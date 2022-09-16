@@ -1,0 +1,52 @@
+
+Global_Unknow未知"Unknow
+,Btn_Enter_Game进入游戏"
+Enter Game
+.Btn_Create_Role创建角色"Create Role
+'Global_Btn_Confirm确定"Confirm
+%Global_Btn_Cancel取消"Cancel
+!Global_Btn_Back返回"Back
+#Global_Btn_Login登录"Login
+)Global_Btn_Register注册"Register
+6Text_Enter_Account请输入账号"Enter account
+3	Text_Enter_Psw请输入密码"Enter password
+A
+Text_Name_Not_Null名称不能为空"Name can not be null!
+:Text_Choose_Role请选择角色"Please choose role!
+BText_Create_Role_Suc创建角色成功"Create role success!
+5Text_Enter_Nick请输入昵称"Enter nick name
+-Btn_Out_Stuck脱离卡死"Out of stuck
+.Btn_Quit_Game退出游戏"Quit the game
+7Btn_Reture_Login返回登录"Return to the login
+EText_Quit_Game确认退出游戏？"Confirm quitting the game?
+ Btn_Exit退出游戏"Exit
+3Text_Normal_Attack普通攻击"Normal attack
+�Notice_Login_By_Othersu你的账户在其他地方登陆，如果并非是你本人操作，请立即前往账号安全中心修改密码！"�Your account is logged in elsewhere. If it is not operated by you, please go to the account security center to change your password immediately!
+�Notice_Link_Close*与服务器连接断开，请重新登录"=The server is disconnected. Please log in to the server again
+iUpdate_Get_Fail$获取更新失败，请检查网络".Failed to get update. Please check the network
+Update_ReTry重试"Retry
+cUpdate_Download_Fail下载失败，请检查网络")Download failed, please check the network
+�Update_Info[检测到資源更新
+更新包大小：<color=#DB744C>{0}</color> MB
+是否立即下載？"mResource update detected 
+update package size: <color=#db744c>{0}</color> MB 
+do you want to download it now?
+DUpdate_White是否进入白名单模式"Enter white list mode
+�Update_ReDownload-当前版本太低，请重新下载客户端"@The current version is too low, please download the client again
+�Update_SuDownload3当前版本较低。建议下载最新的客户端"MThe current version is lower. It is recommended to download the latest client
++Global_AutoPlay自动播放"AutoPlay
+#Global_QuickPlay快进"Quick
+'Global_Record对话记录"Record
+$ GalGame_Stop停止播放"Stop
+#!RoleName_Unknow	？？？"???
+#"Update_Skip跳过更新"Skip
+�#	Help_InfoB帮助:
+1. 右键点击移动
+2. R 热重载 Dll
+3. T 地图传送";Help:
+1. Mouse Right Move
+2. R Reload Dll
+3. T Transfer Map
+,$	Help_Test测试剧情"Show Story Test
+!%Help_Setting设置"Setting
+*&Btn_Enter_Map进入地图"	Enter map

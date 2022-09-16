@@ -1,0 +1,17 @@
+{
+    "name": "Unity.Mono",
+    "rootNamespace": "TaoTie",
+    "references": [
+        "GUID:e2dafdce766231e4f809a7423f5d5815",
+        "GUID:e34a5702dd353724aa315fb8011f08c3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

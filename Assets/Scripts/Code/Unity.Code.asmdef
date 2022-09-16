@@ -1,0 +1,22 @@
+{
+    "name": "Unity.Code",
+    "rootNamespace": "TaoTie",
+    "references": [
+        "GUID:44867461c7558094cab94edbb05214d9",
+        "GUID:e34a5702dd353724aa315fb8011f08c3",
+        "GUID:e2dafdce766231e4f809a7423f5d5815",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

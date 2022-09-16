@@ -1,0 +1,1 @@
+﻿将ET\Release\下打的cdn包 覆盖此文件夹下，参考YooAssets教程，教程中v1.0和googleplay_android等效
