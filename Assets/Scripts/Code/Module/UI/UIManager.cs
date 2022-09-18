@@ -574,13 +574,14 @@ namespace TaoTie
                 target.Active = true;
                 T res = target.View as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await InnerOpenWindow_GetGameObject(target.PrefabPath,target);
                 }
                 InnerResetWindowLayer(target);
                 await this.__AddWindowToStack(target);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -598,13 +599,14 @@ namespace TaoTie
                 target.Active = true;
                 T res = target.View as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await InnerOpenWindow_GetGameObject(target.PrefabPath,target);
                 }
                 InnerResetWindowLayer(target);
                 await this.__AddWindowToStack(target, p1);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -621,13 +623,14 @@ namespace TaoTie
                 target.Active = true;
                 T res = target.View as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await InnerOpenWindow_GetGameObject(target.PrefabPath,target);
                 }
                 InnerResetWindowLayer(target);
                 await this.__AddWindowToStack(target, p1, p2);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -644,13 +647,14 @@ namespace TaoTie
                 target.Active = true;
                 T res = target.View as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await InnerOpenWindow_GetGameObject(target.PrefabPath,target);
                 }
                 InnerResetWindowLayer(target);
                 await this.__AddWindowToStack(target, p1, p2, p3);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -667,13 +671,14 @@ namespace TaoTie
                 target.Active = true;
                 T res = target.View as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await InnerOpenWindow_GetGameObject(target.PrefabPath,target);
                 }
                 InnerResetWindowLayer(target);
                 await this.__AddWindowToStack(target, p1, p2, p3, p4);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -702,7 +707,6 @@ namespace TaoTie
             (view as IOnCreate)?.OnCreate();
             if (view is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
-            target.LoadingState = UIWindowLoadingState.LoadOver;
         }
         #endregion
         
