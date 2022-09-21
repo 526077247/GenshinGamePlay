@@ -252,7 +252,7 @@ namespace TaoTie
 
         private void InnerSetActive(bool active)
         {
-            if(gameObject!=null&&gameObject.activeSelf!=active)
+            if(GetGameObject()!=null&&gameObject.activeSelf!=active)
                 gameObject.SetActive(active);
         }
         

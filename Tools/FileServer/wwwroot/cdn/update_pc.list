@@ -2,7 +2,7 @@
     "_t": "UpdateConfig",
     "res_list": {
         "googleplay": {
-            "1.0.0": {
+            "1": {
                 "_t": "Resver",
                 "channel": [
                     "all"

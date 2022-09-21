@@ -64,7 +64,7 @@ namespace TaoTie
         static void GenerateUIBaseViewCode(GameObject go, string path)
         {
             string name = go.name;
-            bool isItem = go.name.EndsWith("Item");
+            bool isItem = !go.name.EndsWith("View") && !go.name.EndsWith("Win") && !go.name.EndsWith("Panel");
             var temp = new List<string>(path.Split('/'));
             int index = temp.IndexOf("AssetsPackage");
             var dirPath = $"Assets/Scripts/Code/{generate_path}/{temp[index + 1]}/{temp[index + 2]}";

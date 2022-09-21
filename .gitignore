@@ -33,3 +33,6 @@
 /Build-AndroidV8
 Build-Mac
 /Bundles
+/Tools/FileServer/obj
+/Tools/FileServer/.idea
+/FileServer
