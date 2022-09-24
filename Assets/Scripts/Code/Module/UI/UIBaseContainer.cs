@@ -12,7 +12,7 @@ namespace TaoTie
     public class UIBaseContainer
     {
         UIBaseContainer Parent;
-        readonly MultiDictionary<string, Type, UIBaseContainer> components = new MultiDictionary<string, Type, UIBaseContainer>();//[path]:[component_name:UIBaseContainer]
+        MultiDictionary<string, Type, UIBaseContainer> components;//[path]:[component_name:UIBaseContainer]
         int length;
         GameObject gameObject;
         Transform transform;
@@ -71,10 +71,7 @@ namespace TaoTie
             }
             return ParentTransform;
         }
-        public MultiDictionary<string,Type, UIBaseContainer> GetComponents()
-        {
-            return components;
-        }
+
         public int GetLength()
         {
             return length;
@@ -103,15 +100,16 @@ namespace TaoTie
 
         public void BeforeOnDestroy()
         {
-            var keys1 = GetComponents().Keys.ToList();
+            if(components==null) return;
+            var keys1 = components.Keys.ToList();
             for (int i = keys1.Count - 1; i >= 0; i--)
             {
-                if (GetComponents()[keys1[i]] != null)
+                if (components[keys1[i]] != null)
                 {
-                    var keys2 = GetComponents()[keys1[i]].Keys.ToList();
+                    var keys2 = components[keys1[i]].Keys.ToList();
                     for (int j = keys2.Count - 1; j >= 0; j--)
                     {
-                        var component = GetComponents()[keys1[i]][keys2[j]];
+                        var component = components[keys1[i]][keys2[j]];
                         component.BeforeOnDestroy();
                         if (component is II18N i18n)
                             I18NManager.Instance.RemoveI18NEntity(i18n);
@@ -136,7 +134,8 @@ namespace TaoTie
         //遍历：注意，这里是无序的
         void Walk(Action<UIBaseContainer> callback)
         {
-            foreach (var item in this.GetComponents())
+            if(components==null) return;
+            foreach (var item in this.components)
             {
                 if (item.Value != null)
                 {
@@ -151,12 +150,13 @@ namespace TaoTie
         //记录Component
         void RecordUIComponent(string name, Type component_class, UIBaseContainer component)
         {
-            if (this.GetComponents().TryGetValue(name, component_class,out var obj))
+            if (components == null) components = new MultiDictionary<string, Type, UIBaseContainer>();
+            if (this.components.ContainSubKey(name, component_class))
             {
                 Log.Error("Aready exist component_class : " + component_class.Name);
                 return;
             }
-            this.GetComponents().Add(name,component_class,component);
+            this.components.Add(name,component_class,component);
         }
 
         /// <summary>
@@ -342,8 +342,9 @@ namespace TaoTie
         /// <returns></returns>
         public T GetComponent<T>( string path = "") where T : UIBaseContainer
         {
+            if (components == null) return null;
             Type type = typeof(T);
-            if (this.GetComponents().TryGetValue(path,type,out var component))
+            if (this.components.TryGetValue(path,type,out var component))
             {
                 return component as T;
             }
@@ -355,7 +356,7 @@ namespace TaoTie
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
-        public void RemoveComponent<T>( string path = "") where T : UIBaseContainer
+        public void RemoveComponent<T>(string path = "") where T : UIBaseContainer
         {
             var component = this.GetComponent<T>(path);
             if (component != null)
@@ -364,7 +365,7 @@ namespace TaoTie
                 if (component is II18N i18n)
                     I18NManager.Instance.RemoveI18NEntity(i18n);
                 (component as IOnDestroy)?.OnDestroy();
-                this.GetComponents().Remove(path,typeof(T));
+                this.components.Remove(path,typeof(T));
             }
         }
 
@@ -373,11 +374,11 @@ namespace TaoTie
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
-        void InnerRemoveComponent( UIBaseContainer component, string path)
+        void InnerRemoveComponent(UIBaseContainer component, string path)
         {
             if (component != null)
             {
-                this.GetComponents().Remove(path,component.GetType());
+                this.components.Remove(path,component.GetType());
                 this.SetLength(this.GetLength()-1);
             }
         }
