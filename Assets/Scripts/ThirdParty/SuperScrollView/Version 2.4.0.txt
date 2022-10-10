@@ -1,0 +1,9 @@
+Package Version 2.4.0
+
+*** WARNING ***
+
+PLEASE BACK UP YOUR PROJECT BEFORE UPDATING!
+
+Version 2.x is a major changeset
+
+Version 2.x is NOT compatible with Version 1.0.

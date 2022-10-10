@@ -1,6 +1,6 @@
 # TaoTie
 
-包含一个轻量级组件式Unity-UI框架
+包含一个轻量级MVVM组件化Unity-UI框架
 
 包含一个基于YooAsset的资源管理系统，支持动态图集、Unity内置SpriteAtlas图集功能
 

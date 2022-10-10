@@ -45,8 +45,8 @@ namespace TaoTie
         static UIScriptController() //优先生成的排前面
         {
             WidgetInterfaceList = new Dictionary<Type, string>();
-            // WidgetInterfaceList.Add(typeof(SuperScrollView.LoopListView2), "UILoopListView2");
-            // WidgetInterfaceList.Add(typeof(SuperScrollView.LoopGridView), "UILoopGridView");
+            WidgetInterfaceList.Add(typeof(SuperScrollView.LoopListView2), "UILoopListView2");
+            WidgetInterfaceList.Add(typeof(SuperScrollView.LoopGridView), "UILoopGridView");
             WidgetInterfaceList.Add(typeof(CopyGameObject), "UICopyGameObject");
             WidgetInterfaceList.Add(typeof(PointerClick), "UIPointerClick");
             WidgetInterfaceList.Add(typeof(Button), "UIButton");
@@ -215,26 +215,26 @@ namespace TaoTie
                                 tempBuilder.AppendLine("\t\t{").AppendLine();
                                 tempBuilder.AppendLine("\t\t}");
                             }
-                            // else if (uiComponent.Key == typeof(SuperScrollView.LoopListView2))
-                            // {
-                            //     addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
-                            //             .AppendLine();
-                            //     tempBuilder.AppendFormat("\t\tpublic LoopListViewItem2 Get{0}ItemByIndex(LoopListView2 listView, int index)", uisc.GetModuleName())
-                            //             .AppendLine();
-                            //     tempBuilder.AppendLine("\t\t{");
-                            //     tempBuilder.AppendLine("\t\t\treturn null;");
-                            //     tempBuilder.AppendLine("\t\t}");
-                            // }
-                            // else if (uiComponent.Key == typeof(SuperScrollView.LoopGridView))
-                            // {
-                            //     addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitGridView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
-                            //             .AppendLine();
-                            //     tempBuilder.AppendFormat("\t\tpublic LoopGridViewItem Get{0}ItemByIndex(LoopGridView gridview, int index, int row, int column)", uisc.GetModuleName())
-                            //             .AppendLine();
-                            //     tempBuilder.AppendLine("\t\t{");
-                            //     tempBuilder.AppendLine("\t\t\treturn null;");
-                            //     tempBuilder.AppendLine("\t\t}");
-                            // }
+                            else if (uiComponent.Key == typeof(SuperScrollView.LoopListView2))
+                            {
+                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
+                                        .AppendLine();
+                                tempBuilder.AppendFormat("\t\tpublic LoopListViewItem2 Get{0}ItemByIndex(LoopListView2 listView, int index)", uisc.GetModuleName())
+                                        .AppendLine();
+                                tempBuilder.AppendLine("\t\t{");
+                                tempBuilder.AppendLine("\t\t\treturn null;");
+                                tempBuilder.AppendLine("\t\t}");
+                            }
+                            else if (uiComponent.Key == typeof(SuperScrollView.LoopGridView))
+                            {
+                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitGridView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
+                                        .AppendLine();
+                                tempBuilder.AppendFormat("\t\tpublic LoopGridViewItem Get{0}ItemByIndex(LoopGridView gridview, int index, int row, int column)", uisc.GetModuleName())
+                                        .AppendLine();
+                                tempBuilder.AppendLine("\t\t{");
+                                tempBuilder.AppendLine("\t\t\treturn null;");
+                                tempBuilder.AppendLine("\t\t}");
+                            }
                             else if (uiComponent.Key == typeof(CopyGameObject))
                             {
                                 addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
