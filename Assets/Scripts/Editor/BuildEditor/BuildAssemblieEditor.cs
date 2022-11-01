@@ -31,7 +31,7 @@ namespace TaoTie
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildInConfig>(jstr);
-            string assemblyName = "Code" + config.Resver;
+            string assemblyName = "Code" + config.Dllver;
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Assets/Scripts/Code",
@@ -46,7 +46,7 @@ namespace TaoTie
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildInConfig>(jstr);
-            string assemblyName = "Code" + config.Resver;
+            string assemblyName = "Code" + config.Dllver;
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Assets/Scripts/Code",

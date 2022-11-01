@@ -3,42 +3,33 @@ using System.Reflection;
 
 namespace TaoTie
 {
-    public class MonoStaticMethod : IStaticMethod
+    public class MonoStaticAction : IStaticAction
     {
-        private readonly MethodInfo methodInfo;
-
-        private readonly object[] param;
-
-        public MonoStaticMethod(Assembly assembly, string typeName, string methodName)
+        private Action method;
+        public MonoStaticAction(Assembly assembly, string typeName, string methodName)
         {
-            this.methodInfo = assembly.GetType(typeName).GetMethod(methodName);
-            this.param = new object[this.methodInfo.GetParameters().Length];
+            var methodInfo = assembly.GetType(typeName).GetMethod(methodName);
+            this.method = (Action)Delegate.CreateDelegate(typeof(Action), null, methodInfo);
         }
 
-        public override void Run()
+        public void Run()
         {
-            this.methodInfo.Invoke(null, param);
+            this.method();
         }
-
-        public override void Run(object a)
+    }
+    
+    public class MonoStaticFunc<T> : IStaticFunc<T>
+    {
+        private Func<T> method;
+        public MonoStaticFunc(Assembly assembly, string typeName, string methodName)
         {
-            this.param[0] = a;
-            this.methodInfo.Invoke(null, param);
+            var methodInfo = assembly.GetType(typeName).GetMethod(methodName);
+            this.method = (Func<T>)Delegate.CreateDelegate(typeof(Func<T>), null, methodInfo);
         }
-
-        public override void Run(object a, object b)
+        
+        public T Run()
         {
-            this.param[0] = a;
-            this.param[1] = b;
-            this.methodInfo.Invoke(null, param);
-        }
-
-        public override void Run(object a, object b, object c)
-        {
-            this.param[0] = a;
-            this.param[1] = b;
-            this.param[2] = c;
-            this.methodInfo.Invoke(null, param);
+            return this.method();
         }
     }
 }

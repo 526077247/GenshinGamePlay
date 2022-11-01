@@ -23,8 +23,10 @@ namespace YooAsset
         private PatchManifest staticManifest;
 
         public int staticVersion;
+        public bool IsDllBuildIn;
         public IEnumerator Init(YooAssets.EPlayMode mode)
         {
+            IsDllBuildIn = false;
             var _downloader1 = new UnityWebDataRequester();
             _downloader1.SendRequest(StaticVersionStreamingPath);
             while (!_downloader1.IsDone())
@@ -34,6 +36,9 @@ namespace YooAsset
             int.TryParse(_downloader1.GetText(),out int buildInVersion);
             _downloader1.Dispose();
             staticVersion = PlayerPrefs.GetInt("STATIC_VERSION", -1);
+#if !UNITY_EDITOR
+            this.IsDllBuildIn = staticVersion == buildInVersion;//粗略判断一下
+#endif
             if (staticVersion == -1)
             {
                 staticVersion = buildInVersion;

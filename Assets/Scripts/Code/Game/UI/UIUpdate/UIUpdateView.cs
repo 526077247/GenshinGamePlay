@@ -356,7 +356,6 @@ namespace TaoTie
         /// <summary>
         /// 更新完成
         /// </summary>
-        /// <param name="this"></param>
         private async ETTask UpdateFinishAndStartGame()
         {
             PlayerPrefs.SetInt("STATIC_VERSION",this.StaticVersion);
@@ -368,8 +367,6 @@ namespace TaoTie
             ResourcesManager.Instance.ClearAssetsCache();
             ManagerProvider.Clear();
             YooAssetsMgr.Instance.ClearConfigCache();
-            //热修复
-            // AddressablesManager.Instance.StartInjectFix();
             CodeLoader.Instance.ReStart();
         }
         #endregion

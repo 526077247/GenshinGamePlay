@@ -6,6 +6,7 @@ namespace TaoTie
     {
         public string Channel;
         public int Resver;
+        public int Dllver;
         public string RemoteCdnUrl;
         public string RemoteCdnUrl2;
     }

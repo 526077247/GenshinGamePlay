@@ -1,10 +1,12 @@
 ﻿namespace TaoTie
 {
-    public abstract class IStaticMethod
+    public interface IStaticAction
     {
-        public abstract void Run();
-        public abstract void Run(object a);
-        public abstract void Run(object a, object b);
-        public abstract void Run(object a, object b, object c);
+        public void Run();
+    }
+    
+    public interface IStaticFunc<T>
+    {
+        public T Run();
     }
 }
