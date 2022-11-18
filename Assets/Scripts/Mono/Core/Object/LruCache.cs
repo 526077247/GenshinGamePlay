@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 
 namespace TaoTie
 { 
-    public class LruCache<TKey, TValue>
+    public class LruCache<TKey, TValue>:IEnumerable<KeyValuePair<TKey, TValue>>
     {
         const int DEFAULT_CAPACITY = 255;
 
@@ -22,7 +23,7 @@ namespace TaoTie
         {
             _locker = new ReaderWriterLockSlim();
             _capacity = capacity > 0 ? capacity : DEFAULT_CAPACITY;
-            _dictionary = new Dictionary<TKey, TValue>();
+            _dictionary = new Dictionary<TKey, TValue>(DEFAULT_CAPACITY);
             _linkedList = new LinkedList<TKey>();
         }
 
@@ -34,6 +35,20 @@ namespace TaoTie
         public void SetPopCallback(Action<TKey, TValue> func)
         {
             pop_cb = func;
+        }
+
+        public TValue this[TKey t]
+        {
+            get
+            {
+                if(TryGet(t, out var res))
+                    return res;
+                throw new ArgumentException();
+            }
+            set
+            {
+                Set(t, value);
+            }
         }
 
         public void Set(TKey key, TValue value)
@@ -211,18 +226,26 @@ namespace TaoTie
             }
 
         }
-
-        public void ForEach(Action<TKey, TValue> cb)
+        
+        public void Clear()
+        {
+            _dictionary.Clear();
+            _linkedList.Clear();
+        }
+        
+        IEnumerator IEnumerable.GetEnumerator()
         {
             foreach (var item in _dictionary)
             {
-                cb(item.Key, item.Value);
+                yield return item;
             }
         }
-        public void Clear()
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            _dictionary = new Dictionary<TKey, TValue>();
-            _linkedList = new LinkedList<TKey>();
+            foreach (var item in _dictionary)
+            {
+                yield return item;
+            }
         }
     }
 

@@ -556,7 +556,7 @@ namespace TaoTie
 
         public void Clear()
         {
-            this.m_cacheSpriteAtlas.ForEach((key, value) =>
+            foreach ((string key,var value) in this.m_cacheSpriteAtlas)
             {
                 if (value.subasset != null)
                     foreach (var item in value.subasset)
@@ -567,16 +567,15 @@ namespace TaoTie
                 value.asset = null;
                 value.subasset = null;
                 value.ref_count = 0;
-            });
+            }
             this.m_cacheSpriteAtlas.Clear();
 
-            this.m_cacheSingleSprite.ForEach((key, value) =>
-                {
-                    ResourcesManager.Instance?.ReleaseAsset(value.asset);
-                    value.asset = null;
-                    value.ref_count = 0;
-                }
-            );
+            foreach ((string key, var value) in this.m_cacheSingleSprite)
+            {
+                ResourcesManager.Instance?.ReleaseAsset(value.asset);
+                value.asset = null;
+                value.ref_count = 0;
+            }
             this.m_cacheSingleSprite.Clear();
 
             foreach (var item in this.m_cacheDynamicAtlas)

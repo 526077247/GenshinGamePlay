@@ -75,7 +75,7 @@ namespace TaoTie
         /// <returns></returns>
         public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null) where T: UnityEngine.Object
         {
-            ETTask<T> res = ETTask<T>.Create();
+            ETTask<T> res = ETTask<T>.Create(true);
             if (string.IsNullOrEmpty(path))
             {
                 Log.Error("path is empty");
@@ -112,7 +112,7 @@ namespace TaoTie
         /// <returns></returns>
         public ETTask LoadTask<T>(string path,Action<T> callback)where T:UnityEngine.Object
         {
-            ETTask task = ETTask.Create();
+            ETTask task = ETTask.Create(true);
             this.LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
@@ -129,7 +129,7 @@ namespace TaoTie
         /// <returns></returns>
         public ETTask LoadSceneAsync(string path, bool isAdditive)
         {
-            ETTask res = ETTask.Create();
+            ETTask res = ETTask.Create(true);
             if (string.IsNullOrEmpty(path))
             {
                 Log.Error("path err : " + path);
