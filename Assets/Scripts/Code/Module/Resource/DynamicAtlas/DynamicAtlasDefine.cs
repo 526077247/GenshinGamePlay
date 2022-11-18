@@ -11,5 +11,8 @@ namespace TaoTie
         public const int Size_1024 = 1024;
         public const int Size_2048 = 2048;
     }
-    
+    public class DynamicAtlasConfig
+    {
+        public const TextureFormat kTextureFormat = TextureFormat.ARGB32;
+    }
 }

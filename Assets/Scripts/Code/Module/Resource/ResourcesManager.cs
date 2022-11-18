@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 namespace TaoTie
 {
     /// <summary>
-    /// 资源管理系统：提供资源加载管理
-    /// 注意：
-    /// 1、只提供异步接口，即使内部使用的是同步操作，对外来说只有异步
-    /// 2、对于串行执行一连串的异步操作，建议使用协程（用同步形式的代码写异步逻辑），回调方式会使代码难读
-    /// 3、理论上做到逻辑层脚本对AB名字是完全透明的，所有资源只有packagePath的概念，这里对路径进行处理
+    /// <para>资源管理系统：提供资源加载管理</para>
+    /// <para>注意：</para>
+    /// <para>1、只提供异步接口，即使内部使用的是同步操作，对外来说只有异步</para>
+    /// <para>2、对于串行执行一连串的异步操作，建议使用协程（用同步形式的代码写异步逻辑），回调方式会使代码难读</para>
+    /// <para>3、理论上做到逻辑层脚本对AB名字是完全透明的，所有资源只有packagePath的概念，这里对路径进行处理</para>
     /// </summary>
     public class ResourcesManager:IManager
     {
@@ -173,7 +173,10 @@ namespace TaoTie
             }
             YooAssets.UnloadUnusedAssets();
         }
-
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <param name="pooledGo"></param>
         public void ReleaseAsset(UnityEngine.Object pooledGo)
         {
             if (this.Temp.TryGetValue(pooledGo, out var op))

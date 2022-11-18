@@ -78,41 +78,9 @@ namespace TaoTie
         }
         
         #endregion
-        
-     //    /// <summary>
-	    // /// 从池子获取UI组件
-	    // /// </summary>
-	    // /// <param name="this"></param>
-	    // /// <param name="path"></param>
-	    // /// <typeparam name="T"></typeparam>
-	    // /// <returns></returns>
-     //    public async ETTask<T> GetUIGameObjectAsync<T>( string path) where T : Entity,IAwake,IOnCreate
-     //    {
-     //        var obj = await this.GetGameObjectAsync(path);
-     //        if (obj == null) return null;
-     //        T res = this.AddChild<T>();
-     //        res.AddUIComponent<UITransform,Transform>("", obj.transform);
-     //        UIWatcherComponent.Instance.OnCreate(res);
-     //        return res;
-     //    }
-     //
-	    // /// <summary>
-	    // /// 池子回收UI组件
-	    // /// </summary>
-	    // /// <param name="this"></param>
-	    // /// <param name="obj"></param>
-	    // /// <param name="isClear"></param>
-	    // /// <typeparam name="T"></typeparam>
-     //    public void RecycleUIGameObject<T>( T obj,bool isClear = false) where T : Entity,IAwake,IOnCreate
-     //    {
-     //        var uiTrans = obj.GetUIComponent<UITransform>();
-     //        this.RecycleGameObject(uiTrans.transform.gameObject, isClear);
-     //        obj.BeforeOnDestroy();
-     //        UIWatcherComponent.Instance.OnDestroy(obj);
-     //    }
 
 
-		/// <summary>
+        /// <summary>
 		/// 预加载一系列资源
 		/// </summary>
 		/// <param name="this"></param>
@@ -636,7 +604,7 @@ namespace TaoTie
 			}
 		}
 		/// <summary>
-		/// 是否开始检查污染
+		/// 是否开启检查污染
 		/// </summary>
 		/// <returns></returns>
 		bool __IsOpenCheck()
@@ -645,7 +613,7 @@ namespace TaoTie
 		}
 
 		/// <summary>
-		/// 递归取子物体组件数量
+		/// 递归取子节点数量
 		/// </summary>
 		/// <param name="trans"></param>
 		/// <param name="path"></param>

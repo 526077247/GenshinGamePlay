@@ -9,7 +9,7 @@ namespace TaoTie
     /// UI容器，可以自定义UI侧的组件，并对组件的生命周期进行管理，不受Unity生命周期管理
     /// 所有UI相关扩展组件都应继承此类
     /// </summary>
-    public class UIBaseContainer
+    public abstract class UIBaseContainer
     {
         UIBaseContainer Parent;
         MultiDictionary<string, Type, UIBaseContainer> components;//[path]:[component_name:UIBaseContainer]

@@ -100,7 +100,12 @@ namespace TaoTie
                 value.ref_count = 0;
             });
         }
-        //异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
+        /// <summary>
+        /// 异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
+        /// </summary>
+        /// <param name="image_path"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         public ETTask LoadImageTask(string image_path, Action<Sprite> callback = null)
         {
             ETTask task = ETTask.Create();
@@ -111,7 +116,12 @@ namespace TaoTie
             }).Coroutine();
             return task;
         }
-        //异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
+        /// <summary>
+        /// 异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
+        /// </summary>
+        /// <param name="image_path"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         public async ETTask<Sprite> LoadImageAsync(string image_path, Action<Sprite> callback = null)
         {
             Sprite res = null;
@@ -146,7 +156,10 @@ namespace TaoTie
             return res;
         }
 
-        //释放图片
+        /// <summary>
+        /// 释放图片
+        /// </summary>
+        /// <param name="image_path"></param>
         public void ReleaseImage(string image_path)
         {
             if (string.IsNullOrEmpty(image_path))
@@ -196,7 +209,12 @@ namespace TaoTie
         }
 
 
-        //异步加载图集： 回调方式，按理除了预加载的时候其余时候是不需要关心图集的
+        /// <summary>
+        /// 异步加载图集： 回调方式，按理除了预加载的时候其余时候是不需要关心图集的
+        /// </summary>
+        /// <param name="atlas_path"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         public async ETTask<Sprite> LoadAtlasImageAsync(string atlas_path, Action<Sprite> callback = null)
         {
             Sprite res;
@@ -214,7 +232,12 @@ namespace TaoTie
             return res;
         }
         
-        //异步加载图片： 回调方式，按理除了预加载的时候其余时候是不需要关心图集的
+        /// <summary>
+        /// 异步加载图片： 回调方式，按理除了预加载的时候其余时候是不需要关心图集的
+        /// </summary>
+        /// <param name="atlas_path"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
         public async ETTask<Sprite> LoadSingleImageAsync(string atlas_path, Action<Sprite> callback = null)
         {
             Sprite res;
