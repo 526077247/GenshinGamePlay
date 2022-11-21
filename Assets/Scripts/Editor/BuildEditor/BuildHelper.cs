@@ -9,7 +9,7 @@ namespace TaoTie
 {
     public static class BuildHelper
     {
-        public const string relativeDirPrefix = "Release";
+        const string relativeDirPrefix = "Release";
 
         static Dictionary<PlatformType, BuildTarget> buildmap = new Dictionary<PlatformType, BuildTarget>(PlatformTypeComparer.Instance)
         {
@@ -36,7 +36,6 @@ namespace TaoTie
 
         public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder)
         {
-            // EditorUserSettings.SetConfigValue(AddressableTools.is_packing, "1");
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
@@ -95,7 +94,7 @@ namespace TaoTie
             if (buildResult.Success)
                 Debug.Log($"构建成功!");
         }
-        public static void HandleAltas()
+        public static void HandleAtlas()
         {
             //清除图集
             AltasHelper.ClearAllAtlas();
@@ -113,8 +112,6 @@ namespace TaoTie
         }
         static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder)
         {
-            
-            
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
             string programName = "TaoTie";
             string exeName = programName;
@@ -124,24 +121,20 @@ namespace TaoTie
                 case PlatformType.PC:
                     buildTarget = BuildTarget.StandaloneWindows64;
                     exeName += ".exe";
-                    // IFixEditor.Patch();
                     platform = "pc";
                     break;
                 case PlatformType.Android:
                     KeystoreSetting();
                     buildTarget = BuildTarget.Android;
                     exeName += ".apk";
-                    // IFixEditor.CompileToAndroid();
                     platform = "android";
                     break;
                 case PlatformType.IOS:
                     buildTarget = BuildTarget.iOS;
-                    // IFixEditor.CompileToIOS();
                     platform = "ios";
                     break;
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
-                    // IFixEditor.Patch();
                     platform = "pc";
                     break;
             }
@@ -149,7 +142,7 @@ namespace TaoTie
             BuildAssemblieEditor.BuildCodeRelease();
             
             //处理图集资源
-            // HandleAltas();
+            // HandleAtlas();
             //打ab
             BuildInternal(buildTarget, isBuildExe);
 
@@ -165,7 +158,6 @@ namespace TaoTie
 
             if (isBuildExe)
             {
-                // MethodBridgeHelper.MethodBridge_All();
 
                 AssetDatabase.Refresh();
                 string[] levels = {
@@ -179,8 +171,7 @@ namespace TaoTie
             
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
-
-            // var settings = AASUtility.GetSettings();
+            
             string fold = $"{AssetBundleBuilderHelper.GetDefaultOutputRoot()}/{buildTarget}/{obj.Resver}";
             
             string targetPath = Path.Combine(relativeDirPrefix, $"{obj.Channel}_{platform}");

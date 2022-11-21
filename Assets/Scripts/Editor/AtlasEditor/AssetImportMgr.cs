@@ -48,7 +48,7 @@ namespace TaoTie
             }
         }
 
-        public void OnPostprocessModel()
+        public void OnPostprocessModel(GameObject o)
         {
 
             if (!assetPath.Contains("Assets"))
@@ -61,11 +61,7 @@ namespace TaoTie
                 return;
             string path = assetPath.ToLower();
             bool oldReadable = mi.isReadable;
-            bool newReadable = false;
-            if (path.Contains("ReadEnable"))
-            {
-                newReadable = true;
-            }
+            bool newReadable = path.Contains("ReadEnable");
 
             mi.isReadable = newReadable;
             if (oldReadable != newReadable)
@@ -149,22 +145,6 @@ namespace TaoTie
                 ti.SaveAndReimport();
             }
         }
-
-
-        [RuntimeInitializeOnLoadMethod]
-        static void OnRuntimeMethodLoad()
-        {
-            //Debug.LogError("After Scene is loaded and game is running");
-            //EditorMenu.RunCheckAssetBundleWithDiscreteImages();
-        }
-
-        [InitializeOnLoadMethod]
-        static void Init()
-        {
-            // EditorApplication.playModeStateChanged += OnEditorPlayModeChanged;
-        }
-
-
 
     }
 }

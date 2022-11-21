@@ -8,7 +8,6 @@ namespace TaoTie
         public bool clearFolder = false;
         public bool isBuildExe = false;
         public bool isContainAB = false;
-        public bool isInject = false;
         public BuildType buildType = BuildType.Release;
         public BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
     }
