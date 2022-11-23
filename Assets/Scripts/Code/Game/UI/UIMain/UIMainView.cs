@@ -36,7 +36,7 @@ namespace TaoTie
 			this.LoopGridView.InitGridView(0,OnGetGridItemByIndex);
 			this.LoopListView2 = this.AddComponent<UILoopListView2>("ScrollList/LoopList");
 			this.LoopListView2.InitListView(0,OnGetListItemByIndex);
-			Welcome = this.AddComponent<UIBaseContainer>("ScrollList/Welcome");
+			Welcome = this.AddComponent<UIEmptyView>("ScrollList/Welcome");
 			//模拟读配置
 			List<MenuPara> paras = new List<MenuPara>();
 			foreach (var item in Config)
