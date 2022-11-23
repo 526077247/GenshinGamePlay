@@ -119,7 +119,7 @@ namespace TaoTie
                 };
                 var trans = go.transform;
                 trans.SetParent(transform, false);
-                UILayer new_layer = ManagerProvider.GetManager<UILayer,UILayerDefine,GameObject>(layer, go,layer.Name.ToString());
+                UILayer new_layer = ManagerProvider.RegisterManager<UILayer,UILayerDefine,GameObject>(layer, go,layer.Name.ToString());
                 this.layers[layer.Name] = new_layer;
                 UIManager.Instance.window_stack[layer.Name] = new LinkedList<string>();
             }

@@ -9,25 +9,25 @@ namespace TaoTie
         {
             try
             {
-                ManagerProvider.GetManager<AttributeManager>();
+                ManagerProvider.RegisterManager<AttributeManager>();
                 
-                ManagerProvider.GetManager<CoroutineLockManager>();
-                ManagerProvider.GetManager<TimerManager>();
+                ManagerProvider.RegisterManager<CoroutineLockManager>();
+                ManagerProvider.RegisterManager<TimerManager>();
                 
-                ManagerProvider.GetManager<ConfigManager>();
-                ManagerProvider.GetManager<ResourcesManager>();
-                ManagerProvider.GetManager<GameObjectPoolManager>();
-                ManagerProvider.GetManager<ImageLoaderManager>();
-                ManagerProvider.GetManager<MaterialManager>();
+                ManagerProvider.RegisterManager<ConfigManager>();
+                ManagerProvider.RegisterManager<ResourcesManager>();
+                ManagerProvider.RegisterManager<GameObjectPoolManager>();
+                ManagerProvider.RegisterManager<ImageLoaderManager>();
+                ManagerProvider.RegisterManager<MaterialManager>();
                 
-                ManagerProvider.GetManager<I18NManager>();
-                ManagerProvider.GetManager<UIManager>();
-                ManagerProvider.GetManager<UILayersManager>();
+                ManagerProvider.RegisterManager<I18NManager>();
+                ManagerProvider.RegisterManager<UIManager>();
+                ManagerProvider.RegisterManager<UILayersManager>();
 
-                ManagerProvider.GetManager<CameraManager>();
-                ManagerProvider.GetManager<SceneManager>();
+                ManagerProvider.RegisterManager<CameraManager>();
+                ManagerProvider.RegisterManager<SceneManager>();
                 
-                ManagerProvider.GetManager<ServerConfigManager>();
+                ManagerProvider.RegisterManager<ServerConfigManager>();
                 StartGameAsync().Coroutine();
             }
             catch (Exception e)

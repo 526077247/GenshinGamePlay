@@ -7,7 +7,7 @@ namespace TaoTie
 {
     public class AssemblyManager:IManager
     {
-        public static AssemblyManager Instance => ManagerProvider.GetManager<AssemblyManager>();
+        public static AssemblyManager Instance => ManagerProvider.RegisterManager<AssemblyManager>();
         private HashSet<Assembly> Temp;
         private HashSet<Assembly> HotfixTemp;
         private Dictionary<string, Type> allTypes;

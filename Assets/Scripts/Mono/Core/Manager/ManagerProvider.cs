@@ -16,7 +16,16 @@ namespace TaoTie
         MultiDictionary<Type,string, object> ManagersMap;
         private LinkedList<object> AllManagers;
         private LinkedList<IUpdateManager> UpdateManagers;
-        public static T GetManager<T>(string name = "") where T :class,IManager
+        public static T GetManager<T>(string name = "") where T :class,IManagerDestroy
+        {
+            var type = typeof(T);
+            if (!Instance.ManagersMap.TryGetValue(type, name, out var res))
+            {
+                return null;
+            }
+            return res as T;
+        }
+        public static T RegisterManager<T>(string name = "") where T :class,IManager
         {
             var type = typeof(T);
             if (!Instance.ManagersMap.TryGetValue(type, name, out var res))
@@ -33,7 +42,7 @@ namespace TaoTie
             }
             return res as T;
         }
-        public static T GetManager<T,P1>(P1 p1,string name = "") where T :class,IManager<P1>
+        public static T RegisterManager<T,P1>(P1 p1,string name = "") where T :class,IManager<P1>
         {
             var type = typeof(T);
             if (!Instance.ManagersMap.TryGetValue(type, name, out var res))
@@ -49,7 +58,7 @@ namespace TaoTie
             }
             return res as T;
         }
-        public static T GetManager<T,P1,P2>(P1 p1,P2 p2,string name = "") where T :class,IManager<P1,P2>
+        public static T RegisterManager<T,P1,P2>(P1 p1,P2 p2,string name = "") where T :class,IManager<P1,P2>
         {
             var type = typeof(T);
             if (!Instance.ManagersMap.TryGetValue(type, name, out var res))
@@ -65,7 +74,7 @@ namespace TaoTie
             }
             return res as T;
         }
-        public static T GetManager<T,P1,P2,P3>(P1 p1,P2 p2,P3 p3,string name = "") where T :class,IManager<P1,P2,P3>
+        public static T RegisterManager<T,P1,P2,P3>(P1 p1,P2 p2,P3 p3,string name = "") where T :class,IManager<P1,P2,P3>
         {
             var type = typeof(T);
             if (!Instance.ManagersMap.TryGetValue(type, name, out var res))

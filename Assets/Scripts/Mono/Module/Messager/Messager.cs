@@ -6,7 +6,7 @@ namespace TaoTie
 
     public class Messager:IManager
     {
-        public static Messager Instance => ManagerProvider.GetManager<Messager>();
+        public static Messager Instance => ManagerProvider.RegisterManager<Messager>();
         public void Init()
         {
             
