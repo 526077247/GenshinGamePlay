@@ -44,18 +44,20 @@ namespace TaoTie
             Instance = this;
             this.timerActions = new ITimer[TimerManager.TimeTypeMax];
 
-            Assembly assembly = GetType().Assembly;
-            foreach (Type type in assembly.GetTypes())
+            List<Type> types = AttributeManager.Instance.GetTypes(typeof (TimerAttribute));
+
+            foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(TimerAttribute), false);
-                if (attrs.Length == 0)
-                {
-                    continue;
-                }
                 ITimer iTimer = Activator.CreateInstance(type) as ITimer;
                 if (iTimer == null)
                 {
                     Log.Error($"Timer Action {type.Name} 需要继承 ITimer");
+                    continue;
+                }
+                
+                object[] attrs = type.GetCustomAttributes(typeof(TimerAttribute), false);
+                if (attrs.Length == 0)
+                {
                     continue;
                 }
 
