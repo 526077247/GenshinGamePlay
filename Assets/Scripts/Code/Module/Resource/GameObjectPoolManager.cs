@@ -625,8 +625,8 @@ namespace TaoTie
 			for (int i = 0; i < trans.childCount; i++)
 			{
 				var child = trans.GetChild(i);
-				if (child.name.Contains("Input Caret") || child.name.Contains("TMP SubMeshUI") || child.name.Contains("TMP UI SubObject") || /*child.GetComponent<LoopListViewItem2>()!=null
-					 || child.GetComponent<LoopGridViewItem>() != null ||*/ (child.name.Contains("Caret") && child.parent.name.Contains("Text Area")))
+				if (child.name.Contains("Input Caret") || child.name.Contains("TMP SubMeshUI") || child.name.Contains("TMP UI SubObject") || child.GetComponent<SuperScrollView.LoopListViewItem2>()!=null
+					 || child.GetComponent<SuperScrollView.LoopGridViewItem>() != null || (child.name.Contains("Caret") && child.parent.name.Contains("Text Area")))
 				{
 					//Input控件在运行时会自动生成个光标子控件，而prefab中是没有的，所以得过滤掉
 					//TextMesh会生成相应字体子控件
