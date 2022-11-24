@@ -94,6 +94,7 @@ namespace TaoTie
 		private void Update()
 		{
 			if (!IsInit) return;
+			TimeInfo.Instance.Update();
 			CodeLoader.Instance.Update?.Invoke();
 			ManagerProvider.Update();
 			if (CodeLoader.Instance.isReStart)
