@@ -100,28 +100,31 @@ namespace TaoTie
 
         public void BeforeOnDestroy()
         {
-            if(components==null) return;
-            var keys1 = components.Keys.ToList();
-            for (int i = keys1.Count - 1; i >= 0; i--)
+            if (components != null)
             {
-                if (components[keys1[i]] != null)
+                var keys1 = components.Keys.ToList();
+                for (int i = keys1.Count - 1; i >= 0; i--)
                 {
-                    var keys2 = components[keys1[i]].Keys.ToList();
-                    for (int j = keys2.Count - 1; j >= 0; j--)
+                    if (components[keys1[i]] != null)
                     {
-                        var component = components[keys1[i]][keys2[j]];
-                        component.BeforeOnDestroy();
-                        if (component is II18N i18n)
-                            I18NManager.Instance.RemoveI18NEntity(i18n);
-                        if(component is IOnDestroy a) a.OnDestroy();
-                        
+                        var keys2 = components[keys1[i]].Keys.ToList();
+                        for (int j = keys2.Count - 1; j >= 0; j--)
+                        {
+                            var component = components[keys1[i]][keys2[j]];
+                            component.BeforeOnDestroy();
+                            if (component is II18N i18n)
+                                I18NManager.Instance.RemoveI18NEntity(i18n);
+                            if (component is IOnDestroy a) a.OnDestroy();
+
+                        }
                     }
                 }
             }
-            this.SetLength(this.GetLength()-1);
+
+            length--;
             if (this.GetLength() <= 0)
             {
-                if (string.IsNullOrEmpty(path))
+                if (!string.IsNullOrEmpty(path))
                     this.Parent.InnerRemoveComponent(this, path);
                 else
                     Log.Info("Close window here, type name: "+this.GetType().Name);
