@@ -67,6 +67,11 @@ namespace TaoTie
             bool isItem = !go.name.EndsWith("View") && !go.name.EndsWith("Win") && !go.name.EndsWith("Panel");
             var temp = new List<string>(path.Split('/'));
             int index = temp.IndexOf("AssetsPackage");
+            if (temp.Count <= index + 3)
+            {
+                Log.Error("ui预制体路径应为  Assets/AssetsPackage/UI模块/UI子模块/Prefabs/预制体");
+                return;
+            }
             var dirPath = $"Assets/Scripts/Code/{generate_path}/{temp[index + 1]}/{temp[index + 2]}";
             if (!Directory.Exists(dirPath))
             {
@@ -160,7 +165,7 @@ namespace TaoTie
 
                     if (!had)
                     {
-                        strBuilder.AppendFormat("\t\tpublic UIEmptyGameobject {0};", uisc.GetModuleName())
+                        strBuilder.AppendFormat("\t\tpublic UIEmptyView {0};", uisc.GetModuleName())
                             .AppendLine();
                     }
                 }
@@ -250,7 +255,7 @@ namespace TaoTie
 
                     if (!had)
                     {
-                        strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyGameobject>(\"{1}\");",
+                        strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyView>(\"{1}\");",
                                 uisc.GetModuleName(), strTemp)
                             .AppendLine();
                     }
