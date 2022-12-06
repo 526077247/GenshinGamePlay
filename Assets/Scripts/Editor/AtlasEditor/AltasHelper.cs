@@ -19,15 +19,18 @@ namespace TaoTie
 
         public static string DiscreteImagesName = "DiscreteImages";
         public static string DynamicAtlasName = "DynamicAtlas";
-
+        public static string[] uipaths = {"UI", /*"UIGames", "UIHall"*/};
         /// <summary>
         /// 将UI目录下的小图 打成  图集
         /// </summary>
         public static void GeneratingAtlas()
         {
-            GeneratingAtlasByDir("UI");
-            GeneratingAtlasByDir("UIGames");
-            GeneratingAtlasByDir("UIHall");
+            for (int i = 0; i < uipaths.Length; i++)
+            {
+                GeneratingAtlasByDir(uipaths[i]);
+            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         private static void GeneratingAtlasByDir(string dir)
@@ -194,9 +197,8 @@ namespace TaoTie
             string
                 atlasName = AtlasName +
                             ".spriteatlas"; //dirInfo.Name.ToLower() + "_" + AtlasName.ToLower() + ".spriteatlas";
-            CreateAtlas(dirInfo.FullName, atlasName);
+            SpriteAtlas sptAtlas = GetOrCreateAtlas(dirInfo.FullName, atlasName);
             string dirInfoPath = dirInfo.FullName.Substring(dirInfo.FullName.IndexOf("Assets"));
-            SpriteAtlas sptAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(Path.Combine(dirInfoPath, atlasName));
             SetSpriteAtlas(sptAtlas, Path.Combine(dirInfoPath, atlasName));
             if (sptAtlas != null && spts.Count > 0)
             {
@@ -223,9 +225,8 @@ namespace TaoTie
 
 
             string atlasName = AtlasName + "_" + atlasDir.Name + ".spriteatlas";
-            CreateAtlas(dirInfo.FullName, atlasName);
+            SpriteAtlas sptAtlas = GetOrCreateAtlas(dirInfo.FullName, atlasName);
             string assetPath = dirInfo.FullName.Substring(dirInfo.FullName.IndexOf("Assets"));
-            SpriteAtlas sptAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(Path.Combine(assetPath, atlasName));
             SetSpriteAtlas(sptAtlas, Path.Combine(assetPath, atlasName));
             if (sptAtlas != null && folders.Count > 0)
             {
@@ -326,13 +327,26 @@ namespace TaoTie
         }
 
 
-        private static void CreateAtlas(string fullName, string atlasName)
+        private static SpriteAtlas GetOrCreateAtlas(string fullName, string atlasName)
         {
             string filePath = Path.Combine(fullName, atlasName);
             string atlasPath = filePath.Substring(filePath.IndexOf("Assets"));
-            SpriteAtlas sa = new SpriteAtlas();
-            AssetDatabase.CreateAsset(sa, atlasPath);
-            AssetDatabase.SaveAssets();
+            SpriteAtlas sa = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(atlasPath);
+            if (sa == null)
+            {
+                sa = new SpriteAtlas();
+                AssetDatabase.CreateAsset(sa, atlasPath);
+                EditorUtility.SetDirty(sa);
+                AssetDatabase.SaveAssetIfDirty(sa);
+            }
+            else
+            {
+                var obj = sa.GetPackables();
+                sa.Remove(obj);
+                EditorUtility.SetDirty(sa);
+                AssetDatabase.SaveAssetIfDirty(sa);
+            }
+            return sa;
             //        string yaml = @"%YAML 1.1
             //%TAG !u! tag:unity3d.com,2011:
             //--- !u!687078895 &4343727234628468602
@@ -390,16 +404,15 @@ namespace TaoTie
          */
         public static void ClearAllAtlas()
         {
-            string[] uipaths = {"UICommonGame", "UIGames", "UIHall"};
             foreach (var cpath in uipaths)
             {
                 string uiPath = Path.Combine(Application.dataPath, "AssetsPackage", cpath);
                 string[] strs = FileHelper.GetFileNames(uiPath, "*.spriteatlas*", true);
                 for (int i = 0; i < strs.Length; i++)
                 {
-                    Debug.Log(strs[i]);
-                    FileHelper.SafeDeleteFile(strs[i]);
-                    FileHelper.SafeDeleteFile(strs[i] + ".meta");
+                    string atlasPath = strs[i].Substring(strs[i].IndexOf("Assets"));
+                    Debug.Log(atlasPath);
+                    AssetDatabase.DeleteAsset(atlasPath);
                 }
             }
 
