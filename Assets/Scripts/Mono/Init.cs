@@ -7,15 +7,16 @@ using System.Threading;
 using UnityEngine;
 namespace TaoTie
 {
-	// 1 mono模式 2 ILRuntime模式 3 Wolong模式
+
 	public enum CodeMode
 	{
-		Mono = 1,
+		LoadDll = 1,//加载dll
+		BuildIn = 2,//直接打进整包
 	}
 	
 	public class Init: MonoBehaviour
 	{
-		public CodeMode CodeMode = CodeMode.Mono;
+		public CodeMode CodeMode = CodeMode.LoadDll;
 
 		public YooAssets.EPlayMode PlayMode = YooAssets.EPlayMode.EditorSimulateMode;
 

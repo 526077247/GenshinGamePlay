@@ -34,19 +34,33 @@ namespace TaoTie
 		
 		public void Start()
 		{
+			AssetBundle ab = null;
 			switch (this.CodeMode)
 			{
-				case CodeMode.Mono:
+				case CodeMode.BuildIn:
+				{
+					foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
+					{
+						if (item.FullName.Contains("Unity.Code"))
+						{
+							assembly = item;
+							Debug.Log("Get AOT Dll Success");
+							break;
+						}
+					}
+					break;
+				}
+				case CodeMode.LoadDll:
 				{
 					byte[] assBytes = null;
 					byte[] pdbBytes= null;
-					AssetBundle ab = null;
+					
 					//先尝试直接加载AOT的dll
 					if (YooAssetsMgr.Instance.IsDllBuildIn)
 					{
 						foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
 						{
-							if (item.FullName.Contains("Unity.Codes"))
+							if (item.FullName.Contains("Unity.Code"))
 							{
 								assembly = item;
 								Debug.Log("Get AOT Dll Success");
@@ -79,20 +93,24 @@ namespace TaoTie
 								typeof(TextAsset)) as TextAsset).bytes;
 						}
 #endif
-
 						assembly = Assembly.Load(assBytes, pdbBytes);
 						Debug.Log("Get Dll Success");
 					}
 
-					AssemblyManager.Instance.AddAssembly(assembly);
-					IStaticAction start = new MonoStaticAction(assembly, "TaoTie.Entry", "Start");
-					start.Run();
-					if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
-						ab?.Unload(true);
-
+					
 					break;
 				}
 			}
+
+			if (assembly != null)
+			{
+				AssemblyManager.Instance.AddAssembly(assembly);
+				IStaticAction start = new MonoStaticAction(assembly, "TaoTie.Entry", "Start");
+				start.Run();
+			}
+			if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+				ab?.Unload(true);
+
 		}
 		
 		public bool isReStart = false;
