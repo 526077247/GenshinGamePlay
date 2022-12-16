@@ -16,16 +16,16 @@ namespace TaoTie
     {
 
         public static ResourcesManager Instance { get;private set; }
-        public int ProcessingAddressablesAsyncLoaderCount = 0;
-        public Dictionary<object, AssetOperationHandle> Temp;
-        public List<AssetOperationHandle> CachedAssetOperationHandles;
+        private int loaderCount = 0;
+        private Dictionary<object, AssetOperationHandle> Temp;
+        private List<AssetOperationHandle> CachedAssetOperationHandles;
 
         #region override
         
         public void Init()
         {
             Instance = this;
-            this.ProcessingAddressablesAsyncLoaderCount = 0;
+            this.loaderCount = 0;
             this.Temp = new Dictionary<object, AssetOperationHandle>(1024);
             this.CachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
         }
@@ -44,7 +44,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool IsProsessRunning()
         {
-            return this.ProcessingAddressablesAsyncLoaderCount > 0;
+            return this.loaderCount > 0;
         }
         /// <summary>
         /// 同步加载Asset
@@ -59,9 +59,9 @@ namespace TaoTie
                 Log.Error("path is empty");
                 return null;
             }
-            this.ProcessingAddressablesAsyncLoaderCount++;
+            this.loaderCount++;
             var op = YooAssets.LoadAssetSync<T>(path);
-            this.ProcessingAddressablesAsyncLoaderCount--;
+            this.loaderCount--;
             this.Temp.Add(op.AssetObject,op);
             return op.AssetObject as T;
 
@@ -83,11 +83,11 @@ namespace TaoTie
                 res.SetResult(null);
                 return res;
             }
-            this.ProcessingAddressablesAsyncLoaderCount++;
+            this.loaderCount++;
             var op = YooAssets.LoadAssetAsync<T>(path);
             op.Completed += (op) =>
             {
-                this.ProcessingAddressablesAsyncLoaderCount--;
+                this.loaderCount--;
                 callback?.Invoke(op.AssetObject as T);
                 res.SetResult(op.AssetObject as T);
                 if (!this.Temp.ContainsKey(op.AssetObject))
@@ -135,11 +135,11 @@ namespace TaoTie
                 Log.Error("path err : " + path);
                 return res;
             }
-            this.ProcessingAddressablesAsyncLoaderCount++;
+            this.loaderCount++;
             var op = YooAssets.LoadSceneAsync(path,isAdditive?LoadSceneMode.Additive:LoadSceneMode.Single);
             op.Completed += (op) =>
             {
-                this.ProcessingAddressablesAsyncLoaderCount--;
+                this.loaderCount--;
                 res.SetResult();
             };
             return res;

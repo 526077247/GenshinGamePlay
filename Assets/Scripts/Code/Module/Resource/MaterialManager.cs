@@ -7,22 +7,22 @@ namespace TaoTie
     public class MaterialManager:IManager
     {
         public static MaterialManager Instance { get; set; }
-        public Dictionary<string, Material> m_cacheMaterial;
+        private Dictionary<string, Material> cacheMaterial;
 
         #region override
 
         public void Init()
         {
-            m_cacheMaterial = new Dictionary<string, Material>();
+            cacheMaterial = new Dictionary<string, Material>();
         }
 
         public void Destroy()
         {
-            foreach (var item in m_cacheMaterial)
+            foreach (var item in cacheMaterial)
             {
                 ResourcesManager.Instance.ReleaseAsset(item.Value);
             }
-            m_cacheMaterial.Clear();
+            cacheMaterial.Clear();
         }
 
         #endregion
@@ -34,11 +34,11 @@ namespace TaoTie
             try
             {
                 coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, address.GetHashCode());
-                if (!this.m_cacheMaterial.TryGetValue(address, out res))
+                if (!this.cacheMaterial.TryGetValue(address, out res))
                 {
                     res = await ResourcesManager.Instance.LoadAsync<Material>(address);
                     if (res != null)
-                        this.m_cacheMaterial[address] = res;
+                        this.cacheMaterial[address] = res;
                 }
                 callback?.Invoke(res);
             }
