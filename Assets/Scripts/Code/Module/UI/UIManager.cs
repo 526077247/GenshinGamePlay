@@ -564,6 +564,8 @@ namespace TaoTie
                 var layer = GetLayer(target.Layer);
                 uiTrans.transform.SetParent(layer.transform, false);
             }
+            if (view is IOnWidthPaddingChange)
+                OnWidthPaddingChange(view);
         }
         
         async ETTask<T> __InnerOpenWindow<T>( UIWindow target) where T : UIBaseView
@@ -895,7 +897,6 @@ namespace TaoTie
         /// <summary>
         /// 修改边缘宽度
         /// </summary>
-        
         /// <param name="value"></param>
         public void SetWidthPadding(float value)
         {
@@ -907,17 +908,21 @@ namespace TaoTie
                     for (LinkedListNode<string> node = layer.First; null != node; node = node.Next)
                     {
                         var target = this.GetWindow(node.Value);
-                        var win = target.View as IOnWidthPaddingChange;
-                        if (win != null)
+                        if (target.View is IOnWidthPaddingChange)
                         {
-                            var rectTrans = target.View.GetTransform().GetComponent<RectTransform>();
-                            var pandding = WidthPadding;
-                            rectTrans.offsetMin = new Vector2(pandding * (1 - rectTrans.anchorMin.x), 0);
-                            rectTrans.offsetMax = new Vector2(-pandding * rectTrans.anchorMax.x, 0);
+                            OnWidthPaddingChange(target.View);
                         }
                     }
                 }
             }
+        }
+
+        private void OnWidthPaddingChange(UIBaseView target)
+        {
+            var rectTrans = target.GetTransform().GetComponent<RectTransform>();
+            var pandding = WidthPadding;
+            rectTrans.offsetMin = new Vector2(pandding * (1 - rectTrans.anchorMin.x), 0);
+            rectTrans.offsetMax = new Vector2(-pandding * rectTrans.anchorMax.x, 0);
         }
 
         #endregion

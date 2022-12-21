@@ -36,9 +36,7 @@ namespace YooAsset
             int.TryParse(_downloader1.GetText(),out int buildInVersion);
             _downloader1.Dispose();
             staticVersion = PlayerPrefs.GetInt("STATIC_VERSION", -1);
-#if !UNITY_EDITOR
-            this.IsDllBuildIn = staticVersion == buildInVersion;//粗略判断一下
-#endif
+
             if (staticVersion == -1)
             {
                 staticVersion = buildInVersion;
@@ -80,11 +78,21 @@ namespace YooAsset
             }
             else
             {
-                var ab = SyncLoadAssetBundle("assets/assetspackage.bundle");
-
+                string assetBundleName = "assets/assetspackage.bundle";
+                var ab = SyncLoadAssetBundle(assetBundleName);
+                IsDllBuildIn = true;
                 string jstr = ((TextAsset) ab.LoadAsset("Assets/AssetsPackage/config.bytes", typeof (TextAsset))).text;
                 Config = JsonHelper.FromJson<BuildInConfig>(jstr);
                 ab.Unload(true);
+                if (!IsAssetBundleInPackage(assetBundleName))
+                {
+                    ab = SyncLoadBuildInAssetBundle(assetBundleName);
+                    jstr = ((TextAsset) ab.LoadAsset("Assets/AssetsPackage/config.bytes", typeof (TextAsset))).text;
+                    var oldConfig = JsonHelper.FromJson<BuildInConfig>(jstr);
+                    this.IsDllBuildIn = Config.Dllver == oldConfig.Dllver;
+                    Debug.Log($"Config.Dllver ={Config.Dllver } oldConfig.Dllver={oldConfig.Dllver}");
+                    ab.Unload(true);
+                }
             }
         }
 
@@ -168,7 +176,18 @@ namespace YooAsset
             var ab = AssetBundle.LoadFromFile(path, 0, YooAssetConst.Offset);
             return ab;
         }
-        
+        /// <summary>
+        /// 同步加载内置ab包
+        /// </summary>
+        /// <param name="assetBundleName"></param>
+        /// <returns></returns>
+        public AssetBundle SyncLoadBuildInAssetBundle(string assetBundleName)
+        {
+            var info = buildInManifest.BundleDic[assetBundleName];
+            var path =  PathHelper.MakeStreamingLoadPath(info.FileName);
+            var ab = AssetBundle.LoadFromFile(path, 0, YooAssetConst.Offset);
+            return ab;
+        }
         
         private AssetBundle configBundle;
         
