@@ -25,16 +25,7 @@ namespace TaoTie
 		private MemoryStream pdbStream ;
 
 		public bool IsInit = false;
-		
-		private CodeLoader()
-		{
-			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			foreach (Assembly ass in assemblies)
-			{
-				AssemblyManager.Instance.AddHotfixAssembly(ass);
-			}
-		}
-		
+
 		public void Start()
 		{
 			AssetBundle ab = null;
@@ -92,7 +83,7 @@ namespace TaoTie
 
 			if (assembly != null)
 			{
-				AssemblyManager.Instance.AddAssembly(assembly);
+				AssemblyManager.Instance.AddHotfixAssembly(assembly);
 				IStaticAction start = new MonoStaticAction(assembly, "TaoTie.Entry", "Start");
 				start.Run();
 			}
