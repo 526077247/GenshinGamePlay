@@ -27,8 +27,9 @@ namespace TaoTie
 		None,
 		Android,
 		IOS,
-		PC,
+		Windows,
 		MacOS,
+		Linux,
 	}
 	
 	public enum BuildType:byte
@@ -66,9 +67,11 @@ namespace TaoTie
 #elif UNITY_IOS
 			activePlatform = PlatformType.IOS;
 #elif UNITY_STANDALONE_WIN
-			activePlatform = PlatformType.PC;
+	        activePlatform = PlatformType.Windows;
 #elif UNITY_STANDALONE_OSX
 			activePlatform = PlatformType.MacOS;
+#elif UNITY_STANDALONE_LINUX
+			activePlatform = PlatformType.Linux;
 #else
 			activePlatform = PlatformType.None;
 #endif
@@ -107,6 +110,7 @@ namespace TaoTie
 			EditorGUILayout.LabelField("cdn地址：" + this._inConfig.RemoteCdnUrl);
 			EditorGUILayout.LabelField("渠道标识：" + this._inConfig.Channel);
 			EditorGUILayout.LabelField("资源版本：" + this._inConfig.Resver);
+			EditorGUILayout.LabelField("代码版本：" + this._inConfig.Dllver);
 			if (GUILayout.Button("修改配置"))
 			{
 				System.Diagnostics.Process.Start("notepad.exe", "Assets/AssetsPackage/config.bytes");
