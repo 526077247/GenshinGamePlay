@@ -42,7 +42,7 @@ namespace TaoTie
         /// 是否有加载任务正在进行
         /// </summary>
         /// <returns></returns>
-        public bool IsProsessRunning()
+        public bool IsProcessRunning()
         {
             return this.loaderCount > 0;
         }

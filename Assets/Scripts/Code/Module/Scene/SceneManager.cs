@@ -19,7 +19,7 @@ namespace TaoTie
         //是否忙
         public bool Busing = false;
         
-        
+        private readonly Queue<ETTask> waitFinishTask = new Queue<ETTask>();
         #region override
 
         public void Init()
@@ -30,6 +30,7 @@ namespace TaoTie
 
         public void Destroy()
         {
+            waitFinishTask.Clear();
             this.Scenes = null;
             Instance = null;
         }
@@ -62,8 +63,8 @@ namespace TaoTie
             CameraManager.Instance.SetCameraStackAtLoadingStart();
 
             //等待资源管理器加载任务结束，否则很多Unity版本在切场景时会有异常，甚至在真机上crash
-            Log.Info("InnerSwitchScene ProsessRunning Done ");
-            while (ResourcesManager.Instance.IsProsessRunning())
+            Log.Info("InnerSwitchScene ProcessRunning Done ");
+            while (ResourcesManager.Instance.IsProcessRunning())
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
@@ -141,10 +142,13 @@ namespace TaoTie
 
             slid_value = 1;
             await scene.SetProgress(slid_value);
+            Log.Info("等久点，跳的太快");
             //等久点，跳的太快
             await TimerManager.Instance.WaitAsync(500);
+            Log.Info("加载目标场景完成 Start");
             await scene.OnSwitchSceneEnd();
             CurrentScene = scene;
+            FinishLoad();
         }
         //切换场景
         public async ETTask SwitchScene<T>(bool needclean = false)where T:IScene
@@ -170,6 +174,23 @@ namespace TaoTie
         {
             if (this.CurrentScene == null) return false;
             return this.CurrentScene.GetType() == typeof(T);
+        }
+
+        public ETTask WaitLoadOver()
+        {
+            ETTask task = ETTask.Create();
+            waitFinishTask.Enqueue(task);
+            return task;
+        }
+        
+        public void FinishLoad()
+        {
+            int count = waitFinishTask.Count;
+            while (count-- > 0)
+            {
+                ETTask task = waitFinishTask.Dequeue();
+                task.SetResult();
+            }
         }
         
     }

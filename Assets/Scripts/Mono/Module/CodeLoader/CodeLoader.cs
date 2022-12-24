@@ -75,7 +75,6 @@ namespace TaoTie
 						GetBytes(out ab, out assBytes, out pdbBytes);
 						assembly = Assembly.Load(assBytes, pdbBytes);
 						Debug.Log("Get Dll Success");
-						this.assemblyVer = YooAssetsMgr.Instance.Config.Dllver;//记录当前dll版本
 					}
 					break;
 				}
@@ -83,6 +82,8 @@ namespace TaoTie
 
 			if (assembly != null)
 			{
+				this.assemblyVer = YooAssetsMgr.Instance.Config.Dllver;//记录当前dll版本
+				AssemblyManager.Instance.AddAssembly(GetType().Assembly);
 				AssemblyManager.Instance.AddHotfixAssembly(assembly);
 				IStaticAction start = new MonoStaticAction(assembly, "TaoTie.Entry", "Start");
 				start.Run();

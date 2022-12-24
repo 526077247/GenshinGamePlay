@@ -360,13 +360,14 @@ namespace TaoTie
         {
             PlayerPrefs.SetInt("STATIC_VERSION",this.StaticVersion);
             PlayerPrefs.Save();
-            while (ResourcesManager.Instance.IsProsessRunning())
+            while (ResourcesManager.Instance.IsProcessRunning())
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
             ResourcesManager.Instance.ClearAssetsCache();
             ManagerProvider.Clear();
             YooAssetsMgr.Instance.ClearConfigCache();
+            ObjectPool.Instance.Dispose();
             CodeLoader.Instance.ReStart();
         }
         #endregion

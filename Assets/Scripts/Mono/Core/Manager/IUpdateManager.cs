@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public interface IUpdateManager:IManager
+    public interface IUpdateManager
     {
         public void Update();
     }

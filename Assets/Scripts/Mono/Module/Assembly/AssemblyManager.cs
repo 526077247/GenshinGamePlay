@@ -85,6 +85,7 @@ namespace TaoTie
                 }
 
                 mapTypes.Remove(assembly);
+                Temp.Remove(assembly);
             }
             HotfixTemp.Clear();
         }

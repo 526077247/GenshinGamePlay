@@ -43,6 +43,18 @@ namespace YooAsset
                 PlayerPrefs.SetInt("STATIC_VERSION", staticVersion);
             }
             Debug.Log("buildInVersion"+buildInVersion+" staticVersion"+staticVersion);
+            if (buildInVersion >= staticVersion)//测试打包时没改version，需要把旧的删了
+            {
+                for (int i = staticVersion; i <= buildInVersion; i++)
+                {
+                    string oldPatch = string.Format(PatchManifestPersistentPath, i);
+                    if(File.Exists(oldPatch))
+                    {
+                        Debug.Log("测试打包时没改version,旧的删了"+i);
+                        File.Delete(oldPatch);
+                    }
+                }
+            }
             string path = string.Format(PatchManifestStreamingPath, buildInVersion);
             _downloader1 = new UnityWebDataRequester();
             _downloader1.SendRequest(path);

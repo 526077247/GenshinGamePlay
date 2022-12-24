@@ -12,64 +12,41 @@ namespace TaoTie
         RepeatedTimer,
     }
     
-    public class TimerManager:IUpdateManager
+    public class TimerManager:IUpdateManager,IManager
     {
 
         public static TimerManager Instance { get; private set; }
-        public long timeNow;
+        protected long timeNow;
 
-        public Dictionary<long, TimerAction> childs = new Dictionary<long, TimerAction>();
+        protected Dictionary<long, TimerAction> childs = new Dictionary<long, TimerAction>();
         /// <summary>
         /// key: time, value: timer id
         /// </summary>
-        public readonly MultiMap<long, long> TimeId = new MultiMap<long, long>();
+        protected readonly MultiMap<long, long> TimeId = new MultiMap<long, long>();
 
-        public readonly Queue<long> timeOutTime = new Queue<long>();
+        protected readonly Queue<long> timeOutTime = new Queue<long>();
 
-        public readonly Queue<long> timeOutTimerIds = new Queue<long>();
+        protected readonly Queue<long> timeOutTimerIds = new Queue<long>();
         
-        public readonly Queue<long> everyFrameTimer = new Queue<long>();
+        protected readonly Queue<long> everyFrameTimer = new Queue<long>();
 
         // 记录最小时间，不用每次都去MultiMap取第一个值
-        public long minTime;
+        protected long minTime;
 
-        public const int TimeTypeMax = 10000;
+        protected const int TimeTypeMax = 10000;
 
-        public ITimer[] timerActions;
+        protected ITimer[] timerActions;
 
         #region override
 
-        public void Init()
+        public virtual void Init()
         {
             Instance = this;
-            this.timerActions = new ITimer[TimerManager.TimeTypeMax];
-
-            List<Type> types = AttributeManager.Instance.GetTypes(typeof (TimerAttribute));
-
-            foreach (Type type in types)
-            {
-                ITimer iTimer = Activator.CreateInstance(type) as ITimer;
-                if (iTimer == null)
-                {
-                    Log.Error($"Timer Action {type.Name} 需要继承 ITimer");
-                    continue;
-                }
-                
-                object[] attrs = type.GetCustomAttributes(typeof(TimerAttribute), false);
-                if (attrs.Length == 0)
-                {
-                    continue;
-                }
-
-                foreach (object attr in attrs)
-                {
-                    TimerAttribute timerAttribute = attr as TimerAttribute;
-                    this.timerActions[timerAttribute.Type] = iTimer;
-                }
-            }
+            
+            InitAction();
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             Instance = null;
             foreach (var item in this.childs)
@@ -79,7 +56,7 @@ namespace TaoTie
             this.childs.Clear();
         }
 
-        public void Update()
+        public virtual void Update()
         {
             #region 每帧执行的timer，不用foreach TimeId，减少GC
 
@@ -149,8 +126,36 @@ namespace TaoTie
         }
 
         #endregion
+
+        protected void InitAction()
+        {
+            this.timerActions = new ITimer[TimerManager.TimeTypeMax];
+            List<Type> types = AttributeManager.Instance.GetTypes(typeof (TimerAttribute));
+
+            foreach (Type type in types)
+            {
+                ITimer iTimer = Activator.CreateInstance(type) as ITimer;
+                if (iTimer == null)
+                {
+                    Log.Error($"Timer Action {type.Name} 需要继承 ITimer");
+                    continue;
+                }
+                
+                object[] attrs = type.GetCustomAttributes(typeof(TimerAttribute), false);
+                if (attrs.Length == 0)
+                {
+                    continue;
+                }
+
+                foreach (object attr in attrs)
+                {
+                    TimerAttribute timerAttribute = attr as TimerAttribute;
+                    this.timerActions[timerAttribute.Type] = iTimer;
+                }
+            }
+        }
         
-        private void Run(TimerAction timerAction)
+        protected void Run(TimerAction timerAction)
         {
             switch (timerAction.TimerClass)
             {
@@ -224,7 +229,8 @@ namespace TaoTie
             {
                 return false;
             }
-            timerAction.Dispose();
+
+            this.RemoveChild(id);
             return true;
         }
 
@@ -254,6 +260,11 @@ namespace TaoTie
                 cancellationToken?.Add(CancelAction);
                 ret = await tcs;
             }
+            catch (Exception ex)
+            {
+                ret = false;
+                Log.Error(ex);
+            }
             finally
             {
                 cancellationToken?.Remove(CancelAction);    
@@ -280,7 +291,6 @@ namespace TaoTie
             TimerAction timer = this.AddChild(TimerClass.OnceWaitTimer, time, 0, tcs);
             this.AddTimer(tillTime, timer);
             long timerId = timer.Id;
-
             void CancelAction()
             {
                 if (this.Remove(timerId))
@@ -294,6 +304,11 @@ namespace TaoTie
             {
                 cancellationToken?.Add(CancelAction);
                 ret = await tcs;
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+                Log.Error(ex);
             }
             finally
             {
