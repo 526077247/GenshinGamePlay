@@ -145,6 +145,7 @@ namespace TaoTie
                     break;
             }
             //打程序集
+            FileHelper.CleanDirectory(Define.HotfixDir);
             BuildAssemblieEditor.BuildCodeRelease();
             
             //处理图集资源

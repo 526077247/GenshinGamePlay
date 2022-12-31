@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UITextmesh : UIBaseContainer
+    public class UITextmesh : UIBaseContainer,II18N
     {
         public TMPro.TMP_Text unity_uitext;
         public I18NText unity_i18ncomp_touched;

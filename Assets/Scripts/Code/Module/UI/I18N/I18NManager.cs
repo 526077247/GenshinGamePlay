@@ -181,7 +181,7 @@ namespace TaoTie
             //             break;
             //     }
             // }
-            
+            I18NBridge.Instance.OnLanguageChangeEvt?.Invoke();
             OnLanguageChangeEvt?.Invoke();
         }
 

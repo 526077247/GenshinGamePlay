@@ -70,15 +70,8 @@ namespace YooAsset
             if (staticVersion > buildInVersion)
             {
                 path = string.Format(PatchManifestPersistentPath, staticVersion);
-                _downloader1 = new UnityWebDataRequester();
-                _downloader1.SendRequest(path);
-                while (!_downloader1.IsDone())
-                {
-                    yield return 0;
-                }
-                jStr = _downloader1.GetText();
-                _downloader1.Dispose();
-                Debug.Log("Load buildInManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
+                jStr = File.ReadAllText(path);
+                Debug.Log("Load staticManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
                 if(!string.IsNullOrEmpty(jStr))
                     staticManifest = Deserialize(jStr);
             }
