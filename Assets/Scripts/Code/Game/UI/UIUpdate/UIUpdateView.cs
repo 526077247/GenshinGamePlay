@@ -9,15 +9,15 @@ namespace TaoTie
         public readonly int BTN_CANCEL = 1;
         public readonly int BTN_CONFIRM = 2;
 
-        public UISlider m_slider;
+        public UISlider mSlider;
 
         public MsgBoxPara para { get; private set; } = new MsgBoxPara();
         
-        public float last_progress;
+        public float lastProgress;
         public static string PrefabPath => "UI/UIUpdate/Prefabs/UIUpdateView.prefab";
 
         public Action OnOver;
-        public bool force_update;
+        public bool ForceUpdate;
 
         public YooAsset.PatchDownloaderOperation Downloader;
         public int StaticVersion;
@@ -26,15 +26,15 @@ namespace TaoTie
 
         public void OnCreate()
         {
-            this.m_slider = this.AddComponent<UISlider>("Loadingscreen/Slider");
+            this.mSlider = this.AddComponent<UISlider>("Loadingscreen/Slider");
         }
         
         public void OnEnable(Action func)
         {
-            this.force_update = Define.ForceUpdate;
+            this.ForceUpdate = Define.ForceUpdate;
             this.OnOver = func;
-            this.last_progress = 0;
-            this.m_slider.SetValue(0);
+            this.lastProgress = 0;
+            this.mSlider.SetValue(0);
             this.StartCheckUpdate().Coroutine();
         }
 
@@ -46,9 +46,9 @@ namespace TaoTie
         /// <param name="value"></param>
         void SetProgress( float value)
         {
-            if(value> this.last_progress)
-                this.last_progress = value;
-            this.m_slider.SetNormalizedValue(this.last_progress);
+            if(value> this.lastProgress)
+                this.lastProgress = value;
+            this.mSlider.SetNormalizedValue(this.lastProgress);
         }
         /// <summary>
         /// 提示窗
@@ -83,15 +83,16 @@ namespace TaoTie
         /// <summary>
         /// 开始检测
         /// </summary>
-        /// <param name="this"></param>
         public async ETTask StartCheckUpdate()
         {
+            //如果这个界面依赖了其他没加载过的ab包，等会提示下载前会自动下载依赖包，所以这里需要提前预加载
+            await GameObjectPoolManager.Instance.PreLoadGameObjectAsync(UIMsgBoxWin.PrefabPath,1);
             await this.CheckIsInWhiteList();
 
             await this.CheckUpdateList();
 
-            var Over = await this.CheckAppUpdate();
-            if (Over) return;
+            var over = await this.CheckAppUpdate();
+            if (over) return;
             
             var isUpdateDone = await this.CheckResUpdate();
             if (isUpdateDone)
@@ -112,7 +113,6 @@ namespace TaoTie
         /// <summary>
         /// 白名单
         /// </summary>
-        /// <param name="this"></param>
         async ETTask CheckIsInWhiteList()
         {
             var url = ServerConfigManager.Instance.GetWhiteListCdnUrl();
@@ -140,7 +140,6 @@ namespace TaoTie
         /// <summary>
         /// 版本号信息
         /// </summary>
-        /// <param name="this"></param>
         async ETTask CheckUpdateList()
         {
             var url = ServerConfigManager.Instance.GetUpdateListCdnUrl();
@@ -163,12 +162,12 @@ namespace TaoTie
             var info = await HttpManager.Instance.HttpGetResult<UpdateConfig>(url);
             if (info == null)
             {
-                var btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.force_update?"Btn_Exit":"Update_Skip");
+                var btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.ForceUpdate?"Btn_Exit":"Update_Skip");
                 if (btnState == this.BTN_CONFIRM)
                 {
                     await this.CheckUpdateList();
                 }
-                else if(this.force_update)
+                else if(this.ForceUpdate)
                 {
                     Application.Quit();
                     return;
@@ -183,61 +182,60 @@ namespace TaoTie
         /// <summary>
         /// 是否需要整包更新
         /// </summary>
-        /// <param name="this"></param>
         /// <returns></returns>
         async ETTask<bool> CheckAppUpdate()
         {
-            var app_channel = PlatformUtil.GetAppChannel();
-            var channel_app_update_list = ServerConfigManager.Instance.GetAppUpdateListByChannel(app_channel);
-            if (channel_app_update_list == null || channel_app_update_list.app_ver == null)
+            var appChannel = PlatformUtil.GetAppChannel();
+            var channelAppUpdateList = ServerConfigManager.Instance.GetAppUpdateListByChannel(appChannel);
+            if (channelAppUpdateList == null || channelAppUpdateList.app_ver == null)
             {
                 Log.Info("CheckAppUpdate channel_app_update_list or app_ver is nil, so return");
                 return false;
             }
-            this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateAppVer(app_channel);
+            this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateAppVer(appChannel);
             Log.Info("FindMaxUpdateAppVer =" + this.StaticVersion);
             if (this.StaticVersion<0)
             {
                 Log.Info("CheckAppUpdate maxVer is nil");
                 return false;
             }
-            int app_ver = int.Parse(Application.version);
-            var flag = app_ver - this.StaticVersion;
-            Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", app_ver, this.StaticVersion));
+            int appVer = int.Parse(Application.version);
+            var flag = appVer - this.StaticVersion;
+            Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", appVer, this.StaticVersion));
             if (flag >= 0)
             {
                 Log.Info("CheckAppUpdate AppVer is Most Max Version, so return; flag = " + flag);
                 return false;
             }
 
-            var app_url = channel_app_update_list.app_url;
-            var verInfo = channel_app_update_list.app_ver[app_ver];
-            Log.Info("CheckAppUpdate app_url = " + app_url);
+            var appURL = channelAppUpdateList.app_url;
+            var verInfo = channelAppUpdateList.app_ver[appVer];
+            Log.Info("CheckAppUpdate app_url = " + appURL);
 
-            this.force_update = Define.ForceUpdate; 
+            this.ForceUpdate = Define.ForceUpdate; 
             if (Define.ForceUpdate)//默认强更
             {
                 if (verInfo != null && verInfo.force_update == 0)
-                    this.force_update = false;
+                    this.ForceUpdate = false;
             }
             else
             {
                 if (verInfo != null && verInfo.force_update != 0)
-                    this.force_update = true;
+                    this.ForceUpdate = true;
             }
 
 
-            var cancelBtnText = this.force_update ? "Btn_Exit" : "Btn_Enter_Game";
-            var content_updata = this.force_update ? "Update_ReDownload" : "Update_SuDownload";
-            var btnState = await this.ShowMsgBoxView(content_updata, "Global_Btn_Confirm", cancelBtnText);
+            var cancelBtnText = this.ForceUpdate ? "Btn_Exit" : "Btn_Enter_Game";
+            var contentUpdata = this.ForceUpdate ? "Update_ReDownload" : "Update_SuDownload";
+            var btnState = await this.ShowMsgBoxView(contentUpdata, "Global_Btn_Confirm", cancelBtnText);
 
             if (btnState == this.BTN_CONFIRM)
             {
-                Application.OpenURL(app_url);
+                Application.OpenURL(appURL);
                 //为了防止切换到网页后回来进入了游戏，所以这里需要继续进入该流程
                 return await this.CheckAppUpdate();
             }
-            else if(this.force_update)
+            else if(this.ForceUpdate)
             {
                 Log.Info("CheckAppUpdate Need Force Update And User Choose Exit Game!");
                 Application.Quit();
@@ -249,7 +247,6 @@ namespace TaoTie
         /// <summary>
         /// 资源更新检查，并根据版本来修改资源cdn地址
         /// </summary>
-        /// <param name="this"></param>
         /// <returns></returns>
         public async ETTask<bool> CheckResUpdate()
         {
@@ -261,11 +258,11 @@ namespace TaoTie
                 Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + app_channel);
                 return false;
             }
-            this.force_update = Define.ForceUpdate; 
+            this.ForceUpdate = Define.ForceUpdate; 
             if (!Define.ForceUpdate)//默认强更
             {
                 if (verInfo != null && verInfo.force_update != 0)
-                    this.force_update = true;
+                    this.ForceUpdate = true;
             }
             // if (this.StaticVersion>= maxVer)
             // {
@@ -292,12 +289,12 @@ namespace TaoTie
             int btnState;
             if(operation.Status != EOperationStatus.Succeed)
             {
-                btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.force_update?"Btn_Exit":"Update_Skip");
+                btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.ForceUpdate?"Btn_Exit":"Update_Skip");
                 if (btnState == this.BTN_CONFIRM)
                 {
                     return await this.CheckResUpdate();
                 }
-                else if(this.force_update)
+                else if(this.ForceUpdate)
                 {
                     Application.Quit();
                     return false;
@@ -323,10 +320,10 @@ namespace TaoTie
             if (size_mb > 0 && size_mb < 0.01) size_mb = 0.01;
 
             var ct = I18NManager.Instance.I18NGetParamText("Update_Info",size_mb.ToString("0.00"));
-            btnState = await this.ShowMsgBoxView(ct, "Global_Btn_Confirm", this.force_update?"Btn_Exit":"Update_Skip");
+            btnState = await this.ShowMsgBoxView(ct, "Global_Btn_Confirm", this.ForceUpdate?"Btn_Exit":"Update_Skip");
             if (btnState == this.BTN_CANCEL)
             {
-                if (this.force_update)
+                if (this.ForceUpdate)
                 {
                     Application.Quit();
                     return false;
@@ -336,7 +333,7 @@ namespace TaoTie
 
             //开始进行更新
 
-            this.last_progress = 0;
+            this.lastProgress = 0;
             this.SetProgress(0);
             //2、更新资源
             ETTask<bool> downloadTask = ETTask<bool>.Create(true);

@@ -482,14 +482,12 @@ namespace TaoTie
         public async ETTask DestroyAllWindow()
         {
             var keys = this.windows.Keys.ToArray();
-            using (ListComponent<ETTask> TaskScheduler = ListComponent<ETTask>.Create())
+            List<ETTask> TaskScheduler = new List<ETTask>();
+            for (int i = keys.Length - 1; i >= 0; i--)
             {
-                for (int i = this.windows.Count - 1; i >= 0; i--)
-                {
-                    TaskScheduler.Add(this.DestroyWindow(this.windows[keys[i]].Name));
-                }
-                await ETTaskHelper.WaitAll(TaskScheduler);
+                TaskScheduler.Add(this.DestroyWindow(this.windows[keys[i]].Name));
             }
+            await ETTaskHelper.WaitAll(TaskScheduler);
         }
 
         /// <summary>
