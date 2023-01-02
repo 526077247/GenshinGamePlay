@@ -113,7 +113,7 @@ namespace TaoTie
                             var component = components[keys1[i]][keys2[j]];
                             component.BeforeOnDestroy();
                             if (component is II18N i18n)
-                                I18NManager.Instance.RemoveI18NEntity(i18n);
+                                I18NManager.Instance?.RemoveI18NEntity(i18n);
                             if (component is IOnDestroy a) a.OnDestroy();
 
                         }
