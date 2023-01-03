@@ -6,8 +6,8 @@ namespace TaoTie
 {
     public class UIToggle: UIBaseContainer,IOnDestroy
     {
-        public Toggle unity_uitoggle;
-        public UnityAction<bool> CallBack;
+        private Toggle toggle;
+        private UnityAction<bool> callBack;
 
         #region override
 
@@ -20,10 +20,10 @@ namespace TaoTie
         
         void ActivatingComponent()
         {
-            if (this.unity_uitoggle == null)
+            if (this.toggle == null)
             {
-                this.unity_uitoggle = this.GetGameObject().GetComponent<Toggle>();
-                if (this.unity_uitoggle == null)
+                this.toggle = this.GetGameObject().GetComponent<Toggle>();
+                if (this.toggle == null)
                 {
                     Log.Error($"添加UI侧组件UIToggle时，物体{this.GetGameObject().name}上没有找到Toggle组件");
                 }
@@ -32,33 +32,33 @@ namespace TaoTie
         public bool GetIsOn()
         {
             this.ActivatingComponent();
-            return this.unity_uitoggle.isOn;
+            return this.toggle.isOn;
         }
 
         public void SetIsOn(bool ison,bool broadcast = true)
         {
             this.ActivatingComponent();
             if(broadcast)
-                this.unity_uitoggle.isOn = ison;
+                this.toggle.isOn = ison;
             else
-                this.unity_uitoggle.SetIsOnWithoutNotify(ison);
+                this.toggle.SetIsOnWithoutNotify(ison);
         }
         
         public void SetOnValueChanged(Action<bool> cb)
         {
             this.ActivatingComponent();
-            this.CallBack = (a)=>
+            this.callBack = (a)=>
             {
                 cb?.Invoke(a);
             };
-            this.unity_uitoggle.onValueChanged.AddListener(this.CallBack);
+            this.toggle.onValueChanged.AddListener(this.callBack);
         }
         
         public void RemoveOnValueChanged()
         {
-            if (this.CallBack != null)
+            if (this.callBack != null)
             {
-                this.unity_uitoggle.onValueChanged.RemoveListener(this.CallBack);
+                this.toggle.onValueChanged.RemoveListener(this.callBack);
             }
             
         }

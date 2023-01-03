@@ -11,10 +11,10 @@ namespace TaoTie
 {
     public class UISlider : UIBaseContainer,IOnDestroy
     {
-        public Slider unity_uislider;
-        public UnityAction<float> __onValueChanged;
-        public bool isWholeNumbers;
-        public ArrayList value_list;
+        private Slider slider;
+        private UnityAction<float> onValueChanged;
+        private bool isWholeNumbers;
+        private ArrayList valueList;
 
         #region override
 
@@ -27,10 +27,10 @@ namespace TaoTie
         
         void ActivatingComponent()
         {
-            if (this.unity_uislider == null)
+            if (this.slider == null)
             {
-                this.unity_uislider = this.GetGameObject().GetComponent<Slider>();
-                if (this.unity_uislider == null)
+                this.slider = this.GetGameObject().GetComponent<Slider>();
+                if (this.slider == null)
                 {
                     Log.Error($"添加UI侧组件UISlider时，物体{this.GetGameObject().name}上没有找到Slider组件");
                 }
@@ -40,41 +40,41 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             this.RemoveOnValueChanged();
-            this.__onValueChanged = callback;
-            this.unity_uislider.onValueChanged.AddListener(this.__onValueChanged);
+            this.onValueChanged = callback;
+            this.slider.onValueChanged.AddListener(this.onValueChanged);
         }
 
         public void RemoveOnValueChanged()
         {
-            if (this.__onValueChanged != null)
+            if (this.onValueChanged != null)
             {
-                this.unity_uislider.onValueChanged.RemoveListener(this.__onValueChanged);
-                this.__onValueChanged = null;
+                this.slider.onValueChanged.RemoveListener(this.onValueChanged);
+                this.onValueChanged = null;
             }
         }
 
         public void SetWholeNumbers(bool wholeNumbers)
         {
             this.ActivatingComponent();
-            this.unity_uislider.wholeNumbers = wholeNumbers;
+            this.slider.wholeNumbers = wholeNumbers;
             this.isWholeNumbers = true;
         }
 
         public void SetMaxValue(float value)
         {
             this.ActivatingComponent();
-            this.unity_uislider.maxValue = value;
+            this.slider.maxValue = value;
         }
 
         public void SetMinValue(float value)
         {
             this.ActivatingComponent();
-            this.unity_uislider.minValue = value;
+            this.slider.minValue = value;
         }
 
         public void SetValueList(ArrayList value_list)
         {
-            this.value_list = value_list;
+            this.valueList = value_list;
             this.SetWholeNumbers(true);
             this.SetMinValue(0);
             this.SetMaxValue(value_list.Count - 1);
@@ -82,7 +82,7 @@ namespace TaoTie
    
         public ArrayList GetValueList()
         {
-            return this.value_list;
+            return this.valueList;
         }
 
         public object GetValue()
@@ -90,18 +90,18 @@ namespace TaoTie
             this.ActivatingComponent();
             if (this.isWholeNumbers)
             {
-                var index = (int)this.unity_uislider.value;
-                return this.value_list[index];
+                var index = (int)this.slider.value;
+                return this.valueList[index];
             }
             else
             {
-                return this.unity_uislider.normalizedValue;
+                return this.slider.normalizedValue;
             }
         }
         public object GetNormalizedValue()
         {
             this.ActivatingComponent();
-            return this.unity_uislider.normalizedValue;
+            return this.slider.normalizedValue;
         }
         /// <summary>
         /// 设置进度
@@ -110,7 +110,7 @@ namespace TaoTie
         public void SetValue(int value)
         {
             this.ActivatingComponent();
-            this.unity_uislider.value = value;
+            this.slider.value = value;
         }
         
         public void SetWholeNumbersValue(object value)
@@ -122,11 +122,11 @@ namespace TaoTie
                 return;
             }
 
-            for (int i = 0; i < this.value_list.Count; i++)
+            for (int i = 0; i < this.valueList.Count; i++)
             {
-                if (this.value_list[i] == value)
+                if (this.valueList[i] == value)
                 {
-                    this.unity_uislider.value = i;
+                    this.slider.value = i;
                     return;
                 }
             }
@@ -139,7 +139,7 @@ namespace TaoTie
         public void SetNormalizedValue(float value)
         {
             this.ActivatingComponent();
-            this.unity_uislider.normalizedValue = value;
+            this.slider.normalizedValue = value;
         }
         /// <summary>
         /// 设置进度
@@ -149,11 +149,11 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             if (!this.isWholeNumbers)
-                this.unity_uislider.value = value;
+                this.slider.value = value;
             else
             {
                 Log.Warning("请先设置WholeNumbers为false");
-                this.unity_uislider.value = (int)value;
+                this.slider.value = (int)value;
             }
         }
     }

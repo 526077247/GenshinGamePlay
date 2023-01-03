@@ -6,16 +6,14 @@ namespace TaoTie
 {
     public class CopyGameObject : MonoBehaviour
     {
-        int? start_sibling_index;
-        Action<int, GameObject> ongetitemcallback;
-        int show_count;
-        List<GameObject> m_itemviewlist = new List<GameObject>();
+        int? startSiblingIndex;
+        Action<int, GameObject> onGetItemCallback;
+        int showCount;
+        List<GameObject> itemViewList = new List<GameObject>();
         public GameObject item;//要复制的物体
-        public int InitCreateCount = 0;//初始化个数
         private void Awake()
         {
-            this.start_sibling_index = item.transform.GetSiblingIndex();
-            InitListView(InitCreateCount);
+            this.startSiblingIndex = item.transform.GetSiblingIndex();
         }
 
         private void OnEnable()
@@ -23,103 +21,103 @@ namespace TaoTie
             item.SetActive(false);
         }
 
-        public void InitListView(int total_count, Action<int, GameObject> ongetitemcallback = null, int? start_sibling_index = null)
+        public void InitListView(int totalCount, Action<int, GameObject> onGetItemCallback = null, int? startSiblingIndex = null)
         {
             //for (int i = 0; i < m_itemviewlist.Count; i++)
             //    Destroy(m_itemviewlist[i]);
             //m_itemviewlist.Clear();
-            if (this.start_sibling_index != null)
+            if (this.startSiblingIndex != null)
             {
-                this.start_sibling_index = start_sibling_index;
-                if (this.start_sibling_index > transform.childCount)
+                this.startSiblingIndex = startSiblingIndex;
+                if (this.startSiblingIndex > transform.childCount)
                 {
-                    this.start_sibling_index = this.transform.childCount - 1;
+                    this.startSiblingIndex = this.transform.childCount - 1;
                 }
             }
-            this.ongetitemcallback = ongetitemcallback;
-            SetListItemCount(total_count);
+            this.onGetItemCallback = onGetItemCallback;
+            SetListItemCount(totalCount);
         }
 
-        public void SetListItemCount(int total_count, int? start_sibling_index = null)
+        public void SetListItemCount(int totalCount, int? startSiblingIndex = null)
         {
-            if (total_count > 10) Debug.Log("total_count 不建议超过10个");
+            if (totalCount > 10) Debug.Log("total_count 不建议超过10个");
             if (item == null) Debug.LogError("item is Null!!!");
-            if (this.start_sibling_index != null)
+            if (this.startSiblingIndex != null)
             {
-                this.start_sibling_index = start_sibling_index;
-                if (this.start_sibling_index > transform.childCount)
+                this.startSiblingIndex = startSiblingIndex;
+                if (this.startSiblingIndex > transform.childCount)
                 {
-                    this.start_sibling_index = this.transform.childCount - 1;
+                    this.startSiblingIndex = this.transform.childCount - 1;
                 }
             }
-            this.show_count = total_count;
-            var count = this.m_itemviewlist.Count > total_count ? this.m_itemviewlist.Count : total_count;
+            this.showCount = totalCount;
+            var count = this.itemViewList.Count > totalCount ? this.itemViewList.Count : totalCount;
             for (int i = 0; i < count; i++)
             {
-                if (i < this.m_itemviewlist.Count && i < total_count)
+                if (i < this.itemViewList.Count && i < totalCount)
                 {
-                    this.m_itemviewlist[i].SetActive(true);
-                    if (this.start_sibling_index != null)
+                    this.itemViewList[i].SetActive(true);
+                    if (this.startSiblingIndex != null)
                     {
-                        this.m_itemviewlist[i].transform.SetSiblingIndex((int)this.start_sibling_index + i);
+                        this.itemViewList[i].transform.SetSiblingIndex((int)this.startSiblingIndex + i);
                     }
-                    this.ongetitemcallback?.Invoke(i, this.m_itemviewlist[i]);
+                    this.onGetItemCallback?.Invoke(i, this.itemViewList[i]);
                 }
-                else if (i < total_count)
+                else if (i < totalCount)
                 {
                     var item = GameObject.Instantiate(this.item, transform);
-                    this.m_itemviewlist.Add(item);
-                    if (this.start_sibling_index != null)
+                    this.itemViewList.Add(item);
+                    if (this.startSiblingIndex != null)
                     {
-                        this.m_itemviewlist[i].transform.SetSiblingIndex((int)this.start_sibling_index + i);
+                        this.itemViewList[i].transform.SetSiblingIndex((int)this.startSiblingIndex + i);
                     }
                     item.SetActive(true);
-                    this.ongetitemcallback?.Invoke(i, item);
+                    this.onGetItemCallback?.Invoke(i, item);
                 }
-                else if (i < this.m_itemviewlist.Count)
+                else if (i < this.itemViewList.Count)
                 {
-                    this.m_itemviewlist[i].SetActive(false);
-                    if (this.start_sibling_index != null)
+                    this.itemViewList[i].SetActive(false);
+                    if (this.startSiblingIndex != null)
                     {
-                        this.m_itemviewlist[i].transform.SetSiblingIndex((int)this.start_sibling_index + i);
+                        this.itemViewList[i].transform.SetSiblingIndex((int)this.startSiblingIndex + i);
                     }
                 }
             }
         }
 
-        public void RefreshAllShownItem(int? start_sibling_index = null)
+        public void RefreshAllShownItem(int? startSiblingIndex = null)
         {
-            if (this.start_sibling_index != null)
+            if (this.startSiblingIndex != null)
             {
-                this.start_sibling_index = start_sibling_index;
-                if (this.start_sibling_index > transform.childCount)
+                this.startSiblingIndex = startSiblingIndex;
+                if (this.startSiblingIndex > transform.childCount)
                 {
-                    this.start_sibling_index = this.transform.childCount - 1;
+                    this.startSiblingIndex = this.transform.childCount - 1;
                 }
             }
-            for (int i = 0; i < show_count; i++)
+            for (int i = 0; i < showCount; i++)
             {
-                ongetitemcallback?.Invoke(i, this.m_itemviewlist[i]);
+                onGetItemCallback?.Invoke(i, this.itemViewList[i]);
             }
         }
 
         public GameObject GetItemByIndex(int index)
         {
-            return m_itemviewlist[index];
+            return itemViewList[index];
         }
 
         public int GetListItemCount()
         {
-            return show_count;
+            return showCount;
         }
         
         public void Clear()
         {
-            for (int i = m_itemviewlist.Count - 1; i >= 0; i--)
+            for (int i = itemViewList.Count - 1; i >= 0; i--)
             {
-                Destroy(m_itemviewlist[i]);
+                Destroy(itemViewList[i]);
             }
-            m_itemviewlist.Clear();
+            itemViewList.Clear();
         }
     }
 }

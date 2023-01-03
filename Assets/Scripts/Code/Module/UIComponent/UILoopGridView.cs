@@ -6,16 +6,16 @@ namespace TaoTie
 {
     public class UILoopGridView:UIBaseContainer,IOnDestroy
     {
-        public LoopGridView unity_uiloopgridview;
+        private LoopGridView loopGridView;
 
         #region override
 
         public void OnDestroy()
         {
-            if (this.unity_uiloopgridview != null)
+            if (this.loopGridView != null)
             {
-                this.unity_uiloopgridview.ClearListView();
-                this.unity_uiloopgridview = null;
+                this.loopGridView.ClearListView();
+                this.loopGridView = null;
             }
         }
 
@@ -23,10 +23,10 @@ namespace TaoTie
         
         public void ActivatingComponent()
         {
-            if (this.unity_uiloopgridview == null)
+            if (this.loopGridView == null)
             {
-                this.unity_uiloopgridview = this.GetGameObject().GetComponent<LoopGridView>();
-                if (this.unity_uiloopgridview == null)
+                this.loopGridView = this.GetGameObject().GetComponent<LoopGridView>();
+                if (this.loopGridView == null)
                 {
                     Log.Error($"添加UI侧组件UILoopGridView时，物体{ this.GetGameObject().name}上没有找到LoopGridView组件");
                 }
@@ -38,7 +38,7 @@ namespace TaoTie
                 LoopGridViewInitParam initParam = null)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.InitGridView(itemTotalCount, onGetItemByRowColumn, settingParam, initParam);
+            this.loopGridView.InitGridView(itemTotalCount, onGetItemByRowColumn, settingParam, initParam);
         }
 
         //item是Unity侧的item对象，在这里创建相应的UI对象
@@ -62,51 +62,51 @@ namespace TaoTie
         public void SetListItemCount(int itemCount, bool resetPos = true)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.SetListItemCount(itemCount, resetPos);
+            this.loopGridView.SetListItemCount(itemCount, resetPos);
         }
 
         //获取当前index对应的item 没有显示的话返回null
         public LoopGridViewItem GetShownItemByItemIndex(int itemIndex)
         {
             this.ActivatingComponent();
-            return this.unity_uiloopgridview.GetShownItemByItemIndex(itemIndex);
+            return this.loopGridView.GetShownItemByItemIndex(itemIndex);
         }
 
         public void MovePanelToItemByRowColumn(int row, int column, int offsetX = 0, int offsetY = 0)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.MovePanelToItemByRowColumn(row, column, offsetX, offsetY);
+            this.loopGridView.MovePanelToItemByRowColumn(row, column, offsetX, offsetY);
         }
 
 
         public void RefreshAllShownItem()
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.RefreshAllShownItem();
+            this.loopGridView.RefreshAllShownItem();
         }
 
         public void SetItemSize(Vector2 sizeDelta)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.SetItemSize(sizeDelta);
+            this.loopGridView.SetItemSize(sizeDelta);
         }
 
         public void SetOnBeginDragAction(Action<PointerEventData> callback)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.mOnBeginDragAction = callback;
+            this.loopGridView.mOnBeginDragAction = callback;
         }
 
         public void SetOnDragingAction(Action<PointerEventData> callback)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.mOnDragingAction = callback;
+            this.loopGridView.mOnDragingAction = callback;
         }
 
         public void SetOnEndDragAction(Action<PointerEventData> callback)
         {
             this.ActivatingComponent();
-            this.unity_uiloopgridview.mOnEndDragAction = callback;
+            this.loopGridView.mOnEndDragAction = callback;
         }
     }
 }

@@ -5,18 +5,18 @@ namespace TaoTie
 {
     public class UIInputTextmesh:UIBaseContainer
     {
-        public TMPro.TMP_InputField unity_uiinput;
+        private TMPro.TMP_InputField input;
         
-        public UnityAction<string> __OnValueChange;
+        private UnityAction<string> onValueChange;
 
-        public UnityAction<string> __OnEndEdit;
+        private UnityAction<string> onEndEdit;
         
         void ActivatingComponent()
         {
-            if (this.unity_uiinput == null)
+            if (this.input == null)
             {
-                this.unity_uiinput = this.GetGameObject().GetComponent<TMPro.TMP_InputField>();
-                if (this.unity_uiinput == null)
+                this.input = this.GetGameObject().GetComponent<TMPro.TMP_InputField>();
+                if (this.input == null)
                 {
                     Log.Error($"添加UI侧组件UIInputTextmesh时，物体{this.GetGameObject().name}上没有找到TMPro.TMP_InputField组件");
                 }
@@ -25,30 +25,30 @@ namespace TaoTie
         public string GetText()
         {
             this.ActivatingComponent();
-            return this.unity_uiinput.text;
+            return this.input.text;
         }
 
         public void SetText(string text)
         {
             this.ActivatingComponent();
-            this.unity_uiinput.text = text;
+            this.input.text = text;
         }
 
         public void SetOnValueChanged(Action func)
         {
             this.ActivatingComponent();
             this.RemoveOnValueChanged();
-            this.__OnValueChange = (a) =>
+            this.onValueChange = (a) =>
             {
                 func?.Invoke();
             };
-            this.unity_uiinput.onValueChanged.AddListener(this.__OnValueChange);
+            this.input.onValueChanged.AddListener(this.onValueChange);
         }
 
         public void RemoveOnValueChanged()
         {
-            if(this.__OnValueChange!=null)
-                this.unity_uiinput.onValueChanged.RemoveListener(this.__OnValueChange);
+            if(this.onValueChange!=null)
+                this.input.onValueChanged.RemoveListener(this.onValueChange);
         }
         
         
@@ -56,17 +56,17 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             this.RemoveOnEndEdit();
-            this.__OnEndEdit = (a) =>
+            this.onEndEdit = (a) =>
             {
                 func?.Invoke();
             };
-            this.unity_uiinput.onEndEdit.AddListener(this.__OnEndEdit);
+            this.input.onEndEdit.AddListener(this.onEndEdit);
         }
         
         public void RemoveOnEndEdit()
         {
-            if(this.__OnEndEdit!=null)
-                this.unity_uiinput.onEndEdit.RemoveListener(this.__OnEndEdit);
+            if(this.onEndEdit!=null)
+                this.input.onEndEdit.RemoveListener(this.onEndEdit);
         }
     }
 }

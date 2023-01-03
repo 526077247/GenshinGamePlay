@@ -5,8 +5,8 @@ namespace TaoTie
 {
     public class UIDropdown:UIBaseContainer,IOnDestroy
     {
-        public Dropdown unity_uidropdown;
-        public UnityAction<int> __onValueChanged;
+        public Dropdown dropdown;
+        public UnityAction<int> onValueChanged;
 
         #region override
 
@@ -19,10 +19,10 @@ namespace TaoTie
         
         void ActivatingComponent()
         {
-            if (this.unity_uidropdown == null)
+            if (this.dropdown == null)
             {
-                this.unity_uidropdown = this.GetGameObject().GetComponent<Dropdown>();
-                if (this.unity_uidropdown == null)
+                this.dropdown = this.GetGameObject().GetComponent<Dropdown>();
+                if (this.dropdown == null)
                 {
                     Log.Error($"添加UI侧组件UIDropdown时，物体{this.GetGameObject().name}上没有找到Dropdown组件");
                 }
@@ -32,26 +32,26 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             this.RemoveOnValueChanged();
-            this.__onValueChanged = callback;
-            this.unity_uidropdown.onValueChanged.AddListener(this.__onValueChanged);
+            this.onValueChanged = callback;
+            this.dropdown.onValueChanged.AddListener(this.onValueChanged);
         }
         public void RemoveOnValueChanged()
         {
-            if (this.__onValueChanged != null)
+            if (this.onValueChanged != null)
             {
-                this.unity_uidropdown.onValueChanged.RemoveListener(this.__onValueChanged);
-                this.__onValueChanged = null;
+                this.dropdown.onValueChanged.RemoveListener(this.onValueChanged);
+                this.onValueChanged = null;
             }
         }
         public int GetValue()
         {
             this.ActivatingComponent();
-            return this.unity_uidropdown.value;
+            return this.dropdown.value;
         }
         public void SetValue( int value)
         {
             this.ActivatingComponent();
-            this.unity_uidropdown.value = value;
+            this.dropdown.value = value;
         }
     }
 }

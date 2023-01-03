@@ -10,22 +10,22 @@ namespace TaoTie
 {
     public class UIText : UIBaseContainer,II18N
     {
-        public Text unity_uitext;
-        public I18NText unity_i18ncomp_touched;
-        public string __text_key;
-        public object[] keyParams;
+        private Text text;
+        private I18NText i18nCompTouched;
+        private string textKey;
+        private object[] keyParams;
         
         void ActivatingComponent()
         {
-            if (this.unity_uitext == null)
+            if (this.text == null)
             {
-                this.unity_uitext = this.GetGameObject().GetComponent<Text>();
-                if (this.unity_uitext == null)
+                this.text = this.GetGameObject().GetComponent<Text>();
+                if (this.text == null)
                 {
-                    this.unity_uitext = this.GetGameObject().AddComponent<Text>();
+                    this.text = this.GetGameObject().AddComponent<Text>();
                     Log.Info($"添加UI侧组件UIText时，物体{this.GetGameObject().name}上没有找到Text组件");
                 }
-                this.unity_i18ncomp_touched = this.GetGameObject().GetComponent<I18NText>();
+                this.i18nCompTouched = this.GetGameObject().GetComponent<I18NText>();
             }
         }
 
@@ -33,9 +33,9 @@ namespace TaoTie
         void __DisableI18Component(bool enable = false)
         {
             this.ActivatingComponent();
-            if (this.unity_i18ncomp_touched != null)
+            if (this.i18nCompTouched != null)
             {
-                this.unity_i18ncomp_touched.enabled = enable;
+                this.i18nCompTouched.enabled = enable;
                 if (!enable)
                     Log.Warning($"组件{this.GetGameObject().name}, text在逻辑层进行了修改，所以应该去掉去预设里面的I18N组件，否则会被覆盖");
             }
@@ -44,14 +44,14 @@ namespace TaoTie
         public string GetText()
         {
             this.ActivatingComponent();
-            return this.unity_uitext.text;
+            return this.text.text;
         }
 
         public void SetText( string text)
         {
             this.__DisableI18Component();
-            this.__text_key = null;
-            this.unity_uitext.text = text;
+            this.textKey = null;
+            this.text.text = text;
         }
         public void SetI18NKey( string key)
         {
@@ -61,7 +61,7 @@ namespace TaoTie
                 return;
             }
             this.__DisableI18Component();
-            this.__text_key = key;
+            this.textKey = key;
             this.SetI18NText(null);
         }
         public void SetI18NKey( string key, params object[] paras)
@@ -72,13 +72,13 @@ namespace TaoTie
                 return;
             }
             this.__DisableI18Component();
-            this.__text_key = key;
+            this.textKey = key;
             this.SetI18NText(paras);
         }
 
         public void SetI18NText( params object[] paras)
         {
-            if (string.IsNullOrEmpty(this.__text_key))
+            if (string.IsNullOrEmpty(this.textKey))
             {
                 Log.Error("there is not key ");
             }
@@ -86,9 +86,9 @@ namespace TaoTie
             {
                 this.__DisableI18Component();
                 this.keyParams = paras;
-                if (I18NManager.Instance.I18NTryGetText(this.__text_key, out var text) && paras != null)
+                if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && paras != null)
                     text = string.Format(text, paras);
-                this.unity_uitext.text = text;
+                this.text.text = text;
             }
         }
 
@@ -96,11 +96,11 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             {
-                if (this.__text_key != null)
+                if (this.textKey != null)
                 {
-                    if (I18NManager.Instance.I18NTryGetText(this.__text_key, out var text) && this.keyParams != null)
+                    if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && this.keyParams != null)
                         text = string.Format(text, this.keyParams);
-                    this.unity_uitext.text = text;
+                    this.text.text = text;
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace TaoTie
         public void SetTextColor( Color color)
         {
             this.ActivatingComponent();
-            this.unity_uitext.color = color;
+            this.text.color = color;
         }
 
         public void SetTextWithColor( string text, string colorstr)

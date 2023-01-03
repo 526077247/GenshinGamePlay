@@ -10,24 +10,24 @@ namespace TaoTie
 {
     public class UIImage:UIBaseContainer,IOnCreate<string>,IOnDestroy
     {
-        string sprite_path;
-        Image unity_uiimage;
-        BgAutoFit BgAutoFit;
-        private long Id;
+        string spritePath;
+        Image image;
+        BgAutoFit bgAutoFit;
+        private long id;
         #region override
 
         public void OnCreate(string path)
         {
-            Id = IdGenerater.Instance.GenerateId();
+            id = IdGenerater.Instance.GenerateId();
             SetSpritePath(path).Coroutine();
         }
 
         public void OnDestroy()
         {
-            if (string.IsNullOrEmpty(sprite_path))
+            if (string.IsNullOrEmpty(spritePath))
             {
-                ImageLoaderManager.Instance?.ReleaseImage(sprite_path);
-                sprite_path = null;
+                ImageLoaderManager.Instance?.ReleaseImage(spritePath);
+                spritePath = null;
             }
         }
 
@@ -35,14 +35,14 @@ namespace TaoTie
         
         void ActivatingComponent()
         {
-            if (this.unity_uiimage == null)
+            if (this.image == null)
             {
-                this.unity_uiimage = this.GetGameObject().GetComponent<Image>();
-                if (this.unity_uiimage == null)
+                this.image = this.GetGameObject().GetComponent<Image>();
+                if (this.image == null)
                 {
                     Log.Error($"添加UI侧组件UIImage时，物体{this.GetGameObject().name}上没有找到Image组件");
                 }
-                this.BgAutoFit =  this.GetGameObject().GetComponent<BgAutoFit>();
+                this.bgAutoFit =  this.GetGameObject().GetComponent<BgAutoFit>();
             }
         }
         public async ETTask SetSpritePath(string sprite_path,bool setNativeSize = false)
@@ -50,34 +50,34 @@ namespace TaoTie
             CoroutineLock coroutine = null;
             try
             {
-                coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.Id);
-                if (sprite_path == this.sprite_path) return;
+                coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.id);
+                if (sprite_path == this.spritePath) return;
                 this.ActivatingComponent();
-                if (this.BgAutoFit != null) this.BgAutoFit.enabled = false;
-                this.unity_uiimage.enabled = false;
-                var base_sprite_path = this.sprite_path;
-                this.sprite_path = sprite_path;
+                if (this.bgAutoFit != null) this.bgAutoFit.enabled = false;
+                this.image.enabled = false;
+                var base_sprite_path = this.spritePath;
+                this.spritePath = sprite_path;
                 if (string.IsNullOrEmpty(sprite_path))
                 {
-                    this.unity_uiimage.sprite = null;
-                    this.unity_uiimage.enabled = true;
+                    this.image.sprite = null;
+                    this.image.enabled = true;
                 }
                 else
                 {
                     var sprite = await ImageLoaderManager.Instance.LoadImageAsync(sprite_path);
-                    this.unity_uiimage.enabled = true;
+                    this.image.enabled = true;
                     if (sprite == null)
                     {
                         ImageLoaderManager.Instance.ReleaseImage(sprite_path);
                         return;
                     }
-                    this.unity_uiimage.sprite = sprite;
+                    this.image.sprite = sprite;
                     if(setNativeSize)
                         this.SetNativeSize();
-                    if (this.BgAutoFit != null)
+                    if (this.bgAutoFit != null)
                     {
-                        this.BgAutoFit.bgSprite = sprite;
-                        this.BgAutoFit.enabled = true;
+                        this.bgAutoFit.bgSprite = sprite;
+                        this.bgAutoFit.enabled = true;
                     }
                 }
                 if(!string.IsNullOrEmpty(base_sprite_path))
@@ -91,12 +91,12 @@ namespace TaoTie
 
         public void SetNativeSize()
         {
-            this.unity_uiimage.SetNativeSize();
+            this.image.SetNativeSize();
         }
 
         public string GetSpritePath()
         {
-            return this.sprite_path;
+            return this.spritePath;
         }
         public void SetColor(string colorStr)
         {
@@ -104,7 +104,7 @@ namespace TaoTie
             if (ColorUtility.TryParseHtmlString(colorStr, out var color))
             {
                 this.ActivatingComponent();
-                this.unity_uiimage.color = color;
+                this.image.color = color;
             }
             else
             {
@@ -114,22 +114,22 @@ namespace TaoTie
         public void SetImageColor(Color color)
         {
             this.ActivatingComponent();
-            this.unity_uiimage.color = color;
+            this.image.color = color;
         }
 
         public Color GetImageColor()
         {
             this.ActivatingComponent();
-            return this.unity_uiimage.color;
+            return this.image.color;
         }
         public void SetImageAlpha(float a,bool changeChild=false)
         {
             this.ActivatingComponent();
-            this.unity_uiimage.color = new Color(this.unity_uiimage.color.r,this.unity_uiimage.color.g,
-                this.unity_uiimage.color.b,a);
+            this.image.color = new Color(this.image.color.r,this.image.color.g,
+                this.image.color.b,a);
             if (changeChild)
             {
-                var images = this.unity_uiimage.GetComponentsInChildren<Image>(false);
+                var images = this.image.GetComponentsInChildren<Image>(false);
                 for (int i = 0; i < images.Length; i++)
                 {
                     images[i].color = new Color(images[i].color.r,images[i].color.g, images[i].color.b,a);
@@ -144,7 +144,7 @@ namespace TaoTie
         public void SetEnabled(bool flag)
         {
             this.ActivatingComponent();
-            this.unity_uiimage.enabled = flag;
+            this.image.enabled = flag;
         }
         public async ETTask SetImageGray(bool isGray)
         {
@@ -154,12 +154,12 @@ namespace TaoTie
             {
                 mt = await MaterialManager.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
             }
-            this.unity_uiimage.material = mt;
+            this.image.material = mt;
         }
         public void SetFillAmount(float value)
         {
             this.ActivatingComponent();
-            this.unity_uiimage.fillAmount = value;
+            this.image.fillAmount = value;
         }
         // public void DoSetFillAmount(float newValue, float duration)
         // {
@@ -170,7 +170,7 @@ namespace TaoTie
         public Material GetMaterial()
         {
             this.ActivatingComponent();
-            return this.unity_uiimage.material;
+            return this.image.material;
         }
     }
 }

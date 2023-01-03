@@ -4,28 +4,28 @@ namespace TaoTie
 {
     public class UIPointerClick:UIBaseContainer,IOnDestroy
     {
-        public UnityAction __onclick;
-        public PointerClick unity_pointerclick;
+        private UnityAction onClick;
+        private PointerClick pointerClick;
 
         #region override
 
         public void OnDestroy()
         {
-            if (__onclick != null)
-                unity_pointerclick.onClick.RemoveListener(__onclick);
-            __onclick = null;
+            if (onClick != null)
+                pointerClick.onClick.RemoveListener(onClick);
+            onClick = null;
         }
 
         #endregion
         
         void ActivatingComponent()
         {
-            if (this.unity_pointerclick == null)
+            if (this.pointerClick == null)
             {
-                this.unity_pointerclick = this.GetGameObject().GetComponent<PointerClick>();
-                if (this.unity_pointerclick == null)
+                this.pointerClick = this.GetGameObject().GetComponent<PointerClick>();
+                if (this.pointerClick == null)
                 {
-                    this.unity_pointerclick = this.GetGameObject().AddComponent<PointerClick>();
+                    this.pointerClick = this.GetGameObject().AddComponent<PointerClick>();
                     Log.Info($"添加UI侧组件UIPointerClick时，物体{this.GetGameObject().name}上没有找到PointerClick组件");
                 }
             }
@@ -33,32 +33,32 @@ namespace TaoTie
         //虚拟点击
         public void Click()
         {
-            this.__onclick?.Invoke();
+            this.onClick?.Invoke();
         }
 
         public void SetOnClick(UnityAction callback)
         {
             this.ActivatingComponent();
             this.RemoveOnClick();
-            this.__onclick = () =>
+            this.onClick = () =>
             {
                 //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
                 callback();
             };
-            this.unity_pointerclick.onClick.AddListener(this.__onclick);
+            this.pointerClick.onClick.AddListener(this.onClick);
         }
 
         public void RemoveOnClick()
         {
-            if (this.__onclick != null)
-                this.unity_pointerclick.onClick.RemoveListener(this.__onclick);
-            this.__onclick = null;
+            if (this.onClick != null)
+                this.pointerClick.onClick.RemoveListener(this.onClick);
+            this.onClick = null;
         }
 
         public void SetEnabled(bool flag)
         {
             this.ActivatingComponent();
-            this.unity_pointerclick.enabled = flag;
+            this.pointerClick.enabled = flag;
         }
     }
 }
