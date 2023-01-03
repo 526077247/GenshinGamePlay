@@ -10,7 +10,7 @@ namespace TaoTie
         static GameObject rootGo = null;
 
 
-        static string GetPrefabPath(GameObject go)
+        static string GetPrefabPath()
         {
             var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
             if (prefabStage == null)
@@ -29,60 +29,74 @@ namespace TaoTie
             return prefabPath;
         }
 
-        [MenuItem("GameObject/生成UI代码/生成代码", false, 23)]
-        static void CreateUIModule(MenuCommand menuCommand)
+       [MenuItem("GameObject/生成UI代码/生成代码", false, 23)]
+    static void CreateUIModule()
+    {
+        //GameObject go = menuCommand.context as GameObject;
+        GameObject go = rootGo;
+
+        if (go == null || go.GetComponent<UIScriptCreator>() == null)
         {
-            //GameObject go = menuCommand.context as GameObject;
-            GameObject go = rootGo;
+            Debug.LogError("未标记根节点");
+            return;
+        }
+        string PREFAB_PATH = GetPrefabPath();
+        UIScriptController.GenerateUICode(go, PREFAB_PATH);
+        if (IsMarking)
+        {
+            IsMarking = false;
+            EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
+            return;
+        }
+        Debug.Log("生成完成");
+    }
 
-            if (go == null || go.GetComponent<UIScriptCreator>() == null)
-            {
-                Debug.LogError("未标记根节点");
-                return;
-            }
+    [MenuItem("GameObject/生成UI代码/开始或取消标记", false, 22)]
+    static void OpenMarkCreateUIFilesPanel()
+    {
+        if (IsMarking)
+        {
+            IsMarking = false;
+            EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
+            return;
+        }
+        IsMarking = true;
+        EditorApplication.hierarchyWindowItemOnGUI += DrawHierarchyIcon;
+    }
 
-            string PREFAB_PATH = GetPrefabPath(go);
-            UIScriptController.GenerateUICode(go, PREFAB_PATH);
-            if (IsMarking)
-            {
-                IsMarking = false;
-                EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
-                return;
-            }
-
-            Debug.Log("生成完成");
+    [MenuItem("GameObject/生成UI代码/清除标记", false, 24)]
+    static void ClearMark()
+    {
+        var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+        if (prefabStage == null)
+        {
+            return;
+        }
+        string prefabPath = prefabStage.prefabAssetPath;
+        var obj = Selection.activeObject as GameObject;
+        if (obj == null)
+        {
+            return;
         }
 
-        [MenuItem("GameObject/生成UI代码/开始或取消标记", false, 22)]
-        static void OpenMarkCreateUIFilesPanel(MenuCommand menuCommand)
+        var trans = obj.transform;
+        while (trans.parent!=null)
         {
-            if (IsMarking)
-            {
-                IsMarking = false;
-                EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
-                return;
-            }
-
-            IsMarking = true;
-            EditorApplication.hierarchyWindowItemOnGUI += DrawHierarchyIcon;
+            trans = trans.parent;
         }
-
-        [MenuItem("GameObject/生成UI代码/清除标记", false, 24)]
-        static void ClearMark(MenuCommand menuCommand)
+        var go = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        foreach (UIScriptCreator m in go.GetComponentsInChildren<UIScriptCreator>(true))
         {
-            GameObject go = menuCommand.context as GameObject;
-            if (go == null || go.GetComponent<UIScriptCreator>() == null)
-            {
-                Debug.LogError("未标记根节点");
-                return;
-            }
-
-            // 遍历标记生成代码的节点
-            foreach (UIScriptCreator m in go.transform.GetComponentsInChildren<UIScriptCreator>(true))
-            {
-                DestroyImmediate(m);
-            }
+            DestroyImmediate(m, true);
         }
+        // 遍历标记生成代码的节点
+        foreach (UIScriptCreator m in trans.GetComponentsInChildren<UIScriptCreator>(true))
+        {
+            DestroyImmediate(m, true);
+        }
+        EditorUtility.SetDirty(go);
+        AssetDatabase.SaveAssetIfDirty(go);
+    }
 
         // 绘制icon方法
         static void DrawHierarchyIcon(int instanceID, Rect selectionRect)
