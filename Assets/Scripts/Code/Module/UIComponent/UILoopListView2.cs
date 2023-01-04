@@ -72,19 +72,11 @@ namespace TaoTie
             return this.loopListView.GetShownItemByItemIndex(itemIndex);
         }
 
-        public void MovePanelToItemByRowColumn(int itemIndex, float offset)
-        {
-            this.ActivatingComponent();
-            this.loopListView.MovePanelToItemIndex(itemIndex, offset);
-        }
-
-
         public void RefreshAllShownItem()
         {
             this.ActivatingComponent();
             this.loopListView.RefreshAllShownItem();
         }
-
 
         public void SetOnBeginDragAction(Action callback)
         {

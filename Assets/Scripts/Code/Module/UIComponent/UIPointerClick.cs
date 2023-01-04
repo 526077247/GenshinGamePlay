@@ -43,7 +43,7 @@ namespace TaoTie
             this.onClick = () =>
             {
                 //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
-                callback();
+                callback?.Invoke();
             };
             this.pointerClick.onClick.AddListener(this.onClick);
         }
