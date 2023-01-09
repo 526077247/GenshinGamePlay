@@ -12,16 +12,18 @@ namespace TaoTie
     public abstract class UIBaseContainer
     {
         UIBaseContainer Parent;
-        MultiDictionary<string, Type, UIBaseContainer> components;//[path]:[component_name:UIBaseContainer]
+        MultiDictionary<string, Type, UIBaseContainer> components; //[path]:[component_name:UIBaseContainer]
         int length;
         GameObject gameObject;
         Transform transform;
         string path;
-        
+        public bool activeSelf { get; private set; }
+
         public void SetGameObject(GameObject gameObject)
         {
             this.gameObject = gameObject;
         }
+
         public GameObject GetGameObject()
         {
             if (gameObject == null)
@@ -31,16 +33,20 @@ namespace TaoTie
 
             return gameObject;
         }
+
         public void SetTransform(Transform transform)
         {
             this.transform = transform;
         }
+
         public Transform GetTransform()
         {
             ActivatingComponent();
             return transform;
         }
+
         Transform ParentTransform;
+
         Transform ActivatingComponent()
         {
             if (this.transform == null)
@@ -49,11 +55,13 @@ namespace TaoTie
                 this.transform = this.GetParentTransform()?.Find(path);
                 if (this.transform == null)
                 {
-                    Log.Error(this.Parent.GetType().Name+"路径错误:" + path);
+                    Log.Error(this.Parent.GetType().Name + "路径错误:" + path);
                 }
             }
+
             return this.transform;
         }
+
         Transform GetParentTransform()
         {
             if (this.ParentTransform == null)
@@ -69,6 +77,7 @@ namespace TaoTie
                     ParentTransform = pui.transform;
                 }
             }
+
             return ParentTransform;
         }
 
@@ -76,15 +85,17 @@ namespace TaoTie
         {
             return length;
         }
+
         public void SetLength(int length)
         {
             this.length = length;
         }
+
         void AfterOnEnable()
         {
             Walk((component) =>
             {
-                if(component is IOnEnable a) a.OnEnable();
+                if (component is IOnEnable a) a.OnEnable();
                 component.AfterOnEnable();
             });
         }
@@ -94,7 +105,7 @@ namespace TaoTie
             Walk((component) =>
             {
                 component.BeforeOnDisable();
-                if(component is IOnDisable a) a.OnDisable();
+                if (component is IOnDisable a) a.OnDisable();
             });
         }
 
@@ -115,7 +126,6 @@ namespace TaoTie
                             if (component is II18N i18n)
                                 I18NManager.Instance?.RemoveI18NEntity(i18n);
                             if (component is IOnDestroy a) a.OnDestroy();
-
                         }
                     }
                 }
@@ -127,17 +137,16 @@ namespace TaoTie
                 if (!string.IsNullOrEmpty(path))
                     this.Parent.InnerRemoveComponent(this, path);
                 else
-                    Log.Info("Close window here, type name: "+this.GetType().Name);
-            }    
+                    Log.Info("Close window here, type name: " + this.GetType().Name);
+            }
             else
                 Log.Error("OnDestroy fail, length != 0");
-            
         }
 
         //遍历：注意，这里是无序的
         void Walk(Action<UIBaseContainer> callback)
         {
-            if(components==null) return;
+            if (components == null) return;
             foreach (var item in this.components)
             {
                 if (item.Value != null)
@@ -159,7 +168,8 @@ namespace TaoTie
                 Log.Error("Aready exist component_class : " + component_class.Name);
                 return;
             }
-            this.components.Add(name,component_class,component);
+
+            this.components.Add(name, component_class, component);
         }
 
         /// <summary>
@@ -170,11 +180,12 @@ namespace TaoTie
         public T AddComponentNotCreate<T>(string name) where T : UIBaseContainer
         {
             Type type = typeof(T);
-            T component_inst = Activator.CreateInstance<T>();;
+            T component_inst = Activator.CreateInstance<T>();
+            ;
             component_inst.path = name;
             component_inst.Parent = this;
             this.RecordUIComponent(name, type, component_inst);
-            this.SetLength(this.GetLength()+1);
+            this.SetLength(this.GetLength() + 1);
             return component_inst;
         }
 
@@ -189,7 +200,7 @@ namespace TaoTie
             T component_inst = Activator.CreateInstance<T>();
             component_inst.path = path;
             component_inst.Parent = this;
-            if(component_inst is IOnCreate a)
+            if (component_inst is IOnCreate a)
                 a.OnCreate();
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
@@ -203,10 +214,11 @@ namespace TaoTie
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
         /// <param name="path">相对路径</param>
-        public T AddComponent<T, A>(string path, A a) where T : UIBaseContainer,IOnCreate<A>
+        public T AddComponent<T, A>(string path, A a) where T : UIBaseContainer, IOnCreate<A>
         {
             Type type = typeof(T);
-            T component_inst = Activator.CreateInstance<T>();;
+            T component_inst = Activator.CreateInstance<T>();
+            ;
             component_inst.path = path;
             component_inst.Parent = this;
             component_inst.OnCreate(a);
@@ -216,36 +228,40 @@ namespace TaoTie
             this.SetLength(this.GetLength() + 1);
             return component_inst;
         }
+
         /// <summary>
         /// 添加组件
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
         /// <param name="path">路径</param>
-        public T AddComponent<T, A, B>( string path, A a, B b) where T : UIBaseContainer,IOnCreate<A,B>
+        public T AddComponent<T, A, B>(string path, A a, B b) where T : UIBaseContainer, IOnCreate<A, B>
         {
             Type type = typeof(T);
-            T component_inst = Activator.CreateInstance<T>();;
+            T component_inst = Activator.CreateInstance<T>();
+            ;
             component_inst.path = path;
             component_inst.Parent = this;
-            component_inst.OnCreate(a,b);
+            component_inst.OnCreate(a, b);
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, component_inst);
             this.SetLength(this.GetLength() + 1);
             return component_inst;
         }
+
         /// <summary>
         /// 添加组件
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
         /// <param name="path">路径</param>
-        public T AddComponent<T, A, B, C>(string path, A a, B b, C c) where T : UIBaseContainer,IOnCreate<A,B,C>
+        public T AddComponent<T, A, B, C>(string path, A a, B b, C c) where T : UIBaseContainer, IOnCreate<A, B, C>
         {
             Type type = typeof(T);
-            T component_inst = Activator.CreateInstance<T>();;
+            T component_inst = Activator.CreateInstance<T>();
+            ;
             component_inst.path = path;
             component_inst.Parent = this;
-            component_inst.OnCreate(a,b,c);
+            component_inst.OnCreate(a, b, c);
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, component_inst);
@@ -255,13 +271,13 @@ namespace TaoTie
 
         private void InnerSetActive(bool active)
         {
-            if(GetGameObject()!=null&&gameObject.activeSelf!=active)
+            activeSelf = active;
+            if (GetGameObject() != null && gameObject.activeSelf != active)
                 gameObject.SetActive(active);
         }
-        
-        public void SetActive( bool active)
-        {
 
+        public void SetActive(bool active)
+        {
             if (active)
             {
                 (this as IOnEnable)?.OnEnable();
@@ -276,7 +292,7 @@ namespace TaoTie
             }
         }
 
-        public void SetActive<T>( bool active, T param1)
+        public void SetActive<T>(bool active, T param1)
         {
             if (active)
             {
@@ -291,11 +307,12 @@ namespace TaoTie
                 (this as IOnDisable<T>)?.OnDisable(param1);
             }
         }
-        public void SetActive<T, P>( bool active, T param1, P param2)
+
+        public void SetActive<T, P>(bool active, T param1, P param2)
         {
             if (active)
             {
-                (this as IOnEnable<T,P>)?.OnEnable(param1,param2);
+                (this as IOnEnable<T, P>)?.OnEnable(param1, param2);
                 this.AfterOnEnable();
                 InnerSetActive(active);
             }
@@ -303,30 +320,15 @@ namespace TaoTie
             {
                 InnerSetActive(active);
                 this.BeforeOnDisable();
-                (this as IOnDisable<T,P>)?.OnDisable(param1,param2);
-            }
-        }
-        public void SetActive<T, P, K>( bool active, T param1, P param2, K param3)
-        {
-            if (active)
-            {
-                (this as IOnEnable<T,P,K>)?.OnEnable(param1,param2,param3);
-                this.AfterOnEnable();
-                InnerSetActive(active);
-            }
-            else
-            {
-                InnerSetActive(active);
-                this.BeforeOnDisable();
-                (this as IOnDisable<T,P,K>)?.OnDisable(param1,param2,param3);
+                (this as IOnDisable<T, P>)?.OnDisable(param1, param2);
             }
         }
 
-        public void SetActive<T, P, K, V>( bool active, T param1, P param2, K param3, V param4)
+        public void SetActive<T, P, K>(bool active, T param1, P param2, K param3)
         {
             if (active)
             {
-                (this as IOnEnable<T,P,K,V>)?.OnEnable(param1,param2,param3,param4);
+                (this as IOnEnable<T, P, K>)?.OnEnable(param1, param2, param3);
                 this.AfterOnEnable();
                 InnerSetActive(active);
             }
@@ -334,23 +336,41 @@ namespace TaoTie
             {
                 InnerSetActive(active);
                 this.BeforeOnDisable();
-                (this as IOnDisable<T,P,K,V>)?.OnDisable(param1,param2,param3,param4);
+                (this as IOnDisable<T, P, K>)?.OnDisable(param1, param2, param3);
             }
         }
+
+        public void SetActive<T, P, K, V>(bool active, T param1, P param2, K param3, V param4)
+        {
+            if (active)
+            {
+                (this as IOnEnable<T, P, K, V>)?.OnEnable(param1, param2, param3, param4);
+                this.AfterOnEnable();
+                InnerSetActive(active);
+            }
+            else
+            {
+                InnerSetActive(active);
+                this.BeforeOnDisable();
+                (this as IOnDisable<T, P, K, V>)?.OnDisable(param1, param2, param3, param4);
+            }
+        }
+
         /// <summary>
         /// 获取组件
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
         /// <returns></returns>
-        public T GetComponent<T>( string path = "") where T : UIBaseContainer
+        public T GetComponent<T>(string path = "") where T : UIBaseContainer
         {
             if (components == null) return null;
             Type type = typeof(T);
-            if (this.components.TryGetValue(path,type,out var component))
+            if (this.components.TryGetValue(path, type, out var component))
             {
                 return component as T;
             }
+
             return null;
         }
 
@@ -368,7 +388,7 @@ namespace TaoTie
                 if (component is II18N i18n)
                     I18NManager.Instance.RemoveI18NEntity(i18n);
                 (component as IOnDestroy)?.OnDestroy();
-                this.components.Remove(path,typeof(T));
+                this.components.Remove(path, typeof(T));
             }
         }
 
@@ -381,8 +401,8 @@ namespace TaoTie
         {
             if (component != null)
             {
-                this.components.Remove(path,component.GetType());
-                this.SetLength(this.GetLength()-1);
+                this.components.Remove(path, component.GetType());
+                this.SetLength(this.GetLength() - 1);
             }
         }
     }

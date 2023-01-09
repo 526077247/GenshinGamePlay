@@ -2,11 +2,13 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
 namespace TaoTie
 {
-    public class UILoopListView2:UIBaseContainer,IOnDestroy
+    public class UILoopListView2 : UIBaseContainer, IOnDestroy
     {
         private LoopListView2 loopListView;
+
         #region override
 
         public void OnDestroy()
@@ -48,8 +50,10 @@ namespace TaoTie
             item.gameObject.name = item.gameObject.name + item.ItemId;
             T t = this.AddComponentNotCreate<T>(item.gameObject.name);
             t.SetTransform(item.transform);
-            if(t is IOnCreate a)
+            if (t is IOnCreate a)
                 a.OnCreate();
+            if (activeSelf && t is IOnEnable b)
+                b.OnEnable();
             return t;
         }
 
@@ -58,6 +62,7 @@ namespace TaoTie
         {
             return this.GetComponent<T>(item.gameObject.name);
         }
+
         //itemCount重设item的数量，resetPos是否刷新当前显示的位置
         public void SetListItemCount(int itemCount, bool resetPos = true)
         {
@@ -96,12 +101,12 @@ namespace TaoTie
             this.loopListView.mOnEndDragAction = callback;
         }
 
-        public void MovePanelToItemIndex(int index, float offset=0)
+        public void MovePanelToItemIndex(int index, float offset = 0)
         {
             this.ActivatingComponent();
-            this.loopListView.MovePanelToItemIndex(index,offset);
+            this.loopListView.MovePanelToItemIndex(index, offset);
         }
-        
+
         public void SetOnSnapChange(Action<LoopListView2, LoopListViewItem2> callback)
         {
             this.ActivatingComponent();

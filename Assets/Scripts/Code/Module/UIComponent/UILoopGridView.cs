@@ -2,9 +2,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+
 namespace TaoTie
 {
-    public class UILoopGridView:UIBaseContainer,IOnDestroy
+    public class UILoopGridView : UIBaseContainer, IOnDestroy
     {
         private LoopGridView loopGridView;
 
@@ -20,7 +21,7 @@ namespace TaoTie
         }
 
         #endregion
-        
+
         public void ActivatingComponent()
         {
             if (this.loopGridView == null)
@@ -28,14 +29,15 @@ namespace TaoTie
                 this.loopGridView = this.GetGameObject().GetComponent<LoopGridView>();
                 if (this.loopGridView == null)
                 {
-                    Log.Error($"添加UI侧组件UILoopGridView时，物体{ this.GetGameObject().name}上没有找到LoopGridView组件");
+                    Log.Error($"添加UI侧组件UILoopGridView时，物体{this.GetGameObject().name}上没有找到LoopGridView组件");
                 }
             }
         }
+
         public void InitGridView(int itemTotalCount,
-                System.Func<LoopGridView, int, int, int, LoopGridViewItem> onGetItemByRowColumn,
-                LoopGridViewSettingParam settingParam = null,
-                LoopGridViewInitParam initParam = null)
+            System.Func<LoopGridView, int, int, int, LoopGridViewItem> onGetItemByRowColumn,
+            LoopGridViewSettingParam settingParam = null,
+            LoopGridViewInitParam initParam = null)
         {
             this.ActivatingComponent();
             this.loopGridView.InitGridView(itemTotalCount, onGetItemByRowColumn, settingParam, initParam);
@@ -48,8 +50,10 @@ namespace TaoTie
             item.gameObject.name = item.gameObject.name + item.ItemId;
             T t = this.AddComponentNotCreate<T>(item.gameObject.name);
             t.SetTransform(item.transform);
-            if(t is IOnCreate a)
+            if (t is IOnCreate a)
                 a.OnCreate();
+            if (activeSelf && t is IOnEnable b)
+                b.OnEnable();
             return t;
         }
 
@@ -58,6 +62,7 @@ namespace TaoTie
         {
             return this.GetComponent<T>(item.gameObject.name);
         }
+
         //itemCount重设item的数量，resetPos是否刷新当前显示的位置
         public void SetListItemCount(int itemCount, bool resetPos = true)
         {
