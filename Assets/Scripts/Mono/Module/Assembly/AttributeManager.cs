@@ -17,26 +17,29 @@ namespace TaoTie
         {
             Instance = this;
             this.types.Clear();
-            List<Type> baseAttributeTypes = AssemblyManager.Instance.GetBaseAttributes();
-            foreach (Type baseAttributeType in baseAttributeTypes)
+            HashSet<Type> temp = new HashSet<Type>();
+            var allTypes = AssemblyManager.Instance.GetTypes();
+            foreach (var item in allTypes)
             {
-                foreach (var kv in AssemblyManager.Instance.GetTypes())
+                Type type = item.Value;
+
+                if (type.IsAbstract)
                 {
-                    Type type = kv.Value;
-                    if (type.IsAbstract)
-                    {
-                        continue;
-                    }
-
-                    object[] objects = type.GetCustomAttributes(baseAttributeType, true);
-                    if (objects.Length == 0)
-                    {
-                        continue;
-                    }
-
-                    this.types.Add(baseAttributeType, type);
+                    continue;
+                }
+                
+                // 记录所有的有BaseAttribute标记的的类型
+                object[] objects = type.GetCustomAttributes(typeof(BaseAttribute), true);
+                temp.Clear();
+                foreach (object o in objects)
+                {
+                    var otype = o.GetType();
+                    if(temp.Contains(otype)) continue;
+                    this.types.Add(otype, type);
+                    temp.Add(otype);
                 }
             }
+
         }
 
         public void Destroy()

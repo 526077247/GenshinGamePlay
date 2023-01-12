@@ -34,26 +34,6 @@ namespace TaoTie
             return allTypes;
         }
 
-        public List<Type> GetBaseAttributes()
-        {
-            List<Type> attributeTypes = new List<Type>();
-            foreach (var kv in this.allTypes)
-            {
-                Type type = kv.Value;
-                if (type.IsAbstract)
-                {
-                    continue;
-                }
-
-                if (type.IsSubclassOf(typeof (BaseAttribute)))
-                {
-                    attributeTypes.Add(type);
-                }
-            }
-
-            return attributeTypes;
-        }
-        
         public void AddAssembly(Assembly assembly)
         {
             if (!Temp.Contains(assembly))
