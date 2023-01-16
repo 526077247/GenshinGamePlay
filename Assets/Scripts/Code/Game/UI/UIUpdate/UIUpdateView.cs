@@ -192,16 +192,17 @@ namespace TaoTie
                 Log.Info("CheckAppUpdate channel_app_update_list or app_ver is nil, so return");
                 return false;
             }
-            this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateAppVer(appChannel);
-            Log.Info("FindMaxUpdateAppVer =" + this.StaticVersion);
-            if (this.StaticVersion<0)
+            var version = ServerConfigManager.Instance.FindMaxUpdateAppVer(appChannel);
+            Log.Info("FindMaxUpdateAppVer =" + version);
+            if (version<0)
             {
                 Log.Info("CheckAppUpdate maxVer is nil");
                 return false;
             }
+            //x.x.xxx这种的话，这里就自己约定一下，看看哪一位表示整包更新
             int appVer = int.Parse(Application.version);
-            var flag = appVer - this.StaticVersion;
-            Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", appVer, this.StaticVersion));
+            var flag = appVer - version;
+            Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", appVer, version));
             if (flag >= 0)
             {
                 Log.Info("CheckAppUpdate AppVer is Most Max Version, so return; flag = " + flag);

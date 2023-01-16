@@ -25,6 +25,20 @@ namespace TaoTie
 
 		private IEnumerator AwakeAsync()
 		{
+			InitUnitySetting();
+			
+
+			System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+			{
+				Log.Error(e.ExceptionObject.ToString());
+			};
+
+			DontDestroyOnLoad(gameObject);
+
+			ETTask.ExceptionHandler += Log.Error;
+
+			Log.ILog = new UnityLogger();
+			
 #if !UNITY_EDITOR && !FORCE_UPDATE //编辑器模式下跳过更新
 			Define.Networked = Application.internetReachability != NetworkReachability.NotReachable;
 #endif
@@ -65,20 +79,6 @@ namespace TaoTie
 				// 先设置更新补丁清单
 				yield return YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
 			}
-
-			InitUnitySetting();
-			
-
-			System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-			{
-				Log.Error(e.ExceptionObject.ToString());
-			};
-
-			DontDestroyOnLoad(gameObject);
-
-			ETTask.ExceptionHandler += Log.Error;
-
-			Log.ILog = new UnityLogger();
 			
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			IsInit = true;
