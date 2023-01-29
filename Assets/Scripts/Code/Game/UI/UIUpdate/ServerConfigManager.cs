@@ -153,6 +153,8 @@ namespace TaoTie
             int last_ver = -1;
             if (this.appUpdateList.TryGetValue(channel, out var data))
             {
+                if (!string.IsNullOrEmpty(data.jump_channel))
+                    data = appUpdateList[data.jump_channel];
                 foreach (var item in data.app_ver)
                 {
                     if (last_ver == -1) last_ver = item.Key;

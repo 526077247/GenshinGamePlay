@@ -143,22 +143,46 @@ namespace TaoTie
         async ETTask CheckUpdateList()
         {
             var url = ServerConfigManager.Instance.GetUpdateListCdnUrl();
-            //UpdateConfig aa = new UpdateConfig
-            //{
-            //    app_list = new Dictionary<string, AppConfig>
-            //    {
-                    
-            //    },
-            //    res_list = new Dictionary<string, Dictionary<string, Resver>>
-            //    {
-            //        {"100",new Dictionary<string, Resver>{
-            //            { "1",new Resver{
-            //                channel = new List<string>(){"all"},
-            //                update_tailnumber = new List<string>(){"all"},
-            //            } }
-            //        }}
-            //    }
-            //};
+            // UpdateConfig aa = new UpdateConfig
+            // {
+            //     app_list = new Dictionary<string, AppConfig>
+            //     {
+            //         {
+            //             "googleplay",
+            //             new AppConfig()
+            //             {
+            //                 app_url = "http://127.0.0.1",
+            //                 app_ver = new Dictionary<int, Resver>()
+            //                 {
+            //                     {
+            //                         1,
+            //                         new Resver()
+            //                         {
+            //                             channel = new List<string>() { "all" },
+            //                             update_tailnumber = new List<string>() { "all" },
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     res_list = new Dictionary<string, Dictionary<int, Resver>>
+            //     {
+            //         {
+            //             "googleplay",
+            //             new Dictionary<int, Resver>
+            //             {
+            //                 {
+            //                     1,
+            //                     new Resver
+            //                     {
+            //                         channel = new List<string>() { "all" }, update_tailnumber = new List<string>() { "all" },
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // };
             var info = await HttpManager.Instance.HttpGetResult<UpdateConfig>(url);
             if (info == null)
             {
@@ -199,7 +223,7 @@ namespace TaoTie
                 Log.Info("CheckAppUpdate maxVer is nil");
                 return false;
             }
-            //x.x.xxx这种的话，这里就自己约定一下，看看哪一位表示整包更新
+            //x.x.xxx这种的话，这里就自己改一下
             int appVer = int.Parse(Application.version);
             var flag = appVer - version;
             Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", appVer, version));
@@ -251,12 +275,12 @@ namespace TaoTie
         /// <returns></returns>
         public async ETTask<bool> CheckResUpdate()
         {
-            var app_channel = PlatformUtil.GetAppChannel();
+            var appChannel = PlatformUtil.GetAppChannel();
             var channel = YooAssetsMgr.Instance.Config.Channel;
-            this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateResVer(channel, app_channel,out var verInfo);
+            this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateResVer(appChannel, channel, out var verInfo);
             if (this.StaticVersion<0)
             {
-                Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + app_channel);
+                Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + appChannel);
                 return false;
             }
             this.ForceUpdate = Define.ForceUpdate; 
