@@ -297,7 +297,7 @@ namespace TaoTie
 
             // 编辑器下跳过。
             // if (Define.IsEditor) return false;
-            if (YooAssets.PlayMode != YooAssets.EPlayMode.HostPlayMode)
+            if (YooAssetsMgr.Instance.PlayMode != EPlayMode.HostPlayMode)
             {
                 Log.Info("非网络运行模式");
                 return false;
@@ -305,12 +305,8 @@ namespace TaoTie
             ETTask task = ETTask.Create(true);
             // 更新补丁清单
             Log.Info("更新补丁清单");
-            var operation = YooAssets.UpdateManifestAsync(this.StaticVersion, 30);
-            operation.Completed += (op) =>
-            {
-                task.SetResult();
-            };
-            await task;
+            var operation = YooAssetsMgr.Instance.UpdateManifestAsync(this.StaticVersion.ToString(), 30);
+            await operation.Task;
             int btnState;
             if(operation.Status != EOperationStatus.Succeed)
             {
@@ -388,7 +384,6 @@ namespace TaoTie
             }
             ResourcesManager.Instance.ClearAssetsCache();
             ManagerProvider.Clear();
-            YooAssetsMgr.Instance.ClearConfigCache();
             ObjectPool.Instance.Dispose();
             CodeLoader.Instance.ReStart();
         }

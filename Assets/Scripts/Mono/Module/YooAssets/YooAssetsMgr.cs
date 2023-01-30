@@ -12,269 +12,67 @@ namespace YooAsset
     {
         public static YooAssetsMgr Instance { get; private set; } = new YooAssetsMgr();
 
-        public BuildInConfig Config { get; private set; }
-        
-        public static string StaticVersionStreamingPath = Path.Combine(Application.streamingAssetsPath,"YooAssets", YooAssetSettings.VersionFileName);
-        
-        public static string PatchManifestStreamingPath = Path.Combine(Application.streamingAssetsPath,"YooAssets", "PatchManifest_{0}.bytes");
-        public static string PatchManifestPersistentPath = PathHelper.MakePersistentLoadPath("PatchManifest_{0}.bytes");
+        public BuildInConfig Config;
+        public AssetsPackage DefaultPackage;
+        public EPlayMode PlayMode;
 
-        private PatchManifest buildInManifest;
-        private PatchManifest staticManifest;
+        private readonly Dictionary<string, AssetsPackage> packages = new Dictionary<string, AssetsPackage>();
 
-        public int staticVersion;
-        public bool IsDllBuildIn;
-        public IEnumerator Init(YooAssets.EPlayMode mode)
+        public async ETTask Init(YooAsset.EPlayMode mode)
         {
-            IsDllBuildIn = false;
-            var _downloader1 = new UnityWebDataRequester();
-            _downloader1.SendRequest(StaticVersionStreamingPath);
-            while (!_downloader1.IsDone())
-            {
-                yield return 0;
-            }
-            int.TryParse(_downloader1.GetText(),out int buildInVersion);
-            _downloader1.Dispose();
-            staticVersion = PlayerPrefs.GetInt("STATIC_VERSION", -1);
-
-            if (staticVersion == -1)
-            {
-                staticVersion = buildInVersion;
-                PlayerPrefs.SetInt("STATIC_VERSION", staticVersion);
-            }
-            Debug.Log("buildInVersion"+buildInVersion+" staticVersion"+staticVersion);
-            if (buildInVersion >= staticVersion)//测试打包时没改version，需要把旧的删了
-            {
-                for (int i = staticVersion; i <= buildInVersion; i++)
-                {
-                    string oldPatch = string.Format(PatchManifestPersistentPath, i);
-                    if(File.Exists(oldPatch))
-                    {
-                        Debug.Log("测试打包时没改version,旧的删了"+i);
-                        File.Delete(oldPatch);
-                    }
-                }
-            }
-            string path = string.Format(PatchManifestStreamingPath, buildInVersion);
-            _downloader1 = new UnityWebDataRequester();
-            _downloader1.SendRequest(path);
-            while (!_downloader1.IsDone())
-            {
-                yield return 0;
-            }
-            var jStr = _downloader1.GetText();
-            _downloader1.Dispose();
-            Debug.Log("Load buildInManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
-            if(!string.IsNullOrEmpty(jStr))
-                buildInManifest= Deserialize(jStr);
-            if (staticVersion > buildInVersion)
-            {
-                path = string.Format(PatchManifestPersistentPath, staticVersion);
-                jStr = File.ReadAllText(path);
-                Debug.Log("Load staticManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
-                if(!string.IsNullOrEmpty(jStr))
-                    staticManifest = Deserialize(jStr);
-            }
-
-            if (mode == YooAssets.EPlayMode.EditorSimulateMode)
-            {
-                string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-                Config = JsonHelper.FromJson<BuildInConfig>(jstr);
-            }
-            else
-            {
-                string assetBundleName = "assets/assetspackage.bundle";
-                var ab = SyncLoadAssetBundle(assetBundleName);
-                IsDllBuildIn = true;
-                string jstr = ((TextAsset) ab.LoadAsset("Assets/AssetsPackage/config.bytes", typeof (TextAsset))).text;
-                Config = JsonHelper.FromJson<BuildInConfig>(jstr);
-                ab.Unload(true);
-                if (!IsAssetBundleInPackage(assetBundleName))
-                {
-                    ab = SyncLoadBuildInAssetBundle(assetBundleName);
-                    jstr = ((TextAsset) ab.LoadAsset("Assets/AssetsPackage/config.bytes", typeof (TextAsset))).text;
-                    var oldConfig = JsonHelper.FromJson<BuildInConfig>(jstr);
-                    this.IsDllBuildIn = Config.Dllver == oldConfig.Dllver;
-                    Debug.Log($"Config.Dllver ={Config.Dllver } oldConfig.Dllver={oldConfig.Dllver}");
-                    ab.Unload(true);
-                }
-            }
-        }
-
-
-        #region 之所以是有这些接口，是为了在启动时进行使用，加快启动速度，其他地方严禁调用这里的方法
-        /// <summary>
-        /// 反序列化
-        /// </summary>
-        public PatchManifest Deserialize(string jsonData)
-        {
-            PatchManifest patchManifest = JsonUtility.FromJson<PatchManifest>(jsonData);
-            
-            // BundleList
-            foreach (var patchBundle in patchManifest.BundleList)
-            {
-                patchBundle.ParseFlagsValue();
-                patchBundle.ParseFileName(patchManifest.OutputNameStyle);
-                patchManifest.BundleDic.Add(patchBundle.BundleName, patchBundle);
-            }
-
-            // AssetList
-            foreach (var patchAsset in patchManifest.AssetList)
-            {
-                // 注意：我们不允许原始路径存在重名
-                string assetPath = patchAsset.AssetPath;
-                if (patchManifest.AssetDic.ContainsKey(assetPath))
-                    throw new Exception($"AssetPath have existed : {assetPath}");
-                else
-                    patchManifest.AssetDic.Add(assetPath, patchAsset);
-            }
-
-            return patchManifest;
-        }
-        
-        /// <summary>
-        /// 获取assetbundle在本地的存储路径，该接口只会检查本地数据
-        /// </summary>
-        /// <param name="assetBundleName"></param>
-        /// <returns></returns>
-        public string GetAssetBundleLocalPath(string assetBundleName)
-        {
-            PatchBundle info;
-            if (IsAssetBundleInPackage(assetBundleName))
-            {
-                info = buildInManifest.BundleDic[assetBundleName];
-                return PathHelper.MakeStreamingLoadPath(info.FileName);
-            }
-            if(staticManifest.BundleDic.TryGetValue(assetBundleName,out info))
-                return PathHelper.MakePersistentLoadPath("CacheFiles/"+info.FileName);
-            throw new Exception("指定assetBundleName不存在！"+assetBundleName);
-        }
-
-        /// <summary>
-        /// 判断assetbundle是否是内置在包里面的
-        /// </summary>
-        /// <param name="assetBundleName"></param>
-        /// <returns></returns>
-        public bool IsAssetBundleInPackage(string assetBundleName)
-        {
-            if (buildInManifest.BundleDic.TryGetValue(assetBundleName,out var info))
-            {
-                if (staticManifest==null||!staticManifest.BundleDic.TryGetValue(assetBundleName, out var nowInfo) || nowInfo.Hash == info.Hash)
-                {
-                    return true;
-                }
-                Debug.Log(assetBundleName+" staticManifest==null"+(staticManifest==null));
-                Debug.Log(assetBundleName+" nowInfo.Hash == info.Hash"+(nowInfo.Hash == info.Hash));
-            }
-            Debug.Log(assetBundleName+" !buildInManifest.BundleDic.Contains");
-            return false;
-        }
-
-        /// <summary>
-        /// 同步加载ab包
-        /// </summary>
-        /// <param name="assetBundleName"></param>
-        /// <returns></returns>
-        public AssetBundle SyncLoadAssetBundle(string assetBundleName)
-        {
-            var path = GetAssetBundleLocalPath(assetBundleName);
-            var ab = AssetBundle.LoadFromFile(path, 0, YooAssetConst.Offset);
-            return ab;
-        }
-        /// <summary>
-        /// 同步加载内置ab包
-        /// </summary>
-        /// <param name="assetBundleName"></param>
-        /// <returns></returns>
-        public AssetBundle SyncLoadBuildInAssetBundle(string assetBundleName)
-        {
-            var info = buildInManifest.BundleDic[assetBundleName];
-            var path =  PathHelper.MakeStreamingLoadPath(info.FileName);
-            var ab = AssetBundle.LoadFromFile(path, 0, YooAssetConst.Offset);
-            return ab;
-        }
-        
-        private AssetBundle configBundle;
-        
-        public TextAsset LoadTextAsset(string addressPath)
-        {
-            addressPath = "Assets/AssetsPackage/" + addressPath;
-            if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
-            {
-                if (configBundle == null)
-                {
-                    configBundle = SyncLoadAssetBundle("assets/assetspackage/config.bundle");
-                }
-                TextAsset asset = (TextAsset)configBundle.LoadAsset(addressPath, typeof(TextAsset));
-                if (asset == null)
-                {
-                    Debug.LogError("LoadTextAsset fail, path: "+ addressPath);
-                }
-                return asset;
-                
-            }
+            PlayMode = mode;
+            // 初始化资源系统
+            YooAssets.Initialize();
+            // 创建默认的资源包
+            var package = YooAssets.CreateAssetsPackage("DefaultPackage");
+            DefaultPackage = package;
+            // 设置该资源包为默认的资源包，可以使用YooAssets相关加载接口加载该资源包内容。
+            YooAssets.SetDefaultAssetsPackage(package);
 #if UNITY_EDITOR
+            // 编辑器下的模拟模式
+            if (mode == YooAsset.EPlayMode.EditorSimulateMode)
+            {
+                var initParameters = new EditorSimulateModeParameters();
+                initParameters.SimulatePatchManifestPath = EditorSimulateModeHelper.SimulateBuild("DefaultPackage");
+                await package.InitializeAsync(initParameters).Task;
+            }
+            else
+#endif
+                // 单机运行模式
+            if (mode == YooAsset.EPlayMode.OfflinePlayMode)
+            {
+                var initParameters = new OfflinePlayModeParameters();
+                await package.InitializeAsync(initParameters).Task;
+            }
+            // 联机运行模式
             else
             {
-                TextAsset asset = (AssetDatabase.LoadAssetAtPath(addressPath, typeof(TextAsset)) as TextAsset);
-                if (asset == null)
-                {
-                    Debug.LogError("LoadTextAsset fail, path: " + addressPath);
-                }
-                return asset;
+                var initParameters = new HostPlayModeParameters();
+                initParameters.DefaultHostServer = "";
+                initParameters.FallbackHostServer = "";
+                await package.InitializeAsync(initParameters).Task;
             }
-#endif
-            return null;
-        }
-        
-        public Dictionary<string, TextAsset> LoadAllTextAsset()
-        {
-            Dictionary<string, TextAsset> res = new Dictionary<string, TextAsset>();
-            if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
-            {
-                if (configBundle == null)
-                {
-                    configBundle = SyncLoadAssetBundle("assets/assetspackage/config.bundle");
-                }
-                var assets = configBundle.LoadAllAssets<TextAsset>();
-                foreach (TextAsset asset in assets)
-                {
-                    res.Add(asset.name, asset);
-                }
-            }
-#if UNITY_EDITOR
-            else
-            {
-                var fullPath = "Assets/AssetsPackage/Config/";
-                if (Directory.Exists(fullPath))
-                {
-                    DirectoryInfo direction = new DirectoryInfo(fullPath);
-                    FileInfo[] files = direction.GetFiles("*", SearchOption.AllDirectories);
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        if (files[i].Name.EndsWith(".meta"))
-                        {
-                            continue;
-                        }
 
-                        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Config/" + files[i].Name);
-                        res.Add(asset.name, asset);
-                    }
-                }
-            }
-#endif
-            return res;
+            await UpdateConfig();
         }
 
-        /// <summary>
-        /// 清除配置ab包
-        /// </summary>
-        public void ClearConfigCache()
+        public async ETTask UpdateConfig()
         {
-            configBundle?.Unload(true);
-            configBundle = null;
+            var op = DefaultPackage.LoadRawFileSync("config.bytes");
+            await op.Task;
+            var conf = op.GetRawFileText();
+            Config = JsonHelper.FromJson<BuildInConfig>(conf);
+            op.Release();
         }
-        
-        #endregion
+
+        public void UnloadUnusedAssets()
+        {
+            DefaultPackage.UnloadUnusedAssets();
+        }
+
+        public UpdatePackageManifestOperation UpdateManifestAsync(string version,int timeout)
+        {
+            return DefaultPackage.UpdatePackageManifestAsync(version, timeout);
+        }
     }
 }

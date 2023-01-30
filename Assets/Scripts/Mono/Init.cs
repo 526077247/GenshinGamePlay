@@ -18,12 +18,12 @@ namespace TaoTie
 	{
 		public CodeMode CodeMode = CodeMode.LoadDll;
 
-		public YooAssets.EPlayMode PlayMode = YooAssets.EPlayMode.EditorSimulateMode;
+		public YooAsset.EPlayMode PlayMode = YooAsset.EPlayMode.EditorSimulateMode;
 
 		private bool IsInit = false;
 		
 
-		private IEnumerator AwakeAsync()
+		private async ETTask AwakeAsync()
 		{
 			InitUnitySetting();
 			
@@ -42,43 +42,8 @@ namespace TaoTie
 #if !UNITY_EDITOR && !FORCE_UPDATE //编辑器模式下跳过更新
 			Define.Networked = Application.internetReachability != NetworkReachability.NotReachable;
 #endif
-			
-#if UNITY_EDITOR
-			// 编辑器下的模拟模式
-			if (PlayMode == YooAssets.EPlayMode.EditorSimulateMode)
-			{
-				yield return YooAssetsMgr.Instance.Init(YooAssets.EPlayMode.EditorSimulateMode);
-				var createParameters = new YooAssets.EditorSimulateModeParameters();
-				createParameters.LocationServices = new AddressByPathLocationServices("Assets/AssetsPackage");
-				//createParameters.SimulatePatchManifestPath = GetPatchManifestPath();
-				yield return YooAssets.InitializeAsync(createParameters);
-			}
-			else
-#endif
-			// 单机运行模式
-			if (PlayMode == YooAssets.EPlayMode.OfflinePlayMode)
-			{
-				yield return YooAssetsMgr.Instance.Init(YooAssets.EPlayMode.OfflinePlayMode);
-				var createParameters = new YooAssets.OfflinePlayModeParameters();
-				createParameters.LocationServices = new AddressByPathLocationServices("Assets/AssetsPackage");
-				yield return YooAssets.InitializeAsync(createParameters);
-			}
-			// 联机运行模式
-			else
-			{
-				yield return YooAssetsMgr.Instance.Init(YooAssets.EPlayMode.HostPlayMode);
-				var createParameters = new YooAssets.HostPlayModeParameters();
-				createParameters.LocationServices = new AddressByPathLocationServices("Assets/AssetsPackage");
-				createParameters.DecryptionServices = new BundleDecryption();
-				createParameters.ClearCacheWhenDirty = true;
-				createParameters.DefaultHostServer = YooAssetsMgr.Instance.Config.RemoteCdnUrl+"/"+YooAssetsMgr.Instance.Config.Channel+"_"+PlatformUtil.GetStrPlatformIgnoreEditor();
-				createParameters.FallbackHostServer = YooAssetsMgr.Instance.Config.RemoteCdnUrl2+"/"+YooAssetsMgr.Instance.Config.Channel+"_"+PlatformUtil.GetStrPlatformIgnoreEditor();
-				createParameters.VerifyLevel = EVerifyLevel.High;
-				yield return YooAssets.InitializeAsync(createParameters);
 
-				// 先设置更新补丁清单
-				yield return YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
-			}
+			await YooAssetsMgr.Instance.Init(PlayMode);
 			
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			IsInit = true;
@@ -87,7 +52,7 @@ namespace TaoTie
 
 		private void Start()
 		{
-			StartCoroutine(AwakeAsync());
+			AwakeAsync().Coroutine();
 		}
 
 		private void Update()
@@ -98,16 +63,14 @@ namespace TaoTie
 			ManagerProvider.Update();
 			if (CodeLoader.Instance.isReStart)
 			{
-				StartCoroutine(ReStart());
+				ReStart().Coroutine();
 			}
 		}
 
-		public IEnumerator ReStart()
+		public async ETTask ReStart()
 		{
 			CodeLoader.Instance.isReStart = false;
-			yield return YooAssetsMgr.Instance.Init(YooAssets.PlayMode);
-			// 先设置更新补丁清单
-			yield return YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
+			await YooAssetsMgr.Instance.UpdateConfig();
 			Log.Debug("ReStart");
 			CodeLoader.Instance.OnApplicationQuit?.Invoke();
 			CodeLoader.Instance.Start();

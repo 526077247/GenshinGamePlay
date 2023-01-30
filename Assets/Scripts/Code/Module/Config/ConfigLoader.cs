@@ -7,20 +7,25 @@ namespace TaoTie
     {
         public void GetAllConfigBytes(Dictionary<string, byte[]> output)
         {
-            Dictionary<string, TextAsset> keys = YooAssetsMgr.Instance.LoadAllTextAsset();
+            var assets = YooAssets.GetAssetInfos("config");
 
-            foreach (var kv in keys)
+            foreach (var asset in assets)
             {
-                TextAsset v = kv.Value;
-                string key = kv.Key;
+                var op = YooAssets.LoadAssetSync(asset);
+                TextAsset v = op.AssetObject as TextAsset;
+                string key = asset.Address;
                 output[key] = v.bytes;
+                op.Release();
             }
         }
 
         public byte[] GetOneConfigBytes(string configName)
         {
-            TextAsset v = YooAssetsMgr.Instance.LoadTextAsset(configName);
-            return v.bytes;
+            var op = YooAssets.LoadAssetAsync(configName,typeof(TextAsset));
+            TextAsset v = op.AssetObject as TextAsset;
+            var bytes = v.bytes;
+            op.Release();
+            return bytes;
         }
     }
 }

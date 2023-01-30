@@ -171,7 +171,7 @@ namespace TaoTie
                     this.CachedAssetOperationHandles.RemoveAt(i);
                 }
             }
-            YooAssets.UnloadUnusedAssets();
+            YooAssetsMgr.Instance.UnloadUnusedAssets();
         }
         /// <summary>
         /// 释放资源
