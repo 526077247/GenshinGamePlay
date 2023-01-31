@@ -81,16 +81,6 @@ namespace TaoTie
             return ParentTransform;
         }
 
-        public int GetLength()
-        {
-            return length;
-        }
-
-        public void SetLength(int length)
-        {
-            this.length = length;
-        }
-
         void AfterOnEnable()
         {
             Walk((component) =>
@@ -132,7 +122,7 @@ namespace TaoTie
             }
 
             length--;
-            if (this.GetLength() <= 0)
+            if (this.length <= 0)
             {
                 if (!string.IsNullOrEmpty(path))
                     this.Parent.InnerRemoveComponent(this, path);
@@ -185,7 +175,7 @@ namespace TaoTie
             component_inst.path = name;
             component_inst.Parent = this;
             this.RecordUIComponent(name, type, component_inst);
-            this.SetLength(this.GetLength() + 1);
+            length++;
             return component_inst;
         }
 
@@ -205,7 +195,7 @@ namespace TaoTie
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, component_inst);
-            this.SetLength(this.GetLength() + 1);
+            length++;
             return component_inst;
         }
 
@@ -225,7 +215,7 @@ namespace TaoTie
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, component_inst);
-            this.SetLength(this.GetLength() + 1);
+            length++;
             return component_inst;
         }
 
@@ -245,7 +235,7 @@ namespace TaoTie
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, component_inst);
-            this.SetLength(this.GetLength() + 1);
+            length++;
             return component_inst;
         }
 
@@ -265,7 +255,7 @@ namespace TaoTie
             if (component_inst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, component_inst);
-            this.SetLength(this.GetLength() + 1);
+            length++;
             return component_inst;
         }
 
@@ -402,7 +392,7 @@ namespace TaoTie
             if (component != null)
             {
                 this.components.Remove(path, component.GetType());
-                this.SetLength(this.GetLength() - 1);
+                length--;
             }
         }
     }
