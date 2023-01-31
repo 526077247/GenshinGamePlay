@@ -7,7 +7,7 @@
         Refresh, // 刷新已存在的modifier
         Prolong, // 延长已存在的modifier
     }
-    public abstract class ConfigAbilityModifier
+    public class ConfigAbilityModifier
     {
         public string ModifierName;
         /// <summary>

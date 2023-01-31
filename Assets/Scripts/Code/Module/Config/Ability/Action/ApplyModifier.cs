@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public class ConfigApplyModifier: ConfigAbilityAction
+    public class ApplyModifier: ConfigAbilityAction
     {
         public string ModifierName;
     }
