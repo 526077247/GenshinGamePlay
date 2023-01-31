@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public class ConfigAbilityAction
+    public abstract class ConfigAbilityAction
     {
         
     }
