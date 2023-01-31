@@ -153,7 +153,7 @@ namespace TaoTie
                     bool had = false;
                     foreach (var uiComponent in WidgetInterfaceList)
                     {
-                        Component component = child.GetComponent(uiComponent.Key);
+                        UnityEngine.Component component = child.GetComponent(uiComponent.Key);
                         if (null != component)
                         {
                             had = true;
@@ -193,7 +193,7 @@ namespace TaoTie
                     bool had = false;
                     foreach (var uiComponent in WidgetInterfaceList)
                     {
-                        Component component = child.GetComponent(uiComponent.Key);
+                        UnityEngine.Component component = child.GetComponent(uiComponent.Key);
                         if (null != component)
                         {
                             had = true;
