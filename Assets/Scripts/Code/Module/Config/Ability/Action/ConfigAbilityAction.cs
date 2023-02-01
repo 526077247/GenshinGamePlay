@@ -16,6 +16,6 @@
     {
         public AbilityActionTarget ActionTarget;
 
-        public abstract void DoExecute(ActorAbility actorAbility, Entity other);
+        public abstract void DoExecute(Entity applier, ActorAbility actorAbility, Entity other);
     }
 }

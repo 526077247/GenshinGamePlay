@@ -4,9 +4,9 @@
     {
         public string ModifierName;
 
-        public override void DoExecute(ActorAbility actorAbility, Entity other)
+        public override void DoExecute(Entity applier, ActorAbility actorAbility, Entity other)
         {
-            actorAbility.Parent.ApplyModifier(actorAbility.Parent.Id,actorAbility,ModifierName);
+            actorAbility.Parent.ApplyModifier(applier.Id, actorAbility, ModifierName);
         }
     }
 }
