@@ -29,7 +29,7 @@ namespace TaoTie
                 }
                 
                 // 记录所有的有BaseAttribute标记的的类型
-                object[] objects = type.GetCustomAttributes(typeof(BaseAttribute), true);
+                object[] objects = type.GetCustomAttributes(TypeInfo<BaseAttribute>.Type, true);
                 temp.Clear();
                 foreach (object o in objects)
                 {

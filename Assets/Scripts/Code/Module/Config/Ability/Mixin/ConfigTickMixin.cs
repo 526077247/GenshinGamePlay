@@ -16,7 +16,7 @@
 
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(typeof(TickMixin)) as TickMixin;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<TickMixin>.Type) as TickMixin;
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

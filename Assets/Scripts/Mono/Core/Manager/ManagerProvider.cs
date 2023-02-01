@@ -18,7 +18,7 @@ namespace TaoTie
         private LinkedList<IUpdateManager> UpdateManagers;
         public static T GetManager<T>(string name = "") where T :class,IManagerDestroy
         {
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
             {
                 return null;
@@ -27,7 +27,7 @@ namespace TaoTie
         }
         public static T RegisterManager<T>(string name = "") where T :class,IManager
         {
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
@@ -44,7 +44,7 @@ namespace TaoTie
         }
         public static T RegisterManager<T,P1>(P1 p1,string name = "") where T :class,IManager<P1>
         {
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
@@ -60,7 +60,7 @@ namespace TaoTie
         }
         public static T RegisterManager<T,P1,P2>(P1 p1,P2 p2,string name = "") where T :class,IManager<P1,P2>
         {
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
@@ -76,7 +76,7 @@ namespace TaoTie
         }
         public static T RegisterManager<T,P1,P2,P3>(P1 p1,P2 p2,P3 p3,string name = "") where T :class,IManager<P1,P2,P3>
         {
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
@@ -93,7 +93,7 @@ namespace TaoTie
 
         public static void RemoveManager<T>(string name = "")
         {
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             if (Instance._managersDictionary.TryGetValue(type, name, out var res))
             {
                 if (res is IUpdateManager u)

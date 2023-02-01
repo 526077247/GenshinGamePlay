@@ -9,7 +9,7 @@ namespace TaoTie
         public MonoStaticAction(Assembly assembly, string typeName, string methodName)
         {
             var methodInfo = assembly.GetType(typeName).GetMethod(methodName);
-            this.method = (Action)Delegate.CreateDelegate(typeof(Action), null, methodInfo);
+            this.method = (Action)Delegate.CreateDelegate(TypeInfo<Action>.Type, null, methodInfo);
         }
 
         public void Run()
@@ -24,7 +24,7 @@ namespace TaoTie
         public MonoStaticFunc(Assembly assembly, string typeName, string methodName)
         {
             var methodInfo = assembly.GetType(typeName).GetMethod(methodName);
-            this.method = (Func<T>)Delegate.CreateDelegate(typeof(Func<T>), null, methodInfo);
+            this.method = (Func<T>)Delegate.CreateDelegate(TypeInfo<Func<T>>.Type, null, methodInfo);
         }
         
         public T Run()

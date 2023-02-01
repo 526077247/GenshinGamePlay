@@ -141,7 +141,7 @@ namespace TaoTie
                     continue;
                 }
                 
-                object[] attrs = type.GetCustomAttributes(typeof(TimerAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<TimerAttribute>.Type, false);
                 if (attrs.Length == 0)
                 {
                     continue;

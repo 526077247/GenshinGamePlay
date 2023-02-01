@@ -375,7 +375,7 @@ namespace TaoTie
 
         public static DynamicAtlasPage OnCreate(int index, int width, int height, Color32[] tempColor)
         {
-            var res = ObjectPool.Instance.Fetch(typeof(DynamicAtlasPage)) as DynamicAtlasPage;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<DynamicAtlasPage>.Type) as DynamicAtlasPage;
             if (res.m_Width != width || res.m_Height == height)
             {
                 res.SetData(width, height);

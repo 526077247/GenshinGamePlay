@@ -17,7 +17,7 @@ namespace TaoTie
 
         public static ActorAbility Create(ConfigAbility config, AbilityComponent component)
         {
-            var res = ObjectPool.Instance.Fetch(typeof(ActorAbility)) as ActorAbility;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<ActorAbility>.Type) as ActorAbility;
             res.Config = config;
             res.Parent = component;
             res.mixins = ListComponent<AbilityMixin>.Create();
