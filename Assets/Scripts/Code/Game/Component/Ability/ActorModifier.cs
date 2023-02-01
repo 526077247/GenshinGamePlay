@@ -25,12 +25,12 @@ namespace TaoTie
         public event Action afterAdd;
         public event Action beforeRemove;
 
-        private ConfigAbilityModifier config;
-        private AbilityComponent parent;
-        private ActorAbility ability;
+        public ConfigAbilityModifier Config{ get; private set; }
+        public AbilityComponent Parent{ get; private set; }
+        public ActorAbility Ability { get; private set; }
         private long applierID;
         private long timerId;
-
+        private long tillTime;
         private ListComponent<AbilityMixin> mixins;
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace TaoTie
             AbilityComponent component)
         {
             var res = ObjectPool.Instance.Fetch(typeof(ActorModifier)) as ActorModifier;
-            res.config = config;
+            res.Config = config;
             res.applierID = applierID;
-            res.ability = ability;
-            res.parent = component;
+            res.Ability = ability;
+            res.Parent = component;
             res.mixins = ListComponent<AbilityMixin>.Create();
             res.isDispose = false;
             if (config.Mixins != null)
@@ -66,9 +66,10 @@ namespace TaoTie
         public void AfterAdd()
         {
             afterAdd?.Invoke();
-            if (config.Duration >= 0)
+            if (Config.Duration >= 0)
             {
-                timerId = GameTimerManager.Instance.NewOnceTimer(config.Duration, TimerType.ModifierExpired, this);
+                tillTime = GameTimerManager.Instance.GetTimeNow() + Config.Duration;
+                timerId = GameTimerManager.Instance.NewOnceTimer(tillTime, TimerType.ModifierExpired, this);
             }
         }
 
@@ -82,7 +83,7 @@ namespace TaoTie
         {
             if (isDispose) return;
             isDispose = true;
-            parent.RemoveModifier(this);
+            Parent.RemoveModifier(this);
 
             for (int i = 0; i < mixins.Count; i++)
             {
@@ -90,8 +91,23 @@ namespace TaoTie
             }
 
             mixins.Dispose();
-            config = null;
+            Config = null;
             ObjectPool.Instance.Recycle(this);
+        }
+
+
+        public void SetDuration(long duration)
+        {
+            GameTimerManager.Instance.Remove(ref timerId);
+            tillTime = GameTimerManager.Instance.GetTimeNow() + duration;
+            timerId = GameTimerManager.Instance.NewOnceTimer(tillTime, TimerType.ModifierExpired, this);
+        }
+        
+        public void AddDuration(long duration)
+        {
+            GameTimerManager.Instance.Remove(ref timerId);
+            tillTime += duration;
+            timerId = GameTimerManager.Instance.NewOnceTimer(tillTime, TimerType.ModifierExpired, this);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class MultiDictionary<T, M, N>: Dictionary<T, Dictionary<M, N>>
+    public class UnOrderDoubleKeyDictionary<T, M, N>: Dictionary<T, Dictionary<M, N>>
     {
         public bool TryGetDic(T t, out Dictionary<M, N> k)
         {

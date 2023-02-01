@@ -12,7 +12,7 @@ namespace TaoTie
     public abstract class UIBaseContainer
     {
         UIBaseContainer Parent;
-        MultiDictionary<string, Type, UIBaseContainer> components; //[path]:[component_name:UIBaseContainer]
+        UnOrderDoubleKeyDictionary<string, Type, UIBaseContainer> components; //[path]:[component_name:UIBaseContainer]
         int length;
         GameObject gameObject;
         Transform transform;
@@ -152,7 +152,7 @@ namespace TaoTie
         //记录Component
         void RecordUIComponent(string name, Type component_class, UIBaseContainer component)
         {
-            if (components == null) components = new MultiDictionary<string, Type, UIBaseContainer>();
+            if (components == null) components = new UnOrderDoubleKeyDictionary<string, Type, UIBaseContainer>();
             if (this.components.ContainSubKey(name, component_class))
             {
                 Log.Error("Aready exist component_class : " + component_class.Name);

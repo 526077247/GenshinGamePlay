@@ -15,6 +15,7 @@
         /// </summary>
         public int Duration;
         public StackingType StackingType;
+        public int StackLimitCount;
         public ConfigAbilityMixin[] Mixins;
     }
 }
