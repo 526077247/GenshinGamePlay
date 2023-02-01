@@ -7,10 +7,7 @@
         Enemy,
         SelfAttackTarget,
         Applier,    // modifier applier
-        CurTeamAvatars,
         CurLocalAvatar,
-        Team,
-        Owner,
     }
     public abstract class ConfigAbilityAction
     {
@@ -67,19 +64,8 @@
                 }
                 case AbilityActionTarget.CurLocalAvatar:
                 {
+                    var em = ability.Parent.GetParent<Entity>().Parent;
                     //返回当前(前台)角色
-                    return null;
-                }
-                case AbilityActionTarget.Team:
-                {
-                    return null;
-                }
-                case AbilityActionTarget.CurTeamAvatars:
-                {
-                    return null;
-                }
-                case AbilityActionTarget.Owner:
-                {
                     return null;
                 }
                 default:
