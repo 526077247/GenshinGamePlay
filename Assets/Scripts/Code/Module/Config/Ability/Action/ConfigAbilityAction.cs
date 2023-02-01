@@ -16,9 +16,6 @@
     {
         public AbilityActionTarget ActionTarget;
 
-        public virtual void DoExecute()
-        {
-            
-        }
+        public abstract void DoExecute(ActorAbility actorAbility, Entity other);
     }
 }

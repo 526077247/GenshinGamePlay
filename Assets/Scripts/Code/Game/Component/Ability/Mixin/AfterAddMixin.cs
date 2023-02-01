@@ -4,10 +4,10 @@
     {
         public ConfigAfterAddMixin config => baseConfig as ConfigAfterAddMixin;
 
-        public override void Init(Ability ability, ConfigAbilityMixin config)
+        public override void Init(ActorAbility actorAbility, ConfigAbilityMixin config)
         {
-            base.Init(ability, config);
-            ability.afterAdd += Excute;
+            base.Init(actorAbility, config);
+            actorAbility.afterAdd += Excute;
         }
 
         private void Excute()
@@ -16,14 +16,14 @@
             {
                 for (int i = 0; i < config.Actions.Length; i++)
                 {
-                    config.Actions[i].DoExecute();
+                    config.Actions[i].DoExecute(actorAbility,null);
                 }
             }
         }
 
         public override void Dispose()
         {
-            ability.afterAdd -= Excute;
+            actorAbility.afterAdd -= Excute;
             base.Dispose();
         }
     }

@@ -4,10 +4,10 @@
     {
         public ConfigBeforeRemoveMixin config => baseConfig as ConfigBeforeRemoveMixin;
 
-        public override void Init(Ability ability, ConfigAbilityMixin config)
+        public override void Init(ActorAbility actorAbility, ConfigAbilityMixin config)
         {
-            base.Init(ability, config);
-            ability.beforeRemove += Excute;
+            base.Init(actorAbility, config);
+            actorAbility.beforeRemove += Excute;
         }
         
         private void Excute()
@@ -16,14 +16,14 @@
             {
                 for (int i = 0; i < config.Actions.Length; i++)
                 {
-                    config.Actions[i].DoExecute();
+                    config.Actions[i].DoExecute(actorAbility,null);
                 }
             }
         }
 
         public override void Dispose()
         {
-            ability.beforeRemove -= Excute;
+            actorAbility.beforeRemove -= Excute;
             base.Dispose();
         }
     }

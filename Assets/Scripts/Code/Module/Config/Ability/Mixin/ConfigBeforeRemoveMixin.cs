@@ -4,10 +4,10 @@
     {
         public ConfigAbilityAction[] Actions;
         
-        public override AbilityMixin CreateAbilityMixin(Ability ability)
+        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility)
         {
             var res = ObjectPool.Instance.Fetch(typeof(AfterAddMixin)) as AfterAddMixin;
-            res.Init(ability,this);
+            res.Init(actorAbility,this);
             return res;
         }
     }
