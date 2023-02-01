@@ -6,6 +6,17 @@
         /// 时间间隔毫秒
         /// </summary>
         public uint Interval;
+        /// <summary>
+        /// 添加后立即tick一次
+        /// </summary>
+        public bool TickFirstOnAdd;
         public ConfigAbilityAction[] Actions;
+        
+        public override AbilityMixin CreateAbilityMixin(Ability ability)
+        {
+            var res = ObjectPool.Instance.Fetch(typeof(TickMixin)) as TickMixin;
+            res.Init(ability,this);
+            return res;
+        }
     }
 }
