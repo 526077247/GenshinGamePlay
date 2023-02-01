@@ -39,13 +39,13 @@ namespace TaoTie
 
         async ETTask<IScene> GetScene<T>() where T : IScene
         {
-            if (Scenes.TryGetValue(typeof(T), out var res))
+            if (Scenes.TryGetValue(TypeInfo<T>.Type, out var res))
             {
                 return res;
             }
             res = Activator.CreateInstance<T>();
             await res.OnCreate();
-            Scenes.Add(typeof(T),res);
+            Scenes.Add(TypeInfo<T>.Type,res);
             return res;
         }
 
@@ -173,7 +173,7 @@ namespace TaoTie
         public bool IsInTargetScene<T>()where T:IScene
         {
             if (this.CurrentScene == null) return false;
-            return this.CurrentScene.GetType() == typeof(T);
+            return this.CurrentScene.GetType() == TypeInfo<T>.Type;
         }
 
         public ETTask WaitLoadOver()

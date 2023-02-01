@@ -4,7 +4,7 @@
     {
         Self,
         Caster,
-        Enemy,
+        Target,
         SelfAttackTarget,
         Applier,    // modifier applier
         CurLocalAvatar,
@@ -17,7 +17,7 @@
 
         public virtual void DoExecute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other)
         {
-            Entity[] targetLs = ResolveActionTarget(ActionTarget, applier, ability, modifier, other);
+            Entity[] targetLs = ResolveActionTarget(applier, ability, modifier, other);
             if (targetLs != null && targetLs.Length > 0)
             {
                 foreach (Entity target in targetLs)
@@ -34,15 +34,15 @@
             }
         }
         
-        private Entity[] ResolveActionTarget(AbilityActionTarget actionTarget, Entity actor, ActorAbility ability, ActorModifier modifier, Entity other)
+        private Entity[] ResolveActionTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity other)
         {
-            switch (actionTarget)
+            switch (ActionTarget)
             {
                 case AbilityActionTarget.Self:
                     return new[] { actor };
                 case AbilityActionTarget.Caster:
                     return new[] { ability.Parent.GetParent<Entity>() };
-                case AbilityActionTarget.Enemy:
+                case AbilityActionTarget.Target:
                     return new[] { other };
                 case AbilityActionTarget.SelfAttackTarget:
                 {

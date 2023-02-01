@@ -169,7 +169,7 @@ namespace TaoTie
         /// <param name="name">游戏物体名称</param>
         public T AddComponentNotCreate<T>(string name) where T : UIBaseContainer
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = Activator.CreateInstance<T>();
             ;
             component_inst.path = name;
@@ -186,7 +186,7 @@ namespace TaoTie
         /// <param name="path">路径</param>
         public T AddComponent<T>(string path = "") where T : UIBaseContainer
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = Activator.CreateInstance<T>();
             component_inst.path = path;
             component_inst.Parent = this;
@@ -206,7 +206,7 @@ namespace TaoTie
         /// <param name="path">相对路径</param>
         public T AddComponent<T, A>(string path, A a) where T : UIBaseContainer, IOnCreate<A>
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = Activator.CreateInstance<T>();
             ;
             component_inst.path = path;
@@ -226,7 +226,7 @@ namespace TaoTie
         /// <param name="path">路径</param>
         public T AddComponent<T, A, B>(string path, A a, B b) where T : UIBaseContainer, IOnCreate<A, B>
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = Activator.CreateInstance<T>();
             ;
             component_inst.path = path;
@@ -246,7 +246,7 @@ namespace TaoTie
         /// <param name="path">路径</param>
         public T AddComponent<T, A, B, C>(string path, A a, B b, C c) where T : UIBaseContainer, IOnCreate<A, B, C>
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = Activator.CreateInstance<T>();
             ;
             component_inst.path = path;
@@ -355,7 +355,7 @@ namespace TaoTie
         public T GetComponent<T>(string path = "") where T : UIBaseContainer
         {
             if (components == null) return null;
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (this.components.TryGetValue(path, type, out var component))
             {
                 return component as T;
@@ -378,7 +378,7 @@ namespace TaoTie
                 if (component is II18N i18n)
                     I18NManager.Instance.RemoveI18NEntity(i18n);
                 (component as IOnDestroy)?.OnDestroy();
-                this.components.Remove(path, typeof(T));
+                this.components.Remove(path, TypeInfo<T>.Type);
             }
         }
 

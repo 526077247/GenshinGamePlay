@@ -30,7 +30,7 @@ namespace TaoTie
         
         public T LoadOneConfig<T>(string name = "", bool cache = false) where T: ProtoObject
 		{
-			Type configType = typeof(T);
+			Type configType = TypeInfo<T>.Type;
 			if (string.IsNullOrEmpty(name))
 				name = configType.FullName;
 			byte[] oneConfigBytes = this.ConfigLoader.GetOneConfigBytes(name);

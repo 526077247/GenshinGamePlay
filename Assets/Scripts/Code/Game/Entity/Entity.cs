@@ -47,7 +47,7 @@ namespace TaoTie
 
         public T AddComponent<T>() where T : Component
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
                 Log.Error($"重复添加{type.Name}");
@@ -64,7 +64,7 @@ namespace TaoTie
 
         public T AddComponent<T, P1>(P1 p1) where T : Component, IComponent<P1>
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
                 Log.Error($"重复添加{type.Name}");
@@ -80,7 +80,7 @@ namespace TaoTie
 
         public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : Component, IComponent<P1, P2>
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
                 Log.Error($"重复添加{type.Name}");
@@ -96,7 +96,7 @@ namespace TaoTie
 
         public T AddComponent<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : Component, IComponent<P1, P2, P3>
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
                 Log.Error($"重复添加{type.Name}");
@@ -112,7 +112,7 @@ namespace TaoTie
 
         public T GetComponent<T>() where T : Component, IComponentDestroy
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (Components.TryGetValue(type, out var res))
             {
                 return (T) res;
@@ -124,7 +124,7 @@ namespace TaoTie
 
         public void RemoveComponent<T>() where T : Component, IComponentDestroy
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             RemoveComponent(type);
         }
 

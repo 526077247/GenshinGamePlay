@@ -120,7 +120,7 @@ namespace TaoTie
         /// <returns></returns>
         public T GetWindow<T>( int active = 0) where T : UIBaseView
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             if (this!=null&&this.windows!=null&&this.windows.TryGetValue(ui_name, out var target))
             {
                 if (active == 0 || active == (target.Active ? 1 : -1))
@@ -146,7 +146,7 @@ namespace TaoTie
         /// <typeparam name="T"></typeparam>
         public async ETTask CloseWindow<T>()
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             await this.CloseWindow(ui_name);
         }
         /// <summary>
@@ -200,7 +200,7 @@ namespace TaoTie
         /// <typeparam name="T"></typeparam>
         public async ETTask DestroyWindow<T>() where T:UIBaseView
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             await this.DestroyWindow(ui_name);
         }
         /// <summary>
@@ -247,7 +247,7 @@ namespace TaoTie
         public async ETTask<T> OpenWindow<T>( string path, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -271,7 +271,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1>
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -295,7 +295,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1,P2>
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -319,7 +319,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1,P2,P3>
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -343,7 +343,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1,P2,P3,P4>
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -499,7 +499,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool IsActiveWindow<T>() where T : UIBaseView
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -535,7 +535,7 @@ namespace TaoTie
         UIWindow __InitWindow<T>( string path, UILayerNames layer_name) where T : UIBaseView
         {
             UIWindow window = UIWindow.Create();
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             window.Name = type.Name;
             window.Active = false;
             window.Layer = layer_name;
@@ -733,7 +733,7 @@ namespace TaoTie
         /// <typeparam name="T"></typeparam>
         public void MoveWindowToTop<T>() where T:UIBaseView
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.Type.Name;
             var target = this.GetWindow(ui_name,1);
             if (target == null)
             {
