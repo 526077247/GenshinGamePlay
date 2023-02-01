@@ -24,9 +24,9 @@ namespace TaoTie
         public ConfigTickMixin config => baseConfig as ConfigTickMixin;
 
         private long timerId;
-        public override void Init(ActorAbility actorAbility, ConfigAbilityMixin config)
+        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
-            base.Init(actorAbility, config);
+            base.Init(actorAbility, actorModifier, config);
             timerId = GameTimerManager.Instance.NewRepeatedTimer(this.config.Interval, TimerType.TickMixin, this);
             if (this.config.TickFirstOnAdd)
             {

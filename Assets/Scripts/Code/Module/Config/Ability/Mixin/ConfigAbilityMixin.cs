@@ -2,6 +2,6 @@
 {
     public abstract class ConfigAbilityMixin
     {
-        public abstract AbilityMixin CreateAbilityMixin(ActorAbility actorAbility);
+        public abstract AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier);
     }
 }

@@ -1,13 +1,13 @@
 ﻿namespace TaoTie
 {
-    public class ConfigBeforeRemoveMixin:ConfigAbilityMixin
+    public class ConfigBeforeRemoveMixin : ConfigAbilityMixin
     {
         public ConfigAbilityAction[] Actions;
-        
-        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility)
+
+        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
             var res = ObjectPool.Instance.Fetch(typeof(AfterAddMixin)) as AfterAddMixin;
-            res.Init(actorAbility,this);
+            res.Init(actorAbility, actorModifier, this);
             return res;
         }
     }

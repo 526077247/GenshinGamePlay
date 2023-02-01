@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public sealed class ActorAbility: IDisposable
+    public sealed class ActorAbility : IDisposable
     {
         private bool isDispose = true;
         public event Action afterAdd;
         public event Action beforeRemove;
-        
+
         public ConfigAbility Config { get; private set; }
         public AbilityComponent Parent { get; private set; }
-        
+
         private ListComponent<AbilityMixin> mixins;
         private DictionaryComponent<string, ConfigAbilityModifier> modifierConfigs;
 
@@ -27,7 +27,7 @@ namespace TaoTie
             {
                 for (int i = 0; i < config.AbilityMixins.Length; i++)
                 {
-                    var mixin = config.AbilityMixins[i].CreateAbilityMixin(res);
+                    var mixin = config.AbilityMixins[i].CreateAbilityMixin(res, null);
                     res.mixins.Add(mixin);
                 }
             }
@@ -37,17 +37,18 @@ namespace TaoTie
                 for (int i = 0; i < config.Modifiers.Length; i++)
                 {
                     var modifier = config.Modifiers[i];
-                    res.modifierConfigs.Add(modifier.ModifierName,modifier);
+                    res.modifierConfigs.Add(modifier.ModifierName, modifier);
                 }
             }
 
             return res;
         }
-        
+
         public void AfterAdd()
         {
             afterAdd?.Invoke();
         }
+
         public void BeforeRemove()
         {
             beforeRemove?.Invoke();
@@ -55,14 +56,15 @@ namespace TaoTie
 
         public void Dispose()
         {
-            if(isDispose) return;
+            if (isDispose) return;
             isDispose = true;
             Parent.RemoveAbility(this);
-            
+
             for (int i = 0; i < mixins.Count; i++)
             {
                 mixins[i].Dispose();
             }
+
             mixins.Dispose();
             modifierConfigs.Dispose();
             Config = null;
@@ -76,7 +78,7 @@ namespace TaoTie
         /// <param name="name"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public bool TryGetConfigAbilityModifier(string name,out ConfigAbilityModifier config)
+        public bool TryGetConfigAbilityModifier(string name, out ConfigAbilityModifier config)
         {
             return modifierConfigs.TryGetValue(name, out config);
         }

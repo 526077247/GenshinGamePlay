@@ -7,17 +7,19 @@ namespace TaoTie
 
         protected ConfigAbilityMixin baseConfig;
         protected ActorAbility actorAbility;
-
-        public virtual void Init(ActorAbility actorAbility,ConfigAbilityMixin config)
+        protected ActorModifier actorModifier;
+        public virtual void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             this.baseConfig = config;
             this.actorAbility = actorAbility;
+            this.actorModifier = actorModifier;
         }
         
         public virtual void Dispose()
         {
             actorAbility = null;
             baseConfig = null;
+            actorModifier = null;
             ObjectPool.Instance.Recycle(this);
         }
     }
