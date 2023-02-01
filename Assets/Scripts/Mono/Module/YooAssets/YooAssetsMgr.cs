@@ -37,8 +37,8 @@ namespace YooAsset
                 await package.InitializeAsync(initParameters).Task;
             }
             else
-#endif
-                // 单机运行模式
+#endif 
+            // 单机运行模式
             if (mode == YooAsset.EPlayMode.OfflinePlayMode)
             {
                 var initParameters = new OfflinePlayModeParameters();

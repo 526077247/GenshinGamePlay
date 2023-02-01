@@ -28,7 +28,7 @@ namespace TaoTie
         public ConfigAbilityModifier Config{ get; private set; }
         public AbilityComponent Parent{ get; private set; }
         public ActorAbility Ability { get; private set; }
-        private long applierID;
+        public long ApplierID { get; private set; }
         private long timerId;
         private long tillTime;
         private ListComponent<AbilityMixin> mixins;
@@ -46,7 +46,7 @@ namespace TaoTie
         {
             var res = ObjectPool.Instance.Fetch(typeof(ActorModifier)) as ActorModifier;
             res.Config = config;
-            res.applierID = applierID;
+            res.ApplierID = applierID;
             res.Ability = ability;
             res.Parent = component;
             res.mixins = ListComponent<AbilityMixin>.Create();

@@ -4,9 +4,13 @@
     {
         public string ModifierName;
 
-        public override void DoExecute(Entity applier, ActorAbility actorAbility, Entity other)
+        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other)
         {
-            actorAbility.Parent.ApplyModifier(applier.Id, actorAbility, ModifierName);
+            var ac = other.GetComponent<AbilityComponent>();
+            if (ac != null)
+            {
+                ac.ApplyModifier(applier.Id, ability, ModifierName);
+            }
         }
     }
 }
