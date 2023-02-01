@@ -15,7 +15,7 @@ namespace TaoTie
         public Sprite sprite;
         public static SaveTextureData Create()
         {
-            return ObjectPool.Instance.Fetch(typeof (SaveTextureData)) as SaveTextureData;
+            return ObjectPool.Instance.Fetch(TypeInfo<SaveTextureData>.Type) as SaveTextureData;
         }
 
         public void Dispose()
@@ -30,7 +30,7 @@ namespace TaoTie
         public string name;
         public static GetTextureData Create()
         {
-            return ObjectPool.Instance.Fetch(typeof (GetTextureData)) as GetTextureData;
+            return ObjectPool.Instance.Fetch(TypeInfo<GetTextureData>.Type) as GetTextureData;
         }
 
         public void Dispose()
@@ -61,7 +61,7 @@ namespace TaoTie
         }
         public static IntegerRectangle Create(int x, int y, int width, int height)
         {
-            var res = ObjectPool.Instance.Fetch(typeof (IntegerRectangle)) as IntegerRectangle;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<IntegerRectangle>.Type) as IntegerRectangle;
             res.OnCreate(x, y, width, height);
             return res;
         }

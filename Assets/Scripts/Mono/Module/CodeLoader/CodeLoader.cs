@@ -94,9 +94,9 @@ namespace TaoTie
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
 				var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
 				int version = obj.Dllver;
-				assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", typeof (TextAsset)) as TextAsset)
+				assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", TypeInfo<TextAsset>.Type) as TextAsset)
 					.bytes;
-				pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", typeof (TextAsset)) as TextAsset)
+				pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", TypeInfo<TextAsset>.Type) as TextAsset)
 					.bytes;
 			}
 #endif

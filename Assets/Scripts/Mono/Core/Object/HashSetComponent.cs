@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public static HashSetComponent<T> Create()
         {
-            return ObjectPool.Instance.Fetch(typeof (HashSetComponent<T>)) as HashSetComponent<T>;
+            return ObjectPool.Instance.Fetch(TypeInfo<HashSetComponent<T>>.Type) as HashSetComponent<T>;
         }
 
         public void Dispose()

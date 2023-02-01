@@ -22,7 +22,7 @@ namespace TaoTie
 
         public static CoroutineLockQueue Create()
         {
-            return ObjectPool.Instance.Fetch(typeof (CoroutineLockQueue)) as CoroutineLockQueue;
+            return ObjectPool.Instance.Fetch(TypeInfo<CoroutineLockQueue>.Type) as CoroutineLockQueue;
         }
 
         public void Dispose()

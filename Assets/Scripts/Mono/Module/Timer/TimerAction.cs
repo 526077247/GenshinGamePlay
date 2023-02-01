@@ -13,7 +13,7 @@ namespace TaoTie
         public long Id;
         public static TimerAction Create(TimerClass timerClass, long time, int type, object obj)
         {
-            var res = ObjectPool.Instance.Fetch(typeof (TimerAction)) as TimerAction;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<TimerAction>.Type) as TimerAction;
             res.TimerClass = timerClass;
             res.Object = obj;
             res.Time = time;

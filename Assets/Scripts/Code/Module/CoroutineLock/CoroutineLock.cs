@@ -10,7 +10,7 @@ namespace TaoTie
         public long InstanceId;
         public static CoroutineLock Create(int type, long k, int count)
         {
-            var res = ObjectPool.Instance.Fetch(typeof (CoroutineLock)) as CoroutineLock;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<CoroutineLock>.Type) as CoroutineLock;
             res.coroutineLockType = type;
             res.key = k;
             res.level = count;

@@ -130,7 +130,7 @@ namespace TaoTie
         protected void InitAction()
         {
             this.timerActions = new ITimer[TimerManager.TimeTypeMax];
-            List<Type> types = AttributeManager.Instance.GetTypes(typeof (TimerAttribute));
+            List<Type> types = AttributeManager.Instance.GetTypes(TypeInfo<TimerAttribute>.Type);
 
             foreach (Type type in types)
             {

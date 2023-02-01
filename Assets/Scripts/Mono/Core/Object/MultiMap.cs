@@ -13,7 +13,7 @@ namespace TaoTie
             this.TryGetValue(t, out list);
             if (list == null)
             {
-                list = ObjectPool.Instance.Fetch(typeof (List<K>)) as List<K>;
+                list = ObjectPool.Instance.Fetch(TypeInfo<List<K>>.Type) as List<K>;
                 list.Clear();
                 this.Add(t, list);
             }
