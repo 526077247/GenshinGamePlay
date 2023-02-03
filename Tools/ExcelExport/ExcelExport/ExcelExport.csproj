@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <BaseOutputPath>..\..\..\Bin\</BaseOutputPath>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>TaoTie</RootNamespace>
+  </PropertyGroup>
+	
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<OutputPath>..\..\..\Bin\</OutputPath>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants>TRACECOREAPP;NOT_UNITY</DefineConstants>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<OutputPath>..\..\..\Bin\</OutputPath>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants>TRACECOREAPP;NOT_UNITY</DefineConstants>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="EPPlus" Version="6.0.8" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
+    <PackageReference Include="mongocsharpdriver" Version="2.13.3" />
+    <PackageReference Include="MongoDB.Bson" Version="2.13.3" />
+    <PackageReference Include="Nino.Serialization" Version="1.1.0" />
+    <PackageReference Include="Nino.Shared" Version="1.0.15" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\..\Assets\Scripts\Code\Module\Config\IMerge.cs">
+			<Link>Config\IMerge.cs</Link>
+		</Compile>
+		<Compile Include="..\..\..\Assets\Scripts\Code\Module\Config\ProtoObject.cs">
+			<Link>Config\ProtoObject.cs</Link>
+		</Compile>
+		<Compile Include="..\..\..\Assets\Scripts\Code\Module\Config\ConfigAttribute.cs">
+			<Link>Config\ConfigAttribute.cs</Link>
+		</Compile>
+		<Compile Include="..\..\..\Assets\Scripts\Mono\Module\Assembly\BaseAttribute.cs">
+			<Link>Assembly\BaseAttribute.cs</Link>
+		</Compile>
+		<Compile Include="..\..\..\Assets\Scripts\Code\Module\Config\ProtobufHelper.cs">
+			<Link>Helper\ProtobufHelper.cs</Link>
+		</Compile>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Update="Template.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 #endif
 using System.IO;
-using ProtoBuf;
-using ProtoBuf.Meta;
+using Nino.Serialization;
 
 namespace TaoTie
 {
@@ -17,34 +16,27 @@ namespace TaoTie
 
         public static object FromBytes(Type type, byte[] bytes, int index, int count)
         {
-            using (MemoryStream stream = new MemoryStream(bytes, index, count))
+            object o = Deserializer.Deserialize(type,bytes);
+            if (o is ISupportInitialize supportInitialize)
             {
-                object o = RuntimeTypeModel.Default.Deserialize(stream, null, type);
-                if (o is ISupportInitialize supportInitialize)
-                {
-                    supportInitialize.EndInit();
-                }
-                return o;
+                supportInitialize.EndInit();
             }
+            return o;
         }
 
         public static byte[] ToBytes(object message)
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                ProtoBuf.Serializer.Serialize(stream, message);
-                return stream.ToArray();
-            }
+            return Serializer.Serialize(message);
         }
 
         public static void ToStream(object message, MemoryStream stream)
         {
-            ProtoBuf.Serializer.Serialize(stream, message);
+            stream.Write(ToBytes(message));
         }
 
         public static object FromStream(Type type, MemoryStream stream)
         {
-            object o = RuntimeTypeModel.Default.Deserialize(stream, null, type);
+            object o = Deserializer.Deserialize(type,stream.ToArray());
             if (o is ISupportInitialize supportInitialize)
             {
                 supportInitialize.EndInit();
