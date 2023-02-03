@@ -9,7 +9,7 @@ namespace TaoTie
 {
     internal class AttrExporter
     {
-        private const string ClassDir = "../Assets/Scripts/Code/Game/Battle/Component/Numeric/NumericType.cs";
+        private const string ClassDir = "../Assets/Scripts/Code/Module/Const/NumericType.cs";
 
         private const string excelDir = "../Excel";
         public class Info

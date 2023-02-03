@@ -1,0 +1,14 @@
+{"list":[
+{"_t":"AttributeConfig","_id":1000,"Key":"AOI","Name":"","Type":0,"Show":0,"Affected":0,"Desc":""},
+{"_t":"AttributeConfig","_id":1001,"Key":"Lv","Name":"Attr_Lv","Type":0,"Show":0,"Affected":0,"Desc":"Attr_Desc_Lv"},
+{"_t":"AttributeConfig","_id":1002,"Key":"Exp","Name":"Attr_Exp","Type":0,"Show":0,"Affected":0,"Desc":"Attr_Desc_Exp"},
+{"_t":"AttributeConfig","_id":1003,"Key":"Hp","Name":"Attr_HP","Type":0,"Show":0,"Affected":0,"Desc":"Attr_Desc_HP"},
+{"_t":"AttributeConfig","_id":1004,"Key":"MaxHp","Name":"Attr_Max_Hp","Type":0,"Show":0,"Affected":1,"Desc":"Attr_Desc_Max_Hp"},
+{"_t":"AttributeConfig","_id":1005,"Key":"HpReUp","Name":"Attr_Hp_ReUp","Type":0,"Show":0,"Affected":1,"Desc":"Attr_Desc_Hp_ReUp"},
+{"_t":"AttributeConfig","_id":1006,"Key":"Mp","Name":"Attr_Mp","Type":0,"Show":0,"Affected":0,"Desc":"Attr_Desc_Mp"},
+{"_t":"AttributeConfig","_id":1007,"Key":"MaxMp","Name":"Attr_Max_Mp","Type":0,"Show":0,"Affected":1,"Desc":"Attr_Desc_Max_Mp"},
+{"_t":"AttributeConfig","_id":1008,"Key":"MpReUp","Name":"Attr_Mp_ReUp","Type":0,"Show":0,"Affected":1,"Desc":"Attr_Desc_Mp_ReUp"},
+{"_t":"AttributeConfig","_id":1009,"Key":"Speed","Name":"Attr_Move_Speed","Type":1,"Show":0,"Affected":1,"Desc":"Attr_Desc_Move_Speed"},
+{"_t":"AttributeConfig","_id":1010,"Key":"ATK","Name":"Attr_ATK","Type":0,"Show":0,"Affected":1,"Desc":"Attr_Desc_ATK"},
+{"_t":"AttributeConfig","_id":1011,"Key":"DEF","Name":"Attr_DEF","Type":0,"Show":0,"Affected":1,"Desc":"Attr_Desc_DEF"},
+]}

@@ -1,20 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using ProtoBuf;
+using Nino.Serialization;
 
 namespace TaoTie
 {
-    [ProtoContract]
+    [NinoSerialize]
     [Config]
     public partial class AttributeConfigCategory : ProtoObject, IMerge
     {
         public static AttributeConfigCategory Instance;
 		
         
-        [ProtoIgnore]
+        [NinoIgnore]
         private Dictionary<int, AttributeConfig> dict = new Dictionary<int, AttributeConfig>();
         
-        [ProtoMember(1)]
+        [NinoMember(1)]
         private List<AttributeConfig> list = new List<AttributeConfig>();
 		
         public AttributeConfigCategory()
@@ -74,29 +74,29 @@ namespace TaoTie
         }
     }
 
-    [ProtoContract]
+    [NinoSerialize]
 	public partial class AttributeConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[ProtoMember(1)]
+		[NinoMember(1)]
 		public int Id { get; set; }
 		/// <summary>索引</summary>
-		[ProtoMember(2)]
+		[NinoMember(2)]
 		public string Key { get; set; }
 		/// <summary>名称</summary>
-		[ProtoMember(3)]
+		[NinoMember(3)]
 		public string Name { get; set; }
 		/// <summary>类型(0:整数,1:小数)</summary>
-		[ProtoMember(4)]
+		[NinoMember(4)]
 		public int Type { get; set; }
 		/// <summary>显示</summary>
-		[ProtoMember(5)]
+		[NinoMember(5)]
 		public int Show { get; set; }
 		/// <summary>是否被BUFF影响</summary>
-		[ProtoMember(6)]
+		[NinoMember(6)]
 		public int Affected { get; set; }
 		/// <summary>描述</summary>
-		[ProtoMember(7)]
+		[NinoMember(7)]
 		public string Desc { get; set; }
 
 	}
