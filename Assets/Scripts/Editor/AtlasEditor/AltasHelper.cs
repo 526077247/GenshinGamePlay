@@ -19,7 +19,7 @@ namespace TaoTie
 
         public static string DiscreteImagesName = "DiscreteImages";
         public static string DynamicAtlasName = "DynamicAtlas";
-        public static string[] uipaths = {"UI", /*"UIGames", "UIHall"*/};
+        public static string[] uipaths = {"UI", "UIGame", /*"UIHall"*/};
         /// <summary>
         /// 将UI目录下的小图 打成  图集
         /// </summary>

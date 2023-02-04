@@ -57,7 +57,7 @@ namespace TaoTie
 
         public async ETTask OnSwitchSceneEnd()
         {
-            await UIManager.Instance.OpenWindow<UIMainView>(UIMainView.PrefabPath);
+            await UIManager.Instance.OpenWindow<UILobbyView>(UILobbyView.PrefabPath);
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;
         }
