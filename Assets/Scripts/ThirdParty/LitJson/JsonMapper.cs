@@ -470,8 +470,10 @@ namespace LitJson
 
                     if (instance == null)
                     {
+                        bool hasType = false;
                         if (property == "_t")
                         {
+                            hasType = true;
                             string typeName = (string)ReadValue(typeof(string), reader);
                             if (typeName != value_type.FullName)
                             {
@@ -484,7 +486,10 @@ namespace LitJson
                         t_data = object_metadata[value_type];
                 
                         instance = Activator.CreateInstance(value_type);
-                        continue;
+                        if (hasType)
+                        {
+                            continue;
+                        }
                     }
                    
                     
@@ -556,41 +561,7 @@ namespace LitJson
 
             return instance;
         }
-        private static readonly Dictionary<string, Type> temp = new Dictionary<string, Type>();
-        private static Type FindType(string fullName,Type baseType)
-        {
-            if (temp.TryGetValue(fullName, out var type))
-            {
-                return type;
-            }
-            if (baseType != null)
-            {
-                type = baseType.Assembly.GetType(fullName);
-                if (type != null)
-                {
-                    temp[fullName] = type;
-                }
-
-                return type;
-            }
-
-            var ass = AppDomain.CurrentDomain.GetAssemblies();
-            for (int i = 0; i < ass.Length; i++)
-            {
-                if (ass[i] != baseType.Assembly)
-                {
-                    type = baseType.Assembly.GetType(fullName);
-                    if (type != null)
-                    {
-                        temp[fullName] = type;
-                    }
-
-                    return type;
-                }
-            }
-            return null;
-        }
-
+        
         private static IJsonWrapper ReadValue(WrapperFactory factory,
                                                JsonReader reader)
         {
@@ -1116,5 +1087,59 @@ namespace LitJson
             custom_importers_table.Clear();
         }
         
+        #region 多态支持
+        private static readonly Dictionary<string, Type> _temp = new Dictionary<string, Type>();
+        public static Type FindType(string fullName,Type baseType)
+        {
+            if (_temp.TryGetValue(fullName, out var type))
+            {
+                return type;
+            }
+
+            Assembly assembly = null;
+            if (baseType != null)
+            {
+                assembly = baseType.Assembly;
+                type = assembly.GetType(fullName);
+                if (type != null)
+                {
+                    _temp[fullName] = type;
+                }
+
+                return type;
+            }
+
+            var ass = AppDomain.CurrentDomain.GetAssemblies();
+            for (int i = 0; i < ass.Length; i++)
+            {
+                if (ass[i] != assembly)
+                {
+                    type = baseType.Assembly.GetType(fullName);
+                    if (type != null)
+                    {
+                        _temp[fullName] = type;
+                    }
+
+                    return type;
+                }
+            }
+            return null;
+        }
+
+        public static bool RedirectType(string fullName,Type type,bool overwrite = true)
+        {
+            if (!overwrite&&_temp.ContainsKey(fullName))
+            {
+                return false;
+            }
+            _temp[fullName] = type;
+            return true;
+        }
+
+        public static Dictionary<string, Type> GetAll()
+        {
+            return _temp;
+        }
+        #endregion
     }
 }
