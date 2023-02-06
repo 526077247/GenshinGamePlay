@@ -39,3 +39,5 @@ Build-Mac
 /Bin
 /Tools/ExcelExport/ExcelExport/obj
 /Tools/ExcelExport/.idea
+/Excel/Json
+/Assets/Modules/
