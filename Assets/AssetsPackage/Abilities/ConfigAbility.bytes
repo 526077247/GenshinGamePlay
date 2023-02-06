@@ -1,0 +1,1 @@
+{"_t":"TaoTie.ConfigAbility","AbilityName":"Test1","AbilityMixins":[{"_t":"TaoTie.ConfigAfterAddMixin","Actions":[{"_t":"TaoTie.ApplyModifier","ModifierName":"aaa","ActionTarget":0}]}],"Modifiers":[{"_t":"TaoTie.ConfigAbilityModifier","ModifierName":"aaa","Duration":0,"StackingType":0,"StackLimitCount":0,"Mixins":[]}]}

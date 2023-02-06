@@ -956,9 +956,10 @@ namespace LitJson
             {
                 if (p_data.IsField)
                 {
+                    var value = ((FieldInfo) p_data.Info).GetValue(obj);
+                    if(value == default) continue;
                     writer.WritePropertyName(p_data.Info.Name);
-                    WriteValue(((FieldInfo)p_data.Info).GetValue(obj),
-                                writer, writer_is_private, depth + 1);
+                    WriteValue(value, writer, writer_is_private, depth + 1);
                 }
                 else
                 {
@@ -966,9 +967,10 @@ namespace LitJson
 
                     if (p_info.CanRead)
                     {
+                        var value = p_info.GetValue(obj, null);
+                        if(value==default) continue;
                         writer.WritePropertyName(p_data.Info.Name);
-                        WriteValue(p_info.GetValue(obj, null),
-                                    writer, writer_is_private, depth + 1);
+                        WriteValue(value, writer, writer_is_private, depth + 1);
                     }
                 }
             }

@@ -58,6 +58,7 @@ namespace TaoTie
                 jsonPath = searchPath;
                 var jStr = JsonHelper.ToJson(ability);
                 File.WriteAllText(jsonPath, jStr);
+                AssetDatabase.Refresh();
             }
         }
     }
