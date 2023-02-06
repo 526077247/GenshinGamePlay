@@ -10,5 +10,11 @@ namespace TaoTie
         {
             EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
         }
+        
+        [MenuItem("Tools/Ability/编辑器")]
+        static void OpenAbility()
+        {
+            EditorWindow.GetWindow<AbilityEditor>().Show();
+        }
     }
 }

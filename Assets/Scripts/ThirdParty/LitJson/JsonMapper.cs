@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -457,10 +458,7 @@ namespace LitJson
             }
             else if (reader.Token == JsonToken.ObjectStart)
             {
-                AddObjectMetadata(value_type);
-                ObjectMetadata t_data = object_metadata[value_type];
-                
-                instance = Activator.CreateInstance(value_type);
+                ObjectMetadata t_data = default;
                 while (true)
                 {
                     reader.Read();
@@ -470,6 +468,26 @@ namespace LitJson
 
                     string property = (string)reader.Value;
 
+                    if (instance == null)
+                    {
+                        if (property == "_t")
+                        {
+                            string typeName = (string)ReadValue(typeof(string), reader);
+                            if (typeName != value_type.FullName)
+                            {
+                                var type = FindType(typeName, value_type);
+                                if(type != null)
+                                    value_type = type;
+                            }
+                        }
+                        AddObjectMetadata(value_type);
+                        t_data = object_metadata[value_type];
+                
+                        instance = Activator.CreateInstance(value_type);
+                        continue;
+                    }
+                   
+                    
                     if (t_data.Properties.ContainsKey(property))
                     {
                         PropertyMetadata prop_data =
@@ -537,6 +555,40 @@ namespace LitJson
             }
 
             return instance;
+        }
+        private static readonly Dictionary<string, Type> temp = new Dictionary<string, Type>();
+        private static Type FindType(string fullName,Type baseType)
+        {
+            if (temp.TryGetValue(fullName, out var type))
+            {
+                return type;
+            }
+            if (baseType != null)
+            {
+                type = baseType.Assembly.GetType(fullName);
+                if (type != null)
+                {
+                    temp[fullName] = type;
+                }
+
+                return type;
+            }
+
+            var ass = AppDomain.CurrentDomain.GetAssemblies();
+            for (int i = 0; i < ass.Length; i++)
+            {
+                if (ass[i] != baseType.Assembly)
+                {
+                    type = baseType.Assembly.GetType(fullName);
+                    if (type != null)
+                    {
+                        temp[fullName] = type;
+                    }
+
+                    return type;
+                }
+            }
+            return null;
         }
 
         private static IJsonWrapper ReadValue(WrapperFactory factory,
@@ -928,7 +980,7 @@ namespace LitJson
 
             writer.WriteObjectStart();
             writer.WritePropertyName("_t");
-            writer.Write(obj_type.Name);
+            writer.Write(obj_type.FullName);
             foreach (PropertyMetadata p_data in props)
             {
                 if (p_data.IsField)
