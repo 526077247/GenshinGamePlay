@@ -62,8 +62,16 @@ namespace TaoTie
             this.loaderCount++;
             var op = YooAssets.LoadAssetSync<T>(path);
             this.loaderCount--;
-            this.Temp.Add(op.AssetObject,op);
-            return op.AssetObject as T;
+            T obj = op.AssetObject as T;
+            if (!this.Temp.ContainsKey(op.AssetObject))
+            {
+                this.Temp.Add(op.AssetObject, op);
+            }
+            else
+            {
+                op.Release();
+            }
+            return obj;
 
         }
         /// <summary>

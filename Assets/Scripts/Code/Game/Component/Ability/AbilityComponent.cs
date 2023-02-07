@@ -8,14 +8,14 @@ namespace TaoTie
         private ListComponent<ActorAbility> abilities;
 
         private ListComponent<ActorModifier> modifiers;
-        private UnOrderDoubleKeyMap<ConfigAbility, ConfigAbilityModifier, ActorModifier> modifierDictionary;
+        private UnOrderMultiMap<string, ActorModifier> modifierDictionary;//[Ability_Modifier:ActorModifier]
         #region override
         public void Init(List<ConfigAbility> data)
         {
             isDestroy = false;
             abilities = ListComponent<ActorAbility>.Create();
             modifiers = ListComponent<ActorModifier>.Create();
-            modifierDictionary = new UnOrderDoubleKeyMap<ConfigAbility, ConfigAbilityModifier, ActorModifier>();
+            modifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
             for (int i = 0; i < data.Count; i++)
             {
                 var ability = ActorAbility.Create(data[i], this);
@@ -55,7 +55,8 @@ namespace TaoTie
                 return;
             }
 
-            var list = modifierDictionary[ability.Config, config];
+            string key = ability.Config.AbilityName + "_" + config.ModifierName;
+            var list = modifierDictionary[key];
             if (list.Count > 0)
             {
                 // 处理堆叠
@@ -79,7 +80,7 @@ namespace TaoTie
                         {
                             var modifier = ActorModifier.Create(applierID, config, ability, this);
                             modifiers.Add(modifier);
-                            modifierDictionary.Add(ability.Config, config, modifier);
+                            modifierDictionary.Add(key, modifier);
                             modifier.AfterAdd();
                         }
                         return ;
@@ -109,7 +110,7 @@ namespace TaoTie
             {
                 var modifier = ActorModifier.Create(applierID, config, ability, this);
                 modifiers.Add(modifier);
-                modifierDictionary.Add(ability.Config, config, modifier);
+                modifierDictionary.Add(key, modifier);
                 modifier.AfterAdd();
             }
             
@@ -118,16 +119,25 @@ namespace TaoTie
         public void RemoveModifier(ActorModifier modifier)
         {
             if(isDestroy) return;
-            if (modifierDictionary.Contains(modifier.Ability.Config, modifier.Config, modifier))
+            string key = modifier.Ability.Config.AbilityName + "_" + modifier.Config.ModifierName;
+            if (modifierDictionary.Contains(key, modifier))
             {
                 modifier.BeforeRemove();
                 modifiers.Remove(modifier);
-                modifierDictionary.Remove(modifier.Ability.Config, modifier.Config, modifier);
+                modifierDictionary.Remove(key, modifier);
                 modifier.Dispose();
             }
         }
 
-        
+        public void RemoveModifier(string ability, string modifier)
+        {
+            string key = ability + "_" + modifier;
+            for (int i = modifierDictionary[key].Count-1; i >=0; i--)
+            {
+                modifierDictionary[key][i].Dispose();
+            }
+            modifierDictionary.Remove(key);
+        }
         
         public void RemoveAbility(ActorAbility ability)
         {

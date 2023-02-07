@@ -9,8 +9,7 @@
             var ac = other.GetComponent<AbilityComponent>();
             if (ac != null)
             {
-                
-                // ac.RemoveModifier(ModifierName);
+                ac.RemoveModifier(ability.Config.AbilityName, ModifierName);
             }
         }
     }
