@@ -1122,9 +1122,8 @@ namespace LitJson
                 if (type != null)
                 {
                     _temp[fullName] = type;
+                    return type;
                 }
-
-                return type;
             }
 
             var ass = AppDomain.CurrentDomain.GetAssemblies();
@@ -1136,9 +1135,8 @@ namespace LitJson
                     if (type != null)
                     {
                         _temp[fullName] = type;
+                        return type;
                     }
-
-                    return type;
                 }
             }
             return null;
