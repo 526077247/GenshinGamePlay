@@ -13,6 +13,11 @@ namespace TaoTie
     {
         public static readonly string EditDirName = "Edit";
         public static readonly string PublishDirName = "Publish";
+
+        public static string ToPublishFilePath(string path)
+        {
+            return path.Replace(EditDirName, PublishDirName);
+        }
     }
     public class FsmExportDialog : OdinEditorWindow
     {

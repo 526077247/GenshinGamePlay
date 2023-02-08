@@ -113,7 +113,7 @@ namespace TaoTie
             if (!dirInfo.Exists)
                 return;
 
-            FileInfo[] fileInfos = dirInfo.GetFiles("*.asset", SearchOption.TopDirectoryOnly);
+            FileInfo[] fileInfos = dirInfo.GetFiles("*.bytes", SearchOption.TopDirectoryOnly);
             foreach (FileInfo fileInfo in fileInfos)
             {
                 var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(Path.Combine(path, fileInfo.Name));
@@ -121,7 +121,7 @@ namespace TaoTie
                 if (obj != null)
                 {
                     ConfigFsmTimeline timeline = JsonHelper.FromJson<ConfigFsmTimeline>(obj.text);
-                    _fsmTimelineDict.Add(fileInfo.Name, timeline);
+                    _fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
                 }
             }
         }

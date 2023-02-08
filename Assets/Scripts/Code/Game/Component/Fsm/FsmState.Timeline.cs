@@ -19,7 +19,7 @@ namespace TaoTie
             {
                 _clipIndex = 0;
                 _timeline = _config.timeline;
-                _nextClipTime = _timeline.clips[0].starttime;
+                _nextClipTime = _timeline.clips[0].StartTime;
                 _clipList = LinkedListComponent<FsmClip>.Create();
                 CheckNextClip();
             }
@@ -89,7 +89,7 @@ namespace TaoTie
                 ++_clipIndex;
                 if (_clipIndex < _timeline.clips.Length)
                 {
-                    _nextClipTime = _timeline.clips[_clipIndex].starttime;
+                    _nextClipTime = _timeline.clips[_clipIndex].StartTime;
                 }
                 else
                 {

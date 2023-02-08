@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 2448630520698127417}
   - component: {fileID: 2448630520698127416}
   m_Layer: 0
-  m_Name: NorrmalAttack
+  m_Name: NormalAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -368,8 +368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2519f6607d41e1b8b0cac939bc1d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startTime: 2
+  _startTime: 4
   _animationData:
     _animatedParameters: []
-  ModifierName: 
-  AbilityName: 
+  AbilityName: abc
