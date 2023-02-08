@@ -1,5 +1,8 @@
 ﻿namespace TaoTie
 {
+    /// <summary>
+    /// 监听移除前
+    /// </summary>
     public class ConfigBeforeRemoveMixin : ConfigAbilityMixin
     {
         public ConfigAbilityAction[] Actions;

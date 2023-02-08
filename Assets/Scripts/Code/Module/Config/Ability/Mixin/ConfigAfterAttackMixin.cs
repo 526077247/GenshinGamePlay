@@ -1,5 +1,8 @@
 ﻿namespace TaoTie
 {
+    /// <summary>
+    /// 监听攻击后
+    /// </summary>
     public class ConfigAfterAttackMixin: ConfigAbilityMixin
     {
         public ConfigAbilityAction[] Actions;

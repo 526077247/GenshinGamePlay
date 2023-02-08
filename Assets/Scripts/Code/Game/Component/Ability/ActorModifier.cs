@@ -24,6 +24,7 @@ namespace TaoTie
 
         public event Action afterAdd;
         public event Action beforeRemove;
+        public event Action onExecute;
 
         public ConfigAbilityModifier Config{ get; private set; }
         public AbilityComponent Parent{ get; private set; }
@@ -79,6 +80,10 @@ namespace TaoTie
             beforeRemove?.Invoke();
         }
 
+        public void Execute()
+        {
+            onExecute?.Invoke();
+        }
         public void Dispose()
         {
             if (isDispose) return;

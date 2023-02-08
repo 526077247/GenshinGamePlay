@@ -8,6 +8,7 @@ namespace TaoTie
         private bool isDispose = true;
         public event Action afterAdd;
         public event Action beforeRemove;
+        public event Action onExecute;
 
         public ConfigAbility Config { get; private set; }
         public AbilityComponent Parent { get; private set; }
@@ -52,6 +53,11 @@ namespace TaoTie
         public void BeforeRemove()
         {
             beforeRemove?.Invoke();
+        }
+
+        public void Execute()
+        {
+            onExecute?.Invoke();
         }
 
         public void Dispose()

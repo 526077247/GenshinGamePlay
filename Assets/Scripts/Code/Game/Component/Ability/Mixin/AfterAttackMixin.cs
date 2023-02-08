@@ -13,16 +13,16 @@
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             base.Init(actorAbility, actorModifier, config);
-            Messager.Instance.AddListener<AttackInfo>(actorAbility.Parent.GetParent<Entity>().Id,MessageId.Attack,Excute);
+            Messager.Instance.AddListener<AttackInfo>(actorAbility.Parent.GetParent<Entity>().Id,MessageId.Attack,Execute);
         }
 
         public override void Dispose()
         {
-            Messager.Instance.RemoveListener<AttackInfo>(actorAbility.Parent.GetParent<Entity>().Id,MessageId.Attack,Excute);
+            Messager.Instance.RemoveListener<AttackInfo>(actorAbility.Parent.GetParent<Entity>().Id,MessageId.Attack,Execute);
             base.Dispose();
         }
 
-        public void Excute(AttackInfo attackInfo)
+        public void Execute(AttackInfo attackInfo)
         {
             if (config.Actions != null)
             {

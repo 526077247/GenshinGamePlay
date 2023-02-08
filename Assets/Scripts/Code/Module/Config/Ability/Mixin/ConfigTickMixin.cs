@@ -1,5 +1,8 @@
 ﻿namespace TaoTie
 {
+    /// <summary>
+    /// 监听间隔
+    /// </summary>
     public class ConfigTickMixin : ConfigAbilityMixin
     {
         /// <summary>
