@@ -7,18 +7,18 @@ namespace TaoTie
     /// </summary>
     public class ConfigBornByTarget: ConfigBornType
     {
-        public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim)
+        public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            if (aim is Unit u)
+            if (target is Unit u)
             {
                 return u.Position + u.Rotation*PositionOffset;
             }
             return PositionOffset;
         }
 
-        public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim)
+        public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            if (aim is Unit u)
+            if (target is Unit u)
             {
                 return Quaternion.Euler(u.Rotation.eulerAngles+RotationOffset);
             }

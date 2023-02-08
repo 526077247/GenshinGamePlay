@@ -5,9 +5,9 @@
         public string Key;
         public T Value;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim)
+        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            FsmComponent fc = aim.GetComponent<FsmComponent>();
+            FsmComponent fc = target.GetComponent<FsmComponent>();
             if (fc != null)
             {
                 SetData(fc);

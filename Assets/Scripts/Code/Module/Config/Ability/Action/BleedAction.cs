@@ -4,9 +4,9 @@
     {
         public int Num;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim)
+        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var nc = aim.GetComponent<NumericComponent>();
+            var nc = target.GetComponent<NumericComponent>();
             if (nc != null)
             {
                 var now = nc.GetAsInt(NumericType.HpBase);

@@ -10,8 +10,8 @@ namespace TaoTie
         public Vector3 PositionOffset;
         public Vector3 RotationOffset;
 
-        public abstract Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim);
+        public abstract Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);
 
-        public abstract Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim);
+        public abstract Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);
     }
 }

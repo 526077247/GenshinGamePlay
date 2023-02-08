@@ -7,7 +7,7 @@ namespace TaoTie
     /// </summary>
     public class ConfigBornBySelf: ConfigBornType
     {
-        public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim)
+        public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             if (actor is Unit u)
             {
@@ -16,7 +16,7 @@ namespace TaoTie
             return PositionOffset;
         }
 
-        public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim)
+        public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             if (actor is Unit u)
             {
