@@ -124,6 +124,21 @@ namespace TaoTie
             {
                 node.Value.Update();
             }
+            int count = frameFinishTask.Count;
+            while (count-- > 0)
+            {
+                ETTask task = frameFinishTask.Dequeue();
+                task.SetResult();
+            }
+        }
+        
+        private static Queue<ETTask> frameFinishTask = new Queue<ETTask>();
+        //等待这一帧所有update结束
+        public static ETTask WaitFrameFinish()
+        {
+            ETTask task = ETTask.Create(true);
+            frameFinishTask.Enqueue(task);
+            return task;
         }
     }
 }

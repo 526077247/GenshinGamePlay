@@ -9,8 +9,19 @@
             var ac = other.GetComponent<AbilityComponent>();
             if (ac != null)
             {
-                ac.RemoveModifier(ability.Config.AbilityName, ModifierName);
+                ExecuteLater(ac,ability.Config.AbilityName).Coroutine();
             }
+        }
+
+        /// <summary>
+        /// 防止移除后foreach循环报错，所以得等当前帧结束
+        /// </summary>
+        /// <param name="ac"></param>
+        /// <param name="name"></param>
+        private async ETTask ExecuteLater(AbilityComponent ac,string name)
+        {
+            await ManagerProvider.WaitFrameFinish();
+            ac.RemoveModifier(name, ModifierName);
         }
     }
 }

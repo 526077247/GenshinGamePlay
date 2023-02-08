@@ -5,21 +5,21 @@ namespace TaoTie
     public class AbilityComponent:Component,IComponent<List<ConfigAbility>>
     {
         private bool isDestroy;
-        private ListComponent<ActorAbility> abilities;
+        private LinkedListComponent<ActorAbility> abilities;
 
-        private ListComponent<ActorModifier> modifiers;
+        private LinkedListComponent<ActorModifier> modifiers;
         private UnOrderMultiMap<string, ActorModifier> modifierDictionary;//[Ability_Modifier:ActorModifier]
         #region override
         public void Init(List<ConfigAbility> data)
         {
             isDestroy = false;
-            abilities = ListComponent<ActorAbility>.Create();
-            modifiers = ListComponent<ActorModifier>.Create();
+            abilities = LinkedListComponent<ActorAbility>.Create();
+            modifiers = LinkedListComponent<ActorModifier>.Create();
             modifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
             for (int i = 0; i < data.Count; i++)
             {
                 var ability = ActorAbility.Create(data[i], this);
-                abilities.Add(ability);
+                abilities.AddLast(ability);
                 ability.AfterAdd();
             }
         }
@@ -27,17 +27,17 @@ namespace TaoTie
         public void Destroy()
         {
             isDestroy = true;
-            for (int i = 0; i < abilities.Count; i++)
+            foreach (var item in abilities)
             {
-                abilities[i].BeforeRemove();
-                abilities[i].Dispose();
+                item.BeforeRemove();
+                item.Dispose();
             }
             abilities.Dispose();
             
-            for (int i = 0; i < modifiers.Count; i++)
+            foreach (var item in modifiers)
             {
-                modifiers[i].BeforeRemove();
-                modifiers[i].Dispose();
+                item.BeforeRemove();
+                item.Dispose();
             }
             modifiers.Dispose();
 
@@ -76,10 +76,10 @@ namespace TaoTie
                             limitNum = config.StackLimitCount;
                         }
 
-                        if (modifiers.Count < limitNum)
+                        if (list.Count < limitNum)
                         {
                             var modifier = ActorModifier.Create(applierID, config, ability, this);
-                            modifiers.Add(modifier);
+                            modifiers.AddLast(modifier);
                             modifierDictionary.Add(key, modifier);
                             modifier.AfterAdd();
                         }
@@ -88,18 +88,18 @@ namespace TaoTie
                     case StackingType.Refresh:
                     {
                         // 刷新已存在的modifier
-                        for (int i = 0; i < modifiers.Count; ++i)
+                        for (int i = 0; i < list.Count; ++i)
                         {
-                            modifiers[i].SetDuration(config.Duration);
+                            list[i].SetDuration(config.Duration);
                         }
                         return ;
                     }
                     case StackingType.Prolong:
                     {
                         // 延长已存在的modifier
-                        for (int i = 0; i < modifiers.Count; ++i)
+                        for (int i = 0; i < list.Count; ++i)
                         {
-                            modifiers[i].AddDuration(config.Duration);
+                            list[i].AddDuration(config.Duration);
                         }
                         return ;
                     }
@@ -109,7 +109,7 @@ namespace TaoTie
             else
             {
                 var modifier = ActorModifier.Create(applierID, config, ability, this);
-                modifiers.Add(modifier);
+                modifiers.AddLast(modifier);
                 modifierDictionary.Add(key, modifier);
                 modifier.AfterAdd();
             }
@@ -147,6 +147,17 @@ namespace TaoTie
                 ability.BeforeRemove();
                 abilities.Remove(ability);
                 ability.Dispose();
+            }
+        }
+
+        public void ExecuteAbility(string ability)
+        {
+            foreach (var item in abilities)
+            {
+                if (item.Config.AbilityName == ability)
+                {
+                    item.Execute();
+                }
             }
         }
     }
