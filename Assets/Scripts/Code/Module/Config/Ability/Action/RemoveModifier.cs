@@ -4,9 +4,9 @@
     {
         public string ModifierName;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other)
+        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim)
         {
-            var ac = other.GetComponent<AbilityComponent>();
+            var ac = aim.GetComponent<AbilityComponent>();
             if (ac != null)
             {
                 ExecuteLater(ac,ability.Config.AbilityName).Coroutine();

@@ -13,11 +13,11 @@
     {
         public AbilityActionTarget ActionTarget;
 
-        protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other);
+        protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim);
 
-        public virtual void DoExecute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other)
+        public void DoExecute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim)
         {
-            Entity[] targetLs = ResolveActionTarget(applier, ability, modifier, other);
+            Entity[] targetLs = ResolveActionTarget(applier, ability, modifier, aim);
             if (targetLs != null && targetLs.Length > 0)
             {
                 foreach (Entity target in targetLs)
