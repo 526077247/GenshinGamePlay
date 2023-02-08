@@ -8,11 +8,12 @@
         SelfAttackTarget,
         Applier,    // modifier applier
         CurLocalAvatar,
+        Other,
     }
     public abstract class ConfigAbilityAction
     {
         public AbilityActionTarget ActionTarget;
-
+        public ConfigSelectTargets OtherTargets;
         protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim);
 
         public void DoExecute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity aim)
@@ -34,7 +35,7 @@
             }
         }
         
-        private Entity[] ResolveActionTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity other)
+        private Entity[] ResolveActionTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity aim)
         {
             switch (ActionTarget)
             {
@@ -43,7 +44,7 @@
                 case AbilityActionTarget.Caster:
                     return new[] { ability.Parent.GetParent<Entity>() };
                 case AbilityActionTarget.Target:
-                    return new[] { other };
+                    return new[] { aim };
                 case AbilityActionTarget.SelfAttackTarget:
                 {
                     return null;
@@ -68,6 +69,9 @@
                     //返回当前(前台)角色
                     return null;
                 }
+                case AbilityActionTarget.Other:
+                    if (OtherTargets == null) return null;
+                    return OtherTargets.ResolveTargets(actor, ability, modifier, aim);
                 default:
                     return null;
             }
