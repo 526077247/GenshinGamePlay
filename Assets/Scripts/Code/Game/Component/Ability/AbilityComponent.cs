@@ -2,14 +2,16 @@
 
 namespace TaoTie
 {
-    public class AbilityComponent:Component,IComponent<List<ConfigAbility>>
+    public class AbilityComponent : Component, IComponent<List<ConfigAbility>>
     {
         private bool isDestroy;
         private LinkedListComponent<ActorAbility> abilities;
 
         private LinkedListComponent<ActorModifier> modifiers;
-        private UnOrderMultiMap<string, ActorModifier> modifierDictionary;//[Ability_Modifier:ActorModifier]
+        private UnOrderMultiMap<string, ActorModifier> modifierDictionary; //[Ability_Modifier:ActorModifier]
+
         #region override
+
         public void Init(List<ConfigAbility> data)
         {
             isDestroy = false;
@@ -23,7 +25,7 @@ namespace TaoTie
                 ability.AfterAdd();
             }
         }
-		
+
         public void Destroy()
         {
             isDestroy = true;
@@ -32,13 +34,15 @@ namespace TaoTie
                 item.BeforeRemove();
                 item.Dispose();
             }
+
             abilities.Dispose();
-            
+
             foreach (var item in modifiers)
             {
                 item.BeforeRemove();
                 item.Dispose();
             }
+
             modifiers.Dispose();
 
             modifierDictionary = null;
@@ -51,7 +55,8 @@ namespace TaoTie
         {
             if (!ability.TryGetConfigAbilityModifier(modifierName, out var config))
             {
-                Log.Error($"ApplyModifier Fail! modifierName = {modifierName} abilityName = {ability.Config.AbilityName}");
+                Log.Error(
+                    $"ApplyModifier Fail! modifierName = {modifierName} abilityName = {ability.Config.AbilityName}");
                 return;
             }
 
@@ -65,7 +70,7 @@ namespace TaoTie
                     case StackingType.Unique:
                     {
                         // 只能存在唯一一个
-                        return ;
+                        return;
                     }
                     case StackingType.Multiple:
                     {
@@ -83,7 +88,8 @@ namespace TaoTie
                             modifierDictionary.Add(key, modifier);
                             modifier.AfterAdd();
                         }
-                        return ;
+
+                        return;
                     }
                     case StackingType.Refresh:
                     {
@@ -92,7 +98,8 @@ namespace TaoTie
                         {
                             list[i].SetDuration(config.Duration);
                         }
-                        return ;
+
+                        return;
                     }
                     case StackingType.Prolong:
                     {
@@ -101,10 +108,10 @@ namespace TaoTie
                         {
                             list[i].AddDuration(config.Duration);
                         }
-                        return ;
+
+                        return;
                     }
                 }
-                return ;
             }
             else
             {
@@ -113,12 +120,12 @@ namespace TaoTie
                 modifierDictionary.Add(key, modifier);
                 modifier.AfterAdd();
             }
-            
+
         }
-        
+
         public void RemoveModifier(ActorModifier modifier)
         {
-            if(isDestroy) return;
+            if (isDestroy) return;
             string key = modifier.Ability.Config.AbilityName + "_" + modifier.Config.ModifierName;
             if (modifierDictionary.Contains(key, modifier))
             {
@@ -132,16 +139,15 @@ namespace TaoTie
         public void RemoveModifier(string ability, string modifier)
         {
             string key = ability + "_" + modifier;
-            for (int i = modifierDictionary[key].Count-1; i >=0; i--)
+            for (int i = modifierDictionary[key].Count - 1; i >= 0; i--)
             {
                 modifierDictionary[key][i].Dispose();
             }
-            modifierDictionary.Remove(key);
         }
-        
+
         public void RemoveAbility(ActorAbility ability)
         {
-            if(isDestroy) return;
+            if (isDestroy) return;
             if (abilities.Contains(ability))
             {
                 ability.BeforeRemove();
