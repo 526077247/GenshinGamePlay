@@ -11,7 +11,7 @@
             var numc = entity.GetComponent<NumericComponent>();
             if (numc != null)
             {
-                return FormulaStringFx.Get(Formula).GetData(numc);
+                return FormulaStringFx.Get(Formula).GetData(numc,ability);
             }
             Log.Error($"获取{Formula}时，未找到NumericComponent组件");
             return 0;

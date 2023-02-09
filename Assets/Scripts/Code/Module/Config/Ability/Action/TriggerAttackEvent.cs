@@ -1,12 +1,13 @@
 ﻿namespace TaoTie
 {
-    public class TriggerAttackEvent: ConfigAbilityAction
+    public class TriggerAttackEvent : ConfigAbilityAction
     {
         public TargetType TargetType;
         public ConfigAttackEvent AttackEvent;
+
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            if(TargetType.None == TargetType) return;
+            if (TargetType.None == TargetType) return;
             var len = AttackEvent.AttackPattern.ResolveHit(applier, ability, modifier, target,
                 new[] {EntityType.ALL}, out var infos);
             for (int i = 0; i < len; i++)
@@ -21,9 +22,10 @@
                     continue;
                 if (TargetType == TargetType.SelfCamp && !AttackHelper.CheckIsCamp(target, hitEntity))
                     continue;
-                
+                AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo);
+                AttackHelper.DamageClose(ability, modifier, result);
+                result.Dispose();
             }
         }
-
     }
 }

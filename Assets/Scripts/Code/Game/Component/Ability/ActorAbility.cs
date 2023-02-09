@@ -74,5 +74,27 @@ namespace TaoTie
         {
             return modifierConfigs.TryGetValue(name, out config);
         }
+
+
+        /// <summary>
+        /// 获取变量
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public float GetSpecials(string key)
+        {
+            return VariableSet.Get(key);
+        }
+        
+        
+        /// <summary>
+        /// 获取变量
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public void SetSpecials(string key,float value)
+        {
+            VariableSet.Set(key,value);
+        }
     }
 }
