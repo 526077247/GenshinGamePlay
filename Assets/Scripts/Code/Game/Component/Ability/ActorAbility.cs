@@ -11,7 +11,7 @@ namespace TaoTie
 
         public static ActorAbility Create(long applierID,ConfigAbility config, AbilityComponent component)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<ActorAbility>.Type) as ActorAbility;
+            var res = ObjectPool.Instance.Fetch<ActorAbility>();
             res.Init(applierID,component);
             res.Config = config;
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();

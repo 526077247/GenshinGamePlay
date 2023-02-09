@@ -40,7 +40,7 @@ namespace TaoTie
         public static ActorModifier Create(long applierID, ConfigAbilityModifier config, ActorAbility ability,
             AbilityComponent component)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<ActorModifier>.Type) as ActorModifier;
+            var res = ObjectPool.Instance.Fetch<ActorModifier>();
             res.Init(applierID,component);
             res.Ability = ability;
             res.isDispose = false;
