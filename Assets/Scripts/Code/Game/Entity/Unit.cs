@@ -11,9 +11,7 @@ namespace TaoTie
 
         
         public int ConfigId { get; protected set; } //配置表id
-        
-        public abstract EntityType Type { get; }
-        
+
         public UnitConfig Config => UnitConfigCategory.Instance.Get(this.ConfigId);
 
         private Vector3 position; //坐标

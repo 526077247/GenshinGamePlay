@@ -54,13 +54,12 @@ namespace TaoTie
                         Ray ray = new Ray(startPos, (center - startPos).normalized);
                         if (!collider.bounds.IntersectRay(ray, out float dis))
                         {
-                            Log.Error("IntersectRay what's fuck?");
-                            continue;
+                            dis = (center - startPos).magnitude;
                         }
                         int index = count;
                         if (idMapIndex.TryGetValue(e.Id, out int oldIndex))
                         {
-                            if (hitInfos[oldIndex].Distance < dis)
+                            if (hitInfos[oldIndex].Distance > dis)
                             {
                                 count--;
                                 index = oldIndex;

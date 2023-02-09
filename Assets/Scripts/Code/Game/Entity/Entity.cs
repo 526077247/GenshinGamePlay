@@ -8,7 +8,7 @@ namespace TaoTie
         public long Id { get; private set; }
         public bool IsDispose { get; private set; }
         public EntityManager Parent { get; private set; }
-
+        public abstract EntityType Type { get; }
         #region override
 
         public void Dispose()
