@@ -20,7 +20,7 @@ namespace TaoTie
             modifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
             for (int i = 0; i < data.Count; i++)
             {
-                var ability = ActorAbility.Create(data[i], this);
+                var ability = ActorAbility.Create(Id, data[i], this);
                 abilities.AddLast(ability);
                 ability.AfterAdd();
             }
@@ -51,13 +51,13 @@ namespace TaoTie
         #endregion
 
 
-        public void ApplyModifier(long applierID, ActorAbility ability, string modifierName)
+        public ActorModifier ApplyModifier(long applierID, ActorAbility ability, string modifierName)
         {
             if (!ability.TryGetConfigAbilityModifier(modifierName, out var config))
             {
                 Log.Error(
                     $"ApplyModifier Fail! modifierName = {modifierName} abilityName = {ability.Config.AbilityName}");
-                return;
+                return null;
             }
 
             string key = ability.Config.AbilityName + "_" + config.ModifierName;
@@ -70,7 +70,7 @@ namespace TaoTie
                     case StackingType.Unique:
                     {
                         // 只能存在唯一一个
-                        return;
+                        return null;
                     }
                     case StackingType.Multiple:
                     {
@@ -87,9 +87,10 @@ namespace TaoTie
                             modifiers.AddLast(modifier);
                             modifierDictionary.Add(key, modifier);
                             modifier.AfterAdd();
+                            return modifier;
                         }
 
-                        return;
+                        return  null;
                     }
                     case StackingType.Refresh:
                     {
@@ -99,7 +100,7 @@ namespace TaoTie
                             list[i].SetDuration(config.Duration);
                         }
 
-                        return;
+                        return  null;
                     }
                     case StackingType.Prolong:
                     {
@@ -109,7 +110,7 @@ namespace TaoTie
                             list[i].AddDuration(config.Duration);
                         }
 
-                        return;
+                        return null;
                     }
                 }
             }
@@ -119,8 +120,10 @@ namespace TaoTie
                 modifiers.AddLast(modifier);
                 modifierDictionary.Add(key, modifier);
                 modifier.AfterAdd();
+                return modifier;
             }
 
+            return null;
         }
 
         public void RemoveModifier(ActorModifier modifier)

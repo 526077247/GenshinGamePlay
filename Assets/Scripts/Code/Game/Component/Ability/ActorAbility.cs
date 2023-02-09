@@ -3,25 +3,17 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public sealed class ActorAbility : IDisposable
+    public sealed class ActorAbility :BaseActorActionContext
     {
-        private bool isDispose = true;
-        public event Action afterAdd;
-        public event Action beforeRemove;
-        public event Action onExecute;
-
         public ConfigAbility Config { get; private set; }
-        public AbilityComponent Parent { get; private set; }
-
-        private ListComponent<AbilityMixin> mixins;
+        
         private DictionaryComponent<string, ConfigAbilityModifier> modifierConfigs;
 
-        public static ActorAbility Create(ConfigAbility config, AbilityComponent component)
+        public static ActorAbility Create(long applierID,ConfigAbility config, AbilityComponent component)
         {
             var res = ObjectPool.Instance.Fetch(TypeInfo<ActorAbility>.Type) as ActorAbility;
+            res.Init(applierID,component);
             res.Config = config;
-            res.Parent = component;
-            res.mixins = ListComponent<AbilityMixin>.Create();
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();
             res.isDispose = false;
             if (config.AbilityMixins != null)
@@ -45,33 +37,14 @@ namespace TaoTie
             return res;
         }
 
-        public void AfterAdd()
-        {
-            afterAdd?.Invoke();
-        }
-
-        public void BeforeRemove()
-        {
-            beforeRemove?.Invoke();
-        }
-
-        public void Execute()
-        {
-            onExecute?.Invoke();
-        }
-
-        public void Dispose()
+        public override void Dispose()
         {
             if (isDispose) return;
             isDispose = true;
             Parent.RemoveAbility(this);
-
-            for (int i = 0; i < mixins.Count; i++)
-            {
-                mixins[i].Dispose();
-            }
-
-            mixins.Dispose();
+            
+            base.Dispose();
+            
             modifierConfigs.Dispose();
             Config = null;
             ObjectPool.Instance.Recycle(this);

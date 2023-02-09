@@ -1,5 +1,8 @@
 ﻿namespace TaoTie
 {
+    /// <summary>
+    /// 应用Modifier，不会随别人移除
+    /// </summary>
     public class ApplyModifier: ConfigAbilityAction
     {
         public string ModifierName;
