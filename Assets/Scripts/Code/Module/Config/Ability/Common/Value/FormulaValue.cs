@@ -8,7 +8,9 @@
         public string Formula;
         public override float Resolve(Entity entity)
         {
-            throw new System.NotImplementedException();
+            var numc = entity.GetComponent<NumericComponent>();
+            if (numc == null) return 0;
+            return FormulaStringFx.Get(Formula).GetData(numc);
         }
     }
 }

@@ -114,13 +114,11 @@ namespace TaoTie
         {
             public int Key;
             public string Value;
-            public bool IsSelf;
 
-            public FormulaNode(int Key, string Value, bool IsSelf = true)
+            public FormulaNode(int Key, string Value)
             {
                 this.Key = Key;
                 this.Value = Value;
-                this.IsSelf = IsSelf;
             }
         }
 
@@ -150,13 +148,6 @@ namespace TaoTie
 
         private void AddNode(int Key, string Value)
         {
-            if (Value.StartsWith("$"))
-            {
-                Value = Value.Substring(1, Value.Length - 1);
-                formulaNodeList.Add(new FormulaNode(Key, Value, false));
-                return;
-            }
-
             formulaNodeList.Add(new FormulaNode(Key, Value));
         }
 
@@ -165,8 +156,7 @@ namespace TaoTie
             string outstring = "";
             for (int i = 0; i < formulaNodeList.Count; i++)
             {
-                outstring += string.Format("[{0}-({1}):({2}) ]", formulaNodeList[i].IsSelf ? "Slef" : "Other",
-                    formulaNodeList[i].Key, formulaNodeList[i].Value);
+                outstring += string.Format("[{0}-({1}):({2}) ]", formulaNodeList[i].Key, formulaNodeList[i].Value);
             }
 
             Log.Info(outstring);
@@ -174,7 +164,7 @@ namespace TaoTie
         }
 
         /// 计算结果,传入的Dictionary中必须包含所有信息//
-        public float GetData(NumericComponent comp, NumericComponent other)
+        public float GetData(NumericComponent comp)
         {
             ListComponent<int> priorityList = ListComponent<int>.Create();
 
@@ -182,8 +172,7 @@ namespace TaoTie
 
             for (int i = 0; i < formulaNodeList.Count; i++)
             {
-                FormulaNode node = new FormulaNode(formulaNodeList[i].Key, formulaNodeList[i].Value,
-                    formulaNodeList[i].IsSelf);
+                FormulaNode node = new FormulaNode(formulaNodeList[i].Key, formulaNodeList[i].Value);
                 tempList.Add(node);
             }
 
@@ -194,15 +183,7 @@ namespace TaoTie
                 {
                     if (NumericType.Map.TryGetValue(tempList[i].Value, out int type))
                     {
-                        if (tempList[i].IsSelf)
-                            tempList[i].Value = comp.GetAsFloat(type).ToString();
-                        else if (other != null)
-                            tempList[i].Value = other.GetAsFloat(type).ToString();
-                        else
-                        {
-                            tempList[i].Value = "0";
-                            Log.Error("计算伤害未传入目标");
-                        }
+                        tempList[i].Value = comp.GetAsFloat(type).ToString();
                     }
 
                 }

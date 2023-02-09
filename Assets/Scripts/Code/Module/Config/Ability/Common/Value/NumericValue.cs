@@ -1,7 +1,7 @@
 ﻿namespace TaoTie
 {
     /// <summary>
-    /// 获取属性
+    /// 属性值
     /// </summary>
     public class NumericValue: BaseValue
     {

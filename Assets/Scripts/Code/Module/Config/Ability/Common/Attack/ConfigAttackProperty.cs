@@ -47,7 +47,7 @@
         /// </summary>
         public AttackType AttackType;
         /// <summary>
-        /// 伤害值
+        /// 额外伤害值
         /// </summary>
         public BaseValue DamageExtra;
         /// <summary>
