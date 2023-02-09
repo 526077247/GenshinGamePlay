@@ -1,4 +1,6 @@
-﻿namespace TaoTie
+﻿using System;
+
+namespace TaoTie
 {
     public static class AbilityHelper
     {
@@ -54,5 +56,6 @@
                     return null;
             }
         }
+
     }
 }

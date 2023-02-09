@@ -6,11 +6,15 @@
     public class FormulaValue: BaseValue
     {
         public string Formula;
-        public override float Resolve(Entity entity)
+        public override float Resolve(Entity entity, ActorAbility ability)
         {
             var numc = entity.GetComponent<NumericComponent>();
-            if (numc == null) return 0;
-            return FormulaStringFx.Get(Formula).GetData(numc);
+            if (numc != null)
+            {
+                return FormulaStringFx.Get(Formula).GetData(numc);
+            }
+            Log.Error($"获取{Formula}时，未找到NumericComponent组件");
+            return 0;
         }
     }
 }

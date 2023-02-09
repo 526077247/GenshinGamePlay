@@ -8,14 +8,24 @@ namespace TaoTie
         public ConfigAbility Config { get; private set; }
         
         private DictionaryComponent<string, ConfigAbilityModifier> modifierConfigs;
-
+        private VariableSet VariableSet;
         public static ActorAbility Create(long applierID,ConfigAbility config, AbilityComponent component)
         {
             var res = ObjectPool.Instance.Fetch<ActorAbility>();
             res.Init(applierID,component);
+            res.VariableSet = VariableSet.Create();
             res.Config = config;
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();
             res.isDispose = false;
+
+            if (config.AbilitySpecials != null)
+            {
+                foreach (var item in config.AbilitySpecials)
+                {
+                    res.VariableSet.Set(item.Key,item.Value);
+                }
+            }
+            
             if (config.AbilityMixins != null)
             {
                 for (int i = 0; i < config.AbilityMixins.Length; i++)
@@ -46,6 +56,9 @@ namespace TaoTie
             base.Dispose();
             
             modifierConfigs.Dispose();
+            modifierConfigs = null;
+            VariableSet.Dispose();
+            VariableSet = null;
             Config = null;
             ObjectPool.Instance.Recycle(this);
         }

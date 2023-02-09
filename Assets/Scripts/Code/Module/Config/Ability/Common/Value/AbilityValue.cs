@@ -1,14 +1,15 @@
 ﻿namespace TaoTie
 {
     /// <summary>
-    /// 固定值
+    /// 取Ability值
     /// </summary>
-    public class SingleValue: BaseValue
+    public class AbilityValue: BaseValue
     {
-        public float Value;
+        public string Key;
         public override float Resolve(Entity entity,ActorAbility ability)
         {
-            return Value;
+            
+            return 0;
         }
     }
 }

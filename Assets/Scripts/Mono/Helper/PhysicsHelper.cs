@@ -4,19 +4,6 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public struct HitInfo
-    {
-        public long EntityId;
-        public Vector3 HitPos;
-        public Vector3 HitDir;
-        public float Distance;
-    }
-    public enum CheckHitLayerType
-    {
-        OnlyHitBox = 0,
-        OnlyHitScene = 1,
-        Both = 2
-    }
     public static class PhysicsHelper
     {
         private static readonly Collider[] colliders = new Collider[64];
@@ -80,19 +67,19 @@ namespace TaoTie
         #region HitInfo
 
         public static int OverlapBoxNonAllocHitInfo(Vector3 center, Vector3 halfExtents, Quaternion orientation,
-            EntityType[] filter,CheckHitLayerType type,
-            out long[] res)
+            EntityType[] filter, CheckHitLayerType type,
+            out HitInfo[] res)
         {
-            res = entities;
+            res = hitInfos;
             var len = Physics.OverlapBoxNonAlloc(center, halfExtents, colliders, orientation, GetHitLayer(type),
                 QueryTriggerInteraction.Ignore);
             return FilterHitInfo(filter,len,center);
         }
         public static int OverlapSphereNonAllocHitInfo(Vector3 center, float radius, EntityType[] filter,
             CheckHitLayerType type,
-            out long[] res)
+            out HitInfo[] res)
         {
-            res = entities;
+            res = hitInfos;
             var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Ignore);
             return FilterHitInfo(filter,len,center);
         }
@@ -114,15 +101,19 @@ namespace TaoTie
         private static int FilterHitInfo(EntityType[] filter, int len, Vector3 startPos)
         {
             int count = 0;
+            bool isAll = false;
             for (int i = 0; i < len; i++)
             {
                 Collider collider = colliders[i];
                 if (collider == null || collider.transform == null) continue;
+                var gitBox = collider.GetComponent<HitBoxComponent>();
+                if (gitBox == null) continue;
                 var e = collider.transform.GetComponentInParent<EntityComponent>();
                 if (e == null) continue;
                 for (int j = 0; j < filter.Length; j++)
                 {
-                    if (e.EntityType == filter[i])
+                    if (filter[i] == EntityType.ALL) isAll = true;
+                    if (isAll || e.EntityType == filter[i])
                     {
                         var center = collider.bounds.center;
                         // 取HitBox中心的连线与HitBox的交点作为受击点
@@ -150,7 +141,8 @@ namespace TaoTie
                             EntityId = e.Id,
                             Distance = dis,
                             HitDir = ray.direction,
-                            HitPos = ray.GetPoint(dis)
+                            HitPos = ray.GetPoint(dis),
+                            HitBoxType = gitBox.HitBoxType
                         };
                         count++;
                         break;

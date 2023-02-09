@@ -2,6 +2,9 @@
 {
     public class ConfigHitPattern
     {
+        /// <summary>
+        /// 击中特效
+        /// </summary>
         public string OnHitEffectName;
         public HitLevel HitLevel;
         public BaseValue HitImpulseX;

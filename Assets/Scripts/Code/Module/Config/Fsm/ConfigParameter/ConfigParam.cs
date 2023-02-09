@@ -13,7 +13,7 @@ namespace TaoTie
         public void SetValue(FsmComponent ctrl, float val)
         {
             
-            ctrl.variableSet.Set<float>(this.key, val);
+            ctrl.variableSet.Set(this.key, val);
             if (needSyncAnimator)
             {
                 ctrl.animator.SetFloat(keyHash, val);
@@ -23,7 +23,7 @@ namespace TaoTie
         public void SetValue(FsmComponent ctrl, int val)
         {
             
-            ctrl.variableSet.Set<int>(this.key, val);
+            ctrl.variableSet.Set(this.key, val);
             if (needSyncAnimator)
             {
                 ctrl.animator.SetInteger(keyHash, val);
@@ -33,7 +33,7 @@ namespace TaoTie
         public void SetValue(FsmComponent ctrl, bool val)
         {
             
-            ctrl.variableSet.Set<bool>(this.key, val);
+            ctrl.variableSet.Set(this.key, val?1:0);
             if (needSyncAnimator)
             {
                 ctrl.animator.SetBool(keyHash, val);
@@ -42,20 +42,17 @@ namespace TaoTie
 
         public float GetFloat(FsmComponent ctrl)
         {
-            
-            return ctrl.variableSet.Get<float>(this.key);
+            return ctrl.variableSet.Get(this.key);
         }
 
         public int GetInt(FsmComponent ctrl)
         {
-            
-            return ctrl.variableSet.Get<int>(this.key);
+            return (int)ctrl.variableSet.Get(this.key);
         }
 
         public bool GetBool(FsmComponent ctrl)
         {
-            
-            return ctrl.variableSet.Get<bool>(this.key);
+            return ctrl.variableSet.Get(this.key) != 0;
         }
 
         public abstract void SetDefaultValue(FsmComponent ctrl);
