@@ -4,9 +4,7 @@
     {
         Avatar = 1,
         Monster = 2,
-        NPC = 3,
-        Skill = 4,
-        Buff = 5,
+        Gadget = 3,
         
         MAX,
         ALL,

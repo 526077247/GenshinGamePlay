@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     /// <summary>
-    /// 单位
+    /// 场景单位
     /// </summary>
     public abstract class Unit: Entity
     {
