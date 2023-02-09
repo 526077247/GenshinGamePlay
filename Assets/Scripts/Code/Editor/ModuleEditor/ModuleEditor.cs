@@ -9,7 +9,7 @@ namespace TaoTIe
 
     public class ModuleEditor: EditorWindow
     {
-        private const string settingAsset = "Assets/Scripts/Editor/ModuleEditor/ModuleInfo.asset";
+        private const string settingAsset = "Assets/Scripts/Code/Editor/ModuleEditor/ModuleInfo.asset";
         private string Source = "Modules";
         private string ModulePath = "Assets/Modules";
         private ModuleInfo info;
@@ -75,6 +75,15 @@ namespace TaoTIe
                 bool old = false;
                 temp.TryGetValue(sources[i].Name, out old);
                 temp[sources[i].Name] = GUILayout.Toggle(old, sources[i].Name);
+                if (GUILayout.Button("反向覆盖"))
+                {
+                    if (Directory.Exists(ModulePath + "/" + sources[i].Name))
+                    {
+                        Directory.Delete(ModulePath + "/" + sources[i].Name,true);
+                    }
+                    SafeCopyDir(ModulePath + "/" + sources[i].Name,  Source+ "/" + sources[i].Name);
+                    Debug.Log("反向覆盖 "+ModulePath);
+                }
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndScrollView();
