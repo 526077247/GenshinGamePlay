@@ -36,8 +36,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.1" />
     <PackageReference Include="mongocsharpdriver" Version="2.13.3" />
     <PackageReference Include="MongoDB.Bson" Version="2.13.3" />
-    <PackageReference Include="Nino.Serialization" Version="1.1.0" />
-    <PackageReference Include="Nino.Shared" Version="1.0.15" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -55,6 +53,9 @@
 		</Compile>
 		<Compile Include="..\..\..\Assets\Scripts\Code\Module\Config\ProtobufHelper.cs">
 			<Link>Helper\ProtobufHelper.cs</Link>
+		</Compile>
+		<Compile Include="..\..\..\Assets\Scripts\ThirdParty\Nino\**\*.cs">
+			<Link>Nino\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
 	</ItemGroup>
 	

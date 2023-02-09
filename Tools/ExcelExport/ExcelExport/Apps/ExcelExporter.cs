@@ -704,7 +704,7 @@ namespace TaoTie
 
             Assembly ass = GetAssembly(configType);
             Type type = ass.GetType($"TaoTie.{protoName}Category");
-
+            Type subType = ass.GetType($"TaoTie.{protoName}");
             IMerge final = Activator.CreateInstance(type) as IMerge;
 
             string p = Path.Combine(string.Format(jsonDir, configType, relativeDir));
@@ -726,6 +726,9 @@ namespace TaoTie
             var bytes = Serializer.Serialize(data);
             using FileStream file = File.Create(path);
             file.Write(bytes);
+            string outputPath = GetClassDir(configType) + "/Nino/";
+            CodeGenerator.GenerateSerializationCode(type, outputPath);
+            CodeGenerator.GenerateSerializationCode(subType, outputPath);
         }
     }
 }
