@@ -67,7 +67,8 @@
             if (!result.IsEffective) return;//被取消
             combatD.BeforeBeAttack(result,combatA);
             if (!result.IsEffective) return;//被取消
-            
+
+            result.FinalRealDamage = 0;
             //todo:结算伤害
             if (result.BonusCritical > 0)
             {

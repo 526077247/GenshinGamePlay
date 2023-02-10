@@ -54,7 +54,7 @@ namespace TaoTie
         /// </summary>
         public AttackType AttackType;
         /// <summary>
-        /// 额外伤害值
+        /// 额外伤害值(暂定为不受任何因素影响的固定伤害)
         /// </summary>
         public float DamageExtra;
         /// <summary>
@@ -78,6 +78,11 @@ namespace TaoTie
         /// 是否有效
         /// </summary>
         public bool IsEffective;
+
+        /// <summary>
+        /// 最后真正造成的伤害(造成伤害后才会赋值)
+        /// </summary>
+        public float FinalRealDamage;
         public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config)
         {
             AttackResult res = new AttackResult();
@@ -94,6 +99,24 @@ namespace TaoTie
             DefenseId = default;
             HitInfo = default;
             ConfigAttackInfo = null;
+            DamagePercentage = default;
+            DamagePercentageRatio = default;
+            ElementType = default;
+            ElementRankRawNum = default;
+            ElementDurability = default;
+            OverrideByWeapon = default;
+            IgnoreAttackerProperty = default;
+            StrikeType = default;
+            EnBreakRawNum = default;
+            EnHeadBreakRawNum = default;
+            AttackType = default;
+            DamageExtra = default;
+            BonusCritical = default;
+            BonusCriticalHurt = default;
+            IgnoreLevelDiff = default;
+            TrueDamage = default;
+            IsEffective = default;
+            FinalRealDamage = default;
         }
     }
 }
