@@ -1,10 +1,14 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
     /// <summary>
     /// 公式运算值
     /// </summary>
+    [NinoSerialize]
     public class FormulaValue: BaseValue
     {
+        [NinoMember(1)]
         public string Formula;
         public override float Resolve(Entity entity, ActorAbility ability)
         {

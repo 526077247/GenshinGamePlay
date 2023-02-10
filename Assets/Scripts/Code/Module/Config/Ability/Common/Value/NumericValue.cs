@@ -1,10 +1,14 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
     /// <summary>
     /// 属性值
     /// </summary>
+    [NinoSerialize]
     public class NumericValue: BaseValue
     {
+        [NinoMember(1)]
         public int Key;
         public override float Resolve(Entity entity,ActorAbility ability)
         {

@@ -1,7 +1,11 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
+    [NinoSerialize]
     public class ByEntityTypes: ConfigAbilityPredicate
     {
+        [NinoMember(10)]
         public EntityType[] EntityTypes;
         public override bool Evaluate(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {

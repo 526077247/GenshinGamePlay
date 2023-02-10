@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
+using Nino.Serialization;
 
 namespace TaoTie
 {
     /// <summary>
     /// 监听状态机状态
     /// </summary>
+    [NinoSerialize]
     public class ConfigAttachToStateIDMixin: ConfigAbilityMixin
     {
+        [NinoMember(1)]
         public string ChargeLayer;
+        [NinoMember(2)]
         public HashSet<string> StateIDs;
+        [NinoMember(3)]
         public ConfigAbilityPredicate Predicate;
+        [NinoMember(4)]
         public string ModifierName;
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {

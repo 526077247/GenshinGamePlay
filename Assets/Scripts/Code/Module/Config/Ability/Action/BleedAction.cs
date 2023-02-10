@@ -1,7 +1,11 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
+    [NinoSerialize]
     public class BleedAction: ConfigAbilityAction
     {
+        [NinoMember(10)]
         public int Num;
 
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)

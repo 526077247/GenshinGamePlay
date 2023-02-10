@@ -21,6 +21,7 @@ namespace TaoTie
             out long[] res)
         {
             res = entities;
+            if (filter == null) return 0;
             var len = Physics.OverlapBoxNonAlloc(center, halfExtents, colliders, orientation, entity,
                 QueryTriggerInteraction.Ignore);
             return FilterEntity(filter,len);
@@ -71,6 +72,7 @@ namespace TaoTie
             out HitInfo[] res)
         {
             res = hitInfos;
+            if (filter == null) return 0;
             var len = Physics.OverlapBoxNonAlloc(center, halfExtents, colliders, orientation, GetHitLayer(type),
                 QueryTriggerInteraction.Ignore);
             return FilterHitInfo(filter,len,center);

@@ -1,9 +1,13 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
+    [NinoSerialize]
     public class TriggerAttackEvent : ConfigAbilityAction
     {
+        [NinoMember(10)]
         public TargetType TargetType;
-        [NotNull]
+        [NotNull] [NinoMember(11)]
         public ConfigAttackEvent AttackEvent;
 
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)

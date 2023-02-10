@@ -1,29 +1,31 @@
 ﻿using System.Collections.Generic;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
+    [NinoSerialize]
     public class ConfigAttackProperty
     {
-        [Tooltip("伤害值")] [NotNull]
+        [NinoMember(1)][Tooltip("伤害值")] [NotNull]
         public BaseValue DamagePercentage;
-        [Tooltip("伤害比例")] [NotNull]
+        [NinoMember(2)][Tooltip("伤害比例")] [NotNull]
         public BaseValue DamagePercentageRatio;
-        [Tooltip("击打类型")]
+        [NinoMember(3)][Tooltip("击打类型")]
         public StrikeType StrikeType;
-        [Tooltip("破霸体值")] 
+        [NinoMember(4)][Tooltip("破霸体值")] 
         public Dictionary<HitBoxType, BaseValue> EnBreak;
-        [Tooltip("攻击类型")]
+        [NinoMember(5)][Tooltip("攻击类型")]
         public AttackType AttackType;
-        [Tooltip("额外伤害值")] [NotNull]
+        [NinoMember(6)][Tooltip("额外伤害值")] [NotNull]
         public BaseValue DamageExtra;
-        [Tooltip("暴击率")] [NotNull]
+        [NinoMember(7)][Tooltip("暴击率")] [NotNull]
         public BaseValue BonusCritical;
-        [Tooltip("暴击伤害")] [NotNull]
+        [NinoMember(8)][Tooltip("暴击伤害")] [NotNull]
         public BaseValue BonusCriticalHurt;
-        [Tooltip("忽略等级差距带来的衰减")]
+        [NinoMember(9)][Tooltip("忽略等级差距带来的衰减")]
         public bool IgnoreLevelDiff;
-        [Tooltip("是否真伤")]
+        [NinoMember(10)][Tooltip("是否真伤")]
         public bool TrueDamage;
     }
 }

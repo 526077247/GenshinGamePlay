@@ -1,10 +1,14 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
     /// <summary>
     /// 监听移除前
     /// </summary>
+    [NinoSerialize]
     public class ConfigBeforeRemoveMixin : ConfigAbilityMixin
     {
+        [NinoMember(1)]
         public ConfigAbilityAction[] Actions;
 
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)

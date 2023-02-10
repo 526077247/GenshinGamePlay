@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
@@ -6,8 +7,10 @@ namespace TaoTie
     /// <summary>
     /// 范围
     /// </summary>
+    [NinoSerialize]
     public abstract class ConfigRange
     {
+        [NinoMember(1)]
         public ConfigBornType bornType;
         
         public abstract int ResolveEntity(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target, EntityType[] filter, List<Entity> results);

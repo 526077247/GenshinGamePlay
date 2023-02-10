@@ -1,8 +1,11 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
+    [NinoSerialize]
     public class ConfigAttackSphere: ConfigSimpleAttackPattern
     {
-        [NotNull]
+        [NotNull][NinoMember(1)]
         public BaseValue Radius;
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target,

@@ -1,14 +1,18 @@
-﻿using UnityEngine;
+﻿using Nino.Serialization;
+using UnityEngine;
 
 namespace TaoTie
 {
     /// <summary>
     /// 出生点
     /// </summary>
+    [NinoSerialize]
     public abstract class ConfigBornType
     {
-        public Vector3 PositionOffset;
-        public Vector3 RotationOffset;
+        [NinoMember(1)][NotNull]
+        public DynamicVector3 PositionOffset;
+        [NinoMember(2)][NotNull]
+        public DynamicVector3 RotationOffset;
 
         public abstract Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);
 

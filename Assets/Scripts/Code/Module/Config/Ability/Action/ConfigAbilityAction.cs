@@ -1,10 +1,16 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
     public abstract class ConfigAbilityAction
     {
+        [NinoMember(1)]
         public AbilityTargetting Targetting;
+        [NinoMember(2)]
         public ConfigSelectTargets OtherTargets;
+        [NinoMember(3)]
         public ConfigAbilityPredicate Predicate;
+        [NinoMember(4)]
         public ConfigAbilityPredicate PredicateForeach; 
         protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target);
 

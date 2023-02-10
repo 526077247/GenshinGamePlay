@@ -1,10 +1,13 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
+    [NinoSerialize]
     public class ConfigAttackEvent
     {
-        [NotNull]
+        [NotNull][NinoMember(1)]
         public ConfigBaseAttackPattern AttackPattern;
-        [NotNull]
+        [NotNull][NinoMember(2)]
         public ConfigAttackInfo AttackInfo;
     }
 }
