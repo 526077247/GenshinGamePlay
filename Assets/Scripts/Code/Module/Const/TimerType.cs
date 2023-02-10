@@ -8,5 +8,7 @@
         public const int TickMixin = 1001;
         /// <summary> Modifier过期 </summary>
         public const int ModifierExpired = 1002;
+
+        public const int DestroyEffect = 1003;
     }
 }

@@ -21,6 +21,7 @@ namespace TaoTie
                 writer.CompressAndWrite(value.Type);
                 writer.CompressAndWrite(value.Show);
                 writer.CompressAndWrite(value.Affected);
+                writer.Write(value.MaxAttr);
                 writer.Write(value.Desc);
             }
 
@@ -35,6 +36,7 @@ namespace TaoTie
                 value.Type = reader.DecompressAndReadNumber<System.Int32>();
                 value.Show = reader.DecompressAndReadNumber<System.Int32>();
                 value.Affected = reader.DecompressAndReadNumber<System.Int32>();
+                value.MaxAttr = reader.ReadString();
                 value.Desc = reader.ReadString();
                 return value;
             }

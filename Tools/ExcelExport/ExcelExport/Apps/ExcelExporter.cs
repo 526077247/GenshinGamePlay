@@ -704,7 +704,6 @@ namespace TaoTie
 
             Assembly ass = GetAssembly(configType);
             Type type = ass.GetType($"TaoTie.{protoName}Category");
-
             IMerge final = Activator.CreateInstance(type) as IMerge;
 
             string p = Path.Combine(string.Format(jsonDir, configType, relativeDir));

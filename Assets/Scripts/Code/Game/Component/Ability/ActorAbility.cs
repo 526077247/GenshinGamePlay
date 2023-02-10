@@ -3,26 +3,29 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public sealed class ActorAbility : IDisposable
+    public sealed class ActorAbility :BaseActorActionContext
     {
-        private bool isDispose = true;
-        public event Action afterAdd;
-        public event Action beforeRemove;
-
         public ConfigAbility Config { get; private set; }
-        public AbilityComponent Parent { get; private set; }
-
-        private ListComponent<AbilityMixin> mixins;
+        
         private DictionaryComponent<string, ConfigAbilityModifier> modifierConfigs;
-
-        public static ActorAbility Create(ConfigAbility config, AbilityComponent component)
+        private VariableSet VariableSet;
+        public static ActorAbility Create(long applierID,ConfigAbility config, AbilityComponent component)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<ActorAbility>.Type) as ActorAbility;
+            var res = ObjectPool.Instance.Fetch<ActorAbility>();
+            res.Init(applierID,component);
+            res.VariableSet = VariableSet.Create();
             res.Config = config;
-            res.Parent = component;
-            res.mixins = ListComponent<AbilityMixin>.Create();
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();
             res.isDispose = false;
+
+            if (config.AbilitySpecials != null)
+            {
+                foreach (var item in config.AbilitySpecials)
+                {
+                    res.VariableSet.Set(item.Key,item.Value);
+                }
+            }
+            
             if (config.AbilityMixins != null)
             {
                 for (int i = 0; i < config.AbilityMixins.Length; i++)
@@ -44,29 +47,18 @@ namespace TaoTie
             return res;
         }
 
-        public void AfterAdd()
-        {
-            afterAdd?.Invoke();
-        }
-
-        public void BeforeRemove()
-        {
-            beforeRemove?.Invoke();
-        }
-
-        public void Dispose()
+        public override void Dispose()
         {
             if (isDispose) return;
             isDispose = true;
             Parent.RemoveAbility(this);
-
-            for (int i = 0; i < mixins.Count; i++)
-            {
-                mixins[i].Dispose();
-            }
-
-            mixins.Dispose();
+            
+            base.Dispose();
+            
             modifierConfigs.Dispose();
+            modifierConfigs = null;
+            VariableSet.Dispose();
+            VariableSet = null;
             Config = null;
             ObjectPool.Instance.Recycle(this);
         }
@@ -81,6 +73,28 @@ namespace TaoTie
         public bool TryGetConfigAbilityModifier(string name, out ConfigAbilityModifier config)
         {
             return modifierConfigs.TryGetValue(name, out config);
+        }
+
+
+        /// <summary>
+        /// 获取变量
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public float GetSpecials(string key)
+        {
+            return VariableSet.Get(key);
+        }
+        
+        
+        /// <summary>
+        /// 获取变量
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public void SetSpecials(string key,float value)
+        {
+            VariableSet.Set(key,value);
         }
     }
 }

@@ -15,19 +15,7 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                if(value.list != null)
-                {
-                    writer.Write(true);
-                    writer.CompressAndWrite(value.list.Count);
-                    foreach (var entry in value.list)
-                    {
-                        TaoTie.ServerConfig.NinoSerializationHelper.Serialize(entry, writer);
-                    }
-                }
-                else
-                {
-                    writer.Write(false);
-                }
+                writer.Write(value.list);
             }
 
             public override ServerConfigCategory Deserialize(Nino.Serialization.Reader reader)
@@ -35,12 +23,7 @@ namespace TaoTie
                 if(!reader.ReadBool())
                     return null;
                 ServerConfigCategory value = new ServerConfigCategory();
-                if(reader.ReadBool()){value.list = new System.Collections.Generic.List<TaoTie.ServerConfig>(reader.ReadLength());
-                for(int i = 0, cnt = value.list.Capacity; i < cnt; i++)
-                {
-                    var value_list_i = TaoTie.ServerConfig.NinoSerializationHelper.Deserialize(reader);
-                    value.list.Add(value_list_i);
-                }}
+                value.list = reader.ReadList<TaoTie.ServerConfig>();
                 return value;
             }
             #endregion

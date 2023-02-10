@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace TaoTie
+{
+    public static class AbilityHelper
+    {
+        /// <summary>
+        /// 获取目标
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="ability"></param>
+        /// <param name="modifier"></param>
+        /// <param name="target"></param>
+        /// <param name="targetting"></param>
+        /// <param name="otherTargets"></param>
+        /// <returns></returns>
+        public static Entity[] ResolveTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
+            AbilityTargetting targetting, ConfigSelectTargets otherTargets = null)
+        {
+            switch (targetting)
+            {
+                case AbilityTargetting.Self:
+                    return new[] { actor };
+                case AbilityTargetting.Caster:
+                    return new[] { ability.Parent.GetParent<Entity>() };
+                case AbilityTargetting.Target:
+                    return new[] { target };
+                case AbilityTargetting.SelfAttackTarget:
+                {
+                    return null;
+                }
+                case AbilityTargetting.Applier:
+                {
+                    if (modifier != null)
+                    {
+                        var em = ability.Parent.GetParent<Entity>().Parent;
+                        Entity applierEntity = em.Get<Entity>(modifier.ApplierID);
+                        if (applierEntity != null)
+                        {
+                            return new[] { applierEntity };
+                        }
+                    }
+
+                    return null;
+                }
+                case AbilityTargetting.CurLocalAvatar:
+                {
+                    var em = ability.Parent.GetParent<Entity>().Parent;
+                    //返回当前(前台)角色
+                    return null;
+                }
+                case AbilityTargetting.Other:
+                    if (otherTargets == null) return null;
+                    return otherTargets.ResolveTargets(actor, ability, modifier, target);
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// 获取配置
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static List<ConfigAbility> GetAbility(string path)
+        {
+            var file = ResourcesManager.Instance.Load<TextAsset>(path);
+            try
+            {
+                List<ConfigAbility> res = ProtobufHelper.FromBytes<List<ConfigAbility>>(file.bytes);
+                ResourcesManager.Instance.ReleaseAsset(file);
+                return res;
+            }
+            catch{}
+
+            try
+            {
+                List<ConfigAbility> res = JsonHelper.FromJson<List<ConfigAbility>>(file.text);
+                ResourcesManager.Instance.ReleaseAsset(file);
+                return res;
+            }
+            catch{}
+            Log.Error("反序列化Ability失败！"+path);
+            return null;
+        }
+    }
+}

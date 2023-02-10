@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public sealed class ActorModifier : IDisposable
+    public sealed class ActorModifier : BaseActorActionContext
     {
-        private bool isDispose = true;
+        
 
         [Timer(TimerType.ModifierExpired)]
         public class ModifierExpiredTimer : ATimer<ActorModifier>
@@ -22,16 +23,11 @@ namespace TaoTie
             }
         }
 
-        public event Action afterAdd;
-        public event Action beforeRemove;
 
         public ConfigAbilityModifier Config{ get; private set; }
-        public AbilityComponent Parent{ get; private set; }
         public ActorAbility Ability { get; private set; }
-        public long ApplierID { get; private set; }
         private long timerId;
         private long tillTime;
-        private ListComponent<AbilityMixin> mixins;
 
         /// <summary>
         /// 
@@ -44,13 +40,11 @@ namespace TaoTie
         public static ActorModifier Create(long applierID, ConfigAbilityModifier config, ActorAbility ability,
             AbilityComponent component)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<ActorModifier>.Type) as ActorModifier;
-            res.Config = config;
-            res.ApplierID = applierID;
+            var res = ObjectPool.Instance.Fetch<ActorModifier>();
+            res.Init(applierID,component);
             res.Ability = ability;
-            res.Parent = component;
-            res.mixins = ListComponent<AbilityMixin>.Create();
             res.isDispose = false;
+            res.Config = config;
             if (config.Mixins != null)
             {
                 for (int i = 0; i < config.Mixins.Length; i++)
@@ -63,9 +57,9 @@ namespace TaoTie
             return res;
         }
 
-        public void AfterAdd()
+        public override void AfterAdd()
         {
-            afterAdd?.Invoke();
+            base.AfterAdd();
             if (Config.Duration >= 0)
             {
                 tillTime = GameTimerManager.Instance.GetTimeNow() + Config.Duration;
@@ -73,26 +67,10 @@ namespace TaoTie
             }
         }
 
-        public void BeforeRemove()
+        public override void BeforeRemove()
         {
             GameTimerManager.Instance.Remove(ref timerId);
-            beforeRemove?.Invoke();
-        }
-
-        public void Dispose()
-        {
-            if (isDispose) return;
-            isDispose = true;
-            Parent.RemoveModifier(this);
-
-            for (int i = 0; i < mixins.Count; i++)
-            {
-                mixins[i].Dispose();
-            }
-
-            mixins.Dispose();
-            Config = null;
-            ObjectPool.Instance.Recycle(this);
+            base.BeforeRemove();
         }
 
 
@@ -108,6 +86,18 @@ namespace TaoTie
             GameTimerManager.Instance.Remove(ref timerId);
             tillTime += duration;
             timerId = GameTimerManager.Instance.NewOnceTimer(tillTime, TimerType.ModifierExpired, this);
+        }
+        
+        public override void Dispose()
+        {
+            if (isDispose) return;
+            isDispose = true;
+            Parent.RemoveModifier(this);
+
+            base.Dispose();
+            
+            Config = null;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

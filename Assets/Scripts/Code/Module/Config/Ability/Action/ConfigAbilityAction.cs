@@ -1,75 +1,41 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
-    public enum AbilityActionTarget
-    {
-        Self,
-        Caster,
-        Target,
-        SelfAttackTarget,
-        Applier,    // modifier applier
-        CurLocalAvatar,
-    }
     public abstract class ConfigAbilityAction
     {
-        public AbilityActionTarget ActionTarget;
+        [NinoMember(1)]
+        public AbilityTargetting Targetting;
+        [NinoMember(2)]
+        public ConfigSelectTargets OtherTargets;
+        [NinoMember(3)]
+        public ConfigAbilityPredicate Predicate;
+        [NinoMember(4)]
+        public ConfigAbilityPredicate PredicateForeach; 
+        protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target);
 
-        protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other);
-
-        public virtual void DoExecute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other)
+        public void DoExecute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            Entity[] targetLs = ResolveActionTarget(applier, ability, modifier, other);
-            if (targetLs != null && targetLs.Length > 0)
+            if (Predicate == null || Predicate.Evaluate(applier,ability,modifier,target))
             {
-                foreach (Entity target in targetLs)
+                Entity[] targetLs = AbilityHelper.ResolveTarget(applier, ability, modifier, target,Targetting, OtherTargets);
+                if (targetLs != null && targetLs.Length > 0)
                 {
-                    if (target != null)
+                    foreach (Entity item in targetLs)
                     {
-                        Execute(applier, ability, modifier, target);
-                    }
-                }
-            }
-            else
-            {
-                Log.Error("[ConfigAbilityAction:DoExecute] resolve action target is illegal,please check logic!");
-            }
-        }
-        
-        private Entity[] ResolveActionTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity other)
-        {
-            switch (ActionTarget)
-            {
-                case AbilityActionTarget.Self:
-                    return new[] { actor };
-                case AbilityActionTarget.Caster:
-                    return new[] { ability.Parent.GetParent<Entity>() };
-                case AbilityActionTarget.Target:
-                    return new[] { other };
-                case AbilityActionTarget.SelfAttackTarget:
-                {
-                    return null;
-                }
-                case AbilityActionTarget.Applier:
-                {
-                    if (modifier != null)
-                    {
-                        var em = ability.Parent.GetParent<Entity>().Parent;
-                        Entity applierEntity = em.Get<Entity>(modifier.ApplierID);
-                        if (applierEntity != null)
+                        if (item != null)
                         {
-                            return new[] { applierEntity };
+                            if (PredicateForeach == null || PredicateForeach.Evaluate(applier, ability, modifier, item))
+                            {
+                                Execute(applier, ability, modifier, item);
+                            }
                         }
                     }
-
-                    return null;
                 }
-                case AbilityActionTarget.CurLocalAvatar:
+                else
                 {
-                    var em = ability.Parent.GetParent<Entity>().Parent;
-                    //返回当前(前台)角色
-                    return null;
+                    Log.Error("[ConfigAbilityAction:DoExecute] resolve action target is illegal,please check logic!");
                 }
-                default:
-                    return null;
             }
         }
     }

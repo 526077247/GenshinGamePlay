@@ -12,7 +12,7 @@ namespace TaoTie
             {
                 try
                 {
-                    t.Excute();
+                    t.Execute();
                 }
                 catch (Exception ex)
                 {
@@ -30,11 +30,11 @@ namespace TaoTie
             timerId = GameTimerManager.Instance.NewRepeatedTimer(this.config.Interval, TimerType.TickMixin, this);
             if (this.config.TickFirstOnAdd)
             {
-                Excute();
+                Execute();
             }
         }
         
-        private void Excute()
+        private void Execute()
         {
             if (config.Actions != null)
             {

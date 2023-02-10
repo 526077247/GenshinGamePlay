@@ -1,12 +1,19 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
-    public class ApplyModifier: ConfigAbilityAction
+    /// <summary>
+    /// 应用Modifier，不会随别人移除
+    /// </summary>
+    [NinoSerialize]
+    public partial class ApplyModifier: ConfigAbilityAction
     {
+        [NinoMember(10)]
         public string ModifierName;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity other)
+        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var ac = other.GetComponent<AbilityComponent>();
+            var ac = target.GetComponent<AbilityComponent>();
             if (ac != null)
             {
                 ac.ApplyModifier(applier.Id, ability, ModifierName);

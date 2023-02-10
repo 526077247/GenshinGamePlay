@@ -1,4 +1,0 @@
-{"list":[
-{"_t":"ServerConfig","_id":1,"Name":"本机开发","RealmIp":"127.0.0.1:10002","UpdateListUrl":"http://127.0.0.1:8081/cdn","RouterListUrl":"http://127.0.0.1:8081/cdn","ResUrl":"http://127.0.0.1:8081/cdn","TestUpdateListUrl":"http://127.0.0.1:8081/cdn_test","EnvId":1,"IsPriority":1},
-{"_t":"ServerConfig","_id":2,"Name":"内网测试","RealmIp":"172.22.213.58:10002","UpdateListUrl":"http://172.22.213.58:8081/cdn","RouterListUrl":"http://172.22.213.58:8081/cdn","ResUrl":"http://172.22.213.58:8081/cdn","TestUpdateListUrl":"http://172.22.213.58:8081/cdn_test","EnvId":1,"IsPriority":0},
-]}

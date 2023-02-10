@@ -9,16 +9,16 @@
             base.Init(actorAbility, actorModifier, config);
             if (actorModifier == null)
             {
-                actorAbility.beforeRemove += Excute;
+                actorAbility.beforeRemove += Execute;
             }
             else
             {
-                actorModifier.beforeRemove += Excute;
+                actorModifier.beforeRemove += Execute;
             }
             
         }
         
-        private void Excute()
+        private void Execute()
         {
             if (config.Actions != null)
             {
@@ -31,8 +31,8 @@
 
         public override void Dispose()
         {
-            actorAbility.beforeRemove -= Excute;
-            actorModifier.beforeRemove -= Excute;
+            actorAbility.beforeRemove -= Execute;
+            actorModifier.beforeRemove -= Execute;
             base.Dispose();
         }
     }

@@ -8,7 +8,8 @@ namespace TaoTie
         public long Id { get; private set; }
         public bool IsDispose { get; private set; }
         public EntityManager Parent { get; private set; }
-
+        public abstract EntityType Type { get; }
+        public long CreateTime { get; private set; }
         #region override
 
         public void Dispose()
@@ -26,6 +27,7 @@ namespace TaoTie
 
             Components.Dispose();
             Components = null;
+            CreateTime = 0;
             ObjectPool.Instance.Recycle(this);
         }
 
@@ -35,6 +37,7 @@ namespace TaoTie
             Id = IdGenerater.Instance.GenerateInstanceId();
             IsDispose = false;
             Components = DictionaryComponent<Type, object>.Create();
+            CreateTime = GameTimerManager.Instance.GetTimeNow();
         }
 
         #endregion
@@ -56,9 +59,9 @@ namespace TaoTie
 
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
+            Components.Add(type, data);
             if (data is IComponent comp)
                 comp.Init();
-            Components.Add(type, data);
             return data;
         }
 
@@ -73,8 +76,8 @@ namespace TaoTie
 
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
-            data.Init(p1);
             Components.Add(type, data);
+            data.Init(p1);
             return data;
         }
 
@@ -89,8 +92,8 @@ namespace TaoTie
 
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
-            data.Init(p1, p2);
             Components.Add(type, data);
+            data.Init(p1, p2);
             return data;
         }
 
@@ -105,8 +108,8 @@ namespace TaoTie
 
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
-            data.Init(p1, p2, p3);
             Components.Add(type, data);
+            data.Init(p1, p2, p3);
             return data;
         }
 
