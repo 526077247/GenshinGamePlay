@@ -28,7 +28,11 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<SceneManager>();
                 
                 ManagerProvider.RegisterManager<ServerConfigManager>();
-                StartGameAsync().Coroutine();
+                
+                
+                ManagerProvider.RegisterManager<InputManager>();
+                // StartGameAsync().Coroutine();
+                StartGame();
             }
             catch (Exception e)
             {
