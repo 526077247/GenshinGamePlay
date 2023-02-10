@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
@@ -24,11 +25,7 @@ namespace TaoTie
         /// <summary>
         /// 破霸体值
         /// </summary>
-        public float EnBreakRawNum;
-        /// <summary>
-        /// 击中头部破霸体值
-        /// </summary>
-        public float EnHeadBreakRawNum;
+        public readonly Dictionary<HitBoxType, float> EnBreak = new Dictionary<HitBoxType, float>();
         /// <summary>
         /// 攻击类型
         /// </summary>
@@ -74,6 +71,7 @@ namespace TaoTie
             res.DefenseId = defenseId;
             res.HitInfo = info;
             res.ConfigAttackInfo = config;
+            res.EnBreak.Clear();
             return res;
         }
 
@@ -86,8 +84,7 @@ namespace TaoTie
             DamagePercentage = default;
             DamagePercentageRatio = default;
             StrikeType = default;
-            EnBreakRawNum = default;
-            EnHeadBreakRawNum = default;
+            EnBreak.Clear();
             AttackType = default;
             DamageExtra = default;
             BonusCritical = default;

@@ -60,8 +60,13 @@ namespace TaoTie
             result.BonusCritical = result.ConfigAttackInfo.AttackProperty.BonusCritical.Resolve(attacker, ability);
             result.BonusCriticalHurt =
                 result.ConfigAttackInfo.AttackProperty.BonusCriticalHurt.Resolve(attacker, ability);
-            result.EnBreakRawNum = result.ConfigAttackInfo.AttackProperty.EnBreakRawNum;
-            result.EnHeadBreakRawNum = result.ConfigAttackInfo.AttackProperty.EnHeadBreakRawNum;
+            if (result.ConfigAttackInfo.AttackProperty.EnBreak != null)
+            {
+                foreach (var item in result.ConfigAttackInfo.AttackProperty.EnBreak)
+                {
+                    result.EnBreak.Add(item.Key,item.Value.Resolve(attacker, ability));
+                }
+            }
             result.TrueDamage = result.ConfigAttackInfo.AttackProperty.TrueDamage;
             result.IgnoreLevelDiff = result.ConfigAttackInfo.AttackProperty.IgnoreLevelDiff;
             result.StrikeType = result.ConfigAttackInfo.AttackProperty.StrikeType;
@@ -106,7 +111,11 @@ namespace TaoTie
             
             //修改血量
             numD.Set(NumericType.HpBase, numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage);
-            
+            //破霸体
+            if (result.EnBreak.TryGetValue(result.HitInfo.HitBoxType,out float value))
+            {
+                numD.Set(NumericType.ENBase, numD.GetAsInt(NumericType.ENBase) - value);
+            }
             
             combatD.AfterBeAttack(result, combatA);
             combatA.AfterAttack(result, combatD);

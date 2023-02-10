@@ -4,6 +4,7 @@
     {
         public CheckHitLayerType CheckHitLayerType;
         public ConfigHitScene HitScene;
+        [NotNull]
         public ConfigBornType Born;
 
         public abstract int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier,

@@ -7,17 +7,19 @@ namespace TaoTie
 {
     public class GameTools
     {
-        [MenuItem("Tools/帮助/启动场景 #_b")]
-        static void ChangeInitScene()
-        {
-            EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
-        }
         
         [MenuItem("Tools/Ability/编辑器")]
         static void OpenAbility()
         {
             EditorWindow.GetWindow<AbilityEditor>().Show();
         }
+        
+        [MenuItem("Tools/帮助/启动场景 #_b")]
+        static void ChangeInitScene()
+        {
+            EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
+        }
+
         
         [MenuItem("Tools/帮助/创建子目录")]
         [MenuItem("Assets/工具/创建子目录")]

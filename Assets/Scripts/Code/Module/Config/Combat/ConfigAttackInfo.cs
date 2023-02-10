@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -10,14 +11,10 @@ namespace TaoTie
         public string AttenuationTag;
         [Tooltip("衰减分组")]
         public string AttenuationGroup;
-        [Tooltip("伤害数据")]
+        [Tooltip("伤害数据")] [NotNull]
         public ConfigAttackProperty AttackProperty;
         [Tooltip("打击数据")]
-        public ConfigHitPattern HitPattern;
-        [Tooltip("是否有击中头部额外效果")]
-        public bool CanHitHead;
-        [Tooltip("击中头部的效果")]
-        public ConfigHitPattern HitHeadPattern;
+        public Dictionary<HitBoxType, ConfigHitPattern> HitPattern;
         [Tooltip("强制抖动摄像机")]
         public bool ForceCameraShake;
         [Tooltip("抖动摄像机参数")]

@@ -3,11 +3,13 @@
     public class TriggerAttackEvent : ConfigAbilityAction
     {
         public TargetType TargetType;
+        [NotNull]
         public ConfigAttackEvent AttackEvent;
 
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            if (TargetType.None == TargetType) return;
+            if (TargetType.None == TargetType || AttackEvent == null || AttackEvent.AttackInfo == null ||
+                AttackEvent.AttackPattern == null) return;
             var len = AttackEvent.AttackPattern.ResolveHit(applier, ability, modifier, target,
                 new[] {EntityType.ALL}, out var infos);
             for (int i = 0; i < len; i++)
