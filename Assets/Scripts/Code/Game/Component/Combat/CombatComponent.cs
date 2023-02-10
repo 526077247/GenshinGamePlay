@@ -11,44 +11,44 @@ namespace TaoTie
 
         public void Destroy()
         {
-            beforeMakeDamage = null;
-            beforeApplyDamage = null;
-            afterMakeDamage = null;
-            afterApplyDamage = null;
+            beforeAttack = null;
+            beforeBeAttack = null;
+            afterAttack = null;
+            afterBeAttack = null;
         }
 
         /// <summary>
         /// 造成伤害前
         /// </summary>
-        public event Action<AttackResult, CombatComponent> beforeMakeDamage;
+        public event Action<AttackResult, CombatComponent> beforeAttack;
 
         /// <summary>
         /// 受到伤害前
         /// </summary>
-        public event Action<AttackResult, CombatComponent> beforeApplyDamage;
+        public event Action<AttackResult, CombatComponent> beforeBeAttack;
 
         /// <summary>
         /// 造成伤害后
         /// </summary>
-        public event Action<AttackResult, CombatComponent> afterMakeDamage;
+        public event Action<AttackResult, CombatComponent> afterAttack;
 
         /// <summary>
         /// 造成伤害后
         /// </summary>
-        public event Action<AttackResult, CombatComponent> afterApplyDamage;
+        public event Action<AttackResult, CombatComponent> afterBeAttack;
 
         /// <summary>
         /// 造成伤害前
         /// </summary>
-        public void BeforeMakeDamage(AttackResult result, CombatComponent other)
+        public void BeforeAttack(AttackResult result, CombatComponent other)
         {
-            beforeMakeDamage?.Invoke(result, other);
+            beforeAttack?.Invoke(result, other);
         }
 
         /// <summary>
         /// 受到伤害前
         /// </summary>
-        public void BeforeApplyDamage(AttackResult result, CombatComponent other)
+        public void BeforeBeAttack(AttackResult result, CombatComponent other)
         {
             if (!result.IgnoreAttackerProperty)
             {
@@ -59,23 +59,23 @@ namespace TaoTie
                 }
             }
 
-            beforeApplyDamage?.Invoke(result, other);
+            beforeBeAttack?.Invoke(result, other);
         }
 
         /// <summary>
         /// 造成伤害后
         /// </summary>
-        public void AfterMakeDamage(AttackResult result, CombatComponent other)
+        public void AfterAttack(AttackResult result, CombatComponent other)
         {
-            afterMakeDamage?.Invoke(result, other);
+            afterAttack?.Invoke(result, other);
         }
 
         /// <summary>
         /// 受到伤害后
         /// </summary>
-        public void AfterApplyDamage(AttackResult result, CombatComponent other)
+        public void AfterBeAttack(AttackResult result, CombatComponent other)
         {
-            afterApplyDamage?.Invoke(result, other);
+            afterBeAttack?.Invoke(result, other);
         }
     }
 }

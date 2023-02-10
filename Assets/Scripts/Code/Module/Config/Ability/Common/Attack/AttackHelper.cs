@@ -63,9 +63,9 @@
             result.AttackType = result.ConfigAttackInfo.AttackProperty.AttackType;
             
             
-            combatA.BeforeMakeDamage(result,combatD);
+            combatA.BeforeAttack(result,combatD);
             if (!result.IsEffective) return;//被取消
-            combatD.BeforeApplyDamage(result,combatA);
+            combatD.BeforeBeAttack(result,combatA);
             if (!result.IsEffective) return;//被取消
             
             //todo:结算伤害
@@ -74,8 +74,8 @@
                 
             }
             
-            combatD.AfterApplyDamage(result,combatA);
-            combatA.AfterMakeDamage(result,combatD);
+            combatD.AfterBeAttack(result,combatA);
+            combatA.AfterAttack(result,combatD);
         }
     }
 }
