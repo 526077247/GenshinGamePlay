@@ -86,3 +86,24 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectScene
         AssetTags: 
+      - CollectPath: Assets/AssetsPackage/Scenes/MapScene
+        CollectorGUID: cdfe4912815000c428086bf26198d53d
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectScene
+        AssetTags: 
+      - CollectPath: Assets/AssetsPackage/Unit
+        CollectorGUID: 64876c441ccdfa24da89797b709392fd
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackTopDirectory
+        FilterRuleName: CollectPrefab
+        AssetTags: 
+      - CollectPath: Assets/AssetsPackage/Abilities
+        CollectorGUID: aefbd68a86df11d41b79d2298ea1d9ea
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 

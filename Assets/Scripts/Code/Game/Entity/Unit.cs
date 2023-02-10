@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -53,7 +54,7 @@ namespace TaoTie
             // AddComponent<HudComponent>();
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent>();
-            AddComponent<AbilityComponent>();
+            AddComponent<AbilityComponent,List<ConfigAbility>>(AbilityHelper.GetAbility(Config.Abilities));
             AddComponent<CombatComponent>();
         }
     }

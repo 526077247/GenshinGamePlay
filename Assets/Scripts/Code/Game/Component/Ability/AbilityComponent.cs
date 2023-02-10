@@ -62,7 +62,7 @@ namespace TaoTie
 
             string key = ability.Config.AbilityName + "_" + config.ModifierName;
             var list = modifierDictionary[key];
-            if (list.Count > 0)
+            if (list!=null && list.Count > 0)
             {
                 // 处理堆叠
                 switch (config.StackingType)

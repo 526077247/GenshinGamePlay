@@ -21,13 +21,13 @@ namespace TaoTie
 		#region override
 		public void OnCreate()
 		{
-			this.txt_gold = this.AddComponent<UIText>("bg_txt_gold/txt_gold");
-			this.btn_option = this.AddComponent<UIButton>("btn_option");
-			this.btn_start = this.AddComponent<UIButton>("btn_start");
-			this.btn_collection = this.AddComponent<UIButton>("btn_collection");
-			this.btn_record = this.AddComponent<UIButton>("btn_record");
-			this.btn_strength = this.AddComponent<UIButton>("btn_strength");
-			this.btn_production = this.AddComponent<UIButton>("btn_production");
+			this.txt_gold = this.AddComponent<UIText>("root/Image/bg_txt_gold/txt_gold");
+			this.btn_option = this.AddComponent<UIButton>("root/Image/btn_option");
+			this.btn_start = this.AddComponent<UIButton>("root/Image/btn_start");
+			this.btn_collection = this.AddComponent<UIButton>("root/Image/btn_collection");
+			this.btn_record = this.AddComponent<UIButton>("root/Image/btn_record");
+			this.btn_strength = this.AddComponent<UIButton>("root/Image/btn_strength");
+			this.btn_production = this.AddComponent<UIButton>("root/Image/btn_production");
 		}
 		public void OnEnable()
 		{
@@ -47,7 +47,7 @@ namespace TaoTie
 		}
 		public void OnClickbtn_start()
 		{
-
+			SceneManager.Instance.SwitchScene<HeavenScene>().Coroutine();
 		}
 		public void OnClickbtn_collection()
 		{

@@ -69,11 +69,11 @@ namespace TaoTie
 
         public virtual async ETTask OnSwitchSceneEnd()
         {
+            RegisterManager<GameTimerManager>();
             // await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath);
             // await UIManager.Instance.OpenWindow<UIMainView>(UIMainView.PrefabPath);
             var em = RegisterManager<EntityManager>();
-            MyId = em.CreateEntity<Avatar, int>(0).Id;
-            // RegisterManager<NpcManager, BaseMapScene>(this);
+            MyId = em.CreateEntity<Avatar, int>(1).Id;
             // RegisterManager<InputManager,BaseMapScene>(this);
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;

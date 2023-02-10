@@ -95,6 +95,9 @@ namespace TaoTie
 		/// <summary>身高</summary>
 		[NinoMember(6)]
 		public float Height { get; set; }
+		/// <summary>Ability路径</summary>
+		[NinoMember(7)]
+		public string Abilities { get; set; }
 
 	}
 }
