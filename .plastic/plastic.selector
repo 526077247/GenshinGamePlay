@@ -1,0 +1,4 @@
+repository "MonkeyKing@sonofvoid@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"
