@@ -50,15 +50,6 @@ namespace TaoTie
         /// </summary>
         public void BeforeBeAttack(AttackResult result, CombatComponent other)
         {
-            if (!result.IgnoreAttackerProperty)
-            {
-                var numC = Parent.GetComponent<NumericComponent>();
-                if (numC != null)
-                {
-                    //todo:等级、防御、抵抗计算
-                }
-            }
-
             beforeBeAttack?.Invoke(result, other);
         }
 

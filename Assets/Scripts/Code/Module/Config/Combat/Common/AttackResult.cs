@@ -18,26 +18,6 @@ namespace TaoTie
         /// </summary>
         public float DamagePercentageRatio;
         /// <summary>
-        /// 元素类型
-        /// </summary>
-        public ElementType ElementType;
-        /// <summary>
-        /// 元素等级
-        /// </summary>
-        public float ElementRankRawNum;
-        /// <summary>
-        /// 元素量
-        /// </summary>
-        public float ElementDurability;
-        /// <summary>
-        /// 是否能被武器属性覆盖
-        /// </summary>
-        public bool OverrideByWeapon;
-        /// <summary>
-        /// 无视攻击方属性加成，这个除了无视攻击方，还会无视受击方的等级、防御。
-        /// </summary>
-        public bool IgnoreAttackerProperty;
-        /// <summary>
         /// 击打类型
         /// </summary>
         public StrikeType StrikeType;
@@ -80,9 +60,13 @@ namespace TaoTie
         public bool IsEffective;
 
         /// <summary>
+        /// 是否暴击
+        /// </summary>
+        public bool IsCritical;
+        /// <summary>
         /// 最后真正造成的伤害(造成伤害后才会赋值)
         /// </summary>
-        public float FinalRealDamage;
+        public int FinalRealDamage;
         public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config)
         {
             AttackResult res = new AttackResult();
@@ -101,11 +85,6 @@ namespace TaoTie
             ConfigAttackInfo = null;
             DamagePercentage = default;
             DamagePercentageRatio = default;
-            ElementType = default;
-            ElementRankRawNum = default;
-            ElementDurability = default;
-            OverrideByWeapon = default;
-            IgnoreAttackerProperty = default;
             StrikeType = default;
             EnBreakRawNum = default;
             EnHeadBreakRawNum = default;
