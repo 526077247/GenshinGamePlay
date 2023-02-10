@@ -75,6 +75,8 @@ namespace TaoTie
                     __Map.Add("DEFPct",DEFPct);
                     __Map.Add("DEFFinalAdd",DEFFinalAdd);
                     __Map.Add("DEFFinalPct",DEFFinalPct);
+                    __Map.Add("EN",EN);
+                    __Map.Add("ENBase",ENBase);
                 }
                 return __Map;
             }
@@ -196,5 +198,10 @@ namespace TaoTie
 		public const int DEFFinalAdd = 1011 * 10 + 4;
 		/// <summary> 防御力FinalPct </summary>
 		public const int DEFFinalPct = 1011 * 10 + 5;
+
+		/// <summary> 霸体值 </summary>
+		public const int EN = 1012;
+		/// <summary> 霸体值Base </summary>
+		public const int ENBase = 1012 * 10 + 1;
     }
 }

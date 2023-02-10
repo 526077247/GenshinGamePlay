@@ -95,8 +95,11 @@ namespace TaoTie
 		/// <summary>是否被BUFF影响</summary>
 		[NinoMember(6)]
 		public int Affected { get; set; }
-		/// <summary>描述</summary>
+		/// <summary>最大值</summary>
 		[NinoMember(7)]
+		public string MaxAttr { get; set; }
+		/// <summary>描述</summary>
+		[NinoMember(8)]
 		public string Desc { get; set; }
 
 	}

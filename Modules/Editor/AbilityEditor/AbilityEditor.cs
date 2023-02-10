@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -13,7 +14,7 @@ namespace TaoTie
         [ShowIf("@ability!=null")][ReadOnly]
         public string jsonPath;
         [ShowIf("@ability!=null")]
-        public ConfigAbility ability;
+        public List<ConfigAbility> ability;
         
         [Button("保存")]
         [ShowIf("@ability!=null")]
@@ -36,7 +37,7 @@ namespace TaoTie
                 var text = File.ReadAllText(searchPath);
                 try
                 {
-                    ability = JsonHelper.FromJson<ConfigAbility>(text);
+                    ability = JsonHelper.FromJson<List<ConfigAbility>>(text);
                     jsonPath = searchPath;
                 }
                 catch(Exception ex)
@@ -54,7 +55,7 @@ namespace TaoTie
             string searchPath = EditorUtility.SaveFilePanel("选择ability配置文件", folderPath,"ConfigAbility", "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
-                ability = new ConfigAbility();
+                ability = new List<ConfigAbility>();
                 jsonPath = searchPath;
                 var jStr = JsonHelper.ToJson(ability);
                 File.WriteAllText(jsonPath, jStr);

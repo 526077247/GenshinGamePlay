@@ -77,9 +77,9 @@ namespace TaoTIe
                 temp[sources[i].Name] = GUILayout.Toggle(old, sources[i].Name);
                 if (GUILayout.Button("反向覆盖"))
                 {
-                    if (Directory.Exists(ModulePath + "/" + sources[i].Name))
+                    if (Directory.Exists(Source + "/" + sources[i].Name))
                     {
-                        Directory.Delete(ModulePath + "/" + sources[i].Name,true);
+                        Directory.Delete(Source + "/" + sources[i].Name,true);
                     }
                     SafeCopyDir(ModulePath + "/" + sources[i].Name,  Source+ "/" + sources[i].Name);
                     Debug.Log("反向覆盖 "+ModulePath);

@@ -13,6 +13,16 @@ namespace TaoTie
         public static void Init()
         {
         }
+        public static T FromBytes<T>(byte[] bytes)
+        {
+            if (bytes.Length == 0) return default;
+            T o = Deserializer.Deserialize<T>(bytes);
+            if (o is ISupportInitialize supportInitialize)
+            {
+                supportInitialize.EndInit();
+            }
+            return o;
+        }
         public static object FromBytes(Type type, byte[] bytes)
         {
             if (bytes.Length == 0) return null;
