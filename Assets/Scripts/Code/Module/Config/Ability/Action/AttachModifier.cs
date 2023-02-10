@@ -6,7 +6,7 @@ namespace TaoTie
     /// 附加Modifier，会随被附加的移除而移除
     /// </summary>
     [NinoSerialize]
-    public class AttachModifier: ConfigAbilityAction
+    public partial class AttachModifier: ConfigAbilityAction
     {
         [NinoMember(10)]
         public string ModifierName;

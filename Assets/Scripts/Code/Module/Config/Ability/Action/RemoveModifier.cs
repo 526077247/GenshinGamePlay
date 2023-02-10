@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class RemoveModifier: ConfigAbilityAction
+    public partial class RemoveModifier: ConfigAbilityAction
     {
         [NinoMember(10)]
         public string ModifierName;

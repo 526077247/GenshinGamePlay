@@ -6,7 +6,7 @@ namespace TaoTie
     /// 属性值
     /// </summary>
     [NinoSerialize]
-    public class NumericValue: BaseValue
+    public partial class NumericValue: BaseValue
     {
         [NinoMember(1)]
         public int Key;

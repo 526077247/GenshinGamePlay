@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ModifyAbility: ConfigAbilityAction
+    public partial class ModifyAbility: ConfigAbilityAction
     {
         [NinoMember(10)]
         public string Key;

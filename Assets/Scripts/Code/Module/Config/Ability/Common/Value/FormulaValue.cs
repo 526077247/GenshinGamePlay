@@ -6,7 +6,7 @@ namespace TaoTie
     /// 公式运算值
     /// </summary>
     [NinoSerialize]
-    public class FormulaValue: BaseValue
+    public partial class FormulaValue: BaseValue
     {
         [NinoMember(1)]
         public string Formula;

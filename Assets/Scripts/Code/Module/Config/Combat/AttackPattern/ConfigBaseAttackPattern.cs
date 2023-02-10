@@ -2,8 +2,7 @@
 
 namespace TaoTie
 {
-    [NinoSerialize]
-    public abstract class ConfigBaseAttackPattern
+    public abstract partial class ConfigBaseAttackPattern
     {
         [NinoMember(1)]
         public CheckHitLayerType CheckHitLayerType;

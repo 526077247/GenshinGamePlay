@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class DynamicVector3
+    public partial class DynamicVector3
     {
         [NinoMember(1)][NotNull]
         public BaseValue X;

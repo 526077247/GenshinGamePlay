@@ -4,9 +4,9 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAttackBox: ConfigSimpleAttackPattern
+    public partial class ConfigAttackBox: ConfigSimpleAttackPattern
     {
-        [NinoMember(1)][NotNull]
+        [NinoMember(10)][NotNull]
         public DynamicVector3 Size;
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target,

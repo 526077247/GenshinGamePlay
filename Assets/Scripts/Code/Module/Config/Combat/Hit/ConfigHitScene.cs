@@ -4,7 +4,7 @@ using Nino.Serialization;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigHitScene
+    public partial class ConfigHitScene
     {
         [NinoMember(1)]
         public string DefaultEffect;

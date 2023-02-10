@@ -6,8 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 出生点
     /// </summary>
-    [NinoSerialize]
-    public abstract class ConfigBornType
+    public abstract partial class ConfigBornType
     {
         [NinoMember(1)][NotNull]
         public DynamicVector3 PositionOffset;

@@ -6,7 +6,7 @@ namespace TaoTie
     /// 监听调用Execute方法
     /// </summary>
     [NinoSerialize]
-    public class ConfigExecuteMixin : ConfigAbilityMixin
+    public partial class ConfigExecuteMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;

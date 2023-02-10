@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class SetFsmTrigger : SetFsmParam<bool>
+    public partial class SetFsmTrigger : SetFsmParam<bool>
     {
         protected override void SetData(FsmComponent fsmComponent)
         {

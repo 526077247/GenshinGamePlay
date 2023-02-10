@@ -2,8 +2,7 @@
 
 namespace TaoTie
 {
-    [NinoSerialize]
-    public abstract class ConfigAbilityPredicate
+    public abstract partial class ConfigAbilityPredicate
     {
         [NinoMember(1)]
         public AbilityTargetting Target;

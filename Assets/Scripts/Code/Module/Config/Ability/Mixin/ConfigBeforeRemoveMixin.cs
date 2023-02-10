@@ -6,7 +6,7 @@ namespace TaoTie
     /// 监听移除前
     /// </summary>
     [NinoSerialize]
-    public class ConfigBeforeRemoveMixin : ConfigAbilityMixin
+    public partial class ConfigBeforeRemoveMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;

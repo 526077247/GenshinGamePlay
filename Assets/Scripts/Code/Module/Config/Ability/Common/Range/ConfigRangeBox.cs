@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigRangeBox: ConfigRange
+    public partial class ConfigRangeBox: ConfigRange
     {
         [NinoMember(10)][NotNull]
         public DynamicVector3 Size;

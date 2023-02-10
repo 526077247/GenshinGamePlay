@@ -7,7 +7,7 @@ namespace TaoTie
     /// 已自身为原点
     /// </summary>
     [NinoSerialize]
-    public class ConfigBornBySelf: ConfigBornType
+    public partial class ConfigBornBySelf: ConfigBornType
     {
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {

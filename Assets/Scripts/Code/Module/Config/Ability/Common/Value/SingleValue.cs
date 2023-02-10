@@ -6,7 +6,7 @@ namespace TaoTie
     /// 固定值
     /// </summary>
     [NinoSerialize]
-    public class SingleValue: BaseValue
+    public partial class SingleValue: BaseValue
     {
         [NinoMember(1)]
         public float Value;

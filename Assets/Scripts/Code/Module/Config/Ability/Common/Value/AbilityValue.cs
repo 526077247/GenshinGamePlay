@@ -6,7 +6,7 @@ namespace TaoTie
     /// 取Ability值
     /// </summary>
     [NinoSerialize]
-    public class AbilityValue: BaseValue
+    public partial class AbilityValue: BaseValue
     {
         [NinoMember(1)]
         public string Key;

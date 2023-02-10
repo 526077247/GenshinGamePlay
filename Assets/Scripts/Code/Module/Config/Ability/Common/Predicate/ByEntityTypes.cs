@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ByEntityTypes: ConfigAbilityPredicate
+    public partial class ByEntityTypes: ConfigAbilityPredicate
     {
         [NinoMember(10)]
         public EntityType[] EntityTypes;

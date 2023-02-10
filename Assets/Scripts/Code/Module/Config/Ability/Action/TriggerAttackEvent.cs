@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class TriggerAttackEvent : ConfigAbilityAction
+    public partial class TriggerAttackEvent : ConfigAbilityAction
     {
         [NinoMember(10)]
         public TargetType TargetType;

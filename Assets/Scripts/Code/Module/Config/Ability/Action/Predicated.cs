@@ -6,7 +6,7 @@ namespace TaoTie
     /// 按条件过滤
     /// </summary>
     [NinoSerialize]
-    public class Predicated: ConfigAbilityAction
+    public partial class Predicated: ConfigAbilityAction
     {
         [NinoMember(10)]
         public ConfigAbilityPredicate TargetPredicate;

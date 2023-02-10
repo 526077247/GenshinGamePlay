@@ -8,7 +8,7 @@ namespace TaoTie
     /// 通过范围筛选
     /// </summary>
     [NinoSerialize]
-    public class ConfigSelectTargetsByRange: ConfigSelectTargets
+    public partial class ConfigSelectTargetsByRange: ConfigSelectTargets
     {
         [NinoMember(1)][NotNull]
         public ConfigRange Range;

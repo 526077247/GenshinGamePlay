@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class SetFsmFloat : SetFsmParam<float>
+    public partial class SetFsmFloat : SetFsmParam<float>
     {
         protected override void SetData(FsmComponent fsmComponent)
         {

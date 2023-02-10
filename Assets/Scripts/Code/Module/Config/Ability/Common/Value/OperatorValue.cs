@@ -6,7 +6,7 @@ namespace TaoTie
     /// 操作值
     /// </summary>
     [NinoSerialize]
-    public class OperatorValue: BaseValue
+    public partial class OperatorValue: BaseValue
     {
         [NinoMember(1)][NotNull]
         public BaseValue Left;
@@ -14,13 +14,7 @@ namespace TaoTie
         public Operator Op;
         [NinoMember(3)][NotNull]
         public BaseValue Right;
-        public enum Operator
-        {
-            Add,
-            Sub,
-            Mul,
-            Div
-        }
+
 
         public override float Resolve(Entity entity,ActorAbility ability)
         {

@@ -6,7 +6,7 @@ namespace TaoTie
     /// 应用Modifier，不会随别人移除
     /// </summary>
     [NinoSerialize]
-    public class ApplyModifier: ConfigAbilityAction
+    public partial class ApplyModifier: ConfigAbilityAction
     {
         [NinoMember(10)]
         public string ModifierName;

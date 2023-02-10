@@ -3,9 +3,9 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAttackUsePrefab: ConfigBaseAttackPattern
+    public partial class ConfigAttackUsePrefab: ConfigBaseAttackPattern
     {
-        [NinoMember(1)]
+        [NinoMember(10)]
         public string PrefabPathName;
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target, EntityType[] filter,

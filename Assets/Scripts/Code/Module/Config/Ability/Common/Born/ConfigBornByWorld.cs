@@ -7,7 +7,7 @@ namespace TaoTie
     /// 世界坐标为原点
     /// </summary>
     [NinoSerialize]
-    public class ConfigBornByWorld: ConfigBornType
+    public partial class ConfigBornByWorld: ConfigBornType
     {
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {

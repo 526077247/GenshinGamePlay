@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigHitPattern
+    public partial class ConfigHitPattern
     {
         [NinoMember(1)][Tooltip("击中特效")]
         public string OnHitEffectName;

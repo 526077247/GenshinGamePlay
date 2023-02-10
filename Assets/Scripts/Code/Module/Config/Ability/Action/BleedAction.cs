@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class BleedAction: ConfigAbilityAction
+    public partial class BleedAction: ConfigAbilityAction
     {
         [NinoMember(10)]
         public int Num;

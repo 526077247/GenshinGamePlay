@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAttackProperty
+    public partial class ConfigAttackProperty
     {
         [NinoMember(1)][Tooltip("伤害值")] [NotNull]
         public BaseValue DamagePercentage;

@@ -6,7 +6,7 @@ namespace TaoTie
     /// 或
     /// </summary>
     [NinoSerialize]
-    public class ByOr : ConfigAbilityPredicate
+    public partial class ByOr : ConfigAbilityPredicate
     {
         [NinoMember(10)]
         public ConfigAbilityPredicate[] Predicates;

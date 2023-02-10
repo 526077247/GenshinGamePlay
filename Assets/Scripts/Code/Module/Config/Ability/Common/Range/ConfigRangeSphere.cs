@@ -4,7 +4,7 @@ using Nino.Serialization;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigRangeSphere: ConfigRange
+    public partial class ConfigRangeSphere: ConfigRange
     {
         [NinoMember(10)][NotNull]
         public BaseValue Radius;

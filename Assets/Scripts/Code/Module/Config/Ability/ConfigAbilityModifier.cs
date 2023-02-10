@@ -10,7 +10,7 @@ namespace TaoTie
         Prolong, // 延长已存在的modifier
     }
     [NinoSerialize]
-    public class ConfigAbilityModifier
+    public partial class ConfigAbilityModifier
     {
         [NinoMember(1)]
         public string ModifierName;

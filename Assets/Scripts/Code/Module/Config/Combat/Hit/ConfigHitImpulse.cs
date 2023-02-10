@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigHitImpulse
+    public partial class ConfigHitImpulse
     {
         [NinoMember(1)]
         public HitLevel HitLevel;

@@ -6,7 +6,7 @@ namespace TaoTie
     /// 非
     /// </summary>
     [NinoSerialize]
-    public class ByNot : ConfigAbilityPredicate
+    public partial class ByNot : ConfigAbilityPredicate
     {
         [NinoMember(10)]
         public ConfigAbilityPredicate Predicate;

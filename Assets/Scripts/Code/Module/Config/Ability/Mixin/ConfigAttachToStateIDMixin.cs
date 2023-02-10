@@ -7,7 +7,7 @@ namespace TaoTie
     /// 监听状态机状态
     /// </summary>
     [NinoSerialize]
-    public class ConfigAttachToStateIDMixin: ConfigAbilityMixin
+    public partial class ConfigAttachToStateIDMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]
         public string ChargeLayer;

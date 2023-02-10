@@ -4,7 +4,7 @@ using Nino.Serialization;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAbility
+    public partial class ConfigAbility
     {
         [NinoMember(1)]
         public string AbilityName;

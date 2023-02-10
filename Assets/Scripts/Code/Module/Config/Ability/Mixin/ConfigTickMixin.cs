@@ -6,7 +6,7 @@ namespace TaoTie
     /// 监听间隔
     /// </summary>
     [NinoSerialize]
-    public class ConfigTickMixin : ConfigAbilityMixin
+    public partial class ConfigTickMixin : ConfigAbilityMixin
     {
         /// <summary>
         /// 时间间隔毫秒

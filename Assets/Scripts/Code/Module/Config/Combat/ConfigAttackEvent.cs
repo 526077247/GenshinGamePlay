@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAttackEvent
+    public partial class ConfigAttackEvent
     {
         [NotNull][NinoMember(1)]
         public ConfigBaseAttackPattern AttackPattern;

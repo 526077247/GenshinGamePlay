@@ -6,7 +6,7 @@ namespace TaoTie
     /// 受到攻击前
     /// </summary>
     [NinoSerialize]
-    public class ConfigAttachToBeforeBeAttack: ConfigAbilityMixin
+    public partial class ConfigAttachToBeforeBeAttack: ConfigAbilityMixin
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;

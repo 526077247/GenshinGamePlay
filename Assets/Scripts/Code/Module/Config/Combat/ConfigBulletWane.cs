@@ -7,7 +7,7 @@ namespace TaoTie
     /// 子弹衰减
     /// </summary>
     [NinoSerialize]
-    public class ConfigBulletWane
+    public partial class ConfigBulletWane
     {
         [NinoMember(1)][Tooltip("表示从Bullet创生之后这么久，开始套用衰减规则")]
         public float WaneDelayRawNum;

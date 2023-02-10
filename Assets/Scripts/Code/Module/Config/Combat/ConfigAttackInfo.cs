@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAttackInfo
+    public partial class ConfigAttackInfo
     {
         [NinoMember(1)][Tooltip("攻击标识，其他地方可通过这个标记筛选过滤")]
         public string AttackTag;

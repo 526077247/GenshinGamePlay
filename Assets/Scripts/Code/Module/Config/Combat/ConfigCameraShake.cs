@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigCameraShake
+    public partial class ConfigCameraShake
     {
         
     }
