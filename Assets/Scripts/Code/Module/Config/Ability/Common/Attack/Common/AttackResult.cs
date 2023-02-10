@@ -73,8 +73,11 @@ namespace TaoTie
         /// 是否真伤
         /// </summary>
         public bool TrueDamage;
-        
 
+        /// <summary>
+        /// 是否有效
+        /// </summary>
+        public bool IsEffective;
         public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config)
         {
             AttackResult res = new AttackResult();

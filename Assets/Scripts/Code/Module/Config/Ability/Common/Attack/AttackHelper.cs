@@ -41,7 +41,10 @@
             var em = ability.Parent.GetParent<Entity>().Parent;
             var attacker = em.Get<Entity>(result.AttackerId);
             var defence = em.Get<Entity>(result.DefenseId);
-            if(attacker==null||defence == null) return;
+            if(attacker==null || defence == null) return;
+            var combatA = attacker.GetComponent<CombatComponent>();
+            var combatD = defence.GetComponent<CombatComponent>();
+            if(combatA==null || combatD == null) return;
             result.DamagePercentage = result.ConfigAttackInfo.AttackProperty.DamagePercentage.Resolve(attacker, ability);
             result.DamagePercentageRatio = result.ConfigAttackInfo.AttackProperty.DamagePercentageRatio.Resolve(attacker, ability);
             result.DamageExtra = result.ConfigAttackInfo.AttackProperty.DamageExtra.Resolve(attacker, ability);
@@ -59,12 +62,20 @@
             result.OverrideByWeapon = result.ConfigAttackInfo.AttackProperty.OverrideByWeapon;
             result.AttackType = result.ConfigAttackInfo.AttackProperty.AttackType;
             
-            //todo: CombatComponent的BeforeDamage 和AfterDamage
-
+            
+            combatA.BeforeMakeDamage(result,combatD);
+            if (!result.IsEffective) return;//被取消
+            combatD.BeforeApplyDamage(result,combatA);
+            if (!result.IsEffective) return;//被取消
+            
+            //todo:结算伤害
             if (result.BonusCritical > 0)
             {
                 
             }
+            
+            combatD.AfterApplyDamage(result,combatA);
+            combatA.AfterMakeDamage(result,combatD);
         }
     }
 }

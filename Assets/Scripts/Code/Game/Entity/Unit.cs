@@ -54,6 +54,7 @@ namespace TaoTie
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent>();
             AddComponent<AbilityComponent>();
+            AddComponent<CombatComponent>();
         }
     }
 }
