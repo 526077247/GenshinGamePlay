@@ -22,5 +22,23 @@ namespace TaoTie
         public float maxValue;
         [LabelText("增加的值")]
         [SerializeReference] public AbstractVariableValue value;
+        
+        
+        protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
+        {
+            if (aimGear.variable != null)
+            {
+                float flag = value.Resolve(evt, aimGear.variable);
+
+                var val = aimGear.variable.Get(key);
+                val += flag;
+                if (limit)
+                {
+                    val = (int) Mathf.Clamp(val, minValue, maxValue);
+                }
+
+                aimGear.variable.Set(key, val);
+            }
+        }
     }
 }

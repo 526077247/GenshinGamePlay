@@ -32,5 +32,25 @@ namespace TaoTie
             actions.Sort((a, b) => { return a.localId - b.localId; });
         }
 #endif
+
+        public abstract void OnTrigger(Gear gear, IEventBase evt);
+    }
+    
+    public abstract class ConfigGearTrigger<T> : ConfigGearTrigger where T : IEventBase
+    {
+        private Type EventType => TypeInfo<T>.Type;
+
+        public sealed override void OnTrigger(Gear gear, IEventBase evt)
+        {
+            if (evt.GetType() != EventType) return;
+            Log.Info("OnTrigger: " + GetType().Name);
+            if (actions != null)
+            {
+                for (int i = 0; i < actions.Length; i++)
+                {
+                    actions[i].ExecuteAction(evt, gear);
+                }
+            }
+        }
     }
 }

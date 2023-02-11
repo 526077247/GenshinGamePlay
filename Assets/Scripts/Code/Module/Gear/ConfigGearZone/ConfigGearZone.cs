@@ -19,5 +19,7 @@ namespace TaoTie
         [PropertyOrder(int.MinValue)]
         [SerializeField] public int localId;
         [SerializeField] public Vector3 position;
+
+        public abstract Zone CreateZone(Gear gear);
     }
 }

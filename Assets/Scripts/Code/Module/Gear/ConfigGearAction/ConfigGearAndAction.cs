@@ -45,5 +45,36 @@ namespace TaoTie
             }
         }
 #endif
+        
+        protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
+        {
+            bool isSuc = true;
+            if (conditions == null || conditions.Length == 0)
+            {
+                isSuc = true;
+            }
+            else
+            {
+                for (int i = 0; i < conditions.Length; i++)
+                {
+                    isSuc &= conditions[i].IsMatch(evt,aimGear);
+                }
+            }
+
+            if (isSuc)
+            {
+                for (int i = 0; i < (success == null ? 0 : success.Length); i++)
+                {
+                    success[i]?.ExecuteAction(evt,aimGear);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < (fail==null?0:fail.Length); i++)
+                {
+                    fail[i]?.ExecuteAction(evt,aimGear);
+                }
+            }
+        }
     }
 }

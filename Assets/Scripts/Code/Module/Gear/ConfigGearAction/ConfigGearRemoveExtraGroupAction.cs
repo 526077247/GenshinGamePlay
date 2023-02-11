@@ -10,5 +10,10 @@ namespace TaoTie
     {
         [SerializeField]
         public int groupId;
+        
+        protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
+        {
+            aimGear.RemoveExtraGroup(groupId);
+        }
     }
 }

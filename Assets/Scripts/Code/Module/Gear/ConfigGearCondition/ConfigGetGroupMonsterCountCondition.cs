@@ -12,7 +12,12 @@ namespace TaoTie
         public CompareMode mode;
         
         [SerializeField] public int value;
-
+        public override bool IsMatch(IEventBase obj,Gear gear)
+        {
+            var count = gear.GetGroupMonsterCount();
+            // NLog.Info(LogConst.NGear, $"do condition: ConfigGetGroupMonsterCountCondition {_value} {count} {_mode}");
+            return IsMatch(value, count, mode);
+        }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)
         {

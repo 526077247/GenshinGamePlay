@@ -5,15 +5,14 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable]
     public abstract class ConfigGearAction
     {
-        [SerializeField] [LabelText("禁用")] public bool disable;
+        [LabelText("禁用")] public bool disable;
 
 #if UNITY_EDITOR
-        [HideInInspector] public Type handleType;
+        public Type handleType;
 #endif
-        [SerializeField] [LabelText("排序序号")] public int localId;
+        [LabelText("排序序号")] public int localId;
         public virtual bool canSetOtherGear { get; } = false;
 
         [SerializeField] [ShowIf("canSetOtherGear")] [LabelText("是否是设置其他Gear的内容")] 
@@ -21,5 +20,31 @@ namespace TaoTie
 
         [SerializeField] [ShowIf("isOtherGear")]
         public ulong otherGearId;
+        public void ExecuteAction(IEventBase evt, Gear gear)
+        {
+            if (disable)
+            {
+                // NLog.Info(LogConst.NGear, "被禁用");
+                return;
+            }
+
+            var aimGear = gear;
+            if (isOtherGear)
+            {
+                if (gear.manager.TryGetGear(otherGearId, out var other))
+                {
+                    aimGear = other;
+                }
+                else
+                {
+                    Log.Error("未找到其他Gear,请检查配置! id=" + otherGearId);
+                    return;
+                }
+            }
+
+            Execute(evt, aimGear, gear);
+        }
+
+        protected abstract void Execute(IEventBase evt, Gear aimGear, Gear fromGear);
     }
 }

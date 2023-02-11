@@ -16,7 +16,7 @@
         public const string MoveStart = "MoveStart";
         /// <summary> 当停止移动 </summary>
         public const string MoveStop = "MoveStop";
-        /// <summary> 攻击 </summary>
-        public const string Attack = "Attack";
+        /// <summary> GearEvent </summary>
+        public const string GearEvent = "GearEvent";
     }
 }

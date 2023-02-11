@@ -1,19 +1,22 @@
-using System;
+﻿using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("进入触发区域的指定类型实体的数量")]
-    [TriggerType(typeof(ConfigEnterZoneGearTrigger))]
-    public class ConfigEnterZoneEvtGetRegionEntityCountCondition : ConfigGearCondition
+    [Serializable][LabelText("当添加或附加组之后-组localId判断")]
+    [TriggerType(typeof(ConfigGroupLoadGearTrigger))]
+    public class ConfigGroupLoadLocalIdCondition : ConfigGearCondition<GroupLoadEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] [SerializeField]
         public CompareMode mode;
-
-        [SerializeField] public int type;
-        [SerializeField] public int value;
-
+        [ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]
+        [SerializeField]public int value;
+        
+        public override bool IsMatch(GroupLoadEvent obj,Gear gear)
+        {
+            return IsMatch(value, obj.GroupId, mode);
+        }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)
         {

@@ -12,5 +12,9 @@ namespace TaoTie
         [SerializeField][LabelText("要附加的组id")]
         public int groupId;
 
+        protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
+        {
+            aimGear.AddExtraGroup(groupId);
+        }
     }
 }

@@ -10,5 +10,12 @@ namespace TaoTie
     {
         [SerializeField] public Vector3 rotation;
         [SerializeField] public Vector3 size;
+
+        public override Zone CreateZone(Gear gear)
+        {
+            var entity = gear.Parent.CreateEntity<Zone>();
+            entity.AddComponent<GearZoneComponent, int, long>(localId, gear.Id);
+            return entity;
+        }
     }
 }

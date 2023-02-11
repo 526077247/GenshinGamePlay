@@ -9,10 +9,10 @@ using UnityEditor;
 namespace TaoTie
 {
     // Condition
-    [Serializable]
     public abstract class ConfigGearCondition
     {
-
+        public abstract bool IsMatch(IEventBase obj, Gear gear);
+        
         public enum CompareMode
         {
             [LabelText("==")] Equal,
@@ -188,5 +188,17 @@ namespace TaoTie
         }
 
 #endif
+    }
+    
+    public abstract class ConfigGearCondition<T>:ConfigGearCondition where T:IEventBase
+    {
+        private Type EventType => TypeInfo<T>.Type;
+        public sealed override bool IsMatch(IEventBase obj, Gear gear)
+        {
+            if (EventType != obj.GetType()) return false;
+            return IsMatch((T)obj, gear);
+        }
+        
+        public abstract bool IsMatch(T obj, Gear gear);
     }
 }

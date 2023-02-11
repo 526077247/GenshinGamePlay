@@ -18,6 +18,11 @@ namespace TaoTie
         public AbstractVariableValue value2;
         
 
+        public override float Resolve(IEventBase obj, VariableSet set)
+        {
+            float v1 = value1.Resolve(obj, set), v2 = value2.Resolve(obj, set);
+            return GetLogicValue(v1, v2, _op);
+        }
         public enum LogicMode
         {
             [LabelText("无")] Default,
@@ -29,7 +34,7 @@ namespace TaoTie
             [LabelText("次方")] Pow,
         }
 
-        public int GetLogicValue(int from, int value, LogicMode mode)
+        public float GetLogicValue(float from, float value, LogicMode mode)
         {
             switch (mode)
             {

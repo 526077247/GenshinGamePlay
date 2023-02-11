@@ -9,6 +9,7 @@ namespace TaoTie
         public void Init(List<ConfigGear> gears,SceneManagerProvider scene)
         {
             this.Parent = scene;
+            EntityManager em = scene.GetManager<EntityManager>();
             configIdMapGear = new Dictionary<ulong, long>();
             if (gears != null)
             {
@@ -28,7 +29,7 @@ namespace TaoTie
                         continue;
                     }
 
-                    var gear = scene.GetManager<EntityManager>().CreateEntity<Gear, ConfigGear>(gearConf);
+                    var gear = em.CreateEntity<Gear, ConfigGear, GearManager>(gearConf,this);
                     configIdMapGear.Add(gearConf.id, gear.Id);
                     Log.Info("<color=red>创建gear</color>"+gearConf.id);
                 }

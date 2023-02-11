@@ -23,5 +23,7 @@ namespace TaoTie
         [PropertyOrder(int.MinValue)]
         [SerializeField] public int localId;
         [SerializeField] public Vector3 position;
+        
+        public abstract Entity CreateActor(Gear gear);
     }
 }

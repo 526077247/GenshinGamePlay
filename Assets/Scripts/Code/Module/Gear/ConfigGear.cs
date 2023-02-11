@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using UnityEngine;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 
-#pragma warning disable 0649
-
 namespace TaoTie
 {
-    [CreateAssetMenu(menuName = "Gear/创建 ConfigGear")]
     public class ConfigGear : SerializedScriptableObject
     {
         [PropertyOrder(int.MinValue)] [SerializeField]
         public ulong id;
-        [PropertyOrder(int.MinValue+1)] [SerializeField]
-        public string scene;
 #if UNITY_EDITOR
         [LabelText("策划备注")] [SerializeField] [PropertyOrder(int.MinValue + 1)]
         private string remarks;

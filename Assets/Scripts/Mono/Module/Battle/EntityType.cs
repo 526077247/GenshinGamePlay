@@ -6,6 +6,7 @@
         Monster = 2,
         Gadget = 3,
         Gear = 4,
+        Zone = 5,
         
         
         MAX,

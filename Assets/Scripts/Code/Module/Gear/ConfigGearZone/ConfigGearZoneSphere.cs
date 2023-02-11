@@ -9,5 +9,12 @@ namespace TaoTie
     {
 
         [SerializeField] public float radius;
+        
+        public override Zone CreateZone(Gear gear)
+        {
+            var entity = gear.Parent.CreateEntity<Zone>();
+            entity.AddComponent<GearZoneComponent, int, long>(localId, gear.Id);
+            return entity;
+        }
     }
 }

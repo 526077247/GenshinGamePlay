@@ -3,14 +3,16 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class Gear: Entity,IEntity<ConfigGear>
+    public class Gear: Entity,IEntity<ConfigGear,GearManager>
     {
         public override EntityType Type => EntityType.Gear;
 
         #region IEntity
 
-        public void Init(ConfigGear p1)
+        public void Init(ConfigGear p1,GearManager manager)
         {
+            Messager.Instance.AddListener<IEventBase>(Id,MessageId.GearEvent,OnEvent);
+            this.manager = manager;
             configId = config.id;
             variable = VariableSet.Create();
             _actorEntities = new Dictionary<int, long>();
@@ -57,6 +59,7 @@ namespace TaoTie
 
         public void Destroy()
         {
+            this.manager = null;
             this.triggers = null;
             this.actors = null;
             this.routes = null;
@@ -85,11 +88,12 @@ namespace TaoTie
             this.variable.onValueChange -= this.OnVariableChanged;
             this.variable.Dispose();
             this.variable = null;
+            Messager.Instance.RemoveListener<IEventBase>(Id,MessageId.GearEvent,OnEvent);
         }
 
         #endregion
 
-        
+        public GearManager manager { get; private set; }
         public VariableSet variable { get; set; }
         public ulong configId;
 
@@ -133,24 +137,16 @@ namespace TaoTie
             
         }
         
-        // public void OnEvent(EventType.GearTriggerEvent evt)
-        // {
-        //     for (var node = this._activeHandlers.First; node != null; node = node.Next)
-        //     {
-        //         var trigger = this.triggers[node.Value];
-        //         if (evt.CheckEvent(trigger))
-        //         {
-        //             for (int i = 0; i < trigger.actions.Length; i++)
-        //             {
-        //                 if(trigger.actions[i] == null) continue;
-        //                 // var action  = EventType.GearAction.Create(self, evt, trigger.actions[i], self);
-        //                 // EventSystem.Instance.PublishClass(action);
-        //             }
-        //         }
-        //     }
-        // }
+        private void OnEvent(IEventBase evt)
+        {
+            for (var node = this._activeHandlers.First; node != null; node = node.Next)
+            {
+                var trigger = this.triggers[node.Value];
+                trigger.OnTrigger(this, evt);
+            }
+        }
 
-        public void AfterLoadFromDB()
+        private void AfterLoadFromDB()
         {
             this.variable.onValueChange += this.OnVariableChanged;
 
@@ -188,11 +184,12 @@ namespace TaoTie
         
         private void OnVariableChanged(string key,float newVal,float oldVal)
         {
-            // EventType.VariableChangeGearEvent.Instance.Gear = self;
-            // EventType.VariableChangeGearEvent.Instance.Key = key;
-            // EventType.VariableChangeGearEvent.Instance.NewValue = newVal;
-            // EventType.VariableChangeGearEvent.Instance.OldValue = oldVal;
-            // Game.EventSystem.PublishClass(EventType.VariableChangeGearEvent.Instance);
+            Messager.Instance.Broadcast(Id,MessageId.GearEvent,new VariableChangeEvent()
+            {
+                Key = key,
+                NewValue = newVal,
+                OldValue = oldVal,
+            });
         }
 
         #region 切换Group
@@ -214,10 +211,11 @@ namespace TaoTie
                 this.ChangeActors(config);
                 this.ChangeZones(config);
                 this.curGroupId = config.localId;
-                // EventType.GroupLoadGearTriggerEvent evt = EventType.GroupLoadGearTriggerEvent.Instance;
-                // evt.GroupId = this.curGroupId;
-                // evt.Gear = self;
-                // Game.EventSystem.PublishClass(evt);
+                Messager.Instance.Broadcast(Id,MessageId.GearEvent,new GroupLoadEvent()
+                {
+                    GroupId = curGroupId,
+                    IsAddOn = false,
+                });
             }
         }
 
@@ -268,8 +266,8 @@ namespace TaoTie
                 {
                     if (!this._actorEntities.ContainsKey(item.Key) && this.actors.TryGetValue(item.Key, out var actor))
                     {
-                        // var unit = Parent.CreateEntity<Entity>(this.GetCurrentScenesFromZoneScene(), self, actor);
-                        // this._actorEntities.Add(item.Key, unit.Id);
+                        var unit = actor.CreateActor(this);
+                        this._actorEntities.Add(item.Key, unit.Id);
                     }
                 }
                 else if (item.Value < 0) //消失actor
@@ -315,8 +313,8 @@ namespace TaoTie
                 {
                     if (!this._zoneEntities.ContainsKey(item.Key) && this.zones.TryGetValue(item.Key, out var zone))
                     {
-                        // var unit = UnitFactory.CreateGearZone(this.GetCurrentScenesFromZoneScene(), self, zone);
-                        // this._zoneEntities[zone.localId] = unit.Id;
+                        var unit = zone.CreateZone(this);
+                        this._zoneEntities[zone.localId] = unit.Id;
                     }
                 }
                 else if (item.Value < 0) //消失
@@ -353,10 +351,11 @@ namespace TaoTie
                 this.AddonActors(config);
                 this.AddonZones(config);
                 this._addOnGroupConfig.Add(config.localId);
-                // EventType.GroupLoadGearTriggerEvent evt = EventType.GroupLoadGearTriggerEvent.Instance;
-                // evt.GroupId = config.localId;
-                // evt.IsAddOn = true;
-                // Game.EventSystem.PublishClass(evt);
+                Messager.Instance.Broadcast(Id,MessageId.GearEvent,new GroupLoadEvent()
+                {
+                    GroupId = curGroupId,
+                    IsAddOn = true,
+                });
             }
         }
         private void AddonActors(ConfigGearGroup config)
@@ -365,8 +364,8 @@ namespace TaoTie
             {
                 if (!this._actorEntities.ContainsKey(config.actors[i]) && this.actors.TryGetValue(config.actors[i], out var actor))
                 {
-                    // var unit = UnitFactory.CreateGearActor(this.GetCurrentScenesFromZoneScene(), self, actor);
-                    // this._actorEntities.Add(actor.localId, unit.Id);
+                    var unit = actor.CreateActor(this);
+                    this._actorEntities.Add(actor.localId, unit.Id);
                 }
             }
         }
@@ -386,8 +385,8 @@ namespace TaoTie
             {
                 if (!this._zoneEntities.ContainsKey(config.zones[i]) && this.zones.TryGetValue(config.zones[i], out var zone))
                 {
-                    // var unit = UnitFactory.CreateGearZone(this.GetCurrentScenesFromZoneScene(), self, zone);
-                    // this._zoneEntities[zone.localId]=unit.Id;
+                    var unit = zone.CreateZone(this);
+                    this._zoneEntities[zone.localId]=unit.Id;
                 }
             }
             
@@ -547,8 +546,8 @@ namespace TaoTie
         {
             if (!this._actorEntities.ContainsKey(actorId) && this.actors.TryGetValue(actorId, out var actor))
             {
-                // var unit = UnitFactory.CreateGearActor(this.GetCurrentScenesFromZoneScene(), self, actor);
-                // this._actorEntities.Add(actor.localId, unit.Id);
+                var unit = actor.CreateActor(this);
+                this._actorEntities.Add(actor.localId, unit.Id);
             }
         }
 

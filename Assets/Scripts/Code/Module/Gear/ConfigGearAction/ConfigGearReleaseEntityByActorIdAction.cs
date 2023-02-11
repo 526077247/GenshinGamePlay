@@ -9,5 +9,13 @@ namespace TaoTie
     {
         [SerializeField]
         public int actorId;
+        
+        protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
+        {
+            if(aimGear.TryGetActorEntity(actorId,out long eid))
+            {
+                aimGear.Parent.Remove(eid);
+            }
+        }
     }
 }

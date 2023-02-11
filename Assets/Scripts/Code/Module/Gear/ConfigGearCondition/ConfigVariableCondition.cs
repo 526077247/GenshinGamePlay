@@ -29,5 +29,11 @@ namespace TaoTie
             return true;
         }
 #endif
+        
+        public sealed override bool IsMatch(IEventBase obj, Gear gear)
+        {
+            var valLeft = leftValue.Resolve(obj, gear.variable);
+            return IsMatch(rightValue, valLeft, mode);
+        }
     }
 }
