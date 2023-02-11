@@ -1,11 +1,12 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable]
+    [NinoSerialize]
     public class ConfigPoint
     {
-        [SerializeField]public Vector3 position;
+        public Vector3 position;
     }
 }

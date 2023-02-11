@@ -1,11 +1,13 @@
 using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("玩家进入触发区域")]
+    [LabelText("玩家进入触发区域")]
     [TriggerType(typeof(ConfigExitZoneGearTrigger))]
+    [NinoSerialize]
     public class ConfigExitZoneEvtGetIsMyCondition : ConfigGearCondition<ExitZoneEvent>
     {
         public override bool IsMatch(ExitZoneEvent obj, Gear gear)

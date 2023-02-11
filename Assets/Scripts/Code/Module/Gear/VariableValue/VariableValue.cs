@@ -1,19 +1,20 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [Serializable]
+    [NinoSerialize]
     public class VariableValue : AbstractVariableValue
     {
-        [SerializeField] [LabelText("是否变量？")]
+        [NinoMember(1)][LabelText("是否变量？")]
         public bool isDynamic;
 
-        [ShowIf("isDynamic")] [SerializeField][LabelText("变量")]
+        [NinoMember(2)][ShowIf("isDynamic")] [LabelText("变量")]
         public string key;
 
-        [ShowIf("@!isDynamic")] [SerializeField] [LabelText("固定值")]
+        [NinoMember(3)][ShowIf("@!isDynamic")] [LabelText("固定值")]
         public int fixedValue;
         
         public override float Resolve(IEventBase obj, VariableSet set)

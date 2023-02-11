@@ -1,21 +1,24 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable]
-    [TriggerType][LabelText("Gear当前剩余怪物数量")]
+    
+    [TriggerType]
+    [LabelText("Gear当前剩余怪物数量")]
+    [NinoSerialize]
     public class ConfigGetGroupMonsterCountCondition : ConfigGearCondition
     {
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] [SerializeField]
+        [NinoMember(1)]
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
         public CompareMode mode;
-        
-        [SerializeField] public int value;
+        [NinoMember(2)]
+        public int value;
         public override bool IsMatch(IEventBase obj,Gear gear)
         {
             var count = gear.GetGroupMonsterCount();
-            // NLog.Info(LogConst.NGear, $"do condition: ConfigGetGroupMonsterCountCondition {_value} {count} {_mode}");
             return IsMatch(value, count, mode);
         }
 #if UNITY_EDITOR

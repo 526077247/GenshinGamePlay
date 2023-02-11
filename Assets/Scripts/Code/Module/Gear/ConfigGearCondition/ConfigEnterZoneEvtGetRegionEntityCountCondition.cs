@@ -1,18 +1,22 @@
 using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("进入触发区域的指定类型实体的数量")]
+    [LabelText("进入触发区域的指定类型实体的数量")]
     [TriggerType(typeof(ConfigEnterZoneGearTrigger))]
+    [NinoSerialize]
     public class ConfigEnterZoneEvtGetRegionEntityCountCondition : ConfigGearCondition<EnterZoneEvent>
     {
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] [SerializeField]
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
+        [NinoMember(1)]
         public CompareMode mode;
-
-        [SerializeField] public EntityType type;
-        [SerializeField] public int value;
+        [NinoMember(2)]
+        public EntityType type;
+        [NinoMember(3)]
+        public int value;
         public override bool IsMatch(EnterZoneEvent obj,Gear gear)
         {
             var zone = gear.Parent.Get<Zone>(obj.ZoneEntityId)?.GetComponent<GearZoneComponent>();

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -7,17 +7,19 @@ using UnityEngine;
 namespace TaoTie
 {
     // Trigger
-    [Serializable]
+    
     public abstract class ConfigGearTrigger
     {
-        [PropertyOrder(int.MinValue)] [SerializeField]
+        [PropertyOrder(int.MinValue)] 
+        [NinoMember(1)]
         public int localId;
-
-        [SerializeReference][OnCollectionChanged("Refresh")] [OnStateUpdate("Refresh")] 
+        [NinoMember(2)]
+        [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
+        [PropertyOrder(int.MaxValue - 1)]
         public ConfigGearAction[] actions;
 
 #if UNITY_EDITOR
-        [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")] [SerializeField]
+        [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
         private string remarks;
         
         private void Refresh()

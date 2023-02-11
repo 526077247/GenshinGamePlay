@@ -1,28 +1,24 @@
 ﻿using System;
+using LitJson.Extensions;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-#pragma warning disable 0649
-
 namespace TaoTie
 {
-    [Serializable]
+    
     public abstract class ConfigGearActor
     {
 #if UNITY_EDITOR
-        /// <summary>
-        /// 编辑器下使用！！加个Obsolete给提示
-        /// </summary>
-        [HideInInspector]
-        [Obsolete][HideInTables][NonSerialized]
-        public ConfigRoute[] routes;
         [PropertyOrder(int.MinValue+1)]
-        [LabelText("策划备注")][SerializeField]
+        [LabelText("策划备注")]
         private string remarks;
 #endif
+        [NinoMember(1)]
         [PropertyOrder(int.MinValue)]
-        [SerializeField] public int localId;
-        [SerializeField] public Vector3 position;
+        public int localId;
+        [NinoMember(2)]
+        public Vector3 position;
         
         public abstract Entity CreateActor(Gear gear);
     }

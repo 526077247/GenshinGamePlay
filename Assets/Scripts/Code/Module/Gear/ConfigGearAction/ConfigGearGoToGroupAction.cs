@@ -1,4 +1,5 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,10 +8,13 @@ namespace TaoTie
     /// <summary>
     /// gear调整group进度,只对非randGroup有效
     /// </summary>
-    [Serializable][LabelText("跳转到其他Group")]
+    [LabelText("跳转到其他Group")]
+    [NinoSerialize]
     public class ConfigGearGoToGroupAction:ConfigGearAction
     {
-        [SerializeField][LabelText("要跳转的组Id")]
+        [LabelText("要跳转的组Id")]
+        [ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]
+        [NinoMember(10)]
         public int groupId;
         protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
         {

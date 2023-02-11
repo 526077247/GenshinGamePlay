@@ -1,4 +1,6 @@
 ﻿using System;
+using LitJson.Extensions;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,18 +9,23 @@ namespace TaoTie
 {
     public abstract class ConfigGearAction
     {
+        [NinoMember(1)]
         [LabelText("禁用")] public bool disable;
 
 #if UNITY_EDITOR
+        [HideInInspector][JsonIgnore]
         public Type handleType;
 #endif
+        [NinoMember(2)]
         [LabelText("排序序号")] public int localId;
+        [JsonIgnore]
         public virtual bool canSetOtherGear { get; } = false;
-
-        [SerializeField] [ShowIf("canSetOtherGear")] [LabelText("是否是设置其他Gear的内容")] 
+        [ShowIf(nameof(canSetOtherGear))] [LabelText("是否是设置其他Gear的内容")] 
+        [NinoMember(3)]
         public bool isOtherGear;
 
-        [SerializeField] [ShowIf("isOtherGear")]
+        [ShowIf(nameof(isOtherGear))]
+        [NinoMember(4)]
         public ulong otherGearId;
         public void ExecuteAction(IEventBase evt, Gear gear)
         {

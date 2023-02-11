@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LitJson.Extensions;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,86 +11,24 @@ namespace TaoTie
     /// <summary>
     /// 小组配置
     /// </summary>
-    [Serializable]
+    [NinoSerialize]
     public class ConfigGearGroup
     {
 #if UNITY_EDITOR
-        [LabelText("策划备注")][SerializeField][PropertyOrder(int.MinValue+1)]
+        [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
         private string remarks;
-        /// <summary>
-        /// 编辑器下使用！！加个Obsolete给提示
-        /// </summary>
-        [HideInInspector]
-        [Obsolete][HideInTables][NonSerialized]
-        public ConfigGearActor[] gearActors;
-        [HideInInspector]
-        [Obsolete][HideInTables][NonSerialized]
-        public ConfigGearZone[] gearZones;
-        [HideInInspector]
-        [Obsolete][HideInTables][NonSerialized]
-        public ConfigGearTrigger[] gearTriggers;
-        [HideInInspector]
-        [Obsolete][HideInTables][NonSerialized]
-        public bool randGroup;
-        
-        private List<int> actorIds
-        {
-            get
-            {
-                List<int> res = new List<int>();
-                if (gearActors == null) return res;
-                for (int i = 0; i < gearActors.Length; i++)
-                {
-                    if(gearActors[i]!=null&&(actors==null||!actors.Contains(gearActors[i].localId)))
-                        res.Add(gearActors[i].localId);
-                }
-
-                return res;
-            }
-        }
-        
-        private List<int> zoneIds
-        {
-            get
-            {
-                List<int> res = new List<int>();
-                if (gearZones == null) return res;
-                for (int i = 0; i <gearZones.Length; i++)
-                {
-                    if(gearZones[i]!=null&&(zones==null||!zones.Contains(gearZones[i].localId)))
-                        res.Add(gearZones[i].localId);
-                }
-
-                return res;
-            }
-        }
-        
-        private List<int> triggerIds
-        {
-            get
-            {
-                List<int> res = new List<int>();
-                if (gearTriggers == null) return res;
-                for (int i = 0; i < gearTriggers.Length; i++)
-                {
-                    if(gearTriggers[i]!=null&&(triggers==null||!triggers.Contains(gearTriggers[i].localId)))
-                        res.Add(gearTriggers[i].localId);
-                }
-
-                return res;
-            }
-        }
+        [JsonIgnore]
+        private bool randGroup => OdinDropdownHelper.gear.randGroup;
 #endif
-        [PropertyOrder(int.MinValue)]
-        [SerializeField]
+        [NinoMember(1)][PropertyOrder(int.MinValue)]
         public int localId;
-        [ValueDropdown("actorIds")][SerializeField]
+        [NinoMember(2)][ValueDropdown("@OdinDropdownHelper.GetGearActorIds()")]
         public int[] actors;
-        [ValueDropdown("zoneIds")][SerializeField]
+        [NinoMember(3)][ValueDropdown("@OdinDropdownHelper.GetGearZoneIds()")]
         public int[] zones;
-        [ValueDropdown("triggerIds")][SerializeField]
+        [NinoMember(4)][ValueDropdown("@OdinDropdownHelper.GetGearTriggerIds()")]
         public int[] triggers;
-        [ShowIf("randGroup")][SerializeField]
+        [NinoMember(5)][ShowIf(nameof(randGroup))]
         public int randWeight;
         
         

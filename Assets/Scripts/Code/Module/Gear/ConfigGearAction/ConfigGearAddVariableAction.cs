@@ -1,27 +1,32 @@
 ﻿using System;
+using LitJson.Extensions;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("增加变量的值")]
+    [LabelText("增加变量的值")]
+    [NinoSerialize]
     public class ConfigGearAddVariableAction : ConfigGearAction
     {
+        [JsonIgnore]
         public override bool canSetOtherGear => true;
-        
+        [NinoMember(10)]
         [LabelText("变量")]
-        [SerializeField] public string key;
-        
-        [SerializeField][LabelText("是否限制范围")]
+        public string key;
+        [NinoMember(11)]
+        [LabelText("是否限制范围")]
         public bool limit;
-
-        [ShowIf("limit")] [SerializeField][LabelText("范围最小值")]
+        [NinoMember(12)]
+        [ShowIf(nameof(limit))] [LabelText("范围最小值")]
         public float minValue;
-
-        [ShowIf("limit")] [SerializeField][LabelText("范围最大值")]
+        [NinoMember(13)]
+        [ShowIf(nameof(limit))] [LabelText("范围最大值")]
         public float maxValue;
+        [NinoMember(14)]
         [LabelText("增加的值")]
-        [SerializeReference] public AbstractVariableValue value;
+        public AbstractVariableValue value;
         
         
         protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)

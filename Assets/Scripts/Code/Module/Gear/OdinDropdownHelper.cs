@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.Utilities;
@@ -8,6 +9,7 @@ namespace TaoTie
 {
     public static class OdinDropdownHelper
     {
+        public static ConfigGear gear;
         #region Gear
 
         public static IEnumerable<Type> GetFilteredConditionTypeList(Type type)
@@ -74,10 +76,11 @@ namespace TaoTie
 
         public static List<int> GetGearActorIds()
         {
+            
             List<int> res = new List<int>();
-            if (Selection.activeObject != null && Selection.activeObject.GetType() == typeof(ConfigGear))
+            if (gear!=null)
             {
-                ConfigGear config = Selection.activeObject as ConfigGear;
+                ConfigGear config = gear;
                 for (int i = 0; i < (config.actors == null ? 0 : config.actors.Length); i++)
                 {
                     if (config.actors[i] != null)
@@ -91,9 +94,9 @@ namespace TaoTie
         public static List<int> GetGearRouteIds()
         {
             List<int> res = new List<int>();
-            if (Selection.activeObject != null && Selection.activeObject.GetType() == typeof(ConfigGear))
+            if (gear!=null)
             {
-                ConfigGear config = Selection.activeObject as ConfigGear;
+                ConfigGear config = gear;
                 for (int i = 0; i < (config.route == null ? 0 : config.route.Length); i++)
                 {
                     if (config.route[i] != null)
@@ -106,9 +109,9 @@ namespace TaoTie
         public static List<int> GetGearZoneIds()
         {
             List<int> res = new List<int>();
-            if (Selection.activeObject != null && Selection.activeObject.GetType() == typeof(ConfigGear))
+            if (gear!=null)
             {
-                ConfigGear config = Selection.activeObject as ConfigGear;
+                ConfigGear config = gear;
                 for (int i = 0; i < (config.zones == null ? 0 : config.zones.Length); i++)
                 {
                     if (config.zones[i] != null)
@@ -121,9 +124,9 @@ namespace TaoTie
         public static List<int> GetGearGroupIds()
         {
             List<int> res = new List<int>();
-            if (Selection.activeObject != null && Selection.activeObject.GetType() == typeof(ConfigGear))
+            if (gear!=null)
             {
-                ConfigGear config = Selection.activeObject as ConfigGear;
+                ConfigGear config = gear;
                 for (int i = 0; i < (config.group == null ? 0 : config.group.Length); i++)
                 {
                     if (config.group[i] != null)
@@ -132,6 +135,36 @@ namespace TaoTie
             }
             return res;
         }
+        public static List<int> GetGearGroupIds0()
+        {
+            List<int> res = new List<int>();
+            if (gear!=null)
+            {
+                ConfigGear config = gear;
+                for (int i = 0; i < (config.group == null ? 0 : config.group.Length); i++)
+                {
+                    if (config.group[i] != null)
+                        res.Add(config.group[i].localId);
+                }
+            }
+            res.Add(0);
+            return res;
+        }
+        public static List<int> GetGearTriggerIds()
+        {
+            List<int> res = new List<int>();
+            if (gear!=null)
+            {
+                ConfigGear config = gear;
+                for (int i = 0; i < (config.triggers == null ? 0 : config.triggers.Length); i++)
+                {
+                    if (config.triggers[i] != null)
+                        res.Add(config.triggers[i].localId);
+                }
+            }
+            return res;
+        }
         #endregion
     }
 }
+#endif

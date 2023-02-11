@@ -1,4 +1,5 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,10 +8,12 @@ namespace TaoTie
     /// <summary>
     /// 打印log
     /// </summary>
-    [Serializable][LabelText("打印log")]
+    [LabelText("打印log")]
+    [NinoSerialize]
     public class ConfigGearPrintContextLogAction : ConfigGearAction
     {
-        [SerializeField] public string content;
+        [NinoMember(10)]
+        public string content;
         
         protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)
         {

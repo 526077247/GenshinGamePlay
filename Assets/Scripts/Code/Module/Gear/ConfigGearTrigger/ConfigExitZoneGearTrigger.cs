@@ -1,9 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("当有实体离开区域")]
+    [LabelText("当有实体离开区域")]
+    [NinoSerialize]
     public class ConfigExitZoneGearTrigger : ConfigGearTrigger<ExitZoneEvent>
     {
 

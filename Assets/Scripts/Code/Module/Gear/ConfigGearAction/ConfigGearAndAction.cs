@@ -1,23 +1,28 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("且 运算节点")]
+    [LabelText("且 运算节点")]
+    [NinoSerialize]
     public class ConfigGearAndAction:ConfigGearAction
     {
-        [SerializeReference][LabelText("条件")]
+        [NinoMember(10)]
+        [LabelText("条件")]
         [TypeFilter("@OdinDropdownHelper.GetFilteredConditionTypeList(handleType)")]
         public ConfigGearCondition[] conditions;
-        [LabelText("所有条件都满足后执行")][OnCollectionChanged("Refresh")]
-        [OnStateUpdate("Refresh")]
-        [SerializeReference]
+        [NinoMember(11)]
+        [LabelText("所有条件都满足后执行")]
+        [OnCollectionChanged(nameof(Refresh))]
+        [OnStateUpdate(nameof(Refresh))]
         public ConfigGearAction[] success;
+        [NinoMember(12)]
         [LabelText("任意一个条件不满足执行")]
-        [SerializeReference][OnCollectionChanged("Refresh")]
-        [OnStateUpdate("Refresh")]
+        [OnCollectionChanged(nameof(Refresh))]
+        [OnStateUpdate(nameof(Refresh))]
         public ConfigGearAction[] fail;
 
 #if UNITY_EDITOR

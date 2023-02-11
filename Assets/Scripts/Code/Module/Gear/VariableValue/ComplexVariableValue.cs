@@ -1,20 +1,21 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable]
+    [NinoSerialize]
     public class ComplexVariableValue : AbstractVariableValue
     {
-        [SerializeField, SerializeReference][LabelText("左值")]
+        [NinoMember(1)][LabelText("左值")]
         public AbstractVariableValue value1;
 
-        [Tooltip("操作类型")] [SerializeField]
+        [NinoMember(2)][Tooltip("操作类型")]
         public LogicMode _op;
         
         [InfoBox("注意：除数不能为0")] [ShowIf("@_op != LogicMode.Default")]
-        [SerializeField, SerializeReference][LabelText("右值")]
+        [NinoMember(3)][LabelText("右值")]
         public AbstractVariableValue value2;
         
 

@@ -1,15 +1,19 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("立方")]
+    [LabelText("立方")]
+    [NinoSerialize]
     public class ConfigGearZoneOBB : ConfigGearZone
     {
-        [SerializeField] public Vector3 rotation;
-        [SerializeField] public Vector3 size;
+        [NinoMember(5)]
+        public Vector3 rotation;
+        [NinoMember(6)]
+        public Vector3 size;
 
         public override Zone CreateZone(Gear gear)
         {

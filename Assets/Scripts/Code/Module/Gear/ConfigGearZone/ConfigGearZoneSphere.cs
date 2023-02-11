@@ -1,14 +1,16 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("球")]
+    [LabelText("球")]
+    [NinoSerialize]
     public class ConfigGearZoneSphere : ConfigGearZone
     {
-
-        [SerializeField] public float radius;
+        [NinoMember(5)]
+        public float radius;
         
         public override Zone CreateZone(Gear gear)
         {

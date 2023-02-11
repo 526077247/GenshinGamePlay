@@ -1,17 +1,21 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("当添加或附加组之后-组localId判断")]
+    [LabelText("当添加或附加组之后-组localId判断")]
     [TriggerType(typeof(ConfigGroupLoadGearTrigger))]
+    [NinoSerialize]
     public class ConfigGroupLoadLocalIdCondition : ConfigGearCondition<GroupLoadEvent>
     {
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] [SerializeField]
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
+        [NinoMember(1)]
         public CompareMode mode;
         [ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]
-        [SerializeField]public int value;
+        [NinoMember(2)]
+        public int value;
         
         public override bool IsMatch(GroupLoadEvent obj,Gear gear)
         {

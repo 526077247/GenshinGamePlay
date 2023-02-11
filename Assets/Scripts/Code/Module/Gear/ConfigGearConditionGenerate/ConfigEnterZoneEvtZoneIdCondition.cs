@@ -1,17 +1,21 @@
 using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("进入触发区域的id")]
+    [LabelText("进入触发区域的id")]
     [TriggerType(typeof(ConfigEnterZoneGearTrigger))]
+    [NinoSerialize]
     public class ConfigEnterZoneEvtZoneIdCondition : ConfigGearCondition<EnterZoneEvent>
     {
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] [SerializeField]
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
+        [NinoMember(1)]
         public CompareMode mode;
+        [NinoMember(2)]
         [ValueDropdown("@OdinDropdownHelper.GetGearZoneIds()")]
-        [SerializeField] public int value;
+        public int value;
 
         public override bool IsMatch(EnterZoneEvent obj,Gear gear)
         {

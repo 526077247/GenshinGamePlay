@@ -1,9 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("当关卡内怪物死亡")]
+    [LabelText("当关卡内怪物死亡")]
+    [NinoSerialize]
     public class ConfigAnyMonsterDieGearTrigger : ConfigGearTrigger<AnyMonsterDieEvent>
     {
         

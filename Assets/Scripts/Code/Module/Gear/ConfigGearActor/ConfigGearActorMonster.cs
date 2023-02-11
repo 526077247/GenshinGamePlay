@@ -1,14 +1,17 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable]
+    [NinoSerialize]
     public sealed class ConfigGearActorMonster : ConfigGearActor
     {
-        [SerializeField] public int configID;
-        [SerializeField] public int AIId;
+        [NinoMember(10)]
+        public int configID;
+        [NinoMember(11)]
+        public int AIId;
         
         public override Entity CreateActor(Gear gear)
         {

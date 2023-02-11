@@ -1,17 +1,21 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("关卡内怪物死亡-怪物localId判断")]
+    [LabelText("关卡内怪物死亡-怪物localId判断")]
     [TriggerType(typeof(ConfigAnyMonsterDieGearTrigger))]
+    [NinoSerialize]
     public class ConfigAnyMonsterDieLocalIdCondition : ConfigGearCondition<AnyMonsterDieEvent>
     {
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] [SerializeField]
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
+        [NinoMember(1)]
         public CompareMode mode;
+        [NinoMember(2)]
         [ValueDropdown("@OdinDropdownHelper.GetGearActorIds()")]
-        [SerializeField]public int value;
+        public int value;
         
         public sealed override bool IsMatch(AnyMonsterDieEvent obj, Gear gear)
         {

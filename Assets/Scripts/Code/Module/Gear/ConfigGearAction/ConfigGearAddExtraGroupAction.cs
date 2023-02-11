@@ -1,15 +1,17 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable]
+    
     [LabelText("附加group")]
+    [NinoSerialize]
     public class ConfigGearAddExtraGroupAction : ConfigGearAction
     {
-
-        [SerializeField][LabelText("要附加的组id")]
+        [NinoMember(10)]
+        [LabelText("要附加的组id")][ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]
         public int groupId;
 
         protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)

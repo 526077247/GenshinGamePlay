@@ -1,9 +1,11 @@
 using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("当有实体进入区域")]
+    [LabelText("当有实体进入区域")]
+    [NinoSerialize]
     public class ConfigEnterZoneGearTrigger : ConfigGearTrigger<EnterZoneEvent>
     {
 

@@ -1,13 +1,15 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("当关卡的变量改变之后")]
+    [LabelText("当关卡的变量改变之后")]
+    [NinoSerialize]
     public class ConfigVariableChangeGearTrigger : ConfigGearTrigger<VariableChangeEvent>
     {
-        [SerializeField] 
+        [NinoMember(5)][LabelText("变量")]
         public string key;
 
     }

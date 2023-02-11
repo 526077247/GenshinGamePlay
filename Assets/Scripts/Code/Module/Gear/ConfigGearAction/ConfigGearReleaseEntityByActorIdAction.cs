@@ -1,13 +1,16 @@
 ﻿using System;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][LabelText("通过ActorId释放实体")]
+    [LabelText("通过ActorId释放实体")]
+    [NinoSerialize]
     public class ConfigGearReleaseEntityByActorIdAction:ConfigGearAction
     {
-        [SerializeField]
+        [NinoMember(10)]
+        [ValueDropdown("@OdinDropdownHelper.GetGearActorIds()")]
         public int actorId;
         
         protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)

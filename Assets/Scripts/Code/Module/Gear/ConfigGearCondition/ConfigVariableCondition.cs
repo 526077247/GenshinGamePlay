@@ -1,21 +1,24 @@
 ﻿using System;
-
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType]
-    [Serializable][LabelText("变量值")]
+    [LabelText("变量值")]
+    [NinoSerialize]
     public class ConfigVariableCondition : ConfigGearCondition
     {
-        [SerializeReference] [LabelText("左值")] 
+        [NinoMember(1)]
+        [LabelText("左值")] 
         public AbstractVariableValue leftValue;
-
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(rightValue,mode)")] [SerializeField]
+        [NinoMember(2)]
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(rightValue,mode)")]
         public CompareMode mode;
-
-        [SerializeReference] [LabelText("右值")] public float rightValue;
+        [NinoMember(3)]
+        [LabelText("右值")] 
+        public float rightValue;
 
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)
