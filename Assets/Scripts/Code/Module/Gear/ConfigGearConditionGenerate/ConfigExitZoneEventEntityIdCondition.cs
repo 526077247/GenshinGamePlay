@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigExitZoneEventTrigger))]
     [NinoSerialize]
-    public class ConfigExitZoneEventEntityIdCondition : ConfigGearCondition<ExitZoneEvent>
+    public partial class ConfigExitZoneEventEntityIdCondition : ConfigGearCondition<ExitZoneEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]

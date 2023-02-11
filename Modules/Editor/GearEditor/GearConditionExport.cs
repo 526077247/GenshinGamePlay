@@ -45,7 +45,7 @@ namespace TaoTie
             sb.AppendLine("{");
             sb.AppendLine($"    [TriggerType(typeof(Config{type.Name}Trigger))]");
             sb.AppendLine("    [NinoSerialize]");
-            sb.AppendLine($"    public class {className} : ConfigGearCondition<{type.Name}>");
+            sb.AppendLine($"    public partial class {className} : ConfigGearCondition<{type.Name}>");
             sb.AppendLine("    {");
             sb.AppendLine("        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged(\"@CheckModeType(value,mode)\")] ");
             sb.AppendLine("        [NinoMember(1)]");

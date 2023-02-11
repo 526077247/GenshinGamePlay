@@ -273,7 +273,7 @@ namespace TaoTie
             }
             if (tran.hasExitTime)
             {
-                conditionList.Add(new ConfigConditionByStateTime(tran.exitTime, true, ConfigCondition.CompareMode.GEqual));
+                conditionList.Add(new ConfigConditionByStateTime(tran.exitTime, true, CompareMode.GEqual));
             }
 
             // do export transition without conditions
@@ -511,26 +511,26 @@ namespace TaoTie
                 return null;
             }
 
-            ConfigCondition.CompareMode mode = ConfigCondition.CompareMode.Equal;
+            CompareMode mode = CompareMode.Equal;
             switch (cond.mode)
             {
                 case AnimatorConditionMode.If:
-                    mode = ConfigCondition.CompareMode.Equal;
+                    mode = CompareMode.Equal;
                     break;
                 case AnimatorConditionMode.IfNot:
-                    mode = ConfigCondition.CompareMode.NotEqual;
+                    mode = CompareMode.NotEqual;
                     break;
                 case AnimatorConditionMode.Greater:
-                    mode = ConfigCondition.CompareMode.Greater;
+                    mode = CompareMode.Greater;
                     break;
                 case AnimatorConditionMode.Less:
-                    mode = ConfigCondition.CompareMode.Less;
+                    mode = CompareMode.Less;
                     break;
                 case AnimatorConditionMode.Equals:
-                    mode = ConfigCondition.CompareMode.Equal;
+                    mode = CompareMode.Equal;
                     break;
                 case AnimatorConditionMode.NotEqual:
-                    mode = ConfigCondition.CompareMode.NotEqual;
+                    mode = CompareMode.NotEqual;
                     break;
                 default:
                     break;
@@ -556,7 +556,7 @@ namespace TaoTie
                         }
                     case AnimatorControllerParameterType.Bool:
                         {
-                            cfg = new ConfigConditionByDataBool(cond.parameter, cond.mode == AnimatorConditionMode.If, ConfigCondition.CompareMode.Equal);
+                            cfg = new ConfigConditionByDataBool(cond.parameter, cond.mode == AnimatorConditionMode.If, CompareMode.Equal);
                             break;
                         }
                     case AnimatorControllerParameterType.Int:

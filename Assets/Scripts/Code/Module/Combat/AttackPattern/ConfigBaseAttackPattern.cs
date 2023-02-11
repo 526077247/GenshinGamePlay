@@ -2,6 +2,7 @@
 
 namespace TaoTie
 {
+    [NinoSerialize]
     public abstract partial class ConfigBaseAttackPattern
     {
         [NinoMember(1)]

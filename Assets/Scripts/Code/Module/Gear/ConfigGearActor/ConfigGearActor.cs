@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    
+    [NinoSerialize]
     public abstract class ConfigGearActor
     {
 #if UNITY_EDITOR

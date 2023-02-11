@@ -6,7 +6,7 @@ namespace TaoTie
 {
     [LabelText("当添加或附加组之后")]
     [NinoSerialize]
-    public class ConfigGroupLoadEventTrigger : ConfigGearTrigger<GroupLoadEvent>
+    public partial class ConfigGroupLoadEventTrigger : ConfigGearTrigger<GroupLoadEvent>
     {
 
     }

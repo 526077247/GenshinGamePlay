@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigVariableChangeEventTrigger))]
     [NinoSerialize]
-    public class ConfigVariableChangeEventOldValueCondition : ConfigGearCondition<VariableChangeEvent>
+    public partial class ConfigVariableChangeEventOldValueCondition : ConfigGearCondition<VariableChangeEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]

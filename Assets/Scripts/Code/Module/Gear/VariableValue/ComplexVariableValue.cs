@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ComplexVariableValue : AbstractVariableValue
+    public partial class ComplexVariableValue : AbstractVariableValue
     {
         [NinoMember(1)][LabelText("左值")]
         public AbstractVariableValue value1;
@@ -23,16 +23,6 @@ namespace TaoTie
         {
             float v1 = value1.Resolve(obj, set), v2 = value2.Resolve(obj, set);
             return GetLogicValue(v1, v2, _op);
-        }
-        public enum LogicMode
-        {
-            [LabelText("无")] Default,
-            [LabelText("加")] Add,
-            [LabelText("减")] Red,
-            [LabelText("乘")] Mul,
-            [LabelText("除")] Div,
-            [LabelText("取余")] Rem,
-            [LabelText("次方")] Pow,
         }
 
         public float GetLogicValue(float from, float value, LogicMode mode)

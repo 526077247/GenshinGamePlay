@@ -8,7 +8,7 @@ namespace TaoTie
 {
     [LabelText("且 运算节点")]
     [NinoSerialize]
-    public class ConfigGearAndAction:ConfigGearAction
+    public partial class ConfigGearAndAction:ConfigGearAction
     {
         [NinoMember(10)]
         [LabelText("条件")]

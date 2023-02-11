@@ -8,7 +8,7 @@ namespace TaoTie
     [LabelText("进入触发区域的指定类型实体的数量")]
     [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
     [NinoSerialize]
-    public class ConfigEnterZoneEvtGetRegionEntityCountCondition : ConfigGearCondition<EnterZoneEvent>
+    public partial class ConfigEnterZoneEvtGetRegionEntityCountCondition : ConfigGearCondition<EnterZoneEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
         [NinoMember(1)]

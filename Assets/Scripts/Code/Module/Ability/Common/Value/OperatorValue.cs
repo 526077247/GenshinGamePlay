@@ -1,4 +1,6 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -11,8 +13,8 @@ namespace TaoTie
         [NinoMember(1)][NotNull]
         public BaseValue Left;
         [NinoMember(2)]
-        public Operator Op;
-        [NinoMember(3)][NotNull]
+        public LogicMode Op;
+        [NinoMember(3)][NotNull][ShowIf("@_op != LogicMode.Default")]
         public BaseValue Right;
 
 
@@ -20,14 +22,21 @@ namespace TaoTie
         {
             switch (Op)
             {
-                case Operator.Add:
+                case LogicMode.Add:
                     return Left.Resolve(entity,ability) + Right.Resolve(entity,ability);
-                case Operator.Sub:
+                case LogicMode.Red:
                     return Left.Resolve(entity,ability) - Right.Resolve(entity,ability);
-                case Operator.Mul:
+                case LogicMode.Mul:
                     return Left.Resolve(entity,ability) * Right.Resolve(entity,ability);
-                case Operator.Div:
+                case LogicMode.Div:
                     return Left.Resolve(entity,ability) / Right.Resolve(entity,ability);
+                case LogicMode.Rem:
+                    if (Right.Resolve(entity,ability) == 0) return Left.Resolve(entity,ability);
+                    return Left.Resolve(entity,ability) % Right.Resolve(entity,ability);
+                case LogicMode.Pow:
+                    return (int) Mathf.Pow(Left.Resolve(entity,ability), Right.Resolve(entity,ability));
+                case LogicMode.Default:
+                    return Left.Resolve(entity,ability);
             }
 
             return 0;

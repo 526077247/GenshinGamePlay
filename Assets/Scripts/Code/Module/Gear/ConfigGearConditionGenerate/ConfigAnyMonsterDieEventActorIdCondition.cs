@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigAnyMonsterDieEventTrigger))]
     [NinoSerialize]
-    public class ConfigAnyMonsterDieEventActorIdCondition : ConfigGearCondition<AnyMonsterDieEvent>
+    public partial class ConfigAnyMonsterDieEventActorIdCondition : ConfigGearCondition<AnyMonsterDieEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]

@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [LabelText("通过ActorId创建实体")]
     [NinoSerialize]
-    public class ConfigGearCreateEntityByActorIdAction : ConfigGearAction
+    public partial class ConfigGearCreateEntityByActorIdAction : ConfigGearAction
     {
         [NinoMember(10)]
         [ValueDropdown("@OdinDropdownHelper.GetGearActorIds()")]

@@ -6,7 +6,7 @@ namespace TaoTie
 {
     [LabelText("当有实体进入区域")]
     [NinoSerialize]
-    public class ConfigEnterZoneEventTrigger : ConfigGearTrigger<EnterZoneEvent>
+    public partial class ConfigEnterZoneEventTrigger : ConfigGearTrigger<EnterZoneEvent>
     {
 
     }

@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [LabelText("移除附加group")]
     [NinoSerialize]
-    public class ConfigGearRemoveExtraGroupAction : ConfigGearAction
+    public partial class ConfigGearRemoveExtraGroupAction : ConfigGearAction
     {
         [NinoMember(10)]
         [ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]

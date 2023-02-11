@@ -8,7 +8,7 @@ namespace TaoTie
     
     [LabelText("附加group")]
     [NinoSerialize]
-    public class ConfigGearAddExtraGroupAction : ConfigGearAction
+    public partial class ConfigGearAddExtraGroupAction : ConfigGearAction
     {
         [NinoMember(10)]
         [LabelText("要附加的组id")][ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]

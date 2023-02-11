@@ -1,5 +1,5 @@
 using System;
-
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -9,19 +9,10 @@ using UnityEditor;
 namespace TaoTie
 {
     // Condition
-    public abstract class ConfigGearCondition
+    [NinoSerialize]
+    public abstract partial class ConfigGearCondition
     {
         public abstract bool IsMatch(IEventBase obj, Gear gear);
-        
-        public enum CompareMode
-        {
-            [LabelText("==")] Equal,
-            [LabelText("!=")] NotEqual,
-            [LabelText(">")] Greater,
-            [LabelText("<")] Less,
-            [LabelText("<=")] LEqual,
-            [LabelText(">=")] GEqual,
-        }
 
         public bool IsMatch(int configValue, int evtValue, CompareMode mode)
         {
@@ -92,18 +83,7 @@ namespace TaoTie
                     return false;
             }
         }
-
-
-        public enum LogicMode
-        {
-            [LabelText("无")] Default,
-            [LabelText("+")] Add,
-            [LabelText("-")] Red,
-            [LabelText("*")] Mul,
-            [LabelText("÷")] Div,
-            [LabelText("%")] Rem,
-            [LabelText("^")] Pow,
-        }
+        
 
         public int GetLogicValue(int from, int value, LogicMode mode)
         {

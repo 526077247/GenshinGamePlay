@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigRoute
+    public partial class ConfigRoute
     {
         public int localId;
 

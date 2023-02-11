@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class VariableValue : AbstractVariableValue
+    public partial class VariableValue : AbstractVariableValue
     {
         [NinoMember(1)][LabelText("是否变量？")]
         public bool isDynamic;

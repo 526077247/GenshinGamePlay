@@ -10,7 +10,7 @@ namespace TaoTie
     /// </summary>
     [LabelText("跳转到其他Group")]
     [NinoSerialize]
-    public class ConfigGearGoToGroupAction:ConfigGearAction
+    public partial class ConfigGearGoToGroupAction:ConfigGearAction
     {
         [LabelText("要跳转的组Id")]
         [ValueDropdown("@OdinDropdownHelper.GetGearGroupIds()")]

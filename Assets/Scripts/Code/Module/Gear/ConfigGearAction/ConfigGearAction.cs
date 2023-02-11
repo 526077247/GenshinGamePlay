@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class ConfigGearAction
+    [NinoSerialize]
+    public abstract partial class ConfigGearAction
     {
         [NinoMember(1)]
         [LabelText("禁用")] public bool disable;

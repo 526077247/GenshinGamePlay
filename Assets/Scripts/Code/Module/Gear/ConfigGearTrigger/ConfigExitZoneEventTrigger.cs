@@ -6,7 +6,7 @@ namespace TaoTie
 {
     [LabelText("当有实体离开区域")]
     [NinoSerialize]
-    public class ConfigExitZoneEventTrigger : ConfigGearTrigger<ExitZoneEvent>
+    public partial class ConfigExitZoneEventTrigger : ConfigGearTrigger<ExitZoneEvent>
     {
 
     }

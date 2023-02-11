@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
     [NinoSerialize]
-    public class ConfigEnterZoneEventZoneEntityIdCondition : ConfigGearCondition<EnterZoneEvent>
+    public partial class ConfigEnterZoneEventZoneEntityIdCondition : ConfigGearCondition<EnterZoneEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]

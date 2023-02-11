@@ -31,6 +31,7 @@ namespace Nino.Serialization
                     //find NinoSerializeAttribute
                     NinoSerializeAttribute[] ns =
                         (NinoSerializeAttribute[])t.GetCustomAttributes(typeof(NinoSerializeAttribute), true);
+                    if (t.IsAbstract) return false;
                     if (ns.Length == 0) return false;
                     return true;
                 }).ToList();
@@ -395,7 +396,7 @@ namespace Nino.Serialization
                 case TypeCode.DateTime:
                     return "reader.ReadDateTime()";
                 default:
-                    if (GetValidNinoClass(mt, false))
+                    if (!mt.IsAbstract && GetValidNinoClass(mt, false))
                     {
                         return $"{BeautifulLongTypeName(mt)}.NinoSerializationHelper.Deserialize(reader)";
                     }
@@ -474,7 +475,7 @@ namespace Nino.Serialization
                 case TypeCode.DateTime:
                     return $"writer.Write({val})";
                 default:
-                    if (GetValidNinoClass(mt, false))
+                    if (!mt.IsAbstract&&GetValidNinoClass(mt, false))
                     {
                         return $"{BeautifulLongTypeName(mt)}.NinoSerializationHelper.Serialize({val}, writer)";
                     }

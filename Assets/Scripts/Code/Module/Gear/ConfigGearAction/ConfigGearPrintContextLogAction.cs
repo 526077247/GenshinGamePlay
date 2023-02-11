@@ -10,7 +10,7 @@ namespace TaoTie
     /// </summary>
     [LabelText("打印log")]
     [NinoSerialize]
-    public class ConfigGearPrintContextLogAction : ConfigGearAction
+    public partial class ConfigGearPrintContextLogAction : ConfigGearAction
     {
         [NinoMember(10)]
         public string content;

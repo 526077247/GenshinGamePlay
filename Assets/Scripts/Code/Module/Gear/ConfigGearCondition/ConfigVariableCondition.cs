@@ -8,7 +8,7 @@ namespace TaoTie
     [TriggerType]
     [LabelText("变量值")]
     [NinoSerialize]
-    public class ConfigVariableCondition : ConfigGearCondition
+    public partial class ConfigVariableCondition : ConfigGearCondition
     {
         [NinoMember(1)]
         [LabelText("左值")] 

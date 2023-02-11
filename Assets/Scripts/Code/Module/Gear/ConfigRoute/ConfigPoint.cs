@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigPoint
+    public partial class ConfigPoint
     {
         public Vector3 position;
     }

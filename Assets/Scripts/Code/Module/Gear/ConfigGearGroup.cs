@@ -12,7 +12,7 @@ namespace TaoTie
     /// 小组配置
     /// </summary>
     [NinoSerialize]
-    public class ConfigGearGroup
+    public partial class ConfigGearGroup
     {
 #if UNITY_EDITOR
         [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]

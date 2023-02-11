@@ -8,7 +8,7 @@ namespace TaoTie
     [LabelText("玩家进入触发区域")]
     [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
     [NinoSerialize]
-    public class ConfigEnterZoneEvtGetIsMyCondition : ConfigGearCondition<EnterZoneEvent>
+    public partial class ConfigEnterZoneEvtGetIsMyCondition : ConfigGearCondition<EnterZoneEvent>
     {
 
         public override bool IsMatch(EnterZoneEvent obj, Gear gear)

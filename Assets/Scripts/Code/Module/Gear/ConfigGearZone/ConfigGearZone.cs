@@ -9,7 +9,8 @@ namespace TaoTie
     /// <summary>
     /// 区域
     /// </summary>
-    public abstract class ConfigGearZone
+    [NinoSerialize]
+    public abstract partial class ConfigGearZone
     {
         
         #if UNITY_EDITOR

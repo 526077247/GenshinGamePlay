@@ -8,7 +8,7 @@ namespace TaoTie
 {
     [LabelText("增加变量的值")]
     [NinoSerialize]
-    public class ConfigGearAddVariableAction : ConfigGearAction
+    public partial class ConfigGearAddVariableAction : ConfigGearAction
     {
         [JsonIgnore]
         public override bool canSetOtherGear => true;

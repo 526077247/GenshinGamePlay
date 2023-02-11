@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public sealed class ConfigGearActorMonster : ConfigGearActor
+    public sealed partial class ConfigGearActorMonster : ConfigGearActor
     {
         [NinoMember(10)]
         public int configID;

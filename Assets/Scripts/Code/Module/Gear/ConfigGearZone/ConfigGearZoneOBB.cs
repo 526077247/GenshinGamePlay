@@ -8,7 +8,7 @@ namespace TaoTie
 {
     [LabelText("立方")]
     [NinoSerialize]
-    public class ConfigGearZoneOBB : ConfigGearZone
+    public partial class ConfigGearZoneOBB : ConfigGearZone
     {
         [NinoMember(5)]
         public Vector3 rotation;

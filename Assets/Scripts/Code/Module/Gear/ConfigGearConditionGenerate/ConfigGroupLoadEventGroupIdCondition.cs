@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigGroupLoadEventTrigger))]
     [NinoSerialize]
-    public class ConfigGroupLoadEventGroupIdCondition : ConfigGearCondition<GroupLoadEvent>
+    public partial class ConfigGroupLoadEventGroupIdCondition : ConfigGearCondition<GroupLoadEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]

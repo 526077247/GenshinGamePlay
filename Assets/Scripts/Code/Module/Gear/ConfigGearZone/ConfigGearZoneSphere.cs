@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [LabelText("球")]
     [NinoSerialize]
-    public class ConfigGearZoneSphere : ConfigGearZone
+    public partial class ConfigGearZoneSphere : ConfigGearZone
     {
         [NinoMember(5)]
         public float radius;

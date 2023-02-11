@@ -1,16 +1,17 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     public abstract class ConfigAbilityAction
     {
-        [NinoMember(1)]
+        [NinoMember(1)][LabelText("Action目标")][BoxGroup("Common")]
         public AbilityTargetting Targetting;
-        [NinoMember(2)]
+        [NinoMember(2)][ShowIf("@Targetting == AbilityTargetting.Other")][BoxGroup("Common")]
         public ConfigSelectTargets OtherTargets;
-        [NinoMember(3)]
+        [NinoMember(3)][BoxGroup("Common")]
         public ConfigAbilityPredicate Predicate;
-        [NinoMember(4)]
+        [NinoMember(4)][BoxGroup("Common")]
         public ConfigAbilityPredicate PredicateForeach; 
         protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target);
 

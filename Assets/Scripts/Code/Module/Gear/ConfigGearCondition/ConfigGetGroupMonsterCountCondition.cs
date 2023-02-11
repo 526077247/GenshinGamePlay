@@ -9,7 +9,7 @@ namespace TaoTie
     [TriggerType]
     [LabelText("Gear当前剩余怪物数量")]
     [NinoSerialize]
-    public class ConfigGetGroupMonsterCountCondition : ConfigGearCondition
+    public partial class ConfigGetGroupMonsterCountCondition : ConfigGearCondition
     {
         [NinoMember(1)]
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]

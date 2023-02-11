@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [LabelText("当关卡的变量改变之后")]
     [NinoSerialize]
-    public class ConfigVariableChangeEventTrigger : ConfigGearTrigger<VariableChangeEvent>
+    public partial class ConfigVariableChangeEventTrigger : ConfigGearTrigger<VariableChangeEvent>
     {
         [NinoMember(5)][LabelText("变量")]
         public string key;

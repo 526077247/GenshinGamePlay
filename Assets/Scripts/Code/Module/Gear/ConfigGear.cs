@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigGear
+    public partial class ConfigGear
     {
         [NinoMember(1)]
         [PropertyOrder(int.MinValue)]
