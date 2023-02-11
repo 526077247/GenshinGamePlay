@@ -1,4 +1,5 @@
-﻿using Slate;
+﻿#if UNITY_EDITOR
+using Slate;
 
 namespace TaoTie
 {
@@ -9,3 +10,4 @@ namespace TaoTie
         public string AbilityName;
     }
 }
+#endif

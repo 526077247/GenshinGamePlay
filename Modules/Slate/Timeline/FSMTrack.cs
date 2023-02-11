@@ -1,4 +1,5 @@
-﻿using Slate;
+﻿#if UNITY_EDITOR
+using Slate;
 
 namespace TaoTie
 {
@@ -12,3 +13,4 @@ namespace TaoTie
         }
     }
 }
+#endif
