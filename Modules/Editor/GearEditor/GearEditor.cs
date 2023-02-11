@@ -1,14 +1,12 @@
-﻿using Sirenix.OdinInspector.Editor;
-
-namespace TaoTie
+﻿namespace TaoTie
 {
-    public class GearEditor: OdinEditorWindow
+    public class GearEditor: BaseEditorWindow<ConfigGear>
     {
-        public ConfigGear ConfigGear;
-        
+       
         public void Update()
         {
-            OdinDropdownHelper.gear = ConfigGear;
+            OdinDropdownHelper.gear = data;
         }
+        
     }
 }

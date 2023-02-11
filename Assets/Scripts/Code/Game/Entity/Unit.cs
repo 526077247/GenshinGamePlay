@@ -54,8 +54,10 @@ namespace TaoTie
             // AddComponent<HudComponent>();
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent>();
-            AddComponent<AbilityComponent,List<ConfigAbility>>(AbilityHelper.GetAbility(Config.Abilities));
             AddComponent<CombatComponent>();
+            
+            
+            AddComponent<AbilityComponent,List<ConfigAbility>>(AbilityHelper.GetAbility(Config.Abilities));
         }
     }
 }
