@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: 55bf6403aea34964496c51a5a0c11190
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Roboto
+  fontNames:
+  - Roboto
+  - Mangal
+  - Source Han Sans CN
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 544588d22ae122f42988d0ca2810a9f0, type: 3}
+  - {fileID: 12800000, guid: 3306739e30319c442b253f8363e78021, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
