@@ -6,7 +6,7 @@ namespace TaoTie
 {
     [LabelText("当关卡内怪物死亡")]
     [NinoSerialize]
-    public class ConfigAnyMonsterDieGearTrigger : ConfigGearTrigger<AnyMonsterDieEvent>
+    public class ConfigAnyMonsterDieEventTrigger : ConfigGearTrigger<AnyMonsterDieEvent>
     {
         
     }

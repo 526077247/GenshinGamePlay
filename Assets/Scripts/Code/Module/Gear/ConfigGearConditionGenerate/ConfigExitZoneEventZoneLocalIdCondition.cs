@@ -5,17 +5,16 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [LabelText("进入触发区域的id")]
-    [TriggerType(typeof(ConfigExitZoneGearTrigger))]
+    [TriggerType(typeof(ConfigExitZoneEventTrigger))]
     [NinoSerialize]
-    public class ConfigExitZoneEvtZoneIdCondition : ConfigGearCondition<ExitZoneEvent>
+    public class ConfigExitZoneEventZoneLocalIdCondition : ConfigGearCondition<ExitZoneEvent>
     {
+        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]
-        [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
         public CompareMode mode;
         [NinoMember(2)]
         [ValueDropdown("@OdinDropdownHelper.GetGearZoneIds()")]
-        public int value;
+        public Int64 value;
 
         public override bool IsMatch(ExitZoneEvent obj,Gear gear)
         {

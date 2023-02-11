@@ -5,21 +5,19 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [LabelText("进入触发区域的id")]
-    [TriggerType(typeof(ConfigEnterZoneGearTrigger))]
+    [TriggerType(typeof(ConfigVariableChangeEventTrigger))]
     [NinoSerialize]
-    public class ConfigEnterZoneEvtZoneIdCondition : ConfigGearCondition<EnterZoneEvent>
+    public class ConfigVariableChangeEventOldValueCondition : ConfigGearCondition<VariableChangeEvent>
     {
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]
         public CompareMode mode;
         [NinoMember(2)]
-        [ValueDropdown("@OdinDropdownHelper.GetGearZoneIds()")]
-        public int value;
+        public Single value;
 
-        public override bool IsMatch(EnterZoneEvent obj,Gear gear)
+        public override bool IsMatch(VariableChangeEvent obj,Gear gear)
         {
-            return IsMatch(value, obj.ZoneLocalId, mode);
+            return IsMatch(value, obj.OldValue, mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

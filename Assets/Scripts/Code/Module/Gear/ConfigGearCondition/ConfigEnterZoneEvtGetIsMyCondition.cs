@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [LabelText("玩家进入触发区域")]
-    [TriggerType(typeof(ConfigEnterZoneGearTrigger))]
+    [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
     [NinoSerialize]
     public class ConfigEnterZoneEvtGetIsMyCondition : ConfigGearCondition<EnterZoneEvent>
     {
