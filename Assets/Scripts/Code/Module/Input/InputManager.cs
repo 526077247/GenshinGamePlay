@@ -24,6 +24,10 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
+            foreach (var keyValue in keySetMap)
+            {
+                keyStatus.Add(keyValue.Value, false);
+            }
         }
 
         public void Destroy()
