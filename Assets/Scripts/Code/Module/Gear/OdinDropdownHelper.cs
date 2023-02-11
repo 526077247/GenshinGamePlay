@@ -27,17 +27,19 @@ namespace TaoTie
                 .Where(x => !x.IsGenericTypeDefinition)
                 .Where(x =>
                 {
+                    bool has = false;
                     foreach (var attributeData in x.GetAttributes())
                     {
                         if (attributeData is TriggerTypeAttribute attr)
                         {
+                            has = true;
                             if (attr.type == type || attr.type == null)
                             {
                                 return true;
                             }
                         }
                     }
-                    return false;
+                    return !has;
                 })
                 .Where(x => typeof(ConfigGearCondition).IsAssignableFrom(x));
             return q2;
@@ -58,17 +60,19 @@ namespace TaoTie
                 .Where(x => !x.IsGenericTypeDefinition)
                 .Where(x =>
                 {
+                    bool has = false;
                     foreach (var attributeData in x.GetAttributes())
                     {
                         if (attributeData is TriggerTypeAttribute attr)
                         {
+                            has = true;
                             if (attr.type == type || attr.type == null)
                             {
                                 return true;
                             }
                         }
                     }
-                    return false;
+                    return !has;
                 })
                 .Where(x => typeof(ConfigGearAction).IsAssignableFrom(x));
             return q2;

@@ -5,13 +5,6 @@ namespace TaoTie
     /// <summary>
     /// 标识导出添加下拉选项OdinDropdownHelper.GetGearActorIds()
     /// </summary>
-    public class GearConditionAttribute: System.Attribute
-    {
-        
-    }
-    /// <summary>
-    /// 标识导出添加下拉选项OdinDropdownHelper.GetGearActorIds()
-    /// </summary>
     public class GearActorIdAttribute: System.Attribute
     {
         

@@ -7,6 +7,11 @@ namespace TaoTie
 {
     public class GameTools
     {
+        [MenuItem("Tools/Gear/编辑器")]
+        static void OpenGear()
+        {
+            EditorWindow.GetWindow<GearEditor>().Show();
+        }
         
         [MenuItem("Tools/Ability/编辑器")]
         static void OpenAbility()
