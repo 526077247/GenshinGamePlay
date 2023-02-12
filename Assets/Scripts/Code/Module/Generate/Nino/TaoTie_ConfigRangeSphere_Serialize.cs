@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigRangeSphere
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigRangeSphere.SerializationHelper NinoSerializationHelper = new ConfigRangeSphere.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigRangeSphere>
         {
@@ -15,8 +16,8 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.ConfigBornType>(value.bornType);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.Radius);
+                writer.WriteCommonVal<TaoTie.ConfigBornType>(value.bornType==null?TypeInfo<TaoTie.ConfigBornType>.Type:value.bornType.GetType(),value.bornType);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.Radius==null?TypeInfo<TaoTie.BaseValue>.Type:value.Radius.GetType(),value.Radius);
             }
 
             public override ConfigRangeSphere Deserialize(Nino.Serialization.Reader reader)

@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigAttackEvent
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigAttackEvent.SerializationHelper NinoSerializationHelper = new ConfigAttackEvent.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigAttackEvent>
         {
@@ -15,7 +16,7 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.ConfigBaseAttackPattern>(value.AttackPattern);
+                writer.WriteCommonVal<TaoTie.ConfigBaseAttackPattern>(value.AttackPattern==null?TypeInfo<TaoTie.ConfigBaseAttackPattern>.Type:value.AttackPattern.GetType(),value.AttackPattern);
                 TaoTie.ConfigAttackInfo.NinoSerializationHelper.Serialize(value.AttackInfo, writer);
             }
 

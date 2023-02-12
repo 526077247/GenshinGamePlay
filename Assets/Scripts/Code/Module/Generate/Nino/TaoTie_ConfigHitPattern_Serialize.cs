@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigHitPattern
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigHitPattern.SerializationHelper NinoSerializationHelper = new ConfigHitPattern.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigHitPattern>
         {
@@ -17,8 +18,8 @@ namespace TaoTie
                 writer.Write(true);
                 writer.Write(value.OnHitEffectName);
                 writer.CompressAndWriteEnum<TaoTie.HitLevel>(value.HitLevel);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.HitImpulseX);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.HitImpulseY);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.HitImpulseX==null?TypeInfo<TaoTie.BaseValue>.Type:value.HitImpulseX.GetType(),value.HitImpulseX);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.HitImpulseY==null?TypeInfo<TaoTie.BaseValue>.Type:value.HitImpulseY.GetType(),value.HitImpulseY);
                 writer.Write(value.HitImpulseType);
                 TaoTie.ConfigHitImpulse.NinoSerializationHelper.Serialize(value.OverrideHitImpulse, writer);
                 writer.CompressAndWriteEnum<TaoTie.RetreatType>(value.RetreatType);

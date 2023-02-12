@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigRoute
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigRoute.SerializationHelper NinoSerializationHelper = new ConfigRoute.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigRoute>
         {

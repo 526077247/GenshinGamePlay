@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigAttackBox
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigAttackBox.SerializationHelper NinoSerializationHelper = new ConfigAttackBox.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigAttackBox>
         {
@@ -17,7 +18,7 @@ namespace TaoTie
                 writer.Write(true);
                 writer.CompressAndWriteEnum<TaoTie.CheckHitLayerType>(value.CheckHitLayerType);
                 TaoTie.ConfigHitScene.NinoSerializationHelper.Serialize(value.HitScene, writer);
-                writer.WriteCommonVal<TaoTie.ConfigBornType>(value.Born);
+                writer.WriteCommonVal<TaoTie.ConfigBornType>(value.Born==null?TypeInfo<TaoTie.ConfigBornType>.Type:value.Born.GetType(),value.Born);
                 TaoTie.DynamicVector3.NinoSerializationHelper.Serialize(value.Size, writer);
             }
 

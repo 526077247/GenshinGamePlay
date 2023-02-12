@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigAnyMonsterDieEventActorIdCondition
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigAnyMonsterDieEventActorIdCondition.SerializationHelper NinoSerializationHelper = new ConfigAnyMonsterDieEventActorIdCondition.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigAnyMonsterDieEventActorIdCondition>
         {

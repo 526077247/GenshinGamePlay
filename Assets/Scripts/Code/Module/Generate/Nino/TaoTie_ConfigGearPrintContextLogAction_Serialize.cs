@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigGearPrintContextLogAction
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigGearPrintContextLogAction.SerializationHelper NinoSerializationHelper = new ConfigGearPrintContextLogAction.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigGearPrintContextLogAction>
         {

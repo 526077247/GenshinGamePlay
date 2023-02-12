@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class Predicated
     {
+        [LitJson.Extensions.JsonIgnore]
         public static Predicated.SerializationHelper NinoSerializationHelper = new Predicated.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<Predicated>
         {
@@ -16,10 +17,10 @@ namespace TaoTie
                 }
                 writer.Write(true);
                 writer.CompressAndWriteEnum<TaoTie.AbilityTargetting>(value.Targetting);
-                writer.WriteCommonVal<TaoTie.ConfigSelectTargets>(value.OtherTargets);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.Predicate);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.PredicateForeach);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.TargetPredicate);
+                writer.WriteCommonVal<TaoTie.ConfigSelectTargets>(value.OtherTargets==null?TypeInfo<TaoTie.ConfigSelectTargets>.Type:value.OtherTargets.GetType(),value.OtherTargets);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.Predicate==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.Predicate.GetType(),value.Predicate);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.PredicateForeach==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.PredicateForeach.GetType(),value.PredicateForeach);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.TargetPredicate==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.TargetPredicate.GetType(),value.TargetPredicate);
                 writer.Write(value.SuccessActions);
                 writer.Write(value.FailActions);
             }

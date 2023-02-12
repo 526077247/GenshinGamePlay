@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ServerConfigCategory
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ServerConfigCategory.SerializationHelper NinoSerializationHelper = new ServerConfigCategory.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ServerConfigCategory>
         {

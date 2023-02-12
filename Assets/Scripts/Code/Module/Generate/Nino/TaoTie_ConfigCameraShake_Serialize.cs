@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigCameraShake
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigCameraShake.SerializationHelper NinoSerializationHelper = new ConfigCameraShake.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigCameraShake>
         {

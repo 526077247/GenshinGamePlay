@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigGearZoneOBB
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigGearZoneOBB.SerializationHelper NinoSerializationHelper = new ConfigGearZoneOBB.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigGearZoneOBB>
         {

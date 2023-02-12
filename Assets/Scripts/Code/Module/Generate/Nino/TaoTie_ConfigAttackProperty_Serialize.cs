@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigAttackProperty
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigAttackProperty.SerializationHelper NinoSerializationHelper = new ConfigAttackProperty.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigAttackProperty>
         {
@@ -15,14 +16,14 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.DamagePercentage);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.DamagePercentageRatio);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.DamagePercentage==null?TypeInfo<TaoTie.BaseValue>.Type:value.DamagePercentage.GetType(),value.DamagePercentage);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.DamagePercentageRatio==null?TypeInfo<TaoTie.BaseValue>.Type:value.DamagePercentageRatio.GetType(),value.DamagePercentageRatio);
                 writer.CompressAndWriteEnum<TaoTie.StrikeType>(value.StrikeType);
                 writer.Write(value.EnBreak);
                 writer.CompressAndWriteEnum<TaoTie.AttackType>(value.AttackType);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.DamageExtra);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.BonusCritical);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.BonusCriticalHurt);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.DamageExtra==null?TypeInfo<TaoTie.BaseValue>.Type:value.DamageExtra.GetType(),value.DamageExtra);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.BonusCritical==null?TypeInfo<TaoTie.BaseValue>.Type:value.BonusCritical.GetType(),value.BonusCritical);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.BonusCriticalHurt==null?TypeInfo<TaoTie.BaseValue>.Type:value.BonusCriticalHurt.GetType(),value.BonusCriticalHurt);
                 writer.Write(value.IgnoreLevelDiff);
                 writer.Write(value.TrueDamage);
             }

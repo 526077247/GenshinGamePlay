@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigExitZoneEventZoneLocalIdCondition
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigExitZoneEventZoneLocalIdCondition.SerializationHelper NinoSerializationHelper = new ConfigExitZoneEventZoneLocalIdCondition.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigExitZoneEventZoneLocalIdCondition>
         {

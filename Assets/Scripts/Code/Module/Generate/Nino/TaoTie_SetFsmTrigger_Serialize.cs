@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class SetFsmTrigger
     {
+        [LitJson.Extensions.JsonIgnore]
         public static SetFsmTrigger.SerializationHelper NinoSerializationHelper = new SetFsmTrigger.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<SetFsmTrigger>
         {
@@ -16,9 +17,9 @@ namespace TaoTie
                 }
                 writer.Write(true);
                 writer.CompressAndWriteEnum<TaoTie.AbilityTargetting>(value.Targetting);
-                writer.WriteCommonVal<TaoTie.ConfigSelectTargets>(value.OtherTargets);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.Predicate);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.PredicateForeach);
+                writer.WriteCommonVal<TaoTie.ConfigSelectTargets>(value.OtherTargets==null?TypeInfo<TaoTie.ConfigSelectTargets>.Type:value.OtherTargets.GetType(),value.OtherTargets);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.Predicate==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.Predicate.GetType(),value.Predicate);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.PredicateForeach==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.PredicateForeach.GetType(),value.PredicateForeach);
                 writer.Write(value.Key);
                 writer.Write(value.Value);
             }

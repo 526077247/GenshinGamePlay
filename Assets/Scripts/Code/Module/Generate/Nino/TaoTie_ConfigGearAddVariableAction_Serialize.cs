@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigGearAddVariableAction
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigGearAddVariableAction.SerializationHelper NinoSerializationHelper = new ConfigGearAddVariableAction.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigGearAddVariableAction>
         {
@@ -23,7 +24,7 @@ namespace TaoTie
                 writer.Write(value.limit);
                 writer.Write(value.minValue);
                 writer.Write(value.maxValue);
-                writer.WriteCommonVal<TaoTie.BaseGearValue>(value.value);
+                writer.WriteCommonVal<TaoTie.BaseGearValue>(value.value==null?TypeInfo<TaoTie.BaseGearValue>.Type:value.value.GetType(),value.value);
             }
 
             public override ConfigGearAddVariableAction Deserialize(Nino.Serialization.Reader reader)

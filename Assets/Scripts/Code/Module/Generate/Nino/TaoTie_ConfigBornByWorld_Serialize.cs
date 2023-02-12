@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigBornByWorld
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigBornByWorld.SerializationHelper NinoSerializationHelper = new ConfigBornByWorld.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigBornByWorld>
         {

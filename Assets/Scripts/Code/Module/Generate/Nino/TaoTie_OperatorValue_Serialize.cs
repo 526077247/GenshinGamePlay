@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class OperatorValue
     {
+        [LitJson.Extensions.JsonIgnore]
         public static OperatorValue.SerializationHelper NinoSerializationHelper = new OperatorValue.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<OperatorValue>
         {
@@ -15,9 +16,9 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.Left);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.Left==null?TypeInfo<TaoTie.BaseValue>.Type:value.Left.GetType(),value.Left);
                 writer.CompressAndWriteEnum<TaoTie.LogicMode>(value.Op);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.Right);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.Right==null?TypeInfo<TaoTie.BaseValue>.Type:value.Right.GetType(),value.Right);
             }
 
             public override OperatorValue Deserialize(Nino.Serialization.Reader reader)

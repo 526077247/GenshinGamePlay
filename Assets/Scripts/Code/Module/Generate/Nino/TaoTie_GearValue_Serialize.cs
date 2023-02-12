@@ -3,28 +3,29 @@ namespace TaoTie
 {
     public partial class GearValue
     {
+        [LitJson.Extensions.JsonIgnore]
         public static GearValue.SerializationHelper NinoSerializationHelper = new GearValue.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<GearValue>
         {
             #region NINO_CODEGEN
-            public override void Serialize(GearValue baseGearValue, Nino.Serialization.Writer writer)
+            public override void Serialize(GearValue value, Nino.Serialization.Writer writer)
             {
-                if(baseGearValue == null)
+                if(value == null)
                 {
                     writer.Write(false);
                     return;
                 }
                 writer.Write(true);
-                writer.Write(baseGearValue.key);
+                writer.Write(value.key);
             }
 
             public override GearValue Deserialize(Nino.Serialization.Reader reader)
             {
                 if(!reader.ReadBool())
                     return null;
-                GearValue baseGearValue = new GearValue();
-                baseGearValue.key = reader.ReadString();
-                return baseGearValue;
+                GearValue value = new GearValue();
+                value.key = reader.ReadString();
+                return value;
             }
             #endregion
         }

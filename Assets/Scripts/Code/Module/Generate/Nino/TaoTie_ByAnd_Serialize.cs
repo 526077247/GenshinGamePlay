@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ByAnd
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ByAnd.SerializationHelper NinoSerializationHelper = new ByAnd.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ByAnd>
         {
