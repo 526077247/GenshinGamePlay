@@ -14,7 +14,7 @@ namespace TaoTie
         public BaseValue Left;
         [NinoMember(2)]
         public LogicMode Op;
-        [NinoMember(3)][NotNull][ShowIf("@_op != LogicMode.Default")]
+        [NinoMember(3)][NotNull][ShowIf("@Op != LogicMode.Default")]
         public BaseValue Right;
 
 

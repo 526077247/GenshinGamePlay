@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public abstract partial class AbstractVariableValue
+    public abstract partial class BaseGearValue
     {
         public abstract float Resolve(IEventBase obj, VariableSet set);
     }

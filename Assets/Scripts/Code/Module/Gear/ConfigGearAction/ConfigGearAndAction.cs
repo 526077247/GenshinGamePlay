@@ -18,13 +18,13 @@ namespace TaoTie
         [LabelText("所有条件都满足后执行")]
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
-        [ValueDropdown("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
+        //[ValueDropdown("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
         public ConfigGearAction[] success;
         [NinoMember(12)]
         [LabelText("任意一个条件不满足执行")]
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
-        [ValueDropdown("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
+        //[ValueDropdown("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
         public ConfigGearAction[] fail;
 
 #if UNITY_EDITOR

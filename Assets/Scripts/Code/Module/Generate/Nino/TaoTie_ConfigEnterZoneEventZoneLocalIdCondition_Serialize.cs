@@ -25,7 +25,7 @@ namespace TaoTie
                     return null;
                 ConfigEnterZoneEventZoneLocalIdCondition value = new ConfigEnterZoneEventZoneLocalIdCondition();
                 reader.DecompressAndReadEnum<TaoTie.CompareMode>(ref value.mode);
-                reader.DecompressAndReadNumber<System.Int64>(ref value.value);
+                reader.DecompressAndReadNumber<System.Int32>(ref value.value);
                 return value;
             }
             #endregion

@@ -15,7 +15,7 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.AbstractVariableValue>(value.leftValue);
+                writer.WriteCommonVal<TaoTie.BaseGearValue>(value.leftValue);
                 writer.CompressAndWriteEnum<TaoTie.CompareMode>(value.mode);
                 writer.Write(value.rightValue);
             }
@@ -25,7 +25,7 @@ namespace TaoTie
                 if(!reader.ReadBool())
                     return null;
                 ConfigVariableCondition value = new ConfigVariableCondition();
-                value.leftValue = reader.ReadCommonVal<TaoTie.AbstractVariableValue>();
+                value.leftValue = reader.ReadCommonVal<TaoTie.BaseGearValue>();
                 reader.DecompressAndReadEnum<TaoTie.CompareMode>(ref value.mode);
                 reader.Read<System.Single>(ref value.rightValue, Nino.Shared.Mgr.ConstMgr.SizeOfUInt);
                 return value;

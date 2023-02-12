@@ -5,6 +5,6 @@
         public long EntityId;
         public long ZoneEntityId;
         [GearZoneId]
-        public long ZoneLocalId;
+        public int ZoneLocalId;
     }
 }

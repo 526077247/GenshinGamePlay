@@ -6,17 +6,17 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ComplexVariableValue : AbstractVariableValue
+    public partial class OperatorGearValue : BaseGearValue
     {
         [NinoMember(1)][LabelText("左值")]
-        public AbstractVariableValue value1;
+        public BaseGearValue value1;
 
         [NinoMember(2)][Tooltip("操作类型")]
         public LogicMode _op;
         
         [InfoBox("注意：除数不能为0")] [ShowIf("@_op != LogicMode.Default")]
         [NinoMember(3)][LabelText("右值")]
-        public AbstractVariableValue value2;
+        public BaseGearValue value2;
         
 
         public override float Resolve(IEventBase obj, VariableSet set)
