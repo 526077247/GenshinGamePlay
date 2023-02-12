@@ -10,5 +10,9 @@ namespace TaoTie
         public string Key;
         [ShowIf("@!IsDynamic")][BoxGroup("Pose")]
         public int PoseID;
+        [LabelText("是否能移动")]
+        public bool CanMove;
+        [LabelText("是否能转向")]
+        public bool CanTurn;
     }
 }
