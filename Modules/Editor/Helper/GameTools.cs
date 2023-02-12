@@ -18,7 +18,11 @@ namespace TaoTie
         {
             EditorWindow.GetWindow<AbilityEditor>().Show();
         }
-        
+        [MenuItem("Tools/AI/编辑器")]
+        static void OpenAI()
+        {
+            EditorWindow.GetWindow<AIEditor>().Show();
+        }
         [MenuItem("Tools/帮助/启动场景 #_b")]
         static void ChangeInitScene()
         {
