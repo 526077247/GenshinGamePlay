@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using Slate;
 
 namespace TaoTie
@@ -19,3 +20,4 @@ namespace TaoTie
         }
     }
 }
+#endif

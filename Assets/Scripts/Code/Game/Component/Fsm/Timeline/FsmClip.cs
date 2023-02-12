@@ -12,7 +12,7 @@ namespace TaoTie
 
         public float length => this.cfg.Length;
 
-        protected Entity _actor => this.state.fsm.Component.entityLogic;
+        protected Entity _actor => this.state.fsm.Component.GetParent<Entity>();
 
         #region IRecyclable
         public virtual void OnInit(FsmState state, ConfigFsmClip cfg)

@@ -144,7 +144,10 @@ namespace Nino.Serialization
                 reader.Init(data, data.Length,
                     TypeModel.IsNonCompressibleType(type) ? CompressOption.NoCompression : option);
             }
-
+            // if (type.IsAbstract)
+            // {
+            //     type = TypeModel.AllTypes.TryGetValue(reader.ReadInt32(), out var type1) ? type1 : type;
+            // }
             //array
             if (TryDeserializeArray(type, reader, returnDispose, out var arr))
             {

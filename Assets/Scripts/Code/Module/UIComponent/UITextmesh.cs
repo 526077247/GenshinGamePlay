@@ -118,5 +118,44 @@ namespace TaoTie
             else
                 this.SetText($"<color={colorstr}>{text}</color>");
         }
+        
+                
+        public int GetCharacterCount()
+        {
+            ActivatingComponent();
+            return text.CharacterCount;
+        }
+
+        public void SetMaxVisibleCharacters(int count)
+        {
+            ActivatingComponent();
+            text.maxVisibleCharacters = count;
+        }
+        
+        public Vector3 GetLastCharacterLocalPosition()
+        {
+            ActivatingComponent();
+            if (text.m_textInfo.characterInfo != null && text.m_textInfo.characterInfo.Length > 0)
+            {
+                var info = text.m_textInfo.characterInfo[text.m_textInfo.characterCount - 1];
+                return info.vertex_BR.position;
+            }
+
+            var rect = text.rectTransform.rect;
+            return new Vector3(-rect.width / 2, -rect.height / 2, 0);
+        }
+        
+        public Vector3 GetCharacterLocalPosition(int index)
+        {
+            ActivatingComponent();
+            if (text.m_textInfo.characterInfo != null && text.m_textInfo.characterInfo.Length > index)
+            {
+                var info = text.m_textInfo.characterInfo[index];
+                return info.vertex_BR.position;
+            }
+
+            var rect = text.rectTransform.rect;
+            return new Vector3(-rect.width / 2, -rect.height / 2, 0);
+        }
     }
 }

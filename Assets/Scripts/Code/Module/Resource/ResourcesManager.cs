@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using YooAsset;
 using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace TaoTie
@@ -193,6 +194,37 @@ namespace TaoTie
                 this.Temp.Remove(pooledGo);
                 this.CachedAssetOperationHandles.Remove(op);
             }
+        }
+
+        /// <summary>
+        /// 同步加载json或者二进制配置
+        /// </summary>
+        /// <param name="path"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T LoadConfig<T>(string path) where T : class
+        {
+            var file = Load<TextAsset>(path);
+            try
+            {
+                T res = ProtobufHelper.FromBytes<T>(file.bytes);
+                ReleaseAsset(file);
+                return res;
+            }
+            catch{}
+
+            try
+            {
+                T res = JsonHelper.FromJson<T>(file.text);
+                ReleaseAsset(file);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            Log.Error($"反序列化{TypeInfo<T>.Name}失败！{path}");
+            return default;
         }
     }
 }

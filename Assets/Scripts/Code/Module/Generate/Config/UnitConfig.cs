@@ -98,6 +98,9 @@ namespace TaoTie
 		/// <summary>Ability路径</summary>
 		[NinoMember(7)]
 		public string Abilities { get; set; }
+		/// <summary>FSM路径</summary>
+		[NinoMember(8)]
+		public string FSM { get; set; }
 
 	}
 }

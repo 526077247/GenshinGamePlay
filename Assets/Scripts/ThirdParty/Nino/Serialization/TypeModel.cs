@@ -279,8 +279,7 @@ namespace Nino.Serialization
 					//has to have getter and setter
 					if (!(p.CanRead && p.CanWrite))
 					{
-						throw new InvalidOperationException(
-							$"Cannot read or write property {p.Name} in {type.FullName}, cannot Serialize or Deserialize this property");
+						continue;
 					}
 
 					if (model.IncludeAll)

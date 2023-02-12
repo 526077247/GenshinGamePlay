@@ -16,7 +16,7 @@ namespace TaoTie
                 }
                 writer.Write(true);
                 writer.WriteCommonVal<TaoTie.BaseValue>(value.Left);
-                writer.CompressAndWriteEnum<TaoTie.Operator>(value.Op);
+                writer.CompressAndWriteEnum<TaoTie.LogicMode>(value.Op);
                 writer.WriteCommonVal<TaoTie.BaseValue>(value.Right);
             }
 
@@ -26,7 +26,7 @@ namespace TaoTie
                     return null;
                 OperatorValue value = new OperatorValue();
                 value.Left = reader.ReadCommonVal<TaoTie.BaseValue>();
-                reader.DecompressAndReadEnum<TaoTie.Operator>(ref value.Op);
+                reader.DecompressAndReadEnum<TaoTie.LogicMode>(ref value.Op);
                 value.Right = reader.ReadCommonVal<TaoTie.BaseValue>();
                 return value;
             }

@@ -3,20 +3,13 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class FsmComponent: Component, IComponent
+    public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdateComponent
     {
-        protected Entity _entityLogic = null;
-
         private Fsm[] _fsms;
         private ConfigFsmController _config;
-        protected Animator _animator;
         protected VariableSet _variableSet;
 
-#if UNITY_EDITOR
-        public Fsm[] Fsms => _fsms;
-#endif
-
-        public Animator animator => _animator;
+        public Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
         public VariableSet variableSet => _variableSet;
 
         public Fsm baseFsm
@@ -43,7 +36,7 @@ namespace TaoTie
             return null;
         }
 
-        public void InitWithConfig(ConfigFsmController cfg)
+        private void InitWithConfig(ConfigFsmController cfg)
         {
             _config = cfg;
             _variableSet = ObjectPool.Instance.Fetch<VariableSet>();
@@ -71,12 +64,12 @@ namespace TaoTie
             }
         }
 
-        public void Update(float nowtime, float elapsetime)
+        public void Update()
         {
             for (int i = 0; i < _fsms.Length; i++)
             {
                 if (_fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                _fsms[i].Update(nowtime, elapsetime);
+                _fsms[i].Update(Time.time, Time.deltaTime);//todo：暂停时间
             }
         }
 
@@ -94,15 +87,15 @@ namespace TaoTie
 
         #region IComponent
 
-        public Entity entityLogic => _entityLogic;
-
-        public void Init()
+        public void Init(ConfigFsmController cfg)
         {
-
+            InitWithConfig(cfg);
+            Start();
         }
 
         public void Destroy()
         {
+            Stop();
             if (_fsms != null)
             {
                 for (int i = 0; i < _fsms.Length; i++)
@@ -117,10 +110,8 @@ namespace TaoTie
                 _variableSet.Dispose();
                 _variableSet = null;
             }
-
-            _animator = null;
+            
             _config = null;
-            _entityLogic = null;
         }
 
         #endregion
