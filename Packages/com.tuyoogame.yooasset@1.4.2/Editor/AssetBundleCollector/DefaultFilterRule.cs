@@ -60,4 +60,13 @@ namespace YooAsset.Editor
 			return Path.GetExtension(data.AssetPath) == ".shadervariants";
 		}
 	}
+	
+	[DisplayName("收集Unit")]
+	public class CollectUnit : IFilterRule
+	{
+		public bool IsCollectAsset(FilterRuleData data)
+		{
+			return Path.GetExtension(data.AssetPath) == ".prefab"||Path.GetExtension(data.AssetPath) == ".bytes";
+		}
+	}
 }

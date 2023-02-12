@@ -10,7 +10,7 @@ namespace TaoTie
         public int value;
         public CompareMode mode;
         
-
+        public ConfigConditionByDataInt(){}
         public ConfigConditionByDataInt(string key, int val, CompareMode mode)
         {
             this.key = key;

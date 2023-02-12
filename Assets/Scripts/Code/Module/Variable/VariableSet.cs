@@ -118,6 +118,7 @@ namespace TaoTie
             if (_varDict.TryGetValue(key, out var vb))
             {
                 _varDict[key] = val;
+                return true;
             }
             return false;
         }

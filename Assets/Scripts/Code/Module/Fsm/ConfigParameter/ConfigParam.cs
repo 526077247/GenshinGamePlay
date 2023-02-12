@@ -61,7 +61,7 @@ namespace TaoTie
     public abstract class ConfigParam<T> : ConfigParam
     {
         public T defaultValue;
-
+        public ConfigParam(){}
         public ConfigParam(string key, T defaultVal, bool needSyncAnimator)
         {
             base.key = key;

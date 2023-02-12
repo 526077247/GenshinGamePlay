@@ -10,6 +10,7 @@ namespace TaoTie
         public bool isNormalized;
         public CompareMode mode;
 
+        public ConfigConditionByStateTime(){}
         public ConfigConditionByStateTime(float time, bool isNormalized, CompareMode mode)
         {
             this.time = time;

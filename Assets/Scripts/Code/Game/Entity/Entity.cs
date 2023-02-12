@@ -62,6 +62,7 @@ namespace TaoTie
             Components.Add(type, data);
             if (data is IComponent comp)
                 comp.Init();
+            data.AfterInit();
             return data;
         }
 
@@ -78,6 +79,7 @@ namespace TaoTie
             data.BeforeInit(this);
             Components.Add(type, data);
             data.Init(p1);
+            data.AfterInit();
             return data;
         }
 
@@ -94,6 +96,7 @@ namespace TaoTie
             data.BeforeInit(this);
             Components.Add(type, data);
             data.Init(p1, p2);
+            data.AfterInit();
             return data;
         }
 
@@ -110,6 +113,7 @@ namespace TaoTie
             data.BeforeInit(this);
             Components.Add(type, data);
             data.Init(p1, p2, p3);
+            data.AfterInit();
             return data;
         }
 

@@ -54,10 +54,12 @@ namespace TaoTie
             // AddComponent<HudComponent>();
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent>();
+            
+            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
             
             
-            AddComponent<AbilityComponent,List<ConfigAbility>>(AbilityHelper.GetAbility(Config.Abilities));
+            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(Config.Abilities));
         }
     }
 }

@@ -5,6 +5,7 @@ namespace TaoTie
 {
     public class ConfigFsm
     {
+        public ConfigFsm(){}
         public string name;
         public int layerIndex;
         public string entry;

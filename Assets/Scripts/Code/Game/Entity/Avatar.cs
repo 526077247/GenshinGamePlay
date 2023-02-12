@@ -12,8 +12,8 @@
         public void Init(int configId)
         {
             ConfigId = configId;
-            // AddComponent<PlayerInfoComponent, RoleInfo>(info);
             AddCommonUnitComponent();
+            AddComponent<PlayerComponent>();
         }
 
         public void Destroy()

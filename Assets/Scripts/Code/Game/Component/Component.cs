@@ -7,14 +7,33 @@ namespace TaoTie
     /// </summary>
     public abstract class Component : IDisposable
     {
+        [Timer(TimerType.ComponentUpdate)]
+        public class ComponentUpdate : ATimer<IUpdateComponent>
+        {
+            public override void Run(IUpdateComponent t)
+            {
+                try
+                {
+                    t.Update();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+        }
         protected Entity Parent;
         public long Id => Parent != null ? Parent.Id : 0;
-
+        private long timerId;
         public void BeforeInit(Entity entity)
         {
             Parent = entity;
         }
-
+        public void AfterInit()
+        {
+            if(this is IUpdateComponent updater)
+                timerId = GameTimerManager.Instance.NewFrameTimer(TimerType.ComponentUpdate, updater);
+        }
         public void AfterDestroy()
         {
             Parent = null;
@@ -32,7 +51,7 @@ namespace TaoTie
                 Parent.RemoveComponent(GetType());
                 Parent = null;
             }
-
+            GameTimerManager.Instance?.Remove(ref timerId);
             ObjectPool.Instance.Recycle(this);
         }
 

@@ -22,6 +22,7 @@ namespace TaoTie
                 writer.Write(value.Perfab);
                 writer.Write(value.Height);
                 writer.Write(value.Abilities);
+                writer.Write(value.FSM);
             }
 
             public override UnitConfig Deserialize(Nino.Serialization.Reader reader)
@@ -36,6 +37,7 @@ namespace TaoTie
                 value.Perfab = reader.ReadString();
                 value.Height = reader.ReadSingle();
                 value.Abilities = reader.ReadString();
+                value.FSM = reader.ReadString();
                 return value;
             }
             #endregion

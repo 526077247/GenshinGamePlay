@@ -17,7 +17,7 @@ namespace TaoTie
         public bool hasTimeline => this.timeline?.clips?.Length > 0;
         
         
-
+        public ConfigFsmState(){}
         public ConfigFsmState(string name, float stateDuration, bool loop, string mirrorParam)
         {
             this.name = name;

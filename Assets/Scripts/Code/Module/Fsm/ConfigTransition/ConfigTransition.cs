@@ -24,7 +24,7 @@ namespace TaoTie
         public bool canTransitionToSelf; // just work in any state transitions
         public ConfigCondition[] conditions;
         
-
+        public ConfigTransition(){}
         public ConfigTransition(string fromState, string toState, ConfigCondition[] conds, float fadeDur, float toStateTime, bool canTransitionToSelf = false)
         {
             this.fromState = fromState;

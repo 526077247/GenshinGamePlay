@@ -10,7 +10,7 @@ namespace TaoTie
         public bool value;
         public CompareMode mode;
         
-
+        public ConfigConditionByDataBool(){}
         public ConfigConditionByDataBool(string key, bool val, CompareMode mode)
         {
             this.key = key;

@@ -58,32 +58,5 @@ namespace TaoTie
                     return null;
             }
         }
-
-        /// <summary>
-        /// 获取配置
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static List<ConfigAbility> GetAbility(string path)
-        {
-            var file = ResourcesManager.Instance.Load<TextAsset>(path);
-            try
-            {
-                List<ConfigAbility> res = ProtobufHelper.FromBytes<List<ConfigAbility>>(file.bytes);
-                ResourcesManager.Instance.ReleaseAsset(file);
-                return res;
-            }
-            catch{}
-
-            try
-            {
-                List<ConfigAbility> res = JsonHelper.FromJson<List<ConfigAbility>>(file.text);
-                ResourcesManager.Instance.ReleaseAsset(file);
-                return res;
-            }
-            catch{}
-            Log.Error("反序列化Ability失败！"+path);
-            return null;
-        }
     }
 }

@@ -8,6 +8,7 @@ namespace TaoTie
     {
         public string key;
 
+        public ConfigConditionByDataTrigger(){}
         public ConfigConditionByDataTrigger(string key)
         {
             this.key = key;
