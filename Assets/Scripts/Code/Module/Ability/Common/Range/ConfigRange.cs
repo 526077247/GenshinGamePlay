@@ -7,7 +7,6 @@ namespace TaoTie
     /// <summary>
     /// 范围
     /// </summary>
-    [NinoSerialize]
     public abstract partial class ConfigRange
     {
         [NinoMember(1)]

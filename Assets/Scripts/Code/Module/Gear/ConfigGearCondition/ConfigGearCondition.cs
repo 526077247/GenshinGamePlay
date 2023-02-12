@@ -9,7 +9,6 @@ using UnityEditor;
 namespace TaoTie
 {
     // Condition
-    [NinoSerialize]
     public abstract partial class ConfigGearCondition
     {
         public abstract bool IsMatch(IEventBase obj, Gear gear);

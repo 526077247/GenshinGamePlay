@@ -120,7 +120,10 @@ namespace Nino.Serialization
             {
                 writer.Init(TypeModel.IsNonCompressibleType(type) ? CompressOption.NoCompression : option);
             }
-
+            // if (type.IsAbstract)
+            // {
+            //     writer.Write(type.GetHashCode());
+            // }
             /*
              * HARD-CODED SERIALIZATION
              */

@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
     public abstract partial class ConfigGearAction
     {
         [NinoMember(1)]

@@ -9,7 +9,6 @@ namespace TaoTie
     /// <summary>
     /// 区域
     /// </summary>
-    [NinoSerialize]
     public abstract partial class ConfigGearZone
     {
         

@@ -445,7 +445,7 @@ namespace Nino.Serialization
                             $"{BeautifulLongTypeName(mt)} {val} = reader.ReadDictionary<{BeautifulLongTypeName(keyType)},{BeautifulLongTypeName(valueType)}>();\n");
                         return builder.ToString();
                     }
-
+                    
                     return $"reader.ReadCommonVal<{BeautifulLongTypeName(mt)}>()";
             }
         }
@@ -501,7 +501,10 @@ namespace Nino.Serialization
                             .Append($"writer.Write({val});\n");
                         return builder.ToString();
                     }
-
+                    if (mt.IsAbstract)
+                    {
+                        return $"writer.WriteCommonVal<{BeautifulLongTypeName(mt)}>({val}==null?TypeInfo<{BeautifulLongTypeName(mt)}>.Type:{val}.GetType(),{val})";
+                    }
                     return $"writer.WriteCommonVal<{BeautifulLongTypeName(mt)}>({val})";
             }
         }

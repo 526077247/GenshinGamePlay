@@ -6,7 +6,6 @@ namespace TaoTie
     /// <summary>
     /// 出生点
     /// </summary>
-    [NinoSerialize]
     public abstract partial class ConfigBornType
     {
         [NinoMember(1)][NotNull]

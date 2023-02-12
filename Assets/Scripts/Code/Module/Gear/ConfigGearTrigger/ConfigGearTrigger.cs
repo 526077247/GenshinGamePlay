@@ -7,7 +7,6 @@ using UnityEngine;
 namespace TaoTie
 {
     // Trigger
-    [NinoSerialize]
     public abstract partial class ConfigGearTrigger
     {
         [PropertyOrder(int.MinValue)] 
