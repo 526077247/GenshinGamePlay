@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class VariableBaseGearValue : BaseGearValue
+    public partial class GearValue : BaseGearValue
     {
         [NinoMember(1)][LabelText("变量")]
         public string key;

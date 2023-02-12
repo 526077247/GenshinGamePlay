@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class SingleBaseGearValue: BaseGearValue
+    public class SingleGearValue: BaseGearValue
     {
         [NinoMember(1)][LabelText("固定值")]
         public int fixedValue;
