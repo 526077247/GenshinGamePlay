@@ -58,7 +58,7 @@ namespace TaoTie
              ChangeState(_config.entry);
          }
 
-         public void Update(float nowtime, float elapsetime)
+         public void Update(float elapsetime)
          {
              if (_currentState != null)
              {
@@ -84,7 +84,7 @@ namespace TaoTie
                      return;
                  }
 
-                 _currentState.OnUpdate(nowtime, elapsetime);
+                 _currentState.OnUpdate();
              }
          }
 

@@ -29,7 +29,7 @@ namespace TaoTie
             StartTimeline();
         }
 
-        public void OnUpdate(float nowtime, float elapsetime)
+        public void OnUpdate()
         {
             UpdateTimeline();
         }

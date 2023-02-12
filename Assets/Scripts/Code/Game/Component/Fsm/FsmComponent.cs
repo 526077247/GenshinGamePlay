@@ -69,7 +69,7 @@ namespace TaoTie
             for (int i = 0; i < _fsms.Length; i++)
             {
                 if (_fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                _fsms[i].Update(Time.time, Time.deltaTime);//todo：暂停时间
+                _fsms[i].Update(Time.deltaTime);//todo：暂停时间
             }
         }
 

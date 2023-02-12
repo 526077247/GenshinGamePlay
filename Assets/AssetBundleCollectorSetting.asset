@@ -100,10 +100,3 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectUnit
         AssetTags: 
-      - CollectPath: Assets/AssetsPackage/Abilities
-        CollectorGUID: aefbd68a86df11d41b79d2298ea1d9ea
-        CollectorType: 0
-        AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
