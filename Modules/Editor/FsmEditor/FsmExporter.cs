@@ -260,7 +260,16 @@ namespace TaoTie
             ConfigFsmState ret = new ConfigFsmState(state.name, stateDuration, stateLoop, mirrorParam);
             ret.transitions = transList.ToArray();
             ret.timeline = timeline;
-
+            if (state.behaviours.Length > 0)
+            {
+                for (int i = 0; i < state.behaviours.Length; i++)
+                {
+                    if (state.behaviours[i] is AnimatorParam param)
+                    {
+                        ret.data = param.Data;
+                    }
+                }
+            }
             return ret;
         }
 
