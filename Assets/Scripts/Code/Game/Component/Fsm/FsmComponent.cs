@@ -9,7 +9,7 @@ namespace TaoTie
         private ConfigFsmController _config;
         protected VariableSet _variableSet;
 
-        public Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
+        public virtual Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
         public VariableSet variableSet => _variableSet;
 
         public Fsm baseFsm
