@@ -1575,4 +1575,4 @@ MonoBehaviour:
   _startTime: 0.55
   _animationData:
     _animatedParameters: []
-  AbilityName: abc
+  AbilityName: NormalAttack

@@ -5,8 +5,6 @@ namespace TaoTie
 {
     public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdateComponent
     {
-        protected Entity _entityLogic = null;
-
         private Fsm[] _fsms;
         private ConfigFsmController _config;
         protected VariableSet _variableSet;
@@ -89,8 +87,6 @@ namespace TaoTie
 
         #region IComponent
 
-        public Entity entityLogic => _entityLogic;
-
         public void Init(ConfigFsmController cfg)
         {
             InitWithConfig(cfg);
@@ -116,7 +112,6 @@ namespace TaoTie
             }
             
             _config = null;
-            _entityLogic = null;
         }
 
         #endregion
