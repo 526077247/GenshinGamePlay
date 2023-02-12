@@ -1,28 +1,28 @@
 ﻿namespace TaoTie
 {
-    public class DoActionByStateIDMixin : AbilityMixin
+    public class DoActionByGadgetStateMixin: AbilityMixin
     {
-        public ConfigDoActionByStateIDMixin config => baseConfig as ConfigDoActionByStateIDMixin;
-        
-        private Fsm fsm;
+        public ConfigDoActionByGadgetStateMixin config => baseConfig as ConfigDoActionByGadgetStateMixin;
+
+        private GadgetComponent gadgetComponent;
         private Entity owner;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
-            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.config.ChargeLayer);
+            gadgetComponent = owner?.GetComponent<GadgetComponent>();
             
-            if (fsm != null)
+            if (gadgetComponent != null)
             {
-                fsm.onStateChanged += OnStateChanged;
-                if (this.config.StateIDs.Contains(fsm.currentStateName))
+                gadgetComponent.onGadgetStateChange += OnStateChanged;
+                if (this.config.StateIDs.Contains(gadgetComponent.GadgetState))
                 {
                     OnEnter();
                 }
             }
         }
 
-        private void OnStateChanged(string from, string to)
+        private void OnStateChanged(GadgetState from, GadgetState to)
         {
             if (config.StateIDs == null)
                 return;
@@ -71,10 +71,10 @@
 
         public override void Dispose()
         {
-            if (fsm != null)
+            if (gadgetComponent != null)
             {
-                fsm.onStateChanged -= OnStateChanged;
-                fsm = null;
+                gadgetComponent.onGadgetStateChange -= OnStateChanged;
+                gadgetComponent = null;
             }
             
             owner = null;

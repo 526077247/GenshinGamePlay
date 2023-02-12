@@ -6,7 +6,7 @@ namespace TaoTie
     /// 监听间隔
     /// </summary>
     [NinoSerialize]
-    public partial class ConfigTickMixin : ConfigAbilityMixin
+    public partial class ConfigDoActionByTickMixin : ConfigAbilityMixin
     {
         /// <summary>
         /// 时间间隔毫秒
@@ -24,7 +24,7 @@ namespace TaoTie
 
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<TickMixin>.Type) as TickMixin;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<DoActionByTickMixin>.Type) as DoActionByTickMixin;
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

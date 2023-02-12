@@ -1,8 +1,8 @@
 ﻿namespace TaoTie
 {
-    public class AttachToAfterAttack: AbilityMixin
+    public class DoActionBeforeBeAttackMixin: AbilityMixin
     {
-        public ConfigAttachToAfterAttack config => baseConfig as ConfigAttachToAfterAttack;
+        public ConfigDoActionBeforeBeAttackMixin config => baseConfig as ConfigDoActionBeforeBeAttackMixin;
 
         private CombatComponent combatComponent;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
@@ -11,7 +11,7 @@
             combatComponent = actorAbility.Parent.GetParent<Entity>().GetComponent<CombatComponent>();
             if (combatComponent != null)
             {
-                combatComponent.afterAttack += Execute;
+                combatComponent.beforeBeAttack += Execute;
             }
 
         }
@@ -31,7 +31,7 @@
         {
             if (combatComponent != null)
             {
-                combatComponent.afterAttack -= Execute;
+                combatComponent.beforeBeAttack -= Execute;
                 combatComponent = null;
             }
             base.Dispose();

@@ -1,8 +1,8 @@
 ﻿namespace TaoTie
 {
-    public class AttachToAfterBeAttack: AbilityMixin
+    public class DoActionAfterBeAttackMixin: AbilityMixin
     {
-        public ConfigAttachToAfterBeAttack config => baseConfig as ConfigAttachToAfterBeAttack;
+        public ConfigDoActionAfterBeAttackMixin config => baseConfig as ConfigDoActionAfterBeAttackMixin;
 
         private CombatComponent combatComponent;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)

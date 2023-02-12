@@ -3,17 +3,16 @@
 namespace TaoTie
 {
     /// <summary>
-    /// 监听调用Execute方法
+    /// 攻击前
     /// </summary>
     [NinoSerialize]
-    public partial class ConfigExecuteMixin : ConfigAbilityMixin
+    public partial class ConfigDoActionBeforeAttackMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;
-
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<ExecuteMixin>.Type) as ExecuteMixin;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<DoActionBeforeAttackMixin>.Type) as DoActionBeforeAttackMixin;
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

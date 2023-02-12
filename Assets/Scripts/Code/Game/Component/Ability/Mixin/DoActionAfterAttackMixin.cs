@@ -1,9 +1,9 @@
 ﻿namespace TaoTie
 {
-    public class AfterAttackMixin: AbilityMixin
+    public class DoActionAfterAttackMixin: AbilityMixin
     {
         
-        public ConfigAfterAttackMixin config => baseConfig as ConfigAfterAttackMixin;
+        public ConfigDoActionAfterAttackMixin ConfigDoAction => baseConfig as ConfigDoActionAfterAttackMixin;
 
         private CombatComponent combat;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
@@ -30,11 +30,11 @@
 
         private void Execute(AttackResult attackResult,CombatComponent other)
         {
-            if (config.Actions != null)
+            if (ConfigDoAction.Actions != null)
             {
-                for (int i = 0; i < config.Actions.Length; i++)
+                for (int i = 0; i < ConfigDoAction.Actions.Length; i++)
                 {
-                    config.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, other.GetParent<Entity>());
+                    ConfigDoAction.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, other.GetParent<Entity>());
                 }
             }
         }

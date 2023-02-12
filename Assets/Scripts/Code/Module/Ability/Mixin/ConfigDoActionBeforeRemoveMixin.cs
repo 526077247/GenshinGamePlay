@@ -3,16 +3,17 @@
 namespace TaoTie
 {
     /// <summary>
-    /// 造成伤害后
+    /// 监听移除前
     /// </summary>
     [NinoSerialize]
-    public partial class ConfigAttachToAfterAttack: ConfigAbilityMixin
+    public partial class ConfigDoActionBeforeRemoveMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;
+
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<AfterAttackMixin>.Type) as AfterAttackMixin;
+            var res = ObjectPool.Instance.Fetch(TypeInfo<DoActionBeforeRemoveMixin>.Type) as DoActionBeforeRemoveMixin;
             res.Init(actorAbility, actorModifier, this);
             return res;
         }
