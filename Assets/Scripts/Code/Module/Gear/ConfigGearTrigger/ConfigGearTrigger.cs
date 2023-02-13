@@ -15,7 +15,7 @@ namespace TaoTie
         [NinoMember(2)]
         [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] [SerializeReference]
         [PropertyOrder(int.MaxValue - 1)]
-        // [ValueDropdown("@OdinDropdownHelper.GetFilteredActionTypeList(GetType())")]
+        [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(GetType())")]
         public ConfigGearAction[] actions;
 
 #if UNITY_EDITOR
