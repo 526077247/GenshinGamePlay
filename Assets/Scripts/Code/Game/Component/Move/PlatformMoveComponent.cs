@@ -214,7 +214,6 @@ namespace TaoTie
 
         public void Update()
         {
-            Unit self = Parent as Unit;
             var nowtime = GameTimerManager.Instance.GetTimeNow() / 1000f;
             #region 延迟启动
 
@@ -262,7 +261,7 @@ namespace TaoTie
                 {
                     var avatar = Parent.Parent.Get<Unit>(scene.MyId);
                     if (avatar != null &&
-                        Vector3.SqrMagnitude(avatar.Position - self.Position) <
+                        Vector3.SqrMagnitude(avatar.Position - GetParent<Unit>().Position) <
                         _sqlAvatarTriggerEventDistance)
                     {
                         Messager.Instance.Broadcast(gearActor.gear.Id,MessageId.GearEvent,new HeroNearPlatformEvt
@@ -292,7 +291,7 @@ namespace TaoTie
         /// <param name="nowtime"></param>
         private void OnUpdateWithVelocity(float nowtime)
         {
-            Unit self = Parent as Unit;
+            Unit unit = Parent as Unit;
             float lastUpdateTime = this._updateTime;
             float elapsetime = nowtime - lastUpdateTime;
             this._updateTime = nowtime;
@@ -313,10 +312,10 @@ namespace TaoTie
             // 计算位置插值
             if (moveTime >= this._needTime)
             {
-                self.Position = this.nextTarget.pos;
+                unit.Position = this.nextTarget.pos;
                 if (this._waitAngularSpeed == 0)
                 {
-                    self.Rotation = this._rotRoundLeaveDir;
+                    unit.Rotation = this._rotRoundLeaveDir;
                 }
             }
             else
@@ -326,20 +325,20 @@ namespace TaoTie
                 if (amount > 0)
                 {
                     Vector3 newPos = Vector3.Lerp(this._startPos, this.nextTarget.pos, amount);
-                    self.Position = newPos;
+                    unit.Position = newPos;
                 }
 
                 // 计算方向
                 if (this._turnTime > 0)
                 {
-                    self.Rotation = Quaternion.Euler(self.Rotation.eulerAngles + this._axis * _moveAngularSpeed * elapsetime);
+                    unit.Rotation = Quaternion.Euler(unit.Rotation.eulerAngles + this._axis * _moveAngularSpeed * elapsetime);
                 }
             }
 
             moveTime -= this._needTime;
 
             // 进入了配置的抵达范围
-            if (Vector3.SqrMagnitude(self.Position - this.nextTarget.pos) <= _sqlArriveRange)
+            if (Vector3.SqrMagnitude(unit.Position - this.nextTarget.pos) <= _sqlArriveRange)
             {
             }
 
@@ -352,7 +351,7 @@ namespace TaoTie
             // 到这里说明这个点已经走完
             if (_hasReachEvent && !_hadBroadcastReachEvent)
             {
-                var gearActor = self.GetComponent<GearActorComponent>();
+                var gearActor = unit.GetComponent<GearActorComponent>();
                 if (gearActor != null)
                 {
                     Messager.Instance.Broadcast(gearActor.gear.Id,MessageId.GearEvent,new PlatformReachPointEvt
@@ -370,7 +369,7 @@ namespace TaoTie
             if (moveTime < _waitTime)
             {
                 // 计算方向插值
-                self.Rotation = Quaternion.Euler(self.Rotation.eulerAngles + this._axis * _waitAngularSpeed * elapsetime);
+                unit.Rotation = Quaternion.Euler(unit.Rotation.eulerAngles + this._axis * _waitAngularSpeed * elapsetime);
                 return;
             }
 
@@ -385,7 +384,7 @@ namespace TaoTie
             {
                 var pos = this.nextTarget.pos;
                 if (this._targets.Length > 0)
-                    self.Position = pos;
+                    unit.Position = pos;
 
                 if (_routeType == RouteType.OneWay)
                 {
@@ -418,7 +417,7 @@ namespace TaoTie
         /// </summary>
         private void SetNextTarget()
         {
-            var self = Parent as Unit;
+            var unit = Parent as Unit;
             ++this._n;
 
             _hadBroadcastReachEvent = false;
@@ -430,7 +429,7 @@ namespace TaoTie
             float distance = faceV.magnitude;
 
             // 插值的起始点要以unit的真实位置来算
-            this._startPos = self.Position;
+            this._startPos = unit.Position;
 
             //更新起始时间
             this._startTime += this._needTime + this._waitTime;
@@ -448,7 +447,7 @@ namespace TaoTie
             if (_rotType == RotType.ROT_AUTO || (_n == 0 && _rotType != RotType.ROT_NONE))
             {
                 var to = Quaternion.LookRotation(faceV, Vector3.up);
-                self.Rotation = to;
+                unit.Rotation = to;
             }
 
             //持续旋转 todo:
@@ -472,8 +471,8 @@ namespace TaoTie
                     this._turnTime = _needTime;
                 }
 
-                this._rotRoundReachDir = self.Rotation;
-                this._rotRoundLeaveDir = self.Rotation;
+                this._rotRoundReachDir = unit.Rotation;
+                this._rotRoundLeaveDir = unit.Rotation;
                 return;
             }
 
@@ -490,7 +489,7 @@ namespace TaoTie
 
                 this._rotRoundReachDir = Quaternion.Euler(nextTarget.rotRoundReachDir);
                 this._rotRoundLeaveDir = Quaternion.Euler(nextTarget.rotRoundLeaveDir);
-                var angle = GetAngle(self.Rotation.eulerAngles, nextTarget.rotRoundReachDir);
+                var angle = GetAngle(unit.Rotation.eulerAngles, nextTarget.rotRoundReachDir);
                 this._moveAngularSpeed =
                     _n == 0 ? 0 : (angle + nextTarget.rotRoundReachRounds * 360) / _turnTime; //第一个点不需要转弯
                 if (nextTarget.waitTime == 0)
@@ -501,7 +500,7 @@ namespace TaoTie
                 {
                     if (_n == 0) //第一个点等到了目标点再转弯
                     {
-                        angle = GetAngle(self.Rotation.eulerAngles, nextTarget.rotRoundLeaveDir);
+                        angle = GetAngle(unit.Rotation.eulerAngles, nextTarget.rotRoundLeaveDir);
                     }
                     else
                     {
@@ -524,7 +523,7 @@ namespace TaoTie
                     return;
                 }
 
-                this._rotRoundReachDir = self.Rotation;
+                this._rotRoundReachDir = unit.Rotation;
                 this._rotRoundLeaveDir = this._rotRoundReachDir;
                 this._moveAngularSpeed = 0; //移动不需要转弯
                 if (nextTarget.waitTime == 0)
@@ -536,7 +535,7 @@ namespace TaoTie
                     var next = GetPointAfterNextTarget();
                     var nextFaceV = next.pos - nextTarget.pos;
                     var to = Quaternion.LookRotation(nextFaceV, Vector3.up);
-                    var angle = GetAngle(self.Rotation.eulerAngles, to.eulerAngles);
+                    var angle = GetAngle(unit.Rotation.eulerAngles, to.eulerAngles);
                     this._waitAngularSpeed = angle / _waitTime;
                 }
 
@@ -548,8 +547,8 @@ namespace TaoTie
             this._waitAngularSpeed = 0;
             if (Mathf.Abs(faceV.x) > 0.01 || Mathf.Abs(faceV.z) > 0.01)
             {
-                this._rotRoundReachDir = self.Rotation;
-                this._rotRoundLeaveDir = self.Rotation;
+                this._rotRoundReachDir = unit.Rotation;
+                this._rotRoundLeaveDir = unit.Rotation;
             }
 
             this._turnTime = 0;
@@ -596,8 +595,7 @@ namespace TaoTie
         /// <returns></returns>
         private Vector3 GetFaceV()
         {
-            var self = Parent as Unit;
-            return this.nextTarget.pos - self.Position;
+            return this.nextTarget.pos - GetParent<Unit>().Position;
         }
 
         /// <summary>
