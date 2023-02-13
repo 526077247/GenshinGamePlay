@@ -1,10 +1,10 @@
 ﻿namespace TaoTie
 {
-    public class ExecuteAbilityClip:FsmClip<ConfigExecuteAbility>
+    public class ExecuteAbilityAction:FsmClip<ConfigExecuteAbility>
     {
-        public static ExecuteAbilityClip Create()
+        public static ExecuteAbilityAction Create()
         {
-            return ObjectPool.Instance.Fetch<ExecuteAbilityClip>();
+            return ObjectPool.Instance.Fetch<ExecuteAbilityAction>();
         }
         protected override void OnStart()
         {
