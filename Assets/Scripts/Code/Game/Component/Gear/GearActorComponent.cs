@@ -2,10 +2,10 @@
 {
     public class GearActorComponent: Component,IComponent<int,long>
     {
-        private int localId;
+        public int localId { get; private set; }
 
         private long gearId;
-        private Gear gear => Parent.Parent.Get<Gear>(gearId);
+        public Gear gear => Parent.Parent.Get<Gear>(gearId);
         #region IComponent
 
         public void Init(int p1, long p2)
