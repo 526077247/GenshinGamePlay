@@ -85,8 +85,6 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit,Vector3>(Id,MessageId.ChangePositionEvt,OnChanePosition);
             Messager.Instance.AddListener<Unit,Quaternion>(Id,MessageId.ChangeRotationEvt,OnChaneRotation);
-            Messager.Instance.AddListener<Unit>(Id,MessageId.MoveStart,MoveStart);
-            Messager.Instance.AddListener<Unit>(Id,MessageId.MoveStop,MoveStop);
             // var hud = unit.GetComponent<HudComponent>();
             // if (hud != null)
             // {
@@ -99,9 +97,7 @@ namespace TaoTie
         {
             Messager.Instance.RemoveListener<Unit,Vector3>(Id,MessageId.ChangePositionEvt,OnChanePosition);
             Messager.Instance.RemoveListener<Unit,Quaternion>(Id,MessageId.ChangeRotationEvt,OnChaneRotation);
-            Messager.Instance.RemoveListener<Unit>(Id,MessageId.MoveStart,MoveStart);
-            Messager.Instance.RemoveListener<Unit>(Id,MessageId.MoveStop,MoveStop);
-            
+
             if(EntityView!=null)
                 GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
         }

@@ -77,14 +77,6 @@ namespace TaoTie
         {
         }
 
-        public void SetWeight(int index, float weight)
-        {
-            if (animator != null)
-            {
-                animator.SetLayerWeight(index, weight);
-            }
-        }
-
         #region IComponent
 
         public virtual void Init(ConfigFsmController cfg)
