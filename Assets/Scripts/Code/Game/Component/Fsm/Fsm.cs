@@ -47,7 +47,7 @@ namespace TaoTie
              return ret;
          }
 
-         protected void Init(FsmComponent ctrl, ConfigFsm cfg)
+         protected virtual void Init(FsmComponent ctrl, ConfigFsm cfg)
          {
              _component = ctrl;
              _config = cfg;

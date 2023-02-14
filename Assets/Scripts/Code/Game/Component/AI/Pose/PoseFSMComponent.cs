@@ -6,5 +6,9 @@ namespace TaoTie
     {
         public override Animator animator=> null;
         
+        protected override Fsm CreateFsm(ConfigFsm fsmCfg)
+        {
+            return PoseFsm.Create(this, fsmCfg);
+        }
     }
 }

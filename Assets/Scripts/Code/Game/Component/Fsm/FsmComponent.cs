@@ -87,13 +87,13 @@ namespace TaoTie
 
         #region IComponent
 
-        public void Init(ConfigFsmController cfg)
+        public virtual void Init(ConfigFsmController cfg)
         {
             InitWithConfig(cfg);
             Start();
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             Stop();
             if (_fsms != null)
