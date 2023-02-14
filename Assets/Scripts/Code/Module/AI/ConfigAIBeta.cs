@@ -8,7 +8,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAIBeta
     {
-        [NinoMember(1)][LabelText("AI类型")]
+        [NinoMember(1)][LabelText("启用")]
         public bool Enable;
         [NinoMember(2)][LabelText("AI类型")]
         public DecisionArchetype DecisionArchetype;
