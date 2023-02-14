@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigGetGroupMonsterCountCondition
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigGetGroupMonsterCountCondition.SerializationHelper NinoSerializationHelper = new ConfigGetGroupMonsterCountCondition.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigGetGroupMonsterCountCondition>
         {

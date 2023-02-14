@@ -1,0 +1,17 @@
+{
+    "name": "Slate.FSM",
+    "rootNamespace": "",
+    "references": [
+        "GUID:05709d20589fbf643b5835fee268769a",
+        "GUID:3e65ca31deeda9d40bb7055d47566974"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

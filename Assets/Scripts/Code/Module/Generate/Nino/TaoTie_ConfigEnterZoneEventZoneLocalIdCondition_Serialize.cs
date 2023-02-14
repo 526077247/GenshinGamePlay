@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigEnterZoneEventZoneLocalIdCondition
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigEnterZoneEventZoneLocalIdCondition.SerializationHelper NinoSerializationHelper = new ConfigEnterZoneEventZoneLocalIdCondition.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigEnterZoneEventZoneLocalIdCondition>
         {
@@ -25,7 +26,7 @@ namespace TaoTie
                     return null;
                 ConfigEnterZoneEventZoneLocalIdCondition value = new ConfigEnterZoneEventZoneLocalIdCondition();
                 reader.DecompressAndReadEnum<TaoTie.CompareMode>(ref value.mode);
-                reader.DecompressAndReadNumber<System.Int64>(ref value.value);
+                reader.DecompressAndReadNumber<System.Int32>(ref value.value);
                 return value;
             }
             #endregion

@@ -9,7 +9,7 @@ namespace TaoTie
         private ConfigFsmController _config;
         protected VariableSet _variableSet;
 
-        public Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
+        public virtual Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
         public VariableSet variableSet => _variableSet;
 
         public Fsm baseFsm
@@ -69,7 +69,7 @@ namespace TaoTie
             for (int i = 0; i < _fsms.Length; i++)
             {
                 if (_fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                _fsms[i].Update(Time.time, Time.deltaTime);//todo：暂停时间
+                _fsms[i].Update(Time.deltaTime);//todo：暂停时间
             }
         }
 
@@ -77,23 +77,15 @@ namespace TaoTie
         {
         }
 
-        public void SetWeight(int index, float weight)
-        {
-            if (animator != null)
-            {
-                animator.SetLayerWeight(index, weight);
-            }
-        }
-
         #region IComponent
 
-        public void Init(ConfigFsmController cfg)
+        public virtual void Init(ConfigFsmController cfg)
         {
             InitWithConfig(cfg);
             Start();
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             Stop();
             if (_fsms != null)

@@ -53,19 +53,12 @@ namespace TaoTie
         }
         public Transform EntityView;
 
-        public Transform TriggerRoot;
-
         public ReferenceCollector Collector;
 
-        DictionaryComponent<long, Collider> Triggers;
-
-        DictionaryComponent<int, EffectInfo> Effects;
         #region override
 
         public void Init()
         {
-            Triggers = DictionaryComponent<long, Collider>.Create();
-            Effects = DictionaryComponent<int, EffectInfo>.Create();
             LoadGameObjectAsync().Coroutine();
         }
 
@@ -88,16 +81,10 @@ namespace TaoTie
             ec.Id = this.Id;
 
             ec.EntityType = unit.Type;
-            GameObject tRoot = new GameObject("TriggerRoot");
-            TriggerRoot = tRoot.transform;
-            TriggerRoot.SetParent(EntityView);
-            TriggerRoot.localPosition = Vector3.zero;
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit,Vector3>(Id,MessageId.ChangePositionEvt,OnChanePosition);
             Messager.Instance.AddListener<Unit,Quaternion>(Id,MessageId.ChangeRotationEvt,OnChaneRotation);
-            Messager.Instance.AddListener<Unit>(Id,MessageId.MoveStart,MoveStart);
-            Messager.Instance.AddListener<Unit>(Id,MessageId.MoveStop,MoveStop);
             // var hud = unit.GetComponent<HudComponent>();
             // if (hud != null)
             // {
@@ -110,24 +97,7 @@ namespace TaoTie
         {
             Messager.Instance.RemoveListener<Unit,Vector3>(Id,MessageId.ChangePositionEvt,OnChanePosition);
             Messager.Instance.RemoveListener<Unit,Quaternion>(Id,MessageId.ChangeRotationEvt,OnChaneRotation);
-            Messager.Instance.RemoveListener<Unit>(Id,MessageId.MoveStart,MoveStart);
-            Messager.Instance.RemoveListener<Unit>(Id,MessageId.MoveStop,MoveStop);
-            foreach (var v in Triggers)
-            {
-                var value = v.Value;
-                GameObject.DestroyImmediate(value.gameObject);
-            }
-            Triggers.Clear();
-            Triggers = null;
-            if(TriggerRoot!=null)
-                GameObject.Destroy(TriggerRoot.gameObject);
-            foreach (var v in Effects)
-            {
-                var value = v.Value;
-                value.Dispose();
-            }
-            Effects.Clear();
-            Effects = null;
+
             if(EntityView!=null)
                 GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
         }

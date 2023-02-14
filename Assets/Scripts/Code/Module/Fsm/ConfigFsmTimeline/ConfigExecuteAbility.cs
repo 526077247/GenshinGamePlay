@@ -5,7 +5,7 @@
         public string AbilityName;
         public override FsmClip CreateClip(FsmState state)
         {
-            var res = ExecuteAbilityClip.Create();
+            var res = ExecuteAbilityAction.Create();
             res.OnInit(state,this);
             return res;
         }

@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigSelectTargetsByRange
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigSelectTargetsByRange.SerializationHelper NinoSerializationHelper = new ConfigSelectTargetsByRange.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigSelectTargetsByRange>
         {
@@ -15,7 +16,7 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.ConfigRange>(value.Range);
+                writer.WriteCommonVal<TaoTie.ConfigRange>(value.Range==null?TypeInfo<TaoTie.ConfigRange>.Type:value.Range.GetType(),value.Range);
                 writer.Write(value.EntityTypes);
             }
 

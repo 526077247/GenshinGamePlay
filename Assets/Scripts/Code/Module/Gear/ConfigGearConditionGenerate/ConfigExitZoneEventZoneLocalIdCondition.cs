@@ -14,7 +14,7 @@ namespace TaoTie
         public CompareMode mode;
         [NinoMember(2)]
         [ValueDropdown("@OdinDropdownHelper.GetGearZoneIds()")]
-        public Int64 value;
+        public Int32 value;
 
         public override bool IsMatch(ExitZoneEvent obj,Gear gear)
         {

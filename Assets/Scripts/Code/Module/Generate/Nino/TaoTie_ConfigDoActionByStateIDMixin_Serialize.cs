@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigDoActionByStateIDMixin
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigDoActionByStateIDMixin.SerializationHelper NinoSerializationHelper = new ConfigDoActionByStateIDMixin.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigDoActionByStateIDMixin>
         {
@@ -17,9 +18,9 @@ namespace TaoTie
                 writer.Write(true);
                 writer.Write(value.ChargeLayer);
                 writer.WriteCommonVal<System.Collections.Generic.HashSet<System.String>>(value.StateIDs);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.EnterPredicate);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.EnterPredicate==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.EnterPredicate.GetType(),value.EnterPredicate);
                 writer.Write(value.EnterActions);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.ExitPredicate);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.ExitPredicate==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.ExitPredicate.GetType(),value.ExitPredicate);
                 writer.Write(value.ExitActions);
             }
 

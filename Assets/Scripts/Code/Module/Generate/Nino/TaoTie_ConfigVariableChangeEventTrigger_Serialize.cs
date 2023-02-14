@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigVariableChangeEventTrigger
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigVariableChangeEventTrigger.SerializationHelper NinoSerializationHelper = new ConfigVariableChangeEventTrigger.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigVariableChangeEventTrigger>
         {

@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ByNot
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ByNot.SerializationHelper NinoSerializationHelper = new ByNot.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ByNot>
         {
@@ -16,7 +17,7 @@ namespace TaoTie
                 }
                 writer.Write(true);
                 writer.CompressAndWriteEnum<TaoTie.AbilityTargetting>(value.Target);
-                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.Predicate);
+                writer.WriteCommonVal<TaoTie.ConfigAbilityPredicate>(value.Predicate==null?TypeInfo<TaoTie.ConfigAbilityPredicate>.Type:value.Predicate.GetType(),value.Predicate);
             }
 
             public override ByNot Deserialize(Nino.Serialization.Reader reader)

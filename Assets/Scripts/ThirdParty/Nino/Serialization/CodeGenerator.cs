@@ -98,6 +98,7 @@ namespace Nino.Serialization
 {start}
     public partial struct {type}
     {
+        [LitJson.Extensions.JsonIgnore]
         public static {type}.SerializationHelper NinoSerializationHelper = new {type}.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<{type}>
         {

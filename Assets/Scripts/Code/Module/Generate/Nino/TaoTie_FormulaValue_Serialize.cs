@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class FormulaValue
     {
+        [LitJson.Extensions.JsonIgnore]
         public static FormulaValue.SerializationHelper NinoSerializationHelper = new FormulaValue.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<FormulaValue>
         {

@@ -6,14 +6,12 @@ namespace TaoTie
     {
         public Animator Animator;
 
-        public void MoveStart(Unit unit)
+        public void SetWeight(int index, float weight)
         {
-            Animator.CrossFade("Walk",0.1f);
-        }
-        
-        public void MoveStop(Unit unit)
-        {
-            Animator.CrossFade("Idle",0.1f);
+            if (Animator != null)
+            {
+                Animator.SetLayerWeight(index, weight);
+            }
         }
     }
 }

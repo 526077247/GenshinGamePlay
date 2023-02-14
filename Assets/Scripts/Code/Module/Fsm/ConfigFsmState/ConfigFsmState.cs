@@ -13,6 +13,7 @@ namespace TaoTie
         public int nameHash = 0;
         public ConfigFsmTimeline timeline;
         public ConfigTransition[] transitions;
+        public StateData data;
         [JsonIgnore]
         public bool hasTimeline => this.timeline?.clips?.Length > 0;
         

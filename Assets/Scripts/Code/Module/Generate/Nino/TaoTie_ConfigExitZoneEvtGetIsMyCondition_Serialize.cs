@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigExitZoneEvtGetIsMyCondition
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigExitZoneEvtGetIsMyCondition.SerializationHelper NinoSerializationHelper = new ConfigExitZoneEvtGetIsMyCondition.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigExitZoneEvtGetIsMyCondition>
         {

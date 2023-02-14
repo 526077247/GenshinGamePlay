@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigAttackInfo
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigAttackInfo.SerializationHelper NinoSerializationHelper = new ConfigAttackInfo.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigAttackInfo>
         {

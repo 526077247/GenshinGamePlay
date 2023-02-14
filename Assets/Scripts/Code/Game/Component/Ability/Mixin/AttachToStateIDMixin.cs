@@ -6,14 +6,14 @@
 
         private Fsm fsm;
         private bool hasAddModifier;
-        private Entity onwer;
+        private Entity owner;
         private AbilityComponent abilityComponent;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             base.Init(actorAbility, actorModifier, config);
-            onwer = actorAbility.Parent.GetParent<Entity>();
-            fsm = onwer?.GetComponent<FsmComponent>()?.GetFsm(this.config.ChargeLayer);
-            abilityComponent = onwer?.GetComponent<AbilityComponent>();
+            owner = actorAbility.Parent.GetParent<Entity>();
+            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.config.ChargeLayer);
+            abilityComponent = owner?.GetComponent<AbilityComponent>();
             if (fsm != null)
             {
                 fsm.onStateChanged += OnStateChanged;
@@ -44,7 +44,7 @@
         {
             if (EvaluatePredicate())
             {
-                abilityComponent.ApplyModifier(onwer.Id, actorAbility, config.ModifierName);
+                abilityComponent.ApplyModifier(owner.Id, actorAbility, config.ModifierName);
                 hasAddModifier = true;
             }
         }
@@ -53,7 +53,7 @@
         {
             if (config.Predicate != null)
             {
-                return config.Predicate.Evaluate(onwer, actorAbility, actorModifier, onwer);
+                return config.Predicate.Evaluate(owner, actorAbility, actorModifier, owner);
             }
             return true;
         }
@@ -78,7 +78,7 @@
 
             hasAddModifier = false;
             abilityComponent = null;
-            onwer = null;
+            owner = null;
             base.Dispose();
         }
     }

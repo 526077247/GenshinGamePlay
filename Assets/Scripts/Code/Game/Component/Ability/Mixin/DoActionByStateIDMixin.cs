@@ -5,12 +5,13 @@
         public ConfigDoActionByStateIDMixin config => baseConfig as ConfigDoActionByStateIDMixin;
         
         private Fsm fsm;
-        private Entity onwer;
+        private Entity owner;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             base.Init(actorAbility, actorModifier, config);
-            onwer = actorAbility.Parent.GetParent<Entity>();
-            fsm = onwer?.GetComponent<FsmComponent>()?.GetFsm(this.config.ChargeLayer);
+            owner = actorAbility.Parent.GetParent<Entity>();
+            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.config.ChargeLayer);
+            
             if (fsm != null)
             {
                 fsm.onStateChanged += OnStateChanged;
@@ -43,7 +44,7 @@
             {
                 for (int i = 0; i < config.EnterActions.Length; i++)
                 {
-                    config.EnterActions[i].DoExecute(onwer, actorAbility, actorModifier, null);
+                    config.EnterActions[i].DoExecute(owner, actorAbility, actorModifier, null);
                 }
             }
         }
@@ -52,7 +53,7 @@
         {
             if (predicate != null)
             {
-                return predicate.Evaluate(onwer, actorAbility, actorModifier, onwer);
+                return predicate.Evaluate(owner, actorAbility, actorModifier, owner);
             }
             return true;
         }
@@ -63,7 +64,7 @@
             {
                 for (int i = 0; i < config.ExitActions.Length; i++)
                 {
-                    config.ExitActions[i].DoExecute(onwer, actorAbility, actorModifier, null);
+                    config.ExitActions[i].DoExecute(owner, actorAbility, actorModifier, null);
                 }
             }
         }
@@ -76,7 +77,7 @@
                 fsm = null;
             }
             
-            onwer = null;
+            owner = null;
             base.Dispose();
         }
     }

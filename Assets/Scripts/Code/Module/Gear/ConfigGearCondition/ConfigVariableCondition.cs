@@ -12,7 +12,7 @@ namespace TaoTie
     {
         [NinoMember(1)]
         [LabelText("左值")] 
-        public AbstractVariableValue leftValue;
+        public BaseGearValue leftValue;
         [NinoMember(2)]
         [Tooltip(GearTooltips.CompareMode)] [OnValueChanged("@CheckModeType(rightValue,mode)")]
         public CompareMode mode;

@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class ConfigEnterZoneEvtGetRegionEntityCountCondition
     {
+        [LitJson.Extensions.JsonIgnore]
         public static ConfigEnterZoneEvtGetRegionEntityCountCondition.SerializationHelper NinoSerializationHelper = new ConfigEnterZoneEvtGetRegionEntityCountCondition.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<ConfigEnterZoneEvtGetRegionEntityCountCondition>
         {

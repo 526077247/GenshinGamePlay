@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class I18NConfig
     {
+        [LitJson.Extensions.JsonIgnore]
         public static I18NConfig.SerializationHelper NinoSerializationHelper = new I18NConfig.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<I18NConfig>
         {

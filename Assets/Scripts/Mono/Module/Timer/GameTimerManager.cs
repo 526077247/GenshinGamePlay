@@ -15,6 +15,8 @@ namespace TaoTie
         private float timeScale = 1;
 
         private long lastUpdateTime;
+        
+        private long deltaTime;
         #region override
         
         public override void Init()
@@ -41,7 +43,7 @@ namespace TaoTie
             if(timeScale<=0) return;
             
             var serverNow = TimeHelper.ServerNow();
-            var deltaTime = (int)((serverNow - lastUpdateTime)*timeScale);
+            deltaTime = (int)((serverNow - lastUpdateTime)*timeScale);
             timeNow += deltaTime;
             lastUpdateTime += (int) (deltaTime / timeScale);
             
@@ -127,6 +129,11 @@ namespace TaoTie
         public long GetTimeNow()
         {
             return timeNow;
+        }
+        
+        public long GetDeltaTime()
+        {
+            return deltaTime;
         }
     }
 }

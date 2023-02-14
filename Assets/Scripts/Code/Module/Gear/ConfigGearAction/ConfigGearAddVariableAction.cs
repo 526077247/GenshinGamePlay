@@ -26,7 +26,7 @@ namespace TaoTie
         public float maxValue;
         [NinoMember(14)]
         [LabelText("增加的值")]
-        public AbstractVariableValue value;
+        public BaseGearValue value;
         
         
         protected override void Execute(IEventBase evt, Gear aimGear, Gear fromGear)

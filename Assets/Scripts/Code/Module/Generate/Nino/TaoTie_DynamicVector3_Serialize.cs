@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class DynamicVector3
     {
+        [LitJson.Extensions.JsonIgnore]
         public static DynamicVector3.SerializationHelper NinoSerializationHelper = new DynamicVector3.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<DynamicVector3>
         {
@@ -15,9 +16,9 @@ namespace TaoTie
                     return;
                 }
                 writer.Write(true);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.X);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.Y);
-                writer.WriteCommonVal<TaoTie.BaseValue>(value.Z);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.X==null?TypeInfo<TaoTie.BaseValue>.Type:value.X.GetType(),value.X);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.Y==null?TypeInfo<TaoTie.BaseValue>.Type:value.Y.GetType(),value.Y);
+                writer.WriteCommonVal<TaoTie.BaseValue>(value.Z==null?TypeInfo<TaoTie.BaseValue>.Type:value.Z.GetType(),value.Z);
             }
 
             public override DynamicVector3 Deserialize(Nino.Serialization.Reader reader)

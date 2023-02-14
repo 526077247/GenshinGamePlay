@@ -3,6 +3,7 @@ namespace TaoTie
 {
     public partial class NumericValue
     {
+        [LitJson.Extensions.JsonIgnore]
         public static NumericValue.SerializationHelper NinoSerializationHelper = new NumericValue.SerializationHelper();
         public class SerializationHelper: Nino.Serialization.NinoWrapperBase<NumericValue>
         {
