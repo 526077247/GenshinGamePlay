@@ -16,12 +16,12 @@ namespace TaoTie
         [NinoMember(4)] [LabelText("目标无效时是否可使用？")]
         public bool CanUseIfTargetInactive;
         [NinoMember(5)]
-        public float CD;
+        public int CD;
         [NinoMember(6)][LabelText("忽略公共CD？")][BoxGroup("公共CD")]
         public bool IgnoreGCD;
         [NinoMember(7)][LabelText("公共CD组")][ShowIf("@!IgnoreGCD")][BoxGroup("公共CD")]
         public string PublicCDGroup;
-        [NinoMember(8)][BoxGroup("公共CD")][ShowIf("@!IgnoreGCD")]
-        public float PublicCD;
+        [NinoMember(8)][LabelText("该技能包含的State")]
+        public string[] StateIds;
     }
 }
