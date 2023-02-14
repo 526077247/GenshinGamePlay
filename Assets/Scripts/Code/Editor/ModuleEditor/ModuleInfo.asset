@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: ModuleInfo
   m_EditorClassIdentifier: 
   Source: Modules
-  ModulePath: Assets/Modules
+  ModulePath: Packages
