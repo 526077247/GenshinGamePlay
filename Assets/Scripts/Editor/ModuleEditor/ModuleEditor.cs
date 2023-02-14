@@ -9,9 +9,9 @@ namespace TaoTIe
 
     public class ModuleEditor : EditorWindow
     {
-        private const string settingAsset = "Assets/Scripts/Code/Editor/ModuleEditor/ModuleInfo.asset";
+        private const string settingAsset = "Assets/Scripts/Editor/ModuleEditor/ModuleInfo.asset";
         private string Source = "Modules";
-        private string ModulePath = "Assets/Modules";
+        private string ModulePath = "Packages";
         private ModuleInfo info;
 
         Vector2 scrollPos;
