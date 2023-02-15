@@ -24,9 +24,9 @@ namespace TaoTie
             if (gear.TryGetRoute(routeId, out var route))
             {
                 var pmc = gear.AddComponent<PlatformMoveComponent, ConfigRoute>(route);
-                if (delay == 0)
+                if (delay >= 0)
                 {
-                    
+                    pmc.DelayStart(delay);
                 }
             }
             return entity;
