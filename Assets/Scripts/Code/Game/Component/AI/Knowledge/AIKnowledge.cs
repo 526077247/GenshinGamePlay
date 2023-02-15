@@ -20,7 +20,8 @@ namespace TaoTie
         public AITactic currentTactic;
         
         public int poseID;
-        
+
+        public AISensingKnowledge snsingKnowledge;
         public AISkillKnowledge skillKnowledge;
         public AIMoveKnowledge moveKnowledge;
         public AIThreatKnowledge threatKnowledge;
@@ -36,6 +37,8 @@ namespace TaoTie
             enterCombatPostion = null;
             enterCombatForward = null;
             
+            snsingKnowledge.Dispose();
+            snsingKnowledge = null;
             skillKnowledge.Dispose();
             skillKnowledge = null;
             moveKnowledge.Dispose();

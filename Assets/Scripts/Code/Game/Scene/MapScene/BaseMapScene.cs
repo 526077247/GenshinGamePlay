@@ -70,6 +70,7 @@ namespace TaoTie
         public virtual async ETTask OnSwitchSceneEnd()
         {
             RegisterManager<GameTimerManager>();
+            RegisterManager<AIManager>();
             // await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath);
             // await UIManager.Instance.OpenWindow<UIMainView>(UIMainView.PrefabPath);
             var em = RegisterManager<EntityManager>();

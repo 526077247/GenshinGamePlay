@@ -5,7 +5,7 @@ namespace TaoTie
     /// <summary>
     /// AI组件，注意回收的问题
     /// </summary>
-    public class AIComponent: Component,IComponent<ConfigAIBeta>,IUpdateComponent
+    public class AIComponent: Component,IComponent<ConfigAIBeta>
     {
 
         /// <summary> 收集的信息 </summary>
@@ -18,6 +18,9 @@ namespace TaoTie
 
         /// <summary> 寻路 </summary>
         protected AIPathfinding pathfinder => new AIPathfinding();
+
+        /// <summary> 感知 </summary>
+        protected AISensingUpdater sensingUpdater => new AISensingUpdater(this);
         /// <summary> 威胁 </summary>
         protected AIThreatUpdater threatUpdater => new AIThreatUpdater(this);
         /// <summary> pose </summary>
@@ -37,15 +40,25 @@ namespace TaoTie
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
             knowledge.Init(Parent,config);
             
+            sensingUpdater.Init(knowledge);
             pathfinder.Init(knowledge);
             threatUpdater.Init(knowledge);
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
+
+            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
+            {
+                scene.GetManager<AIManager>().AddAI(this);
+            }
         }
 
         public virtual void Destroy()
         {
-
+            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
+            {
+                scene.GetManager<AIManager>().RemoveAI(this);
+            }
+            
             pathfinder.Clear();
             threatUpdater.Clear();
             poseControlUpdater.Clear();
@@ -74,8 +87,9 @@ namespace TaoTie
         /// </summary>
         private void UpdateKnowledge()
         {
-            threatUpdater.UpdateMainThread();
             pathfinder.UpdateMainThread();
+            sensingUpdater.UpdateMainThread();
+            threatUpdater.UpdateMainThread();
             poseControlUpdater.UpdateMainThread();
             skillUpdater.UpdateMainThread();
         }
