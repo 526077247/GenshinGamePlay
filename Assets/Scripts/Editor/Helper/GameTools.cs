@@ -35,6 +35,7 @@ namespace TaoTie
         public static void CreateArtSubFolder()
         {
             string[] ArtFolderNames = { "Animations", "Materials", "Models", "Textures", "Prefabs" };
+            string[] UnitFolderNames = { "Animations", "Edit", "Publish", "Prefabs" };
             string[] UIFolderNames = { "Animations", "Atlas", "DiscreteImages","DynamicAtlas", "Prefabs" };
             string[] guids = Selection.assetGUIDs;
             for (int i = 0; i < guids.Length; i++)
@@ -48,6 +49,10 @@ namespace TaoTie
                     if (selectPath.Contains("UI/") || selectPath.Contains("UIHall/") || selectPath.Contains("UIGames/"))
                     {
                         names = UIFolderNames;
+                    }
+                    if (selectPath.Contains("Unit/"))
+                    {
+                        names = UnitFolderNames;
                     }
                     for (int j = 0; j < names.Length; j++)
                     {

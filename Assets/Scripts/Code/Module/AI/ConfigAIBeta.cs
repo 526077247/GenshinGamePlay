@@ -24,7 +24,7 @@ namespace TaoTie
         public Dictionary<int, int> SkillGroupCDConfigs;
         [NinoMember(7)][BoxGroup("技能")]
         public ConfigAISkill[] Skills;
-        [NinoMember(8)][BoxGroup("行为")][Tooltip("优先级从上到下")]
+        [NinoMember(8)][BoxGroup("行为")]
         public ConfigAITacticBaseSetting[] Tactics;
 
 

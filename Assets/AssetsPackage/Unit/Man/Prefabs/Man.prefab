@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4607287509344516595}
   - component: {fileID: 9008285557706316086}
   m_Layer: 0
-  m_Name: Turner
+  m_Name: Obj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
