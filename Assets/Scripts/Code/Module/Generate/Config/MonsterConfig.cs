@@ -80,9 +80,12 @@ namespace TaoTie
 		/// <summary>Id</summary>
 		[NinoMember(1)]
 		public int Id { get; set; }
-		/// <summary>AI路径</summary>
+		/// <summary>模型Id</summary>
 		[NinoMember(2)]
-		public string AI路径 { get; set; }
+		public int UnitId { get; set; }
+		/// <summary>AI路径</summary>
+		[NinoMember(3)]
+		public string AIPath { get; set; }
 
 	}
 }
