@@ -86,6 +86,9 @@ namespace TaoTie
 		/// <summary>AI路径</summary>
 		[NinoMember(3)]
 		public string AIPath { get; set; }
+		/// <summary>PseFSM</summary>
+		[NinoMember(4)]
+		public string PseFSM { get; set; }
 
 	}
 }
