@@ -1,7 +1,7 @@
 ﻿namespace TaoTie
 {
     /// <summary>
-    /// 威胁值
+    /// 威胁模块
     /// </summary>
     public class AIThreatUpdater: BrainModuleBase
     {
