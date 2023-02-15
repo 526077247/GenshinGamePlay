@@ -16,6 +16,9 @@ namespace TaoTie
         public bool FaceTarget;
         [NinoMember(4)] [LabelText("目标无效时是否可使用？")]
         public bool CanUseIfTargetInactive;
+        /// <summary>
+        /// CD有3块，aimanager管理的publiccd-全场AI通用，groupcd-该ai内部通用，cd-skill的cd
+        /// </summary>
         [NinoMember(5)]
         public int CD;
         [NinoMember(6)][LabelText("忽略公共CD？")][BoxGroup("公共CD")]
