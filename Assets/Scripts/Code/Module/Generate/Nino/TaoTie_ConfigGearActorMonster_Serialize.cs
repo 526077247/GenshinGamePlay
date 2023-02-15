@@ -19,7 +19,6 @@ namespace TaoTie
                 writer.CompressAndWrite(ref value.localId);
                 writer.WriteCommonVal<UnityEngine.Vector3>(value.position);
                 writer.CompressAndWrite(ref value.configID);
-                writer.CompressAndWrite(ref value.AIId);
             }
 
             public override ConfigGearActorMonster Deserialize(Nino.Serialization.Reader reader)
@@ -30,7 +29,6 @@ namespace TaoTie
                 reader.DecompressAndReadNumber<System.Int32>(ref value.localId);
                 value.position = reader.ReadCommonVal<UnityEngine.Vector3>();
                 reader.DecompressAndReadNumber<System.Int32>(ref value.configID);
-                reader.DecompressAndReadNumber<System.Int32>(ref value.AIId);
                 return value;
             }
             #endregion

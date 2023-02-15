@@ -75,6 +75,8 @@ namespace TaoTie
             // await UIManager.Instance.OpenWindow<UIMainView>(UIMainView.PrefabPath);
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
+            
+            RegisterManager<GearManager,List<ConfigGear>,SceneManagerProvider>(ConfigGearCategory.Instance.GetAllList(),this);
             // RegisterManager<InputManager,BaseMapScene>(this);
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;

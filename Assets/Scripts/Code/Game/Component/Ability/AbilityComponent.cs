@@ -18,11 +18,14 @@ namespace TaoTie
             abilities = LinkedListComponent<ActorAbility>.Create();
             modifiers = LinkedListComponent<ActorModifier>.Create();
             modifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
-            for (int i = 0; i < data.Count; i++)
+            if (data != null)
             {
-                var ability = ActorAbility.Create(Id, data[i], this);
-                abilities.AddLast(ability);
-                ability.AfterAdd();
+                for (int i = 0; i < data.Count; i++)
+                {
+                    var ability = ActorAbility.Create(Id, data[i], this);
+                    abilities.AddLast(ability);
+                    ability.AfterAdd();
+                }
             }
         }
 

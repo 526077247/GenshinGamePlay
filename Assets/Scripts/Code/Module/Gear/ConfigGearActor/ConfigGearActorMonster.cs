@@ -10,12 +10,11 @@ namespace TaoTie
     {
         [NinoMember(10)]
         public int configID;
-        [NinoMember(11)]
-        public int AIId;
-        
+
         public override Entity CreateActor(Gear gear)
         {
             var entity = gear.Parent.CreateEntity<Monster, int>(configID);
+            entity.Position = position;
             entity.AddComponent<GearActorComponent, int, long>(localId, gear.Id);
             return entity;
         }

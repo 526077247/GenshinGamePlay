@@ -18,9 +18,8 @@ namespace TaoTie
         public GadgetState defaultState;
         public override Entity CreateActor(Gear gear)
         {
-            
             var entity = gear.Parent.CreateEntity<Gadget, int, GadgetState>(configID,defaultState);
-            
+            entity.Position = position;
             if (gear.TryGetRoute(routeId, out var route))
             {
                 var pmc = gear.AddComponent<PlatformMoveComponent, ConfigRoute>(route);
