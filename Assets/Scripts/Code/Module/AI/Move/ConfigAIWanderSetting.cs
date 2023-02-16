@@ -7,6 +7,8 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAIWanderSetting: ConfigAITacticBaseSetting
     {
-        
+        [LabelText("启用")]
+        [NinoMember(1)]
+        public bool enable;
     }
 }

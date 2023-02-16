@@ -8,8 +8,9 @@ namespace TaoTie
     public partial class ConfigAISensing
     {
         [LabelText("启用")]
+        [NinoMember(1)]
         public bool enable;
-        public ConfigAISensingSetting defaultSetting;
+        public ConfigAISensingSetting setting;
         public Dictionary<int, ConfigAISensingSetting> settings;
 
     }

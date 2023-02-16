@@ -1,11 +1,14 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [NinoSerialize]
     public partial class ConfigAIThreatSetting
     {
-        public bool enabled;
+        [LabelText("启用")]
+        [NinoMember(1)]
+        public bool enable;
         public float clearThreatTargetDistance;
         public float clearThreatEdgeDistance;
         public bool clearThreatByLostPath;

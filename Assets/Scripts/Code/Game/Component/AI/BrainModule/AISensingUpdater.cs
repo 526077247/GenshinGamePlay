@@ -21,7 +21,7 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            sensingKnowledge = aiKnowledge.snsingKnowledge;
+            sensingKnowledge = aiKnowledge.sensingKnowledge;
         }
 
 
