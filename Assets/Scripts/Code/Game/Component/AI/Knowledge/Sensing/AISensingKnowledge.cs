@@ -8,10 +8,10 @@ namespace TaoTie
         public ConfigAISensingSetting setting;
         public ConfigAISensing sensing;
         
-        public Dictionary<uint, SensibleInfo> enemySensibles;
+        public Dictionary<long, SensibleInfo> enemySensibles;
         //用于决策选取的敌人，只选最近的
         public float nearestEnemyDistance;
-        public uint nearestEnemy;
+        public long nearestEnemy;
         public bool scared;
         public void Dispose()
         {

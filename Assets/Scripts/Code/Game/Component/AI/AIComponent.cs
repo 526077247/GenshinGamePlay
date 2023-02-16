@@ -8,6 +8,7 @@ namespace TaoTie
     public class AIComponent: Component,IComponent<ConfigAIBeta>
     {
 
+        protected AIManager aiManager;
         /// <summary> 收集的信息 </summary>
         protected AIKnowledge knowledge;
 
@@ -20,7 +21,7 @@ namespace TaoTie
         protected AIPathfinding pathfinder => new AIPathfinding();
 
         /// <summary> 感知 </summary>
-        protected AISensingUpdater sensingUpdater => new AISensingUpdater(this);
+        protected AISensingUpdater sensingUpdater => new AISensingUpdater(aiManager);
         /// <summary> 威胁 </summary>
         protected AIThreatUpdater threatUpdater => new AIThreatUpdater(this);
         /// <summary> pose </summary>
@@ -37,6 +38,10 @@ namespace TaoTie
 
         public virtual void Init(ConfigAIBeta config)
         {
+            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
+            {
+                aiManager = scene.GetManager<AIManager>();
+            }
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
             knowledge.Init(Parent,config);
             
@@ -46,18 +51,12 @@ namespace TaoTie
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
 
-            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
-            {
-                scene.GetManager<AIManager>().AddAI(this);
-            }
+            aiManager?.AddAI(this);
         }
 
         public virtual void Destroy()
         {
-            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
-            {
-                scene.GetManager<AIManager>().RemoveAI(this);
-            }
+            aiManager?.RemoveAI(this);
             
             pathfinder.Clear();
             threatUpdater.Clear();
@@ -66,6 +65,7 @@ namespace TaoTie
             
             knowledge.Dispose();
             knowledge = null;
+            aiManager = null;
         }
 
         public virtual void Update()

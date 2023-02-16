@@ -8,9 +8,13 @@ namespace TaoTie
     /// </summary>
     public class AIKnowledge: IDisposable
     {
+        public Unit aiOwnerEntity; // 0x18
+        public uint campID;
+        
         public Vector3 bornPos;
         public Vector3 currentPos;
         public Vector3 currentForward;
+        public Vector3 eyePos;
         
         public ThreatLevel threatLevel;
         public ThreatLevel threatLevelOld;

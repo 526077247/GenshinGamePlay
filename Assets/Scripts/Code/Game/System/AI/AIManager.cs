@@ -10,6 +10,9 @@ namespace TaoTie
         private List<AIComponent> localAvatarAlertEnemies;
         private List<AIComponent> localAvatarAwareEnemies;
         
+        public Dictionary<uint, Dictionary<uint, IList<Unit>>> _aiEnemyEntityTable;
+        private Dictionary<uint, List<Unit>> _configIDEntityTable;
+        
         private Dictionary<string, PublicAISkillCD> publicCDs;
         #region IManager
 
@@ -61,6 +64,13 @@ namespace TaoTie
         public void SetSkillUsed(string pCDName)
         {
             
-        } 
+        }
+
+        public Dictionary<uint, IList<Unit>> GetEnemies(uint campID)
+        {
+            if(_aiEnemyEntityTable.ContainsKey(campID))
+                return _aiEnemyEntityTable[campID];
+            return null;
+        }
     }
 }

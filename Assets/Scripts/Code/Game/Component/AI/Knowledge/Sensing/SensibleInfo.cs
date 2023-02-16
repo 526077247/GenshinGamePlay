@@ -4,7 +4,7 @@ namespace TaoTie
 {
     public struct SensibleInfo
     {
-        public uint sensibleID;
+        public long sensibleID;
         public Vector3 position;
         public Vector3 targetablePosition;
         public Vector3 direction;
