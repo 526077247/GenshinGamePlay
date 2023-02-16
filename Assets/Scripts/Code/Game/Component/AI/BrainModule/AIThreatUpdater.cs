@@ -89,7 +89,8 @@ namespace TaoTie
         {
             //Update candidate from sensible list
             UpdateCandidateFromSensibles();
-
+            var timeNow = GameTimerManager.Instance.GetDeltaTime();
+            var deltaTime = GameTimerManager.Instance.GetDeltaTime();
             foreach (var candidate in _candidateList)
             {
                 var addReason = candidate.Value.addReason;
@@ -99,20 +100,20 @@ namespace TaoTie
                 switch (addReason)
                 {
                     case ThreatAddReason.Vision:
-                        candidate.Value.lastSeenTime = GameTimerManager.Instance.GetTimeNow();
+                        candidate.Value.lastSeenTime = timeNow;
                         //Get View Attenuation
                         var viewAttenuation = knowledge.threatKnowledge.viewAttenuation;
                         float viewAttenuationAmount = 1f;
                         viewAttenuation.FindY(distanceToCandidate, ref viewAttenuationAmount);
 
                         //TODO 加上感知随机偏差系数
-                        temperatureAmount = knowledge.threatKnowledge.config.feelThreatGrow * Time.deltaTime * viewAttenuationAmount;
+                        temperatureAmount = knowledge.threatKnowledge.viewThreatGrowRate * deltaTime * viewAttenuationAmount;
                         candidate.Value.IncreaseTemper(temperatureAmount);
                         break;
                     case ThreatAddReason.Feel:
-                        candidate.Value.lastFeelTime = Time.deltaTime;
+                        candidate.Value.lastFeelTime = timeNow;
                         //TODO 加上感知随机偏差系数
-                        temperatureAmount = knowledge.threatKnowledge.config.feelThreatGrow * Time.deltaTime;
+                        temperatureAmount = knowledge.threatKnowledge.feelThreatGrowRate * deltaTime;
                         candidate.Value.IncreaseTemper(temperatureAmount);
                         break;
                 }
@@ -132,7 +133,7 @@ namespace TaoTie
             //If knowledge's temperature equals TEMPERVAL_ALERT, do not decrease
             if (knowledge.temperature != ThreatInfo.TEMPERVAL_ALERT)
             {
-                float decreaseTemperatureAmount = knowledge.threatKnowledge.config.threatDecreaseSpeed * Time.deltaTime;
+                float decreaseTemperatureAmount = knowledge.threatKnowledge.config.threatDecreaseSpeed * deltaTime;
 
                 for (int i = 0; i < _candidateList.Count; i++)
                 {

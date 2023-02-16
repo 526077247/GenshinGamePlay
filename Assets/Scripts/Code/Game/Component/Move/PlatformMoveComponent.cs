@@ -265,9 +265,9 @@ namespace TaoTie
             if (_hasHeroNearEvent)
             {
                 var gearActor = Parent.GetComponent<GearActorComponent>();
-                if (gearActor != null && SceneManager.Instance.GetCurrentScene() is BaseMapScene scene )
+                if (gearActor != null && SceneManager.Instance.GetCurrentScene() is BaseMapScene scene)
                 {
-                    var avatar = Parent.Parent.Get<Unit>(scene.MyId);
+                    var avatar = scene.Self;
                     if (avatar != null &&
                         Vector3.SqrMagnitude(avatar.Position - GetParent<Unit>().Position) <
                         _sqlAvatarTriggerEventDistance)

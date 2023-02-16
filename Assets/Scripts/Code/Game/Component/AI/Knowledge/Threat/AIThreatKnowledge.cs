@@ -27,10 +27,10 @@ namespace TaoTie
 
         //广播 告知
         public float threatBroadcastRange;
-
-        //TODO
+        
         //Taunt 嘲讽
-
+        public TauntLevel resistTauntLevel;
+        
         public void InitSetting(ConfigAIThreatSetting configThreat)
         {
             config = configThreat;
