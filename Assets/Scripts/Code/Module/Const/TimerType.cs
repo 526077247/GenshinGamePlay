@@ -12,5 +12,7 @@
         public const int DestroyEffect = 1003;
         /// <summary> 组件Update </summary>
         public const int ComponentUpdate = 1004;
+        /// <summary> AttachToNormalizedTimeMixinUpdate </summary>
+        public const int AttachToNormalizedTimeMixinUpdate = 1005;
     }
 }
