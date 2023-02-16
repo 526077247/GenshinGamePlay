@@ -10,7 +10,10 @@ namespace TaoTie
     {
         #region 基础数据
 
-        
+        /// <summary>
+        /// 阵营id
+        /// </summary>
+        public uint CampId;
         public int ConfigId { get; protected set; } //配置表id
 
         public UnitConfig Config => UnitConfigCategory.Instance.Get(this.ConfigId);
