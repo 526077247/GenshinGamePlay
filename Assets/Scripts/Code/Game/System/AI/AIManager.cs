@@ -2,22 +2,25 @@
 
 namespace TaoTie
 {
-    public class AIManager:IManager,IUpdateComponent
+    public class AIManager:IManager<BaseMapScene>,IUpdateComponent
     {
-
+        private BaseMapScene scene;
         private Dictionary<long, AIComponent> aiUnits;
         private LinkedList<AIComponent> allAIUnit;
         private List<AIComponent> localAvatarAlertEnemies;
         private List<AIComponent> localAvatarAwareEnemies;
-        
+        private Unit localAvatar;
         public Dictionary<uint, Dictionary<uint, IList<Unit>>> _aiEnemyEntityTable;
         private Dictionary<uint, List<Unit>> _configIDEntityTable;
         
         private Dictionary<string, PublicAISkillCD> publicCDs;
         #region IManager
 
-        public void Init()
+        public void Init(BaseMapScene mapScene)
         {
+            scene = mapScene;
+            localAvatar = scene.Self;
+            
             aiUnits = new Dictionary<long, AIComponent>();
             allAIUnit = new LinkedList<AIComponent>();
             localAvatarAlertEnemies = new List<AIComponent>();

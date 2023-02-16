@@ -59,7 +59,7 @@ namespace TaoTie
                     var entityID = entity.Id;
                     // var entityCampID = entity.campID;
                     var entityPos = entity.Position;
-                    var selfPos = knowledge.aiOwnerEntity.Position + knowledge.aiOwnerEntity.Rotation*knowledge.eyePos;
+                    var selfPos = knowledge.aiOwnerEntity.Position + knowledge.aiOwnerEntity.Rotation * knowledge.eyePos;
                     var direction = (entityPos - selfPos).normalized;
 
                     if (enemySensiblesPreparation.TryGetValue(entityID, out var sensible))
@@ -91,67 +91,51 @@ namespace TaoTie
             foreach (var sensible in enemySensiblesPreparation)
             {
                 enemySensibles.TryAdd(sensible.Key, sensible.Value);
-                //var viewRange = knowledge.threatLevel == AIThreatLevel.Alert ? 200 : knowledge.sensingKnowledge.setting.viewRange;
-                //var halfHorizontalFov = knowledge.sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * knowledge.sensingKnowledge.setting.horizontalFov;
-                //var halfVerticalFov = knowledge.sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * knowledge.sensingKnowledge.setting.verticalFov;
+                var viewRange = knowledge.threatLevel == ThreatLevel.Alert ? 200 : sensingKnowledge.setting.viewRange;
+                var halfHorizontalFov = sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.setting.horizontalFov;
+                var halfVerticalFov = sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.setting.verticalFov;
 
-                ////FeelRange
-                //if (sensible.Value.distance < knowledge.sensingKnowledge.setting.feelRange)
-                //{
-                //    enemySensibles.TryAdd(sensible.Key, sensible.Value);
-
-                //    //Fire Events
-                //    Global.Event.Fire(SensibleCollected.Create(sensible.Value, AIThreatAddReason.Feel));
-                //}
-
-                ////VisionRange
-                //else if (sensible.Value.distance < viewRange)
-                //{
-                //    var horizontalDirection = sensible.Value.direction;
-                //    horizontalDirection.y = knowledge.eyeTransform.forward.y;
-                //    var horizontalAngle = Vector3.Angle(knowledge.owner.transform.forward, horizontalDirection);
-
-                //    if (horizontalAngle < halfHorizontalFov)
-                //    {
-                //        var verticalDirection = sensible.Value.direction;
-                //        verticalDirection.x = knowledge.eyeTransform.forward.x;
-
-                //        var verticalAngle = Vector3.Angle(knowledge.owner.transform.forward, verticalDirection);
-                //        if (verticalAngle < halfVerticalFov)
-                //        {
-                //            //NLog.Info(LogConst.AI, "Collect Target ID : {0} by VISION.", sensible.Key);
-                //            enemySensibles.TryAdd(sensible.Key, sensible.Value);
-
-                //            //Fire Events
-                //            Global.Event.Fire(SensibleCollected.Create(sensible.Value, AIThreatAddReason.Vision));
-                //        }
-                //    }
-                //}
-            }
-
-            if (enemySensibles != null && enemySensibles.Count > 0)
-            {
-                var nearestEnemyID = enemySensibles.ElementAt(0).Value.sensibleID;
-                float nearestEnemyDistance = enemySensibles.ElementAt(0).Value.distance;
-                foreach (var enemy in enemySensibles)
+                //FeelRange
+                if (sensible.Value.distance < sensingKnowledge.setting.feelRange)
                 {
-                    if (enemy.Value.distance < nearestEnemyDistance)
+                    enemySensibles.TryAdd(sensible.Key, sensible.Value);
+                }
+
+                //VisionRange
+                else if (sensible.Value.distance < viewRange)
+                {
+                    var horizontalDirection = sensible.Value.direction;
+                    horizontalDirection.y = knowledge.eyeTransform.forward.y;
+                    var horizontalAngle = Vector3.Angle(knowledge.aiOwnerEntity.Forward, horizontalDirection);
+
+                    if (horizontalAngle < halfHorizontalFov)
                     {
-                        nearestEnemyDistance = enemy.Value.distance;
-                        nearestEnemyID = enemy.Value.sensibleID;
+                        var verticalDirection = sensible.Value.direction;
+                        verticalDirection.x = knowledge.eyeTransform.forward.x;
+
+                        var verticalAngle = Vector3.Angle(knowledge.aiOwnerEntity.Forward, verticalDirection);
+                        if (verticalAngle < halfVerticalFov)
+                        {
+                            enemySensibles.TryAdd(sensible.Key, sensible.Value);
+                        }
                     }
                 }
-                knowledge.sensingKnowledge.nearestEnemy = nearestEnemyID;
-                knowledge.sensingKnowledge.nearestEnemyDistance = nearestEnemyDistance;
-            }
-            else
-            {
-                //Reset nearest data
-                knowledge.sensingKnowledge.nearestEnemy = 0;
-                knowledge.sensingKnowledge.nearestEnemyDistance = -1f;
             }
 
-            knowledge.sensingKnowledge.enemySensibles = enemySensibles;
+            sensingKnowledge.nearestEnemy = 0;
+            sensingKnowledge.nearestEnemyDistance = -1f;
+            if (enemySensibles != null)
+            {
+                foreach (var enemy in enemySensibles)
+                {
+                    if (sensingKnowledge.nearestEnemyDistance<0 || enemy.Value.distance < sensingKnowledge.nearestEnemyDistance)
+                    {
+                        sensingKnowledge.nearestEnemyDistance = enemy.Value.distance;
+                        sensingKnowledge.nearestEnemy = enemy.Value.sensibleID;
+                    }
+                }
+            }
+            sensingKnowledge.enemySensibles = enemySensibles;
         }
 
         //TODO 投掷物用, 同样会添加ThreatInfo

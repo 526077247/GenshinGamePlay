@@ -15,6 +15,7 @@ namespace TaoTie
         public Vector3 currentPos;
         public Vector3 currentForward;
         public Vector3 eyePos;
+        public Transform eyeTransform;
         
         public ThreatLevel threatLevel;
         public ThreatLevel threatLevelOld;

@@ -169,7 +169,10 @@ namespace TaoTie
         {
             return this.CurrentScene;
         }
-
+        public T GetCurrentScene<T>() where T:IScene
+        {
+            return (T)this.CurrentScene;
+        }
         public bool IsInTargetScene<T>()where T:IScene
         {
             if (this.CurrentScene == null) return false;

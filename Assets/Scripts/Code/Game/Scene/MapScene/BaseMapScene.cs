@@ -70,14 +70,15 @@ namespace TaoTie
         public virtual async ETTask OnSwitchSceneEnd()
         {
             RegisterManager<GameTimerManager>();
-            RegisterManager<AIManager>();
-            // await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath);
-            // await UIManager.Instance.OpenWindow<UIMainView>(UIMainView.PrefabPath);
+            
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             
+            RegisterManager<AIManager,BaseMapScene>(this);
+
             RegisterManager<GearManager,List<ConfigGear>,SceneManagerProvider>(ConfigGearCategory.Instance.GetAllList(),this);
-            // RegisterManager<InputManager,BaseMapScene>(this);
+            RegisterManager<InputManager>();
+            
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;
             Log.Info("进入场景 " + GetScenePath());
