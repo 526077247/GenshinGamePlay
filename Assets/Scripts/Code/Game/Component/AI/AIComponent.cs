@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
@@ -33,7 +34,14 @@ namespace TaoTie
         protected AIActionControl actionController => new AIActionControl(knowledge,this);
         /// <summary> 移动执行器 </summary>
         protected AIMoveControl moveController => new AIMoveControl(this,knowledge,pathfinder);
-        
+
+
+        #region Event
+
+        public Action<long, long> OnThreatTargetChanged;
+        public Action<ThreatLevel, ThreatLevel> OnThreatLevelChanged;
+
+        #endregion
         #region IComponent
 
         public virtual void Init(ConfigAIBeta config)

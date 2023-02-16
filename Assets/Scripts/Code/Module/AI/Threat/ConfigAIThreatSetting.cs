@@ -13,9 +13,9 @@ namespace TaoTie
         public float clearThreatEdgeDistance;
         public bool clearThreatByLostPath;
         public bool clearThreatByTargetOutOfZone;
-        public float clearThreatTimerByDistance;
-        public float clearThreatTimerByLostPath;
-        public float clearThreatTimerByTargetOutOfZone;
+        public int clearThreatTimerByDistance;
+        public int clearThreatTimerByLostPath;
+        public int clearThreatTimerByTargetOutOfZone;
         public float viewThreatGrow = 100f;
         public float hearThreatGrow;
         public float feelThreatGrow = 500f;

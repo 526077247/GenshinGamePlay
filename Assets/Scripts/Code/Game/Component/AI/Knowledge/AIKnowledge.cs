@@ -17,6 +17,8 @@ namespace TaoTie
         public Vector3 eyePos;
         public Transform eyeTransform;
         
+        public float temperature;
+        
         public ThreatLevel threatLevel;
         public ThreatLevel threatLevelOld;
         public Vector3? enterCombatPostion;
@@ -30,6 +32,7 @@ namespace TaoTie
         public AIMoveKnowledge moveKnowledge;
         public AIThreatKnowledge threatKnowledge;
         public AISensingKnowledge sensingKnowledge;
+        public AIDefendAreaKnowledge defendAreaKnowledge;
 
         public void Init(Entity aiEntity, ConfigAIBeta config)
         {
