@@ -4,14 +4,14 @@
     {
         public ConfigDoActionAfterBeAttackMixin config => baseConfig as ConfigDoActionAfterBeAttackMixin;
 
-        private CombatComponent combatComponent;
+        private CombatComponent _combatComponent;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             base.Init(actorAbility, actorModifier, config);
-            combatComponent = actorAbility.Parent.GetParent<Entity>().GetComponent<CombatComponent>();
-            if (combatComponent != null)
+            _combatComponent = actorAbility.Parent.GetParent<Entity>().GetComponent<CombatComponent>();
+            if (_combatComponent != null)
             {
-                combatComponent.afterBeAttack += Execute;
+                _combatComponent.afterBeAttack += Execute;
             }
 
         }
@@ -29,10 +29,10 @@
 
         public override void Dispose()
         {
-            if (combatComponent != null)
+            if (_combatComponent != null)
             {
-                combatComponent.afterBeAttack -= Execute;
-                combatComponent = null;
+                _combatComponent.afterBeAttack -= Execute;
+                _combatComponent = null;
             }
             base.Dispose();
         }

@@ -5,12 +5,13 @@ namespace TaoTie
     public class CombatComponent : Component, IComponent
     {
         private FsmComponent fsm => Parent.GetComponent<FsmComponent>();
-        public void Init()
+        protected AttackTarget attackTarget;
+        public virtual void Init()
         {
-            
+            attackTarget = new AttackTarget();
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             beforeAttack = null;
             beforeBeAttack = null;
@@ -70,14 +71,8 @@ namespace TaoTie
             afterBeAttack?.Invoke(result, other);
         }
 
-
-        /// <summary>
-        /// 使用技能
-        /// </summary>
-        /// <param name="skillId"></param>
-        public void UseSkill(int skillId)
+        public void SetFsmSkillParam(int skillId)
         {
-            //todo: 技能冷却时间判断，消耗判断
             fsm.SetData(FSMConst.UseSkill,true);
             fsm.SetData(FSMConst.SkillId,skillId);
         }

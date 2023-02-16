@@ -10,6 +10,7 @@ namespace TaoTie
         private List<AIComponent> localAvatarAlertEnemies;
         private List<AIComponent> localAvatarAwareEnemies;
         private Unit localAvatar;
+        private LocalInputController avatarInputController;
         /// <summary>
         /// [campId:[campId:Units]] campId（左）的敌对campId（右）
         /// </summary>
@@ -26,6 +27,7 @@ namespace TaoTie
         {
             scene = mapScene;
             localAvatar = scene.Self;
+            avatarInputController = localAvatar.GetComponent<LocalInputController>();
             configIDEntityTable = new UnOrderMultiMap<uint, Unit>();
             aiEnemyEntityTable = new UnOrderDoubleKeyDictionary<uint, uint, List<Unit>>();
             aiUnits = new Dictionary<long, AIComponent>();

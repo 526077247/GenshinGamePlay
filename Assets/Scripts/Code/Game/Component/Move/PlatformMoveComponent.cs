@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class PlatformMoveComponent:BaseMoveComponent,IComponent<ConfigRoute>,IUpdateComponent
+    public class PlatformMoveComponent:Component,IComponent<ConfigRoute>,IUpdateComponent
     {
-
+        public bool isStart { get; private set; }
+        
+        public bool isPause { get; private set; }
+        
+        public delegate void OnMoveStateChangeDelegate(bool isStart);
+        public event OnMoveStateChangeDelegate onMoveStateChange; 
+        
         private ConfigRoute _route;
         
         #region 移动相关参数
@@ -195,10 +201,12 @@ namespace TaoTie
         }
         
         
-        public override void OnStart()
+        public void OnStart()
         {
             if (this.isStart) return;
-            base.OnStart();
+            isStart = true;
+            isPause = false;
+            onMoveStateChange?.Invoke(true);
             if (_route == null)
             {
                 Log.Error("未设置路由");
@@ -624,32 +632,38 @@ namespace TaoTie
             return _targets[_n + 1];
         }
 
-        public override void OnStop()
+        public void OnStop()
         {
-            base.OnStop();
+            isStart = false;
+            isPause = false;
+            onMoveStateChange?.Invoke(false);
             this._beginTime = 0;
             _enable = false;
             this._needTime = 0;
             this._waitTime = 0;
         }
 
-        public override void Pause()
+        public void Pause()
         {
-            base.Pause();
+            if (!isPause)
+            {
+                isPause = true;
+                onMoveStateChange?.Invoke(false);
+            }
             _enable = false;
         }
 
         /// <summary>
         /// 停止后重新唤醒
         /// </summary>
-        public override void Resume()
+        public void Resume()
         {
             if (this.isPause) //广播过事件后被重新唤醒
             {
                 _reachStop = false;
+                isPause = false;
+                onMoveStateChange?.Invoke(true);
             }
-
-            base.Resume();
             _enable = true;
         }
 

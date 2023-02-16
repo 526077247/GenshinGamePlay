@@ -1,4 +1,6 @@
-﻿namespace TaoTie
+﻿using System.Collections.Generic;
+
+namespace TaoTie
 {
     /// <summary>
     /// 怪物
@@ -12,8 +14,14 @@
         public void Init(int configId)
         {
             ConfigId = configId;
-            // AddComponent<PlayerInfoComponent, RoleInfo>(info);
-            AddCommonUnitComponent();
+            AddComponent<GameObjectHolderComponent>();
+            AddComponent<NumericComponent>();
+            
+            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            AddComponent<CombatComponent>();
+            AddComponent<MonsterAIInputComponent>();
+            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(Config.Abilities));
+            AddComponent<AIComponent>();
         }
         
         public void Destroy()
