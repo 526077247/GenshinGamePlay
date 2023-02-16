@@ -13,7 +13,7 @@ namespace TaoTie
         protected const float CHECKFAIL_PRE_TIME = 1.5f;
         protected static readonly FailDetectionSystem[] CHECKFAIL;
         protected Vector3? _prevPos;
-        protected long _moveFailTimerId;
+        protected AITimer _moveFailTimer;
         protected float _distanceMoved;
         protected Vector3? _moveFailStartPos;
         protected bool _stopped;
