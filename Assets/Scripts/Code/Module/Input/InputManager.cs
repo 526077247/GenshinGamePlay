@@ -6,35 +6,48 @@ namespace TaoTie
 {
     public class InputManager : IManager, IUpdateManager
     {
+        private const int KeyDown = 1;
+        private const int KeyUp = 2;
+        private const int Key = 4;
+        public static KeyCode[] Default = new KeyCode[(int) GameKeyCode.Max]
+        {
+            KeyCode.W,
+            KeyCode.S,
+            KeyCode.A,
+            KeyCode.D,
+            KeyCode.Alpha1,
+        };
+        
         public static InputManager Instance { get; private set; }
         public bool IsPause;
 
         /// <summary>
         /// 按键绑定
         /// </summary>
-        private readonly Dictionary<int, int> keySetMap = new Dictionary<int, int>();
+        private readonly KeyCode[] keySetMap = new KeyCode[(int)GameKeyCode.Max];
 
         /// <summary>
         /// 按键状态
         /// </summary>
-        private readonly Dictionary<int, bool> keyStatus = new Dictionary<int, bool>();
+        private readonly int[] keyStatus = new int[(int)GameKeyCode.Max];
 
         #region IManager
 
         public void Init()
         {
             Instance = this;
-            foreach (var keyValue in keySetMap)
+            //todo:
+            for (int i = 0; i < (int)GameKeyCode.Max; i++)
             {
-                keyStatus.Add(keyValue.Value, false);
+                keySetMap[i] = Default[i];
             }
         }
 
         public void Destroy()
         {
             Instance = null;
-            keySetMap.Clear();
-            keyStatus.Clear();
+            Array.Clear(keySetMap,0,(int)GameKeyCode.Max);
+            Array.Clear(keyStatus,0,(int)GameKeyCode.Max);
         }
 
         #endregion
@@ -42,11 +55,32 @@ namespace TaoTie
         public void Update()
         {
             if (IsPause) return;
-            foreach (var keyValue in keySetMap)
+            Array.Clear(keyStatus,0,(int)GameKeyCode.Max);
+            for (int i= 0; i< (int)GameKeyCode.Max; ++i)
             {
-                var keyCode = (KeyCode)keyValue.Value;
-                keyStatus[keyValue.Value] = Input.GetKey(keyCode);
+                KeyCode key = keySetMap[i];
+                int val = 0;
+                if (key >= 0)
+                {
+                    if (Input.GetKeyDown(key))
+                        val += KeyDown;
+                    if (Input.GetKeyUp(key))
+                        val += KeyUp;
+                    if (Input.GetKey(key))
+                        val += Key;
+                }
+                keyStatus[i] = val;
             }
+        }
+
+        /// <summary>
+        ///  获取按键
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public bool GetKey(GameKeyCode keyCode)
+        {
+            return (keyStatus[(int)keyCode]& Key) != 0;
         }
 
         /// <summary>
@@ -54,19 +88,24 @@ namespace TaoTie
         /// </summary>
         /// <param name="keyCode"></param>
         /// <returns></returns>
-        public bool InputGetKey(int keyCode)
+        public bool GetKeyDown(GameKeyCode keyCode)
         {
-            if (keyStatus.ContainsKey(keyCode))
-            {
-                return keyStatus[keyCode];
-            }
-
-            Log.Error($"keyCode Fail! keyCode = {keyCode}");
-            return false;
+            return (keyStatus[(int)keyCode]& KeyDown) != 0;
         }
-
-        public void SetInputKeyMap(int key, int keyCode)
+        
+        /// <summary>
+        ///  获取按键是否抬起
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public bool GetKeyUp(GameKeyCode keyCode)
         {
+            return (keyStatus[(int)keyCode]& KeyUp) != 0;
+        }
+        
+        public void SetInputKeyMap(GameKeyCode key, KeyCode keyCode)
+        {
+            keySetMap[(int) key] = keyCode;
         }
     }
 }

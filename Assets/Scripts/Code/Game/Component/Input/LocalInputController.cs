@@ -21,7 +21,7 @@ namespace TaoTie
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (InputManager.Instance.GetKey(GameKeyCode.Skill))
             {
                 TryDoSkill(1001);
             }
