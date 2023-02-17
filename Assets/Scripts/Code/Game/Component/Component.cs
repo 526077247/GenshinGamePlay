@@ -23,7 +23,7 @@ namespace TaoTie
                 }
             }
         }
-        protected Entity Parent;
+        protected Entity Parent { get; private set; }
         public long Id => Parent != null ? Parent.Id : 0;
         private long timerId;
         public void BeforeInit(Entity entity)

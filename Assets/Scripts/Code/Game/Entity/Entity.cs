@@ -128,6 +128,17 @@ namespace TaoTie
             Log.Error($"不存在{type.Name}");
             return default;
         }
+        
+        public T GetOrAddComponent<T>() where T : Component, IComponent
+        {
+            Type type = TypeInfo<T>.Type;
+            if (Components.TryGetValue(type, out var res))
+            {
+                return (T) res;
+            }
+
+            return AddComponent<T>();
+        }
 
         public void RemoveComponent<T>() where T : Component, IComponentDestroy
         {

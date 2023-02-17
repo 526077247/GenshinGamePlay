@@ -74,7 +74,7 @@ namespace TaoTie
             tk.targetRelativeAnglePitch = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.right);
             tk.targetRelativeAnglePitchAbs = Mathf.Abs(tk.targetRelativeAnglePitch);
             //能否看见
-            tk.hasLineOfSight = !PhysicsHelper.LinecastScene(tk.targetEntity.Position, knowledge.eyePos);
+            tk.hasLineOfSight = !PhysicsHelper.LinecastScene(tk.targetEntity.Position, knowledge.eyePos, out _);
             
             var skillAnchorPosition = knowledge.targetKnowledge.skillAnchorPosition;
             skillAnchorPosition.y = 0;

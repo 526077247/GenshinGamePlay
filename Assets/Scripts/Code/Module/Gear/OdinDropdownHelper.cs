@@ -173,7 +173,10 @@ namespace TaoTie
         #endregion
 
         #region Ability
-        
+        /// <summary>
+        /// 数值类型
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerable GetNumericTypeId()
         {
             var fields = typeof(NumericType).GetFields();
@@ -198,7 +201,34 @@ namespace TaoTie
                 return list;
             }
         }
-
+        /// <summary>
+        /// 阵营类型
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetCampTypeId()
+        {
+            var fields = typeof(CampConst).GetFields();
+            ValueDropdownList<ValueDropdownItem> list = new ValueDropdownList<ValueDropdownItem>();
+            if (fields.Length > 0)
+            {
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    if (!fields[i].IsStatic)
+                    {
+                        continue;
+                    }
+                    var val = (int) fields[i].GetValue(null);
+                    list.Add(new ValueDropdownItem($"{fields[i].Name}({val})", val));
+                }
+                return list;
+            }
+            else
+            {
+                
+                list.Add(new ValueDropdownItem("读取CampConst错误", null));
+                return list;
+            }
+        }
         #endregion
     }
 }

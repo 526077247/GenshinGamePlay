@@ -161,11 +161,21 @@ namespace TaoTie
 
         #region Seen
 
-        public static bool LinecastScene(Vector3 start, Vector3 end)
+        public static bool LinecastScene(Vector3 start, Vector3 end, out Vector3 pos)
         {
-            return Physics.Linecast(start, end, defaultL+hitscene, QueryTriggerInteraction.Ignore);
+            var res = Physics.Linecast(start, end, out var hit, defaultL + hitscene, QueryTriggerInteraction.Ignore);
+            if (res)
+            {
+                pos = hit.point;
+            }
+            else
+            {
+                pos = Vector3.zero;
+            }
+
+            return res;
         }
-        
+
         #endregion
     }
 }
