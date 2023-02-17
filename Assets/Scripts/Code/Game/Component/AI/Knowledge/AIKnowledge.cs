@@ -33,10 +33,18 @@ namespace TaoTie
         public AIThreatKnowledge threatKnowledge;
         public AISensingKnowledge sensingKnowledge;
         public AIDefendAreaKnowledge defendAreaKnowledge;
+        public AITargetKnowledge targetKnowledge;
 
         public void Init(Entity aiEntity, ConfigAIBeta config)
         {
+            aiOwnerEntity = aiEntity as Unit;
             
+            skillKnowledge = ObjectPool.Instance.Fetch<AISkillKnowledge>();
+            moveKnowledge = ObjectPool.Instance.Fetch<AIMoveKnowledge>();
+            threatKnowledge = ObjectPool.Instance.Fetch<AIThreatKnowledge>();
+            sensingKnowledge = ObjectPool.Instance.Fetch<AISensingKnowledge>();
+            defendAreaKnowledge = ObjectPool.Instance.Fetch<AIDefendAreaKnowledge>();
+            targetKnowledge = ObjectPool.Instance.Fetch<AITargetKnowledge>();
         }
 
         public void Dispose()
@@ -53,6 +61,8 @@ namespace TaoTie
             threatKnowledge = null;
             sensingKnowledge.Dispose();
             sensingKnowledge = null;
+            targetKnowledge.Dispose();
+            targetKnowledge = null;
             
             ObjectPool.Instance.Recycle(this);
         }
