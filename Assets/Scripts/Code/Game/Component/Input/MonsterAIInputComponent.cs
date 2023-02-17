@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class MonsterAIInputComponent:  Component,IComponent
+    public class MonsterAIInputComponent: Component,IComponent
     {
         private CombatComponent combatComponent => Parent.GetComponent<CombatComponent>();
         private Dictionary<int, bool> animatorParamCache;

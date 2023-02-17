@@ -232,7 +232,7 @@ namespace TaoTie
             {
                 aiComponent.OnThreatLevelChanged?.Invoke(knowledge.threatLevelOld, knowledge.threatLevel);
                 knowledge.aiOwnerEntity?.GetComponent<PoseFSMComponent>()?
-                    .SetData(FsmConst.Alertness, (int)knowledge.threatLevel);
+                    .SetData(FSMConst.Alertness, (int)knowledge.threatLevel);
             }
 
             knowledge.threatKnowledge.mainThreat = _mainTarget;

@@ -2,6 +2,9 @@
 
 namespace TaoTie
 {
+    /// <summary>
+    /// 玩家的输入
+    /// </summary>
     public class LocalInputController: Component,IComponent,IUpdateComponent
     {
         private SkillComponent SkillComponent => Parent.GetComponent<SkillComponent>();
