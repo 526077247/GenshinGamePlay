@@ -176,14 +176,18 @@ namespace TaoTie
         
         public static IEnumerable GetNumericTypeId()
         {
-            (string, int)[] nodeArr = NumericTypeHelper.ToArray();
+            var fields = typeof(NumericType).GetFields();
             ValueDropdownList<ValueDropdownItem> list = new ValueDropdownList<ValueDropdownItem>();
-            if (nodeArr.Length > 0)
+            if (fields.Length > 0)
             {
-                for (int i = 0; i < nodeArr.Length; i++)
+                for (int i = 0; i < fields.Length; i++)
                 {
-                    var item = nodeArr[i];
-                    list.Add(new ValueDropdownItem($"{item.Item1}({item.Item2})", item.Item2));
+                    if (!fields[i].IsStatic)
+                    {
+                        continue;
+                    }
+                    var val = (int) fields[i].GetValue(null);
+                    list.Add(new ValueDropdownItem($"{fields[i].Name}({val})", val));
                 }
                 return list;
             }

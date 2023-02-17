@@ -85,7 +85,7 @@ namespace TaoTie
                 case TargetType.AllExceptSelf:
                     return self != other;
                 case TargetType.Alliance:
-                    return true;
+                    return CampManager.Instance.IsAlliances(self.CampId, other.CampId);
                 default:
                     return false;
             }
