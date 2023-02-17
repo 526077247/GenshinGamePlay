@@ -1,14 +1,8 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    public enum StackingType
-    {
-        Unique, // 只能存在唯一一个
-        Multiple, // 互相独立存在
-        Refresh, // 刷新已存在的modifier
-        Prolong, // 延长已存在的modifier
-    }
     [NinoSerialize]
     public partial class ConfigAbilityModifier
     {
@@ -19,11 +13,13 @@ namespace TaoTie
         /// </summary>
         [NinoMember(2)]
         public int Duration;
-        [NinoMember(3)]
+        [NinoMember(3)][ShowIf("Duration!=0")]
         public StackingType StackingType;
         [NinoMember(4)]
         public int StackLimitCount;
         [NinoMember(5)]
         public ConfigAbilityMixin[] Mixins;
+        [NinoMember(6)][LabelText("修改玩家数值")]
+        public ModifierProperty[] Properties;
     }
 }

@@ -1,7 +1,9 @@
 ﻿#if UNITY_EDITOR
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEditor;
 
@@ -9,9 +11,9 @@ namespace TaoTie
 {
     public static class OdinDropdownHelper
     {
-        public static ConfigGear gear;
+        
         #region Gear
-
+        public static ConfigGear gear;
         public static IEnumerable<Type> GetFilteredConditionTypeList(Type type)
         {
             if (type == null)
@@ -168,6 +170,31 @@ namespace TaoTie
             }
             return res;
         }
+        #endregion
+
+        #region Ability
+        
+        public static IEnumerable GetNumericTypeId()
+        {
+            (string, int)[] nodeArr = NumericTypeHelper.ToArray();
+            ValueDropdownList<ValueDropdownItem> list = new ValueDropdownList<ValueDropdownItem>();
+            if (nodeArr.Length > 0)
+            {
+                for (int i = 0; i < nodeArr.Length; i++)
+                {
+                    var item = nodeArr[i];
+                    list.Add(new ValueDropdownItem($"{item.Item1}({item.Item2})", item.Item2));
+                }
+                return list;
+            }
+            else
+            {
+                
+                list.Add(new ValueDropdownItem("读取NumericType错误", null));
+                return list;
+            }
+        }
+
         #endregion
     }
 }

@@ -30,7 +30,7 @@ namespace TaoTie
         private long tillTime;
 
         /// <summary>
-        /// 
+        /// 创建
         /// </summary>
         /// <param name="applierID">施加者id</param>
         /// <param name="config"></param>
@@ -65,11 +65,36 @@ namespace TaoTie
                 tillTime = GameTimerManager.Instance.GetTimeNow() + Config.Duration;
                 timerId = GameTimerManager.Instance.NewOnceTimer(tillTime, TimerType.ModifierExpired, this);
             }
+
+            if (Config.Properties != null)
+            {
+                var numC = Parent.GetParent<Entity>().GetComponent<NumericComponent>();
+                if (numC != null)
+                {
+                    for (int i = 0; i < Config.Properties.Length; i++)
+                    {
+                        var old = numC.GetAsFloat(Config.Properties[i].NumericType);
+                        numC.Set(Config.Properties[i].NumericType,old + Config.Properties[i].Value);
+                    }
+                }
+            }
         }
 
         public override void BeforeRemove()
         {
             GameTimerManager.Instance.Remove(ref timerId);
+            if (Config.Properties != null)
+            {
+                var numC = Parent.GetParent<Entity>().GetComponent<NumericComponent>();
+                if (numC != null)
+                {
+                    for (int i = 0; i < Config.Properties.Length; i++)
+                    {
+                        var old = numC.GetAsFloat(Config.Properties[i].NumericType);
+                        numC.Set(Config.Properties[i].NumericType,old - Config.Properties[i].Value);
+                    }
+                }
+            }
             base.BeforeRemove();
         }
 
