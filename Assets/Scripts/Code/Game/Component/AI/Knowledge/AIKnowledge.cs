@@ -34,6 +34,7 @@ namespace TaoTie
         public AISensingKnowledge sensingKnowledge;
         public AIDefendAreaKnowledge defendAreaKnowledge;
         public AITargetKnowledge targetKnowledge;
+        public AIPathFindingKnowledge pathFindingKnowledge;
 
         public void Init(Entity aiEntity, ConfigAIBeta config)
         {
@@ -45,6 +46,7 @@ namespace TaoTie
             sensingKnowledge = ObjectPool.Instance.Fetch<AISensingKnowledge>();
             defendAreaKnowledge = ObjectPool.Instance.Fetch<AIDefendAreaKnowledge>();
             targetKnowledge = ObjectPool.Instance.Fetch<AITargetKnowledge>();
+            pathFindingKnowledge = ObjectPool.Instance.Fetch<AIPathFindingKnowledge>();
         }
 
         public void Dispose()

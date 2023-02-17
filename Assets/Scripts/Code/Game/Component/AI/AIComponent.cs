@@ -19,8 +19,9 @@ namespace TaoTie
         protected AIDecision decisionOld => new AIDecision();
 
         /// <summary> 寻路 </summary>
-        protected AIPathfinding pathfinder => new AIPathfinding();
-
+        protected AIPathfindingUpdater pathfinder => new AIPathfindingUpdater();
+        /// <summary> 目标 </summary>
+        protected AITargetUpdater targetUpdater => new AITargetUpdater(this);
         /// <summary> 感知 </summary>
         protected AISensingUpdater sensingUpdater => new AISensingUpdater(aiManager);
         /// <summary> 威胁 </summary>
@@ -40,7 +41,7 @@ namespace TaoTie
 
         public Action<long, long> OnThreatTargetChanged;
         public Action<ThreatLevel, ThreatLevel> OnThreatLevelChanged;
-
+        public Action<long> OnSetCombatAttackTarget;
         #endregion
         #region IComponent
 
@@ -54,8 +55,10 @@ namespace TaoTie
             knowledge.Init(Parent,config);
             
             sensingUpdater.Init(knowledge);
-            pathfinder.Init(knowledge);
             threatUpdater.Init(knowledge);
+            targetUpdater.Init(knowledge);
+            pathfinder.Init(knowledge);
+            
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
 
@@ -66,8 +69,10 @@ namespace TaoTie
         {
             aiManager?.RemoveAI(this);
             
-            pathfinder.Clear();
+            sensingUpdater.Clear();
             threatUpdater.Clear();
+            targetUpdater.Clear();
+            pathfinder.Clear();
             poseControlUpdater.Clear();
             skillUpdater.Clear();
             
@@ -95,9 +100,10 @@ namespace TaoTie
         /// </summary>
         private void UpdateKnowledge()
         {
-            pathfinder.UpdateMainThread();
             sensingUpdater.UpdateMainThread();
             threatUpdater.UpdateMainThread();
+            targetUpdater.UpdateMainThread();
+            pathfinder.UpdateMainThread();
             poseControlUpdater.UpdateMainThread();
             skillUpdater.UpdateMainThread();
         }
@@ -122,5 +128,17 @@ namespace TaoTie
             moveController.ExecuteMove(decision);
         }
 
+
+        #region Public
+
+        public void SetCombatAttackTarget(long targetRuntimeID)
+        {
+            OnSetCombatAttackTarget?.Invoke(targetRuntimeID);
+        }
+        public long GetCombatAttackTarget()
+        {
+            return 0;
+        }
+        #endregion
     }
 }

@@ -6,7 +6,7 @@ namespace TaoTie
     public class AILocomotionHandler
     {
         public AIKnowledge aiKnowledge;
-        public AIPathfinding pathfinder;
+        public AIPathfindingUpdater pathfinder;
         public LocoBaseTask currentTask;
         public LocoTaskState currentState;
         private float? _originalYawSpeed;

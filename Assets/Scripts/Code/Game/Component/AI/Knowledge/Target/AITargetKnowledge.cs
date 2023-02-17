@@ -15,7 +15,7 @@ namespace TaoTie
         /// <summary>
         /// 目标ID
         /// </summary>
-        public int targetID;
+        public long targetID;
 
         /// <summary>
         /// 目标实体
@@ -108,7 +108,6 @@ namespace TaoTie
         
         public bool targetInDefendArea;
         public AITargetHasPathType hasPath;
-        public float hasPathTick;
         public bool hasLineOfSight;
         #endregion
 
@@ -132,7 +131,7 @@ namespace TaoTie
             }
         }
 
-        private void SetEntityTargetInternal(int newTargetID, AIComponent ai)
+        private void SetEntityTargetInternal(long newTargetID, AIComponent ai)
         {
             this.targetID = newTargetID;
             this.targetEntity = ai.GetParent<Unit>();
@@ -144,7 +143,7 @@ namespace TaoTie
         /// <param name="targetSource">目标来源</param>
         /// <param name="newTargetID">目标ID</param>
         /// <param name="ai">AI组件</param>
-        public void SetEntityTarget(AITargetSource targetSource, int newTargetID, AIComponent ai)
+        public void SetEntityTarget(AITargetSource targetSource, long newTargetID, AIComponent ai)
         {
             targetType = AITargetType.EntityTarget;
             if (targetSource == AITargetSource.Threat)
