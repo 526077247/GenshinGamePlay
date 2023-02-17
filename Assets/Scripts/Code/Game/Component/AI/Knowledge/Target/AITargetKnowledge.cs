@@ -21,10 +21,11 @@ namespace TaoTie
         /// 目标实体
         /// </summary>
         public Unit targetEntity;
+        
         public CombatComponent targetAvatarCombat;
+        
         public AbilityComponent targetAbilityPlugin;
         
-
         /// <summary>
         /// 目标位置
         /// </summary>
@@ -104,10 +105,20 @@ namespace TaoTie
         /// 距离技能锚点距离
         /// </summary>
         public float skillAnchorDistance;
+        
         public Vector3? targetLKP;
         
+        /// <summary>
+        /// 目标是否在防御区域内
+        /// </summary>
         public bool targetInDefendArea;
+        /// <summary>
+        /// 路径寻路状态
+        /// </summary>
         public AITargetHasPathType hasPath;
+        /// <summary>
+        /// 目标是否没被遮挡物遮挡
+        /// </summary>
         public bool hasLineOfSight;
         #endregion
 
@@ -122,9 +133,11 @@ namespace TaoTie
                 case AITargetType.PointTarget:
                     targetType = AITargetType.InvalidTarget;
                     targetPosition = Vector3.zero;
+                    hasPath = AITargetHasPathType.Invalid;
                     break;
                 case AITargetType.EntityTarget:
                     targetType = AITargetType.InvalidTarget;
+                    hasPath = AITargetHasPathType.Invalid;
                     targetID = 0;
                     targetEntity = null;
                     break;
@@ -133,8 +146,12 @@ namespace TaoTie
 
         private void SetEntityTargetInternal(long newTargetID, AIComponent ai)
         {
-            this.targetID = newTargetID;
-            this.targetEntity = ai.GetParent<Unit>();
+            if (targetID != newTargetID)
+            {
+                this.targetID = newTargetID;
+                this.targetEntity = ai.GetParent<Unit>();
+                hasPath = AITargetHasPathType.Invalid;
+            }
         }
 
         /// <summary>
@@ -160,11 +177,16 @@ namespace TaoTie
         {
             targetType = AITargetType.PointTarget;
             targetPosition = pos;
+            hasPath = AITargetHasPathType.Invalid;
         }
 
         public void Dispose()
         {
-            
+            targetType = AITargetType.InvalidTarget;
+            targetPosition = Vector3.zero;
+            hasPath = AITargetHasPathType.Invalid;
+            targetEntity = null;
+            targetID = 0;
         }
     }
 }

@@ -67,12 +67,15 @@ namespace TaoTie
             targetPos.y = 0;
             tk.targetDistanceXZ = (pos - targetPos).magnitude;
 
-            var lookDir = tk.targetEntity.Position - knowledge.aiOwnerEntity.Position;
+            var dir = tk.targetEntity.Position - knowledge.aiOwnerEntity.Position;
             tk.targetPosition = targetPos;
-            tk.targetRelativeAngleYaw = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, lookDir, Vector3.up);
+            tk.targetRelativeAngleYaw = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.up);
             tk.targetRelativeAngleYawAbs = Mathf.Abs(tk.targetRelativeAngleYaw);
-            tk.targetRelativeAnglePitch = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, lookDir, Vector3.right);
-
+            tk.targetRelativeAnglePitch = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.right);
+            tk.targetRelativeAnglePitchAbs = Mathf.Abs(tk.targetRelativeAnglePitch);
+            //能否看见
+            tk.hasLineOfSight = !PhysicsHelper.LinecastScene(tk.targetEntity.Position, knowledge.eyePos);
+            
             var skillAnchorPosition = knowledge.targetKnowledge.skillAnchorPosition;
             skillAnchorPosition.y = 0;
             tk.skillAnchorDistance = Vector3.Distance(pos, skillAnchorPosition);
