@@ -24,7 +24,7 @@ namespace TaoTie
         
         public void TryDoSkill(int skillId)
         {
-            combatComponent.SetFsmSkillParam(skillId);
+            combatComponent.UseSkillImmediately(skillId);
         }
     }
 }

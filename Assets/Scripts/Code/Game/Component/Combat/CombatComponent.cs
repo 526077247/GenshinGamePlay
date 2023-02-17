@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -71,10 +72,26 @@ namespace TaoTie
             afterBeAttack?.Invoke(result, other);
         }
 
-        public void SetFsmSkillParam(int skillId)
+        /// <summary>
+        /// 立刻使用技能
+        /// </summary>
+        /// <param name="skillId"></param>
+        public void UseSkillImmediately(int skillId)
         {
-            fsm.SetData(FSMConst.UseSkill,true);
-            fsm.SetData(FSMConst.SkillId,skillId);
+            fsm.SetData(FSMConst.UseSkill, true);
+            fsm.SetData(FSMConst.SkillId, skillId);
+        }
+
+        /// <summary>
+        /// 开启或关闭hitBox
+        /// </summary>
+        /// <param name="hitBox"></param>
+        /// <param name="enable"></param>
+        public async ETTask EnableHitBox(string hitBox, bool enable)
+        {
+            GameObjectHolderComponent ghc = Parent.GetComponent<GameObjectHolderComponent>();
+            await ghc.WaitLoadGameObjectOver();
+            ghc.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
         }
     }
 }

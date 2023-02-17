@@ -29,7 +29,7 @@ namespace TaoTie
         public void TryDoSkill(int skillId)
         {
             //todo: 冷却消耗等判断
-            combatComponent.SetFsmSkillParam(skillId);
+            combatComponent.UseSkillImmediately(skillId);
         }
     }
 }
