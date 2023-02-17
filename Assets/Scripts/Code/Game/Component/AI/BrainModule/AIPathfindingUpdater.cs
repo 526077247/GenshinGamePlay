@@ -26,12 +26,20 @@ namespace TaoTie
                 if (knowledge.pathFindingKnowledge.route != null)
                 {
                     knowledge.pathFindingKnowledge.route.Dispose();
+                    knowledge.pathFindingKnowledge.route = null;
                 }
-                //直接冲过去
-                knowledge.pathFindingKnowledge.route = ListComponent<Vector3>.Create();
-                knowledge.pathFindingKnowledge.route.Add(knowledge.currentPos);
-                knowledge.pathFindingKnowledge.route.Add(aimPos);
-                knowledge.targetKnowledge.hasPath = AITargetHasPathType.Success;
+                if (knowledge.pathFindingKnowledge.type == PathFindingType.Link)
+                {
+                    //直接冲过去
+                    knowledge.pathFindingKnowledge.route = ListComponent<Vector3>.Create();
+                    knowledge.pathFindingKnowledge.route.Add(knowledge.currentPos);
+                    knowledge.pathFindingKnowledge.route.Add(aimPos);
+                    knowledge.targetKnowledge.hasPath = AITargetHasPathType.Success;
+                }
+                else if (knowledge.pathFindingKnowledge.type == PathFindingType.NavMesh)
+                {
+                    //todo:
+                }
             }
         }
     }
