@@ -57,7 +57,6 @@ namespace TaoTie
                 foreach (var entity in item.Value)
                 {
                     var entityID = entity.Id;
-                    // var entityCampID = entity.campID;
                     var entityPos = entity.Position;
                     var selfPos = knowledge.aiOwnerEntity.Position + knowledge.aiOwnerEntity.Rotation * knowledge.eyePos;
                     var direction = (entityPos - selfPos).normalized;

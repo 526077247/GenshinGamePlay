@@ -36,6 +36,7 @@ namespace TaoTie
                 }
             }
             Childs.Dispose();
+            Childs = null;
         }
 
         #endregion
