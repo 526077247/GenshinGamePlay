@@ -44,9 +44,10 @@ namespace TaoTie
         public async ETTask OnLeave()
         {
             await ETTask.CompletedTask;
+            RemoveManager<GearManager>();
+            RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
-            // RemoveManager<InputManager>();
-            // RemoveManager<NpcManager>();
+            RemoveManager<GameTimerManager>();
         }
 
         public async ETTask OnPrepare()

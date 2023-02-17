@@ -13,6 +13,7 @@ namespace TaoTie
 
         public void Init(int configId)
         {
+            CampId = CampConst.Player;
             ConfigId = configId;
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent>();

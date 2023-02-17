@@ -14,6 +14,7 @@ namespace TaoTie
         public override Entity CreateActor(Gear gear)
         {
             var entity = gear.Parent.CreateEntity<Monster, int>(configID);
+            entity.CampId = campId;
             entity.Position = position;
             entity.AddComponent<GearActorComponent, int, long>(localId, gear.Id);
             return entity;

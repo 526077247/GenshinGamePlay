@@ -18,6 +18,8 @@ namespace TaoTie
         public int localId;
         [NinoMember(2)]
         public Vector3 position;
+        [NinoMember(3)]
+        public uint campId;
         
         public abstract Entity CreateActor(Gear gear);
     }

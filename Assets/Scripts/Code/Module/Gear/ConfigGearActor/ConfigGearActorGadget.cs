@@ -20,6 +20,7 @@ namespace TaoTie
         {
             var entity = gear.Parent.CreateEntity<Gadget, int, GadgetState>(configID,defaultState);
             entity.Position = position;
+            entity.CampId = campId;
             if (gear.TryGetRoute(routeId, out var route))
             {
                 var pmc = gear.AddComponent<PlatformMoveComponent, ConfigRoute>(route);
