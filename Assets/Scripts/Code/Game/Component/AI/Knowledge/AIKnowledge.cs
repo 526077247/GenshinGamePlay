@@ -28,6 +28,8 @@ namespace TaoTie
         
         public int poseID;
         
+        public AIManager aiManager;
+        
         public AISkillKnowledge skillKnowledge;
         public AIMoveKnowledge moveKnowledge;
         public AIThreatKnowledge threatKnowledge;
@@ -36,8 +38,9 @@ namespace TaoTie
         public AITargetKnowledge targetKnowledge;
         public AIPathFindingKnowledge pathFindingKnowledge;
 
-        public void Init(Entity aiEntity, ConfigAIBeta config)
+        public void Init(Entity aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
+            this.aiManager = aiManager;
             aiOwnerEntity = aiEntity as Unit;
             bornPos = aiOwnerEntity.Position;
             campID = aiOwnerEntity.CampId;

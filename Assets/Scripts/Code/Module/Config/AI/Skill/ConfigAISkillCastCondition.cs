@@ -10,9 +10,9 @@ namespace TaoTie
         [NinoMember(2)]
         public float minTargetAngleXZ;
         [NinoMember(3)]
-        public float maxTargetAngleXZ;
+        public float maxTargetAngleXZ= 90;
         [NinoMember(4)]
-        public float maxTargetAngleY;
+        public float maxTargetAngleY = 90;
         [NinoMember(5)]
         public float minTargetAngleY;
         [NinoMember(6)]
