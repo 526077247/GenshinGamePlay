@@ -13,9 +13,9 @@ namespace TaoTie
         [NinoMember(2)][LabelText("AI类型")]
         public DecisionArchetype DecisionArchetype;
 
-        [NinoMember(3)][LabelText("感知")]
+        [NinoMember(3)][LabelText("感知")][NotNull]
         public ConfigAISensing Sensing;
-        [NinoMember(4)][LabelText("威胁")]
+        [NinoMember(4)][LabelText("威胁")][NotNull]
         public ConfigAIThreatSetting Threat;
         
         [NinoMember(5)][BoxGroup("技能")]

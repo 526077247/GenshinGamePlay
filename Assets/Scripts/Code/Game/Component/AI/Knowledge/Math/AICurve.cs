@@ -9,7 +9,11 @@ namespace TaoTie
         public AICurve(AIPoint[] inputData)
         {
             data = new List<AIPoint>();
-            data.AddRange(inputData);
+            if (inputData != null)
+            {
+                data.AddRange(inputData);
+            }
+
             SortByX();
         }
 

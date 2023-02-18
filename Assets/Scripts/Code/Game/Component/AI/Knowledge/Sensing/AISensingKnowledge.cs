@@ -20,7 +20,7 @@ namespace TaoTie
         public static AISensingKnowledge Create(ConfigAIBeta config)
         {
             AISensingKnowledge res = ObjectPool.Instance.Fetch<AISensingKnowledge>();
-            res.Setting = config.Sensing.Setting;
+            res.Setting = config.Sensing.Setting.DeepCopy();
             res.TemplateInUse = config.Sensing.Settings;
             return res;
         }

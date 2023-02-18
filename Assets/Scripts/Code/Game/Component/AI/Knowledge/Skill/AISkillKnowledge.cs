@@ -40,20 +40,27 @@ namespace TaoTie
             {
                 res.Skills[i] = AISkillContainer.Create((ConfigAISkillType)i);
             }
-            for (int i = 0; i < config.Skills.Length; i++)
+
+            if (config.Skills != null)
             {
-                var conf = config.Skills[i];
-                res.Skills[(int) conf.SkillType].AddSkill(conf);
+                for (int i = 0; i < config.Skills.Length; i++)
+                {
+                    var conf = config.Skills[i];
+                    res.Skills[(int) conf.SkillType].AddSkill(conf);
+                }
+                res.SkillCount = (uint)config.Skills.Length;
             }
-            res.SkillCount = (uint)config.Skills.Length;
+            
             res.Gcd = config.GloabCD;
             res.NextGCDTick = 0;
             res.SkillGroupCDs = DictionaryComponent<int, AISkillGroupCDInfo>.Create();
-            foreach (var item in config.SkillGroupCDConfigs)
+            if (config.SkillGroupCDConfigs != null)
             {
-                res.SkillGroupCDs.Add(item.Key, AISkillGroupCDInfo.Create(item.Key,item.Value));
+                foreach (var item in config.SkillGroupCDConfigs)
+                {
+                    res.SkillGroupCDs.Add(item.Key, AISkillGroupCDInfo.Create(item.Key, item.Value));
+                }
             }
-            
             return res;
         }
 

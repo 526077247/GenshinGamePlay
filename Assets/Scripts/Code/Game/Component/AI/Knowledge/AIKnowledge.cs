@@ -40,8 +40,9 @@ namespace TaoTie
         {
             aiOwnerEntity = aiEntity as Unit;
             bornPos = aiOwnerEntity.Position;
+            campID = aiOwnerEntity.CampId;
             
-            sensingKnowledge =AISensingKnowledge.Create(config);
+            sensingKnowledge = AISensingKnowledge.Create(config);
             threatKnowledge = AIThreatKnowledge.Create(config);
             targetKnowledge = AITargetKnowledge.Create();
             defendAreaKnowledge = AIDefendAreaKnowledge.Create(config,bornPos);

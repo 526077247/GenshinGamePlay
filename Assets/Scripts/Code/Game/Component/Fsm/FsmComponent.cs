@@ -12,7 +12,7 @@ namespace TaoTie
         public virtual Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
         public VariableSet variableSet => _variableSet;
         private ListComponent<ConfigParamTrigger> _triggers;
-        public Fsm baseFsm
+        public Fsm defaultFsm
         {
             get
             {
