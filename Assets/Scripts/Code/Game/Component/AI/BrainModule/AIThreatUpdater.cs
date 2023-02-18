@@ -153,7 +153,7 @@ namespace TaoTie
         /// </summary>
         private void UpdateCandidateFromSensibles()
         {
-            var sensibles = knowledge.sensingKnowledge.enemySensibles;
+            var sensibles = knowledge.sensingKnowledge.EnemySensibles;
 
             if (sensibles == null)
                 return;
@@ -162,16 +162,16 @@ namespace TaoTie
             {
                 float distanceToSensible = sensible.Value.distance;
 
-                var feelRange = knowledge.sensingKnowledge.setting.feelRange;
-                var viewRange = knowledge.threatLevel == ThreatLevel.Alert ? 200 : knowledge.sensingKnowledge.setting.viewRange;
-                var halfHorizontalFov = knowledge.sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * knowledge.sensingKnowledge.setting.horizontalFov;
-                var halfVerticalFov = knowledge.sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * knowledge.sensingKnowledge.setting.verticalFov;
+                var feelRange = knowledge.sensingKnowledge.Setting.feelRange;
+                var viewRange = knowledge.threatLevel == ThreatLevel.Alert ? 200 : knowledge.sensingKnowledge.Setting.viewRange;
+                var halfHorizontalFov = knowledge.sensingKnowledge.Setting.viewPanoramic ? 180f : 0.5 * knowledge.sensingKnowledge.Setting.horizontalFov;
+                var halfVerticalFov = knowledge.sensingKnowledge.Setting.viewPanoramic ? 180f : 0.5 * knowledge.sensingKnowledge.Setting.verticalFov;
 
                 if (distanceToSensible <= feelRange)//Feel
                 {
                     ProcessSensible(sensible.Value, ThreatAddReason.Feel);
                 }
-                else if (knowledge.sensingKnowledge.setting.enableVision)//Vision
+                else if (knowledge.sensingKnowledge.Setting.enableVision)//Vision
                 {
                     if (distanceToSensible < viewRange)
                     {

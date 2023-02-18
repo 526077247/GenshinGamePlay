@@ -6,15 +6,27 @@ namespace TaoTie
     public class AIThreatKnowledge: IDisposable
     {
         public ConfigAIThreatSetting config;
-        //视觉
+        /// <summary>
+        /// 视觉感知威胁增加系数
+        /// </summary>
         public float viewThreatGrowRate;
-        //听觉
+        /// <summary>
+        /// 听觉感知威胁增加系数
+        /// </summary>
         public float hearThreatGrowRate;
-        //近身感知
+        /// <summary>
+        /// 近身感知威胁增加系数
+        /// </summary>
         public float feelThreatGrowRate;
 
-        public AIMath.AICurve viewAttenuation;
-        public AIMath.AICurve hearAttenuation;
+        /// <summary>
+        /// 视觉感知衰减曲线
+        /// </summary>
+        public AICurve viewAttenuation;
+        /// <summary>
+        /// 听觉感知衰减曲线
+        /// </summary>
+        public AICurve hearAttenuation;
 
         public bool reachAwareThisFrame;
         public bool reachAlertThisFrame;
@@ -22,16 +34,30 @@ namespace TaoTie
         public Dictionary<int, ThreatInfo> candidateList = new();
         public Dictionary<int, ThreatInfo> threatList = new();
 
-        //主要目标
+        /// <summary>
+        /// 主要目标
+        /// </summary>
         public ThreatInfo mainThreat;
 
-        //广播 告知
+        /// <summary>
+        /// 威胁 广播 告知
+        /// </summary>
         public float threatBroadcastRange;
         
-        //Taunt 嘲讽
+        /// <summary>
+        /// Taunt 嘲讽
+        /// </summary>
         public TauntLevel resistTauntLevel;
+
+        public static AIThreatKnowledge Create(ConfigAIBeta config)
+        {
+            AIThreatKnowledge res = ObjectPool.Instance.Fetch<AIThreatKnowledge>();
+
+            res.InitSetting(config.Threat);
+            return res;
+        }
         
-        public void InitSetting(ConfigAIThreatSetting configThreat)
+        private void InitSetting(ConfigAIThreatSetting configThreat)
         {
             config = configThreat;
 
@@ -41,8 +67,8 @@ namespace TaoTie
 
             threatBroadcastRange = configThreat.threatBroadcastRange;
 
-            viewAttenuation = new AIMath.AICurve(configThreat.viewAttenuation);
-            hearAttenuation = new AIMath.AICurve(configThreat.hearAttenuation);
+            viewAttenuation = new AICurve(configThreat.viewAttenuation);
+            hearAttenuation = new AICurve(configThreat.hearAttenuation);
         }
 
         public void ReInit()
@@ -53,7 +79,21 @@ namespace TaoTie
 
         public void Dispose()
         {
+            candidateList.Clear();
+            threatList.Clear();
             
+            mainThreat = null;
+            resistTauntLevel = default;
+            
+            reachAwareThisFrame = false;
+            hearAttenuation = default;
+            viewAttenuation = default;
+            threatBroadcastRange = 0;
+            feelThreatGrowRate = 0;
+            hearThreatGrowRate = 0;
+            viewThreatGrowRate = 0;
+            config = null;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

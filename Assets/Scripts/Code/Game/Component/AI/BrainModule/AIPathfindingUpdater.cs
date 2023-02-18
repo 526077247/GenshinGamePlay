@@ -23,22 +23,22 @@ namespace TaoTie
                 {
                     aimPos= knowledge.targetKnowledge.targetPosition;
                 }
-                if (knowledge.pathFindingKnowledge.route != null)
+                if (knowledge.pathFindingKnowledge.Route != null)
                 {
-                    knowledge.pathFindingKnowledge.route.Dispose();
-                    knowledge.pathFindingKnowledge.route = null;
+                    knowledge.pathFindingKnowledge.Route.Dispose();
+                    knowledge.pathFindingKnowledge.Route = null;
                 }
-                if (knowledge.pathFindingKnowledge.type == PathFindingType.Link)
+                if (knowledge.pathFindingKnowledge.Type == PathFindingType.Link)
                 {
                     //直接冲过去
-                    knowledge.pathFindingKnowledge.route = ListComponent<Vector3>.Create();
-                    knowledge.pathFindingKnowledge.route.Add(knowledge.currentPos);
-                    knowledge.pathFindingKnowledge.route.Add(aimPos);
+                    knowledge.pathFindingKnowledge.Route = ListComponent<Vector3>.Create();
+                    knowledge.pathFindingKnowledge.Route.Add(knowledge.currentPos);
+                    knowledge.pathFindingKnowledge.Route.Add(aimPos);
                     knowledge.targetKnowledge.hasPath = AITargetHasPathType.Success;
                 }
-                else if (knowledge.pathFindingKnowledge.type == PathFindingType.NavMesh)
+                else if (knowledge.pathFindingKnowledge.Type == PathFindingType.NavMesh)
                 {
-                    //todo:
+                    //todo:接入navmesh
                 }
             }
         }

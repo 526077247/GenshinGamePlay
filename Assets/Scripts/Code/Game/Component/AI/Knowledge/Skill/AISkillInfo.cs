@@ -24,6 +24,7 @@ namespace TaoTie
         {
             Config = null;
             NextAvailableUseTick = 0;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

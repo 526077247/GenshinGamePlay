@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 namespace TaoTie
@@ -120,6 +121,12 @@ namespace TaoTie
         /// 目标是否没被遮挡物遮挡
         /// </summary>
         public bool hasLineOfSight;
+
+        public static AITargetKnowledge Create()
+        {
+            return ObjectPool.Instance.Fetch<AITargetKnowledge>();
+        }
+        
         #endregion
 
         /// <summary>
@@ -182,11 +189,28 @@ namespace TaoTie
 
         public void Dispose()
         {
-            targetType = AITargetType.InvalidTarget;
-            targetPosition = Vector3.zero;
-            hasPath = AITargetHasPathType.Invalid;
-            targetEntity = null;
             targetID = 0;
+            targetPosition =Vector3.zero;
+            targetForward =Vector3.zero;
+            targetDirection=Vector3.zero;
+            targetDistance = 0;
+            targetDistanceXZ = 0;
+            targetDistanceY = 0;
+            targetRelativeAngleYaw = 0;
+            targetRelativeAngleYawAbs = 0;
+            targetRelativeAnglePitch = 0;
+            targetRelativeAnglePitchAbs = 0;
+            targetInAir = false;
+            targetKilled = false;
+            isSelfAtTargetBack = false;
+            buddyOverride = false;
+            skillAnchorPosition = Vector3.zero;
+            skillAnchorDistance = 0;
+            targetLKP = null;
+            targetInDefendArea = false;
+            hasPath = AITargetHasPathType.Invalid;
+            hasLineOfSight = false;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

@@ -39,13 +39,15 @@ namespace TaoTie
         public void Init(Entity aiEntity, ConfigAIBeta config)
         {
             aiOwnerEntity = aiEntity as Unit;
+            bornPos = aiOwnerEntity.Position;
             
-            skillKnowledge = ObjectPool.Instance.Fetch<AISkillKnowledge>();
+            sensingKnowledge =AISensingKnowledge.Create(config);
+            threatKnowledge = AIThreatKnowledge.Create(config);
+            targetKnowledge = AITargetKnowledge.Create();
+            defendAreaKnowledge = AIDefendAreaKnowledge.Create(config,bornPos);
+            skillKnowledge = AISkillKnowledge.Create(config);
             moveKnowledge = ObjectPool.Instance.Fetch<AIMoveKnowledge>();
-            threatKnowledge = ObjectPool.Instance.Fetch<AIThreatKnowledge>();
-            sensingKnowledge = ObjectPool.Instance.Fetch<AISensingKnowledge>();
-            defendAreaKnowledge = ObjectPool.Instance.Fetch<AIDefendAreaKnowledge>();
-            targetKnowledge = ObjectPool.Instance.Fetch<AITargetKnowledge>();
+            
             pathFindingKnowledge = ObjectPool.Instance.Fetch<AIPathFindingKnowledge>();
         }
 

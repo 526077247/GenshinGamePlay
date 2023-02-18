@@ -8,6 +8,8 @@
         OnAlert = 3,
         OnNerve = 4,
         ActionPoint = 5,
-        CombatBuddy = 6
+        CombatBuddy = 6,
+        
+        Max,
     }
 }

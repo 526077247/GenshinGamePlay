@@ -30,6 +30,7 @@ namespace TaoTie
         public void Destroy()
         {
             ConfigId = default;
+            CampId = 0;
         }
 
         #endregion

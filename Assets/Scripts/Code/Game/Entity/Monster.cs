@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
     /// <summary>
     /// 怪物
     /// </summary>
-    public class Monster: Unit,IEntity<int>
+    public class Monster: Unit,IEntity<int,Vector3>
     {
         #region IEntity
         
         public override EntityType Type => EntityType.Monster;
         
-        public void Init(int configId)
+        public void Init(int configId,Vector3 bornPos)
         {
+            Position = bornPos;
             var monster = AddComponent<MonsterComponent,int>(configId);
             ConfigId = monster.Config.UnitId;
             var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(monster.Config.EntityConfig);
@@ -32,6 +34,7 @@ namespace TaoTie
         public void Destroy()
         {
             ConfigId = default;
+            CampId = 0;
         }
         
         #endregion

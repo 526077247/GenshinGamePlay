@@ -90,12 +90,12 @@ namespace TaoTie
             foreach (var sensible in enemySensiblesPreparation)
             {
                 enemySensibles.TryAdd(sensible.Key, sensible.Value);
-                var viewRange = knowledge.threatLevel == ThreatLevel.Alert ? 200 : sensingKnowledge.setting.viewRange;
-                var halfHorizontalFov = sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.setting.horizontalFov;
-                var halfVerticalFov = sensingKnowledge.setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.setting.verticalFov;
+                var viewRange = knowledge.threatLevel == ThreatLevel.Alert ? 200 : sensingKnowledge.Setting.viewRange;
+                var halfHorizontalFov = sensingKnowledge.Setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.Setting.horizontalFov;
+                var halfVerticalFov = sensingKnowledge.Setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.Setting.verticalFov;
 
                 //FeelRange
-                if (sensible.Value.distance < sensingKnowledge.setting.feelRange)
+                if (sensible.Value.distance < sensingKnowledge.Setting.feelRange)
                 {
                     enemySensibles.TryAdd(sensible.Key, sensible.Value);
                 }
@@ -121,27 +121,27 @@ namespace TaoTie
                 }
             }
 
-            sensingKnowledge.nearestEnemy = 0;
-            sensingKnowledge.nearestEnemyDistance = -1f;
+            sensingKnowledge.NearestEnemy = 0;
+            sensingKnowledge.NearestEnemyDistance = -1f;
             if (enemySensibles != null)
             {
                 foreach (var enemy in enemySensibles)
                 {
-                    if (sensingKnowledge.nearestEnemyDistance<0 || enemy.Value.distance < sensingKnowledge.nearestEnemyDistance)
+                    if (sensingKnowledge.NearestEnemyDistance<0 || enemy.Value.distance < sensingKnowledge.NearestEnemyDistance)
                     {
-                        sensingKnowledge.nearestEnemyDistance = enemy.Value.distance;
-                        sensingKnowledge.nearestEnemy = enemy.Value.sensibleID;
+                        sensingKnowledge.NearestEnemyDistance = enemy.Value.distance;
+                        sensingKnowledge.NearestEnemy = enemy.Value.sensibleID;
                     }
                 }
             }
-            sensingKnowledge.enemySensibles = enemySensibles;
+            sensingKnowledge.EnemySensibles = enemySensibles;
         }
 
         //TODO 投掷物用, 同样会添加ThreatInfo
         public static bool CanSignalBeNoticed(AIKnowledge knowledge, Vector3 checkPos)
         {
-            var sourcelessHitAttractionRange = knowledge.sensingKnowledge.setting.sourcelessHitAttractionRange;
-            var hearAttractionRange = knowledge.sensingKnowledge.setting.hearAttractionRange;
+            var sourcelessHitAttractionRange = knowledge.sensingKnowledge.Setting.sourcelessHitAttractionRange;
+            var hearAttractionRange = knowledge.sensingKnowledge.Setting.hearAttractionRange;
             var selectRange = hearAttractionRange;
             if (sourcelessHitAttractionRange > 0)
                 selectRange = sourcelessHitAttractionRange;

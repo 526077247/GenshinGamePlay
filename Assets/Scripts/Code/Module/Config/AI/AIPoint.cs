@@ -3,11 +3,11 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ConfigAIDefendArea
+    public class AIPoint
     {
         [NinoMember(1)]
-        public bool Enable;
+        public float x;
         [NinoMember(2)]
-        public float DefendRange; 
+        public float y;
     }
 }

@@ -24,9 +24,14 @@ namespace TaoTie
         public Dictionary<int, int> SkillGroupCDConfigs;
         [NinoMember(7)][BoxGroup("技能")]
         public ConfigAISkill[] Skills;
-        [NinoMember(8)][BoxGroup("行为")]
+        [NinoMember(8)][LabelText("防守范围")]
+        public ConfigAIDefendArea DefendArea;
+        [NinoMember(9)][LabelText("寻路数据")]
+        public ConfigAIPathFindingSetting Path;
+        
+        
+        
+        [NinoMember(20)][BoxGroup("行为")]
         public ConfigAITacticBaseSetting[] Tactics;
-
-
     }
 }
