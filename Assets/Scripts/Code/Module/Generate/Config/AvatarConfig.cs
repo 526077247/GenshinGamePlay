@@ -6,25 +6,25 @@ namespace TaoTie
 {
     [NinoSerialize]
     [Config]
-    public partial class UnitConfigCategory : ProtoObject, IMerge
+    public partial class AvatarConfigCategory : ProtoObject, IMerge
     {
-        public static UnitConfigCategory Instance;
+        public static AvatarConfigCategory Instance;
 		
         
         [NinoIgnore]
-        private Dictionary<int, UnitConfig> dict = new Dictionary<int, UnitConfig>();
+        private Dictionary<int, AvatarConfig> dict = new Dictionary<int, AvatarConfig>();
         
         [NinoMember(1)]
-        private List<UnitConfig> list = new List<UnitConfig>();
+        private List<AvatarConfig> list = new List<AvatarConfig>();
 		
-        public UnitConfigCategory()
+        public AvatarConfigCategory()
         {
             Instance = this;
         }
         
         public void Merge(object o)
         {
-            UnitConfigCategory s = o as UnitConfigCategory;
+            AvatarConfigCategory s = o as AvatarConfigCategory;
             this.list.AddRange(s.list);
         }
 		
@@ -32,20 +32,20 @@ namespace TaoTie
         {
             for(int i =0 ;i<list.Count;i++)
             {
-                UnitConfig config = list[i];
+                AvatarConfig config = list[i];
                 config.EndInit();
                 this.dict.Add(config.Id, config);
             }            
             this.AfterEndInit();
         }
 		
-        public UnitConfig Get(int id)
+        public AvatarConfig Get(int id)
         {
-            this.dict.TryGetValue(id, out UnitConfig item);
+            this.dict.TryGetValue(id, out AvatarConfig item);
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (UnitConfig)}，配置id: {id}");
+                throw new Exception($"配置找不到，配置表名: {nameof (AvatarConfig)}，配置id: {id}");
             }
 
             return item;
@@ -56,15 +56,15 @@ namespace TaoTie
             return this.dict.ContainsKey(id);
         }
 
-        public Dictionary<int, UnitConfig> GetAll()
+        public Dictionary<int, AvatarConfig> GetAll()
         {
             return this.dict;
         }
-        public List<UnitConfig> GetAllList()
+        public List<AvatarConfig> GetAllList()
         {
             return this.list;
         }
-        public UnitConfig GetOne()
+        public AvatarConfig GetOne()
         {
             if (this.dict == null || this.dict.Count <= 0)
             {
@@ -75,26 +75,20 @@ namespace TaoTie
     }
 
     [NinoSerialize]
-	public partial class UnitConfig: ProtoObject
+	public partial class AvatarConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
 		[NinoMember(1)]
 		public int Id { get; set; }
-		/// <summary>Type</summary>
+		/// <summary>模型Id</summary>
 		[NinoMember(2)]
-		public int Type { get; set; }
-		/// <summary>名字</summary>
+		public int UnitId { get; set; }
+		/// <summary>EntityConfig</summary>
 		[NinoMember(3)]
-		public string Name { get; set; }
-		/// <summary>描述</summary>
+		public string EntityConfig { get; set; }
+		/// <summary>Ability路径</summary>
 		[NinoMember(4)]
-		public string Desc { get; set; }
-		/// <summary>预制体路径</summary>
-		[NinoMember(5)]
-		public string Perfab { get; set; }
-		/// <summary>FSM路径</summary>
-		[NinoMember(6)]
-		public string FSM { get; set; }
+		public string Abilities { get; set; }
 
 	}
 }

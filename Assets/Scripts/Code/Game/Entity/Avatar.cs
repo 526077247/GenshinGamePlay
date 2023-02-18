@@ -14,15 +14,16 @@ namespace TaoTie
         public void Init(int configId)
         {
             CampId = CampConst.Player;
-            ConfigId = configId;
+            var avatar = AddComponent<AvatarComponent,int>(configId);
+            ConfigId = avatar.Config.UnitId;
+            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(avatar.Config.EntityConfig);
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<NumericComponent>();
-            
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(entityConfig.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
             AddComponent<SkillComponent>();
             AddComponent<LocalInputController>();
-            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(Config.Abilities));
+            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(avatar.Config.Abilities));
 
         }
 

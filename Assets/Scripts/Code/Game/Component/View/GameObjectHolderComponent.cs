@@ -65,12 +65,15 @@ namespace TaoTie
             //     HudSystem hudSys = ManagerProvider.GetManager<HudSystem>();
             //     hudSys?.ShowHeadInfo(hud.Info);
             // }
-            
-            while (waitFinishTask.TryDequeue(out var task))
+            if (waitFinishTask != null)
             {
-                task.SetResult();
+                while (waitFinishTask.TryDequeue(out var task))
+                {
+                    task.SetResult();
+                }
+
+                waitFinishTask = null;
             }
-            waitFinishTask = null;
         }
 
         public void Destroy()

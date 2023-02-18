@@ -13,14 +13,15 @@ namespace TaoTie
         
         public void Init(int configId)
         {
-            ConfigId = configId;
+            var monster = AddComponent<MonsterComponent,int>(configId);
+            ConfigId = monster.Config.UnitId;
+            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(monster.Config.EntityConfig);
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<NumericComponent>();
-            
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(entityConfig.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
             AddComponent<MonsterAIInputComponent>();
-            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(Config.Abilities));
+            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(monster.Config.Abilities));
             AddComponent<AIComponent>();
         }
         
