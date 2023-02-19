@@ -1,4 +1,5 @@
 ﻿using System;
+using LitJson.Extensions;
 using Nino.Serialization;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -40,6 +41,7 @@ namespace TaoTie
     
     public abstract class ConfigGearTrigger<T> : ConfigGearTrigger where T : IEventBase
     {
+        [JsonIgnore]
         private Type EventType => TypeInfo<T>.Type;
 
         public sealed override void OnTrigger(Gear gear, IEventBase evt)

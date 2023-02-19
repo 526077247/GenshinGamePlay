@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using LitJson.Extensions;
 
 namespace LitJson
 {
@@ -291,7 +292,8 @@ namespace LitJson
             {
                 if (p_info.Name == "Item")
                     continue;
-
+                var attr = p_info.GetCustomAttributes(JsonIgnore.Type,false);
+                if(attr.Length>0)continue;
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = p_info;
                 p_data.IsField = false;
@@ -300,6 +302,8 @@ namespace LitJson
 
             foreach (FieldInfo f_info in type.GetFields())
             {
+                var attr = f_info.GetCustomAttributes(JsonIgnore.Type,false);
+                if(attr.Length>0)continue;
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = f_info;
                 p_data.IsField = true;

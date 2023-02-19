@@ -76,8 +76,7 @@ namespace TaoTie
             for (int i = 0; i < _fsms.Length; i++)
             {
                 if (_fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                // _fsms[i].Update(GameTimerManager.Instance.GetDeltaTime()/1000f);
-                _fsms[i].Update(Time.deltaTime);
+                _fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
             }
 
             for (int i = 0; i < _triggers.Count; i++)

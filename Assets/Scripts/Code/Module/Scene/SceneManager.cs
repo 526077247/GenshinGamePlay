@@ -146,8 +146,8 @@ namespace TaoTie
             //等久点，跳的太快
             await TimerManager.Instance.WaitAsync(500);
             Log.Info("加载目标场景完成 Start");
-            await scene.OnSwitchSceneEnd();
             CurrentScene = scene;
+            await scene.OnSwitchSceneEnd();
             FinishLoad();
         }
         //切换场景

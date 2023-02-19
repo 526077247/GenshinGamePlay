@@ -9,13 +9,14 @@ namespace TaoTie
         public float defendRange;
         public Vector3 defendCenter;
         public bool isInDefendRange;
-
+        private float sqlDefendRange;
         public static AIDefendAreaKnowledge Create(ConfigAIBeta config,Vector3 bornpos)
         {
             AIDefendAreaKnowledge res = ObjectPool.Instance.Fetch<AIDefendAreaKnowledge>();
             res.config = config.DefendArea;
             res.defendRange = res.config.DefendRange;
             res.defendCenter = bornpos;
+            res.sqlDefendRange = res.defendRange * res.defendRange;
             return res;
         }
 
@@ -25,6 +26,15 @@ namespace TaoTie
             defendRange = 0;
             defendCenter = Vector3.zero;
             isInDefendRange = false;
+        }
+
+        public bool CheckInDefendArea(Vector3 point)
+        {
+            if (config.Enable)
+            {
+                return Vector3.SqrMagnitude(point - defendCenter) < sqlDefendRange;
+            }
+            return true;
         }
     }
 }

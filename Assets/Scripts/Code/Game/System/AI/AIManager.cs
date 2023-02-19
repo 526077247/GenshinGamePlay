@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class AIManager:IManager<BaseMapScene>,IUpdateComponent
+    public class AIManager:IManager<BaseMapScene>,IUpdateManager
     {
         private BaseMapScene scene;
         private Dictionary<long, AIComponent> aiUnits;

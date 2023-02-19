@@ -1,4 +1,5 @@
 using System;
+using LitJson.Extensions;
 using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -134,8 +135,8 @@ namespace TaoTie
         }
 
 #if UNITY_EDITOR
-        [Obsolete] [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
-        public string remarks;
+        [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
+        private string remarks;
 
         public static void ShowNotification(string tips)
         {
@@ -171,6 +172,7 @@ namespace TaoTie
     
     public abstract class ConfigGearCondition<T>:ConfigGearCondition where T:IEventBase
     {
+        [JsonIgnore]
         private Type EventType => TypeInfo<T>.Type;
         public sealed override bool IsMatch(IEventBase obj, Gear gear)
         {
