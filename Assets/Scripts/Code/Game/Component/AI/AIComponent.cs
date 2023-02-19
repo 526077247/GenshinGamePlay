@@ -14,27 +14,27 @@ namespace TaoTie
         protected AIKnowledge knowledge;
 
         /// <summary> 这一帧决策结果 </summary>
-        protected AIDecision decision => new AIDecision();
+        protected AIDecision decision { get; private set; }= new AIDecision();
         /// <summary> 上一帧决策结果 </summary>
-        protected AIDecision decisionOld => new AIDecision();
+        protected AIDecision decisionOld { get; private set; }= new AIDecision();
 
         /// <summary> 寻路 </summary>
-        protected AIPathfindingUpdater pathfinder => new AIPathfindingUpdater();
+        public AIPathfindingUpdater pathfinder { get; private set; }= new AIPathfindingUpdater();
         /// <summary> 目标 </summary>
-        protected AITargetUpdater targetUpdater => new AITargetUpdater(this);
+        public AITargetUpdater targetUpdater { get; private set; }= new AITargetUpdater();
         /// <summary> 感知 </summary>
-        protected AISensingUpdater sensingUpdater => new AISensingUpdater(aiManager);
+        public AISensingUpdater sensingUpdater { get; private set; }= new AISensingUpdater();
         /// <summary> 威胁 </summary>
-        protected AIThreatUpdater threatUpdater => new AIThreatUpdater(this);
+        public AIThreatUpdater threatUpdater { get; private set; }= new AIThreatUpdater();
         /// <summary> pose </summary>
-        protected AIPoseControlUpdater poseControlUpdater => new AIPoseControlUpdater();
+        public AIPoseControlUpdater poseControlUpdater { get; private set; }= new AIPoseControlUpdater();
         /// <summary> 技能 </summary>
-        protected AISkillUpdater skillUpdater => new AISkillUpdater();
+        public AISkillUpdater skillUpdater { get; private set; }= new AISkillUpdater();
 
         /// <summary> 行动执行器 </summary>
-        protected AIActionControl actionController => new AIActionControl(knowledge,this);
+        public AIActionControl actionController { get; private set; }= new AIActionControl();
         /// <summary> 移动执行器 </summary>
-        protected AIMoveControl moveController => new AIMoveControl(this,knowledge,pathfinder);
+        public AIMoveControl moveController { get; private set; }= new AIMoveControl();
 
 
         #region Event
@@ -62,6 +62,8 @@ namespace TaoTie
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
 
+            actionController.Init(knowledge);
+            moveController.Init(knowledge);
             aiManager?.AddAI(this);
         }
 

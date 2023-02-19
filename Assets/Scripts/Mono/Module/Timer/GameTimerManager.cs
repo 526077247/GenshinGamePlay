@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -24,7 +25,7 @@ namespace TaoTie
             Instance = this;
             // todo:从服务器或存档中取当前时间
             timeNow = 0;
-            lastUpdateTime = TimeHelper.ServerNow();
+            lastUpdateTime = (long) (Time.time * 1000);
             InitAction();
         }
 
@@ -41,8 +42,8 @@ namespace TaoTie
         public override void Update()
         {
             if(timeScale<=0) return;
-            
-            var serverNow = TimeHelper.ServerNow();
+
+            var serverNow = (long) (Time.time * 1000);
             deltaTime = (int)((serverNow - lastUpdateTime)*timeScale);
             timeNow += deltaTime;
             lastUpdateTime += (int) (deltaTime / timeScale);

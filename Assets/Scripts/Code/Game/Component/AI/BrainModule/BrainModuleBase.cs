@@ -3,7 +3,7 @@
     public abstract class BrainModuleBase
     {
 
-        protected AIKnowledge knowledge;
+        protected AIKnowledge knowledge { get; private set; }
         protected long nextTick;
 
         public void Init(AIKnowledge aiKnowledge)
@@ -46,6 +46,8 @@
 
         protected virtual void ClearInternal()
         {
+            this.knowledge = null;
+            this.nextTick = 0;
         }
     }
 }

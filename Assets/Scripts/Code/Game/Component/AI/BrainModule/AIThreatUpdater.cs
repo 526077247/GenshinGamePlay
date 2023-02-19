@@ -10,12 +10,8 @@ namespace TaoTie
     public class AIThreatUpdater: BrainModuleBase
     {
         private AIComponent aiComponent;
-        public AIThreatUpdater(AIComponent aiComponent)
-        {
-            this.aiComponent = aiComponent;
-        }
-        
-         //警戒列表
+
+        //警戒列表
         private Dictionary<long, ThreatInfo> _candidateList = new Dictionary<long, ThreatInfo>();
         //威胁列表
         private Dictionary<long, ThreatInfo> _threatList = new Dictionary<long, ThreatInfo>();
@@ -30,6 +26,12 @@ namespace TaoTie
         //TODO
         //private List<ThreatInfo> _disqualifiedCandidates;
         //private List<ThreatInfo> _disqualifiedThreats;
+
+        protected override void InitInternal()
+        {
+            base.InitInternal();
+            this.aiComponent = knowledge.aiOwnerEntity.GetComponent<AIComponent>();
+        }
 
         protected override void UpdateMainThreadInternal()
         {

@@ -11,9 +11,10 @@ namespace TaoTie
         private List<AISkillInfo> validCandidates;
         private AIComponent component;
 
-        public AIActionControl(AIKnowledge knowledge, AIComponent aiComponent) : base(knowledge)
+        protected override void InitInternal()
         {
-            component = aiComponent;
+            base.InitInternal();
+            component = aiKnowledge.aiOwnerEntity.GetComponent<AIComponent>();
         }
 
         public void ExecuteAction(AIDecision decision)

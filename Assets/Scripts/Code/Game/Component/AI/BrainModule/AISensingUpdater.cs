@@ -17,14 +17,10 @@ namespace TaoTie
 
         private AISensingKnowledge sensingKnowledge;
 
-        public AISensingUpdater(AIManager aiManager)
-        {
-            this.aiManager = aiManager;
-        }
-
         protected override void InitInternal()
         {
             base.InitInternal();
+            this.aiManager = knowledge.aiManager;
             sensingKnowledge = knowledge.sensingKnowledge;
             enemySensibles = DictionaryComponent<long, SensibleInfo>.Create();
             enemySensiblesPreparation = DictionaryComponent<long, SensibleInfo>.Create();
@@ -45,6 +41,8 @@ namespace TaoTie
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
+            knowledge.defendAreaKnowledge.isInDefendRange =
+                knowledge.defendAreaKnowledge.CheckInDefendArea(knowledge.aiOwnerEntity.Position);
             CollectEnemies();
             ProcessEnemies();
         }

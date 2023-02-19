@@ -8,10 +8,13 @@ namespace TaoTie
     public class AITargetUpdater: BrainModuleBase
     {
         private AIComponent aiComponent;
-        public AITargetUpdater(AIComponent aiComponent)
+        protected override void InitInternal()
         {
-            this.aiComponent = aiComponent;
+            base.InitInternal();
+            aiComponent = knowledge.aiOwnerEntity.GetComponent<AIComponent>();
         }
+
+
         protected override void UpdateMainThreadInternal()
         {
             Collect(knowledge.targetKnowledge);
@@ -75,6 +78,8 @@ namespace TaoTie
             tk.targetRelativeAnglePitchAbs = Mathf.Abs(tk.targetRelativeAnglePitch);
             //能否看见
             tk.hasLineOfSight = !PhysicsHelper.LinecastScene(tk.targetEntity.Position, knowledge.eyePos, out _);
+            //是否在防御范围内
+            tk.targetInDefendArea = knowledge.defendAreaKnowledge.CheckInDefendArea(tk.targetEntity.Position);
             
             var skillAnchorPosition = knowledge.targetKnowledge.skillAnchorPosition;
             skillAnchorPosition.y = 0;

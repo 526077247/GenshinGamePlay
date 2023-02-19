@@ -7,13 +7,13 @@
     {
         private AIComponent aiComponent;
         private AIPathfindingUpdater pathfinder;
-        
-        public AIMoveControl(AIComponent ai, AIKnowledge knowledge, AIPathfindingUpdater pathfinder):base(knowledge)
-        {
-            aiComponent = ai;
-            this.pathfinder = pathfinder;
-        }
 
+        protected override void InitInternal()
+        {
+            base.InitInternal();
+            aiComponent = aiKnowledge.aiOwnerEntity.GetComponent<AIComponent>();
+            pathfinder = aiComponent.pathfinder;
+        }
 
         public void ExecuteMove(AIDecision decision)
         {
