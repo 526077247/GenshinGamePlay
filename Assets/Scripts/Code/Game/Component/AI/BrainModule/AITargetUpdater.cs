@@ -57,11 +57,17 @@ namespace TaoTie
 
         private void Process(AITargetKnowledge tk)
         {
-            if (tk.targetEntity == null)
+            if (tk.targetType== AITargetType.EntityTarget&&tk.targetEntity == null)
+                return;
+            if (tk.targetType== AITargetType.InvalidTarget)
                 return;
             
             var pos = knowledge.aiOwnerEntity.Position;
-            var targetPos = tk.targetEntity.Position;
+            Vector3 targetPos = tk.targetPosition;
+            if (tk.targetType == AITargetType.EntityTarget)
+            {
+                targetPos = tk.targetEntity.Position;
+            }
 
             tk.targetDistance = (pos - targetPos).magnitude;
             tk.targetDistanceY = Mathf.Abs(pos.y - targetPos.y);
@@ -70,16 +76,16 @@ namespace TaoTie
             targetPos.y = 0;
             tk.targetDistanceXZ = (pos - targetPos).magnitude;
 
-            var dir = tk.targetEntity.Position - knowledge.aiOwnerEntity.Position;
+            var dir = targetPos - knowledge.aiOwnerEntity.Position;
             tk.targetPosition = targetPos;
             tk.targetRelativeAngleYaw = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.up);
             tk.targetRelativeAngleYawAbs = Mathf.Abs(tk.targetRelativeAngleYaw);
             tk.targetRelativeAnglePitch = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.right);
             tk.targetRelativeAnglePitchAbs = Mathf.Abs(tk.targetRelativeAnglePitch);
             //能否看见
-            tk.hasLineOfSight = !PhysicsHelper.LinecastScene(tk.targetEntity.Position, knowledge.eyePos, out _);
+            tk.hasLineOfSight = !PhysicsHelper.LinecastScene(targetPos, knowledge.eyePos, out _);
             //是否在防御范围内
-            tk.targetInDefendArea = knowledge.defendAreaKnowledge.CheckInDefendArea(tk.targetEntity.Position);
+            tk.targetInDefendArea = knowledge.defendAreaKnowledge.CheckInDefendArea(targetPos);
             
             var skillAnchorPosition = knowledge.targetKnowledge.skillAnchorPosition;
             skillAnchorPosition.y = 0;

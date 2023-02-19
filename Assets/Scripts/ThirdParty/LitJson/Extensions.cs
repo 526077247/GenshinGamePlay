@@ -35,6 +35,6 @@ namespace LitJson.Extensions {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public sealed class JsonIgnore : Attribute
     {
-
+	    public static readonly Type Type = typeof(JsonIgnore);
     }
 }
