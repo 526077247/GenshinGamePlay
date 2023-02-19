@@ -3,14 +3,14 @@ namespace TaoTie
 {
     public class NumericType
     {
-	    public static int GetKey(string key)
+        public static int GetKey(string key)
         {
-	        if (Map.TryGetValue(key, out var res))
-	        {
-		        return res;
-	        }
-	        Log.Error($"{key}属性不存在");
-	        return -1;
+            if (Map.TryGetValue(key, out var res))
+            {
+                return res;
+            }
+            Log.Error($"{key}属性不存在");
+            return -1;
         }
         private static Dictionary<string, int> __Map;
         public static Dictionary<string, int> Map
