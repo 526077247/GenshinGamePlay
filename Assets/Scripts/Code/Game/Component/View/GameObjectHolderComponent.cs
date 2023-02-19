@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -21,39 +22,12 @@ namespace TaoTie
                 }
             }
         }
-        public class EffectInfo:IDisposable
-        {
-            public static EffectInfo Create()
-            {
-                var res = ObjectPool.Instance.Fetch<EffectInfo>();
-                res.IsDispose = false;
-                return res;
-            }
-
-            private bool IsDispose;
-            public GameObject obj;
-            public int ConfigId;
-            public GameObjectHolderComponent Parent;
-            public long TimerId;
-            public void Dispose()
-            {
-                if (IsDispose)
-                {
-                    return;
-                }
-
-                IsDispose = true;
-                GameTimerManager.Instance.Remove(ref TimerId);
-                Parent = default;
-                ConfigId = default;
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                obj = null;
-                ObjectPool.Instance.Recycle(this);
-            }
-        }
+        
         public Transform EntityView;
 
         public ReferenceCollector Collector;
+
+        private Queue<ETTask> waitFinishTask;
 
         #region override
 
@@ -91,6 +65,15 @@ namespace TaoTie
             //     HudSystem hudSys = ManagerProvider.GetManager<HudSystem>();
             //     hudSys?.ShowHeadInfo(hud.Info);
             // }
+            if (waitFinishTask != null)
+            {
+                while (waitFinishTask.TryDequeue(out var task))
+                {
+                    task.SetResult();
+                }
+
+                waitFinishTask = null;
+            }
         }
 
         public void Destroy()
@@ -100,6 +83,11 @@ namespace TaoTie
 
             if(EntityView!=null)
                 GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
+            while (waitFinishTask.TryDequeue(out var task))
+            {
+                task.SetResult();
+            }
+            waitFinishTask = null;
         }
 
         #endregion
@@ -112,6 +100,24 @@ namespace TaoTie
         public void OnChaneRotation(Unit unit, Quaternion old)
         {
             EntityView.rotation = unit.Rotation;
+        }
+
+        public async ETTask WaitLoadGameObjectOver()
+        {
+            if (EntityView == null)
+            {
+                ETTask task = ETTask.Create(true);
+                if (waitFinishTask == null)
+                    waitFinishTask = new Queue<ETTask>();
+                waitFinishTask.Enqueue(task);
+                await task;
+            }
+        }
+
+        public T GetCollectorObj<T>(string name) where T : class
+        {
+            if (Collector == null) return null;
+            return Collector.Get<T>(name);
         }
     }
 }

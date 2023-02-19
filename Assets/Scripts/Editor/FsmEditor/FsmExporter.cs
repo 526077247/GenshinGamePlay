@@ -150,9 +150,12 @@ namespace TaoTie
             switch (param.type)
             {
                 case AnimatorControllerParameterType.Bool:
+                {
+                        return new ConfigParamBool(param.name, param.defaultBool, animUse);
+                    }
                 case AnimatorControllerParameterType.Trigger:
                     {
-                        return new ConfigParamBool(param.name, param.defaultBool, animUse);
+                        return new ConfigParamTrigger(param.name, param.defaultBool, animUse);
                     }
                 case AnimatorControllerParameterType.Int:
                     {

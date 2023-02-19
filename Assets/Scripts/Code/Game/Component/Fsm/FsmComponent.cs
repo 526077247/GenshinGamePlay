@@ -11,8 +11,8 @@ namespace TaoTie
 
         public virtual Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
         public VariableSet variableSet => _variableSet;
-
-        public Fsm baseFsm
+        private ListComponent<ConfigParamTrigger> _triggers;
+        public Fsm defaultFsm
         {
             get
             {
@@ -42,7 +42,14 @@ namespace TaoTie
             _variableSet = ObjectPool.Instance.Fetch<VariableSet>();
 
             _config.InitDefaultParam(this);
-
+            _triggers = ListComponent<ConfigParamTrigger>.Create();
+            foreach (var item in _config.paramDict)
+            {
+                if (item.Value is ConfigParamTrigger trigger)
+                {
+                    _triggers.Add(trigger);
+                }
+            }
             _fsms = new Fsm[_config.fsmCount];
             for (int i = 0; i < _config.fsmCount; i++)
             {
@@ -69,7 +76,13 @@ namespace TaoTie
             for (int i = 0; i < _fsms.Length; i++)
             {
                 if (_fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                _fsms[i].Update(Time.deltaTime);//todo：暂停时间
+                // _fsms[i].Update(GameTimerManager.Instance.GetDeltaTime()/1000f);
+                _fsms[i].Update(Time.deltaTime);
+            }
+
+            for (int i = 0; i < _triggers.Count; i++)
+            {
+                _triggers[i].SetValue(this,false);
             }
         }
 
@@ -102,7 +115,8 @@ namespace TaoTie
                 _variableSet.Dispose();
                 _variableSet = null;
             }
-            
+            _triggers.Dispose();
+            _triggers = null;
             _config = null;
         }
 

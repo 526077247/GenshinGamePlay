@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-	public class NumericComponent:Component,IComponent
+	public class NumericComponent:Component,IComponent,IComponent<ConfigCombatProperty[]>
 	{
 		#region override
 		public void Init()
@@ -10,7 +10,18 @@ namespace TaoTie
 			NumericDic = new Dictionary<int, long>();
 			ManagerProvider.RegisterManager<NumericSystem>().AddComponent(this);
 		}
-		
+		public void Init(ConfigCombatProperty[] list)
+		{
+			NumericDic = new Dictionary<int, long>();
+			ManagerProvider.RegisterManager<NumericSystem>().AddComponent(this);
+			if (list != null)
+			{
+				for (int i = 0; i < list.Length; i++)
+				{
+					Set(list[i].NumericType,list[i].Value);
+				}
+			}
+		}
 		public void Destroy()
 		{
 			ManagerProvider.RegisterManager<NumericSystem>().RemoveComponent(this);

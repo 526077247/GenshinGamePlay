@@ -12,6 +12,7 @@ namespace TaoTie
         private static readonly int entity = LayerMask.GetMask("Entity");
         private static readonly int hitbox = LayerMask.GetMask("HitBox");
         private static readonly int hitscene = LayerMask.GetMask("HitScene");
+        private static readonly int defaultL = LayerMask.GetMask("Default");
         private static readonly Dictionary<long, int> idMapIndex = new Dictionary<long, int> ();
 
         #region Entity
@@ -74,7 +75,7 @@ namespace TaoTie
             res = hitInfos;
             if (filter == null) return 0;
             var len = Physics.OverlapBoxNonAlloc(center, halfExtents, colliders, orientation, GetHitLayer(type),
-                QueryTriggerInteraction.Ignore);
+                QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
         }
         public static int OverlapSphereNonAllocHitInfo(Vector3 center, float radius, EntityType[] filter,
@@ -82,7 +83,7 @@ namespace TaoTie
             out HitInfo[] res)
         {
             res = hitInfos;
-            var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Ignore);
+            var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
         }
 
@@ -156,6 +157,25 @@ namespace TaoTie
             return count;
         }
         
+        #endregion
+
+        #region Seen
+
+        public static bool LinecastScene(Vector3 start, Vector3 end, out Vector3 pos)
+        {
+            var res = Physics.Linecast(start, end, out var hit, defaultL + hitscene, QueryTriggerInteraction.Ignore);
+            if (res)
+            {
+                pos = hit.point;
+            }
+            else
+            {
+                pos = Vector3.zero;
+            }
+
+            return res;
+        }
+
         #endregion
     }
 }

@@ -149,26 +149,3 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: -2451332271366489666}
---- !u!114 &7801540637760845971
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data:
-    rid: 8622720113652793344
-  references:
-    version: 2
-    RefIds:
-    - rid: 8622720113652793344
-      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
-      data:
-        IsDynamic: 0
-        Key: 
-        PoseID: 1001

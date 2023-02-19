@@ -50,6 +50,8 @@ namespace TaoTie
         static void StartGame()
         {
             SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
+            ManagerProvider.RegisterManager<ConfigGearCategory>();
+            ManagerProvider.RemoveManager<CampManager>();
         }
     }
     

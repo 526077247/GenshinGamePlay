@@ -11,9 +11,10 @@ namespace TaoTie
 
         public void Init(ConfigGear p1,GearManager manager)
         {
+
             Messager.Instance.AddListener<IEventBase>(Id,MessageId.GearEvent,OnEvent);
             this.manager = manager;
-            configId = config.id;
+            configId = p1.id;
             variable = VariableSet.Create();
             _actorEntities = new Dictionary<int, long>();
             _zoneEntities = new Dictionary<int, long>();
@@ -110,8 +111,8 @@ namespace TaoTie
         
 
         public readonly Dictionary<int, int> _temp = new Dictionary<int, int>();
-        
-        public ConfigGear config { get; set; }
+
+        public ConfigGear config => ConfigGearCategory.Instance.Get(configId);
 
         public Dictionary<int, ConfigGearZone> zones { get; set; }
 

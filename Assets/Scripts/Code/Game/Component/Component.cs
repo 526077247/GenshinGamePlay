@@ -7,6 +7,7 @@ namespace TaoTie
     /// </summary>
     public abstract class Component : IDisposable
     {
+        public virtual int MetaTypeID => GetHashCode();
         [Timer(TimerType.ComponentUpdate)]
         public class ComponentUpdate : ATimer<IUpdateComponent>
         {
@@ -22,7 +23,7 @@ namespace TaoTie
                 }
             }
         }
-        protected Entity Parent;
+        protected Entity Parent { get; private set; }
         public long Id => Parent != null ? Parent.Id : 0;
         private long timerId;
         public void BeforeInit(Entity entity)

@@ -6,9 +6,9 @@
     public class AIMoveControl: AIBaseControl
     {
         private AIComponent aiComponent;
-        private AIPathfinding pathfinder;
+        private AIPathfindingUpdater pathfinder;
         
-        public AIMoveControl(AIComponent ai, AIKnowledge knowledge, AIPathfinding pathfinder):base(knowledge)
+        public AIMoveControl(AIComponent ai, AIKnowledge knowledge, AIPathfindingUpdater pathfinder):base(knowledge)
         {
             aiComponent = ai;
             this.pathfinder = pathfinder;

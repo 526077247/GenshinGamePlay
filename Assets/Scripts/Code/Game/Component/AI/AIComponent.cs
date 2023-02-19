@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
     /// <summary>
     /// AI组件，注意回收的问题
     /// </summary>
-    public class AIComponent: Component,IComponent<ConfigAIBeta>,IUpdateComponent
+    public class AIComponent: Component,IComponent<ConfigAIBeta>
     {
 
+        protected AIManager aiManager;
         /// <summary> 收集的信息 </summary>
         protected AIKnowledge knowledge;
 
@@ -17,7 +19,11 @@ namespace TaoTie
         protected AIDecision decisionOld => new AIDecision();
 
         /// <summary> 寻路 </summary>
-        protected AIPathfinding pathfinder => new AIPathfinding();
+        protected AIPathfindingUpdater pathfinder => new AIPathfindingUpdater();
+        /// <summary> 目标 </summary>
+        protected AITargetUpdater targetUpdater => new AITargetUpdater(this);
+        /// <summary> 感知 </summary>
+        protected AISensingUpdater sensingUpdater => new AISensingUpdater(aiManager);
         /// <summary> 威胁 </summary>
         protected AIThreatUpdater threatUpdater => new AIThreatUpdater(this);
         /// <summary> pose </summary>
@@ -29,30 +35,50 @@ namespace TaoTie
         protected AIActionControl actionController => new AIActionControl(knowledge,this);
         /// <summary> 移动执行器 </summary>
         protected AIMoveControl moveController => new AIMoveControl(this,knowledge,pathfinder);
-        
+
+
+        #region Event
+
+        public Action<long, long> OnThreatTargetChanged;
+        public Action<ThreatLevel, ThreatLevel> OnThreatLevelChanged;
+        public Action<long> OnSetCombatAttackTarget;
+        #endregion
         #region IComponent
 
         public virtual void Init(ConfigAIBeta config)
         {
+            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
+            {
+                aiManager = scene.GetManager<AIManager>();
+            }
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
-            knowledge.Init(Parent,config);
+            knowledge.Init(Parent, config, aiManager);
             
-            pathfinder.Init(knowledge);
+            sensingUpdater.Init(knowledge);
             threatUpdater.Init(knowledge);
+            targetUpdater.Init(knowledge);
+            pathfinder.Init(knowledge);
+            
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
+
+            aiManager?.AddAI(this);
         }
 
         public virtual void Destroy()
         {
-
-            pathfinder.Clear();
+            aiManager?.RemoveAI(this);
+            
+            sensingUpdater.Clear();
             threatUpdater.Clear();
+            targetUpdater.Clear();
+            pathfinder.Clear();
             poseControlUpdater.Clear();
             skillUpdater.Clear();
             
             knowledge.Dispose();
             knowledge = null;
+            aiManager = null;
         }
 
         public virtual void Update()
@@ -74,8 +100,11 @@ namespace TaoTie
         /// </summary>
         private void UpdateKnowledge()
         {
+            sensingUpdater.UpdateMainThread();
             threatUpdater.UpdateMainThread();
+            targetUpdater.UpdateMainThread();
             pathfinder.UpdateMainThread();
+            
             poseControlUpdater.UpdateMainThread();
             skillUpdater.UpdateMainThread();
         }
@@ -100,5 +129,17 @@ namespace TaoTie
             moveController.ExecuteMove(decision);
         }
 
+
+        #region Public
+
+        public void SetCombatAttackTarget(long targetRuntimeID)
+        {
+            OnSetCombatAttackTarget?.Invoke(targetRuntimeID);
+        }
+        public long GetCombatAttackTarget()
+        {
+            return 0;
+        }
+        #endregion
     }
 }

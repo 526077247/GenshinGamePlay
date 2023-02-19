@@ -3,7 +3,7 @@
     public abstract class SceneManagerProvider
     {
         private string Name => GetType().Name;
-        public T GetManager<T>() where T :class,IManager
+        public T GetManager<T>() where T :class,IManagerDestroy
         {
             return ManagerProvider.GetManager<T>(Name);
         }

@@ -44,9 +44,10 @@ namespace TaoTie
         public async ETTask OnLeave()
         {
             await ETTask.CompletedTask;
+            RemoveManager<GearManager>();
+            RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
-            // RemoveManager<InputManager>();
-            // RemoveManager<NpcManager>();
+            RemoveManager<GameTimerManager>();
         }
 
         public async ETTask OnPrepare()
@@ -70,11 +71,14 @@ namespace TaoTie
         public virtual async ETTask OnSwitchSceneEnd()
         {
             RegisterManager<GameTimerManager>();
-            // await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath);
-            // await UIManager.Instance.OpenWindow<UIMainView>(UIMainView.PrefabPath);
+            
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
-            // RegisterManager<InputManager,BaseMapScene>(this);
+            
+            RegisterManager<AIManager,BaseMapScene>(this);
+
+            RegisterManager<GearManager,List<ConfigGear>,SceneManagerProvider>(ConfigGearCategory.Instance.GetAllList(),this);
+
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;
             Log.Info("进入场景 " + GetScenePath());

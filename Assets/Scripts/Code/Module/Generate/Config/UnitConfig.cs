@@ -92,14 +92,8 @@ namespace TaoTie
 		/// <summary>预制体路径</summary>
 		[NinoMember(5)]
 		public string Perfab { get; set; }
-		/// <summary>身高</summary>
-		[NinoMember(6)]
-		public float Height { get; set; }
-		/// <summary>Ability路径</summary>
-		[NinoMember(7)]
-		public string Abilities { get; set; }
 		/// <summary>FSM路径</summary>
-		[NinoMember(8)]
+		[NinoMember(6)]
 		public string FSM { get; set; }
 
 	}
