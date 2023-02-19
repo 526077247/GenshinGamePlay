@@ -28,6 +28,10 @@ namespace TaoTie
                 AddComponent<MonsterAIInputComponent>();
                 AddComponent<AIComponent,ConfigAIBeta>(ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(monster.Config.AIPath));
             }
+            if (!string.IsNullOrEmpty(monster.Config.PoseFSM))
+            {
+                AddComponent<PoseFSMComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(monster.Config.PoseFSM));
+            }
             
         }
         

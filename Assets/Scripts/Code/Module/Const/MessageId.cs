@@ -10,5 +10,7 @@
         public const string ChangeRotationEvt = "ChangeRotationEvt";
         /// <summary> GearEvent </summary>
         public const string GearEvent = "GearEvent";
+        /// <summary> PoseChange </summary>
+        public const string PoseChange = "PoseChange";
     }
 }

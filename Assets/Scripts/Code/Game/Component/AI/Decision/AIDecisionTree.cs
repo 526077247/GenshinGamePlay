@@ -56,6 +56,7 @@
 
 		private static void RootCicin(AIKnowledge knowledge, AIDecision decision)
 		{
+			
 		}
 
 		private static void CombatCicin(AIKnowledge knowledge, AIDecision decision)

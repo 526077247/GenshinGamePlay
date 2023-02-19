@@ -104,6 +104,7 @@ namespace TaoTie
             threatUpdater.UpdateMainThread();
             targetUpdater.UpdateMainThread();
             pathfinder.UpdateMainThread();
+            
             poseControlUpdater.UpdateMainThread();
             skillUpdater.UpdateMainThread();
         }
