@@ -8,11 +8,13 @@ namespace TaoTie
         public MoveInfoBase curMoveInfo;
 
         public FacingMoveInfo FacingMoveInfo => moveInfoGroup[(int) MoveDecision.FacingMove] as FacingMoveInfo;
+       
 
         public static AIMoveControlState Create()
         {
             AIMoveControlState res = ObjectPool.Instance.Fetch<AIMoveControlState>();
             res.moveInfoGroup = new MoveInfoBase[(int) MoveDecision.Max];
+            res.moveInfoGroup[(int) MoveDecision.FacingMove] = FacingMoveInfo.Create();
             return res;
         }
 
@@ -31,6 +33,14 @@ namespace TaoTie
         public void Goto(MoveDecision newDecision, AILocomotionHandler taskHandler, AIKnowledge aiKnowledge,
             AIManager aiManager)
         {
+            if (curMoveInfo != null)
+                curMoveInfo.Leave(taskHandler, aiKnowledge, aiManager);
+            curMoveInfo = moveInfoGroup[(int) newDecision];
+            aiKnowledge.moveDecisionChanged = false;
+            if (curMoveInfo != null)
+            {
+                curMoveInfo.Enter(taskHandler, aiKnowledge, aiManager);
+            }
         }
 
         public void UpdateMoveInfo(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,

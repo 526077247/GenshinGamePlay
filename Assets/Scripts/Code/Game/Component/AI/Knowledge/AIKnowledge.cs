@@ -25,7 +25,8 @@ namespace TaoTie
         public Vector3? enterCombatForward;
         public DecisionArchetype decisionArchetype;
         public AITactic currentTactic;
-        
+        public bool tacticChanged;
+        public bool moveDecisionChanged;
         public AIMoveControlState moveControlState;
         
         public int poseID;

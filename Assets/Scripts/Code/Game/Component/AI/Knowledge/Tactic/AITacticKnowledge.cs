@@ -38,5 +38,10 @@ namespace TaoTie
             config = null;
             data = default;
         }
+
+        public bool NerveCheck(AIKnowledge knowledge)
+        {
+            return condition.CheckPose(knowledge);
+        }
     }
 }

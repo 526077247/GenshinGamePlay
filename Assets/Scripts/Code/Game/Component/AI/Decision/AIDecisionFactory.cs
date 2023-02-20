@@ -11,6 +11,9 @@
 
 		public static void OnAware(AIKnowledge knowledge, AIDecision decision)
 		{
+			decision.tactic = AITactic.OnAware;
+			decision.move = MoveDecision.StandStill;
+			decision.act = ActDecision.OnAware;
 		}
 
 		public static void OnNerve(AIKnowledge knowledge, AIDecision decision)
