@@ -21,10 +21,12 @@ namespace TaoTie
         
         public ThreatLevel threatLevel;
         public ThreatLevel threatLevelOld;
-        public Vector3? enterCombatPostion;
+        public Vector3? enterCombatPosition;
         public Vector3? enterCombatForward;
         public DecisionArchetype decisionArchetype;
         public AITactic currentTactic;
+        
+        public AIMoveControlState moveControlState;
         
         public int poseID;
         
@@ -37,41 +39,64 @@ namespace TaoTie
         public AIDefendAreaKnowledge defendAreaKnowledge;
         public AITargetKnowledge targetKnowledge;
         public AIPathFindingKnowledge pathFindingKnowledge;
+        
+        
+        public AITacticKnowledge_FacingMove facingMoveTactic;
 
-        public void Init(Entity aiEntity, ConfigAIBeta config, AIManager aiManager)
+        public void Init(Unit aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
             this.aiManager = aiManager;
-            aiOwnerEntity = aiEntity as Unit;
+            aiOwnerEntity = aiEntity;
             bornPos = aiOwnerEntity.Position;
             campID = aiOwnerEntity.CampId;
+            
+            moveControlState = AIMoveControlState.Create();
             
             sensingKnowledge = AISensingKnowledge.Create(config);
             threatKnowledge = AIThreatKnowledge.Create(config);
             targetKnowledge = AITargetKnowledge.Create();
             defendAreaKnowledge = AIDefendAreaKnowledge.Create(config,bornPos);
             skillKnowledge = AISkillKnowledge.Create(config);
-            moveKnowledge = ObjectPool.Instance.Fetch<AIMoveKnowledge>();
+            moveKnowledge = AIMoveKnowledge.Create(config);
             
-            pathFindingKnowledge = ObjectPool.Instance.Fetch<AIPathFindingKnowledge>();
+            pathFindingKnowledge = AIPathFindingKnowledge.Create(config);
+            
+            facingMoveTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_FacingMove>();
+            facingMoveTactic.LoadData(config.FacingMoveTactic);
         }
 
         public void Dispose()
         {
             //注意清除引用类型
-            enterCombatPostion = null;
+            enterCombatPosition = null;
             enterCombatForward = null;
             
-            skillKnowledge.Dispose();
-            skillKnowledge = null;
+            facingMoveTactic.Dispose();
+            facingMoveTactic = null;
+            
+            pathFindingKnowledge.Dispose();
+            pathFindingKnowledge = null;
+            
             moveKnowledge.Dispose();
             moveKnowledge = null;
+            skillKnowledge.Dispose();
+            skillKnowledge = null;
             threatKnowledge.Dispose();
             threatKnowledge = null;
             sensingKnowledge.Dispose();
             sensingKnowledge = null;
             targetKnowledge.Dispose();
             targetKnowledge = null;
+
+            moveControlState.Dispose();
+            moveControlState = null;
             
+            aiManager = null;
+            aiOwnerEntity = null;
+            bornPos = default;
+            campID = 0;
+            enterCombatPosition = null;
+            enterCombatForward = null;
             ObjectPool.Instance.Recycle(this);
         }
     }

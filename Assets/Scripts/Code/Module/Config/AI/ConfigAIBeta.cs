@@ -30,8 +30,9 @@ namespace TaoTie
         public ConfigAIPathFindingSetting Path;
         
         
-        
+        [NinoMember(19)]
+        public ConfigAIMove moveSetting;
         [NinoMember(20)][BoxGroup("行为")]
-        public ConfigAITacticBaseSetting[] Tactics;
+        public ConfigAIFacingMoveSetting FacingMoveTactic;
     }
 }

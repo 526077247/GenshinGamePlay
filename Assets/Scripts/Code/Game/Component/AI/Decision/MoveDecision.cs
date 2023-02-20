@@ -31,6 +31,8 @@
         AutoPlayerSkillPrepare = 26,
         AutoPlayerFollowTarget = 27,
         BrownianMove = 28,
-        MoveDecisionCount = 29
+        MoveDecisionCount = 29,
+        
+        Max,
     }
 }
