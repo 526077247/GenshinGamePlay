@@ -116,10 +116,20 @@ namespace TaoTie
         /// </summary>
         private void UpdateDecision()
         {
+            knowledge.tacticChanged = false;
+            knowledge.moveDecisionChanged = false;
             decisionOld.act = decision.act;
             decisionOld.tactic = decision.tactic;
             decisionOld.move = decision.move;
             AIDecisionTree.Think(knowledge,decision);
+            if (decision.tactic != decisionOld.tactic)
+            {
+                knowledge.tacticChanged = true;
+            }
+            if (decision.move != decisionOld.move)
+            {
+                knowledge.moveDecisionChanged = true;
+            }
         }
 
         /// <summary>
@@ -142,6 +152,9 @@ namespace TaoTie
         {
             return 0;
         }
+        
+        public AIDecision GetDecision() => decision;
+        public AIDecision GetDecisionOld() => decisionOld;
         #endregion
     }
 }

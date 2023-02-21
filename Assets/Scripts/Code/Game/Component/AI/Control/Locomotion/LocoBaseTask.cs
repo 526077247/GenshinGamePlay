@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class LocoBaseTask
+    public abstract class LocoBaseTask
     {
         public bool delayStopping;
         protected Vector3 _destination;
@@ -56,5 +56,6 @@ namespace TaoTie
             public Vector3 Apply(Vector3 origin) => default;
         }
 
+        public abstract void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state);
     }
 }

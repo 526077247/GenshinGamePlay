@@ -16,6 +16,7 @@
                     var old = knowledge.poseID;
                     knowledge.poseID = poseFsm.defaultFsm.PoseID;
                     Messager.Instance.Broadcast(knowledge.aiOwnerEntity.Id,MessageId.PoseChange,old,knowledge.poseID);
+                    knowledge.facingMoveTactic.SwitchSetting(knowledge.poseID);
                 }
             }
         }

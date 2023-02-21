@@ -74,6 +74,38 @@ namespace TaoTie
             public float targetAngle;
             public float stopDistance;
         }
+        public void UpdateTasks(AITransform currentTransform)
+        {
+            if (currentState == LocoTaskState.Interrupted)
+            {
+                if (!aiKnowledge.moveKnowledge.canFly)
+                {
+                    if (!aiKnowledge.moveKnowledge.inAir)
+                    {
+                        currentState = LocoTaskState.Finished;
+                    }
+                    else
+                    {
+                        // _timeOutTick -= GameTimerManager.Instance.GetDeltaTime();
+                        // if (_timeOutTick <= 0f)
+                        //     UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                    }
+                }
+            }
 
+            if (currentState == LocoTaskState.Finished)
+            {
+                // _timeOutTick = 0.2f;
+                FinishTask();
+            }
+
+            if (currentState == LocoTaskState.Running)
+            {
+                currentTask.UpdateLoco(this, currentTransform, ref currentState);
+            }
+
+        }
+        
+        public void FinishTask() {}
     }
 }

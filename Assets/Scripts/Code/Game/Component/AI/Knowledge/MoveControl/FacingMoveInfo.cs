@@ -30,6 +30,11 @@ namespace TaoTie
         {
         }
 
+        public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
+        {
+            
+        }
+
         private MotionDirection GetNewMoveDirection(ConfigAIFacingMoveWeight weight) => default;
 
         private bool CheckLRHitWall(AIKnowledge aiKnowledge, float obstacleDetectRange) => default;
