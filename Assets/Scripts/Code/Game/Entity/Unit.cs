@@ -36,7 +36,7 @@ namespace TaoTie
             get => this.Rotation * Vector3.forward;
             set => this.Rotation = Quaternion.LookRotation(value, Vector3.up);
         }
-
+        public Vector3 Up => this.Rotation * Vector3.up;
         private Quaternion rotation;
         public Quaternion Rotation
         {

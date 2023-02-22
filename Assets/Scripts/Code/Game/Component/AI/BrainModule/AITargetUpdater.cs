@@ -8,6 +8,8 @@ namespace TaoTie
     public class AITargetUpdater: BrainModuleBase
     {
         private AIComponent aiComponent;
+        private PathQueryTask targetPathQuery;
+        private long nextQueryTime;
         protected override void InitInternal()
         {
             base.InitInternal();
@@ -76,7 +78,14 @@ namespace TaoTie
             targetPos.y = 0;
             tk.targetDistanceXZ = (pos - targetPos).magnitude;
 
-            var dir = targetPos - knowledge.aiOwnerEntity.Position;
+            var dir = targetPos - knowledge.currentPos;
+            if (tk.targetPosition != targetPos && (GameTimerManager.Instance.GetTimeNow() > nextQueryTime ||
+                Vector3.SqrMagnitude(tk.targetPosition - targetPos)>1))
+            {
+                nextQueryTime += 1;
+                targetPathQuery?.Dispose();
+                targetPathQuery = knowledge.pathFindingKnowledge.CreatePathQueryTask(knowledge.currentPos, targetPos);
+            }
             tk.targetPosition = targetPos;
             tk.targetRelativeAngleYaw = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.up);
             tk.targetRelativeAngleYawAbs = Mathf.Abs(tk.targetRelativeAngleYaw);
@@ -90,6 +99,24 @@ namespace TaoTie
             var skillAnchorPosition = knowledge.targetKnowledge.skillAnchorPosition;
             skillAnchorPosition.y = 0;
             tk.skillAnchorDistance = Vector3.Distance(pos, skillAnchorPosition);
+
+            tk.hasPath = AITargetHasPathType.Invalid;
+            if (targetPathQuery != null)
+            {
+                if(targetPathQuery.status == QueryStatus.Success)
+                    tk.hasPath = AITargetHasPathType.Success;
+                else if(targetPathQuery.status == QueryStatus.Fail)
+                    tk.hasPath = AITargetHasPathType.Failed;
+            }
+        }
+
+        protected override void ClearInternal()
+        {
+            base.ClearInternal();
+            targetPathQuery?.Dispose();
+            targetPathQuery = null;
+            nextQueryTime = 0;
+            aiComponent = null;
         }
     }
 }

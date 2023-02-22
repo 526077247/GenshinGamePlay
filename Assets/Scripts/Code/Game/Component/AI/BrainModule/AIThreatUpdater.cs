@@ -12,20 +12,19 @@ namespace TaoTie
         private AIComponent aiComponent;
 
         //警戒列表
-        private Dictionary<long, ThreatInfo> _candidateList = new Dictionary<long, ThreatInfo>();
+        private readonly Dictionary<long, ThreatInfo> candidateList = new Dictionary<long, ThreatInfo>();
         //威胁列表
-        private Dictionary<long, ThreatInfo> _threatList = new Dictionary<long, ThreatInfo>();
+        private readonly Dictionary<long, ThreatInfo> threatList = new Dictionary<long, ThreatInfo>();
 
-        private ThreatInfo _topThreat = null;
+        private ThreatInfo topThreat = null;
         //current Target
-        private ThreatInfo _mainTarget = null;
+        private ThreatInfo mainTarget = null;
 
         //强制离开战斗
         private bool _forceLeaveCombat = false;
-
-        //TODO
-        //private List<ThreatInfo> _disqualifiedCandidates;
-        //private List<ThreatInfo> _disqualifiedThreats;
+        
+        private readonly List<ThreatInfo> disqualifiedCandidates = new List<ThreatInfo>();
+        private readonly List<ThreatInfo> disqualifiedThreats = new List<ThreatInfo>();
 
         protected override void InitInternal()
         {
@@ -57,7 +56,7 @@ namespace TaoTie
         /// <param name="threatIncrementAmount"></param>
         public void ExternalAddThreat(int targetID, Vector3 pos, ThreatAddReason reason, float threatIncrementAmount)
         {
-            if (_threatList.TryGetValue(targetID, out var target))
+            if (threatList.TryGetValue(targetID, out var target))
             {
                 target.IncreaseThreat(threatIncrementAmount);
             }
@@ -71,7 +70,7 @@ namespace TaoTie
         public void ExternalAddCandidate(int targetID, Vector3 pos, ThreatAddReason reason, float temperatureIncrementAmount)
         {
             //调用AISensingUpdater.CanSignalBeNoticed()方法进行check 是否能加入感知列表
-            if (_candidateList.TryGetValue(targetID, out var target))
+            if (candidateList.TryGetValue(targetID, out var target))
             {
                 target.threatPos = pos;
                 target.temperature += temperatureIncrementAmount;
@@ -80,7 +79,7 @@ namespace TaoTie
             {
                 ThreatInfo info = new ThreatInfo(targetID, pos, reason);
                 info.temperature = temperatureIncrementAmount;
-                _candidateList.Add(info.id, info);
+                candidateList.Add(info.id, info);
             }
         }
 
@@ -93,7 +92,7 @@ namespace TaoTie
             UpdateCandidateFromSensibles();
             var timeNow = GameTimerManager.Instance.GetDeltaTime();
             var deltaTime = GameTimerManager.Instance.GetDeltaTime();
-            foreach (var candidate in _candidateList)
+            foreach (var candidate in candidateList)
             {
                 var addReason = candidate.Value.addReason;
                 float distanceToCandidate = Vector3.Distance(candidate.Value.threatPos, knowledge.currentPos);
@@ -122,9 +121,9 @@ namespace TaoTie
             }
 
             var currentMaxTemperature = 0f;
-            for (int i = 0; i < _candidateList.Count; i++)
+            for (int i = 0; i < candidateList.Count; i++)
             {
-                var candidate = _candidateList.ElementAt(i).Value;
+                var candidate = candidateList.ElementAt(i).Value;
 
                 currentMaxTemperature = currentMaxTemperature > candidate.temperature
                     ? currentMaxTemperature : candidate.temperature;
@@ -137,14 +136,15 @@ namespace TaoTie
             {
                 float decreaseTemperatureAmount = knowledge.threatKnowledge.config.threatDecreaseSpeed * deltaTime;
 
-                for (int i = 0; i < _candidateList.Count; i++)
+                for (int i = 0; i < candidateList.Count; i++)
                 {
-                    var candidate = _candidateList.ElementAt(i).Value;
+                    var candidate = candidateList.ElementAt(i).Value;
 
                     candidate.DecreaseTemper(decreaseTemperatureAmount);
                     if (!ValidateCandidate(candidate))
                     {
-                        _candidateList.Remove(i);
+                        candidateList.Remove(candidate.id);
+                        disqualifiedCandidates.Add(candidate);
                     }
                 }
             }
@@ -237,7 +237,7 @@ namespace TaoTie
                     .SetData(FSMConst.Alertness, (int)knowledge.threatLevel);
             }
 
-            knowledge.threatKnowledge.mainThreat = _mainTarget;
+            knowledge.threatKnowledge.mainThreat = mainTarget;
         }
 
         //TODO 待验证该方法是否如下使用
@@ -254,18 +254,18 @@ namespace TaoTie
         /// </summary>
         private void ProcessSensible(SensibleInfo sensible, ThreatAddReason sourceType)
         {
-            if (!_candidateList.ContainsKey(sensible.sensibleID))
+            if (!candidateList.ContainsKey(sensible.sensibleID))
             {
                 ThreatInfo threatInfo = new ThreatInfo(sensible.sensibleID, sensible.position, sourceType);
                 threatInfo.threatPos = sensible.position;
                 //add to candidate list
-                _candidateList.TryAdd(threatInfo.id, threatInfo);
+                candidateList.TryAdd(threatInfo.id, threatInfo);
             }
             else
             {
                 //Renew information
-                _candidateList[sensible.sensibleID].threatPos = sensible.position;
-                _candidateList[sensible.sensibleID].addReason = sourceType;
+                candidateList[sensible.sensibleID].threatPos = sensible.position;
+                candidateList[sensible.sensibleID].addReason = sourceType;
             }
         }
 
@@ -276,25 +276,25 @@ namespace TaoTie
         {
             if (knowledge.temperature != ThreatInfo.TEMPERVAL_ALERT)
             {
-                if (_threatList.Count > 0)
-                    _threatList.Clear();
+                if (threatList.Count > 0)
+                    threatList.Clear();
                 return;
             }
 
             //add all candidate into threat list
-            foreach (var candidate in _candidateList)
+            foreach (var candidate in candidateList)
             {
-                if (_threatList.ContainsKey(candidate.Value.id))
+                if (threatList.ContainsKey(candidate.Value.id))
                     continue;
-                _threatList.Add(candidate.Value.id, candidate.Value);
+                threatList.Add(candidate.Value.id, candidate.Value);
             }
 
             //Out of zone
-            if (_mainTarget != null)
-                if (!ValidateThreat(_mainTarget))
+            if (mainTarget != null)
+                if (!ValidateThreat(mainTarget))
                 {
-                    _candidateList.Clear();
-                    _threatList.Clear();
+                    candidateList.Clear();
+                    threatList.Clear();
                     knowledge.temperature = 0;
                 }
 
@@ -302,10 +302,10 @@ namespace TaoTie
 
         private void SelectTarget()
         {
-            if (_threatList.Count <= 0)
+            if (threatList.Count <= 0)
             {
-                _topThreat = null;
-                _mainTarget = null;
+                topThreat = null;
+                mainTarget = null;
             }
             else
             {
@@ -313,35 +313,35 @@ namespace TaoTie
 
                 long oldThreatTargetID = -1;
 
-                _topThreat = _threatList.ElementAt(0).Value;
-                for (int i = 0; i < _threatList.Count; i++)
+                topThreat = threatList.ElementAt(0).Value;
+                for (int i = 0; i < threatList.Count; i++)
                 {
-                    if (_threatList.ElementAt(i).Value.threatValue > _topThreat.threatValue)
+                    if (threatList.ElementAt(i).Value.threatValue > topThreat.threatValue)
                     {
-                        _topThreat = _threatList.ElementAt(i).Value;
+                        topThreat = threatList.ElementAt(i).Value;
                     }
                 }
 
-                if (_mainTarget == null)
+                if (mainTarget == null)
                 {
                     isThreatTargetChanged = true;
                     oldThreatTargetID = -1;
-                    _mainTarget = _topThreat;
+                    mainTarget = topThreat;
                 }
 
-                if (_topThreat != null)
+                if (topThreat != null)
                 {
-                    if (_topThreat.threatValue > 1.2f * _mainTarget.threatValue)
+                    if (topThreat.threatValue > 1.2f * mainTarget.threatValue)
                     {
-                        oldThreatTargetID = _mainTarget.id;
-                        _mainTarget = _topThreat;
+                        oldThreatTargetID = mainTarget.id;
+                        mainTarget = topThreat;
                         isThreatTargetChanged = true;
                     }
                 }
 
-                if (isThreatTargetChanged && _mainTarget != null)
+                if (isThreatTargetChanged && mainTarget != null)
                 {
-                    aiComponent.OnThreatTargetChanged?.Invoke(oldThreatTargetID, _mainTarget.id);
+                    aiComponent.OnThreatTargetChanged?.Invoke(oldThreatTargetID, mainTarget.id);
                 }
             }
         }
@@ -417,19 +417,20 @@ namespace TaoTie
         /// <param name="id"></param>
         private void InternalRemoveThreat(int id)
         {
-            if (_threatList.ContainsKey(id))
+            if (threatList.TryGetValue(id,out var threatInfo))
             {
-                if (_mainTarget != null)
-                    if (id == _mainTarget.id)
+                if (mainTarget != null)
+                    if (id == mainTarget.id)
                     {
-                        _mainTarget = null;
+                        mainTarget = null;
                     }
-                if (_topThreat != null)
-                    if (id == _topThreat.id)
+                if (topThreat != null)
+                    if (id == topThreat.id)
                     {
-                        _topThreat = null;
+                        topThreat = null;
                     }
-                _threatList.Remove(id);
+                threatList.Remove(id);
+                disqualifiedThreats.Add(threatInfo);
             }
             else
             {

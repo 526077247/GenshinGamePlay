@@ -20,7 +20,7 @@ namespace TaoTie
                 desiredDirection = desiredDirection.normalized;
                 // handler.aiKnowledge.desiredForward = desiredDirection;
 
-                handler.UpdateMotionFlag(_speedLevel);
+                handler.UpdateMotionFlag(speedLevel);
             }
         }
 
@@ -31,7 +31,7 @@ namespace TaoTie
             useMeleeSlot = param.useMeleeSlot;
             stopDistance = param.stopDistance;
             targetAngle = param.targetAngle;
-            _speedLevel = param.speedLevel;
+            speedLevel = param.speedLevel;
         }
 
         public override void Deallocate()

@@ -72,16 +72,16 @@
 		public static bool IsExtractionValid(AIKnowledge knowledge) => default;
 		public static bool IsFleeValid(AIKnowledge knowledge)
 		{
-			// knowledge.fleeTacticKnowledge.SwitchSetting(knowledge.poseID);
-			// float triggerDistance = knowledge.fleeTacticKnowledge.data.triggerDistance;
-			// if (!knowledge.fleeTacticKnowledge.config.enable)
-			// 	return false;
-			// if (!knowledge.fleeTacticKnowledge.condition.CheckPose(knowledge))
-			// 	return false;
-			// if (knowledge.moveControlState.fleeInfo.nextAvailableTick > Time.time)
-			// 	return false;
-			// if (knowledge.targetKnowledge.targetDistance > triggerDistance)
-			// 	return false;
+			knowledge.fleeTactic.SwitchSetting(knowledge.poseID);
+			float triggerDistance = knowledge.fleeTactic.data.triggerDistance;
+			if (!knowledge.fleeTactic.config.Enable)
+				return false;
+			if (!knowledge.fleeTactic.NerveCheck(knowledge))
+				return false;
+			if (knowledge.moveControlState.FleeInfo.nextAvailableTick > GameTimerManager.Instance.GetTimeNow())
+				return false;
+			if (knowledge.targetKnowledge.targetDistance > triggerDistance)
+				return false;
 			return true;
 		}
 		public static bool IsBirdCirclingValid(AIKnowledge knowledge) => default;

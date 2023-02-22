@@ -13,11 +13,10 @@ namespace TaoTie
         
         public struct ParamGoTo
         {
-
             public bool scripted;
             public Vector3 targetPosition;
             public AIMoveSpeedLevel speedLevel;
-            public List<Vector3> pathQuery;
+            public PathQueryTask pathQuery;
             public LocoBaseTask.ObstacleHandling obstacleHandling;
             public float cannedTurnSpeedOverride;
             public bool delayStopping;
@@ -25,14 +24,7 @@ namespace TaoTie
             public bool spacialRoll;
             public NavMeshUseType useNavmesh;
             public bool exactlyMove;
-
-
-            public enum NavMeshUseType
-            {
-                Auto = 0,
-                ForceUse = 1,
-                NotUse = 2
-            }
+            
         }
 
         public struct ParamFacingMove
@@ -88,18 +80,11 @@ namespace TaoTie
                     {
                         currentState = LocoTaskState.Finished;
                     }
-                    else
-                    {
-                        // _timeOutTick -= GameTimerManager.Instance.GetDeltaTime();
-                        // if (_timeOutTick <= 0f)
-                        //     UpdateMotionFlag(AIMoveSpeedLevel.Idle);
-                    }
                 }
             }
 
             if (currentState == LocoTaskState.Finished)
             {
-                // _timeOutTick = 0.2f;
                 FinishTask();
             }
 
@@ -119,10 +104,25 @@ namespace TaoTie
             currentState = LocoTaskState.Running;
         }
 
-        public void CreateGoToTask(ParamGoTo param) {}
+        public void CreateGoToTask(ParamGoTo param)
+        {
+            if (param.pathQuery == null)
+            {
+                param.pathQuery = aiKnowledge.pathFindingKnowledge.CreatePathQueryTask(aiKnowledge.currentPos,
+                    param.targetPosition, param.useNavmesh);
+            }
+        }
         public void CreateFacingMoveTask(ParamFacingMove param) {} 
-        public void CreateSurroundDashTask(ParamSurroundDash param) {} 
-        public void CreateRotationTask(ParamRotation param) {} 
+        public void CreateSurroundDashTask(ParamSurroundDash param) {}
+
+        public void CreateRotationTask(ParamRotation param)
+        {
+            RotationTask rotationTask = new RotationTask();
+            rotationTask.Init(aiKnowledge, param);
+
+
+            CreateTask_Internal(rotationTask);
+        } 
         public void CreateSnakelickMove(ParamGoTo param) {} 
         public void CreateFollowMoveTask(ParamFollowMove param)
         {
@@ -133,17 +133,32 @@ namespace TaoTie
             CreateTask_Internal(followMoveTask);
         }
 
-        public bool TaskEnded() => default;
+        public bool TaskEnded()
+        {
+            return currentTask == null;
+        }
 
-        public void ClearTask() {}
-        public void FinishTask() {}
+        public void ClearTask()
+        {
+            currentTask.OnCloseTask(this);
+            currentTask = null;
+        }
+        
+        public void FinishTask() 
+        {
+            if (currentTask != null)
+                currentTask.OnCloseTask(this);
+        }
         
         public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
         {
-            
+            Messager.Instance.Broadcast(aiKnowledge.aiOwnerEntity.Id, MessageId.UpdateMotionFlag, newSpeed);
         }
-        
-        public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed) {} 
+
+        public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed)
+        {
+            
+        } 
         public void SetGroundFollowAnimationRotation(bool enabled) {} 
         public void Teleport(Vector3 targetPosition) {} 
         public void SwitchRotation(bool rotate) {} 

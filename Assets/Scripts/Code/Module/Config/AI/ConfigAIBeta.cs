@@ -36,5 +36,7 @@ namespace TaoTie
         public ConfigAIFacingMoveSetting FacingMoveTactic;
         [NinoMember(21)][BoxGroup("行为")]
         public ConfigAIMeleeChargeSetting MeleeChargeTactic;
+        [NinoMember(22)][BoxGroup("行为")]
+        public ConfigAIFleeSetting FleeTactic;
     }
 }
