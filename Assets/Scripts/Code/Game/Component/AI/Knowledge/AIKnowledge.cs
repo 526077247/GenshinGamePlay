@@ -28,6 +28,7 @@ namespace TaoTie
         public bool tacticChanged;
         public bool moveDecisionChanged;
         public AIMoveControlState moveControlState;
+        public AIActionControlState actionControlState;
         
         public int poseID;
         
@@ -52,6 +53,7 @@ namespace TaoTie
             campID = aiOwnerEntity.CampId;
             
             moveControlState = AIMoveControlState.Create();
+            actionControlState = AIActionControlState.Create();
             
             sensingKnowledge = AISensingKnowledge.Create(config);
             threatKnowledge = AIThreatKnowledge.Create(config);
@@ -89,6 +91,8 @@ namespace TaoTie
             targetKnowledge.Dispose();
             targetKnowledge = null;
 
+            actionControlState.Dispose();
+            actionControlState = null;
             moveControlState.Dispose();
             moveControlState = null;
             

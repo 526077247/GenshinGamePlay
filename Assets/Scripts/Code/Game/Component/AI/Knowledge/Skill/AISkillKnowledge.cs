@@ -84,5 +84,18 @@ namespace TaoTie
             SkillGroupCDs = null;
             ObjectPool.Instance.Recycle(this);
         }
+
+        public void SetSkillGroupCD(int groupID, long aiKnowledgeTime)
+        {
+            if (SkillGroupCDs.TryGetValue(groupID, out var groupInfo))
+            {
+                groupInfo.NextCDTick = aiKnowledgeTime + groupInfo.GroupCDTime;
+            }
+        }
+
+        public void SetGCD(long currentTime)
+        {
+            NextGCDTick = currentTime + Gcd;
+        }
     }
 }

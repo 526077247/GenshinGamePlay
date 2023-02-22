@@ -46,6 +46,10 @@ namespace TaoTie
         public void UpdateMoveInfo(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,
             AIManager aiManager)
         {
+            if (curMoveInfo == null)
+                return;
+
+            curMoveInfo.UpdateMoveInfo(taskHandler, aiKnowledge, lcai,aiManager);
         }
     }
 }

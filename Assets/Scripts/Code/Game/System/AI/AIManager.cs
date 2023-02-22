@@ -4,6 +4,7 @@ namespace TaoTie
 {
     public class AIManager:IManager<BaseMapScene>,IUpdateManager
     {
+        private const int CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME = 10;
         private BaseMapScene scene;
         private Dictionary<long, AIComponent> aiUnits;
         private LinkedList<AIComponent> allAIUnit;
@@ -20,7 +21,7 @@ namespace TaoTie
         /// </summary>
         private UnOrderMultiMap<uint, Unit> configIDEntityTable;
         
-        private Dictionary<string, PublicAISkillCD> publicCDs;
+        private Dictionary<string, long> publicCDs;
         #region IManager
 
         public void Init(BaseMapScene mapScene)
@@ -88,12 +89,17 @@ namespace TaoTie
 
         public bool CanUseSkill(string pCDName, Entity targetEntity)
         {
+            if (publicCDs.TryGetValue(pCDName, out var time))
+            {
+                return GameTimerManager.Instance.GetTimeNow() > time;
+            }
             return true;
         }
 
         public void SetSkillUsed(string pCDName)
         {
-            
+            if(!string.IsNullOrEmpty(pCDName))
+                publicCDs[pCDName] = GameTimerManager.Instance.GetTimeNow() + CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME;
         }
 
         public Dictionary<uint, List<Unit>> GetEnemies(uint campID)

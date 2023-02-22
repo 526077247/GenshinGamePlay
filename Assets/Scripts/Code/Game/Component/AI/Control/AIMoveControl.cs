@@ -21,7 +21,6 @@
 
         public void ExecuteMove(AIDecision decision)
         {
-            //execute until knowledge's move decision equal decision's move
             if (aiKnowledge.moveDecisionChanged)
             {
                 switch (aiComponent.GetDecisionOld().move)

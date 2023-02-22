@@ -22,9 +22,15 @@ namespace TaoTie
 
         #endregion
         
-        public void TryDoSkill(int skillId)
+        public bool TryDoSkill(int skillId)
         {
             combatComponent.UseSkillImmediately(skillId);
+            return true;
+        }
+
+        public void TryReleaseSkill()
+        {
+            combatComponent.ReleaseSkillImmediately();
         }
     }
 }
