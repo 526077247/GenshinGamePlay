@@ -33,6 +33,8 @@ namespace TaoTie
         public int poseID;
         
         public AIManager aiManager;
+        public CombatComponent combatComponent => aiOwnerEntity.GetComponent<CombatComponent>();
+        public PoseFSMComponent pose => aiOwnerEntity.GetComponent<PoseFSMComponent>();
         
         public AISkillKnowledge skillKnowledge;
         public AIMoveKnowledge moveKnowledge;

@@ -39,18 +39,18 @@
 		public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
-			// knowledge.meleeChargeTacticKnowledge.SwitchSetting(knowledge.poseID);
-			// float meleeChargeStartDistanceMin = knowledge.meleeChargeTacticKnowledge.data.startDistanceMin;
-			// float meleeChargeStartDistanceMax = knowledge.meleeChargeTacticKnowledge.data.startDistanceMax;
-			//
-			// if (!knowledge.meleeChargeTacticKnowledge.config.enable)
-			// 	return false;
-			// if (!knowledge.meleeChargeTacticKnowledge.condition.CheckPose(knowledge))
-			// 	return false;
-			// if (knowledge.targetKnowledge.targetDistance > meleeChargeStartDistanceMax)
-			// 	return false;
-			// if (knowledge.targetKnowledge.targetDistance < meleeChargeStartDistanceMin)
-			// 	return false;
+			knowledge.meleeChargeTactic.SwitchSetting(knowledge.poseID);
+			float meleeChargeStartDistanceMin = knowledge.meleeChargeTactic.data.startDistanceMin;
+			float meleeChargeStartDistanceMax = knowledge.meleeChargeTactic.data.startDistanceMax;
+			
+			if (!knowledge.meleeChargeTactic.config.Enable)
+				return false;
+			if (!knowledge.meleeChargeTactic.NerveCheck(knowledge))
+				return false;
+			if (knowledge.targetKnowledge.targetDistance > meleeChargeStartDistanceMax)
+				return false;
+			if (knowledge.targetKnowledge.targetDistance < meleeChargeStartDistanceMin)
+				return false;
 			return true;
 		}
 		public static bool IsCombatFacingMoveValid(AIKnowledge knowledge)
