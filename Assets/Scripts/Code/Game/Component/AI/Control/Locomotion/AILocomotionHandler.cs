@@ -60,20 +60,19 @@ namespace TaoTie
 
         public struct ParamRotation
         {
-
             public Vector3 targetPosition;
         }
 
         public struct ParamFollowMove
         {
-
-            public Entity anchor;
+            public Unit anchor;
             public bool useMeleeSlot;
             public AIMoveSpeedLevel speedLevel;
             public float turnSpeed;
             public float targetAngle;
             public float stopDistance;
         }
+        public void RefreshTask(Vector3 positoin) {}
         public void UpdateTasks(AITransform currentTransform)
         {
             if (currentState == LocoTaskState.Interrupted)
@@ -105,7 +104,46 @@ namespace TaoTie
             }
 
         }
-        
+        private void CreateTask_Internal(LocoBaseTask task/*, bool delayStopping, float? movingYawSpeedOverride*/)
+        {
+            if (currentTask != null)
+            {
+                ClearTask();
+            }
+            currentTask = task;
+            currentState = LocoTaskState.Running;
+        }
+
+        public void CreateGoToTask(ParamGoTo param) {}
+        public void CreateFacingMoveTask(ParamFacingMove param) {} 
+        public void CreateSurroundDashTask(ParamSurroundDash param) {} 
+        public void CreateRotationTask(ParamRotation param) {} 
+        public void CreateSnakelickMove(ParamGoTo param) {} 
+        public void CreateFollowMoveTask(ParamFollowMove param)
+        {
+            FollowMoveTask followMoveTask = new FollowMoveTask();
+            followMoveTask.Init(aiKnowledge, param);
+
+
+            CreateTask_Internal(followMoveTask);
+        }
+
+        public bool TaskEnded() => default;
+
+        public void ClearTask() {}
         public void FinishTask() {}
+        
+        public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
+        {
+            
+        }
+        
+        public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed) {} 
+        public void SetGroundFollowAnimationRotation(bool enabled) {} 
+        public void Teleport(Vector3 targetPosition) {} 
+        public void SwitchRotation(bool rotate) {} 
+        public void SetForwardImmediately(Vector3 dir) {}
+        public float GetDistanceToPathEnd(Vector3 currentPos) => default;
+        public float GetAlmostReachedDistance() => default;
     }
 }

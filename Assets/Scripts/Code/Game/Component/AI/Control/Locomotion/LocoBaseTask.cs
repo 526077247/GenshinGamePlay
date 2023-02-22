@@ -9,7 +9,7 @@ namespace TaoTie
         protected AIMoveSpeedLevel _speedLevel;
         protected float _startTick;
         protected ObstacleHandling _obstacleHandling;
-        protected AIKnowledge _aiKnowledge;
+        protected AIKnowledge aiKnowledge;
         protected const float CHECKFAIL_PRE_TIME = 1.5f;
         protected static readonly FailDetectionSystem[] CHECKFAIL;
         protected Vector3? _prevPos;
@@ -57,5 +57,10 @@ namespace TaoTie
         }
 
         public abstract void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state);
+
+        protected void Init(AIKnowledge knowledge)
+        {
+            this.aiKnowledge = knowledge;
+        }
     }
 }

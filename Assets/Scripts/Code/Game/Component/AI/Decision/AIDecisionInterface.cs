@@ -55,7 +55,7 @@
 		}
 		public static bool IsCombatFacingMoveValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.facingMoveTactic.config.enable)
+			if (!knowledge.facingMoveTactic.config.Enable)
 				return false;
 			if (!knowledge.facingMoveTactic.NerveCheck(knowledge))
 				return false;

@@ -5,10 +5,8 @@ namespace TaoTie
 {
     [LabelText("返回出生点")]
     [NinoSerialize]
-    public class ConfigAIReturnToBornPosSetting: ConfigAITacticBaseSetting
+    public partial class ConfigAIReturnToBornPosSetting: ConfigAITacticBaseSetting
     {
-        [LabelText("启用")]
-        [NinoMember(1)]
-        public bool enable;
+
     }
 }

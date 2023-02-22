@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAITacticCondition
+    public partial class ConfigAITacticCondition
     {
         [NinoMember(1)][Tooltip("处于这些Pose中时有效")]
         public int[] PoseId;

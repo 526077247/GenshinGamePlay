@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public class ConfigAIMove
+    public partial class ConfigAIMove
     {
         [LabelText("启用")]
         [NinoMember(1)]
