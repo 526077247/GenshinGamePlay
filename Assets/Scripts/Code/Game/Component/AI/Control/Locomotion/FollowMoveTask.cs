@@ -18,7 +18,7 @@ namespace TaoTie
                 var desiredDirection = (anchorPos - currentTransform.pos);
                 desiredDirection.y = 0;
                 desiredDirection = desiredDirection.normalized;
-                handler.aiKnowledge.desiredForward = desiredDirection;
+                // handler.aiKnowledge.desiredForward = desiredDirection;
 
                 handler.UpdateMotionFlag(_speedLevel);
             }
@@ -32,6 +32,11 @@ namespace TaoTie
             stopDistance = param.stopDistance;
             targetAngle = param.targetAngle;
             _speedLevel = param.speedLevel;
+        }
+
+        public override void Deallocate()
+        {
+            
         }
     }
 }

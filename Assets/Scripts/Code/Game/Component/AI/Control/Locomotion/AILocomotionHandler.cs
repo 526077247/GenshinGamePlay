@@ -72,7 +72,12 @@ namespace TaoTie
             public float targetAngle;
             public float stopDistance;
         }
-        public void RefreshTask(Vector3 positoin) {}
+
+        public void RefreshTask(Vector3 position)
+        {
+            currentTask.RefreshTask(this, position);
+            currentState = LocoTaskState.Running;
+        }
         public void UpdateTasks(AITransform currentTransform)
         {
             if (currentState == LocoTaskState.Interrupted)

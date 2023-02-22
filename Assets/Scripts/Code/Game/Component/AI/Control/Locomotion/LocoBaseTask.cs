@@ -58,9 +58,22 @@ namespace TaoTie
 
         public abstract void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state);
 
+       
+        public virtual void UpdateLocoSpeed(AIMoveSpeedLevel speed) {} 
+        public virtual Vector3 GetDestination() => default;
+        public virtual bool NeedPathfinder() => default; 
+        public virtual void OnCloseTask(AILocomotionHandler handler) {}
+        public abstract void Deallocate();
+
+        public virtual void ShowPath() {}
+        protected bool AllowCheckFail() => default;
         protected void Init(AIKnowledge knowledge)
         {
             this.aiKnowledge = knowledge;
         }
+        protected bool UpdateStopping(Vector3 currentPos, AIMoveSpeedLevel speedLevel, int checkModelIndex) => default;
+        public virtual void SetDirectionLock(DirectionLock dl) {}
+        
+        public virtual void RefreshTask(AILocomotionHandler handler, Vector3 positoin) {}
     }
 }
