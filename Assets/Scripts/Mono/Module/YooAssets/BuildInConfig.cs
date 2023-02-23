@@ -1,14 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
+    [Serializable][CreateAssetMenu(menuName = "CDNConfig")]
+    public class CDNConfig:ScriptableObject
+    {
+        public string DefaultHostServer;
+        public string FallbackHostServer;
+    }
     public class BuildInConfig
     {
         public string Channel;
         public int Resver;
         public int Dllver;
-        public string RemoteCdnUrl;
-        public string RemoteCdnUrl2;
     }
     
     public class WhiteConfig

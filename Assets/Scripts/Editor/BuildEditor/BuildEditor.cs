@@ -107,7 +107,6 @@ namespace TaoTie
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
 				_inConfig = JsonHelper.FromJson<BuildInConfig>(jstr);
 			}
-			EditorGUILayout.LabelField("cdn地址：" + this._inConfig.RemoteCdnUrl);
 			EditorGUILayout.LabelField("渠道标识：" + this._inConfig.Channel);
 			EditorGUILayout.LabelField("资源版本：" + this._inConfig.Resver);
 			EditorGUILayout.LabelField("代码版本：" + this._inConfig.Dllver);
