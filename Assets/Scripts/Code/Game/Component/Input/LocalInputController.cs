@@ -29,22 +29,26 @@ namespace TaoTie
             {
                 TryDoSkill(1001);
             }
+
+            //移动
+            Vector3 direction = Vector3.zero;
             if (InputManager.Instance.GetKey(GameKeyCode.MoveForward))
             {
-                TryMove(Vector3.forward);
+                direction += Vector3.forward;
             }
             if (InputManager.Instance.GetKey(GameKeyCode.MoveBack))
             {
-                TryMove(Vector3.back);
+                direction += Vector3.back;
             }
             if (InputManager.Instance.GetKey(GameKeyCode.MoveLeft))
             {
-                TryMove(Vector3.left);
+                direction += Vector3.left;
             }
             if (InputManager.Instance.GetKey(GameKeyCode.MoveRight))
             {
-                TryMove(Vector3.right);
+                direction += Vector3.right;
             }
+            this.TryMove(Vector3.Normalize(direction));
         }
 
         #endregion

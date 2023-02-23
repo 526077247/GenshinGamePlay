@@ -17,7 +17,6 @@ namespace TaoTie
 
         public void TryMove(Vector3 direction)
         {
-            Debug.Log((GameTimerManager.Instance.GetDeltaTime() / 1000f)+ "ss");
             GetParent<Unit>().Position += (GameTimerManager.Instance.GetDeltaTime() / 1000f) * NumericComponent.GetAsFloat(NumericType.Speed) * direction;
         }
     }
