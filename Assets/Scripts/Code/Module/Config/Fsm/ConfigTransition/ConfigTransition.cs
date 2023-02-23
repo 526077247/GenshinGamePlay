@@ -19,7 +19,6 @@ namespace TaoTie
         public string toState;
         public float toStateTime;
         public float fadeDuration;   // fixed time in second
-        public float fadePrependTime;
         public MirrorMode mirrorMode;
         public bool canTransitionToSelf; // just work in any state transitions
         public ConfigCondition[] conditions;
@@ -31,7 +30,6 @@ namespace TaoTie
             this.toState = toState;
             this.conditions = conds;
             this.fadeDuration = fadeDur;
-            this.fadePrependTime = 0f;
             this.toStateTime = toStateTime;
             this.canTransitionToSelf = canTransitionToSelf;
             this.mirrorMode = MirrorMode.DoNotSet;
