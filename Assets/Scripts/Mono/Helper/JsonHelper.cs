@@ -19,5 +19,19 @@ namespace TaoTie
         {
             return LitJson.JsonMapper.ToObject<T>(json);
         }
+        
+        public static bool TryFromJson<T>(string json,out T res)
+        {
+            try
+            {
+                res = LitJson.JsonMapper.ToObject<T>(json);
+                return true;
+            }
+            catch
+            {
+                res = default;
+                return false;
+            }
+        }
     }
 }

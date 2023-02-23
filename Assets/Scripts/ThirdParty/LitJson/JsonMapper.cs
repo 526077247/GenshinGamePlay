@@ -498,8 +498,14 @@ namespace LitJson
                             if (typeName != value_type.FullName)
                             {
                                 var type = FindType(typeName, value_type);
-                                if(type != null)
+                                if (type != null)
+                                {
+                                    if (!value_type.IsAssignableFrom(type))
+                                    {
+                                        throw new Exception($"类型不匹配！jsontype = {type} valuetype = {value_type}");
+                                    }
                                     value_type = type;
+                                }
                             }
                         }
                         AddObjectMetadata(value_type);

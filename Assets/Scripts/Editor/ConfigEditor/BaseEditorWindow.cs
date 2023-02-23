@@ -11,6 +11,13 @@ namespace TaoTie
     {
         
         private bool isJson;
+
+        public void Init(T data,string searchPath, bool isJson)
+        {
+            this.data = data;
+            filePath = searchPath;
+            this.isJson = isJson;
+        }
         [Button("打开")]
         public void Open()
         {
