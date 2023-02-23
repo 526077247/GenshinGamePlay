@@ -125,7 +125,7 @@ namespace TaoTie
 			}
 		}
 		
-		public long GetByKey(int key)
+		private long GetByKey(int key)
 		{
 			long value = 0;
 			this.NumericDic.TryGetValue(key, out value);

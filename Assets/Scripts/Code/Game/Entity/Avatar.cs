@@ -23,6 +23,7 @@ namespace TaoTie
             AddComponent<CombatComponent>();
             AddComponent<SkillComponent>();
             AddComponent<LocalInputController>();
+            AddComponent<AvatarMoveComponent>();
             AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(avatar.Config.Abilities));
 
         }

@@ -90,7 +90,7 @@ namespace TaoTie
 
             if (currentState == LocoTaskState.Running)
             {
-                currentTask.UpdateLoco(this, currentTransform, ref currentState);
+                //currentTask.UpdateLoco(this, currentTransform, ref currentState);
             }
 
         }
