@@ -65,6 +65,13 @@ namespace TaoTie
             public float stopDistance;
         }
 
+        public AILocomotionHandler(AIKnowledge knowledge, AIPathfindingUpdater pPathfinding)
+        {
+            aiKnowledge = knowledge;
+            pathfinder = pPathfinding;
+            currentState = LocoTaskState.Finished;
+        }
+
         public void RefreshTask(Vector3 position)
         {
             currentTask.RefreshTask(this, position);

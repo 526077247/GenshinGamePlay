@@ -14,8 +14,8 @@
         {
             base.InitInternal();
             aiComponent = aiKnowledge.aiOwnerEntity.GetComponent<AIComponent>();
-            loco = new AILocomotionHandler();
             pathfinder = aiComponent.pathfinder;
+            loco = new AILocomotionHandler(aiKnowledge,pathfinder);
             moveFSM = aiKnowledge.moveControlState;
         }
 
