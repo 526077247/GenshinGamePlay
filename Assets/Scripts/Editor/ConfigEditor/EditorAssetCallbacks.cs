@@ -44,6 +44,12 @@ namespace TaoTie
                 win.Init(entityJson,path,true);
                 return true;
             }
+            if (JsonHelper.TryFromJson<DecisionNode>(asset.text,out var decisionTreeJson))
+            {
+                var win = EditorWindow.GetWindow<DecisionTreeEditor>();
+                win.Init(decisionTreeJson,path,true);
+                return true;
+            }
             return false;
         }
     }

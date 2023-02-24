@@ -25,5 +25,10 @@ namespace TaoTie
         {
             EditorWindow.GetWindow<EntityEditor>().Show();
         }
+        [MenuItem("Tools/配置编辑器/AI行为树")]
+        static void OpenDecisionTree()
+        {
+            EditorWindow.GetWindow<DecisionTreeEditor>().Show();
+        }
     }
 }

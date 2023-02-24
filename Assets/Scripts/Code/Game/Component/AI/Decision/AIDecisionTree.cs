@@ -56,25 +56,7 @@
 
 		private static void RootCicin(AIKnowledge knowledge, AIDecision decision)
 		{
-			if (AIDecisionInterface.IsReturnToBornPosValid(knowledge))
-			{
-				AIDecisionFactory.ReturnToBornPos(knowledge, decision);
-			}
-			else if (knowledge.threatLevel >= ThreatLevel.Alert)
-			{
-				CombatCicin(knowledge, decision);
-			}
-			else
-			{
-				if (AIDecisionInterface.IsWanderValid(knowledge))
-				{
-					AIDecisionFactory.Wander(knowledge, decision);
-				}
-				else
-				{
-					AIDecisionFactory.Idle(knowledge, decision);
-				}
-			}
+			
 		}
 
 		private static void CombatCicin(AIKnowledge knowledge, AIDecision decision)

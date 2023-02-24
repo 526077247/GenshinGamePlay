@@ -5,7 +5,7 @@ namespace TaoTie
     public static class JsonHelper
     {
        
-        public static string ToJson(object message)
+        public static string ToJson<T>(T message) where T: class
         {
             return LitJson.JsonMapper.ToJson(message);
         }

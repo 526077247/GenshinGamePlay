@@ -9,7 +9,8 @@ namespace TaoTie
 {
     public abstract class BaseEditorWindow<T> : OdinEditorWindow where T: class
     {
-        
+        protected virtual string fileName => TypeInfo<T>.Name;
+        protected virtual string folderPath => "Assets/AssetsPackage";
         private bool isJson;
 
         public void Init(T data,string searchPath, bool isJson)
@@ -48,14 +49,19 @@ namespace TaoTie
             }
         }
 
-        [Button("新建(json)")]
+        protected virtual T CreateInstance()
+        {
+            return Activator.CreateInstance<T>();
+        }
+
+        [Button("新建(Json)")]
         public void CreateJson()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath,typeof(T).Name, "bytes");
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath,fileName, "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = true;
-                data = Activator.CreateInstance<T>();
+                data = CreateInstance();
                 filePath = searchPath;
                 var jStr = JsonHelper.ToJson(data);
                 File.WriteAllText(filePath, jStr);
@@ -65,18 +71,18 @@ namespace TaoTie
         [Button("新建(Nino)")]
         public void CreateNino()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath,typeof(T).Name, "bytes");
+            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath,fileName, "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = false;
-                data = Activator.CreateInstance<T>();
+                data = CreateInstance();
                 filePath = searchPath;
                 var bytes = ProtobufHelper.ToBytes(data);
                 File.WriteAllBytes(filePath, bytes);
                 AssetDatabase.Refresh();
             }
         }
-        protected virtual string folderPath => "Assets/AssetsPackage";
+
         [ShowIf("@data!=null")][ReadOnly]
         public string filePath;
         [ShowIf("@data!=null")]

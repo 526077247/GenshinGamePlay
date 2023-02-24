@@ -1005,8 +1005,9 @@ namespace LitJson
         #endregion
 
 
-        public static string ToJson(object obj)
+        public static string ToJson<T>(T obj) where T :class
         {
+            if (obj == null) return "{}";
             lock (static_writer_lock)
             {
                 static_writer.Reset();
