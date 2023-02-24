@@ -110,20 +110,20 @@ namespace LitJson
     public class JsonMapper
     {
         #region readonly
-        private static Type floatType => typeof(float);
-        private static Type doubleType => typeof(double);
-        private static Type decimalType => typeof(decimal);
-        private static Type DateTimeType => typeof(DateTime);
-        private static Type charType => typeof(char);
-        private static Type sbyteType => typeof(sbyte);
-        private static Type byteType => typeof(byte);
-        private static Type ushortType => typeof(ushort);
-        private static Type shortType => typeof(short);
-        private static Type uintType => typeof(uint);
-        private static Type intType => typeof(int);
-        private static Type ulongType => typeof(ulong);
-        private static Type longType => typeof(long);
-        private static Type stringType => typeof(string);
+        private static Type floatType = typeof(float);
+        private static Type doubleType = typeof(double);
+        private static Type decimalType = typeof(decimal);
+        private static Type DateTimeType = typeof(DateTime);
+        private static Type charType = typeof(char);
+        private static Type sbyteType = typeof(sbyte);
+        private static Type byteType = typeof(byte);
+        private static Type ushortType = typeof(ushort);
+        private static Type shortType = typeof(short);
+        private static Type uintType = typeof(uint);
+        private static Type intType = typeof(int);
+        private static Type ulongType = typeof(ulong);
+        private static Type longType = typeof(long);
+        private static Type stringType = typeof(string);
         #endregion
         #region Fields
         private static int max_nesting_depth;
@@ -1007,7 +1007,7 @@ namespace LitJson
 
         public static string ToJson<T>(T obj) where T :class
         {
-            if (obj == null) return "{}";
+            if (obj == null) return "null";
             lock (static_writer_lock)
             {
                 static_writer.Reset();
@@ -1057,6 +1057,7 @@ namespace LitJson
 
         public static T ToObject<T>(string json)
         {
+            if (json == "null") return default;
             JsonReader reader = new JsonReader(json);
 
             return (T)ReadValue(typeof(T), reader);
@@ -1064,6 +1065,7 @@ namespace LitJson
 
         public static object ToObject(Type type, string json)
         {
+            if (json == "null") return null;
             JsonReader reader = new JsonReader(json);
             return ReadValue(type, reader);
         }

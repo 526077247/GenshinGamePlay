@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -54,5 +55,13 @@ namespace TaoTie
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+        
+        [MenuItem("Tools/帮助/测试")]
+        static void Test()
+        {
+            var data = JsonHelper.FromJson<List<int>>("null");
+            ;
+        }
+
     }
 }
