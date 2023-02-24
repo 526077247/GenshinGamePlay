@@ -91,7 +91,37 @@
 		
 
 		#endregion
-		
 
+		#region Tree
+
+		private static void Handler(AIKnowledge knowledge, AIDecision decision, DecisionNode tree)
+		{
+			if (tree is DecisionActionNode actionNode)
+			{
+				decision.act = actionNode.Act;
+				decision.move = actionNode.Move;
+				decision.tactic = actionNode.Tactic;
+			}
+			else if (tree is DecisionConditionNode conditionNode)
+			{
+				if (AIDecisionInterface.Methods.TryGetValue(conditionNode.Condition, out var func))
+				{
+					if (func(knowledge))
+					{
+						Handler(knowledge, decision, conditionNode.True);
+					}
+					else
+					{
+						Handler(knowledge, decision, conditionNode.False);
+					}
+				}
+				else
+				{
+					Log.Error("AI行为树未找到指定方法"+conditionNode.Condition);
+				}
+			}
+		}
+
+		#endregion
 	}
 }

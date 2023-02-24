@@ -1,7 +1,26 @@
-﻿namespace TaoTie
+﻿using System;
+using System.Collections.Generic;
+
+namespace TaoTie
 {
 	public class AIDecisionInterface
 	{
+		public static Dictionary<string, Func<AIKnowledge, bool>> Methods;
+		static AIDecisionInterface()
+		{
+			Methods = new Dictionary<string, Func<AIKnowledge, bool>>();
+			var methodInfos = TypeInfo<AIDecisionInterface>.Type.GetMethods();
+			for (int i = 0; i < methodInfos.Length; i++)
+			{
+				if (!methodInfos[i].IsStatic)
+				{
+					continue;
+				}
+				var func = (Func<AIKnowledge, bool>)Delegate.CreateDelegate(TypeInfo<Func<AIKnowledge, bool>>.Type, null, methodInfos[i]);
+				Methods.Add(methodInfos[i].Name,func);
+			}
+		}
+
 		public static bool IsOnAwareValid(AIKnowledge knowledge) => default;
 		public static bool IsOnAlertValid(AIKnowledge knowledge) => default;
 		public static bool IsOnNerveValid(AIKnowledge knowledge) => default;

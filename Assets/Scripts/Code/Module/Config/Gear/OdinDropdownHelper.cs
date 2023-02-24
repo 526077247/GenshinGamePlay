@@ -220,6 +220,34 @@ namespace TaoTie
             return list;
         }
         #endregion
+
+        #region AI
+
+        /// <summary>
+        /// 过滤类型
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetAIDecisionInterface()
+        {
+            var methods = typeof(AIDecisionInterface).GetMethods();
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            if (methods.Length > 0)
+            {
+                for (int i = 0; i < methods.Length; i++)
+                {
+                    if (!methods[i].IsStatic)
+                    {
+                        continue;
+                    }
+                    var val = methods[i].Name;
+                    list.Add(val, val);
+                }
+               
+            }
+            return list;
+        }
+
+        #endregion
     }
 }
 #endif
