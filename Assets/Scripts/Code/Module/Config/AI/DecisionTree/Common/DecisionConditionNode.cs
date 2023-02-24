@@ -8,9 +8,9 @@ namespace TaoTie
     {
         [NinoMember(10)][ValueDropdown("@OdinDropdownHelper.GetAIDecisionInterface()")]
         public string Condition;
-        [NinoMember(11)]
+        [NinoMember(11)][NotNull]
         public DecisionNode True;
-        [NinoMember(12)]
+        [NinoMember(12)][NotNull]
         public DecisionNode False;
     }
 }

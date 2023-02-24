@@ -117,8 +117,12 @@
 				}
 				else
 				{
-					Log.Error("AI行为树未找到指定方法"+conditionNode.Condition);
+					Log.Error("AI行为树未找到指定方法" + conditionNode.Condition);
 				}
+			}
+			else
+			{
+				Log.Error("AI行为树未配置节点");
 			}
 		}
 
