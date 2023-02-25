@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TaoTIe
+namespace TaoTie
 {
     public class ModuleInfo: ScriptableObject
     {

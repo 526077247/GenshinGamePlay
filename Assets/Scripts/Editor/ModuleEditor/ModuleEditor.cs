@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace TaoTIe
+namespace TaoTie
 {
 
     public class ModuleEditor : EditorWindow
@@ -187,6 +187,32 @@ namespace TaoTIe
             #endregion
 
             return true;
+        }
+        
+        public static void Clear(string name)
+        {
+            ModuleInfo info;
+            string Source;
+            string ModulePath;
+            if (!File.Exists(settingAsset))
+            {
+                info = new ModuleInfo();
+                AssetDatabase.CreateAsset(info, settingAsset);
+                Source = info.Source;
+                ModulePath = info.ModulePath;
+            }
+            else
+            {
+                info = AssetDatabase.LoadAssetAtPath<ModuleInfo>(settingAsset);
+                Source = info.Source;
+                ModulePath = info.ModulePath;
+            }
+
+            if (Directory.Exists(ModulePath + "/" + name))
+            {
+                AssetDatabase.DeleteAsset(ModulePath + "/" + name);
+                Debug.Log("移除 "+name);
+            }
         }
     }
 }
