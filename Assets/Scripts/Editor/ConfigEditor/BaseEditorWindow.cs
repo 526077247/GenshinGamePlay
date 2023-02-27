@@ -45,7 +45,7 @@ namespace TaoTie
                 catch(Exception ex) { }
                 data = null;
                 filePath = null;
-                ShowNotification(new GUIContent("非Ability文件或内容损坏"));
+                ShowNotification(new GUIContent($"非{typeof(T).Name}文件或内容损坏"));
             }
         }
 
