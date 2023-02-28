@@ -12,7 +12,7 @@ namespace TaoTie
     public class UtilityEditor
     {
         public static readonly string EditDirName = "Edit";
-        public static readonly string PublishDirName = "Publish";
+        public static readonly string PublishDirName = "Animations";
 
         public static string ToPublishFilePath(string path)
         {
@@ -52,12 +52,12 @@ namespace TaoTie
                 ExportController(controller, _controllerConfigName);
                 if (aicontroller != null)
                 {
-                    ExportController(aicontroller, _aicontrollerConfigName);
+                    ExportController(aicontroller, _aicontrollerConfigName, false);
                 }
             }
         }
 
-        private void ExportController(AnimatorController controller, string name)
+        private void ExportController(AnimatorController controller, string name,bool publish = true)
         {
             if (controller == null)
             {
@@ -74,8 +74,7 @@ namespace TaoTie
             }
             
             
-            string actionPath = editDir.Replace(UtilityEditor.EditDirName, UtilityEditor.PublishDirName);
-            FsmExporter exporter = new FsmExporter(controller, actionPath);
+            FsmExporter exporter = new FsmExporter(controller, editDir,publish);
             exporter.Generate(name);
         }
 

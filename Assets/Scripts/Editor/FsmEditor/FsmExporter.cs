@@ -28,15 +28,16 @@ namespace TaoTie
     {
         private AnimatorController _controller = null;
         private string _fsmActionsPath = null;
-
+        private bool _publish = false;
         private Dictionary<string, ConfigFsmTimeline> _fsmTimelineDict;
         private Dictionary<string, ConfigParam> _paramDict;
         private bool _hasError = false;
         private AnimatorStateMachine _baseSm = null;
         private string _defaultStateName = null;
 
-        public FsmExporter(AnimatorController controller,  string actionPath)
+        public FsmExporter(AnimatorController controller,  string actionPath,bool publish)
         {
+            _publish = publish;
             _controller = controller;
             _fsmActionsPath = actionPath;
         }
@@ -93,7 +94,7 @@ namespace TaoTie
         {
             string dir = Path.GetDirectoryName(savePath);
             EnsureDir(dir);
-            AnimatorControllerExporter.Export(srcPath, savePath);
+            AnimatorControllerExporter.Export(srcPath, savePath, _publish);
         }
         #endregion
 
@@ -113,16 +114,11 @@ namespace TaoTie
             if (!dirInfo.Exists)
                 return;
 
-            FileInfo[] fileInfos = dirInfo.GetFiles("*.bytes", SearchOption.TopDirectoryOnly);
+            FileInfo[] fileInfos = dirInfo.GetFiles("*.prefab", SearchOption.TopDirectoryOnly);
             foreach (FileInfo fileInfo in fileInfos)
             {
-                var obj = AssetDatabase.LoadAssetAtPath<TextAsset>(Path.Combine(path, fileInfo.Name));
-                
-                if (obj != null)
-                {
-                    ConfigFsmTimeline timeline = JsonHelper.FromJson<ConfigFsmTimeline>(obj.text);
-                    _fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
-                }
+                ConfigFsmTimeline timeline = TimelineSerializer.GetTimeline(Path.Combine(path, fileInfo.Name));
+                _fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
             }
         }
         #endregion
