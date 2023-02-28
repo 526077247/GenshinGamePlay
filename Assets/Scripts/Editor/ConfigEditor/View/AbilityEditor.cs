@@ -15,7 +15,7 @@ namespace TaoTie
         {
             EditorWindow.GetWindow<AbilityEditor>().Show();
         }
-        [OnOpenAsset(0)]
+        [OnOpenAsset(1)]
         public static bool OnBaseDataOpened(int instanceID, int line)
         {
             var data = EditorUtility.InstanceIDToObject(instanceID) as TextAsset;
