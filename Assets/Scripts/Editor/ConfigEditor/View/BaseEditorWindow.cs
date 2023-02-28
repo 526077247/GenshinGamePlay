@@ -7,22 +7,34 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class BaseEditorWindow<T> : OdinEditorWindow where T: class
+    public abstract class BaseEditorWindow<T> : OdinEditorWindow where T : class
     {
         protected virtual string fileName => TypeInfo<T>.Name;
         protected virtual string folderPath => "Assets/AssetsPackage";
         private bool isJson;
 
-        public void Init(T data,string searchPath, bool isJson)
+        public void Init(T data, string searchPath, bool isJson)
         {
             this.data = data;
             filePath = searchPath;
             this.isJson = isJson;
         }
+
+        protected virtual T CreateInstance()
+        {
+            return Activator.CreateInstance<T>();
+        }
+
+
+        [ShowIf("@data!=null")] [ReadOnly] public string filePath;
+        [ShowIf("@data!=null")] public T data;
+
+        #region Create
+
         [Button("打开")]
         public void Open()
         {
-            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes");
+            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes,json");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 var text = File.ReadAllText(searchPath);
@@ -33,7 +45,10 @@ namespace TaoTie
                     isJson = true;
                     return;
                 }
-                catch(Exception ex) { }
+                catch (Exception ex)
+                {
+                }
+
                 var bytes = File.ReadAllBytes(searchPath);
                 try
                 {
@@ -42,22 +57,20 @@ namespace TaoTie
                     isJson = false;
                     return;
                 }
-                catch(Exception ex) { }
+                catch (Exception ex)
+                {
+                }
+
                 data = null;
                 filePath = null;
                 ShowNotification(new GUIContent($"非{typeof(T).Name}文件或内容损坏"));
             }
         }
 
-        protected virtual T CreateInstance()
-        {
-            return Activator.CreateInstance<T>();
-        }
-
         [Button("新建(Json)")]
         public void CreateJson()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath,fileName, "bytes");
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = true;
@@ -68,10 +81,11 @@ namespace TaoTie
                 AssetDatabase.Refresh();
             }
         }
-        [Button("新建(Nino)")]
-        public void CreateNino()
+
+        [Button("新建(二进制)")]
+        public void CreateBytes()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath,fileName, "bytes");
+            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = false;
@@ -83,12 +97,11 @@ namespace TaoTie
             }
         }
 
-        [ShowIf("@data!=null")][ReadOnly]
-        public string filePath;
-        [ShowIf("@data!=null")]
-        public T data;
+        #endregion
 
-        [Button("保存")]
+        #region Save
+
+        [Button("保存(Json)")]
         [ShowIf("@data!=null&&isJson")]
         public void SaveJson()
         {
@@ -100,17 +113,50 @@ namespace TaoTie
                 ShowNotification(new GUIContent("保存Json成功"));
             }
         }
-        [Button("保存")]
+
+        [Button("保存(二进制)")]
         [ShowIf("@data!=null&&!isJson")]
-        public void SaveNino()
+        public void SaveBytes()
         {
             if (data != null && !string.IsNullOrEmpty(filePath))
             {
                 var bytes = ProtobufHelper.ToBytes(data);
                 File.WriteAllBytes(filePath, bytes);
                 AssetDatabase.Refresh();
-                ShowNotification(new GUIContent("保存Nino成功"));
+                ShowNotification(new GUIContent("保存二进制成功"));
             }
         }
+
+        [Button("另存为(Json)")]
+        [ShowIf("@data!=null&&!isJson")]
+        public void SaveNewJson()
+        {
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
+            if (!string.IsNullOrEmpty(searchPath))
+            {
+                isJson = true;
+                filePath = searchPath;
+                var jStr = JsonHelper.ToJson(data);
+                File.WriteAllText(filePath, jStr);
+                AssetDatabase.Refresh();
+            }
+        }
+
+        [Button("另存为(二进制)")]
+        [ShowIf("@data!=null&&isJson")]
+        public void SaveNewBytes()
+        {
+            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
+            if (!string.IsNullOrEmpty(searchPath))
+            {
+                isJson = false;
+                filePath = searchPath;
+                var bytes = ProtobufHelper.ToBytes(data);
+                File.WriteAllBytes(filePath, bytes);
+                AssetDatabase.Refresh();
+            }
+        }
+
+        #endregion
     }
 }
