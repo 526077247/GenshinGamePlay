@@ -16,5 +16,17 @@
         public const int UpdateMotionFlag = 6;
         /// <summary> UpdateTurnTargetPos </summary>
         public const int UpdateTurnTargetPos = 7;
+
+        #region Animator
+        
+        public const int SetAnimDataFloat = 8;
+        public const int SetAnimDataInt = 9;
+        public const int SetAnimDataBool = 10;
+        public const int CrossFadeInFixedTime = 11;
+        
+        #endregion
+
+        /// <summary> 执行ability的 Execute节点</summary>
+        public const int ExecuteAbility = 12;
     }
 }

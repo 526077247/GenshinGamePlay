@@ -5,10 +5,10 @@ using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent:Component,IComponent
+    public partial class GameObjectHolderComponent : Component, IComponent
     {
         [Timer(TimerType.DestroyEffect)]
-        public class DestroyEffectTimer: ATimer<EffectInfo>
+        public class DestroyEffectTimer : ATimer<EffectInfo>
         {
             public override void Run(EffectInfo self)
             {
@@ -22,7 +22,7 @@ namespace TaoTie
                 }
             }
         }
-        
+
         public Transform EntityView;
 
         public ReferenceCollector Collector;
@@ -47,6 +47,37 @@ namespace TaoTie
             }
 
             Animator = obj.GetComponentInChildren<Animator>();
+
+            var fsm = Parent.GetComponent<FsmComponent>();
+            if (fsm != null)
+            {
+                foreach (var item in fsm.config.paramDict)
+                {
+                    var para = item.Value;
+                    if (para is ConfigParamBool paramBool)
+                    {
+                        SetData(paramBool.key, fsm.GetBool(paramBool.key));
+                    }
+                    else if (para is ConfigParamFloat paramFloat)
+                    {
+                        SetData(paramFloat.key, fsm.GetFloat(paramFloat.key));
+                    }
+                    else if (para is ConfigParamInt paramInt)
+                    {
+                        SetData(paramInt.key, fsm.GetInt(paramInt.key));
+                    }
+                    else if (para is ConfigParamTrigger paramTrigger)
+                    {
+                        SetData(paramTrigger.key, fsm.GetBool(paramTrigger.key));
+                    }
+                }
+
+                for (int i = 0; i < fsm.fsms.Length; i++)
+                {
+                    CrossFade(fsm.fsms[i].currentState.name, fsm.fsms[i].config.layerIndex);
+                }
+            }
+
             EntityView = obj.transform;
             Collector = obj.GetComponent<ReferenceCollector>();
             EntityView.SetParent(this.Parent.Parent.GameObjectRoot);
@@ -57,8 +88,13 @@ namespace TaoTie
             ec.EntityType = unit.Type;
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
-            Messager.Instance.AddListener<Unit,Vector3>(Id,MessageId.ChangePositionEvt,OnChanePosition);
-            Messager.Instance.AddListener<Unit,Quaternion>(Id,MessageId.ChangeRotationEvt,OnChaneRotation);
+            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChanePosition);
+            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
+            Messager.Instance.AddListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
+                CrossFadeInFixedTime);
+            Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
+            Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
+            Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
             // var hud = unit.GetComponent<HudComponent>();
             // if (hud != null)
             // {
@@ -78,21 +114,27 @@ namespace TaoTie
 
         public void Destroy()
         {
-            Messager.Instance.RemoveListener<Unit,Vector3>(Id,MessageId.ChangePositionEvt,OnChanePosition);
-            Messager.Instance.RemoveListener<Unit,Quaternion>(Id,MessageId.ChangeRotationEvt,OnChaneRotation);
+            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChanePosition);
+            Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
+            Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
+            Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
+            Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.RemoveListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
+                CrossFadeInFixedTime);
 
-            if(EntityView!=null)
+            if (EntityView != null)
                 GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
             while (waitFinishTask.TryDequeue(out var task))
             {
                 task.SetResult();
             }
+
             waitFinishTask = null;
         }
 
         #endregion
 
-        public void OnChanePosition(Unit unit,Vector3 old)
+        public void OnChanePosition(Unit unit, Vector3 old)
         {
             EntityView.position = unit.Position;
         }

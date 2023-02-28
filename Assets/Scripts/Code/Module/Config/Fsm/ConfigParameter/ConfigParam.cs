@@ -14,30 +14,17 @@ namespace TaoTie
         {
             
             ctrl.variableSet.Set(this.key, val);
-            if (needSyncAnimator)
-            {
-                ctrl.animator.SetFloat(keyHash, val);
-            }
+
         }
 
         public void SetValue(FsmComponent ctrl, int val)
         {
-            
             ctrl.variableSet.Set(this.key, val);
-            if (needSyncAnimator)
-            {
-                ctrl.animator.SetInteger(keyHash, val);
-            }
         }
 
         public void SetValue(FsmComponent ctrl, bool val)
         {
-            
             ctrl.variableSet.Set(this.key, val?1:0);
-            if (needSyncAnimator)
-            {
-                ctrl.animator.SetBool(keyHash, val);
-            }
         }
 
         public float GetFloat(FsmComponent ctrl)

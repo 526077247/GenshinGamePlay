@@ -121,12 +121,9 @@ namespace TaoTie
                  ConfigTransition.ApplyDefault(this, toCfg, ref _transitionInfo);
              }
 
-             var animator = _component.animator;
-             if (animator != null)
-             {
-                 animator.CrossFadeInFixedTime(_transitionInfo.targetHash, _transitionInfo.fadeDuration, _transitionInfo.layerIndex, _transitionInfo.targetTime);
-             }
-
+             Messager.Instance.Broadcast(_component.Id, MessageId.CrossFadeInFixedTime, _transitionInfo.targetHash,
+                 _transitionInfo.fadeDuration, _transitionInfo.layerIndex, _transitionInfo.targetTime);
+             
              _statePassTime = 0;
              _stateTime = _transitionInfo.targetTime;
              _stateNormalizedTime = _transitionInfo.targetTime / toCfg.stateDuration;
