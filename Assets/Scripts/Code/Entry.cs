@@ -51,7 +51,7 @@ namespace TaoTie
         {
             SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
             ManagerProvider.RegisterManager<ConfigGearCategory>();
-            ManagerProvider.RemoveManager<CampManager>();
+            ManagerProvider.RegisterManager<CampManager>();
         }
     }
     
