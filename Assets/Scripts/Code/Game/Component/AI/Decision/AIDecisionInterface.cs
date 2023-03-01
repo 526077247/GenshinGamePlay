@@ -21,17 +21,23 @@ namespace TaoTie
 			}
 		}
 
-		public static bool IsOnAwareValid(AIKnowledge knowledge) => default;
-		public static bool IsOnAlertValid(AIKnowledge knowledge) => default;
-		public static bool IsOnNerveValid(AIKnowledge knowledge) => default;
-		public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
+		public static bool IsOnAwareValid(AIKnowledge knowledge)
 		{
-			// if (!knowledge.returnToBornKnowledge.config.enable)
-			// 	return false;
-			// if (!knowledge.isReturnToBorn)
-			// 	return false;
-			return true;
+			return knowledge.threatKnowledge.reachAwareThisFrame;
 		}
+		public static bool IsOnAlertValid(AIKnowledge knowledge)
+		{
+			return knowledge.threatKnowledge.reachAlertThisFrame;
+		}
+		// public static bool IsOnNerveValid(AIKnowledge knowledge) => default;
+		// public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
+		// {
+		// 	// if (!knowledge.returnToBornKnowledge.config.enable)
+		// 	// 	return false;
+		// 	// if (!knowledge.isReturnToBorn)
+		// 	// 	return false;
+		// 	return true;
+		// }
 
 		public static bool IsInvestigateValid(AIKnowledge knowledge) => default;
 		public static bool IsReactActionPointValid(AIKnowledge knowledge) => default;
@@ -43,10 +49,10 @@ namespace TaoTie
 		public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
-			// if (!knowledge.wanderTacticKnowledge.config.enable)
-			// 	return false;
-			// if (knowledge.moveControlState.wanderInfo.nextAvailableTick > Time.time)
-			// 	return false;
+			if (!knowledge.wanderTactic.config.Enable)
+				return false;
+			if (knowledge.moveControlState.WanderInfo.nextAvailableTick > GameTimerManager.Instance.GetTimeNow())
+				return false;
 			return true;
 		}
 

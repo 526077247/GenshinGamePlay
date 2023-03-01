@@ -1,4 +1,5 @@
-﻿using Nino.Serialization;
+﻿using System.Collections.Generic;
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -7,6 +8,9 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAIWanderSetting: ConfigAITacticBaseSetting
     {
-
+        [NinoMember(10)] 
+        public ConfigAIWanderData DefaultSetting;
+        [NinoMember(11)] 
+        public Dictionary<int, ConfigAIWanderData> Specification;
     }
 }

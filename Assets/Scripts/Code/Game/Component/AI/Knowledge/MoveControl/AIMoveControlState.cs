@@ -9,13 +9,14 @@ namespace TaoTie
 
         public FacingMoveInfo FacingMoveInfo => moveInfoGroup[(int) MoveDecision.FacingMove] as FacingMoveInfo;
         public FleeInfo FleeInfo => moveInfoGroup[(int) MoveDecision.Flee] as FleeInfo;
-
+        public WanderInfo WanderInfo =>  moveInfoGroup[(int) MoveDecision.Wander] as WanderInfo;
         public static AIMoveControlState Create()
         {
             AIMoveControlState res = ObjectPool.Instance.Fetch<AIMoveControlState>();
             res.moveInfoGroup = new MoveInfoBase[(int) MoveDecision.Max];
             res.moveInfoGroup[(int) MoveDecision.FacingMove] = FacingMoveInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.Flee] = FleeInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.Wander] = WanderInfo.Create();
             return res;
         }
 
@@ -23,7 +24,7 @@ namespace TaoTie
         {
             for (int i = 0; i < moveInfoGroup.Length; i++)
             {
-                if(moveInfoGroup[i]!=null)
+                if (moveInfoGroup[i] != null)
                     moveInfoGroup[i].Dispose();
             }
 

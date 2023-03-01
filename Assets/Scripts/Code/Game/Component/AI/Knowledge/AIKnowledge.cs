@@ -48,7 +48,7 @@ namespace TaoTie
         public AITacticKnowledge_FacingMove facingMoveTactic;
         public AITacticKnowledge_MeleeCharge meleeChargeTactic;
         public AITacticKnowledge_Flee fleeTactic;
-
+        public AITacticKnowledge_Wander wanderTactic;
         public void Init(Unit aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
             this.aiManager = aiManager;
@@ -74,7 +74,8 @@ namespace TaoTie
             meleeChargeTactic.LoadData(config.MeleeChargeTactic);
             fleeTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_Flee>();
             fleeTactic.LoadData(config.FleeTactic);
-            
+            wanderTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_Wander>();
+            wanderTactic.LoadData(config.WanderTactic);
         }
 
         public void Dispose()
@@ -83,6 +84,8 @@ namespace TaoTie
             enterCombatPosition = null;
             enterCombatForward = null;
             
+            wanderTactic.Dispose();
+            wanderTactic = null;
             fleeTactic.Dispose();
             fleeTactic = null;
             meleeChargeTactic.Dispose();
