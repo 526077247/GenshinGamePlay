@@ -157,6 +157,25 @@ namespace TaoTie
             }
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            if (data != null)
+            {
+                var res = EditorUtility.DisplayDialog("提示", "是否需要保存？", "是", "否");
+                if (res)
+                {
+                    if (isJson)
+                    {
+                        SaveJson();
+                    }
+                    else
+                    {
+                        SaveBytes();
+                    }
+                }
+            }
+        }
         #endregion
     }
 }
