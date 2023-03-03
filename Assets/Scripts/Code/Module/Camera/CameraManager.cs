@@ -26,8 +26,8 @@ namespace TaoTie
         //loading时场景被销毁，这个时候需要将UI摄像机从overlay->base
         public void SetCameraStackAtLoadingStart()
         {
-            var ui_camera = UIManager.Instance.GetUICamera();
-            ui_camera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
+            var uiCamera = UIManager.Instance.GetUICamera();
+            uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
             this.ResetSceneCamera();
         }
 
