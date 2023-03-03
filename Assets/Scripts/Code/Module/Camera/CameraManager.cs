@@ -4,9 +4,9 @@ namespace TaoTie
 {
     public class CameraManager:IManager
     {
-        public static CameraManager Instance;
-        public GameObject m_scene_main_camera_go;
-        public Camera m_scene_main_camera;
+        public static CameraManager Instance { get; private set; }
+        private GameObject sceneMainCameraGo;
+        private Camera sceneMainCamera;
         #region override
 
         public void Init()
@@ -33,26 +33,31 @@ namespace TaoTie
 
         public void  ResetSceneCamera()
         {
-            this.m_scene_main_camera_go = null;
-            this.m_scene_main_camera = null;
+            this.sceneMainCameraGo = null;
+            this.sceneMainCamera = null;
         }
         public void SetCameraStackAtLoadingDone()
         {
-            this.m_scene_main_camera_go = Camera.main.gameObject;
-            this.m_scene_main_camera = this.m_scene_main_camera_go.GetComponent<Camera>();
-            var render = this.m_scene_main_camera.GetUniversalAdditionalCameraData();
+            this.sceneMainCameraGo = Camera.main.gameObject;
+            this.sceneMainCamera = this.sceneMainCameraGo.GetComponent<Camera>();
+            var render = this.sceneMainCamera.GetUniversalAdditionalCameraData();
             render.renderPostProcessing = true;
             render.renderType = CameraRenderType.Base;
             render.SetRenderer(1);
-            var ui_camera = UIManager.Instance.GetUICamera();
-            __AddOverlayCamera(this.m_scene_main_camera, ui_camera);
+            var uiCamera = UIManager.Instance.GetUICamera();
+            AddOverlayCamera(this.sceneMainCamera, uiCamera);
         }
 
 
-        void __AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
+        void AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
         {
             overlayCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
             baseCamera.GetUniversalAdditionalCameraData().cameraStack.Add(overlayCamera);
+        }
+
+        public Camera MainCamera()
+        {
+            return this.sceneMainCamera;
         }
     }
 }
