@@ -39,7 +39,7 @@ namespace TaoTie
             StopTimeline();
         }
 
-        #region IRecyclable
+        #region IDisposable
         public void Dispose()
         {
             ClearTimeline();

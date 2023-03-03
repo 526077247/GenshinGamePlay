@@ -146,7 +146,7 @@ namespace TaoTie
              return _config?.GetStateConfig(stateName);
          }
 
-         #region IRecyclable
+         #region IDisposable
          public virtual void Dispose()
          {
              _component = null;
