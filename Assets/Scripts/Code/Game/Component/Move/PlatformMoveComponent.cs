@@ -30,15 +30,15 @@ namespace TaoTie
             {
                 if (this._n >= this._targets.Length)
                 {
-                    var gearActor = this.Parent.GetComponent<GearActorComponent>();
-                    if (gearActor == null)
+                    var sceneGroupActor = this.Parent.GetComponent<SceneGroupActorComponent>();
+                    if (sceneGroupActor == null)
                     {
                         Log.Error($"路径内部错误! 请策划检查配置  routeId={_route.localId}");
                     }
                     else
                     {
-                        Log.Error($"路径内部错误! 请策划检查配置  gearId={gearActor.gear.config.id} " +
-                                  $"actor={gearActor.localId} routeId={_route.localId}");
+                        Log.Error($"路径内部错误! 请策划检查配置  SceneGroupId={sceneGroupActor.SceneGroup.config.id} " +
+                                  $"actor={sceneGroupActor.localId} routeId={_route.localId}");
                     }
 
                     return this._targets[this._targets.Length - 1];
@@ -264,17 +264,17 @@ namespace TaoTie
 
             if (_hasHeroNearEvent)
             {
-                var gearActor = Parent.GetComponent<GearActorComponent>();
-                if (gearActor != null && SceneManager.Instance.GetCurrentScene() is BaseMapScene scene)
+                var sceneGroupActor = Parent.GetComponent<SceneGroupActorComponent>();
+                if (sceneGroupActor != null && SceneManager.Instance.GetCurrentScene() is BaseMapScene scene)
                 {
                     var avatar = scene.Self;
                     if (avatar != null &&
                         Vector3.SqrMagnitude(avatar.Position - GetParent<Unit>().Position) <
                         _sqlAvatarTriggerEventDistance)
                     {
-                        Messager.Instance.Broadcast(gearActor.gear.Id,MessageId.GearEvent,new HeroNearPlatformEvt
+                        Messager.Instance.Broadcast(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new HeroNearPlatformEvt
                         {
-                            actorId = gearActor.localId,
+                            actorId = sceneGroupActor.localId,
                             routeId = _route.localId,
                             pointIndex = this.nextTarget.index, 
                             isMoving = _enable
@@ -359,12 +359,12 @@ namespace TaoTie
             // 到这里说明这个点已经走完
             if (_hasReachEvent && !_hadBroadcastReachEvent)
             {
-                var gearActor = unit.GetComponent<GearActorComponent>();
-                if (gearActor != null)
+                var sceneGroupActor = unit.GetComponent<SceneGroupActorComponent>();
+                if (sceneGroupActor != null)
                 {
-                    Messager.Instance.Broadcast(gearActor.gear.Id,MessageId.GearEvent,new PlatformReachPointEvt
+                    Messager.Instance.Broadcast(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new PlatformReachPointEvt
                     {
-                        actorId = gearActor.localId,
+                        actorId = sceneGroupActor.localId,
                         routeId = _route.localId,
                         pointIndex = this.nextTarget.index,
                     });

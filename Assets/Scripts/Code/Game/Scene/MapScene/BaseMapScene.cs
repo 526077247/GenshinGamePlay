@@ -44,7 +44,7 @@ namespace TaoTie
         public async ETTask OnLeave()
         {
             await ETTask.CompletedTask;
-            RemoveManager<GearManager>();
+            RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
             RemoveManager<GameTimerManager>();
@@ -77,7 +77,7 @@ namespace TaoTie
             
             RegisterManager<AIManager,BaseMapScene>(this);
 
-            RegisterManager<GearManager,List<ConfigGear>,SceneManagerProvider>(ConfigGearCategory.Instance.GetAllList(),this);
+            RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
 
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;

@@ -26,10 +26,10 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<List<ConfigAbility>>(asset.text,out var gearAbility))
+            if (JsonHelper.TryFromJson<List<ConfigAbility>>(asset.text,out var ability))
             {
                 var win = EditorWindow.GetWindow<AbilityEditor>();
-                win.Init(gearAbility,path,true);
+                win.Init(ability,path,true);
                 return true;
             }
             return false;

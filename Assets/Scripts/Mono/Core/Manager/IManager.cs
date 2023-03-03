@@ -18,7 +18,7 @@
     
     public interface IManager<P1,P2>:IManagerDestroy
     {
-        public void Init(P1 p1,P2 p2);
+        public void Init(P1 sceneGroups,P2 p2);
 
     }
     

@@ -48,9 +48,9 @@ namespace TaoTie
             }
         }
 
-        public void Init(UILayerDefine layer,GameObject gameObject)
+        public void Init(UILayerDefine sceneGroups,GameObject gameObject)
         {
-            this.Name = layer.Name;
+            this.Name = sceneGroups.Name;
             this.gameObject = gameObject;
             //canvas
             if (!this.gameObject.TryGetComponent(out this.unity_canvas))
@@ -61,9 +61,9 @@ namespace TaoTie
             }
             this.unity_canvas.renderMode = RenderMode.ScreenSpaceCamera;
             this.unity_canvas.worldCamera = UILayersManager.Instance.UICamera;
-            this.unity_canvas.planeDistance = layer.PlaneDistance;
+            this.unity_canvas.planeDistance = sceneGroups.PlaneDistance;
             this.unity_canvas.sortingLayerName = SortingLayerNames.UI;
-            this.unity_canvas.sortingOrder = layer.OrderInLayer;
+            this.unity_canvas.sortingOrder = sceneGroups.OrderInLayer;
 
             //scaler
             if (!this.gameObject.TryGetComponent(out this.unity_canvas_scaler))
@@ -84,8 +84,8 @@ namespace TaoTie
                 this.unity_graphic_raycaster = this.gameObject.AddComponent<GraphicRaycaster>();
             }
             // window order
-            this.top_window_order = layer.OrderInLayer;
-            this.min_window_order = layer.OrderInLayer;
+            this.top_window_order = sceneGroups.OrderInLayer;
+            this.min_window_order = sceneGroups.OrderInLayer;
             this.rectTransform = this.gameObject.GetComponent<RectTransform>();
         }
         public void Destroy()

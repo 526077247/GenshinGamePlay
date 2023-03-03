@@ -4,12 +4,17 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class FsmEditor: BaseEditorWindow<ConfigFsmController>
+    public class SceneGroupEditor: BaseEditorWindow<ConfigSceneGroup>
     {
-        [MenuItem("Tools/配置编辑器/Fsm")]
-        static void OpenFsm()
+        protected override string folderPath => base.folderPath + "/SceneGroup";
+        public void Update()
         {
-            EditorWindow.GetWindow<FsmEditor>().Show();
+            OdinDropdownHelper.sceneGroup = data;
+        }
+        [MenuItem("Tools/配置编辑器/SceneGroup")]
+        static void OpenSceneGroup()
+        {
+            EditorWindow.GetWindow<SceneGroupEditor>().Show();
         }
         [OnOpenAsset(0)]
         public static bool OnBaseDataOpened(int instanceID, int line)
@@ -22,9 +27,9 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<ConfigFsmController>(asset.text,out var json))
+            if (JsonHelper.TryFromJson<ConfigSceneGroup>(asset.text,out var json))
             {
-                var win = EditorWindow.GetWindow<FsmEditor>();
+                var win = EditorWindow.GetWindow<SceneGroupEditor>();
                 win.Init(json,path,true);
                 return true;
             }

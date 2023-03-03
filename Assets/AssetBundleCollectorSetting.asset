@@ -106,4 +106,4 @@ MonoBehaviour:
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
-        AssetTags: gear
+        AssetTags: sceneGroup
