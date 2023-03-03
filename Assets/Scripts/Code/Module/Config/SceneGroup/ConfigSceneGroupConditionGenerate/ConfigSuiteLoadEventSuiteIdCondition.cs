@@ -7,17 +7,18 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigSuiteLoadEventTrigger))]
     [NinoSerialize]
-    public partial class ConfigSuiteLoadEventIsAddOnCondition : ConfigSceneGroupCondition<SuiteLoadEvent>
+    public partial class ConfigSuiteLoadEventSuiteIdCondition : ConfigSceneGroupCondition<SuiteLoadEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]
         public CompareMode mode;
         [NinoMember(2)]
-        public Boolean value;
+        [ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
+        public Int32 value;
 
         public override bool IsMatch(SuiteLoadEvent obj, SceneGroup sceneGroup)
         {
-            return IsMatch(value, obj.IsAddOn, mode);
+            return IsMatch(value, obj.SuiteId, mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

@@ -15,7 +15,7 @@ namespace TaoTie
         [NinoMember(2)]
         public Single value;
 
-        public override bool IsMatch(VariableChangeEvent obj,SceneGroup sceneGroup)
+        public override bool IsMatch(VariableChangeEvent obj, SceneGroup sceneGroup)
         {
             return IsMatch(value, obj.NewValue, mode);
         }

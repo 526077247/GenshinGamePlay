@@ -16,7 +16,7 @@ namespace TaoTie
         [ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
         public Int32 value;
 
-        public override bool IsMatch(AnyMonsterDieEvent obj,SceneGroup sceneGroup)
+        public override bool IsMatch(AnyMonsterDieEvent obj, SceneGroup sceneGroup)
         {
             return IsMatch(value, obj.ActorId, mode);
         }

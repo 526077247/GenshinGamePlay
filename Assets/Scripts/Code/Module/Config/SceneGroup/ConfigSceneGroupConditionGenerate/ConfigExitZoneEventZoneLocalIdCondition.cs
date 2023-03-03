@@ -16,7 +16,7 @@ namespace TaoTie
         [ValueDropdown("@OdinDropdownHelper.GetSceneGroupZoneIds()")]
         public Int32 value;
 
-        public override bool IsMatch(ExitZoneEvent obj,SceneGroup sceneGroup)
+        public override bool IsMatch(ExitZoneEvent obj, SceneGroup sceneGroup)
         {
             return IsMatch(value, obj.ZoneLocalId, mode);
         }

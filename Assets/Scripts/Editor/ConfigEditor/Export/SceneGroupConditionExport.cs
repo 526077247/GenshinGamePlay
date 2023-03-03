@@ -9,7 +9,7 @@ namespace TaoTie
 {
     public class SceneGroupConditionExport
     {
-        private const string Path = "Assets/Scripts/Code/Module/SceneGroup/ConfigSceneGroupConditionGenerate/";
+        private const string Path = "Assets/Scripts/Code/Module/Config/SceneGroup/ConfigSceneGroupConditionGenerate/";
         [MenuItem("Tools/SceneGroup/导出Condition")]
         public static void Export()
         {
@@ -34,7 +34,7 @@ namespace TaoTie
 
         private static string GenerateContent(Type type, FieldInfo fieldInfo,out string className)
         {
-            className = $"Config{type.Name}{fieldInfo.Name}Condition";
+            className = $"Config{type.Name}{ObjectNames.NicifyVariableName(fieldInfo.Name).Replace(" ","")}Condition";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("using System;");
             sb.AppendLine("using Nino.Serialization;");

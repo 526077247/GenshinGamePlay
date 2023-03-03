@@ -5,19 +5,19 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [TriggerType(typeof(ConfigSuiteLoadEventTrigger))]
+    [TriggerType(typeof(ConfigPlatformReachPointEvtTrigger))]
     [NinoSerialize]
-    public partial class ConfigSuiteLoadEventIsAddOnCondition : ConfigSceneGroupCondition<SuiteLoadEvent>
+    public partial class ConfigPlatformReachPointEvtRouteIdCondition : ConfigSceneGroupCondition<PlatformReachPointEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
         [NinoMember(1)]
         public CompareMode mode;
         [NinoMember(2)]
-        public Boolean value;
+        public Int32 value;
 
-        public override bool IsMatch(SuiteLoadEvent obj, SceneGroup sceneGroup)
+        public override bool IsMatch(PlatformReachPointEvt obj, SceneGroup sceneGroup)
         {
-            return IsMatch(value, obj.IsAddOn, mode);
+            return IsMatch(value, obj.routeId, mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

@@ -15,7 +15,7 @@ namespace TaoTie
         [NinoMember(2)]
         public Int64 value;
 
-        public override bool IsMatch(EnterZoneEvent obj,SceneGroup sceneGroup)
+        public override bool IsMatch(EnterZoneEvent obj, SceneGroup sceneGroup)
         {
             return IsMatch(value, obj.EntityId, mode);
         }
