@@ -100,7 +100,7 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectUnit
         AssetTags: 
-      - CollectPath: Assets/AssetsPackage/Gear
+      - CollectPath: Assets/AssetsPackage/SceneGroup
         CollectorGUID: db5cba0329d6bb140a8262b63c61e648
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices

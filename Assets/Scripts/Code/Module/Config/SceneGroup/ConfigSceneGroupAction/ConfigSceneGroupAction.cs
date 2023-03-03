@@ -26,7 +26,7 @@ namespace TaoTie
 
         [ShowIf(nameof(isOtherSceneGroup))]
         [NinoMember(4)]
-        public ulong othersceneGroupId;
+        public ulong otherSceneGroupId;
         public void ExecuteAction(IEventBase evt, SceneGroup sceneGroup)
         {
             if (disable)
@@ -37,13 +37,13 @@ namespace TaoTie
             var aimSceneGroup = sceneGroup;
             if (isOtherSceneGroup)
             {
-                if (sceneGroup.manager.TryGetSceneGroup(othersceneGroupId, out var other))
+                if (sceneGroup.manager.TryGetSceneGroup(otherSceneGroupId, out var other))
                 {
                     aimSceneGroup = other;
                 }
                 else
                 {
-                    Log.Error("未找到其他SceneGroup,请检查配置! id=" + othersceneGroupId);
+                    Log.Error("未找到其他SceneGroup,请检查配置! id=" + otherSceneGroupId);
                     return;
                 }
             }
