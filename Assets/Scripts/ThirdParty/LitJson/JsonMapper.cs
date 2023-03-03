@@ -958,10 +958,20 @@ namespace LitJson
             {
                 Type e_type = Enum.GetUnderlyingType(obj_type);
 
-                if (e_type == longType
-                    || e_type == uintType
-                    || e_type == ulongType)
+                if (e_type == longType)
+                    writer.Write((long)obj);
+                else if(e_type == ulongType)
                     writer.Write((ulong)obj);
+                else if (e_type == byteType)
+                    writer.Write((byte)obj);
+                else if(e_type == sbyteType)
+                    writer.Write((sbyte)obj);
+                else if (e_type == shortType)
+                    writer.Write((short)obj);
+                else if(e_type == ushortType)
+                    writer.Write((ushort)obj);
+                else if(e_type == uintType)
+                    writer.Write((uint)obj);
                 else
                     writer.Write((int)obj);
 

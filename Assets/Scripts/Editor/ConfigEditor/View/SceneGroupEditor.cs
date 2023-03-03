@@ -30,6 +30,7 @@ namespace TaoTie
             if (JsonHelper.TryFromJson<ConfigSceneGroup>(asset.text,out var json))
             {
                 var win = EditorWindow.GetWindow<SceneGroupEditor>();
+                OdinDropdownHelper.sceneGroup = json;
                 win.Init(json,path,true);
                 return true;
             }
