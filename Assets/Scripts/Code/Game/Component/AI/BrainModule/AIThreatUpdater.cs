@@ -235,6 +235,7 @@ namespace TaoTie
                 aiComponent.OnThreatLevelChanged?.Invoke(knowledge.threatLevelOld, knowledge.threatLevel);
                 knowledge.aiOwnerEntity?.GetComponent<PoseFSMComponent>()?
                     .SetData(FSMConst.Alertness, (int)knowledge.threatLevel);
+                knowledge.combatComponent.isInCombat = knowledge.threatLevel == ThreatLevel.Alert;
             }
 
             knowledge.threatKnowledge.mainThreat = mainTarget;

@@ -46,7 +46,8 @@ namespace TaoTie
 
         public ConfigAIDecisionTree Get(DecisionArchetype type)
         {
-            return _dict[type];
+            _dict.TryGetValue(type, out var res);
+            return res;
         }
         public Dictionary<DecisionArchetype, ConfigAIDecisionTree> GetAll()
         {

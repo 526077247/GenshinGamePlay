@@ -59,7 +59,7 @@ namespace TaoTie
 		public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.wanderTactic.config.Enable)
+			if (knowledge.wanderTactic.config==null || !knowledge.wanderTactic.config.Enable)
 				return false;
 			if (knowledge.moveControlState.WanderInfo.nextAvailableTick > GameTimerManager.Instance.GetTimeNow())
 				return false;
@@ -90,7 +90,7 @@ namespace TaoTie
 			float meleeChargeStartDistanceMin = knowledge.meleeChargeTactic.data.startDistanceMin;
 			float meleeChargeStartDistanceMax = knowledge.meleeChargeTactic.data.startDistanceMax;
 			
-			if (!knowledge.meleeChargeTactic.config.Enable)
+			if (knowledge.meleeChargeTactic.config==null||!knowledge.meleeChargeTactic.config.Enable)
 				return false;
 			if (!knowledge.meleeChargeTactic.NerveCheck(knowledge))
 				return false;
@@ -102,7 +102,7 @@ namespace TaoTie
 		}
 		public static bool IsCombatFacingMoveValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.facingMoveTactic.config.Enable)
+			if (knowledge.facingMoveTactic.config==null||!knowledge.facingMoveTactic.config.Enable)
 				return false;
 			if (!knowledge.facingMoveTactic.NerveCheck(knowledge))
 				return false;
@@ -121,7 +121,7 @@ namespace TaoTie
 		{
 			knowledge.fleeTactic.SwitchSetting(knowledge.poseID);
 			float triggerDistance = knowledge.fleeTactic.data.triggerDistance;
-			if (!knowledge.fleeTactic.config.Enable)
+			if (knowledge.fleeTactic.config==null||!knowledge.fleeTactic.config.Enable)
 				return false;
 			if (!knowledge.fleeTactic.NerveCheck(knowledge))
 				return false;

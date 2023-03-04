@@ -55,6 +55,7 @@ namespace TaoTie
             aiOwnerEntity = aiEntity;
             bornPos = aiOwnerEntity.Position;
             campID = aiOwnerEntity.CampId;
+            decisionArchetype = config.DecisionArchetype;
             
             moveControlState = AIMoveControlState.Create();
             actionControlState = AIActionControlState.Create();

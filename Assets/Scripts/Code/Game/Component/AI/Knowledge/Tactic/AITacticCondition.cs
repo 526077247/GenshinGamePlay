@@ -9,7 +9,7 @@ namespace TaoTie
         public static AITacticCondition Create(ConfigAITacticCondition condition)
         {
             AITacticCondition res = ObjectPool.Instance.Fetch<AITacticCondition>();
-            res.poseSelector = AIPoseSelector.Create(condition.PoseId);
+            res.poseSelector = AIPoseSelector.Create(condition?.PoseId);
             return res;
         }
         public void Dispose()

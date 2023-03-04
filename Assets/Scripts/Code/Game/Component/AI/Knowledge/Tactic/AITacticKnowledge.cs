@@ -26,7 +26,7 @@ namespace TaoTie
 
         public void SwitchSetting(int poseID)
         {
-            if (specifications.TryGetValue(poseID, out var setting))
+            if (specifications!=null && specifications.TryGetValue(poseID, out var setting))
             {
                 data = setting;
             }

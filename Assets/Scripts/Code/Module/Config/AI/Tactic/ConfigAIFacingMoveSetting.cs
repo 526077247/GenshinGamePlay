@@ -8,7 +8,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAIFacingMoveSetting: ConfigAITacticBaseSetting
     {
-        [NinoMember(10)]
+        [NinoMember(10)][NotNull]
         public ConfigAIFacingMoveData DefaultSetting;
         [NinoMember(11)]
         public Dictionary<int, ConfigAIFacingMoveData> Specification;

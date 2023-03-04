@@ -8,7 +8,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAIFleeSetting: ConfigAITacticBaseSetting
     {
-        [NinoMember(10)]
+        [NinoMember(10)][NotNull]
         public ConfigAIFleeData DefaultSetting; 
         [NinoMember(11)]
         public Dictionary<int, ConfigAIFleeData> Specification;

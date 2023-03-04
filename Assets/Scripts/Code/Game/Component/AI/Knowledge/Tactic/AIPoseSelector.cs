@@ -11,13 +11,16 @@ namespace TaoTie
         public static AIPoseSelector Create(int[] poseList)
         {
             AIPoseSelector res = ObjectPool.Instance.Fetch<AIPoseSelector>();
-            res.poses = HashSetComponent<int>.Create();
-            res.poses.AddRange(poseList);
+            if (poseList != null)
+            {
+                res.poses = HashSetComponent<int>.Create();
+                res.poses.AddRange(poseList);
+            }
             return res;
         }
         public void Dispose()
         {
-            poses.Dispose();
+            poses?.Dispose();
             poses = null;
         }
 
