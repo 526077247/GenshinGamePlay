@@ -25,7 +25,7 @@ namespace TaoTie
             try
             {
                 res = LitJson.JsonMapper.ToObject<T>(json);
-                return true;
+                return res != null;
             }
             catch
             {
