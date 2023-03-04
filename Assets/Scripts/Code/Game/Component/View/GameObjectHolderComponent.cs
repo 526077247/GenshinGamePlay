@@ -56,19 +56,19 @@ namespace TaoTie
                     var para = item.Value;
                     if (para is ConfigParamBool paramBool)
                     {
-                        SetData(paramBool.key, fsm.GetBool(paramBool.key));
+                        SetData(paramBool.keyHash, fsm.GetBool(paramBool.key));
                     }
                     else if (para is ConfigParamFloat paramFloat)
                     {
-                        SetData(paramFloat.key, fsm.GetFloat(paramFloat.key));
+                        SetData(paramFloat.keyHash, fsm.GetFloat(paramFloat.key));
                     }
                     else if (para is ConfigParamInt paramInt)
                     {
-                        SetData(paramInt.key, fsm.GetInt(paramInt.key));
+                        SetData(paramInt.keyHash, fsm.GetInt(paramInt.key));
                     }
                     else if (para is ConfigParamTrigger paramTrigger)
                     {
-                        SetData(paramTrigger.key, fsm.GetBool(paramTrigger.key));
+                        SetData(paramTrigger.keyHash, fsm.GetBool(paramTrigger.key));
                     }
                 }
 
@@ -92,9 +92,9 @@ namespace TaoTie
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
             Messager.Instance.AddListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
-            Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
-            Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
-            Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.AddListener<int, int>(Id, MessageId.SetAnimDataInt, SetData);
+            Messager.Instance.AddListener<int, float>(Id, MessageId.SetAnimDataFloat, SetData);
+            Messager.Instance.AddListener<int, bool>(Id, MessageId.SetAnimDataBool, SetData);
             // var hud = unit.GetComponent<HudComponent>();
             // if (hud != null)
             // {
@@ -116,9 +116,9 @@ namespace TaoTie
         {
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChanePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
-            Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
-            Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
-            Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.RemoveListener<int, int>(Id, MessageId.SetAnimDataInt, SetData);
+            Messager.Instance.RemoveListener<int, float>(Id, MessageId.SetAnimDataFloat, SetData);
+            Messager.Instance.RemoveListener<int, bool>(Id, MessageId.SetAnimDataBool, SetData);
             Messager.Instance.RemoveListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
 

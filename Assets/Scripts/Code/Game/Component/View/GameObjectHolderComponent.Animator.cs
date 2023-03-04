@@ -14,19 +14,19 @@ namespace TaoTie
             }
         }
 
-        private void SetData(string key, int data)
+        private void SetData(int key, int data)
         {
             if (Animator == null) return;
             Animator.SetInteger(key, data);
         }
 
-        private void SetData(string key, float data)
+        private void SetData(int key, float data)
         {
             if (Animator == null) return;
             Animator.SetFloat(key, data);
         }
 
-        private void SetData(string key, bool data)
+        private void SetData(int key, bool data)
         {
             if (Animator == null) return;
             Animator.SetBool(key, data);

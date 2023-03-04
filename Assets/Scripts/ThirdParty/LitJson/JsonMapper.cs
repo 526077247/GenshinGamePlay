@@ -1152,7 +1152,7 @@ namespace LitJson
             {
                 if (ass[i] != assembly)
                 {
-                    type = baseType.Assembly.GetType(fullName);
+                    type = ass[i].GetType(fullName);
                     if (type != null)
                     {
                         _temp[fullName] = type;
