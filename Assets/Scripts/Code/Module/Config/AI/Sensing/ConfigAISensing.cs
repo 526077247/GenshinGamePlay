@@ -9,7 +9,7 @@ namespace TaoTie
     {
         [LabelText("启用")]
         [NinoMember(1)]
-        public bool Enable;
+        public bool Enable = true;
         [NinoMember(2)]
         public ConfigAISensingSetting Setting;
         [NinoMember(3)]

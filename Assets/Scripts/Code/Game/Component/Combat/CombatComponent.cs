@@ -7,6 +7,7 @@ namespace TaoTie
     {
         private FsmComponent fsm => Parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget;
+        public bool isInCombat;
         public virtual void Init()
         {
             attackTarget = new AttackTarget();

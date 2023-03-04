@@ -1,1 +1,0 @@
-{"_t":"TaoTie.DecisionConditionNode","True":{"_t":"TaoTie.DecisionConditionNode","True":{"_t":"TaoTie.DecisionActionNode","Act":0,"Move":0,"Tactic":0,"Enable":false},"False":{"_t":"TaoTie.DecisionConditionNode","Enable":false},"Enable":false},"False":{"_t":"TaoTie.DecisionConditionNode","Condition":"IsInvestigateValid","Enable":false},"Enable":false}

@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class DecisionTreeEditor: BaseEditorWindow<DecisionNode>
+    public class DecisionTreeEditor: BaseEditorWindow<ConfigAIDecisionTree>
     {
         protected override string fileName => "DecisionTree";
         protected override string folderPath => base.folderPath + "/Unit";
-        protected override DecisionNode CreateInstance()
+        protected override ConfigAIDecisionTree CreateInstance()
         {
-            return new DecisionActionNode();
+            return new ConfigAIDecisionTree();
         }
         
               
@@ -30,7 +30,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<DecisionNode>(asset.text,out var decisionTreeJson))
+            if (JsonHelper.TryFromJson<ConfigAIDecisionTree>(asset.text,out var decisionTreeJson))
             {
                 var win = EditorWindow.GetWindow<DecisionTreeEditor>();
                 win.Init(decisionTreeJson,path,true);

@@ -239,7 +239,17 @@ namespace TaoTie
                     {
                         continue;
                     }
-                    var val = methods[i].Name;
+
+                    var attrs = methods[i].GetCustomAttributes(TypeInfo<LabelTextAttribute>.Type,false);
+                    string val;
+                    if (attrs.Length > 0)
+                    {
+                        val = $"{(attrs[0] as LabelTextAttribute).Text}({methods[i].Name})";
+                    }
+                    else
+                    {
+                        val = methods[i].Name;
+                    }
                     list.Add(val, val);
                 }
                

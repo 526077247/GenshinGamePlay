@@ -6,7 +6,7 @@ namespace TaoTie
     public partial class ConfigAIDefendArea
     {
         [NinoMember(1)]
-        public bool Enable;
+        public bool Enable = true;
         [NinoMember(2)]
         public float DefendRange; 
     }

@@ -12,85 +12,21 @@
 		/// <param name="decision"></param>
 		public static void Think(AIKnowledge knowledge, AIDecision decision)
 		{
-			switch (knowledge.decisionArchetype)
+			var conf = ConfigAIDecisionTreeCategory.Instance.Get(knowledge.decisionArchetype);
+			if (conf != null)
 			{
-				case DecisionArchetype.Animal:
-					RootAnimal(knowledge, decision);
-					break;
-				case DecisionArchetype.Cicin:
-					RootCicin(knowledge, decision);
-					break;
-				case DecisionArchetype.Dahaka:
-					RootDahaka(knowledge, decision);
-					break;
-				case DecisionArchetype.Animal_Homeworld:
-					RootAnimal_Homeworld(knowledge, decision);
-					break;
-				case DecisionArchetype.General:
-					RootGeneral(knowledge, decision);
-					break;
+				if (knowledge.combatComponent != null && knowledge.combatComponent.isInCombat)
+				{
+					if (conf.CombatNode != null)
+						Handler(knowledge, decision, conf.CombatNode);
+				}
+				else
+				{
+					if (conf.Node != null)
+						Handler(knowledge, decision, conf.Node);
+				}
 			}
 		}
-
-		#region Animal
-
-		private static void RootAnimal(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatAnimal(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void RootAnimal_Homeworld(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatAnimal_Homeworld(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		#endregion
-
-		#region Cicin
-
-		private static void RootCicin(AIKnowledge knowledge, AIDecision decision)
-		{
-			
-		}
-
-		private static void CombatCicin(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-
-		#endregion
-
-		#region Dahaka
-
-		private static void RootDahaka(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatDahaka(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-
-		#endregion
-
-		#region General
-
-		private static void RootGeneral(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatGeneral(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-		
-
-		#endregion
 
 		#region Tree
 

@@ -8,7 +8,7 @@ namespace TaoTie
     public abstract partial class ConfigAITacticBaseSetting
     {
         [NinoMember(1)][LabelText("启用")]
-        public bool Enable;
+        public bool Enable = true;
         [NinoMember(2)]
         public ConfigAITacticCondition Condition;
         [NinoMember(3)][Tooltip("能使用的技能")]

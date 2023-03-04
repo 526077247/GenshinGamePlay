@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
@@ -23,28 +24,37 @@ namespace TaoTie
 
 		public static bool IsOnAwareValid(AIKnowledge knowledge)
 		{
-			return knowledge.threatKnowledge.reachAwareThisFrame;
+			return knowledge.skillKnowledge.SkillsOnAware.AvailableSkills.Count > 0;
 		}
+
 		public static bool IsOnAlertValid(AIKnowledge knowledge)
 		{
-			return knowledge.threatKnowledge.reachAlertThisFrame;
+			return knowledge.skillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0;
 		}
-		// public static bool IsOnNerveValid(AIKnowledge knowledge) => default;
-		// public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
-		// {
-		// 	// if (!knowledge.returnToBornKnowledge.config.enable)
-		// 	// 	return false;
-		// 	// if (!knowledge.isReturnToBorn)
-		// 	// 	return false;
-		// 	return true;
-		// }
+
+		public static bool IsOnNerveValid(AIKnowledge knowledge)
+		{
+			return knowledge.skillKnowledge.SkillsOnNerve.AvailableSkills.Count > 0;
+		}
+		public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
+		{
+			// if (!knowledge.returnToBornKnowledge.config.enable)
+			// 	return false;
+			// if (!knowledge.isReturnToBorn)
+			// 	return false;
+			return true;
+		}
 
 		public static bool IsInvestigateValid(AIKnowledge knowledge) => default;
 		public static bool IsReactActionPointValid(AIKnowledge knowledge) => default;
 		public static bool IsPatrolFollowValid(AIKnowledge knowledge) => default;
 		public static bool IsFollowServerRouteValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatFollowMoveValid(AIKnowledge knowledge) => default;
-		public static bool IsFreeSkillValid(AIKnowledge knowledge) => default;
+
+		public static bool IsFreeSkillValid(AIKnowledge knowledge)
+		{
+			return knowledge.skillKnowledge.SkillsFree.AvailableSkills.Count > 0;
+		}
 		public static bool IsFollowScriptedPathValid(AIKnowledge knowledge) => default;
 		public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
 		public static bool IsWanderValid(AIKnowledge knowledge)
@@ -58,9 +68,21 @@ namespace TaoTie
 
 		public static bool IsIdleValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatBuddySkillValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatSkillExecuteValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatSkillPrepareValid(AIKnowledge knowledge) => default;
+
+		public static bool IsCombatBuddySkillValid(AIKnowledge knowledge)
+		{
+			return knowledge.skillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0;
+		}
+
+		public static bool IsCombatSkillExecuteValid(AIKnowledge knowledge)
+		{
+			return knowledge.actionControlState.status == SkillStatus.Prepared;
+		}
+
+		public static bool IsCombatSkillPrepareValid(AIKnowledge knowledge)
+		{
+			return knowledge.skillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
+		}
 		public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{

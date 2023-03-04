@@ -6,7 +6,7 @@ namespace TaoTie
     public abstract partial class DecisionNode
     {
         [NinoMember(1)]
-        public bool Enable;
+        public bool Enable = true;
         [LabelText("策划备注")][NinoMember(2)]
         public string Remark;
     }

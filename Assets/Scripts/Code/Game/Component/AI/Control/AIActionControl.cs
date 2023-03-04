@@ -23,17 +23,52 @@ namespace TaoTie
             //Inactive Status: no skill stand by, select new skill
             if (actionState.status == SkillStatus.Inactive)
             {
-                if (decision.act == ActDecision.OnAlert)
+                if (decision.act == ActDecision.OnAware)
+                {
+                    if (aiKnowledge.skillKnowledge.SkillsOnAware.AvailableSkills.Count > 0)
+                    {
+                        SelectSkill(aiKnowledge.skillKnowledge.SkillsOnAware.AvailableSkills[0]);
+                        CastSkill();
+                        actionState.status = SkillStatus.Playing;
+                    }
+                }
+                else if (decision.act == ActDecision.OnAlert)
                 {
                     if (aiKnowledge.skillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0)
                     {
-                        actionState.status = SkillStatus.Preparing;
                         SelectSkill(aiKnowledge.skillKnowledge.SkillsOnAlert.AvailableSkills[0]);
-                        OnSkillStart();
+                        CastSkill();
+                        actionState.status = SkillStatus.Playing;
                     }
                 }
-
-                if (decision.act == ActDecision.CombatSkillPrepare)
+                else if (decision.act == ActDecision.FreeSkill)
+                {
+                    if (aiKnowledge.skillKnowledge.SkillsFree.AvailableSkills.Count > 0)
+                    {
+                        SelectSkill(aiKnowledge.skillKnowledge.SkillsFree.AvailableSkills[0]);
+                        CastSkill();
+                        actionState.status = SkillStatus.Playing;
+                    }
+                }
+                else if (decision.act == ActDecision.BuddySkill)
+                {
+                    if (aiKnowledge.skillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0)
+                    {
+                        SelectSkill(aiKnowledge.skillKnowledge.SkillsCombatBuddy.AvailableSkills[0]);
+                        CastSkill();
+                        actionState.status = SkillStatus.Playing;
+                    }
+                }
+                else if (decision.act == ActDecision.CombatSkill)
+                {
+                    if (aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
+                    {
+                        SelectSkill(aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills[0]);
+                        CastSkill();
+                        actionState.status = SkillStatus.Playing;
+                    }
+                }
+                else if (decision.act == ActDecision.CombatSkillPrepare)
                 {
                     if (aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {

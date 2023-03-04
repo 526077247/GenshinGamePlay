@@ -100,10 +100,17 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectUnit
         AssetTags: 
-      - CollectPath: Assets/AssetsPackage/SceneGroup
+      - CollectPath: Assets/AssetsPackage/EditConfig/SceneGroup
         CollectorGUID: db5cba0329d6bb140a8262b63c61e648
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: sceneGroup
+      - CollectPath: Assets/AssetsPackage/EditConfig/AITree
+        CollectorGUID: 6f5b6adda8708184c8c0a605a13ff976
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: aiTree

@@ -8,7 +8,7 @@ namespace TaoTie
     {
         [LabelText("启用")]
         [NinoMember(1)]
-        public bool enable;
+        public bool Enable = true;
         [NinoMember(2)]
         public MoveCategoryAI moveCategory;
         [NinoMember(5)][LabelText("步行时到达判定距离")]

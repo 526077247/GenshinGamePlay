@@ -34,7 +34,7 @@ namespace TaoTie
 
         protected override void UpdateMainThreadInternal()
         {
-            if (!knowledge.threatKnowledge.config.enable)
+            if (!knowledge.threatKnowledge.config.Enable)
                 return;
 
             UpdateCandidateList();
