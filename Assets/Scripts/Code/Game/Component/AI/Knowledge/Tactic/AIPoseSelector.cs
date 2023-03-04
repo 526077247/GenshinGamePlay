@@ -26,7 +26,7 @@ namespace TaoTie
 
         public bool CheckValidPose(int pose)
         {
-            return poses != null && poses.Contains(pose);
+            return poses == null || poses.Contains(pose);
         }
     }
 }

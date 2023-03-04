@@ -97,7 +97,7 @@ namespace TaoTie
 
             if (currentState == LocoTaskState.Running)
             {
-                //currentTask.UpdateLoco(this, currentTransform, ref currentState);
+                currentTask.UpdateLoco(this, currentTransform, ref currentState);
             }
 
         }
@@ -164,7 +164,7 @@ namespace TaoTie
 
         public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed)
         {
-            
+            currentTask.UpdateLocoSpeed(newSpeed);
         } 
         public void SetGroundFollowAnimationRotation(bool enabled) {} 
         public void Teleport(Vector3 targetPosition) {} 

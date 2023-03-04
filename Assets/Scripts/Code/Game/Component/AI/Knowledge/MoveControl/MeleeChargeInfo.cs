@@ -14,7 +14,12 @@ namespace TaoTie
         public ChargeStatus Status; 
         public Vector3 CurDestination;
         private int retryTimes;
-        
+        public static MeleeChargeInfo Create()
+        {
+            var res = ObjectPool.Instance.Fetch<MeleeChargeInfo>();
+
+            return res;
+        }
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             ConfigAIMeleeChargeData data = aiKnowledge.meleeChargeTactic.data;

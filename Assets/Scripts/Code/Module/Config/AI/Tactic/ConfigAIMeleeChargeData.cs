@@ -6,7 +6,7 @@ namespace TaoTie
     public partial class ConfigAIMeleeChargeData
     {
         [NinoMember(1)]
-        public int speedLevel;
+        public AIMoveSpeedLevel speedLevel;
         [NinoMember(2)]
         public float turnSpeedOverride = 20f;
         [NinoMember(3)]
