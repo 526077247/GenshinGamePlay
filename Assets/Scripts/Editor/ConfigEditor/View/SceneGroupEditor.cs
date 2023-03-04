@@ -6,7 +6,7 @@ namespace TaoTie
 {
     public class SceneGroupEditor: BaseEditorWindow<ConfigSceneGroup>
     {
-        protected override string folderPath => base.folderPath + "/SceneGroup";
+        protected override string folderPath => base.folderPath + "/EditConfig/SceneGroup";
         public void Update()
         {
             OdinDropdownHelper.sceneGroup = data;

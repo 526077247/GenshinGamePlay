@@ -7,7 +7,6 @@ namespace TaoTie
     /// </summary>
     public abstract class Component : IDisposable
     {
-        public virtual int MetaTypeID => GetHashCode();
         [Timer(TimerType.ComponentUpdate)]
         public class ComponentUpdate : ATimer<IUpdateComponent>
         {

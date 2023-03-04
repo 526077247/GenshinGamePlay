@@ -34,7 +34,7 @@ namespace TaoTie
         [Button("打开")]
         public void Open()
         {
-            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes,json");
+            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 var text = File.ReadAllText(searchPath);
@@ -70,7 +70,7 @@ namespace TaoTie
         [Button("新建(Json)")]
         public void CreateJson()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = true;
@@ -131,7 +131,7 @@ namespace TaoTie
         [ShowIf("@data!=null&&!isJson")]
         public void SaveNewJson()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = true;

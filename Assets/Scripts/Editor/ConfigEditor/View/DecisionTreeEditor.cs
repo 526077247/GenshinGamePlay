@@ -7,7 +7,7 @@ namespace TaoTie
     public class DecisionTreeEditor: BaseEditorWindow<ConfigAIDecisionTree>
     {
         protected override string fileName => "DecisionTree";
-        protected override string folderPath => base.folderPath + "/Unit";
+        protected override string folderPath => base.folderPath + "/EditConfig/AITree";
         protected override ConfigAIDecisionTree CreateInstance()
         {
             return new ConfigAIDecisionTree();
