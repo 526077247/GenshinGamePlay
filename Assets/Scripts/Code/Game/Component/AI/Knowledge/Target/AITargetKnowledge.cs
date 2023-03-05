@@ -156,7 +156,7 @@ namespace TaoTie
             if (targetID != newTargetID)
             {
                 this.targetID = newTargetID;
-                this.targetEntity = ai.GetParent<Unit>();
+                this.targetEntity = ai.GetParent<Unit>().Parent.Get<Unit>(newTargetID);
                 hasPath = AITargetHasPathType.Invalid;
             }
         }

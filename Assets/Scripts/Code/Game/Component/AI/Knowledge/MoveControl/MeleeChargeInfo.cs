@@ -28,7 +28,7 @@ namespace TaoTie
             bool useMeleeSlot = data.useMeleeSlot;
             float turnSpeed = data.turnSpeedOverride;
 
-            AIMoveSpeedLevel speedLevel = (AIMoveSpeedLevel)data.speedLevel;
+            AIMoveSpeedLevel speedLevel = data.speedLevel;
 
             AILocomotionHandler.ParamFollowMove param = new AILocomotionHandler.ParamFollowMove
             {

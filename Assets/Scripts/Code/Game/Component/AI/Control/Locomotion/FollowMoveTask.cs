@@ -4,7 +4,8 @@ namespace TaoTie
 {
     public class FollowMoveTask: LocoBaseTask
     {
-        private Unit anchor; 
+        private Unit anchor;
+        private NumericComponent numc => anchor.GetComponent<NumericComponent>();
         private bool useMeleeSlot; 
         private float stopDistance; 
         private float targetAngle; 
@@ -21,6 +22,15 @@ namespace TaoTie
                 // handler.aiKnowledge.desiredForward = desiredDirection;
 
                 handler.UpdateMotionFlag(speedLevel);
+                var moveDis = numc.GetAsFloat(NumericType.Speed) * GameTimerManager.Instance.GetDeltaTime() / 1000f;
+                if (moveDis > distance)
+                {
+                    aiKnowledge.aiOwnerEntity.Position = anchorPos;
+                }
+                else
+                {
+                    aiKnowledge.aiOwnerEntity.Position += desiredDirection * moveDis;
+                }
             }
         }
 

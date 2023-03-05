@@ -6,15 +6,16 @@ namespace TaoTie
     /// <summary>
     /// 怪物
     /// </summary>
-    public class Monster: Unit,IEntity<int,Vector3>
+    public class Monster: Unit,IEntity<int,Vector3,uint>
     {
         #region IEntity
         
         public override EntityType Type => EntityType.Monster;
         
-        public void Init(int configId,Vector3 bornPos)
+        public void Init(int configId,Vector3 bornPos,uint campId)
         {
             Position = bornPos;
+            CampId = campId;
             var monster = AddComponent<MonsterComponent,int>(configId);
             ConfigId = monster.Config.UnitId;
             var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(monster.Config.EntityConfig);

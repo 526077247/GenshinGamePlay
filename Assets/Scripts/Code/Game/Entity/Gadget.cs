@@ -5,18 +5,19 @@ namespace TaoTie
     /// <summary>
     /// 做一些技能生成物、小动物、场景可交互物件什么的小工具
     /// </summary>
-    public class Gadget: Unit,IEntity<int>,IEntity<int,GadgetState>
+    public class Gadget: Unit,IEntity<int,uint>,IEntity<int,GadgetState,uint>
     {
         public override EntityType Type => EntityType.Gadget;
 
         #region IEntity
 
-        public void Init(int id)
+        public void Init(int id,uint campId)
         {
-            Init(id, GadgetState.Default);
+            Init(id, GadgetState.Default,campId);
         }
-        public void Init(int id,GadgetState state)
+        public void Init(int id,GadgetState state,uint campId)
         {
+            CampId = campId;
             var gadget = AddComponent<GadgetComponent,int,GadgetState>(id,state);
             ConfigId = gadget.Config.UnitId;
             var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(gadget.Config.EntityConfig);

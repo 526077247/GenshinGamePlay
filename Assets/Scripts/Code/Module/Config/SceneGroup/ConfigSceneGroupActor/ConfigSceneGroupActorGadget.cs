@@ -18,9 +18,8 @@ namespace TaoTie
         public GadgetState defaultState;
         public override Entity CreateActor(SceneGroup sceneGroup)
         {
-            var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState>(configID,defaultState);
+            var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState, uint>(configID,defaultState,campId);
             entity.Position = position;
-            entity.CampId = campId;
             if (sceneGroup.TryGetRoute(routeId, out var route))
             {
                 var pmc = sceneGroup.AddComponent<PlatformMoveComponent, ConfigRoute>(route);

@@ -5,13 +5,18 @@ namespace TaoTie
     public partial class GameObjectHolderComponent
     {
         public Animator Animator;
-
+        public FsmComponent Fsm => Parent.GetComponent<FsmComponent>();
         public void SetWeight(int index, float weight)
         {
             if (Animator != null)
             {
                 Animator.SetLayerWeight(index, weight);
             }
+        }
+
+        private void UpdateMotionFlag(AIMoveSpeedLevel level)
+        {
+            Fsm.SetData(FSMConst.MotionFlag,(int)level);
         }
 
         private void SetData(int key, int data)

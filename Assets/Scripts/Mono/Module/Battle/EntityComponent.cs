@@ -7,5 +7,7 @@ namespace TaoTie
         public long Id;
 
         public EntityType EntityType;
+
+        public uint CampId;
     }
 }

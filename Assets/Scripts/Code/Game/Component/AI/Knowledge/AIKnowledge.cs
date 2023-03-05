@@ -12,8 +12,8 @@ namespace TaoTie
         public uint campID;
         
         public Vector3 bornPos;
-        public Vector3 currentPos;
-        public Vector3 currentForward;
+        public Vector3 currentPos => aiOwnerEntity.Position;
+        public Vector3 currentForward => aiOwnerEntity.Forward;
         public Vector3 eyePos;
         public Transform eyeTransform;
         

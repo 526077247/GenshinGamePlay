@@ -84,12 +84,14 @@ namespace TaoTie
             var ec = obj.GetComponent<EntityComponent>();
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
-
             ec.EntityType = unit.Type;
+            ec.CampId = unit.CampId;
+            
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChanePosition);
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
+            Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<int, int>(Id, MessageId.SetAnimDataInt, SetData);

@@ -16,7 +16,6 @@ namespace TaoTie
     {
 
         public static TimerManager Instance { get; private set; }
-        protected long timeNow;
 
         protected Dictionary<long, TimerAction> childs = new Dictionary<long, TimerAction>();
         /// <summary>
@@ -80,16 +79,16 @@ namespace TaoTie
                 return;
             }
 
-            this.timeNow = TimeHelper.ServerNow();
+            var timeNow = GetTimeNow();
 
-            if (this.timeNow < this.minTime)
+            if (timeNow < this.minTime)
             {
                 return;
             }
 
             foreach (var item in this.TimeId)
             {
-                if (item.Key > this.timeNow)
+                if (item.Key > timeNow)
                 {
                     this.minTime = item.Key;
                     break;
@@ -181,7 +180,7 @@ namespace TaoTie
                 case TimerClass.RepeatedTimer:
                 {
                     int type = timerAction.Type;
-                    long tillTime = TimeHelper.ServerNow() + timerAction.Time;
+                    long tillTime = GetTimeNow() + timerAction.Time;
                     this.AddTimer(tillTime, timerAction);
 
                     ITimer timer = this.timerActions[type];
@@ -236,13 +235,13 @@ namespace TaoTie
 
         public async ETTask<bool> WaitTillAsync(long tillTime, ETCancellationToken cancellationToken = null)
         {
-            if (this.timeNow >= tillTime)
+            if (this.GetTimeNow() >= tillTime)
             {
                 return true;
             }
 
             ETTask<bool> tcs = ETTask<bool>.Create(true);
-            TimerAction timer = this.AddChild(TimerClass.OnceWaitTimer, tillTime - this.timeNow, 0, tcs);
+            TimerAction timer = this.AddChild(TimerClass.OnceWaitTimer, tillTime - this.GetTimeNow(), 0, tcs);
             this.AddTimer(tillTime, timer);
             long timerId = timer.Id;
 
@@ -284,7 +283,7 @@ namespace TaoTie
             {
                 return true;
             }
-            long tillTime = TimeHelper.ServerNow() + time;
+            long tillTime = GetTimeNow() + time;
 
             ETTask<bool> tcs = ETTask<bool>.Create(true);
             
@@ -322,7 +321,7 @@ namespace TaoTie
         // wait时间长不需要逻辑连贯的建议用NewOnceTimer
         public long NewOnceTimer(long tillTime, int type, object args)
         {
-            if (tillTime < TimeHelper.ServerNow())
+            if (tillTime < GetTimeNow())
             {
                 Log.Warning($"new once time too small: {tillTime}");
             }
@@ -338,12 +337,17 @@ namespace TaoTie
 
         }
 
+        public virtual long GetTimeNow()
+        {
+            return TimeHelper.ServerNow();
+        }
+
         /// <summary>
         /// 创建一个RepeatedTimer
         /// </summary>
         private long NewRepeatedTimerInner(long time, int type, object args)
         {
-            long tillTime = TimeHelper.ServerNow() + time;
+            long tillTime = GetTimeNow() + time;
             TimerAction timer = this.AddChild(TimerClass.RepeatedTimer, time, type, args);
 
             // 每帧执行的不用加到timerId中，防止遍历

@@ -1,5 +1,6 @@
 ﻿using Nino.Serialization;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -7,7 +8,7 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public bool Enable = true;
-        [LabelText("策划备注")][NinoMember(2)]
-        public string Remark;
+        [SerializeField] [LabelText("策划备注")][NinoMember(2)]
+        private string Remark;
     }
 }

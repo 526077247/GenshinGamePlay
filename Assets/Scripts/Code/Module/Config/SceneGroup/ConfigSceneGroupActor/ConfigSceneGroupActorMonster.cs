@@ -13,8 +13,7 @@ namespace TaoTie
 
         public override Entity CreateActor(SceneGroup sceneGroup)
         {
-            var entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3>(configID,position);
-            entity.CampId = campId;
+            var entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3,uint>(configID,position,campId);
             entity.AddComponent<SceneGroupActorComponent, int, long>(localId, sceneGroup.Id);
             return entity;
         }

@@ -42,11 +42,10 @@ namespace TaoTie
                 }
             }
             var rot = born.ResolveRot(applier, ability, modifier, target);
-            var res = target.Parent.CreateEntity<Gadget, int>(GadgetID);
+            var res = target.Parent.CreateEntity<Gadget, int,uint>(GadgetID,CampID);
             res.Position = pos;
             res.Rotation = rot;
-            res.CampId = CampID;
-            
+
             if (ownerIsTarget)
             {
                 var count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, ownerIs, out var entities);

@@ -135,7 +135,7 @@ namespace TaoTie
         }
 
 #if UNITY_EDITOR
-        [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
+        [SerializeField] [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
         private string remarks;
 
         public static void ShowNotification(string tips)

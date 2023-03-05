@@ -8,8 +8,8 @@ namespace TaoTie
     public partial class ConfigRoute
     {
 #if UNITY_EDITOR
-        [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
-        public string remarks;
+        [PropertyOrder(int.MinValue + 1)] [SerializeField] [LabelText("策划备注")]
+        private string remarks;
 #endif
         [NinoMember(1)] public int localId;
         [LabelText("路径类型")] [NinoMember(2)] public RouteType type = RouteType.OneWay;
