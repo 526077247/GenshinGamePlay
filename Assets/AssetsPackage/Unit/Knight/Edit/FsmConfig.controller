@@ -23,8 +23,8 @@ MonoBehaviour:
         IsDynamic: 0
         Key: 
         PoseID: 0
-        CanMove: 0
-        CanTurn: 0
+        CanMove: 1
+        CanTurn: 1
 --- !u!74 &-7322282106757008345
 AnimationClip:
   m_ObjectHideFlags: 0

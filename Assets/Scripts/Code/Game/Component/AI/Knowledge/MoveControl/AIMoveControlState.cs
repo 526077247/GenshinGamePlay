@@ -44,6 +44,10 @@ namespace TaoTie
             {
                 curMoveInfo.Enter(taskHandler, aiKnowledge, aiManager);
             }
+            else
+            {
+                
+            }
         }
 
         public void UpdateMoveInfo(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,

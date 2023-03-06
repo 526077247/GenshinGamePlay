@@ -215,7 +215,7 @@ namespace TaoTie
                 && knowledge.temperature < ThreatInfo.TEMPERVAL_ALERT)
                 && knowledge.threatLevel != ThreatLevel.Aware)
             {
-                threatLevelChange = true;
+                threatLevelChange = knowledge.threatLevel!=ThreatLevel.Aware;
 
                 knowledge.threatKnowledge.reachAwareThisFrame = true;
                 knowledge.threatLevel = ThreatLevel.Aware;
@@ -224,7 +224,7 @@ namespace TaoTie
             //change to ThreatLevel Alert
             if (knowledge.temperature >= ThreatInfo.TEMPERVAL_ALERT && knowledge.threatLevel != ThreatLevel.Alert)
             {
-                threatLevelChange = true;
+                threatLevelChange = knowledge.threatLevel!=ThreatLevel.Alert;
                 
                 knowledge.threatKnowledge.reachAlertThisFrame = true;
                 knowledge.threatLevel = ThreatLevel.Alert;
@@ -235,7 +235,10 @@ namespace TaoTie
                 aiComponent.OnThreatLevelChanged?.Invoke(knowledge.threatLevelOld, knowledge.threatLevel);
                 knowledge.aiOwnerEntity?.GetComponent<PoseFSMComponent>()?
                     .SetData(FSMConst.Alertness, (int)knowledge.threatLevel);
-                knowledge.combatComponent.isInCombat = knowledge.threatLevel == ThreatLevel.Alert;
+                if (!knowledge.combatComponent.isInCombat)
+                {
+                    knowledge.combatComponent.isInCombat = knowledge.threatLevel == ThreatLevel.Alert;
+                }
             }
 
             knowledge.threatKnowledge.mainThreat = mainTarget;

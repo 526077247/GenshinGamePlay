@@ -17,7 +17,8 @@ namespace TaoTie
         protected AIDecision decision { get; private set; }= new AIDecision();
         /// <summary> 上一帧决策结果 </summary>
         protected AIDecision decisionOld { get; private set; }= new AIDecision();
-
+        /// <summary> 移动summary>
+        public AIMoveUpdater moveUpdater { get; private set; }= new AIMoveUpdater();
         /// <summary> 寻路 </summary>
         public AIPathfindingUpdater pathfinder { get; private set; }= new AIPathfindingUpdater();
         /// <summary> 目标 </summary>
@@ -58,7 +59,7 @@ namespace TaoTie
             threatUpdater.Init(knowledge);
             targetUpdater.Init(knowledge);
             pathfinder.Init(knowledge);
-            
+            moveUpdater.Init(knowledge);
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
 
@@ -77,6 +78,7 @@ namespace TaoTie
             pathfinder.Clear();
             poseControlUpdater.Clear();
             skillUpdater.Clear();
+            moveUpdater.Clear();
             
             knowledge.Dispose();
             knowledge = null;
@@ -106,6 +108,7 @@ namespace TaoTie
             threatUpdater.UpdateMainThread();
             targetUpdater.UpdateMainThread();
             pathfinder.UpdateMainThread();
+            moveUpdater.UpdateMainThread();
             
             poseControlUpdater.UpdateMainThread();
             skillUpdater.UpdateMainThread();

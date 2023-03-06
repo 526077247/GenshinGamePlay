@@ -9,7 +9,8 @@ namespace TaoTie
         public bool disableMoveTactic;
         public bool inAir;
         public bool inWater;
-
+        public bool canMove = true;
+        public bool canTurn = true;
         public static AIMoveKnowledge Create(ConfigAIBeta config)
         {
             AIMoveKnowledge res = ObjectPool.Instance.Fetch<AIMoveKnowledge>();

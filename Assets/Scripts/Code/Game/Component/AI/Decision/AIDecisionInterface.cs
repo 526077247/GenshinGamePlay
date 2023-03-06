@@ -38,6 +38,7 @@ namespace TaoTie
 		}
 		public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
 		{
+			if (!knowledge.moveKnowledge.canMove) return false;
 			// if (!knowledge.returnToBornKnowledge.config.enable)
 			// 	return false;
 			// if (!knowledge.isReturnToBorn)
@@ -59,6 +60,7 @@ namespace TaoTie
 		public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
+			if (!knowledge.moveKnowledge.canMove) return false;
 			if (knowledge.wanderTactic.config==null || !knowledge.wanderTactic.config.Enable)
 				return false;
 			if (knowledge.moveControlState.WanderInfo.nextAvailableTick > GameTimerManager.Instance.GetTimeNow())
@@ -86,6 +88,7 @@ namespace TaoTie
 		public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
+			if (!knowledge.moveKnowledge.canMove) return false;
 			knowledge.meleeChargeTactic.SwitchSetting(knowledge.poseID);
 			float meleeChargeStartDistanceMin = knowledge.meleeChargeTactic.data.startDistanceMin;
 			float meleeChargeStartDistanceMax = knowledge.meleeChargeTactic.data.startDistanceMax;
@@ -102,6 +105,7 @@ namespace TaoTie
 		}
 		public static bool IsCombatFacingMoveValid(AIKnowledge knowledge)
 		{
+			if (!knowledge.moveKnowledge.canMove) return false;
 			if (knowledge.facingMoveTactic.config==null||!knowledge.facingMoveTactic.config.Enable)
 				return false;
 			if (!knowledge.facingMoveTactic.NerveCheck(knowledge))
@@ -119,6 +123,7 @@ namespace TaoTie
 		public static bool IsExtractionValid(AIKnowledge knowledge) => default;
 		public static bool IsFleeValid(AIKnowledge knowledge)
 		{
+			if (!knowledge.moveKnowledge.canMove) return false;
 			knowledge.fleeTactic.SwitchSetting(knowledge.poseID);
 			float triggerDistance = knowledge.fleeTactic.data.triggerDistance;
 			if (knowledge.fleeTactic.config==null||!knowledge.fleeTactic.config.Enable)
