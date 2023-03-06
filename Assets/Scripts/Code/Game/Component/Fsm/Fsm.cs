@@ -139,6 +139,14 @@ namespace TaoTie
          {
              if (onStateChanged != null)
                  onStateChanged(fromState?.name, toState.name);
+             if (fromState == null||fromState.CanMove != toState.CanMove)
+             {
+                 Messager.Instance.Broadcast(_component.Id, MessageId.SetCanMove, toState.CanMove);
+             }
+             if (fromState == null || fromState.CanTurn != toState.CanTurn)
+             {
+                 Messager.Instance.Broadcast(_component.Id, MessageId.SetCanTurn, toState.CanTurn);
+             }
          }
 
          public ConfigFsmState GetStateConfig(string stateName)
