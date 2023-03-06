@@ -118,6 +118,9 @@ namespace TaoTie
                 param.pathQuery = aiKnowledge.pathFindingKnowledge.CreatePathQueryTask(aiKnowledge.currentPos,
                     param.targetPosition, param.useNavmesh);
             }
+            GoToTask goToTask = new GoToTask();
+            goToTask.Init(aiKnowledge, param);
+            CreateTask_Internal(goToTask);
         }
         public void CreateFacingMoveTask(ParamFacingMove param) {} 
         public void CreateSurroundDashTask(ParamSurroundDash param) {}

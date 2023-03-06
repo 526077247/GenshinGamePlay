@@ -21,5 +21,13 @@ namespace TaoTie
         {
             config = null;
         }
+        
+        public float GetAlmostReachDistance(AIMoveSpeedLevel speed)
+        {
+            if (speed == AIMoveSpeedLevel.Walk)
+                return config.almostReachedDistanceWalk;
+            else
+                return config.almostReachedDistanceRun;
+        }
     }
 }
