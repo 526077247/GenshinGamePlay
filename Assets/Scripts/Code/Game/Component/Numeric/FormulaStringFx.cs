@@ -156,7 +156,7 @@ namespace TaoTie
             string outstring = "";
             for (int i = 0; i < formulaNodeList.Count; i++)
             {
-                outstring += string.Format("[{0}-({1}):({2}) ]", formulaNodeList[i].Key, formulaNodeList[i].Value);
+                outstring += string.Format("[({0}):({1}) ]", formulaNodeList[i].Key, formulaNodeList[i].Value);
             }
 
             Log.Info(outstring);

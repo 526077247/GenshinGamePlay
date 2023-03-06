@@ -72,6 +72,7 @@ namespace TaoTie
             res.HitInfo = info;
             res.ConfigAttackInfo = config;
             res.EnBreak.Clear();
+            res.IsEffective = true;
             return res;
         }
 

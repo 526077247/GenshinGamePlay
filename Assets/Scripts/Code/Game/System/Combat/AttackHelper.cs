@@ -90,7 +90,7 @@ namespace TaoTie
             if (!result.TrueDamage)
             {
                 var flag = 100 * numD.GetAsFloat(NumericType.Lv);
-                result.DamagePercentageRatio *= numD.GetAsFloat(NumericType.DEF) / (numD.GetAsFloat(NumericType.DEF) + flag);
+                result.DamagePercentageRatio *= flag / (numD.GetAsFloat(NumericType.DEF) + flag);
             }
             
             //暴击
@@ -108,7 +108,7 @@ namespace TaoTie
             result.FinalRealDamage = (int) (
                 result.DamagePercentage * result.DamagePercentageRatio *
                 (result.IsCritical ? (result.BonusCriticalHurt + 1) : 1) + result.DamageExtra);
-            
+            Log.Info("最终伤害： "+result.FinalRealDamage);
             //修改血量
             numD.Set(NumericType.HpBase, numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage);
             //破霸体
