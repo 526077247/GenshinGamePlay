@@ -50,7 +50,7 @@ namespace TaoTie
             var combatD = defence.GetComponent<CombatComponent>();
             if (combatA == null || combatD == null) return;
             var numA = attacker.GetComponent<NumericComponent>();
-            var numD = attacker.GetComponent<NumericComponent>();
+            var numD = defence.GetComponent<NumericComponent>();
             if (numA == null || numD == null) return;
             result.DamagePercentage =
                 result.ConfigAttackInfo.AttackProperty.DamagePercentage.Resolve(attacker, ability);
