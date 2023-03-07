@@ -9,7 +9,7 @@ namespace TaoTie
     {
         protected override string fileName => "Abilities";
 
-        protected override string folderPath => base.folderPath + "/Unit";
+        protected override string folderPath => base.folderPath + "/EditConfig/Abilities";
         [MenuItem("Tools/配置编辑器/Ability")]
         static void OpenAbility()
         {

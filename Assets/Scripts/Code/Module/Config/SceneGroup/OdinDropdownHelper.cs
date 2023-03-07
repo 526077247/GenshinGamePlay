@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -216,6 +217,36 @@ namespace TaoTie
                     list.Add($"{fields[i].Name}({val})", val);
                 }
                
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取所有abilityName
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetAbilities()
+        {
+            var files = Directory.GetFiles("Assets/AssetsPackage/EditConfig/Abilities");
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            HashSet<string> temp = new HashSet<string>();
+            for (int i = 0; i < files.Length; i++)
+            {
+                var jStr = File.ReadAllText(files[i]);
+                if (JsonHelper.TryFromJson(jStr, out List<ConfigAbility> abilities))
+                {
+                    for (int j = 0; j < abilities.Count; j++)
+                    {
+                        if (temp.Contains(abilities[j].AbilityName))
+                        {
+                            Log.Error("ability name重复！"+abilities[j].AbilityName+"  路径："+files[i]);
+                            continue;
+                        }
+
+                        temp.Add(abilities[j].AbilityName);
+                        list.Add(abilities[j].AbilityName);
+                    }
+                }
             }
             return list;
         }

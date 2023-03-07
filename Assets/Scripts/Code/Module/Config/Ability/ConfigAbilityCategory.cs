@@ -24,11 +24,17 @@ namespace TaoTie
                 var op = YooAssets.LoadAssetSync(sceneGroups[i]);
                 if (op.AssetObject is TextAsset textAsset)
                 {
-                    var item = JsonHelper.FromJson<ConfigAbility>(textAsset.text);
-                    if (!_dict.ContainsKey(item.AbilityName))
+                    if (JsonHelper.TryFromJson<List<ConfigAbility>>(textAsset.text, out var list))
                     {
-                        _list.Add(item);
-                        _dict[item.AbilityName] = item;
+                        for (int j = 0; j < list.Count; j++)
+                        {
+                            var item = list[j];
+                            if (!_dict.ContainsKey(item.AbilityName))
+                            {
+                                _list.Add(item);
+                                _dict[item.AbilityName] = item;
+                            }
+                        }
                     }
                 }
                 op.Release();

@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ExecuteAbility: ConfigAbilityAction
+    public partial class AddAbility: ConfigAbilityAction
     {
         [NinoMember(10)] [ValueDropdown("@OdinDropdownHelper.GetAbilities()")]
         public string AbilityName;
@@ -13,7 +13,9 @@ namespace TaoTie
             var ac = target.GetComponent<AbilityComponent>();
             if (ac != null)
             {
-                ac.ExecuteAbility(AbilityName);
+                var config = ConfigAbilityCategory.Instance.Get(AbilityName);
+                if (config != null)
+                    ac.AddAbility(config);
             }
         }
     }

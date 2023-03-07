@@ -52,7 +52,12 @@ namespace TaoTie
         }
 
         #endregion
-
+        public void AddAbility(ConfigAbility config)
+        {
+            var ability = ActorAbility.Create(Id, config, this);
+            abilities.AddLast(ability);
+            ability.AfterAdd();
+        }
 
         public ActorModifier ApplyModifier(long applierID, ActorAbility ability, string modifierName)
         {
