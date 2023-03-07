@@ -86,11 +86,12 @@ namespace TaoTie
             ec.Id = this.Id;
             ec.EntityType = unit.Type;
             ec.CampId = unit.CampId;
-            
+
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
-            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChanePosition);
-            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
+            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.AddListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
@@ -116,8 +117,9 @@ namespace TaoTie
 
         public void Destroy()
         {
-            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChanePosition);
-            Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChaneRotation);
+            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+            Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.RemoveListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.RemoveListener<int, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<int, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.RemoveListener<int, bool>(Id, MessageId.SetAnimDataBool, SetData);
@@ -136,14 +138,23 @@ namespace TaoTie
 
         #endregion
 
-        public void OnChanePosition(Unit unit, Vector3 old)
+        public void OnChangePosition(Unit unit, Vector3 old)
         {
             EntityView.position = unit.Position;
         }
 
-        public void OnChaneRotation(Unit unit, Quaternion old)
+        public void OnChangeRotation(Unit unit, Quaternion old)
         {
             EntityView.rotation = unit.Rotation;
+        }
+
+        public void OnChangeTurn(Unit unit, bool old)
+        {
+            Transform obj = EntityView.Find("Obj");
+            if (obj)
+            {
+                obj.localScale = unit.IsTurn ? new Vector3(-1, 1, 1) : Vector3.one;
+            }
         }
 
         public async ETTask WaitLoadGameObjectOver()
