@@ -52,6 +52,7 @@ namespace TaoTie
             SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();
+            ManagerProvider.RegisterManager<ConfigAbilityCategory>();
             ManagerProvider.RegisterManager<CampManager>();
         }
     }

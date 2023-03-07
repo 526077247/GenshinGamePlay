@@ -86,9 +86,6 @@ namespace TaoTie
 		/// <summary>EntityConfig</summary>
 		[NinoMember(3)]
 		public string EntityConfig { get; set; }
-		/// <summary>Ability路径</summary>
-		[NinoMember(4)]
-		public string Abilities { get; set; }
 
 	}
 }

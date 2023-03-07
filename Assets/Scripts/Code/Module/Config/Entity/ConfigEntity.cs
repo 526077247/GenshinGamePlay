@@ -6,6 +6,8 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigEntity
     {
+        [NinoMember(7)]
+        public string[] Abilities;
         [NinoMember(1)]
         public ConfigEntityCommon Common;
         [NinoMember(2)][LabelText("挂点索引")]

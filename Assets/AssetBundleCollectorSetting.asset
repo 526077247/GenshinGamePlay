@@ -114,3 +114,10 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: aiTree
+      - CollectPath: Assets/AssetsPackage/EditConfig/Abilities
+        CollectorGUID: 01faf65e50fdfce43bacf9c213a3ef4a
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: ability
