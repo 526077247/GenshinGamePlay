@@ -67,7 +67,8 @@ namespace YooAsset.Editor
 		public bool IsCollectAsset(FilterRuleData data)
 		{
 			if (data.AssetPath.Contains("/Edit/")) return false;
-			return Path.GetExtension(data.AssetPath) == ".prefab"||Path.GetExtension(data.AssetPath) == ".bytes";
+			var ext = Path.GetExtension(data.AssetPath);
+			return ext == ".prefab" || ext == ".bytes" || ext == ".controller";
 		}
 	}
 }

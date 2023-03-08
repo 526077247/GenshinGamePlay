@@ -83,9 +83,6 @@ namespace TaoTie
 		/// <summary>模型Id</summary>
 		[NinoMember(2)]
 		public int UnitId { get; set; }
-		/// <summary>EntityConfig</summary>
-		[NinoMember(3)]
-		public string EntityConfig { get; set; }
 
 	}
 }

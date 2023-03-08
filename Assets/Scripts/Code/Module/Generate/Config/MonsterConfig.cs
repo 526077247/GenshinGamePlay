@@ -89,9 +89,6 @@ namespace TaoTie
 		/// <summary>PoseFSM</summary>
 		[NinoMember(4)]
 		public string PoseFSM { get; set; }
-		/// <summary>EntityConfig</summary>
-		[NinoMember(5)]
-		public string EntityConfig { get; set; }
 
 	}
 }

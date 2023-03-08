@@ -20,7 +20,7 @@ namespace TaoTie
             CampId = campId;
             var gadget = AddComponent<GadgetComponent,int,GadgetState>(id,state);
             ConfigId = gadget.Config.UnitId;
-            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(gadget.Config.EntityConfig);
+            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(entityConfig.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));

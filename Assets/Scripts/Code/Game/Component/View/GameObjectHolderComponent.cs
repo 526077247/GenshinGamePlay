@@ -47,7 +47,8 @@ namespace TaoTie
             }
 
             Animator = obj.GetComponentInChildren<Animator>();
-
+            Animator.runtimeAnimatorController =
+                ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
             var fsm = Parent.GetComponent<FsmComponent>();
             if (fsm != null)
             {
@@ -134,6 +135,10 @@ namespace TaoTie
             }
 
             waitFinishTask = null;
+            if (Animator != null)
+            {
+                ResourcesManager.Instance.ReleaseAsset(Animator.runtimeAnimatorController);
+            }
         }
 
         #endregion
