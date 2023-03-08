@@ -97,8 +97,8 @@ namespace TaoTie
             result.IsCritical = false;
             if (result.BonusCritical > 0)
             {
-                var percent = Random.Range(0, 10) / 10;
-                if (percent < result.BonusCritical)
+                var percent = Random.Range(0, 100);
+                if (percent < result.BonusCritical * 100)
                 {
                     result.IsCritical = true;
                 }
