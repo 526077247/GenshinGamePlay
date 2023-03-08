@@ -14,12 +14,16 @@ namespace TaoTie
             canTurn = FsmComponent.defaultFsm.currentState.CanTurn;
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
+            Messager.Instance.AddListener<Unit>(Id, MessageId.MoveStart, MoveStart);
+            Messager.Instance.AddListener<Unit>(Id, MessageId.MoveStop, MoveStop);
         }
 
         public void Destroy()
         {
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
+            Messager.Instance.RemoveListener<Unit>(Id, MessageId.MoveStart, MoveStart);
+            Messager.Instance.RemoveListener<Unit>(Id, MessageId.MoveStop, MoveStop);
         }
 
         public void TryMove(Vector3 direction)
@@ -28,6 +32,14 @@ namespace TaoTie
             {
                 GetParent<Unit>().Position += (GameTimerManager.Instance.GetDeltaTime() / 1000f) *
                                               NumericComponent.GetAsFloat(NumericType.Speed) * direction;
+                if (direction != Vector3.zero)
+                {
+                    MoveStart(GetParent<Unit>());
+                }
+                else
+                {
+                    MoveStop(GetParent<Unit>());
+                }
             }
             if (canTurn)
             {
@@ -51,6 +63,16 @@ namespace TaoTie
         private void SetCanTurn(bool canTurn)
         {
             this.canTurn = canTurn;
+        }
+
+        private void MoveStart(Unit unit)
+        {
+            FsmComponent.SetData(FSMConst.MotionFlag, 1);
+        }
+
+        private void MoveStop(Unit unit)
+        {
+            FsmComponent.SetData(FSMConst.MotionFlag, 0);
         }
     }
 }

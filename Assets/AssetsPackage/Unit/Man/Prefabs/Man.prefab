@@ -250,4 +250,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8a4ae2fbad43488cfdddcf6e992414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: []
+  data:
+  - key: Obj
+    gameObject: {fileID: 4872978029691140067}

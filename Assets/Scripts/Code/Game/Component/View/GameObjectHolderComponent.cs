@@ -150,10 +150,11 @@ namespace TaoTie
 
         public void OnChangeTurn(Unit unit, bool old)
         {
-            Transform obj = EntityView.Find("Obj");
+            GameObject obj = GetCollectorObj<GameObject>("Obj");
             if (obj)
             {
-                obj.localScale = unit.IsTurn ? new Vector3(-1, 1, 1) : Vector3.one;
+                
+                obj.transform.localScale = unit.IsTurn ? new Vector3(-1, 1, 1) : Vector3.one;
             }
         }
 
