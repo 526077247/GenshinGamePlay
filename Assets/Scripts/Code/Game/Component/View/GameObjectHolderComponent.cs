@@ -23,9 +23,9 @@ namespace TaoTie
             }
         }
 
-        public Transform EntityView;
+        private Transform EntityView;
 
-        public ReferenceCollector Collector;
+        private ReferenceCollector Collector;
 
         private Queue<ETTask> waitFinishTask;
 
@@ -36,7 +36,7 @@ namespace TaoTie
             LoadGameObjectAsync().Coroutine();
         }
 
-        public async ETTask LoadGameObjectAsync()
+        private async ETTask LoadGameObjectAsync()
         {
             var unit = this.GetParent<Unit>();
             var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(unit.Config.Perfab);
