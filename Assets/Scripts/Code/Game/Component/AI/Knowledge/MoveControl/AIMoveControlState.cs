@@ -46,7 +46,7 @@ namespace TaoTie
             }
             else
             {
-                
+                taskHandler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
             }
         }
 

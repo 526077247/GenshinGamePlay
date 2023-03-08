@@ -43,7 +43,10 @@ namespace TaoTie
             targetAngle = param.targetAngle;
             speedLevel = param.speedLevel;
         }
-
+        public override void OnCloseTask(AILocomotionHandler handler)
+        {
+            handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+        }
         public override void Deallocate()
         {
             
