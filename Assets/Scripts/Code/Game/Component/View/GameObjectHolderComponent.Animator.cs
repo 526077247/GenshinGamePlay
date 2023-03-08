@@ -4,8 +4,8 @@ namespace TaoTie
 {
     public partial class GameObjectHolderComponent
     {
-        public Animator Animator;
-        public FsmComponent Fsm => Parent.GetComponent<FsmComponent>();
+        private Animator Animator;
+        private FsmComponent Fsm => Parent.GetComponent<FsmComponent>();
         public void SetWeight(int index, float weight)
         {
             if (Animator != null)
