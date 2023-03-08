@@ -11,6 +11,7 @@ namespace TaoTie
         public FleeInfo FleeInfo => moveInfoGroup[(int) MoveDecision.Flee] as FleeInfo;
         public WanderInfo WanderInfo =>  moveInfoGroup[(int) MoveDecision.Wander] as WanderInfo;
         public MeleeChargeInfo MeleeCharge =>  moveInfoGroup[(int) MoveDecision.MeleeCharge] as MeleeChargeInfo;
+        public CombatFollowMoveInfo CombatFollowMove =>  moveInfoGroup[(int) MoveDecision.CombatFollowMove] as CombatFollowMoveInfo;
         public static AIMoveControlState Create()
         {
             AIMoveControlState res = ObjectPool.Instance.Fetch<AIMoveControlState>();
@@ -19,6 +20,7 @@ namespace TaoTie
             res.moveInfoGroup[(int) MoveDecision.Flee] = FleeInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.Wander] = WanderInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.MeleeCharge] = MeleeChargeInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.CombatFollowMove] = CombatFollowMoveInfo.Create();
             return res;
         }
 

@@ -14,8 +14,10 @@ namespace TaoTie
         [NinoMember(1)]
         public int localId;
         [NinoMember(2)]
-        [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] [SerializeReference]
-        [PropertyOrder(int.MaxValue - 1)]
+#if UNITY_EDITOR
+        [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
+#endif
+        [SerializeReference] [PropertyOrder(int.MaxValue - 1)]
         [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(GetType())")]
         public ConfigSceneGroupAction[] actions;
 

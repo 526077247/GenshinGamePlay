@@ -16,14 +16,18 @@ namespace TaoTie
         public ConfigSceneGroupCondition[] conditions;
         [NinoMember(11)]
         [LabelText("所有条件都满足后执行")]
+#if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
+#endif
         [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
         public ConfigSceneGroupAction[] success;
         [NinoMember(12)]
         [LabelText("任意一个条件不满足执行")]
+#if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
+#endif
         [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
         public ConfigSceneGroupAction[] fail;
 

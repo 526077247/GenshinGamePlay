@@ -2,27 +2,25 @@
 
 namespace TaoTie
 {
-    public class MeleeChargeInfo: MoveInfoBase
+    public class CombatFollowMoveInfo: MoveInfoBase
     {
-        public enum ChargeStatus
+        public enum CombatFollowMoveStatus
         {
             Inactive = 0,
-            Charging = 1
+            CloseTo = 1
         }
-
-        public const int RETRY_TIMES = 3; 
-        public ChargeStatus Status; 
-        public Vector3 CurDestination;
+        
+        public CombatFollowMoveStatus Status;
         private int retryTimes;
-        public static MeleeChargeInfo Create()
+        public static CombatFollowMoveInfo Create()
         {
-            var res = ObjectPool.Instance.Fetch<MeleeChargeInfo>();
+            var res = ObjectPool.Instance.Fetch<CombatFollowMoveInfo>();
 
             return res;
         }
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
-            if (Status == ChargeStatus.Inactive)
+            if (Status == CombatFollowMoveStatus.Inactive)
             {
                 ConfigAIMeleeChargeData data = aiKnowledge.meleeChargeTactic.data;
 
@@ -42,16 +40,12 @@ namespace TaoTie
                 };
 
                 taskHandler.CreateFollowMoveTask(param);
-                Status = ChargeStatus.Charging;
+                Status = CombatFollowMoveStatus.CloseTo;
             }
         }
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,
             AIManager aiManager)
-        {
-        }
-        
-        public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
         {
             
         }
@@ -59,7 +53,12 @@ namespace TaoTie
         public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             base.Leave(taskHandler, aiKnowledge, aiManager);
-            Status = ChargeStatus.Inactive;
+            Status = CombatFollowMoveStatus.Inactive;
+        }
+
+        public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
+        {
+            
         }
 
         public override void Dispose()

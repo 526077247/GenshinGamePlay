@@ -32,7 +32,6 @@
         AutoPlayerFollowTarget = 27,
         BrownianMove = 28,
         MoveDecisionCount = 29,
-        
         Max,
     }
 }

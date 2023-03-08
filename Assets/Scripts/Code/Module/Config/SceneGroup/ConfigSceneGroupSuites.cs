@@ -28,7 +28,10 @@ namespace TaoTie
         public int[] zones;
         [NinoMember(4)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupTriggerIds()")]
         public int[] triggers;
-        [NinoMember(5)][ShowIf(nameof(RandSuite))]
+#if UNITY_EDITOR
+        [ShowIf(nameof(RandSuite))]
+#endif
+        [NinoMember(5)]
         public int randWeight;
         
         

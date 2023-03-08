@@ -36,9 +36,5 @@
         public const int ChangeTurnEvt = 15;
         /// <summary> 游戏时间计时 </summary>
         public const int GameTimeEventTrigger = 16;
-        /// <summary> 开始移动 </summary>
-        public const int MoveStart = 17;
-        /// <summary> 停止移动 </summary>
-        public const int MoveStop = 18;
     }
 }

@@ -31,6 +31,8 @@ namespace TaoTie
                 {
                     aiKnowledge.aiOwnerEntity.Position += desiredDirection * moveDis;
                 }
+
+                aiKnowledge.aiOwnerEntity.IsTurn = anchorPos.x < aiKnowledge.aiOwnerEntity.Position.x;
             }
         }
 
