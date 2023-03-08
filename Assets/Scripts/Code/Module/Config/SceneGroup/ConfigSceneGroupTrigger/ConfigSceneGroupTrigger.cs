@@ -47,6 +47,7 @@ namespace TaoTie
         public sealed override void OnTrigger(SceneGroup sceneGroup, IEventBase evt)
         {
             if (evt.GetType() != EventType) return;
+            if (!CheckCondition(sceneGroup, (T)evt)) return;
             Log.Info("OnTrigger: " + GetType().Name);
             if (actions != null)
             {
@@ -55,6 +56,11 @@ namespace TaoTie
                     actions[i].ExecuteAction(evt, sceneGroup);
                 }
             }
+        }
+
+        protected virtual bool CheckCondition(SceneGroup sceneGroup, T evt)
+        {
+            return true;
         }
     }
 }

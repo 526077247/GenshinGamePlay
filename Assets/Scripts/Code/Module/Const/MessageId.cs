@@ -35,5 +35,7 @@
 
         /// <summary> 方向变化 </summary>
         public const int ChangeTurnEvt = 15;
+        /// <summary> 游戏时间计时 </summary>
+        public const int GameTimeEventTrigger = 16;
     }
 }

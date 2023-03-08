@@ -12,5 +12,9 @@ namespace TaoTie
         [NinoMember(5)][LabelText("变量")]
         public string key;
 
+        protected override bool CheckCondition(SceneGroup sceneGroup, VariableChangeEvent evt)
+        {
+            return key == evt.Key;
+        } 
     }
 }
