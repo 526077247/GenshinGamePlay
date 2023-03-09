@@ -9,15 +9,15 @@ namespace TaoTie
     public partial class ConfigVirtualCamera : ConfigCamera
     {
         public override CameraType type => CameraType.VirtualCameraPlugin;
-        [NinoMember(20)] public CinemachineBodyType _body;
+        [NinoMember(20)] public CinemachineBodyType body;
 
-        [ShowIf(nameof(_body), CinemachineBodyType.HardLockToTarget)] 
-        [NinoMember(21)]public ConfigHardLockToTarget _hardLockToTarget;
+        [ShowIf(nameof(body), CinemachineBodyType.HardLockToTarget)] 
+        [NinoMember(21)]public ConfigHardLockToTarget hardLockToTarget;
 
-        [ShowIf(nameof(_body), CinemachineBodyType.Transposer)] 
-        [NinoMember(22)]public ConfigTransposer _transposer;
+        [ShowIf(nameof(body), CinemachineBodyType.Transposer)] 
+        [NinoMember(22)]public ConfigTransposer transposer;
 
-        [ShowIf(nameof(_body), CinemachineBodyType.FramingTransposer)] 
-        [NinoMember(23)]public ConfigFramingTransposer _framingTransposer;
+        [ShowIf(nameof(body), CinemachineBodyType.FramingTransposer)] 
+        [NinoMember(23)]public ConfigFramingTransposer framingTransposer;
     }
 }

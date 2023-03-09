@@ -80,6 +80,8 @@ namespace TaoTie
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
 
             await UIManager.Instance.DestroyWindow<UILoadingView>();
+            var pos = Self.Position + new Vector3(0, 5, -5);
+            CameraManager.Instance.SetVirtualCameraFollowData(pos,Self.Position-pos);
             win = null;
             Log.Info("进入场景 " + GetScenePath());
         }

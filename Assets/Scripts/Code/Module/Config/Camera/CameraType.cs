@@ -6,6 +6,7 @@
     public enum CameraType
     {
         FreeLookCameraPlugin,
-        VirtualCameraPlugin
+        VirtualCameraPlugin,
+        TrackCameraPlugin
     }
 }

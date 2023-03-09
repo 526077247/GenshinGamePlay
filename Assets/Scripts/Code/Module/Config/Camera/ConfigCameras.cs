@@ -9,7 +9,7 @@ namespace TaoTie
     public partial class ConfigCameras
     {
         [NinoMember(1)]
-        public ConfigFreeLookCamera defaultCamera;
+        public ConfigCamera defaultCamera;
         [NinoMember(2)]
         public ConfigCamera[] cameras;
         [NinoMember(3)]
