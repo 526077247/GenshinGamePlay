@@ -1,17 +1,24 @@
 ﻿using System.Collections.Generic;
-
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class SerializeAnimCurveKeyFrame 
+    [NinoSerialize]
+    public partial class SerializeAnimCurveKeyFrame 
     {
-        private float _time;
-        private float _value;
-        private float _inTangent;
-        private float _outTangent;
-        private float _inWeight;
-        private float _outWeight;
+        [NinoMember(1)]
+        public float _time;
+        [NinoMember(2)]
+        public float _value;
+        [NinoMember(3)]
+        public float _inTangent;
+        [NinoMember(4)]
+        public float _outTangent;
+        [NinoMember(5)]
+        public float _inWeight;
+        [NinoMember(6)]
+        public float _outWeight;
 
         public SerializeAnimCurveKeyFrame()
         {

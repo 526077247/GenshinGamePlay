@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
-
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class ConfigHardLockToTarget
+    [NinoSerialize]
+    public partial class ConfigHardLockToTarget
     {
-        [SerializeField] private float _damping = 0;
-
-        public float damping => _damping;
+        [NinoMember(1)]
+        public float damping = 0;
+        
     }
 }
