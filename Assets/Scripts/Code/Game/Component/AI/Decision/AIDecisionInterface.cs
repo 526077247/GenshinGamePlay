@@ -89,6 +89,7 @@ namespace TaoTie
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.moveKnowledge.canMove) return false;
+			if (knowledge.moveControlState.MeleeCharge.Status == MeleeChargeInfo.ChargeStatus.Charging) return true;
 			knowledge.meleeChargeTactic.SwitchSetting(knowledge.poseID);
 			float meleeChargeStartDistanceMin = knowledge.meleeChargeTactic.data.startDistanceMin;
 			float meleeChargeStartDistanceMax = knowledge.meleeChargeTactic.data.startDistanceMax;
