@@ -158,8 +158,10 @@ namespace TaoTie
             GameObject obj = GetCollectorObj<GameObject>("Obj");
             if (obj)
             {
-                
-                obj.transform.localScale = unit.IsTurn ? new Vector3(-1, 1, 1) : Vector3.one;
+                if ((unit.IsTurn && obj.transform.localScale.x > 0) || (!unit.IsTurn && obj.transform.localScale.x < 0))
+                {
+                    obj.transform.localScale = new Vector3(-obj.transform.localScale.x, obj.transform.localScale.y, obj.transform.localScale.z);
+                }
             }
         }
 
