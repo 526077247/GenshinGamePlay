@@ -9,7 +9,7 @@ namespace TaoTie
     public partial class SerializeAnimationCurveData
     {
         [NinoMember(1)]
-        private List<SerializeAnimCurveKeyFrame> _animCurveKeyFrameList;
+        public List<SerializeAnimCurveKeyFrame> _animCurveKeyFrameList;
 
         [JsonIgnore]
         public AnimationCurve AnimCurve

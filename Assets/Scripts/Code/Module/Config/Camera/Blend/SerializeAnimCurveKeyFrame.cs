@@ -19,7 +19,8 @@ namespace TaoTie
         public float _inWeight;
         [NinoMember(6)]
         public float _outWeight;
-
+        [NinoMember(7)]
+        public WeightedMode _mode;
         public SerializeAnimCurveKeyFrame()
         {
         }
@@ -32,6 +33,7 @@ namespace TaoTie
             this._outTangent = keyframe.outTangent;
             this._inWeight = keyframe.inWeight;
             this._outWeight = keyframe.outWeight;
+            this._mode = keyframe.weightedMode;
         }
 
         public static implicit operator SerializeAnimCurveKeyFrame(Keyframe keyframe)
@@ -41,8 +43,10 @@ namespace TaoTie
 
         public static implicit operator Keyframe(SerializeAnimCurveKeyFrame keyframe)
         {
-            return new Keyframe(keyframe._time, keyframe._value, keyframe._inTangent, keyframe._outTangent,
+            var res=new Keyframe(keyframe._time, keyframe._value, keyframe._inTangent, keyframe._outTangent,
                 keyframe._inWeight, keyframe._outWeight);
+            res.weightedMode = keyframe._mode;
+            return res;
         }
     }
 }
