@@ -14,6 +14,7 @@ namespace TaoTie
         private CinemachineComposer _bottomComposer;
 
         private float _objHalfHeight;
+        private FreeLookCameraStateData _stateData => stateData as FreeLookCameraStateData;
 
         protected override void OnInitInternal(ConfigFreeLookCamera data)
         {
@@ -118,11 +119,20 @@ namespace TaoTie
         /// </summary>
         /// <param name="followObj">角色</param>
         /// <param name="height">角色身高</param>
-        public void SetFollowTransform(Transform followObj, float height)
+        /// <param name="cut">跳过过渡动画</param>
+        public void SetFollowTransform(Transform followObj, float height, bool cut = false)
         {
             _objHalfHeight = height / 2;
             SetFollowTransform(followObj);
             SetLookAtTransform(followObj);
+            if (cut)
+            {
+                baseCamera.ForceCameraPosition(
+                    followObj.position +
+                    followObj.rotation * new Vector3(0, _stateData.height[1], -_stateData.radius[1]),
+                    Quaternion.identity);
+            }
+
             if (stateData != null) //刷新配置
                 NearFocusProcess(stateData as FreeLookCameraStateData);
         }
