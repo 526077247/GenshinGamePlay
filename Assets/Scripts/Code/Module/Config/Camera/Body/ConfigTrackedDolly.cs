@@ -1,20 +1,17 @@
 ﻿using System.Collections.Generic;
-
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class ConfigTrackedDolly
+    [NinoSerialize]
+    public partial class ConfigTrackedDolly
     {
-        [SerializeField] private float _xdamping = 0;
-        [SerializeField] private float _ydamping = 0;
-        [SerializeField] private float _zdamping = 0;
-
-        public float xdamping => _xdamping;
-        public float ydamping => _ydamping;
-        public float zdamping => _zdamping;
-
-
-
+        [NinoMember(1)]
+        public float xdamping;
+        [NinoMember(2)]
+        public float ydamping;
+        [NinoMember(3)]
+        public float zdamping;
     }
 }

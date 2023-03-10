@@ -10,7 +10,7 @@ namespace TaoTie
         public HardLockToTargetStateData hardLockToTarget;
         public Vector3 lookAt;
         public TransposerStateData transposer;
-
+        public bool cut = false;
         public VirtualCameraStateData()
         {
         }

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
+    [NinoSerialize()]
     public class ConfigCameraRoutePoint
     {
-        private Vector3 _position;
-        private float _roll;
-
-        public Vector3 position => _position;
-        public float roll => _roll;
+        [NinoMember(1)]
+        public Vector3 position;
+        [NinoMember(2)]
+        public float roll;
     }
 }

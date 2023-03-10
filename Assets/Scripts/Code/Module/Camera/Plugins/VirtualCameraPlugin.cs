@@ -53,6 +53,7 @@ namespace TaoTie
             camera.m_Lens.Dutch = stateData.dutch;
             camera.m_Lens.FarClipPlane = stateData.farClipPlane;
             camera.m_Lens.NearClipPlane = stateData.nearClipPlane;
+            Vector3 pos = stateData.follow;
             if (stateData.body == CinemachineBodyType.Transposer)
             {
                 var comp = camera.GetCinemachineComponent<CinemachineTransposer>();
@@ -64,6 +65,7 @@ namespace TaoTie
                 comp.m_ZDamping = stateData.transposer.zDamping;
                 comp.m_YawDamping = stateData.transposer.yawDamping;
                 comp.m_FollowOffset = stateData.transposer.followOffset;
+                pos += stateData.transposer.followOffset;
             }
             else if (stateData.body == CinemachineBodyType.HardLockToTarget)
             {
@@ -90,6 +92,10 @@ namespace TaoTie
 
             _follow.position = stateData.follow;
             _lookAt.position = stateData.lookAt;
+            if (stateData.cut)
+            {
+                camera.ForceCameraPosition(pos, Quaternion.Euler(_lookAt.position - pos));
+            }
         }
     }
 }

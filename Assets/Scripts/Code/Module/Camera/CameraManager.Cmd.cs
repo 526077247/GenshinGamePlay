@@ -127,28 +127,61 @@ namespace TaoTie
         /// <summary>
         ///     设置VirtualCamera的坐标方向
         /// </summary>
-        public void SetVirtualCameraFollowData(Vector3 position, Vector3 forward)
+        public void SetVirtualCameraFollowData(Vector3 position, Vector3 forward, bool cut = false)
         {
             if (curCameraType == CameraType.VirtualCameraPlugin)
             {
                 var data = curState.data.Clone() as VirtualCameraStateData;
                 data.follow = position;
                 data.lookAt = position + forward;
+                data.cut = cut;
                 ChangeCameraState(curState.id, data);
+            }
+            else
+            {
+                Log.Error("相机类型不匹配");
             }
         }
 
         /// <summary>
         ///     设置VirtualCamera的坐标方向
         /// </summary>
-        public void SetVirtualCameraFollowData(Vector3 position, Quaternion rotation)
+        public void SetVirtualCameraFollowData(Vector3 position, Quaternion rotation, bool cut = false)
         {
             if (curCameraType == CameraType.VirtualCameraPlugin)
             {
                 var data = curState.data.Clone() as VirtualCameraStateData;
                 data.follow = position;
                 data.lookAt = position + rotation * Vector3.forward;
+                data.cut = cut;
                 ChangeCameraState(curState.id, data);
+            }
+            else
+            {
+                Log.Error("相机类型不匹配");
+            }
+        }
+
+        #endregion
+        
+        #region TrackCamera
+
+        /// <summary>
+        /// 使用指定相机播放相机动画
+        /// </summary>
+        /// <param name="cameraId"></param>
+        /// <param name="route"></param>
+        public void PlayTrackAnim(int cameraId, ConfigCameraRoute route)
+        {
+            if (configs.TryGetValue(cameraId, out var data) && data is ConfigTrackCamera config)
+            {
+                var state = new TrackCameraStateData(config);
+                state.smoothRoute = new CameraSmoothRoute(route);
+                ChangeCameraState(cameraId, state, false);
+            }
+            else
+            {
+                Log.Error("相机不存在或类型不匹配");
             }
         }
 
