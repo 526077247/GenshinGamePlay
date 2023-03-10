@@ -125,6 +125,8 @@ namespace TaoTie
             _objHalfHeight = height / 2;
             SetFollowTransform(followObj);
             SetLookAtTransform(followObj);
+            if (stateData != null) //刷新配置
+                NearFocusProcess(stateData as FreeLookCameraStateData);
             if (cut)
             {
                 baseCamera.ForceCameraPosition(
@@ -133,8 +135,6 @@ namespace TaoTie
                     Quaternion.identity);
             }
 
-            if (stateData != null) //刷新配置
-                NearFocusProcess(stateData as FreeLookCameraStateData);
         }
     }
 }
