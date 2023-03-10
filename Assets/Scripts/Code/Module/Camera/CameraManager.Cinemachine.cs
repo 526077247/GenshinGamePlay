@@ -23,8 +23,8 @@ namespace TaoTie
         public VirtualCameraPlugin defaultCamera =>
             _cameraPlugins[defaultCameraId] as VirtualCameraPlugin;
 
-        private partial void AddInputListener();
-        private partial void RemoveInputListener();
+        partial void AddInputListener();
+        partial void RemoveInputListener();
 
         public void Init()
         {

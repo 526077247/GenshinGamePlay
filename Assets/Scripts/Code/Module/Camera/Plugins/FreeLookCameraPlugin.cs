@@ -31,6 +31,7 @@ namespace TaoTie
 
             camera.m_XAxis.m_InvertInput = false;
             camera.m_YAxis.m_InvertInput = true;
+            camera.m_YAxis.Value = 0.5f;
             camera.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
             baseCamera.Priority = 0;
         }
