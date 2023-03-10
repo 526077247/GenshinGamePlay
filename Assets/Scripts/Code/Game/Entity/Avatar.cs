@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -26,7 +27,14 @@ namespace TaoTie
             AddComponent<AvatarMoveComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(entityConfig.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
+            InitAsync().Coroutine();
+        }
 
+        private async ETTask InitAsync()
+        {
+            var ghc = GetComponent<GameObjectHolderComponent>();
+            await ghc.WaitLoadGameObjectOver();
+            CameraManager.Instance.defaultCamera.SetFollowTransform(ghc.EntityView, new Vector3(0, 5, -5), true);
         }
 
         public void Destroy()

@@ -97,5 +97,28 @@ namespace TaoTie
                 camera.ForceCameraPosition(pos, Quaternion.Euler(_lookAt.position - pos));
             }
         }
+        
+        /// <summary>
+        /// 设置跟随物体
+        /// </summary>
+        /// <param name="followObj">角色</param>
+        /// <param name="offset">偏移</param>
+        /// <param name="cut">跳过过渡动画</param>
+        public void SetFollowTransform(Transform followObj, Vector3 offset, bool cut = false)
+        {
+            var comp = camera.GetCinemachineComponent<CinemachineTransposer>();
+            if (comp == null)
+                comp = camera.AddCinemachineComponent<CinemachineTransposer>();
+            comp.enabled = true;
+            comp.m_FollowOffset = offset;
+            SetFollowTransform(followObj);
+            SetLookAtTransform(followObj);
+            if (cut)
+            {
+                baseCamera.ForceCameraPosition(
+                    followObj.position + offset,
+                    Quaternion.identity);
+            }
+        }
     }
 }

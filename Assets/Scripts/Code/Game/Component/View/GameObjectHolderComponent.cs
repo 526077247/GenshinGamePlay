@@ -23,7 +23,7 @@ namespace TaoTie
             }
         }
 
-        private Transform EntityView;
+        public Transform EntityView;
 
         private ReferenceCollector Collector;
 

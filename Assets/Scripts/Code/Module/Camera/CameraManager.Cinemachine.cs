@@ -20,8 +20,8 @@ namespace TaoTie
         public CameraState curState { get; private set; }
         public CameraState lastState { get; private set; }
 
-        public FreeLookCameraPlugin defaultCamera =>
-            _cameraPlugins[defaultCameraId] as FreeLookCameraPlugin;
+        public VirtualCameraPlugin defaultCamera =>
+            _cameraPlugins[defaultCameraId] as VirtualCameraPlugin;
 
         private partial void AddInputListener();
         private partial void RemoveInputListener();
