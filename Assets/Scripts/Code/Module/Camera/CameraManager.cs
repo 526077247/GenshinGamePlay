@@ -1,26 +1,24 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using Cinemachine;
 namespace TaoTie
 {
-    public class CameraManager:IManager
+    public partial class CameraManager:IManager,IUpdateManager
     {
+        #region config
+
+        private int defaultCameraId;
+
+        private Dictionary<int, ConfigCamera> configs;
+        private CinemachineBlendDefinition defaultBlend;
+        private CinemachineBlenderSettings customBlends;
+        #endregion
+         
         public static CameraManager Instance { get; private set; }
         private GameObject sceneMainCameraGo;
         private Camera sceneMainCamera;
-        #region override
-
-        public void Init()
-        {
-            Instance = this;
-        }
-
-
-        public void Destroy()
-        {
-            Instance = null;
-        }
-
-        #endregion
+        
         
         //在场景loading开始时设置camera statck
         //loading时场景被销毁，这个时候需要将UI摄像机从overlay->base
@@ -38,14 +36,32 @@ namespace TaoTie
         }
         public void SetCameraStackAtLoadingDone()
         {
-            this.sceneMainCameraGo = Camera.main.gameObject;
-            this.sceneMainCamera = this.sceneMainCameraGo.GetComponent<Camera>();
+            var mainCamera = Camera.main;
+            if (mainCamera != null) //场景已有主摄像机
+            {
+                if (sceneMainCamera != null)
+                {
+                    sceneMainCamera = null;
+                    Object.Destroy(sceneMainCameraGo);
+                }
+
+                sceneMainCamera = mainCamera;
+                sceneMainCameraGo = sceneMainCamera.gameObject;
+            }
+            else if (sceneMainCameraGo == null) //场景没有主摄像机且没有创建摄像机
+            {
+                sceneMainCameraGo = new GameObject("MainCamera");
+                sceneMainCameraGo.transform.parent = root;
+                sceneMainCameraGo.tag = "MainCamera";
+                sceneMainCamera = sceneMainCameraGo.AddComponent<Camera>();
+            }
             var render = this.sceneMainCamera.GetUniversalAdditionalCameraData();
             render.renderPostProcessing = true;
             render.renderType = CameraRenderType.Base;
             render.SetRenderer(1);
             var uiCamera = UIManager.Instance.GetUICamera();
             AddOverlayCamera(this.sceneMainCamera, uiCamera);
+            SetCameraAtLoadingDone();
         }
 
 

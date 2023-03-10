@@ -1,56 +1,44 @@
 ﻿using System.Collections.Generic;
-
+using Nino.Serialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class ConfigCamera
+    public abstract partial class ConfigCamera
     {
         public abstract CameraType type { get; }
 
-        [PropertyOrder(int.MinValue)] [SerializeField] [Min(0)]
-        private int _id;
+        [NinoMember(1)][PropertyOrder(int.MinValue)] [Min(0)]
+        public int id;
 
-        [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")] [SerializeField]
-        private string _remark;
+        [NinoMember(2)][PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
+        public string remark;
 
-        [Range(-180, 180)] [SerializeField] private float _dutch;
+        [NinoMember(3)][Range(-180, 180)] public float dutch;
 
-        [Range(1, 179)] [SerializeField] private float _fov = 40;
+        [NinoMember(4)][Range(1, 179)] public float fov = 40;
 
-        [Min(0.001f)] [SerializeField] private float _farClipPlane = 5000;
+        [NinoMember(5)][Min(0.001f)] public float farClipPlane = 5000;
 
-        [Min(0.001f)] [SerializeField] private float _nearClipPlane = 0.1f;
+        [NinoMember(6)][Min(0.001f)] public float nearClipPlane = 0.1f;
 
-        [LabelText("显示光标")] [BoxGroup("其他设置")] [SerializeField]
-        private bool _visibleCursor;
+        [NinoMember(7)][LabelText("显示光标")] [BoxGroup("其他设置")]
+        public bool visibleCursor;
 
-        [LabelText("是否允许摄像机震动")] [SerializeField] [BoxGroup("其他设置")]
-        private bool _cameraShake;
+        [NinoMember(8)][LabelText("是否允许摄像机震动")] [BoxGroup("其他设置")]
+        public bool cameraShake;
 
-        [LabelText("开启滚轮缩放")] [SerializeField] [BoxGroup("其他设置")]
-        private bool _enableZoom;
+        [NinoMember(9)][LabelText("开启滚轮缩放")] [BoxGroup("其他设置")]
+        public bool enableZoom;
 
-        [LabelText("光标锁定模式")] [BoxGroup("其他设置")] [SerializeField]
-        private CursorLockMode _mode = CursorLockMode.Locked;
+        [NinoMember(10)][LabelText("光标锁定模式")] [BoxGroup("其他设置")]
+        public CursorLockMode mode = CursorLockMode.Locked;
 
-        [ShowIf(nameof(enableZoom))] [Range(-1, 20)] [SerializeField] [BoxGroup("其他设置")]
-        private float _zoomMin = -1;
+        [NinoMember(11)][ShowIf(nameof(enableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
+        public float zoomMin = -1;
 
-        [ShowIf(nameof(enableZoom))] [Range(-1, 20)] [SerializeField] [BoxGroup("其他设置")]
-        private float _zoomMax = 15;
-
-        public int id => _id;
-        public float fov => _fov;
-        public float nearClipPlane => _nearClipPlane;
-        public float farClipPlane => _farClipPlane;
-        public float dutch => _dutch;
-        public bool visibleCursor => _visibleCursor;
-        public bool cameraShake => _cameraShake;
-        public CursorLockMode mode => _mode;
-        public bool enableZoom => _enableZoom;
-        public float zoomMin => _zoomMin;
-        public float zoomMax => _zoomMax;
+        [NinoMember(12)][ShowIf(nameof(enableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
+        public float zoomMax = 15;
     }
 }

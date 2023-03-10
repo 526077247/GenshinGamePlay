@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using LitJson.Extensions;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class SerializeAnimationCurveData
+    [NinoSerialize]
+    public partial class SerializeAnimationCurveData
     {
+        [NinoMember(1)]
         private List<SerializeAnimCurveKeyFrame> _animCurveKeyFrameList;
 
         [JsonIgnore]

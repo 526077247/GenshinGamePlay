@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public class AIPoint
+    public partial class AIPoint
     {
         [NinoMember(1)]
         public float x;

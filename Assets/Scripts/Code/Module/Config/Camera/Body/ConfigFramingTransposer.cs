@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
-
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class ConfigFramingTransposer
+    [NinoSerialize]
+    public partial class ConfigFramingTransposer
     {
-        [SerializeField] [Min(0.01f)] private float _cameraDistance;
+        [NinoMember(1)] [Min(0.01f)] public float cameraDistance;
 
-        [SerializeField] private Vector3 _trackedObjectOffset;
-
-        public Vector3 trackedObjectOffset => _trackedObjectOffset;
-
-        public float cameraDistance => _cameraDistance;
+        [NinoMember(2)] public Vector3 trackedObjectOffset;
+        
         
     }
 }
