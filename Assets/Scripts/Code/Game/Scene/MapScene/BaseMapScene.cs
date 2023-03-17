@@ -79,6 +79,8 @@ namespace TaoTie
 
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
 
+            await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath);
+
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;
             Log.Info("进入场景 " + GetScenePath());
