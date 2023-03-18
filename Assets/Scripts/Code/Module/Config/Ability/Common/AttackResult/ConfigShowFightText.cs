@@ -11,7 +11,6 @@ namespace TaoTie
     {
         public override void ResolveAttackResult(AttackResult attackResult)
         {
-            Debug.Log("zzz final_dmg" + attackResult.FinalRealDamage + attackResult.HitInfo.HitPos);
             var hudView = UIManager.Instance.GetWindow<UIHudView>();
             if (hudView != null)
             {

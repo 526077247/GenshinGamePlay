@@ -31,6 +31,8 @@ namespace TaoTie
                 
                 
                 ManagerProvider.RegisterManager<InputManager>();
+
+                ManagerProvider.RegisterManager<HudSystem>();
                 // StartGameAsync().Coroutine();
                 StartGame();
             }

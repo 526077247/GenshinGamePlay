@@ -7,12 +7,13 @@ using System.Runtime.InteropServices;
 
 namespace TaoTie
 {
-	public class UIHudView : UIBaseView, IOnCreate, IOnEnable
-	{
+	public class UIHudView : UIBaseView, IOnCreate, IOnEnable, IUpdateManager
+    {
 		public static string PrefabPath => "UIGame/UIBattle/Prefabs/UIHudView.prefab";
 		private  Queue<FightText> fightTexts = new();
 		private List<FightText>showFightTexts = new();
-
+		private long fightTextExpireTime = 1000;	//毫秒
+		
 		#region override
 		public void OnCreate()
 		{
@@ -25,8 +26,8 @@ namespace TaoTie
 
 		public void Update()
 		{
-			if (showFightTexts.Count == 0) return;
-            for (int i = showFightTexts.Count; i > 0; i--)
+            if (showFightTexts.Count == 0) return;
+            for (int i = showFightTexts.Count - 1; i >= 0; i--)
             {
                 if (showFightTexts[i].expire_time < GameTimerManager.Instance.GetTimeNow())
                 {
@@ -38,8 +39,6 @@ namespace TaoTie
 		}
 		#endregion
 
-
-
 		public void ShowFightText(AttackResult ar)
 		{
             if (fightTexts.Count == 0)
@@ -47,20 +46,12 @@ namespace TaoTie
 				FightText new_ft = new();
 				new_ft.OnInit(this).Coroutine();
 				fightTexts.Enqueue(new_ft);
-				GCHandle h = GCHandle.Alloc(new_ft);
-				IntPtr addr = GCHandle.ToIntPtr(h);
-				Debug.Log("zzz new add " + addr.ToString());
-				GCHandle h3 = GCHandle.Alloc(fightTexts);
-				IntPtr addr3 = GCHandle.ToIntPtr(h3);
-				Debug.Log("zzz new queue " + addr3.ToString());
 			}
-			FightText ft = fightTexts.Dequeue();
-			GCHandle h2 = GCHandle.Alloc(ft);
-			IntPtr addr2 =GCHandle.ToIntPtr(h2);
-			Debug.Log("zzz deq add " + addr2.ToString());
+            FightText ft = fightTexts.Dequeue();
 			ft.SetActive(true);
-			long expire_time = GameTimerManager.Instance.GetTimeNow() + 1;
-			//ft.SetData(ar,expire_time);
-		}
+			long expire_time = GameTimerManager.Instance.GetTimeNow() + fightTextExpireTime;
+			ft.SetData(ar.FinalRealDamage, ar.HitInfo.HitPos,expire_time);
+			showFightTexts.Add(ft);
+        }
 	}
 }

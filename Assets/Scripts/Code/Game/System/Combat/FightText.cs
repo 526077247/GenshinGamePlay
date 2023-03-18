@@ -7,25 +7,19 @@ namespace TaoTie
     /// <summary>
     /// hud
     /// </summary>
-    public sealed class FightText : IDisposable
+    public sealed class FightText
     {
         private UIHudView _uiHudView;
         public RectTransform rect { get; private set; }
-        public AttackResult attackResult { get; private set; } = new AttackResult();
+        int show_dmg;
+        Vector3 show_pos;
         public long expire_time { get; private set; }
-        private bool _isDisposable = true;
 
         public async ETTask OnInit(UIHudView uiHudView)
         {
-            _isDisposable = false;
             _uiHudView = uiHudView;
             string res_path = "UIGame/UIBattle/Prefabs/UIFightText.prefab";
             var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(res_path);
-            if (_isDisposable)//等加载回来可能已经销毁了
-            {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                return;
-            }
             rect = obj.GetComponent<RectTransform>();
             OnGameObjectLoad();
         }
@@ -41,27 +35,11 @@ namespace TaoTie
             UpdateText();
         }
 
-        /// <summary>
-        /// 回收
-        /// </summary>
-        public  void Dispose()
+        public void SetData(int final_dmg, Vector3 pos , long time)
         {
-            if (_isDisposable) return;
-            _isDisposable = true;
-            if (rect != null)
-            {
-                GameObjectPoolManager.Instance?.RecycleGameObject(rect.gameObject);
-                rect = null;
-            }
-            _uiHudView = null;
-            ObjectPool.Instance.Recycle(this);
-        }
-
-        public void SetData(AttackResult _attackResult, long _expire_time)
-        {
-            attackResult = _attackResult;
-            expire_time = _expire_time;
-            Debug.Log("zzz attackresult" + attackResult.FinalRealDamage);
+            show_dmg = final_dmg;
+            show_pos = pos;
+            expire_time = time;
             UpdateText();
          }
 
@@ -74,8 +52,9 @@ namespace TaoTie
             var text = rect.GetComponentInChildren<Text>();
             if (text != null)
             {
-                Debug.Log("zzz fuzhi " + attackResult.FinalRealDamage);
-                text.text = attackResult.FinalRealDamage.ToString();
+                text.text = show_dmg.ToString();
+                Vector2 pt = Camera.main.WorldToScreenPoint(show_pos) * UIManager.Instance.ScreenSizeflag;
+                rect.anchoredPosition = pt;
             }
         }
 
