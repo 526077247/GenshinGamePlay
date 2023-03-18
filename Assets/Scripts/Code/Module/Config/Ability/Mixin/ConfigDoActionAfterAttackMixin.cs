@@ -10,6 +10,8 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;
+        [NinoMember(2)]
+        public ConfigAttackResult[] attackResultActions;
 
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {

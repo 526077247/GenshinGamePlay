@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -16,15 +17,24 @@ namespace TaoTie
             CampId = CampConst.Player;
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
-            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(avatar.Config.EntityConfig);
+            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(entityConfig.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
             AddComponent<SkillComponent>();
             AddComponent<LocalInputController>();
-            AddComponent<AbilityComponent,List<ConfigAbility>>(ResourcesManager.Instance.LoadConfig<List<ConfigAbility>>(avatar.Config.Abilities));
+            AddComponent<AvatarMoveComponent>();
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(entityConfig.Abilities);
+            AddComponent<AbilityComponent,List<ConfigAbility>>(list);
+            InitAsync().Coroutine();
+        }
 
+        private async ETTask InitAsync()
+        {
+            var ghc = GetComponent<GameObjectHolderComponent>();
+            await ghc.WaitLoadGameObjectOver();
+            CameraManager.Instance.defaultCamera.SetFollowTransform(ghc.EntityView, new Vector3(0, 5, -5), true);
         }
 
         public void Destroy()

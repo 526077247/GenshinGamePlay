@@ -11,6 +11,24 @@ namespace TaoTie
         public string name => _config.name;
         public ConfigFsmState config => _config;
 
+        public bool CanMove
+        {
+            get
+            {
+                if (config.data == null) return true;
+                return config.data.CanMove;
+            }
+        }
+        
+        public bool CanTurn
+        {
+            get
+            {
+                if (config.data == null) return true;
+                return config.data.CanTurn;
+            }
+        }
+
         public static FsmState Create(Fsm fsm, ConfigFsmState cfg)
         {
             FsmState ret = ObjectPool.Instance.Fetch<FsmState>();
@@ -39,7 +57,7 @@ namespace TaoTie
             StopTimeline();
         }
 
-        #region IRecyclable
+        #region IDisposable
         public void Dispose()
         {
             ClearTimeline();

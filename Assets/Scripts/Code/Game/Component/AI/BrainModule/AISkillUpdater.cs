@@ -18,7 +18,7 @@ namespace TaoTie
                 container.AvailableSkills.Clear();
                 for (int j = 0; j < container.AllSkills.Count; j++)
                 {
-                    var skill = container.AllSkills[i];
+                    var skill = container.AllSkills[j];
                     //target过滤
                     if (!skill.Config.CanUseIfTargetInactive &&
                         knowledge.targetKnowledge.targetType == AITargetType.InvalidTarget) continue;

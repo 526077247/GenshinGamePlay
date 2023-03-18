@@ -21,8 +21,7 @@ namespace TaoTie
         }
     }
 
-
-    [Serializable]
+    
     public class ConfigSetParameterBool : ConfigSetParameter<bool>
     {
         public override void Excute(Fsm fsm)
@@ -31,8 +30,7 @@ namespace TaoTie
             component?.SetData(key, value);
         }
     }
-
-    [Serializable]
+    
     public class ConfigSetParameterInt : ConfigSetParameter<int>
     {
         public override void Excute(Fsm fsm)
@@ -41,8 +39,7 @@ namespace TaoTie
             component?.SetData(key, value);
         }
     }
-
-    [Serializable]
+    
     public class ConfigSetParameterFloat : ConfigSetParameter<float>
     {
         public override void Excute(Fsm fsm)

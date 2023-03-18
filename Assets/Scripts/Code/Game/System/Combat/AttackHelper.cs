@@ -50,7 +50,7 @@ namespace TaoTie
             var combatD = defence.GetComponent<CombatComponent>();
             if (combatA == null || combatD == null) return;
             var numA = attacker.GetComponent<NumericComponent>();
-            var numD = attacker.GetComponent<NumericComponent>();
+            var numD = defence.GetComponent<NumericComponent>();
             if (numA == null || numD == null) return;
             result.DamagePercentage =
                 result.ConfigAttackInfo.AttackProperty.DamagePercentage.Resolve(attacker, ability);
@@ -90,15 +90,15 @@ namespace TaoTie
             if (!result.TrueDamage)
             {
                 var flag = 100 * numD.GetAsFloat(NumericType.Lv);
-                result.DamagePercentageRatio *= numD.GetAsFloat(NumericType.DEF) / (numD.GetAsFloat(NumericType.DEF) + flag);
+                result.DamagePercentageRatio *= flag / (numD.GetAsFloat(NumericType.DEF) + flag);
             }
             
             //暴击
             result.IsCritical = false;
             if (result.BonusCritical > 0)
             {
-                var percent = Random.Range(0, 10) / 10;
-                if (percent < result.BonusCritical)
+                var percent = Random.Range(0, 100);
+                if (percent < result.BonusCritical * 100)
                 {
                     result.IsCritical = true;
                 }
@@ -108,7 +108,7 @@ namespace TaoTie
             result.FinalRealDamage = (int) (
                 result.DamagePercentage * result.DamagePercentageRatio *
                 (result.IsCritical ? (result.BonusCriticalHurt + 1) : 1) + result.DamageExtra);
-            
+            Log.Info("最终伤害： "+result.FinalRealDamage);
             //修改血量
             numD.Set(NumericType.HpBase, numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage);
             //破霸体

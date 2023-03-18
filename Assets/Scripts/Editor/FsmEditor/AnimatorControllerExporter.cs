@@ -17,7 +17,7 @@ namespace TaoTie
         public static readonly Dictionary<string, int> animatorControllerParameterUsed = new();
         public static readonly Dictionary<string, int> animatorControllerParameterUsedByTransition = new();
 
-        public static void Export(string srcPath, string savePath)
+        public static void Export(string srcPath, string savePath, bool publish)
         {
             var srcController = AssetDatabase.LoadAssetAtPath<AnimatorController>(srcPath);
             if (srcController != null)
@@ -54,6 +54,12 @@ namespace TaoTie
                 newAnimator.parameters = paras.ToArray();
 
                 newAnimator.name = srcController.name;
+                if (!publish)
+                {
+                    File.Delete(savePath);
+                    AssetDatabase.Refresh();
+                    return;
+                }
                 AssetDatabase.SaveAssetIfDirty(newAnimator);
                 StringBuilder builder = new StringBuilder();
                 var lines = File.ReadAllLines(savePath);

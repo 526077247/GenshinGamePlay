@@ -26,5 +26,10 @@ namespace TaoTie
             NextAvailableUseTick = 0;
             ObjectPool.Instance.Recycle(this);
         }
+
+        public void TriggerCD(long currentTime)
+        {
+            NextAvailableUseTick = currentTime + CD;
+        }
     }
 }

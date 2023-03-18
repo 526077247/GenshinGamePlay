@@ -17,7 +17,8 @@ namespace TaoTie
         protected AIDecision decision { get; private set; }= new AIDecision();
         /// <summary> 上一帧决策结果 </summary>
         protected AIDecision decisionOld { get; private set; }= new AIDecision();
-
+        /// <summary> 移动summary>
+        public AIMoveUpdater moveUpdater { get; private set; }= new AIMoveUpdater();
         /// <summary> 寻路 </summary>
         public AIPathfindingUpdater pathfinder { get; private set; }= new AIPathfindingUpdater();
         /// <summary> 目标 </summary>
@@ -52,13 +53,13 @@ namespace TaoTie
                 aiManager = scene.GetManager<AIManager>();
             }
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
-            knowledge.Init(Parent, config, aiManager);
+            knowledge.Init(GetParent<Unit>(), config, aiManager);
             
             sensingUpdater.Init(knowledge);
             threatUpdater.Init(knowledge);
             targetUpdater.Init(knowledge);
             pathfinder.Init(knowledge);
-            
+            moveUpdater.Init(knowledge);
             poseControlUpdater.Init(knowledge);
             skillUpdater.Init(knowledge);
 
@@ -77,6 +78,7 @@ namespace TaoTie
             pathfinder.Clear();
             poseControlUpdater.Clear();
             skillUpdater.Clear();
+            moveUpdater.Clear();
             
             knowledge.Dispose();
             knowledge = null;
@@ -106,6 +108,7 @@ namespace TaoTie
             threatUpdater.UpdateMainThread();
             targetUpdater.UpdateMainThread();
             pathfinder.UpdateMainThread();
+            moveUpdater.UpdateMainThread();
             
             poseControlUpdater.UpdateMainThread();
             skillUpdater.UpdateMainThread();
@@ -116,10 +119,20 @@ namespace TaoTie
         /// </summary>
         private void UpdateDecision()
         {
+            knowledge.tacticChanged = false;
+            knowledge.moveDecisionChanged = false;
             decisionOld.act = decision.act;
             decisionOld.tactic = decision.tactic;
             decisionOld.move = decision.move;
             AIDecisionTree.Think(knowledge,decision);
+            if (decision.tactic != decisionOld.tactic)
+            {
+                knowledge.tacticChanged = true;
+            }
+            if (decision.move != decisionOld.move)
+            {
+                knowledge.moveDecisionChanged = true;
+            }
         }
 
         /// <summary>
@@ -142,6 +155,9 @@ namespace TaoTie
         {
             return 0;
         }
+        
+        public AIDecision GetDecision() => decision;
+        public AIDecision GetDecisionOld() => decisionOld;
         #endregion
     }
 }

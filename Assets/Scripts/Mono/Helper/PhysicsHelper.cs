@@ -45,7 +45,7 @@ namespace TaoTie
                 if (e == null) continue;
                 for (int j = 0; j < filter.Length; j++)
                 {
-                    if (e.EntityType == filter[i])
+                    if (e.EntityType == filter[j])
                     {
                         int index = count;
                         if (idMapIndex.ContainsKey(e.Id))
@@ -115,8 +115,8 @@ namespace TaoTie
                 if (e == null) continue;
                 for (int j = 0; j < filter.Length; j++)
                 {
-                    if (filter[i] == EntityType.ALL) isAll = true;
-                    if (isAll || e.EntityType == filter[i])
+                    if (filter[j] == EntityType.ALL) isAll = true;
+                    if (isAll || e.EntityType == filter[j])
                     {
                         var center = collider.bounds.center;
                         // 取HitBox中心的连线与HitBox的交点作为受击点

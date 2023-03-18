@@ -46,7 +46,7 @@ namespace TaoTie
         public bool TriggerGCD;
         #endregion
         
-        #region 该ai内部公共cd
+        #region 该ai内部公共组cd
         [NinoMember(12)] [LabelText("公共CD时长配置id")][BoxGroup("AI公共CD组")]
         public int SkillGroupCDID;
         #endregion

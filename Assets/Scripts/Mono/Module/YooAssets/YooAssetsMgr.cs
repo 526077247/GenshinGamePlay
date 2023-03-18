@@ -47,9 +47,10 @@ namespace YooAsset
             // 联机运行模式
             else
             {
+                var config = Resources.Load<CDNConfig>("CDNConfig");
                 var initParameters = new HostPlayModeParameters();
-                initParameters.DefaultHostServer = "";
-                initParameters.FallbackHostServer = "";
+                initParameters.DefaultHostServer = config.DefaultHostServer;
+                initParameters.FallbackHostServer = config.FallbackHostServer;
                 await package.InitializeAsync(initParameters).Task;
             }
 

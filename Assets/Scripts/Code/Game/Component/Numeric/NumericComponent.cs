@@ -31,9 +31,9 @@ namespace TaoTie
 
 		#endregion
 		
-		public Dictionary<int, long> NumericDic;
+		private Dictionary<int, long> NumericDic;
 
-		public long this[int numericType]
+		private long this[int numericType]
 		{
 			get
 			{
@@ -98,7 +98,7 @@ namespace TaoTie
 			this.Insert(numericType,value,false);
 		}
 		
-		public void Insert(int numericType, long value,bool isPublicEvent = true)
+		private void Insert(int numericType, long value,bool isPublicEvent = true)
 		{
 			long oldValue = this.GetByKey(numericType);
 			if (oldValue == value)
@@ -125,14 +125,14 @@ namespace TaoTie
 			}
 		}
 		
-		public long GetByKey(int key)
+		private long GetByKey(int key)
 		{
 			long value = 0;
 			this.NumericDic.TryGetValue(key, out value);
 			return value;
 		}
 
-		public void Update(int numericType,bool isPublicEvent)
+		private void Update(int numericType,bool isPublicEvent)
 		{
 			int final = (int) numericType / 10;
 			int bas = final * 10 + 1; 
@@ -152,7 +152,7 @@ namespace TaoTie
 		/// </summary>
 		/// <param name="numericType"></param>
 		/// <returns></returns>
-		public bool IsFloat(int numericType)
+		private bool IsFloat(int numericType)
 		{
 			if (numericType > NumericType.Max)
 			{

@@ -9,7 +9,7 @@ namespace TaoTie
     public partial class ConfigAIBeta
     {
         [NinoMember(1)][LabelText("启用")]
-        public bool Enable;
+        public bool Enable = true;
         [NinoMember(2)][LabelText("AI类型")]
         public DecisionArchetype DecisionArchetype;
 
@@ -30,8 +30,15 @@ namespace TaoTie
         public ConfigAIPathFindingSetting Path;
         
         
-        
+        [NinoMember(19)]
+        public ConfigAIMove moveSetting;
         [NinoMember(20)][BoxGroup("行为")]
-        public ConfigAITacticBaseSetting[] Tactics;
+        public ConfigAIFacingMoveSetting FacingMoveTactic;
+        [NinoMember(21)][BoxGroup("行为")]
+        public ConfigAIMeleeChargeSetting MeleeChargeTactic;
+        [NinoMember(22)][BoxGroup("行为")]
+        public ConfigAIFleeSetting FleeTactic;
+        [NinoMember(23)][BoxGroup("行为")]
+        public ConfigAIWanderSetting WanderTactic;
     }
 }

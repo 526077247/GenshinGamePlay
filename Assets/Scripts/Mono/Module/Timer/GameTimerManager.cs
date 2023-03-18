@@ -18,6 +18,8 @@ namespace TaoTie
         private long lastUpdateTime;
         
         private long deltaTime;
+        
+        private long timeNow;
         #region override
         
         public override void Init()
@@ -127,7 +129,7 @@ namespace TaoTie
             return timeScale;
         }
 
-        public long GetTimeNow()
+        public override long GetTimeNow()
         {
             return timeNow;
         }

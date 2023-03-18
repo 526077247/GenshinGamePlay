@@ -14,5 +14,7 @@
         public const int ComponentUpdate = 1004;
         /// <summary> AttachToNormalizedTimeMixinUpdate </summary>
         public const int AttachToNormalizedTimeMixinUpdate = 1005;
+        /// <summary> 游戏时间计时 </summary>
+        public const int GameTimeEventTrigger = 1006;
     }
 }

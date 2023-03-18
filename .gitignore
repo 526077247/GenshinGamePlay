@@ -42,3 +42,5 @@ Build-Mac
 /Excel/Json
 /Assets/Modules/
 /Packages/com.thridparty-moudule.*
+/ProjectSettings/ProjectVersion.txt
+/ProjectSettings/ProjectSettings.asset

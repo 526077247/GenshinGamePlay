@@ -1316,6 +1316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2448630520698127417}
   - component: {fileID: 2448630520698127416}
+  - component: {fileID: 6475999340663751121}
   m_Layer: 0
   m_Name: NormalAttack
   m_TagString: Untagged
@@ -1366,6 +1367,26 @@ MonoBehaviour:
   _length: 1
   _viewTimeMin: -0.14241178
   _viewTimeMax: 1.2214777
+--- !u!95 &6475999340663751121
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2448630520698127423}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7f1d03a0d652aa749a52bb5ed5511f78, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2448630520715272381
 GameObject:
   m_ObjectHideFlags: 0

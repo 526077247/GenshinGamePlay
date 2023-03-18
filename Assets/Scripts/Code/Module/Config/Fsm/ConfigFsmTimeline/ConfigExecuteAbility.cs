@@ -1,7 +1,12 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
+
+namespace TaoTie
 {
-    public class ConfigExecuteAbility:ConfigFsmClip
+    [NinoSerialize]
+    public partial class ConfigExecuteAbility:ConfigFsmClip
     {
+        [NinoMember(10)][ValueDropdown("@OdinDropdownHelper.GetAbilities()")]
         public string AbilityName;
         public override FsmClip CreateClip(FsmState state)
         {

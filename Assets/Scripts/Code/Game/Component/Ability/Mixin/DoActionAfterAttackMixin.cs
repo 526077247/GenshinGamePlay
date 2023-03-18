@@ -37,6 +37,13 @@
                     ConfigDoAction.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, other.GetParent<Entity>());
                 }
             }
+            if (ConfigDoAction.attackResultActions != null)
+            {
+                for (int i = 0; i < ConfigDoAction.attackResultActions.Length; i++)
+                {
+                    ConfigDoAction.attackResultActions[i].ResolveAttackResult(attackResult);
+                }
+            }
         }
     }
 }

@@ -92,9 +92,15 @@ namespace TaoTie
 		/// <summary>预制体路径</summary>
 		[NinoMember(5)]
 		public string Perfab { get; set; }
-		/// <summary>FSM路径</summary>
+		/// <summary>EntityConfig</summary>
 		[NinoMember(6)]
+		public string EntityConfig { get; set; }
+		/// <summary>FSM路径</summary>
+		[NinoMember(7)]
 		public string FSM { get; set; }
+		/// <summary>Controller路径</summary>
+		[NinoMember(8)]
+		public string Controller { get; set; }
 
 	}
 }

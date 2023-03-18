@@ -7,6 +7,7 @@ namespace TaoTie
     {
         private FsmComponent fsm => Parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget;
+        public bool isInCombat;
         public virtual void Init()
         {
             attackTarget = new AttackTarget();
@@ -81,7 +82,14 @@ namespace TaoTie
             fsm.SetData(FSMConst.UseSkill, true);
             fsm.SetData(FSMConst.SkillId, skillId);
         }
-
+        /// <summary>
+        /// 立即停止使用技能
+        /// </summary>
+        public void ReleaseSkillImmediately()
+        {
+            fsm.SetData(FSMConst.UseSkill, false);
+            fsm.SetData(FSMConst.SkillId, 0);
+        }
         /// <summary>
         /// 开启或关闭hitBox
         /// </summary>

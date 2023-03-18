@@ -13,11 +13,10 @@ namespace TaoTie
         
         public struct ParamGoTo
         {
-
             public bool scripted;
             public Vector3 targetPosition;
             public AIMoveSpeedLevel speedLevel;
-            public List<Vector3> pathQuery;
+            public PathQueryTask pathQuery;
             public LocoBaseTask.ObstacleHandling obstacleHandling;
             public float cannedTurnSpeedOverride;
             public bool delayStopping;
@@ -25,14 +24,7 @@ namespace TaoTie
             public bool spacialRoll;
             public NavMeshUseType useNavmesh;
             public bool exactlyMove;
-
-
-            public enum NavMeshUseType
-            {
-                Auto = 0,
-                ForceUse = 1,
-                NotUse = 2
-            }
+            
         }
 
         public struct ParamFacingMove
@@ -60,14 +52,12 @@ namespace TaoTie
 
         public struct ParamRotation
         {
-
             public Vector3 targetPosition;
         }
 
         public struct ParamFollowMove
         {
-
-            public Entity anchor;
+            public Unit anchor;
             public bool useMeleeSlot;
             public AIMoveSpeedLevel speedLevel;
             public float turnSpeed;
@@ -75,5 +65,115 @@ namespace TaoTie
             public float stopDistance;
         }
 
+        public AILocomotionHandler(AIKnowledge knowledge, AIPathfindingUpdater pPathfinding)
+        {
+            aiKnowledge = knowledge;
+            pathfinder = pPathfinding;
+            currentState = LocoTaskState.Finished;
+        }
+
+        public void RefreshTask(Vector3 position)
+        {
+            currentTask.RefreshTask(this, position);
+            currentState = LocoTaskState.Running;
+        }
+        public void UpdateTasks(AITransform currentTransform)
+        {
+            if (currentState == LocoTaskState.Interrupted)
+            {
+                if (!aiKnowledge.moveKnowledge.canFly)
+                {
+                    if (!aiKnowledge.moveKnowledge.inAir)
+                    {
+                        currentState = LocoTaskState.Finished;
+                    }
+                }
+            }
+
+            if (currentState == LocoTaskState.Finished)
+            {
+                FinishTask();
+            }
+
+            if (currentState == LocoTaskState.Running)
+            {
+                currentTask.UpdateLoco(this, currentTransform, ref currentState);
+            }
+
+        }
+        private void CreateTask_Internal(LocoBaseTask task/*, bool delayStopping, float? movingYawSpeedOverride*/)
+        {
+            if (currentTask != null)
+            {
+                ClearTask();
+            }
+            currentTask = task;
+            currentState = LocoTaskState.Running;
+        }
+
+        public void CreateGoToTask(ParamGoTo param)
+        {
+            if (param.pathQuery == null)
+            {
+                param.pathQuery = aiKnowledge.pathFindingKnowledge.CreatePathQueryTask(aiKnowledge.currentPos,
+                    param.targetPosition, param.useNavmesh);
+            }
+            GoToTask goToTask = new GoToTask();
+            goToTask.Init(aiKnowledge, param);
+            CreateTask_Internal(goToTask);
+        }
+        public void CreateFacingMoveTask(ParamFacingMove param) {} 
+        public void CreateSurroundDashTask(ParamSurroundDash param) {}
+
+        public void CreateRotationTask(ParamRotation param)
+        {
+            RotationTask rotationTask = new RotationTask();
+            rotationTask.Init(aiKnowledge, param);
+
+
+            CreateTask_Internal(rotationTask);
+        } 
+        public void CreateSnakelickMove(ParamGoTo param) {} 
+        public void CreateFollowMoveTask(ParamFollowMove param)
+        {
+            FollowMoveTask followMoveTask = new FollowMoveTask();
+            followMoveTask.Init(aiKnowledge, param);
+
+
+            CreateTask_Internal(followMoveTask);
+        }
+
+        public bool TaskEnded()
+        {
+            return currentTask == null;
+        }
+
+        public void ClearTask()
+        {
+            currentTask.OnCloseTask(this);
+            currentTask = null;
+        }
+        
+        public void FinishTask() 
+        {
+            if (currentTask != null)
+                currentTask.OnCloseTask(this);
+        }
+        
+        public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
+        {
+            Messager.Instance.Broadcast(aiKnowledge.aiOwnerEntity.Id, MessageId.UpdateMotionFlag, newSpeed);
+        }
+
+        public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed)
+        {
+            currentTask.UpdateLocoSpeed(newSpeed);
+        } 
+        public void SetGroundFollowAnimationRotation(bool enabled) {} 
+        public void Teleport(Vector3 targetPosition) {} 
+        public void SwitchRotation(bool rotate) {} 
+        public void SetForwardImmediately(Vector3 dir) {}
+        public float GetDistanceToPathEnd(Vector3 currentPos) => default;
+        public float GetAlmostReachedDistance() => default;
     }
 }

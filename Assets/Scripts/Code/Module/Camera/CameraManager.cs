@@ -1,58 +1,79 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using Cinemachine;
 namespace TaoTie
 {
-    public class CameraManager:IManager
+    public partial class CameraManager:IManager,IUpdateManager
     {
-        public static CameraManager Instance;
-        public GameObject m_scene_main_camera_go;
-        public Camera m_scene_main_camera;
-        #region override
+        #region config
 
-        public void Init()
-        {
-            Instance = this;
-        }
+        private int defaultCameraId;
 
-
-        public void Destroy()
-        {
-            Instance = null;
-        }
-
+        private Dictionary<int, ConfigCamera> configs;
+        private CinemachineBlendDefinition defaultBlend;
+        private CinemachineBlenderSettings customBlends;
         #endregion
+         
+        public static CameraManager Instance { get; private set; }
+        private GameObject sceneMainCameraGo;
+        private Camera sceneMainCamera;
+        
         
         //在场景loading开始时设置camera statck
         //loading时场景被销毁，这个时候需要将UI摄像机从overlay->base
         public void SetCameraStackAtLoadingStart()
         {
-            var ui_camera = UIManager.Instance.GetUICamera();
-            ui_camera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
+            var uiCamera = UIManager.Instance.GetUICamera();
+            uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
             this.ResetSceneCamera();
         }
 
         public void  ResetSceneCamera()
         {
-            this.m_scene_main_camera_go = null;
-            this.m_scene_main_camera = null;
+            this.sceneMainCameraGo = null;
+            this.sceneMainCamera = null;
         }
         public void SetCameraStackAtLoadingDone()
         {
-            this.m_scene_main_camera_go = Camera.main.gameObject;
-            this.m_scene_main_camera = this.m_scene_main_camera_go.GetComponent<Camera>();
-            var render = this.m_scene_main_camera.GetUniversalAdditionalCameraData();
+            var mainCamera = Camera.main;
+            if (mainCamera != null) //场景已有主摄像机
+            {
+                if (sceneMainCamera != null)
+                {
+                    sceneMainCamera = null;
+                    Object.Destroy(sceneMainCameraGo);
+                }
+
+                sceneMainCamera = mainCamera;
+                sceneMainCameraGo = sceneMainCamera.gameObject;
+            }
+            else if (sceneMainCameraGo == null) //场景没有主摄像机且没有创建摄像机
+            {
+                sceneMainCameraGo = new GameObject("MainCamera");
+                sceneMainCameraGo.transform.parent = root;
+                sceneMainCameraGo.tag = "MainCamera";
+                sceneMainCamera = sceneMainCameraGo.AddComponent<Camera>();
+            }
+            var render = this.sceneMainCamera.GetUniversalAdditionalCameraData();
             render.renderPostProcessing = true;
             render.renderType = CameraRenderType.Base;
             render.SetRenderer(1);
-            var ui_camera = UIManager.Instance.GetUICamera();
-            __AddOverlayCamera(this.m_scene_main_camera, ui_camera);
+            var uiCamera = UIManager.Instance.GetUICamera();
+            AddOverlayCamera(this.sceneMainCamera, uiCamera);
+            SetCameraAtLoadingDone();
         }
 
 
-        void __AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
+        void AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
         {
             overlayCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
             baseCamera.GetUniversalAdditionalCameraData().cameraStack.Add(overlayCamera);
+        }
+
+        public Camera MainCamera()
+        {
+            return this.sceneMainCamera;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace TaoTie
         public static void CreateArtSubFolder()
         {
             string[] ArtFolderNames = { "Animations", "Materials", "Models", "Textures", "Prefabs" };
-            string[] UnitFolderNames = { "Animations", "Edit", "Publish", "Prefabs" };
+            string[] UnitFolderNames = { "Animations", "Edit", "Prefabs" };
             string[] UIFolderNames = { "Animations", "Atlas", "DiscreteImages","DynamicAtlas", "Prefabs" };
             string[] guids = Selection.assetGUIDs;
             for (int i = 0; i < guids.Length; i++)
@@ -54,5 +55,13 @@ namespace TaoTie
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+        
+        [MenuItem("Tools/帮助/测试")]
+        static void Test()
+        {
+            var data = JsonHelper.FromJson<List<int>>("null");
+            ;
+        }
+
     }
 }

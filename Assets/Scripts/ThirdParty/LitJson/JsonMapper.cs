@@ -14,9 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using LitJson.Extensions;
 
 namespace LitJson
@@ -110,20 +108,20 @@ namespace LitJson
     public class JsonMapper
     {
         #region readonly
-        private static Type floatType => typeof(float);
-        private static Type doubleType => typeof(double);
-        private static Type decimalType => typeof(decimal);
-        private static Type DateTimeType => typeof(DateTime);
-        private static Type charType => typeof(char);
-        private static Type sbyteType => typeof(sbyte);
-        private static Type byteType => typeof(byte);
-        private static Type ushortType => typeof(ushort);
-        private static Type shortType => typeof(short);
-        private static Type uintType => typeof(uint);
-        private static Type intType => typeof(int);
-        private static Type ulongType => typeof(ulong);
-        private static Type longType => typeof(long);
-        private static Type stringType => typeof(string);
+        private static Type floatType = typeof(float);
+        private static Type doubleType = typeof(double);
+        private static Type decimalType = typeof(decimal);
+        private static Type DateTimeType = typeof(DateTime);
+        private static Type charType = typeof(char);
+        private static Type sbyteType = typeof(sbyte);
+        private static Type byteType = typeof(byte);
+        private static Type ushortType = typeof(ushort);
+        private static Type shortType = typeof(short);
+        private static Type uintType = typeof(uint);
+        private static Type intType = typeof(int);
+        private static Type ulongType = typeof(ulong);
+        private static Type longType = typeof(long);
+        private static Type stringType = typeof(string);
         #endregion
         #region Fields
         private static int max_nesting_depth;
@@ -498,8 +496,14 @@ namespace LitJson
                             if (typeName != value_type.FullName)
                             {
                                 var type = FindType(typeName, value_type);
-                                if(type != null)
+                                if (type != null)
+                                {
+                                    if (!value_type.IsAssignableFrom(type))
+                                    {
+                                        throw new Exception($"类型不匹配！jsontype = {type} valuetype = {value_type}");
+                                    }
                                     value_type = type;
+                                }
                             }
                         }
                         AddObjectMetadata(value_type);
@@ -954,10 +958,20 @@ namespace LitJson
             {
                 Type e_type = Enum.GetUnderlyingType(obj_type);
 
-                if (e_type == longType
-                    || e_type == uintType
-                    || e_type == ulongType)
+                if (e_type == longType)
+                    writer.Write((long)obj);
+                else if(e_type == ulongType)
                     writer.Write((ulong)obj);
+                else if (e_type == byteType)
+                    writer.Write((byte)obj);
+                else if(e_type == sbyteType)
+                    writer.Write((sbyte)obj);
+                else if (e_type == shortType)
+                    writer.Write((short)obj);
+                else if(e_type == ushortType)
+                    writer.Write((ushort)obj);
+                else if(e_type == uintType)
+                    writer.Write((uint)obj);
                 else
                     writer.Write((int)obj);
 
@@ -999,8 +1013,9 @@ namespace LitJson
         #endregion
 
 
-        public static string ToJson(object obj)
+        public static string ToJson<T>(T obj) where T :class
         {
+            if (obj == null) return "null";
             lock (static_writer_lock)
             {
                 static_writer.Reset();
@@ -1050,6 +1065,7 @@ namespace LitJson
 
         public static T ToObject<T>(string json)
         {
+            if (json == "null") return default;
             JsonReader reader = new JsonReader(json);
 
             return (T)ReadValue(typeof(T), reader);
@@ -1057,6 +1073,7 @@ namespace LitJson
 
         public static object ToObject(Type type, string json)
         {
+            if (json == "null") return null;
             JsonReader reader = new JsonReader(json);
             return ReadValue(type, reader);
         }
@@ -1135,7 +1152,7 @@ namespace LitJson
             {
                 if (ass[i] != assembly)
                 {
-                    type = baseType.Assembly.GetType(fullName);
+                    type = ass[i].GetType(fullName);
                     if (type != null)
                     {
                         _temp[fullName] = type;

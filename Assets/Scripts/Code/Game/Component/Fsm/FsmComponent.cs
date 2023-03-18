@@ -6,10 +6,11 @@ namespace TaoTie
     public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdateComponent
     {
         private Fsm[] _fsms;
+        public Fsm[] fsms => _fsms;
         private ConfigFsmController _config;
+        public ConfigFsmController config => _config;
         protected VariableSet _variableSet;
-
-        public virtual Animator animator => Parent.GetComponent<GameObjectHolderComponent>()?.Animator;
+        
         public VariableSet variableSet => _variableSet;
         private ListComponent<ConfigParamTrigger> _triggers;
         public Fsm defaultFsm
@@ -133,6 +134,10 @@ namespace TaoTie
             if (_config.TryGetParam(key, out var param))
             {
                 param.SetValue(this, val);
+                if (param.needSyncAnimator)
+                {
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.keyHash, val);
+                }
             }
             else
             {
@@ -145,6 +150,10 @@ namespace TaoTie
             if (_config.TryGetParam(key, out var param))
             {
                 param.SetValue(this, val);
+                if (param.needSyncAnimator)
+                {
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.keyHash, val);
+                }
             }
             else
             {
@@ -157,6 +166,10 @@ namespace TaoTie
             if (_config.TryGetParam(key, out var param))
             {
                 param.SetValue(this, val);
+                if (param.needSyncAnimator)
+                {
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.keyHash, val);
+                }
             }
             else
             {

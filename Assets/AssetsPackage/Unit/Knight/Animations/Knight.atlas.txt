@@ -1,0 +1,272 @@
+
+Knight.png
+size: 2048,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Slash_1
+  rotate: true
+  xy: 294, 94
+  size: 242, 340
+  orig: 242, 343
+  offset: 0, 3
+  index: -1
+Slash_2
+  rotate: false
+  xy: 306, 340
+  size: 225, 343
+  orig: 242, 343
+  offset: 17, 0
+  index: -1
+Slash_3
+  rotate: false
+  xy: 1012, 476
+  size: 144, 273
+  orig: 242, 343
+  offset: 97, 2
+  index: -1
+Slash_4
+  rotate: true
+  xy: 1137, 176
+  size: 141, 140
+  orig: 242, 343
+  offset: 99, 3
+  index: -1
+Slash_5
+  rotate: false
+  xy: 533, 341
+  size: 130, 60
+  orig: 242, 343
+  offset: 110, 2
+  index: -1
+Slash_6
+  rotate: false
+  xy: 684, 8
+  size: 72, 27
+  orig: 242, 343
+  offset: 167, 5
+  index: -1
+arm_L
+  rotate: false
+  xy: 922, 37
+  size: 63, 98
+  orig: 66, 101
+  offset: 1, 2
+  index: -1
+arm_R
+  rotate: true
+  xy: 801, 342
+  size: 59, 104
+  orig: 61, 106
+  offset: 1, 1
+  index: -1
+body
+  rotate: true
+  xy: 907, 352
+  size: 103, 115
+  orig: 106, 117
+  offset: 2, 1
+  index: -1
+eye_close
+  rotate: false
+  xy: 636, 106
+  size: 83, 26
+  orig: 83, 26
+  offset: 0, 0
+  index: -1
+flash
+  rotate: false
+  xy: 1052, 78
+  size: 67, 57
+  orig: 67, 57
+  offset: 0, 0
+  index: -1
+foot_R
+  rotate: false
+  xy: 721, 113
+  size: 37, 19
+  orig: 41, 21
+  offset: 3, 1
+  index: -1
+head
+  rotate: false
+  xy: 916, 137
+  size: 219, 213
+  orig: 219, 213
+  offset: 0, 0
+  index: -1
+health_buff_FX_2
+  rotate: true
+  xy: 803, 457
+  size: 234, 207
+  orig: 242, 242
+  offset: 3, 0
+  index: -1
+hit_fx
+  rotate: false
+  xy: 1020, 855
+  size: 145, 167
+  orig: 146, 170
+  offset: 1, 1
+  index: -1
+impact_shield_1
+  rotate: true
+  xy: 1137, 319
+  size: 155, 142
+  orig: 348, 305
+  offset: 123, 84
+  index: -1
+impact_shield_2
+  rotate: true
+  xy: 533, 403
+  size: 280, 268
+  orig: 348, 305
+  offset: 48, 17
+  index: -1
+impact_shield_3
+  rotate: true
+  xy: 2, 3
+  size: 333, 290
+  orig: 348, 305
+  offset: 15, 6
+  index: -1
+impact_shield_4
+  rotate: true
+  xy: 2, 338
+  size: 338, 302
+  orig: 348, 305
+  offset: 8, 0
+  index: -1
+impact_shield_5
+  rotate: true
+  xy: 2, 678
+  size: 344, 299
+  orig: 348, 305
+  offset: 0, 2
+  index: -1
+impact_shield_6
+  rotate: true
+  xy: 303, 685
+  size: 337, 298
+  orig: 348, 305
+  offset: 5, 4
+  index: -1
+impact_shield_7
+  rotate: false
+  xy: 603, 746
+  size: 266, 276
+  orig: 348, 305
+  offset: 7, 26
+  index: -1
+impact_shield_8
+  rotate: true
+  xy: 636, 134
+  size: 205, 278
+  orig: 348, 305
+  offset: 68, 27
+  index: -1
+knee_R
+  rotate: true
+  xy: 862, 406
+  size: 49, 43
+  orig: 49, 43
+  offset: 0, 0
+  index: -1
+leg_R
+  rotate: true
+  xy: 987, 10
+  size: 58, 69
+  orig: 63, 69
+  offset: 1, 0
+  index: -1
+lightning_1
+  rotate: true
+  xy: 529, 13
+  size: 79, 153
+  orig: 79, 153
+  offset: 0, 0
+  index: -1
+lightning_2
+  rotate: false
+  xy: 684, 37
+  size: 113, 67
+  orig: 113, 67
+  offset: 0, 0
+  index: -1
+mouth_attack
+  rotate: false
+  xy: 827, 703
+  size: 71, 41
+  orig: 71, 41
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: false
+  xy: 294, 2
+  size: 191, 13
+  orig: 193, 15
+  offset: 1, 1
+  index: -1
+shield
+  rotate: false
+  xy: 799, 11
+  size: 121, 121
+  orig: 123, 123
+  offset: 1, 1
+  index: -1
+shoulder_L
+  rotate: true
+  xy: 803, 407
+  size: 48, 57
+  orig: 50, 59
+  offset: 1, 1
+  index: -1
+shoulder_R
+  rotate: true
+  xy: 987, 70
+  size: 65, 63
+  orig: 67, 65
+  offset: 1, 1
+  index: -1
+slash
+  rotate: false
+  xy: 871, 751
+  size: 147, 271
+  orig: 147, 271
+  offset: 0, 0
+  index: -1
+smoke
+  rotate: false
+  xy: 603, 690
+  size: 109, 54
+  orig: 109, 54
+  offset: 0, 0
+  index: -1
+smoke_buff_dam_1
+  rotate: false
+  xy: 714, 693
+  size: 111, 51
+  orig: 111, 51
+  offset: 0, 0
+  index: -1
+smoke_buff_dam_2
+  rotate: false
+  xy: 665, 348
+  size: 134, 53
+  orig: 134, 53
+  offset: 0, 0
+  index: -1
+sword
+  rotate: false
+  xy: 294, 17
+  size: 233, 75
+  orig: 235, 77
+  offset: 1, 1
+  index: -1
+toe_R
+  rotate: true
+  xy: 760, 110
+  size: 22, 14
+  orig: 24, 16
+  offset: 1, 1
+  index: -1

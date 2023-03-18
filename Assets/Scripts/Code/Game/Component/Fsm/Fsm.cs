@@ -121,12 +121,9 @@ namespace TaoTie
                  ConfigTransition.ApplyDefault(this, toCfg, ref _transitionInfo);
              }
 
-             var animator = _component.animator;
-             if (animator != null)
-             {
-                 animator.CrossFadeInFixedTime(_transitionInfo.targetHash, _transitionInfo.fadeDuration, _transitionInfo.layerIndex, _transitionInfo.targetTime);
-             }
-
+             Messager.Instance.Broadcast(_component.Id, MessageId.CrossFadeInFixedTime, _transitionInfo.targetHash,
+                 _transitionInfo.fadeDuration, _transitionInfo.layerIndex, _transitionInfo.targetTime);
+             
              _statePassTime = 0;
              _stateTime = _transitionInfo.targetTime;
              _stateNormalizedTime = _transitionInfo.targetTime / toCfg.stateDuration;
@@ -142,6 +139,14 @@ namespace TaoTie
          {
              if (onStateChanged != null)
                  onStateChanged(fromState?.name, toState.name);
+             if (fromState == null||fromState.CanMove != toState.CanMove)
+             {
+                 Messager.Instance.Broadcast(_component.Id, MessageId.SetCanMove, toState.CanMove);
+             }
+             if (fromState == null || fromState.CanTurn != toState.CanTurn)
+             {
+                 Messager.Instance.Broadcast(_component.Id, MessageId.SetCanTurn, toState.CanTurn);
+             }
          }
 
          public ConfigFsmState GetStateConfig(string stateName)
@@ -149,7 +154,7 @@ namespace TaoTie
              return _config?.GetStateConfig(stateName);
          }
 
-         #region IRecyclable
+         #region IDisposable
          public virtual void Dispose()
          {
              _component = null;

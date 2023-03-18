@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEngine;
 
 namespace TaoTie
@@ -10,4 +9,4 @@ namespace TaoTie
         public StateData Data;
     }
 }
-
+#endif

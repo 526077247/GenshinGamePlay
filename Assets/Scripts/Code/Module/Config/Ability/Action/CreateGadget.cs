@@ -26,27 +26,26 @@ namespace TaoTie
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var pos = born.ResolvePos(applier, ability, modifier, target);
-            if (checkGround != null && checkGround.enable)
+            if (checkGround != null && checkGround.Enable)
             {
-                if (!PhysicsHelper.LinecastScene(pos + Vector3.up * checkGround.raycastUpHeight,
-                        pos + Vector3.down * checkGround.raycastUpHeight, out var newPos))
+                if (!PhysicsHelper.LinecastScene(pos + Vector3.up * checkGround.RaycastUpHeight,
+                        pos + Vector3.down * checkGround.RaycastUpHeight, out var newPos))
                 {
-                    if (checkGround.dontCreateIfInvalid) return;
+                    if (checkGround.DontCreateIfInvalid) return;
                 }
                 else
                 {
-                    if (checkGround.stickToGroundIfValid)
+                    if (checkGround.StickToGroundIfValid)
                     {
                         pos = newPos;
                     }
                 }
             }
             var rot = born.ResolveRot(applier, ability, modifier, target);
-            var res = target.Parent.CreateEntity<Gadget, int>(GadgetID);
+            var res = target.Parent.CreateEntity<Gadget, int,uint>(GadgetID,CampID);
             res.Position = pos;
             res.Rotation = rot;
-            res.CampId = CampID;
-            
+
             if (ownerIsTarget)
             {
                 var count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, ownerIs, out var entities);

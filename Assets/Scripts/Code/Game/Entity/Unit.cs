@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 场景单位
     /// </summary>
-    public abstract class Unit: Entity
+    public abstract class Unit : Entity
     {
         #region 基础数据
 
@@ -27,16 +27,16 @@ namespace TaoTie
             {
                 var oldPos = this.position;
                 this.position = value;
-                Messager.Instance.Broadcast(Id,MessageId.ChangePositionEvt,this,oldPos);
+                Messager.Instance.Broadcast(Id, MessageId.ChangePositionEvt, this, oldPos);
             }
         }
-        
+
         public Vector3 Forward
         {
             get => this.Rotation * Vector3.forward;
             set => this.Rotation = Quaternion.LookRotation(value, Vector3.up);
         }
-
+        public Vector3 Up => this.Rotation * Vector3.up;
         private Quaternion rotation;
         public Quaternion Rotation
         {
@@ -45,12 +45,23 @@ namespace TaoTie
             {
                 var oldRot = this.rotation;
                 this.rotation = value;
-                Messager.Instance.Broadcast(Id,MessageId.ChangeRotationEvt,this,oldRot);
+                Messager.Instance.Broadcast(Id, MessageId.ChangeRotationEvt, this, oldRot);
             }
         }
 
-        
+        private bool isTurn;
+        public bool IsTurn
+        {
+            get => isTurn;
+            set
+            {
+                var oldTurn = this.isTurn;
+                this.isTurn = value;
+                Messager.Instance.Broadcast(Id, MessageId.ChangeTurnEvt, this, oldTurn);
+            }
+        }
+
         #endregion
-        
+
     }
 }

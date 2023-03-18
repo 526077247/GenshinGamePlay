@@ -12,86 +12,56 @@
 		/// <param name="decision"></param>
 		public static void Think(AIKnowledge knowledge, AIDecision decision)
 		{
-			switch (knowledge.decisionArchetype)
+			var conf = ConfigAIDecisionTreeCategory.Instance.Get(knowledge.decisionArchetype);
+			if (conf != null)
 			{
-				case DecisionArchetype.Animal:
-					RootAnimal(knowledge, decision);
-					break;
-				case DecisionArchetype.Cicin:
-					RootCicin(knowledge, decision);
-					break;
-				case DecisionArchetype.Dahaka:
-					RootDahaka(knowledge, decision);
-					break;
-				case DecisionArchetype.Animal_Homeworld:
-					RootAnimal_Homeworld(knowledge, decision);
-					break;
-				case DecisionArchetype.General:
-					RootGeneral(knowledge, decision);
-					break;
+				if (knowledge.combatComponent != null && knowledge.combatComponent.isInCombat)
+				{
+					if (conf.CombatNode != null)
+						Handler(knowledge, decision, conf.CombatNode);
+				}
+				else
+				{
+					if (conf.Node != null)
+						Handler(knowledge, decision, conf.Node);
+				}
 			}
 		}
 
-		#region Animal
+		#region Tree
 
-		private static void RootAnimal(AIKnowledge knowledge, AIDecision decision)
+		private static void Handler(AIKnowledge knowledge, AIDecision decision, DecisionNode tree)
 		{
-		}
-
-		private static void CombatAnimal(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void RootAnimal_Homeworld(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatAnimal_Homeworld(AIKnowledge knowledge, AIDecision decision)
-		{
+			if (tree is DecisionActionNode actionNode)
+			{
+				decision.act = actionNode.Act;
+				decision.move = actionNode.Move;
+				decision.tactic = actionNode.Tactic;
+			}
+			else if (tree is DecisionConditionNode conditionNode)
+			{
+				if (AIDecisionInterface.Methods.TryGetValue(conditionNode.Condition, out var func))
+				{
+					if (func(knowledge))
+					{
+						Handler(knowledge, decision, conditionNode.True);
+					}
+					else
+					{
+						Handler(knowledge, decision, conditionNode.False);
+					}
+				}
+				else
+				{
+					Log.Error("AI行为树未找到指定方法" + conditionNode.Condition);
+				}
+			}
+			else
+			{
+				Log.Error("AI行为树未配置节点");
+			}
 		}
 
 		#endregion
-
-		#region Cicin
-
-		private static void RootCicin(AIKnowledge knowledge, AIDecision decision)
-		{
-			
-		}
-
-		private static void CombatCicin(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-
-		#endregion
-
-		#region Dahaka
-
-		private static void RootDahaka(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatDahaka(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-
-		#endregion
-
-		#region General
-
-		private static void RootGeneral(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-
-		private static void CombatGeneral(AIKnowledge knowledge, AIDecision decision)
-		{
-		}
-		
-
-		#endregion
-		
-
 	}
 }
