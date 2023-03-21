@@ -311,7 +311,7 @@ namespace TMPro
         /// </summary>
         public override void UpdateMeshPadding()
         {
-            m_padding = ShaderUtilities.GetPadding(m_sharedMaterial, m_enableExtraPadding, m_isUsingBold);
+            m_padding = ShaderUtilities.GetPadding(m_sharedMaterial, m_enableExtraPadding, m_isUsingBold, this);
             m_isMaskingEnabled = ShaderUtilities.IsMaskingEnabled(m_sharedMaterial);
             m_havePropertiesChanged = true;
             checkPaddingRequired = false;
@@ -321,7 +321,7 @@ namespace TMPro
 
             // Update sub text objects
             for (int i = 1; i < m_textInfo.materialCount; i++)
-                m_subTextObjects[i].UpdateMeshPadding(m_enableExtraPadding, m_isUsingBold);
+                m_subTextObjects[i].UpdateMeshPadding(m_enableExtraPadding, m_isUsingBold, this);
         }
 
 
@@ -421,8 +421,12 @@ namespace TMPro
                 if ((flags & TMP_VertexDataUpdateFlags.Uv2) == TMP_VertexDataUpdateFlags.Uv2)
                     mesh.uv2 = m_textInfo.meshInfo[i].uvs2;
 
-                //if ((flags & TMP_VertexDataUpdateFlags.Uv4) == TMP_VertexDataUpdateFlags.Uv4)
-                //    mesh.uv4 = m_textInfo.meshInfo[i].uvs4;
+                if ((flags & TMP_VertexDataUpdateFlags.Uv4) == TMP_VertexDataUpdateFlags.Uv4)
+                {
+                    mesh.uv3 = m_textInfo.meshInfo[i].uvs3;
+                    mesh.uv4 = m_textInfo.meshInfo[i].uvs4;
+                    mesh.tangents = m_textInfo.meshInfo[i].tangents;
+                }
 
                 if ((flags & TMP_VertexDataUpdateFlags.Colors32) == TMP_VertexDataUpdateFlags.Colors32)
                     mesh.colors32 = m_textInfo.meshInfo[i].colors32;
@@ -458,9 +462,10 @@ namespace TMPro
                 mesh.vertices = m_textInfo.meshInfo[i].vertices;
                 mesh.uv = m_textInfo.meshInfo[i].uvs0;
                 mesh.uv2 = m_textInfo.meshInfo[i].uvs2;
-                //mesh.uv4 = m_textInfo.meshInfo[i].uvs4;
+                mesh.uv3 = m_textInfo.meshInfo[i].uvs3;
+                mesh.uv4 = m_textInfo.meshInfo[i].uvs4;
                 mesh.colors32 = m_textInfo.meshInfo[i].colors32;
-
+                mesh.tangents = m_textInfo.meshInfo[i].tangents;
                 mesh.RecalculateBounds();
             }
         }

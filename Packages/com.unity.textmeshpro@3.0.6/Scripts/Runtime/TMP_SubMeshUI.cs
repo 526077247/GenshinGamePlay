@@ -536,7 +536,7 @@ namespace TMPro
         /// <returns></returns>
         public float GetPaddingForMaterial()
         {
-            float padding = ShaderUtilities.GetPadding(m_sharedMaterial, m_TextComponent.extraPadding, m_TextComponent.isUsingBold);
+            float padding = ShaderUtilities.GetPadding(m_sharedMaterial, m_TextComponent.extraPadding, m_TextComponent.isUsingBold, m_TextComponent);
 
             return padding;
         }
@@ -548,7 +548,7 @@ namespace TMPro
         /// <returns></returns>
         public float GetPaddingForMaterial(Material mat)
         {
-            float padding = ShaderUtilities.GetPadding(mat, m_TextComponent.extraPadding, m_TextComponent.isUsingBold);
+            float padding = ShaderUtilities.GetPadding(mat, m_TextComponent.extraPadding, m_TextComponent.isUsingBold, m_TextComponent);
 
             return padding;
         }
@@ -559,9 +559,9 @@ namespace TMPro
         /// </summary>
         /// <param name="isExtraPadding"></param>
         /// <param name="isBold"></param>
-        public void UpdateMeshPadding(bool isExtraPadding, bool isUsingBold)
+        public void UpdateMeshPadding(bool isExtraPadding, bool isUsingBold, TMP_Text text)
         {
-            m_padding = ShaderUtilities.GetPadding(m_sharedMaterial, isExtraPadding, isUsingBold);
+            m_padding = ShaderUtilities.GetPadding(m_sharedMaterial, isExtraPadding, isUsingBold, text);
         }
 
 
