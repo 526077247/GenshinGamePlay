@@ -136,7 +136,7 @@ namespace TaoTie
                 param.SetValue(DynDictionary, val);
                 if (param.needSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.keyHash, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.key, val);
                 }
             }
             else
@@ -152,7 +152,7 @@ namespace TaoTie
                 param.SetValue(DynDictionary, val);
                 if (param.needSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.keyHash, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.key, val);
                 }
             }
             else
@@ -168,7 +168,7 @@ namespace TaoTie
                 param.SetValue(DynDictionary, val);
                 if (param.needSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.keyHash, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.key, val);
                 }
             }
             else
