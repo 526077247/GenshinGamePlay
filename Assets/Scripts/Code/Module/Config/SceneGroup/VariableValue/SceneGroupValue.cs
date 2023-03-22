@@ -11,7 +11,7 @@ namespace TaoTie
         [NinoMember(1)][LabelText("变量")]
         public string key;
         
-        public override float Resolve(IEventBase obj, VariableSet set)
+        public override float Resolve(IEventBase obj, DynDictionary set)
         {
             if (set.TryGet(key, out float f))
             {

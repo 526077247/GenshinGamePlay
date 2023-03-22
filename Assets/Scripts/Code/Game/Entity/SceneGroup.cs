@@ -35,7 +35,7 @@ namespace TaoTie
             Messager.Instance.AddListener<IEventBase>(Id, MessageId.SceneGroupEvent, OnEvent);
             this.manager = manager;
             configId = p1.id;
-            variable = VariableSet.Create();
+            variable = DynDictionary.Create();
             _actorEntities = new Dictionary<int, long>();
             _zoneEntities = new Dictionary<int, long>();
             _timerTrigger = new Dictionary<int, long>();
@@ -120,7 +120,7 @@ namespace TaoTie
         #endregion
 
         public SceneGroupManager manager { get; private set; }
-        public VariableSet variable { get; set; }
+        public DynDictionary variable { get; set; }
         public ulong configId;
 
         public Dictionary<int, long> _actorEntities; // [localid: entityid]

@@ -4,6 +4,6 @@ namespace TaoTie
 {
     public abstract partial class BaseSceneGroupValue
     {
-        public abstract float Resolve(IEventBase obj, VariableSet set);
+        public abstract float Resolve(IEventBase obj, DynDictionary set);
     }
 }

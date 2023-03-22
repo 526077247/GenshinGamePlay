@@ -8,12 +8,12 @@ namespace TaoTie
         public ConfigAbility Config { get; private set; }
         
         private DictionaryComponent<string, ConfigAbilityModifier> modifierConfigs;
-        private VariableSet VariableSet;
+        private DynDictionary _dynDictionary;
         public static ActorAbility Create(long applierID,ConfigAbility config, AbilityComponent component)
         {
             var res = ObjectPool.Instance.Fetch<ActorAbility>();
             res.Init(applierID,component);
-            res.VariableSet = VariableSet.Create();
+            res._dynDictionary = DynDictionary.Create();
             res.Config = config;
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();
             res.isDispose = false;
@@ -22,7 +22,7 @@ namespace TaoTie
             {
                 foreach (var item in config.AbilitySpecials)
                 {
-                    res.VariableSet.Set(item.Key,item.Value);
+                    res._dynDictionary.Set(item.Key,item.Value);
                 }
             }
             
@@ -57,8 +57,8 @@ namespace TaoTie
             
             modifierConfigs.Dispose();
             modifierConfigs = null;
-            VariableSet.Dispose();
-            VariableSet = null;
+            _dynDictionary.Dispose();
+            _dynDictionary = null;
             Config = null;
             ObjectPool.Instance.Recycle(this);
         }
@@ -83,7 +83,7 @@ namespace TaoTie
         /// <returns></returns>
         public float GetSpecials(string key)
         {
-            return VariableSet.Get(key);
+            return _dynDictionary.Get(key);
         }
         
         
@@ -94,7 +94,7 @@ namespace TaoTie
         /// <returns></returns>
         public void SetSpecials(string key,float value)
         {
-            VariableSet.Set(key,value);
+            _dynDictionary.Set(key,value);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace TaoTie
             {
                 foreach (var item in this.paramDict)
                 {
-                    item.Value.SetDefaultValue(ctrl);
+                    item.Value.SetDefaultValue(ctrl.DynDictionary);
                 }
             }
         }

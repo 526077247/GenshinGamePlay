@@ -7,42 +7,40 @@ namespace TaoTie
     {
         public string key;
         public bool needSyncAnimator;
-        public int keyHash = 0;
-        
 
-        public void SetValue(FsmComponent ctrl, float val)
+        public void SetValue(DynDictionary dynDictionary, float val)
         {
             
-            ctrl.variableSet.Set(this.key, val);
+            dynDictionary.Set(this.key, val);
 
         }
 
-        public void SetValue(FsmComponent ctrl, int val)
+        public void SetValue(DynDictionary dynDictionary, int val)
         {
-            ctrl.variableSet.Set(this.key, val);
+            dynDictionary.Set(this.key, val);
         }
 
-        public void SetValue(FsmComponent ctrl, bool val)
+        public void SetValue(DynDictionary dynDictionary, bool val)
         {
-            ctrl.variableSet.Set(this.key, val?1:0);
+            dynDictionary.Set(this.key, val?1:0);
         }
 
-        public float GetFloat(FsmComponent ctrl)
+        public float GetFloat(DynDictionary dynDictionary)
         {
-            return ctrl.variableSet.Get(this.key);
+            return dynDictionary.Get(this.key);
         }
 
-        public int GetInt(FsmComponent ctrl)
+        public int GetInt(DynDictionary dynDictionary)
         {
-            return (int)ctrl.variableSet.Get(this.key);
+            return (int)dynDictionary.Get(this.key);
         }
 
-        public bool GetBool(FsmComponent ctrl)
+        public bool GetBool(DynDictionary dynDictionary)
         {
-            return ctrl.variableSet.Get(this.key) != 0;
+            return dynDictionary.Get(this.key) != 0;
         }
 
-        public abstract void SetDefaultValue(FsmComponent ctrl);
+        public abstract void SetDefaultValue(DynDictionary dynDictionary);
     }
     
     public abstract class ConfigParam<T> : ConfigParam
@@ -53,7 +51,6 @@ namespace TaoTie
         {
             base.key = key;
             this.defaultValue = defaultVal;
-            this.keyHash = Animator.StringToHash(this.key);
             this.needSyncAnimator = needSyncAnimator;
         }
     }

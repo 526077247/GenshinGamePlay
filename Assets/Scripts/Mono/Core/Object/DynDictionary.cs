@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public class VariableSet : IDisposable
+    public class DynDictionary : IDisposable
     {
-        private VariableSet _parent;
+        private DynDictionary _parent;
         private Dictionary<string, float> _varDict = new Dictionary<string, float>();
         
         public delegate void OnVariableChangeDelegate(string key,float value,float oldValue);
         
         public event OnVariableChangeDelegate onValueChange;
 
-        public static VariableSet Create()
+        public static DynDictionary Create()
         {
-            return ObjectPool.Instance.Fetch<VariableSet>();
+            return ObjectPool.Instance.Fetch<DynDictionary>();
         }
         
 
@@ -100,7 +100,7 @@ namespace TaoTie
             _varDict.Clear();
         }
 
-        public void SetParent(VariableSet varset)
+        public void SetParent(DynDictionary varset)
         {
             _parent = varset;
         }

@@ -19,7 +19,7 @@ namespace TaoTie
         public BaseSceneGroupValue value2;
         
 
-        public override float Resolve(IEventBase obj, VariableSet set)
+        public override float Resolve(IEventBase obj, DynDictionary set)
         {
             float v1 = value1.Resolve(obj, set), v2 = value2.Resolve(obj, set);
             return GetLogicValue(v1, v2, _op);

@@ -5,11 +5,11 @@
         public ConfigParamFloat(){}
         public ConfigParamFloat(string key, float value, bool needSyncAnimator = false) : base(key, value, needSyncAnimator) { }
 
-        public override void SetDefaultValue(FsmComponent ctrl)
+        public override void SetDefaultValue(DynDictionary dynDictionary)
         {
             if (this.defaultValue != default(float))
             {
-                SetValue(ctrl, this.defaultValue);
+                SetValue(dynDictionary, this.defaultValue);
             }
         }
     }
