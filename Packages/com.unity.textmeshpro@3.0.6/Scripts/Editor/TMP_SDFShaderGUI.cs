@@ -240,7 +240,7 @@ namespace TMPro.EditorUtilities
         void DoOutlinePanel()
         {
             EditorGUI.indentLevel += 1;
-            DoColor("_OutlineColor", "Color");
+            // DoColor("_OutlineColor", "Color");
             if (m_Material.HasProperty(ShaderUtilities.ID_OutlineTex))
             {
                 if (m_Material.HasProperty("_OutlineUVSpeedX"))
@@ -253,7 +253,7 @@ namespace TMPro.EditorUtilities
                 }
             }
 
-            DoSlider("_OutlineWidth", "Thickness");
+            // DoSlider("_OutlineWidth", "Thickness");
             if (m_Material.HasProperty("_OutlineShininess"))
             {
                 DoSlider("_OutlineShininess", "Gloss");
