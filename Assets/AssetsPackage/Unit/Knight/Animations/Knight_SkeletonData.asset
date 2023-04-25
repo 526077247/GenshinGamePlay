@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: Knight_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: 1ca3259d09cecf948a0f8622f1c8dcce, type: 2}
+  - {fileID: 11400000, guid: 41ec79344f4c5584ab5398a8d64f7d1c, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: bd2e78832bdd6ed458357d281dcf3a6e, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: 91f428232a73df9408b92bb656d0d977, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
-    applyAdditiveMaterial: 0
-    additiveMaterials: []
+    requiresBlendModeMaterials: 1
+    applyAdditiveMaterial: 1
+    additiveMaterials:
+    - pageName: Knight.png
+      material: {fileID: 2100000, guid: 3e38a6a5c6aad3244ba5a9784bac4775, type: 2}
     multiplyMaterials: []
     screenMaterials: []
   skeletonDataModifiers: []
@@ -28,4 +30,4 @@ MonoBehaviour:
   toAnimation: []
   duration: []
   defaultMix: 0.2
-  controller: {fileID: 9100000, guid: 283b0fb630813ef4c92a0a117607ad87, type: 2}
+  controller: {fileID: 0}
