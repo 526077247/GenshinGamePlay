@@ -189,7 +189,9 @@ namespace TaoTie
             FileHelper.CopyFiles(fold, targetPath);
             
             UnityEngine.Debug.Log("完成cdn资源打包");
-            
+#if UNITY_EDITOR
+            Application.OpenURL($"file:///{targetPath}");
+#endif
         }
         
     }

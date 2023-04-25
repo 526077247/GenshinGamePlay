@@ -1,10 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-
-    public abstract class ConfigFsmAction
+    [NinoSerialize]
+    public abstract partial class ConfigFsmAction
     {
         public float normalizedTime;
 

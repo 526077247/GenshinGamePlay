@@ -1,10 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-
-    public class ConfigConditionByStateTime : ConfigCondition
+    [NinoSerialize]
+    public partial class ConfigConditionByStateTime : ConfigCondition
     {
         public float time;
         public bool isNormalized;

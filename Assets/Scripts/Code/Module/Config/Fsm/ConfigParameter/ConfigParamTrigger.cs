@@ -1,6 +1,9 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
-    public class ConfigParamTrigger : ConfigParam<bool>
+    [NinoSerialize]
+    public partial class ConfigParamTrigger : ConfigParam<bool>
     {
         public ConfigParamTrigger(){}
         public ConfigParamTrigger(string key, bool value, bool needSyncAnimator = false) : base(key, value, needSyncAnimator) { }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nino.Serialization;
 
 namespace TaoTie
 {
-    public class ConfigFsm
+    [NinoSerialize]
+    public partial class ConfigFsm
     {
         public ConfigFsm(){}
         public string name;

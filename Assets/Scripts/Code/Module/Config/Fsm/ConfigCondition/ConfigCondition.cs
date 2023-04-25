@@ -1,8 +1,10 @@
 ﻿using System;
+using Nino.Serialization;
 
 namespace TaoTie
 {
-    public abstract class ConfigCondition
+    [NinoSerialize]
+    public abstract partial class ConfigCondition
     {
 
 

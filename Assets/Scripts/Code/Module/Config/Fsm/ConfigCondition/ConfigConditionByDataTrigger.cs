@@ -1,10 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-
-    public class ConfigConditionByDataTrigger : ConfigCondition
+    [NinoSerialize]
+    public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
         public string key;
 

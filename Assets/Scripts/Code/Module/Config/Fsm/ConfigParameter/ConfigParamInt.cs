@@ -1,6 +1,9 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
-    public class ConfigParamInt : ConfigParam<int>
+    [NinoSerialize]
+    public partial class ConfigParamInt : ConfigParam<int>
     {
         public ConfigParamInt(){}
         public ConfigParamInt(string key, int value, bool needSyncAnimator = false) : base(key, value, needSyncAnimator) { }

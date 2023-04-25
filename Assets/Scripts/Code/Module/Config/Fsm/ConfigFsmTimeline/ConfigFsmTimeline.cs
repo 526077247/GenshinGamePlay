@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using Nino.Serialization;
+using UnityEngine;
 
 namespace TaoTie
 {
-    public class ConfigFsmTimeline
+    [NinoSerialize]
+    public partial class ConfigFsmTimeline
     {
         public float length;
         public ConfigFsmClip[] clips;

@@ -1,10 +1,12 @@
 ﻿using System;
 using LitJson.Extensions;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class ConfigFsmState
+    [NinoSerialize]
+    public partial class ConfigFsmState
     {
         public string name;
         public float stateDuration;
@@ -15,6 +17,7 @@ namespace TaoTie
         public ConfigTransition[] transitions;
         public StateData data;
         [JsonIgnore]
+        [NinoIgnore]
         public bool hasTimeline => this.timeline?.clips?.Length > 0;
         
         

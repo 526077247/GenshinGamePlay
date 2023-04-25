@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.cysharp.memorypack": {
-      "version": "file:com.cysharp.memorypack@1.9.13",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.thridparty.odin": {
       "version": "file:com.thridparty.odin",
       "depth": 0,

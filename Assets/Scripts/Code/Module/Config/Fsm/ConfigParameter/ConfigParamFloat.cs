@@ -1,5 +1,8 @@
-﻿namespace TaoTie
+﻿using Nino.Serialization;
+
+namespace TaoTie
 {
+    [NinoSerialize]
     public class ConfigParamFloat : ConfigParam<float>
     {
         public ConfigParamFloat(){}

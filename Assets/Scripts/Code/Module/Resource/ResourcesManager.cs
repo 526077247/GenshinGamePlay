@@ -219,7 +219,7 @@ namespace TaoTie
             {
                 try
                 {
-                    T res = MemoryPack.MemoryPackSerializer.Deserialize<T>(file.bytes);
+                    T res = ProtobufHelper.FromBytes<T>(file.bytes);
                     ReleaseAsset(file);
                     return res;
                 }

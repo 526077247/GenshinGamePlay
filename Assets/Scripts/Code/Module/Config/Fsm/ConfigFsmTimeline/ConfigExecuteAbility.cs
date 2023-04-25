@@ -6,7 +6,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigExecuteAbility:ConfigFsmClip
     {
-        [NinoMember(10)][ValueDropdown("@OdinDropdownHelper.GetAbilities()")]
+        [ValueDropdown("@OdinDropdownHelper.GetAbilities()")]
         public string AbilityName;
         public override FsmClip CreateClip(FsmState state)
         {

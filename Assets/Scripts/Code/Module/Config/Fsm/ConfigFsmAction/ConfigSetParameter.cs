@@ -1,9 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class ConfigSetParameter<T> : ConfigFsmAction
+    [NinoSerialize]
+    public abstract partial class ConfigSetParameter<T> : ConfigFsmAction
     {
         public string key;
 
@@ -21,8 +23,8 @@ namespace TaoTie
         }
     }
 
-    
-    public class ConfigSetParameterBool : ConfigSetParameter<bool>
+    [NinoSerialize]
+    public partial class ConfigSetParameterBool : ConfigSetParameter<bool>
     {
         public override void Excute(Fsm fsm)
         {
@@ -30,8 +32,8 @@ namespace TaoTie
             component?.SetData(key, value);
         }
     }
-    
-    public class ConfigSetParameterInt : ConfigSetParameter<int>
+    [NinoSerialize]
+    public partial class ConfigSetParameterInt : ConfigSetParameter<int>
     {
         public override void Excute(Fsm fsm)
         {
@@ -39,8 +41,8 @@ namespace TaoTie
             component?.SetData(key, value);
         }
     }
-    
-    public class ConfigSetParameterFloat : ConfigSetParameter<float>
+    [NinoSerialize]
+    public partial class ConfigSetParameterFloat : ConfigSetParameter<float>
     {
         public override void Excute(Fsm fsm)
         {

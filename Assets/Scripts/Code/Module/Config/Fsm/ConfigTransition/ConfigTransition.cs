@@ -1,9 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class ConfigTransition
+    [NinoSerialize]
+    public partial class ConfigTransition
     {
         public enum MirrorMode
         {

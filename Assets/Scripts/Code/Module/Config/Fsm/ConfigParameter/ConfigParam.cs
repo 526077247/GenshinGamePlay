@@ -1,9 +1,11 @@
 ﻿using System;
+using Nino.Serialization;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class ConfigParam
+    [NinoSerialize]
+    public abstract partial class ConfigParam
     {
         public string key;
         public bool needSyncAnimator;
@@ -42,7 +44,7 @@ namespace TaoTie
 
         public abstract void SetDefaultValue(DynDictionary dynDictionary);
     }
-    
+    [NinoSerialize]
     public abstract class ConfigParam<T> : ConfigParam
     {
         public T defaultValue;
