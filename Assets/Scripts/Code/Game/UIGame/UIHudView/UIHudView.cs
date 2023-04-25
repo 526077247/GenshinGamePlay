@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace TaoTie
 {
-	public class UIHudView : UIBaseView, IOnCreate, IOnEnable, IUpdateManager
+	public class UIHudView : UIBaseView, IOnCreate, IOnEnable,IOnDisable, IUpdateManager
     {
 		public static string PrefabPath => "UIGame/UIBattle/Prefabs/UIHudView.prefab";
 		private  Queue<FightText> fightTexts = new();
@@ -21,9 +21,12 @@ namespace TaoTie
 		}
 		public void OnEnable()
 		{
-
+			Messager.Instance.AddListener<AttackResult>(0,MessageId.ShowDamageText,ShowFightText);
 		}
-
+		public void OnDisable()
+		{
+			Messager.Instance.RemoveListener<AttackResult>(0,MessageId.ShowDamageText,ShowFightText);
+		}
 		public void Update()
 		{
             if (showFightTexts.Count == 0) return;

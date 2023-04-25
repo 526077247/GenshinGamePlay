@@ -71,6 +71,7 @@ namespace TaoTie
         public void AfterBeAttack(AttackResult result, CombatComponent other)
         {
             afterBeAttack?.Invoke(result, other);
+            Messager.Instance.Broadcast(0,MessageId.ShowDamageText,result);
         }
 
         /// <summary>

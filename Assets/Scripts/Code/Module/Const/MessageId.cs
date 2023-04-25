@@ -36,5 +36,7 @@
         public const int ChangeTurnEvt = 15;
         /// <summary> 游戏时间计时 </summary>
         public const int GameTimeEventTrigger = 16;
+        /// <summary> 伤害飘字 </summary>
+        public const int ShowDamageText = 17;
     }
 }
