@@ -4,36 +4,36 @@ namespace TaoTie
 {
     public class SceneGroupZoneComponent: Component,IComponent<int,long>
     {
-        private int localId;
+        private int LocalId;
 
         private long sceneGroupId;
-        private SceneGroup SceneGroup => Parent.Parent.Get<SceneGroup>(sceneGroupId);
+        private SceneGroup sceneGroup => parent.Parent.Get<SceneGroup>(sceneGroupId);
         
-        private List<long> InnerEntity;
+        private List<long> innerEntity;
         #region IComponent
 
         public void Init(int p1, long p2)
         {
-            localId = p1;
+            LocalId = p1;
             sceneGroupId = p2;
         }
 
         public void Destroy()
         {
             sceneGroupId = 0;
-            localId = 0;
+            LocalId = 0;
         }
 
         #endregion
         
         public int GetRegionEntityCount(EntityType type)
         {
-            if (InnerEntity.Count == 0) return 0;
-            var uc = Parent.Parent;
+            if (innerEntity.Count == 0) return 0;
+            var uc = parent.Parent;
             int count = 0;
-            for (int i = 0; i < InnerEntity.Count; i++)
+            for (int i = 0; i < innerEntity.Count; i++)
             {
-                var u = uc.Get<Unit>(InnerEntity[i]);
+                var u = uc.Get<Unit>(innerEntity[i]);
                 if (u != null)
                 {
                     if (u.Type == type)

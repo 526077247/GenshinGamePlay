@@ -34,27 +34,27 @@ namespace TaoTie
 
             Messager.Instance.AddListener<IEventBase>(Id, MessageId.SceneGroupEvent, OnEvent);
             this.manager = manager;
-            configId = p1.id;
+            configId = p1.Id;
             variable = DynDictionary.Create();
             _actorEntities = new Dictionary<int, long>();
             _zoneEntities = new Dictionary<int, long>();
             _timerTrigger = new Dictionary<int, long>();
             _activeHandlers = new LinkedList<int>();
             AfterLoadFromDB();
-            if (config.randSuite && config.suites != null && config.suites.Length > 0)
+            if (config.RandSuite && config.Suites != null && config.Suites.Length > 0)
             {
                 this._temp.Clear();
                 int total = 0;
-                for (int i = 0; i < config.suites.Length; i++)
+                for (int i = 0; i < config.Suites.Length; i++)
                 {
-                    this._temp.Add(config.suites[i].localId, config.suites[i].randWeight);
-                    total += config.suites[i].randWeight;
+                    this._temp.Add(config.Suites[i].LocalId, config.Suites[i].RandWeight);
+                    total += config.Suites[i].RandWeight;
                 }
 
                 if (total == 0)
                 {
-                    Log.Error("随机group失败 totalWeight == 0! sceneGroupId=" + config.id);
-                    this.ChangeSuite(config.suites[0].localId);
+                    Log.Error("随机group失败 totalWeight == 0! sceneGroupId=" + config.Id);
+                    this.ChangeSuite(config.Suites[0].LocalId);
                     return;
                 }
 
@@ -72,12 +72,12 @@ namespace TaoTie
                     }
                 }
 
-                Log.Error("随机suite失败 sceneGroupId=" + config.id);
-                this.ChangeSuite(config.suites[0].localId);
+                Log.Error("随机suite失败 sceneGroupId=" + config.Id);
+                this.ChangeSuite(config.Suites[0].LocalId);
             }
             else
             {
-                this.ChangeSuite(config.initSuite);
+                this.ChangeSuite(config.InitSuite);
             }
         }
 
@@ -178,35 +178,35 @@ namespace TaoTie
         {
             this.variable.onValueChange += this.OnVariableChanged;
 
-            this.actors = new Dictionary<int, ConfigSceneGroupActor>(this.config.actors.Length);
-            this.routes = new Dictionary<int, ConfigRoute>(this.config.route != null ? this.config.route.Length : 0);
-            this.triggers = new Dictionary<int, ConfigSceneGroupTrigger>(this.config.triggers.Length);
-            this.zones = new Dictionary<int, ConfigSceneGroupZone>(this.config.zones.Length);
-            this.suite = new Dictionary<int, ConfigSceneGroupSuites>(this.config.suites.Length);
+            this.actors = new Dictionary<int, ConfigSceneGroupActor>(this.config.Actors.Length);
+            this.routes = new Dictionary<int, ConfigRoute>(this.config.Route != null ? this.config.Route.Length : 0);
+            this.triggers = new Dictionary<int, ConfigSceneGroupTrigger>(this.config.Triggers.Length);
+            this.zones = new Dictionary<int, ConfigSceneGroupZone>(this.config.Zones.Length);
+            this.suite = new Dictionary<int, ConfigSceneGroupSuites>(this.config.Suites.Length);
 
-            for (int i = 0; i < (this.config.actors == null ? 0 : this.config.actors.Length); i++)
+            for (int i = 0; i < (this.config.Actors == null ? 0 : this.config.Actors.Length); i++)
             {
-                this.actors.Add(this.config.actors[i].localId, this.config.actors[i]);
+                this.actors.Add(this.config.Actors[i].LocalId, this.config.Actors[i]);
             }
 
-            for (int i = 0; i < (this.config.route == null ? 0 : this.config.route.Length); i++)
+            for (int i = 0; i < (this.config.Route == null ? 0 : this.config.Route.Length); i++)
             {
-                this.routes.Add(this.config.route[i].localId, this.config.route[i]);
+                this.routes.Add(this.config.Route[i].LocalId, this.config.Route[i]);
             }
 
-            for (int i = 0; i < (this.config.triggers == null ? 0 : this.config.triggers.Length); i++)
+            for (int i = 0; i < (this.config.Triggers == null ? 0 : this.config.Triggers.Length); i++)
             {
-                this.triggers.Add(this.config.triggers[i].localId, this.config.triggers[i]);
+                this.triggers.Add(this.config.Triggers[i].LocalId, this.config.Triggers[i]);
             }
 
-            for (int i = 0; i < (this.config.zones == null ? 0 : this.config.zones.Length); i++)
+            for (int i = 0; i < (this.config.Zones == null ? 0 : this.config.Zones.Length); i++)
             {
-                this.zones.Add(this.config.zones[i].localId, this.config.zones[i]);
+                this.zones.Add(this.config.Zones[i].LocalId, this.config.Zones[i]);
             }
 
-            for (int i = 0; i < (this.config.suites == null ? 0 : this.config.suites.Length); i++)
+            for (int i = 0; i < (this.config.Suites == null ? 0 : this.config.Suites.Length); i++)
             {
-                this.suite.Add(this.config.suites[i].localId, this.config.suites[i]);
+                this.suite.Add(this.config.Suites[i].LocalId, this.config.Suites[i]);
             }
         }
 
@@ -239,7 +239,7 @@ namespace TaoTie
                 this.ChangeTriggers(config);
                 this.ChangeActors(config);
                 this.ChangeZones(config);
-                this.curSuiteId = config.localId;
+                this.curSuiteId = config.LocalId;
                 Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteLoadEvent()
                 {
                     SuiteId = curSuiteId,
@@ -288,7 +288,7 @@ namespace TaoTie
 
         private void ChangeActors(ConfigSceneGroupSuites config)
         {
-            this.Collect(this.CurGroupSuitesConfig != null ? this.CurGroupSuitesConfig.actors : null, config.actors);
+            this.Collect(this.CurGroupSuitesConfig != null ? this.CurGroupSuitesConfig.Actors : null, config.Actors);
             foreach (var item in this._temp)
             {
                 if (item.Value > 0) //新增actor
@@ -311,8 +311,8 @@ namespace TaoTie
 
         private void ChangeTriggers(ConfigSceneGroupSuites config)
         {
-            this.Collect(this.CurGroupSuitesConfig != null ? this.CurGroupSuitesConfig.triggers : null,
-                config.triggers);
+            this.Collect(this.CurGroupSuitesConfig != null ? this.CurGroupSuitesConfig.Triggers : null,
+                config.Triggers);
 
             foreach (var item in this._temp)
             {
@@ -320,12 +320,12 @@ namespace TaoTie
                 {
                     if (this.triggers.TryGetValue(item.Key, out var trigger))
                     {
-                        this._activeHandlers.AddLast(trigger.localId);
-                        if (trigger is ConfigGameTimeEventTrigger timeEventTrigger)
+                        this._activeHandlers.AddLast(trigger.LocalId);
+                        if (trigger is ConfigGameTimeChangeTrigger timeEventTrigger)
                         {
                             var timerId = GameTimerManager.Instance.NewOnceTimer(timeEventTrigger.GameTime,
                                 TimerType.GameTimeEventTrigger, this);
-                            this._timerTrigger.Add(trigger.localId, timerId);
+                            this._timerTrigger.Add(trigger.LocalId, timerId);
                         }
                     }
                 }
@@ -333,12 +333,12 @@ namespace TaoTie
                 {
                     if (this.triggers.TryGetValue(item.Key, out var trigger))
                     {
-                        this._activeHandlers.Remove(trigger.localId);
-                        if (trigger is ConfigGameTimeEventTrigger &&
-                            this._timerTrigger.TryGetValue(trigger.localId, out var timerId))
+                        this._activeHandlers.Remove(trigger.LocalId);
+                        if (trigger is ConfigGameTimeChangeTrigger &&
+                            this._timerTrigger.TryGetValue(trigger.LocalId, out var timerId))
                         {
                             GameTimerManager.Instance.Remove(ref timerId);
-                            this._timerTrigger.Remove(trigger.localId);
+                            this._timerTrigger.Remove(trigger.LocalId);
                         }
                     }
                 }
@@ -347,7 +347,7 @@ namespace TaoTie
 
         private void ChangeZones(ConfigSceneGroupSuites config)
         {
-            this.Collect(this.CurGroupSuitesConfig != null ? this.CurGroupSuitesConfig.zones : null, config.zones);
+            this.Collect(this.CurGroupSuitesConfig != null ? this.CurGroupSuitesConfig.Zones : null, config.Zones);
 
             foreach (var item in this._temp)
             {
@@ -356,7 +356,7 @@ namespace TaoTie
                     if (!this._zoneEntities.ContainsKey(item.Key) && this.zones.TryGetValue(item.Key, out var zone))
                     {
                         var unit = zone.CreateZone(this);
-                        this._zoneEntities[zone.localId] = unit.Id;
+                        this._zoneEntities[zone.LocalId] = unit.Id;
                     }
                 }
                 else if (item.Value < 0) //消失
@@ -384,7 +384,7 @@ namespace TaoTie
             // 新的
             if (suiteId != this.curSuiteId && this.suite.TryGetValue(suiteId, out var config)
                                            && (this._addOnSuiteConfig == null ||
-                                               !this._addOnSuiteConfig.Contains(config.localId)))
+                                               !this._addOnSuiteConfig.Contains(config.LocalId)))
             {
                 if (this._addOnSuiteConfig == null)
                 {
@@ -394,7 +394,7 @@ namespace TaoTie
                 this.AddonTriggers(config);
                 this.AddonActors(config);
                 this.AddonZones(config);
-                this._addOnSuiteConfig.Add(config.localId);
+                this._addOnSuiteConfig.Add(config.LocalId);
                 Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteLoadEvent()
                 {
                     SuiteId = curSuiteId,
@@ -405,38 +405,38 @@ namespace TaoTie
 
         private void AddonActors(ConfigSceneGroupSuites config)
         {
-            for (int i = 0; i < config.actors.Length; i++)
+            for (int i = 0; i < config.Actors.Length; i++)
             {
-                if (!this._actorEntities.ContainsKey(config.actors[i]) &&
-                    this.actors.TryGetValue(config.actors[i], out var actor))
+                if (!this._actorEntities.ContainsKey(config.Actors[i]) &&
+                    this.actors.TryGetValue(config.Actors[i], out var actor))
                 {
                     var unit = actor.CreateActor(this);
-                    this._actorEntities.Add(actor.localId, unit.Id);
+                    this._actorEntities.Add(actor.LocalId, unit.Id);
                 }
             }
         }
 
         private void AddonTriggers(ConfigSceneGroupSuites config)
         {
-            for (int i = 0; i < config.triggers.Length; i++)
+            for (int i = 0; i < config.Triggers.Length; i++)
             {
-                if (this.triggers.TryGetValue(config.triggers[i], out var trigger) &&
-                    !this._activeHandlers.Contains(trigger.localId))
+                if (this.triggers.TryGetValue(config.Triggers[i], out var trigger) &&
+                    !this._activeHandlers.Contains(trigger.LocalId))
                 {
-                    this._activeHandlers.AddLast(trigger.localId);
+                    this._activeHandlers.AddLast(trigger.LocalId);
                 }
             }
         }
 
         private void AddonZones(ConfigSceneGroupSuites config)
         {
-            for (int i = 0; i < config.zones.Length; i++)
+            for (int i = 0; i < config.Zones.Length; i++)
             {
-                if (!this._zoneEntities.ContainsKey(config.zones[i]) &&
-                    this.zones.TryGetValue(config.zones[i], out var zone))
+                if (!this._zoneEntities.ContainsKey(config.Zones[i]) &&
+                    this.zones.TryGetValue(config.Zones[i], out var zone))
                 {
                     var unit = zone.CreateZone(this);
-                    this._zoneEntities[zone.localId] = unit.Id;
+                    this._zoneEntities[zone.LocalId] = unit.Id;
                 }
             }
 
@@ -449,12 +449,12 @@ namespace TaoTie
         public void RemoveExtraGroup(int group)
         {
             if (this.suite.TryGetValue(group, out var config) && this._addOnSuiteConfig != null &&
-                this._addOnSuiteConfig.Contains(config.localId))
+                this._addOnSuiteConfig.Contains(config.LocalId))
             {
                 this.RemoveAddonZones(config);
                 this.RemoveAddonActors(config);
                 this.RemoveAddonTriggers(config);
-                this._addOnSuiteConfig.Remove(config.localId);
+                this._addOnSuiteConfig.Remove(config.LocalId);
             }
         }
 
@@ -502,14 +502,14 @@ namespace TaoTie
         {
             List<int[]> pre = new List<int[]>();
             if (this.CurGroupSuitesConfig != null)
-                pre.Add(this.CurGroupSuitesConfig.actors);
+                pre.Add(this.CurGroupSuitesConfig.Actors);
             foreach (var item in this._addOnSuiteConfig)
             {
                 var conf = this.suite[item];
-                pre.Add(conf.actors);
+                pre.Add(conf.Actors);
             }
 
-            this.Collect(pre, config.actors);
+            this.Collect(pre, config.Actors);
             foreach (var item in this._temp)
             {
                 if (item.Value < 0) //消失actor
@@ -526,21 +526,21 @@ namespace TaoTie
         {
             List<int[]> pre = new List<int[]>();
             if (this.CurGroupSuitesConfig != null)
-                pre.Add(this.CurGroupSuitesConfig.triggers);
+                pre.Add(this.CurGroupSuitesConfig.Triggers);
             foreach (var item in this._addOnSuiteConfig)
             {
                 var conf = this.suite[item];
-                pre.Add(conf.triggers);
+                pre.Add(conf.Triggers);
             }
 
-            this.Collect(pre, config.triggers);
+            this.Collect(pre, config.Triggers);
             foreach (var item in this._temp)
             {
                 if (item.Value < 0) //消失
                 {
                     if (this.triggers.TryGetValue(item.Key, out var trigger))
                     {
-                        this._activeHandlers.Remove(trigger.localId);
+                        this._activeHandlers.Remove(trigger.LocalId);
                     }
                 }
             }
@@ -550,14 +550,14 @@ namespace TaoTie
         {
             List<int[]> pre = new List<int[]>();
             if (this.CurGroupSuitesConfig != null)
-                pre.Add(this.CurGroupSuitesConfig.zones);
+                pre.Add(this.CurGroupSuitesConfig.Zones);
             foreach (var item in this._addOnSuiteConfig)
             {
                 var conf = this.suite[item];
-                pre.Add(conf.zones);
+                pre.Add(conf.Zones);
             }
 
-            this.Collect(pre, config.zones);
+            this.Collect(pre, config.Zones);
             foreach (var item in this._temp)
             {
                 if (item.Value < 0) //消失
@@ -605,7 +605,7 @@ namespace TaoTie
             if (!this._actorEntities.ContainsKey(actorId) && this.actors.TryGetValue(actorId, out var actor))
             {
                 var unit = actor.CreateActor(this);
-                this._actorEntities.Add(actor.localId, unit.Id);
+                this._actorEntities.Add(actor.LocalId, unit.Id);
             }
         }
 
@@ -616,10 +616,10 @@ namespace TaoTie
         public int GetSuiteMonsterCount()
         {
             int res = 0;
-            for (int i = 0; i < this.config.actors.Length; i++)
+            for (int i = 0; i < this.config.Actors.Length; i++)
             {
-                if (this.config.actors[i] is ConfigSceneGroupActorMonster monster &&
-                    this._actorEntities.TryGetValue(monster.localId, out var eid))
+                if (this.config.Actors[i] is ConfigSceneGroupActorMonster monster &&
+                    this._actorEntities.TryGetValue(monster.LocalId, out var eid))
                 {
                     res++;
                 }

@@ -13,11 +13,11 @@ namespace TaoTie
     public partial class ConfigSceneGroupPrintContextLogAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        public string content;
+        public string Content;
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            Log.Info(content + "\r\n" + LitJson.JsonMapper.ToJson(evt));
+            Log.Info(Content + "\r\n" + LitJson.JsonMapper.ToJson(evt));
         }
     }
 }

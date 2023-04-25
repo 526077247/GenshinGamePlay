@@ -7,20 +7,20 @@ namespace TaoTie
     /// </summary>
     public class LocalInputController : Component, IComponent, IUpdateComponent
     {
-        private SkillComponent SkillComponent => Parent.GetComponent<SkillComponent>();
-        private AvatarMoveComponent AvatarMoveComponent => Parent.GetComponent<AvatarMoveComponent>();
-        public ControlData controlData;
+        private SkillComponent SkillComponent => parent.GetComponent<SkillComponent>();
+        private AvatarMoveComponent AvatarMoveComponent => parent.GetComponent<AvatarMoveComponent>();
+        public ControlData ControlData;
         #region IComponent
 
         public void Init()
         {
-            controlData = ControlData.Create();
+            ControlData = ControlData.Create();
         }
 
         public void Destroy()
         {
-            controlData.Dispose();
-            controlData = null;
+            ControlData.Dispose();
+            ControlData = null;
         }
 
         public void Update()

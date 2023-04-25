@@ -9,12 +9,12 @@ namespace TaoTie
     public sealed partial class ConfigSceneGroupActorMonster : ConfigSceneGroupActor
     {
         [NinoMember(10)]
-        public int configID;
+        public int ConfigID;
 
         public override Entity CreateActor(SceneGroup sceneGroup)
         {
-            var entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3,uint>(configID,position,campId);
-            entity.AddComponent<SceneGroupActorComponent, int, long>(localId, sceneGroup.Id);
+            var entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3,uint>(ConfigID,Position,CampId);
+            entity.AddComponent<SceneGroupActorComponent, int, long>(LocalId, sceneGroup.Id);
             return entity;
         }
     }

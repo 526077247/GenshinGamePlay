@@ -36,7 +36,7 @@ namespace TaoTie
                         if (attributeData is TriggerTypeAttribute attr)
                         {
                             has = true;
-                            if (attr.type == type || attr.type == null)
+                            if (attr.Type == type || attr.Type == null)
                             {
                                 return true;
                             }
@@ -69,7 +69,7 @@ namespace TaoTie
                         if (attributeData is TriggerTypeAttribute attr)
                         {
                             has = true;
-                            if (attr.type == type || attr.type == null)
+                            if (attr.Type == type || attr.Type == null)
                             {
                                 return true;
                             }
@@ -88,10 +88,10 @@ namespace TaoTie
             if (sceneGroup!=null)
             {
                 ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.actors == null ? 0 : config.actors.Length); i++)
+                for (int i = 0; i < (config.Actors == null ? 0 : config.Actors.Length); i++)
                 {
-                    if (config.actors[i] != null)
-                        res.Add(config.actors[i].localId);
+                    if (config.Actors[i] != null)
+                        res.Add(config.Actors[i].LocalId);
                 }
             }
             
@@ -104,10 +104,10 @@ namespace TaoTie
             if (sceneGroup!=null)
             {
                 ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.route == null ? 0 : config.route.Length); i++)
+                for (int i = 0; i < (config.Route == null ? 0 : config.Route.Length); i++)
                 {
-                    if (config.route[i] != null)
-                        res.Add(config.route[i].localId);
+                    if (config.Route[i] != null)
+                        res.Add(config.Route[i].LocalId);
                 }
             }
             return res;
@@ -119,10 +119,10 @@ namespace TaoTie
             if (sceneGroup!=null)
             {
                 ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.zones == null ? 0 : config.zones.Length); i++)
+                for (int i = 0; i < (config.Zones == null ? 0 : config.Zones.Length); i++)
                 {
-                    if (config.zones[i] != null)
-                        res.Add(config.zones[i].localId);
+                    if (config.Zones[i] != null)
+                        res.Add(config.Zones[i].LocalId);
                 }
             }
             return res;
@@ -134,10 +134,10 @@ namespace TaoTie
             if (sceneGroup!=null)
             {
                 ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.suites == null ? 0 : config.suites.Length); i++)
+                for (int i = 0; i < (config.Suites == null ? 0 : config.Suites.Length); i++)
                 {
-                    if (config.suites[i] != null)
-                        res.Add(config.suites[i].localId);
+                    if (config.Suites[i] != null)
+                        res.Add(config.Suites[i].LocalId);
                 }
             }
             return res;
@@ -148,10 +148,10 @@ namespace TaoTie
             if (sceneGroup!=null)
             {
                 ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.suites == null ? 0 : config.suites.Length); i++)
+                for (int i = 0; i < (config.Suites == null ? 0 : config.Suites.Length); i++)
                 {
-                    if (config.suites[i] != null)
-                        res.Add(config.suites[i].localId);
+                    if (config.Suites[i] != null)
+                        res.Add(config.Suites[i].LocalId);
                 }
             }
             res.Add(0);
@@ -163,10 +163,10 @@ namespace TaoTie
             if (sceneGroup!=null)
             {
                 ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.triggers == null ? 0 : config.triggers.Length); i++)
+                for (int i = 0; i < (config.Triggers == null ? 0 : config.Triggers.Length); i++)
                 {
-                    if (config.triggers[i] != null)
-                        res.Add(config.triggers[i].localId);
+                    if (config.Triggers[i] != null)
+                        res.Add(config.Triggers[i].LocalId);
                 }
             }
             return res;

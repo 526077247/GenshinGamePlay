@@ -15,12 +15,12 @@ namespace TaoTie
         [LabelText("要跳转的组Id")]
         [ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
         [NinoMember(10)]
-        public int suiteId;
+        public int SuiteId;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            if (!aimSceneGroup.config.randSuite)
+            if (!aimSceneGroup.config.RandSuite)
             {
-                aimSceneGroup.ChangeSuite(suiteId);
+                aimSceneGroup.ChangeSuite(SuiteId);
             }
             else
             {

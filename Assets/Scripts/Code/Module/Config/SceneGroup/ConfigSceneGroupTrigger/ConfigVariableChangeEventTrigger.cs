@@ -10,11 +10,11 @@ namespace TaoTie
     public partial class ConfigVariableChangeEventTrigger : ConfigSceneGroupTrigger<VariableChangeEvent>
     {
         [NinoMember(5)][LabelText("变量")]
-        public string key;
+        public string Key;
 
         protected override bool CheckCondition(SceneGroup sceneGroup, VariableChangeEvent evt)
         {
-            return key == evt.Key;
+            return Key == evt.Key;
         } 
     }
 }

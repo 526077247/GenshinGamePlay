@@ -7,11 +7,11 @@ namespace TaoTie
     /// </summary>
     public class AttachComponent:Component,IComponent
     {
-        protected AttachComponent ParentEntity { get; private set; }
+        public AttachComponent ParentEntity { get; private set; }
 
-        protected ListComponent<long> Childs { get; private set; }
+        public ListComponent<long> Childs { get; private set; }
         
-        public bool lifeByOwnerIsAlive { get;private set; }
+        public bool LifeByOwnerIsAlive { get;private set; }
         #region IComponent
 
         public void Init()
@@ -24,9 +24,9 @@ namespace TaoTie
             ParentEntity.Childs.Remove(Id);
             for (int i = 0; i < Childs.Count; i++)
             {
-                var e = Parent.Parent.Get<Entity>(Childs[i]);
+                var e = parent.Parent.Get<Entity>(Childs[i]);
                 var ac =  e.GetComponent<AttachComponent>();
-                if (ac.lifeByOwnerIsAlive)
+                if (ac.LifeByOwnerIsAlive)
                 {
                     e.Dispose();
                 }
@@ -49,7 +49,7 @@ namespace TaoTie
                 ac.ParentEntity.Childs.Remove(entity.Id);
             }
             Childs.Add(entity.Id);
-            ac.lifeByOwnerIsAlive = lifeByOwnerIsAlive;
+            ac.LifeByOwnerIsAlive = lifeByOwnerIsAlive;
             ac.ParentEntity = this;
         }
     }

@@ -11,17 +11,17 @@ namespace TaoTie
     {
         [NinoMember(10)]
         [ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
-        public int actorId;
+        public int ActorId;
         [NinoMember(11)]
-        public GadgetState state;
+        public GadgetState State;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            if (aimSceneGroup.TryGetActorEntity(actorId, out var entityId))
+            if (aimSceneGroup.TryGetActorEntity(ActorId, out var entityId))
             {
                 var gadget = aimSceneGroup.Parent.Get<Entity>(entityId).GetComponent<GadgetComponent>();
                 if (gadget != null)
                 {
-                    gadget.SetGadgetState(state);
+                    gadget.SetGadgetState(State);
                 }
             }
         }

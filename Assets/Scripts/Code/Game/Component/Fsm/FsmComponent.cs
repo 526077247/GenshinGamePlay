@@ -5,28 +5,28 @@ namespace TaoTie
 {
     public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdateComponent
     {
-        private Fsm[] _fsms;
-        public Fsm[] fsms => _fsms;
-        private ConfigFsmController _config;
-        public ConfigFsmController config => _config;
+        private Fsm[] fsms;
+        public Fsm[] Fsms => fsms;
+        private ConfigFsmController config;
+        public ConfigFsmController Config => config;
         protected DynDictionary dynDictionary;
         
         public DynDictionary DynDictionary => dynDictionary;
-        private ListComponent<ConfigParamTrigger> _triggers;
-        public Fsm defaultFsm
+        private ListComponent<ConfigParamTrigger> triggers;
+        public Fsm DefaultFsm
         {
             get
             {
-                return _fsms?.Length > 0? _fsms[0] : null;
+                return fsms?.Length > 0? fsms[0] : null;
             }
         }
 
         public Fsm GetFsm(string name)
         {
-            if (_fsms == null || string.IsNullOrEmpty(name))
+            if (fsms == null || string.IsNullOrEmpty(name))
                 return null;
 
-            foreach (var fsm in _fsms)
+            foreach (var fsm in fsms)
             {
                 if (fsm.name == name)
                 {
@@ -39,23 +39,23 @@ namespace TaoTie
 
         private void InitWithConfig(ConfigFsmController cfg)
         {
-            _config = cfg;
+            config = cfg;
             dynDictionary = ObjectPool.Instance.Fetch<DynDictionary>();
 
-            _config.InitDefaultParam(this);
-            _triggers = ListComponent<ConfigParamTrigger>.Create();
-            foreach (var item in _config.paramDict)
+            config.InitDefaultParam(this);
+            triggers = ListComponent<ConfigParamTrigger>.Create();
+            foreach (var item in config.paramDict)
             {
                 if (item.Value is ConfigParamTrigger trigger)
                 {
-                    _triggers.Add(trigger);
+                    triggers.Add(trigger);
                 }
             }
-            _fsms = new Fsm[_config.fsmCount];
-            for (int i = 0; i < _config.fsmCount; i++)
+            fsms = new Fsm[config.fsmCount];
+            for (int i = 0; i < config.fsmCount; i++)
             {
-                var fsmCfg = _config.GetFsmConfig(i);
-                _fsms[i] = CreateFsm(fsmCfg);
+                var fsmCfg = config.GetFsmConfig(i);
+                fsms[i] = CreateFsm(fsmCfg);
             }
         }
 
@@ -66,23 +66,23 @@ namespace TaoTie
 
         public void Start()
         {
-            for (int i = 0; i < _config.fsmCount; i++)
+            for (int i = 0; i < config.fsmCount; i++)
             {
-                _fsms[i].Start();
+                fsms[i].Start();
             }
         }
 
         public void Update()
         {
-            for (int i = 0; i < _fsms.Length; i++)
+            for (int i = 0; i < fsms.Length; i++)
             {
-                if (_fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                _fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
+                if (fsms[i] == null) continue; //可能在其他状态中entity被销毁了
+                fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
             }
 
-            for (int i = 0; i < _triggers.Count; i++)
+            for (int i = 0; i < triggers.Count; i++)
             {
-                _triggers[i].SetValue(DynDictionary,false);
+                triggers[i].SetValue(DynDictionary,false);
             }
         }
 
@@ -101,12 +101,12 @@ namespace TaoTie
         public virtual void Destroy()
         {
             Stop();
-            if (_fsms != null)
+            if (fsms != null)
             {
-                for (int i = 0; i < _fsms.Length; i++)
+                for (int i = 0; i < fsms.Length; i++)
                 {
-                    _fsms[i].Dispose();
-                    _fsms[i] = null;
+                    fsms[i].Dispose();
+                    fsms[i] = null;
                 }
             }
 
@@ -115,9 +115,9 @@ namespace TaoTie
                 dynDictionary.Dispose();
                 dynDictionary = null;
             }
-            _triggers.Dispose();
-            _triggers = null;
-            _config = null;
+            triggers.Dispose();
+            triggers = null;
+            config = null;
         }
 
         #endregion
@@ -126,12 +126,12 @@ namespace TaoTie
 
         public bool KeyExist(string key)
         {
-            return _config.TryGetParam(key, out _);
+            return config.TryGetParam(key, out _);
         }
 
         public void SetData(string key, float val)
         {
-            if (_config.TryGetParam(key, out var param))
+            if (config.TryGetParam(key, out var param))
             {
                 param.SetValue(DynDictionary, val);
                 if (param.needSyncAnimator)
@@ -147,7 +147,7 @@ namespace TaoTie
 
         public void SetData(string key, int val)
         {
-            if (_config.TryGetParam(key, out var param))
+            if (config.TryGetParam(key, out var param))
             {
                 param.SetValue(DynDictionary, val);
                 if (param.needSyncAnimator)
@@ -163,7 +163,7 @@ namespace TaoTie
 
         public void SetData(string key, bool val)
         {
-            if (_config.TryGetParam(key, out var param))
+            if (config.TryGetParam(key, out var param))
             {
                 param.SetValue(DynDictionary, val);
                 if (param.needSyncAnimator)
@@ -179,7 +179,7 @@ namespace TaoTie
 
         public float GetFloat(string key)
         {
-            if (_config.TryGetParam(key, out var param))
+            if (config.TryGetParam(key, out var param))
             {
                 return param.GetFloat(DynDictionary);
             }
@@ -192,7 +192,7 @@ namespace TaoTie
 
         public int GetInt(string key)
         {
-            if (_config.TryGetParam(key, out var param))
+            if (config.TryGetParam(key, out var param))
             {
                 return param.GetInt(DynDictionary);
             }
@@ -205,7 +205,7 @@ namespace TaoTie
 
         public bool GetBool(string key)
         {
-            if (_config.TryGetParam(key, out var param))
+            if (config.TryGetParam(key, out var param))
             {
                 return param.GetBool(DynDictionary);
             }
@@ -218,7 +218,7 @@ namespace TaoTie
 
         public bool IsExist(string key)
         {
-            return _config.TryGetParam(key, out var param);
+            return config.TryGetParam(key, out var param);
         }
 
         #endregion

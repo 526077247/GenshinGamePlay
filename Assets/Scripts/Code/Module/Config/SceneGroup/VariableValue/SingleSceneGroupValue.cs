@@ -7,11 +7,11 @@ namespace TaoTie
     public partial class SingleSceneGroupValue: BaseSceneGroupValue
     {
         [NinoMember(1)][LabelText("固定值")]
-        public int fixedValue;
+        public int FixedValue;
 
         public override float Resolve(IEventBase obj, DynDictionary set)
         {
-            return fixedValue;
+            return FixedValue;
         }
     }
 }

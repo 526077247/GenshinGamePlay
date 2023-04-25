@@ -12,29 +12,29 @@ namespace TaoTie
     {
         [PropertyOrder(int.MinValue)] 
         [NinoMember(1)]
-        public int localId;
+        public int LocalId;
         [NinoMember(2)]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
 #endif
         [SerializeReference] [PropertyOrder(int.MaxValue - 1)]
         [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(GetType())")]
-        public ConfigSceneGroupAction[] actions;
+        public ConfigSceneGroupAction[] Actions;
 
 #if UNITY_EDITOR
         [PropertyOrder(int.MinValue + 1)] [SerializeField] [LabelText("策划备注")]
-        private string remarks;
+        private string Remarks;
         
         private void Refresh()
         {
-            if (actions == null) return;
-            for (int i = 0; i < actions.Length; i++)
+            if (Actions == null) return;
+            for (int i = 0; i < Actions.Length; i++)
             {
-                if (actions[i] != null)
-                    actions[i].handleType = GetType();
+                if (Actions[i] != null)
+                    Actions[i].HandleType = GetType();
             }
 
-            actions.Sort((a, b) => { return a.localId - b.localId; });
+            Actions.Sort((a, b) => { return a.LocalId - b.LocalId; });
         }
 #endif
 
@@ -51,11 +51,11 @@ namespace TaoTie
             if (evt.GetType() != EventType) return;
             if (!CheckCondition(sceneGroup, (T)evt)) return;
             Log.Info("OnTrigger: " + GetType().Name);
-            if (actions != null)
+            if (Actions != null)
             {
-                for (int i = 0; i < actions.Length; i++)
+                for (int i = 0; i < Actions.Length; i++)
                 {
-                    actions[i].ExecuteAction(evt, sceneGroup);
+                    Actions[i].ExecuteAction(evt, sceneGroup);
                 }
             }
         }

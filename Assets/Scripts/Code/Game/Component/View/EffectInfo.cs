@@ -8,23 +8,23 @@ namespace TaoTie
         public static EffectInfo Create()
         {
             var res = ObjectPool.Instance.Fetch<EffectInfo>();
-            res.IsDispose = false;
+            res.isDispose = false;
             return res;
         }
 
-        private bool IsDispose;
+        private bool isDispose;
         public GameObject obj;
         public int ConfigId;
         public GameObjectHolderComponent Parent;
         public long TimerId;
         public void Dispose()
         {
-            if (IsDispose)
+            if (isDispose)
             {
                 return;
             }
 
-            IsDispose = true;
+            isDispose = true;
             GameTimerManager.Instance.Remove(ref TimerId);
             Parent = default;
             ConfigId = default;

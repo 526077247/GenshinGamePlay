@@ -5,14 +5,14 @@ namespace TaoTie
 {
     public class PlatformMoveComponent:Component,IComponent<ConfigRoute>,IUpdateComponent
     {
-        public bool isStart { get; private set; }
+        public bool IsStart { get; private set; }
         
-        public bool isPause { get; private set; }
+        public bool IsPause { get; private set; }
         
         public delegate void OnMoveStateChangeDelegate(bool isStart);
         public event OnMoveStateChangeDelegate onMoveStateChange; 
         
-        private ConfigRoute _route;
+        private ConfigRoute route;
         
         #region 移动相关参数
 
@@ -30,15 +30,15 @@ namespace TaoTie
             {
                 if (this._n >= this._targets.Length)
                 {
-                    var sceneGroupActor = this.Parent.GetComponent<SceneGroupActorComponent>();
+                    var sceneGroupActor = this.parent.GetComponent<SceneGroupActorComponent>();
                     if (sceneGroupActor == null)
                     {
-                        Log.Error($"路径内部错误! 请策划检查配置  routeId={_route.localId}");
+                        Log.Error($"路径内部错误! 请策划检查配置  routeId={route.LocalId}");
                     }
                     else
                     {
-                        Log.Error($"路径内部错误! 请策划检查配置  SceneGroupId={sceneGroupActor.SceneGroup.config.id} " +
-                                  $"actor={sceneGroupActor.localId} routeId={_route.localId}");
+                        Log.Error($"路径内部错误! 请策划检查配置  SceneGroupId={sceneGroupActor.SceneGroup.config.Id} " +
+                                  $"actor={sceneGroupActor.LocalId} routeId={route.LocalId}");
                     }
 
                     return this._targets[this._targets.Length - 1];
@@ -72,7 +72,7 @@ namespace TaoTie
             get
             {
                 if (_routeType != RouteType.Reciprocate || !_isBack)
-                    return _route.points;
+                    return route.Points;
                 return _backPoints;
             }
         }
@@ -177,7 +177,7 @@ namespace TaoTie
         public void Destroy()
         {
             _sqlAvatarTriggerEventDistance = 0;
-            _route = null;
+            route = null;
             this._startTime = 0;
             this._startPos = Vector3.zero;
             this._beginTime = 0;
@@ -203,11 +203,11 @@ namespace TaoTie
         
         public void OnStart()
         {
-            if (this.isStart) return;
-            isStart = true;
-            isPause = false;
+            if (this.IsStart) return;
+            IsStart = true;
+            IsPause = false;
             onMoveStateChange?.Invoke(true);
-            if (_route == null)
+            if (route == null)
             {
                 Log.Error("未设置路由");
                 return;
@@ -264,7 +264,7 @@ namespace TaoTie
 
             if (_hasHeroNearEvent)
             {
-                var sceneGroupActor = Parent.GetComponent<SceneGroupActorComponent>();
+                var sceneGroupActor = parent.GetComponent<SceneGroupActorComponent>();
                 if (sceneGroupActor != null && SceneManager.Instance.GetCurrentScene() is BaseMapScene scene)
                 {
                     var avatar = scene.Self;
@@ -274,10 +274,10 @@ namespace TaoTie
                     {
                         Messager.Instance.Broadcast(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new HeroNearPlatformEvt
                         {
-                            actorId = sceneGroupActor.localId,
-                            routeId = _route.localId,
-                            pointIndex = this.nextTarget.index, 
-                            isMoving = _enable
+                            ActorId = sceneGroupActor.LocalId,
+                            RouteId = route.LocalId,
+                            PointIndex = this.nextTarget.Index, 
+                            IsMoving = _enable
                         });
                     }
                 }
@@ -299,7 +299,7 @@ namespace TaoTie
         /// <param name="nowtime"></param>
         private void OnUpdateWithVelocity(float nowtime)
         {
-            Unit unit = Parent as Unit;
+            Unit unit = parent as Unit;
             float lastUpdateTime = this._updateTime;
             float elapsetime = nowtime - lastUpdateTime;
             this._updateTime = nowtime;
@@ -320,7 +320,7 @@ namespace TaoTie
             // 计算位置插值
             if (moveTime >= this._needTime)
             {
-                unit.Position = this.nextTarget.pos;
+                unit.Position = this.nextTarget.Pos;
                 if (this._waitAngularSpeed == 0)
                 {
                     unit.Rotation = this._rotRoundLeaveDir;
@@ -332,7 +332,7 @@ namespace TaoTie
                 float amount = moveTime * 1f / this._needTime;
                 if (amount > 0)
                 {
-                    Vector3 newPos = Vector3.Lerp(this._startPos, this.nextTarget.pos, amount);
+                    Vector3 newPos = Vector3.Lerp(this._startPos, this.nextTarget.Pos, amount);
                     unit.Position = newPos;
                 }
 
@@ -346,7 +346,7 @@ namespace TaoTie
             moveTime -= this._needTime;
 
             // 进入了配置的抵达范围
-            if (Vector3.SqrMagnitude(unit.Position - this.nextTarget.pos) <= _sqlArriveRange)
+            if (Vector3.SqrMagnitude(unit.Position - this.nextTarget.Pos) <= _sqlArriveRange)
             {
             }
 
@@ -364,9 +364,9 @@ namespace TaoTie
                 {
                     Messager.Instance.Broadcast(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new PlatformReachPointEvt
                     {
-                        actorId = sceneGroupActor.localId,
-                        routeId = _route.localId,
-                        pointIndex = this.nextTarget.index,
+                        ActorId = sceneGroupActor.LocalId,
+                        RouteId = route.LocalId,
+                        PointIndex = this.nextTarget.Index,
                     });
                 }
 
@@ -390,7 +390,7 @@ namespace TaoTie
             // 如果是最后一个点
             if (this._n >= this._targets.Length - 1)
             {
-                var pos = this.nextTarget.pos;
+                var pos = this.nextTarget.Pos;
                 if (this._targets.Length > 0)
                     unit.Position = pos;
 
@@ -425,12 +425,12 @@ namespace TaoTie
         /// </summary>
         private void SetNextTarget()
         {
-            var unit = Parent as Unit;
+            var unit = parent as Unit;
             ++this._n;
 
             _hadBroadcastReachEvent = false;
             //移动速度
-            this._speed = nextTarget.targetVelocity;
+            this._speed = nextTarget.TargetVelocity;
 
             //指向目标点的向量
             Vector3 faceV = this.GetFaceV();
@@ -444,13 +444,13 @@ namespace TaoTie
             //更新需要移动的时间
             this._needTime = distance / this._speed;
             // 到达后等待时间
-            this._waitTime = nextTarget.waitTime;
+            this._waitTime = nextTarget.WaitTime;
             // 达到后等待
-            this._reachStop = nextTarget.reachStop;
+            this._reachStop = nextTarget.ReachStop;
             // 达到后广播
-            this._hasReachEvent = nextTarget.hasReachEvent;
+            this._hasReachEvent = nextTarget.HasReachEvent;
             // 角色靠近广播
-            this._hasHeroNearEvent = _reachStop || nextTarget.hasHeroNearEvent;
+            this._hasHeroNearEvent = _reachStop || nextTarget.HasHeroNearEvent;
 
             if (_rotType == RotType.ROT_AUTO || (_n == 0 && _rotType != RotType.ROT_NONE))
             {
@@ -461,15 +461,15 @@ namespace TaoTie
             //持续旋转 todo:
             if (_rotType == RotType.ROT_ANGLE)
             {
-                this._moveAngularSpeed = nextTarget.rotAngleMoveSpeed;
-                this._waitAngularSpeed = nextTarget.rotAngleWaitSpeed;
+                this._moveAngularSpeed = nextTarget.RotAngleMoveSpeed;
+                this._waitAngularSpeed = nextTarget.RotAngleWaitSpeed;
                 // 要用transform的位置
                 if (faceV.sqrMagnitude < 0.0001f)
                 {
                     return;
                 }
 
-                if (nextTarget.rotAngleSameStop)
+                if (nextTarget.RotAngleSameStop)
                 {
                     float angle = 360f;
                     this._turnTime = _moveAngularSpeed > 0 ? angle / _speed : 0;
@@ -495,12 +495,12 @@ namespace TaoTie
                     return;
                 }
 
-                this._rotRoundReachDir = Quaternion.Euler(nextTarget.rotRoundReachDir);
-                this._rotRoundLeaveDir = Quaternion.Euler(nextTarget.rotRoundLeaveDir);
-                var angle = GetAngle(unit.Rotation.eulerAngles, nextTarget.rotRoundReachDir);
+                this._rotRoundReachDir = Quaternion.Euler(nextTarget.RotRoundReachDir);
+                this._rotRoundLeaveDir = Quaternion.Euler(nextTarget.RotRoundLeaveDir);
+                var angle = GetAngle(unit.Rotation.eulerAngles, nextTarget.RotRoundReachDir);
                 this._moveAngularSpeed =
-                    _n == 0 ? 0 : (angle + nextTarget.rotRoundReachRounds * 360) / _turnTime; //第一个点不需要转弯
-                if (nextTarget.waitTime == 0)
+                    _n == 0 ? 0 : (angle + nextTarget.RotRoundReachRounds * 360) / _turnTime; //第一个点不需要转弯
+                if (nextTarget.WaitTime == 0)
                 {
                     this._waitAngularSpeed = 0;
                 }
@@ -508,14 +508,14 @@ namespace TaoTie
                 {
                     if (_n == 0) //第一个点等到了目标点再转弯
                     {
-                        angle = GetAngle(unit.Rotation.eulerAngles, nextTarget.rotRoundLeaveDir);
+                        angle = GetAngle(unit.Rotation.eulerAngles, nextTarget.RotRoundLeaveDir);
                     }
                     else
                     {
-                        angle = GetAngle(nextTarget.rotRoundReachDir, nextTarget.rotRoundLeaveDir);
+                        angle = GetAngle(nextTarget.RotRoundReachDir, nextTarget.RotRoundLeaveDir);
                     }
 
-                    this._waitAngularSpeed = (angle + nextTarget.rotRoundWaitRounds * 360) / _waitTime;
+                    this._waitAngularSpeed = (angle + nextTarget.RotRoundWaitRounds * 360) / _waitTime;
                 }
 
                 return;
@@ -534,14 +534,14 @@ namespace TaoTie
                 this._rotRoundReachDir = unit.Rotation;
                 this._rotRoundLeaveDir = this._rotRoundReachDir;
                 this._moveAngularSpeed = 0; //移动不需要转弯
-                if (nextTarget.waitTime == 0)
+                if (nextTarget.WaitTime == 0)
                 {
                     this._waitAngularSpeed = 0;
                 }
                 else
                 {
                     var next = GetPointAfterNextTarget();
-                    var nextFaceV = next.pos - nextTarget.pos;
+                    var nextFaceV = next.Pos - nextTarget.Pos;
                     var to = Quaternion.LookRotation(nextFaceV, Vector3.up);
                     var angle = GetAngle(unit.Rotation.eulerAngles, to.eulerAngles);
                     this._waitAngularSpeed = angle / _waitTime;
@@ -571,11 +571,11 @@ namespace TaoTie
         private float GetAngle(Vector3 from, Vector3 to)
         {
             float res = 0;
-            if (_route.rotAngleType == RotAngleType.ROT_ANGLE_X)
+            if (route.RotAngleType == RotAngleType.ROT_ANGLE_X)
             {
                 res = to.x - from.x;
             }
-            else if (_route.rotAngleType == RotAngleType.ROT_ANGLE_Y)
+            else if (route.RotAngleType == RotAngleType.ROT_ANGLE_Y)
             {
                 res = to.y - from.y;
             }
@@ -603,7 +603,7 @@ namespace TaoTie
         /// <returns></returns>
         private Vector3 GetFaceV()
         {
-            return this.nextTarget.pos - GetParent<Unit>().Position;
+            return this.nextTarget.Pos - GetParent<Unit>().Position;
         }
 
         /// <summary>
@@ -634,8 +634,8 @@ namespace TaoTie
 
         public void OnStop()
         {
-            isStart = false;
-            isPause = false;
+            IsStart = false;
+            IsPause = false;
             onMoveStateChange?.Invoke(false);
             this._beginTime = 0;
             _enable = false;
@@ -645,9 +645,9 @@ namespace TaoTie
 
         public void Pause()
         {
-            if (!isPause)
+            if (!IsPause)
             {
-                isPause = true;
+                IsPause = true;
                 onMoveStateChange?.Invoke(false);
             }
             _enable = false;
@@ -658,10 +658,10 @@ namespace TaoTie
         /// </summary>
         public void Resume()
         {
-            if (this.isPause) //广播过事件后被重新唤醒
+            if (this.IsPause) //广播过事件后被重新唤醒
             {
                 _reachStop = false;
-                isPause = false;
+                IsPause = false;
                 onMoveStateChange?.Invoke(true);
             }
             _enable = true;
@@ -674,32 +674,32 @@ namespace TaoTie
         /// <param name="startDelay">延时启动</param>
         public void SetRoute(ConfigRoute route, int startDelay = -1)
         {
-            if (_route != null)
+            if (this.route != null)
             {
                 OnStop();
             }
 
-            _route = route;
+            this.route = route;
             if (route != null)
             {
-                _rotType = _route.rotType;
-                _routeType = _route.type;
+                _rotType = this.route.RotType;
+                _routeType = this.route.Type;
                 //来回路径的返回路径点
                 if (_routeType == RouteType.Reciprocate)
                 {
-                    _backPoints = new ConfigWaypoint[_route.points.Length];
-                    for (int i = 0; i < _route.points.Length; i++)
+                    _backPoints = new ConfigWaypoint[this.route.Points.Length];
+                    for (int i = 0; i < this.route.Points.Length; i++)
                     {
-                        _backPoints[_route.points.Length - 1 - i] = _route.points[i];
+                        _backPoints[this.route.Points.Length - 1 - i] = this.route.Points[i];
                     }
                 }
 
-                _sqlArriveRange = _route.arriveRange * _route.arriveRange;
-                if (_route.rotAngleType == RotAngleType.ROT_ANGLE_X)
+                _sqlArriveRange = this.route.ArriveRange * this.route.ArriveRange;
+                if (this.route.RotAngleType == RotAngleType.ROT_ANGLE_X)
                 {
                     _axis = Vector3.forward;
                 }
-                else if (_route.rotAngleType == RotAngleType.ROT_ANGLE_Y)
+                else if (this.route.RotAngleType == RotAngleType.ROT_ANGLE_Y)
                 {
                     _axis = Vector3.up;
                 }

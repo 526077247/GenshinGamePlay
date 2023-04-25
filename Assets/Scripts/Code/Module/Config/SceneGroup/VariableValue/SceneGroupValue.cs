@@ -9,11 +9,11 @@ namespace TaoTie
     public partial class SceneGroupValue : BaseSceneGroupValue
     {
         [NinoMember(1)][LabelText("变量")]
-        public string key;
+        public string Key;
         
         public override float Resolve(IEventBase obj, DynDictionary set)
         {
-            if (set.TryGet(key, out float f))
+            if (set.TryGet(Key, out float f))
             {
                 return f;
             }

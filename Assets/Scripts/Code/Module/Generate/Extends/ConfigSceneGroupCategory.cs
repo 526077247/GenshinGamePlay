@@ -25,10 +25,10 @@ namespace TaoTie
                 if (op.AssetObject is TextAsset textAsset)
                 {
                     var item = JsonHelper.FromJson<ConfigSceneGroup>(textAsset.text);
-                    if (!_dict.ContainsKey(item.id))
+                    if (!_dict.ContainsKey(item.Id))
                     {
                         _list.Add(item);
-                        _dict[item.id] = item;
+                        _dict[item.Id] = item;
                     }
                 }
                 op.Release();

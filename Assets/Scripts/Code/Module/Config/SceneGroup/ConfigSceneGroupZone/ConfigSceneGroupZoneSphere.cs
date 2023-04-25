@@ -10,12 +10,12 @@ namespace TaoTie
     public partial class ConfigSceneGroupZoneSphere : ConfigSceneGroupZone
     {
         [NinoMember(5)]
-        public float radius;
+        public float Radius;
         
         public override Zone CreateZone(SceneGroup sceneGroup)
         {
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
-            entity.AddComponent<SceneGroupZoneComponent, int, long>(localId, sceneGroup.Id);
+            entity.AddComponent<SceneGroupZoneComponent, int, long>(LocalId, sceneGroup.Id);
             return entity;
         }
     }

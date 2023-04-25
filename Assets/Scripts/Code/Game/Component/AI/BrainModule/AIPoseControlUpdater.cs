@@ -11,10 +11,10 @@
             var poseFsm = knowledge.aiOwnerEntity?.GetComponent<PoseFSMComponent>();
             if (poseFsm != null)
             {
-                if (knowledge.poseID != poseFsm.defaultFsm.PoseID)
+                if (knowledge.poseID != poseFsm.DefaultFsm.PoseID)
                 {
                     var old = knowledge.poseID;
-                    knowledge.poseID = poseFsm.defaultFsm.PoseID;
+                    knowledge.poseID = poseFsm.DefaultFsm.PoseID;
                     Messager.Instance.Broadcast(knowledge.aiOwnerEntity.Id,MessageId.PoseChange,old,knowledge.poseID);
                     knowledge.facingMoveTactic.SwitchSetting(knowledge.poseID);
                 }

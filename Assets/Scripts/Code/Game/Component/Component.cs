@@ -22,12 +22,12 @@ namespace TaoTie
                 }
             }
         }
-        protected Entity Parent { get; private set; }
-        public long Id => Parent != null ? Parent.Id : 0;
+        protected Entity parent { get; private set; }
+        public long Id => parent != null ? parent.Id : 0;
         private long timerId;
         public void BeforeInit(Entity entity)
         {
-            Parent = entity;
+            parent = entity;
         }
         public void AfterInit()
         {
@@ -36,7 +36,7 @@ namespace TaoTie
         }
         public void AfterDestroy()
         {
-            Parent = null;
+            parent = null;
         }
 
         public bool IsDispose { get; private set; }
@@ -46,10 +46,10 @@ namespace TaoTie
             if (IsDispose) return;
             IsDispose = true;
             (this as IComponentDestroy)?.Destroy();
-            if (Parent != null)
+            if (parent != null)
             {
-                Parent.RemoveComponent(GetType());
-                Parent = null;
+                parent.RemoveComponent(GetType());
+                parent = null;
             }
             GameTimerManager.Instance?.Remove(ref timerId);
             ObjectPool.Instance.Recycle(this);
@@ -57,7 +57,7 @@ namespace TaoTie
 
         public T GetParent<T>() where T : Entity
         {
-            return Parent as T;
+            return parent as T;
         }
     }
 }

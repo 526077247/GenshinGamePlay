@@ -47,9 +47,9 @@ namespace TaoTie
             sb.AppendLine("    [NinoSerialize]");
             sb.AppendLine($"    public partial class {className} : ConfigSceneGroupCondition<{type.Name}>");
             sb.AppendLine("    {");
-            sb.AppendLine("        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged(\"@CheckModeType(value,mode)\")] ");
+            sb.AppendLine("        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged(\"@CheckModeType(Value,Mode)\")] ");
             sb.AppendLine("        [NinoMember(1)]");
-            sb.AppendLine("        public CompareMode mode;");
+            sb.AppendLine("        public CompareMode Mode;");
             sb.AppendLine("        [NinoMember(2)]");
             if(fieldInfo.GetCustomAttributes(typeof(SceneGroupZoneIdAttribute),false).Length!=0)
                 sb.AppendLine("        [ValueDropdown(\"@OdinDropdownHelper.GetSceneGroupZoneIds()\")]");
@@ -57,11 +57,11 @@ namespace TaoTie
                 sb.AppendLine("        [ValueDropdown(\"@OdinDropdownHelper.GetSceneGroupSuiteIds()\")]");
             if(fieldInfo.GetCustomAttributes(typeof(SceneGroupActorIdAttribute),false).Length!=0)
                 sb.AppendLine("        [ValueDropdown(\"@OdinDropdownHelper.GetSceneGroupActorIds()\")]");
-            sb.AppendLine($"        public {fieldInfo.FieldType.Name} value;");
+            sb.AppendLine($"        public {fieldInfo.FieldType.Name} Value;");
             sb.AppendLine();
             sb.AppendLine($"        public override bool IsMatch({type.Name} obj, SceneGroup sceneGroup)");
             sb.AppendLine("        {");
-            sb.AppendLine($"            return IsMatch(value, obj.{fieldInfo.Name}, mode);");
+            sb.AppendLine($"            return IsMatch(Value, obj.{fieldInfo.Name}, Mode);");
             sb.AppendLine("        }");
             sb.AppendLine("#if UNITY_EDITOR");
             sb.AppendLine("        protected override bool CheckModeType<T>(T t, CompareMode mode)");

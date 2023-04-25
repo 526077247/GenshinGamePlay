@@ -5,9 +5,9 @@ namespace TaoTie
 {
     public class CombatComponent : Component, IComponent
     {
-        private FsmComponent fsm => Parent.GetComponent<FsmComponent>();
+        private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget;
-        public bool isInCombat;
+        public bool IsInCombat;
         public virtual void Init()
         {
             attackTarget = new AttackTarget();
@@ -98,7 +98,7 @@ namespace TaoTie
         /// <param name="enable"></param>
         public async ETTask EnableHitBox(string hitBox, bool enable)
         {
-            GameObjectHolderComponent ghc = Parent.GetComponent<GameObjectHolderComponent>();
+            GameObjectHolderComponent ghc = parent.GetComponent<GameObjectHolderComponent>();
             await ghc.WaitLoadGameObjectOver();
             ghc.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
         }

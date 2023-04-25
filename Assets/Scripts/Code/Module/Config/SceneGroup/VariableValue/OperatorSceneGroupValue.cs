@@ -9,20 +9,20 @@ namespace TaoTie
     public partial class OperatorSceneGroupValue : BaseSceneGroupValue
     {
         [NinoMember(1)][LabelText("左值")]
-        public BaseSceneGroupValue value1;
+        public BaseSceneGroupValue Value1;
 
         [NinoMember(2)][Tooltip("操作类型")]
-        public LogicMode _op;
+        public LogicMode Op;
         
-        [InfoBox("注意：除数不能为0")] [ShowIf("@_op != LogicMode.Default")]
+        [InfoBox("注意：除数不能为0")] [ShowIf("@Op != LogicMode.Default")]
         [NinoMember(3)][LabelText("右值")]
-        public BaseSceneGroupValue value2;
+        public BaseSceneGroupValue Value2;
         
 
         public override float Resolve(IEventBase obj, DynDictionary set)
         {
-            float v1 = value1.Resolve(obj, set), v2 = value2.Resolve(obj, set);
-            return GetLogicValue(v1, v2, _op);
+            float v1 = Value1.Resolve(obj, set), v2 = Value2.Resolve(obj, set);
+            return GetLogicValue(v1, v2, Op);
         }
 
         public float GetLogicValue(float from, float value, LogicMode mode)

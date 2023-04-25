@@ -9,20 +9,20 @@ namespace TaoTie
     {
 #if UNITY_EDITOR
         [PropertyOrder(int.MinValue + 1)] [SerializeField] [LabelText("策划备注")]
-        private string remarks;
+        private string Remarks;
 #endif
-        [NinoMember(1)] public int localId;
-        [LabelText("路径类型")] [NinoMember(2)] public RouteType type = RouteType.OneWay;
+        [NinoMember(1)] public int LocalId;
+        [LabelText("路径类型")] [NinoMember(2)] public RouteType Type = RouteType.OneWay;
 
         [LabelText("是否是前进")] [DisableInEditorMode] [NinoMember(3)]
-        public bool isForward = true;
+        public bool IsForward = true;
 
-        [LabelText("旋转类型")] [NinoMember(4)] public RotType rotType;
+        [LabelText("旋转类型")] [NinoMember(4)] public RotType RotType;
 
-        [HideIf("rotType", RotType.ROT_NONE)] [NinoMember(5)]
-        public RotAngleType rotAngleType = RotAngleType.ROT_ANGLE_Y;
+        [HideIf(nameof(RotType), RotType.ROT_NONE)] [NinoMember(5)]
+        public RotAngleType RotAngleType = RotAngleType.ROT_ANGLE_Y;
 
-        [LabelText("判定抵达的范围")] [NinoMember(6)] public float arriveRange;
-        [NinoMember(7)] public ConfigWaypoint[] points;
+        [LabelText("判定抵达的范围")] [NinoMember(6)] public float ArriveRange;
+        [NinoMember(7)] public ConfigWaypoint[] Points;
     }
 }

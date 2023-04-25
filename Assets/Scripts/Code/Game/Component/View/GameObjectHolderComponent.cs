@@ -25,7 +25,7 @@ namespace TaoTie
 
         public Transform EntityView;
 
-        private ReferenceCollector Collector;
+        private ReferenceCollector collector;
 
         private Queue<ETTask> waitFinishTask;
 
@@ -46,13 +46,13 @@ namespace TaoTie
                 return;
             }
 
-            Animator = obj.GetComponentInChildren<Animator>();
-            Animator.runtimeAnimatorController =
+            animator = obj.GetComponentInChildren<Animator>();
+            animator.runtimeAnimatorController =
                 ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
-            var fsm = Parent.GetComponent<FsmComponent>();
+            var fsm = parent.GetComponent<FsmComponent>();
             if (fsm != null)
             {
-                foreach (var item in fsm.config.paramDict)
+                foreach (var item in fsm.Config.paramDict)
                 {
                     var para = item.Value;
                     if (para is ConfigParamBool paramBool)
@@ -73,15 +73,15 @@ namespace TaoTie
                     }
                 }
 
-                for (int i = 0; i < fsm.fsms.Length; i++)
+                for (int i = 0; i < fsm.Fsms.Length; i++)
                 {
-                    CrossFade(fsm.fsms[i].currentState.name, fsm.fsms[i].config.layerIndex);
+                    CrossFade(fsm.Fsms[i].currentState.Name, fsm.Fsms[i].config.layerIndex);
                 }
             }
 
             EntityView = obj.transform;
-            Collector = obj.GetComponent<ReferenceCollector>();
-            EntityView.SetParent(this.Parent.Parent.GameObjectRoot);
+            collector = obj.GetComponent<ReferenceCollector>();
+            EntityView.SetParent(this.parent.Parent.GameObjectRoot);
             var ec = obj.GetComponent<EntityComponent>();
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
@@ -135,9 +135,9 @@ namespace TaoTie
             }
 
             waitFinishTask = null;
-            if (Animator != null)
+            if (animator != null)
             {
-                ResourcesManager.Instance.ReleaseAsset(Animator.runtimeAnimatorController);
+                ResourcesManager.Instance.ReleaseAsset(animator.runtimeAnimatorController);
             }
         }
 
@@ -179,8 +179,8 @@ namespace TaoTie
 
         public T GetCollectorObj<T>(string name) where T : class
         {
-            if (Collector == null) return null;
-            return Collector.Get<T>(name);
+            if (collector == null) return null;
+            return collector.Get<T>(name);
         }
     }
 }

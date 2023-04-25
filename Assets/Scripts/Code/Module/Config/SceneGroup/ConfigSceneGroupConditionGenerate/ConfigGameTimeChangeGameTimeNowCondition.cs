@@ -5,19 +5,19 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [TriggerType(typeof(ConfigVariableChangeEventTrigger))]
+    [TriggerType(typeof(ConfigGameTimeChangeTrigger))]
     [NinoSerialize]
-    public partial class ConfigVariableChangeEventNewValueCondition : ConfigSceneGroupCondition<VariableChangeEvent>
+    public partial class ConfigGameTimeChangeGameTimeNowCondition : ConfigSceneGroupCondition<GameTimeChange>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]
-        public Single Value;
+        public Int64 Value;
 
-        public override bool IsMatch(VariableChangeEvent obj, SceneGroup sceneGroup)
+        public override bool IsMatch(GameTimeChange obj, SceneGroup sceneGroup)
         {
-            return IsMatch(Value, obj.NewValue, Mode);
+            return IsMatch(Value, obj.GameTimeNow, Mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

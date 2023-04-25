@@ -4,7 +4,7 @@ namespace TaoTie
 {
     public class MonsterAIInputComponent: Component,IComponent
     {
-        private CombatComponent combatComponent => Parent.GetComponent<CombatComponent>();
+        private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
         private Dictionary<int, bool> animatorParamCache;
         public ControlData controlData;
         #region IComponent

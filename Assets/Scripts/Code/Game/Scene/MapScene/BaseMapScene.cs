@@ -17,7 +17,7 @@ namespace TaoTie
         #endregion
         private UILoadingView win;
         private string[] dontDestroyWindow = {"UILoadingView"};
-        public List<string> scenesChangeIgnoreClean;
+        private List<string> scenesChangeIgnoreClean;
         
         public string[] GetDontDestroyWindow()
         {

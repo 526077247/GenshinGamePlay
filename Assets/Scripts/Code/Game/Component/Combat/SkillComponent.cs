@@ -6,13 +6,13 @@ namespace TaoTie
 {
     public class SkillComponent:Component,IComponent,IUpdateComponent
     {
-        private CombatComponent combatComponent => Parent.GetComponent<CombatComponent>();
-        public Dictionary<uint, SkillInfo> skillInfoMap;
+        private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
+        public Dictionary<uint, SkillInfo> SkillInfoMap;
         #region IComponent
 
         public void Init()
         {
-            skillInfoMap = new Dictionary<uint, SkillInfo>();
+            SkillInfoMap = new Dictionary<uint, SkillInfo>();
         }
 
         public void Destroy()

@@ -13,7 +13,7 @@ namespace TaoTie
         [NinoMember(10)]
         [LabelText("条件")]
         [TypeFilter("@OdinDropdownHelper.GetFilteredConditionTypeList(handleType)")]
-        public ConfigSceneGroupCondition[] conditions;
+        public ConfigSceneGroupCondition[] Conditions;
         [NinoMember(11)]
         [LabelText("所有条件都满足后执行")]
 #if UNITY_EDITOR
@@ -21,7 +21,7 @@ namespace TaoTie
         [OnStateUpdate(nameof(Refresh))]
 #endif
         [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
-        public ConfigSceneGroupAction[] success;
+        public ConfigSceneGroupAction[] Success;
         [NinoMember(12)]
         [LabelText("任意一个条件不满足执行")]
 #if UNITY_EDITOR
@@ -29,30 +29,30 @@ namespace TaoTie
         [OnStateUpdate(nameof(Refresh))]
 #endif
         [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
-        public ConfigSceneGroupAction[] fail;
+        public ConfigSceneGroupAction[] Fail;
 
 #if UNITY_EDITOR
         
         public void Refresh()
         {
-            if (success!= null)
+            if (Success!= null)
             {
-                for (int i = 0; i <  success.Length; i++)
+                for (int i = 0; i <  Success.Length; i++)
                 {
-                    if(success[i]!=null)
-                        success[i].handleType = handleType;
+                    if(Success[i]!=null)
+                        Success[i].HandleType = HandleType;
                 }
-                success.Sort((a, b) => { return a.localId - b.localId;});
+                Success.Sort((a, b) => { return a.LocalId - b.LocalId;});
             }
 
-            if (fail != null)
+            if (Fail != null)
             {
-                for (int i = 0; i <  fail.Length; i++)
+                for (int i = 0; i <  Fail.Length; i++)
                 {
-                    if(fail[i]!=null)
-                        fail[i].handleType = handleType;
+                    if(Fail[i]!=null)
+                        Fail[i].HandleType = HandleType;
                 }
-                fail.Sort((a, b) => { return a.localId - b.localId;});
+                Fail.Sort((a, b) => { return a.LocalId - b.LocalId;});
             }
         }
 #endif
@@ -60,30 +60,30 @@ namespace TaoTie
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
             bool isSuc = true;
-            if (conditions == null || conditions.Length == 0)
+            if (Conditions == null || Conditions.Length == 0)
             {
                 isSuc = true;
             }
             else
             {
-                for (int i = 0; i < conditions.Length; i++)
+                for (int i = 0; i < Conditions.Length; i++)
                 {
-                    isSuc &= conditions[i].IsMatch(evt,aimSceneGroup);
+                    isSuc &= Conditions[i].IsMatch(evt,aimSceneGroup);
                 }
             }
 
             if (isSuc)
             {
-                for (int i = 0; i < (success == null ? 0 : success.Length); i++)
+                for (int i = 0; i < (Success == null ? 0 : Success.Length); i++)
                 {
-                    success[i]?.ExecuteAction(evt,aimSceneGroup);
+                    Success[i]?.ExecuteAction(evt,aimSceneGroup);
                 }
             }
             else
             {
-                for (int i = 0; i < (fail==null?0:fail.Length); i++)
+                for (int i = 0; i < (Fail==null?0:Fail.Length); i++)
                 {
-                    fail[i]?.ExecuteAction(evt,aimSceneGroup);
+                    Fail[i]?.ExecuteAction(evt,aimSceneGroup);
                 }
             }
         }

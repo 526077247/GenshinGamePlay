@@ -2,23 +2,23 @@
 {
     public class SceneGroupActorComponent: Component,IComponent<int,long>
     {
-        public int localId { get; private set; }
+        public int LocalId { get; private set; }
 
         private long sceneGroupId;
-        public SceneGroup SceneGroup => Parent.Parent.Get<SceneGroup>(sceneGroupId);
+        public SceneGroup SceneGroup => parent.Parent.Get<SceneGroup>(sceneGroupId);
         #region IComponent
 
         public void Init(int p1, long p2)
         {
-            localId = p1;
+            LocalId = p1;
             sceneGroupId = p2;
         }
 
         public void Destroy()
         {
-            SceneGroup?.OnActorRelease(localId);
+            SceneGroup?.OnActorRelease(LocalId);
             sceneGroupId = 0;
-            localId = 0;
+            LocalId = 0;
         }
 
         #endregion
@@ -28,7 +28,7 @@
         /// </summary>
         public void RemoveFromSceneGroup()
         {
-            SceneGroup?.OnActorRelease(localId);
+            SceneGroup?.OnActorRelease(LocalId);
         }
     }
 }

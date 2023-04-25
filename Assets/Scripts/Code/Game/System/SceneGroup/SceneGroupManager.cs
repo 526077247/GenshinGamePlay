@@ -23,15 +23,15 @@ namespace TaoTie
                     }
 
 
-                    if (configIdMapSceneGroup.ContainsKey(sceneGroupConf.id))
+                    if (configIdMapSceneGroup.ContainsKey(sceneGroupConf.Id))
                     {
-                        Log.Error("SceneGroupConfigId重复 " + sceneGroupConf.id + "！请策划检查");
+                        Log.Error("SceneGroupConfigId重复 " + sceneGroupConf.Id + "！请策划检查");
                         continue;
                     }
 
                     var sceneGroup = em.CreateEntity<SceneGroup, ConfigSceneGroup, SceneGroupManager>(sceneGroupConf,this);
-                    configIdMapSceneGroup.Add(sceneGroupConf.id, sceneGroup.Id);
-                    Log.Info("<color=red>创建SceneGroup</color>"+sceneGroupConf.id);
+                    configIdMapSceneGroup.Add(sceneGroupConf.Id, sceneGroup.Id);
+                    Log.Info("<color=red>创建SceneGroup</color>"+sceneGroupConf.Id);
                 }
             } 
         }

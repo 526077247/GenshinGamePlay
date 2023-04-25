@@ -6,12 +6,12 @@ namespace TaoTie
     {
         private bool canMove = true;
         private bool canTurn = true;
-        private FsmComponent FsmComponent => Parent.GetComponent<FsmComponent>();
-        private NumericComponent NumericComponent => Parent.GetComponent<NumericComponent>();
+        private FsmComponent FsmComponent => parent.GetComponent<FsmComponent>();
+        private NumericComponent NumericComponent => parent.GetComponent<NumericComponent>();
         public void Init()
         {
-            canMove = FsmComponent.defaultFsm.currentState.CanMove;
-            canTurn = FsmComponent.defaultFsm.currentState.CanTurn;
+            canMove = FsmComponent.DefaultFsm.currentState.CanMove;
+            canTurn = FsmComponent.DefaultFsm.currentState.CanTurn;
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
         }

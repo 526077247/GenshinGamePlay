@@ -4,23 +4,23 @@ namespace TaoTie
 {
     public partial class FsmState
     {
-        private int _clipIndex = 0;
-        private float _nextClipTime = 0.0f;
-        private ConfigFsmTimeline _timeline = null;
-        private LinkedListComponent<FsmClip> _clipList = null;
+        private int clipIndex = 0;
+        private float nextClipTime = 0.0f;
+        private ConfigFsmTimeline timeline = null;
+        private LinkedListComponent<FsmClip> clipList = null;
 
         private void StartTimeline()
         {
-            if (!_config.hasTimeline)
+            if (!config.hasTimeline)
             {
-                _clipIndex = -1;
+                clipIndex = -1;
             }
             else
             {
-                _clipIndex = 0;
-                _timeline = _config.timeline;
-                _nextClipTime = _timeline.clips[0].StartTime;
-                _clipList = LinkedListComponent<FsmClip>.Create();
+                clipIndex = 0;
+                timeline = config.timeline;
+                nextClipTime = timeline.clips[0].StartTime;
+                clipList = LinkedListComponent<FsmClip>.Create();
                 CheckNextClip();
             }
         }
@@ -33,10 +33,10 @@ namespace TaoTie
 
         private void StopTimeline()
         {
-            if (_clipList == null || _clipList.Count <= 0)
+            if (clipList == null || clipList.Count <= 0)
                 return;
 
-            for (var node = _clipList.First; node!=null; node = node.Next)
+            for (var node = clipList.First; node!=null; node = node.Next)
             {
                 if (node.Value != null)
                 {
@@ -44,17 +44,17 @@ namespace TaoTie
                     node.Value.Dispose();
                 }
             }
-            _clipList.Clear();
+            clipList.Clear();
         }
 
         private void UpdateClip()
         {
-            if (_clipList == null || _clipList.Count == 0)
+            if (clipList == null || clipList.Count == 0)
                 return;
 
-            var nowtime = _fsm.stateTime;
-            var elapseTime = _fsm.stateElapseTime;
-            for (var node = _clipList.First; node!=null; )
+            var nowtime = fsm.stateTime;
+            var elapseTime = fsm.stateElapseTime;
+            for (var node = clipList.First; node!=null; )
             {
                 var next = node.Next;
                 if (node.Value != null)
@@ -63,7 +63,7 @@ namespace TaoTie
                     if (!node.Value.isPlaying)
                     {
                         node.Value.Dispose();
-                        _clipList.Remove(node);
+                        clipList.Remove(node);
                     }
                 }
 
@@ -73,27 +73,27 @@ namespace TaoTie
 
         private void CheckNextClip()
         {
-            if (_clipIndex < 0)
+            if (clipIndex < 0)
                 return;
 
-            while (_fsm.stateTime >= _nextClipTime)
+            while (fsm.stateTime >= nextClipTime)
             {
-                ConfigFsmClip clipConfig = _timeline.clips[_clipIndex];
+                ConfigFsmClip clipConfig = timeline.clips[clipIndex];
                 FsmClip clip = clipConfig.CreateClip(this);
                 if (clip != null)
                 {
-                    clip.Start(_fsm.stateTime);
-                    _clipList.AddLast(clip);
+                    clip.Start(fsm.stateTime);
+                    clipList.AddLast(clip);
                 }
 
-                ++_clipIndex;
-                if (_clipIndex < _timeline.clips.Length)
+                ++clipIndex;
+                if (clipIndex < timeline.clips.Length)
                 {
-                    _nextClipTime = _timeline.clips[_clipIndex].StartTime;
+                    nextClipTime = timeline.clips[clipIndex].StartTime;
                 }
                 else
                 {
-                    _clipIndex = -1;
+                    clipIndex = -1;
                     return;
                 }
             }
@@ -101,12 +101,12 @@ namespace TaoTie
 
         private void ClearTimeline()
         {
-            if (_clipList != null)
+            if (clipList != null)
             {
-                _clipList.Dispose();
-                _clipList = null;
+                clipList.Dispose();
+                clipList = null;
             }
-            _timeline = null;
+            timeline = null;
         }
     }
 }

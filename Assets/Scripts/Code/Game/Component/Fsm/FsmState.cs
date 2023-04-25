@@ -4,19 +4,19 @@ namespace TaoTie
 {
     public partial class FsmState : IDisposable
     {
-        private Fsm _fsm;
-        private ConfigFsmState _config;
+        private Fsm fsm;
+        private ConfigFsmState config;
 
-        public Fsm fsm => _fsm;
-        public string name => _config.name;
-        public ConfigFsmState config => _config;
+        public Fsm Fsm => fsm;
+        public string Name => config.name;
+        public ConfigFsmState Config => config;
 
         public bool CanMove
         {
             get
             {
-                if (config.data == null) return true;
-                return config.data.CanMove;
+                if (Config.data == null) return true;
+                return Config.data.CanMove;
             }
         }
         
@@ -24,8 +24,8 @@ namespace TaoTie
         {
             get
             {
-                if (config.data == null) return true;
-                return config.data.CanTurn;
+                if (Config.data == null) return true;
+                return Config.data.CanTurn;
             }
         }
 
@@ -38,8 +38,8 @@ namespace TaoTie
 
         private void Init(Fsm fsm, ConfigFsmState cfg)
         {
-            _fsm = fsm;
-            _config = cfg;
+            this.fsm = fsm;
+            config = cfg;
         }
 
         public void OnEnter()
@@ -61,8 +61,8 @@ namespace TaoTie
         public void Dispose()
         {
             ClearTimeline();
-            _fsm = null;
-            _config = null;
+            fsm = null;
+            config = null;
             ObjectPool.Instance.Recycle(this);
         }
         #endregion

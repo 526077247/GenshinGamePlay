@@ -2,8 +2,8 @@
 {
     public struct AttackTarget
     {
-        public long runtimeID;
-        public string lockedPoint;
+        public long RuntimeID;
+        public string LockedPoint;
         
         public void Reset() {}
     }

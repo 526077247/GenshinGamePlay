@@ -8,11 +8,11 @@ namespace TaoTie
     [AttributeUsage(AttributeTargets.Class)]
     public class TriggerTypeAttribute : System.Attribute
     {
-        public Type type;
+        public Type Type;
 
         public TriggerTypeAttribute(Type type = null)
         {
-            this.type = type;
+            this.Type = type;
         }
     }
 }

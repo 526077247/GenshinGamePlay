@@ -9,16 +9,16 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigSuiteLoadEventSuiteIdCondition : ConfigSceneGroupCondition<SuiteLoadEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
         [NinoMember(1)]
-        public CompareMode mode;
+        public CompareMode Mode;
         [NinoMember(2)]
         [ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
-        public Int32 value;
+        public Int32 Value;
 
         public override bool IsMatch(SuiteLoadEvent obj, SceneGroup sceneGroup)
         {
-            return IsMatch(value, obj.SuiteId, mode);
+            return IsMatch(Value, obj.SuiteId, Mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

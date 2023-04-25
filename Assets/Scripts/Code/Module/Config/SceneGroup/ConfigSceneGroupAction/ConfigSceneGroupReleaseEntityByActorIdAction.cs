@@ -11,11 +11,11 @@ namespace TaoTie
     {
         [NinoMember(10)]
         [ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
-        public int actorId;
+        public int ActorId;
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            if(aimSceneGroup.TryGetActorEntity(actorId,out long eid))
+            if(aimSceneGroup.TryGetActorEntity(ActorId,out long eid))
             {
                 aimSceneGroup.Parent.Remove(eid);
             }

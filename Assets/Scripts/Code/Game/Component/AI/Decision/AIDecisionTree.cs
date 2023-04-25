@@ -15,7 +15,7 @@
 			var conf = ConfigAIDecisionTreeCategory.Instance.Get(knowledge.decisionArchetype);
 			if (conf != null)
 			{
-				if (knowledge.combatComponent != null && knowledge.combatComponent.isInCombat)
+				if (knowledge.combatComponent != null && knowledge.combatComponent.IsInCombat)
 				{
 					if (conf.CombatNode != null)
 						Handler(knowledge, decision, conf.CombatNode);

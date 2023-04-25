@@ -12,11 +12,11 @@ namespace TaoTie
     {
         [NinoMember(10)]
         [LabelText("要附加的组id")][ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
-        public int groupId;
+        public int GroupId;
 
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            aimSceneGroup.AddExtraGroup(groupId);
+            aimSceneGroup.AddExtraGroup(GroupId);
         }
     }
 }

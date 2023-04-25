@@ -9,15 +9,15 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigExitZoneEventEntityIdCondition : ConfigSceneGroupCondition<ExitZoneEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
         [NinoMember(1)]
-        public CompareMode mode;
+        public CompareMode Mode;
         [NinoMember(2)]
-        public Int64 value;
+        public Int64 Value;
 
         public override bool IsMatch(ExitZoneEvent obj, SceneGroup sceneGroup)
         {
-            return IsMatch(value, obj.EntityId, mode);
+            return IsMatch(Value, obj.EntityId, Mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

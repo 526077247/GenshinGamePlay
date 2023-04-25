@@ -11,38 +11,38 @@ namespace TaoTie
     public partial class ConfigSceneGroupAddVariableAction : ConfigSceneGroupAction
     {
         [JsonIgnore]
-        public override bool canSetOtherSceneGroup => true;
+        public override bool CanSetOtherSceneGroup => true;
         [NinoMember(10)]
         [LabelText("变量")]
-        public string key;
+        public string Key;
         [NinoMember(11)]
         [LabelText("是否限制范围")]
-        public bool limit;
+        public bool Limit;
         [NinoMember(12)]
-        [ShowIf(nameof(limit))] [LabelText("范围最小值")]
-        public float minValue;
+        [ShowIf(nameof(Limit))] [LabelText("范围最小值")]
+        public float MinValue;
         [NinoMember(13)]
-        [ShowIf(nameof(limit))] [LabelText("范围最大值")]
-        public float maxValue;
+        [ShowIf(nameof(Limit))] [LabelText("范围最大值")]
+        public float MaxValue;
         [NinoMember(14)]
         [LabelText("增加的值")]
-        public BaseSceneGroupValue value;
+        public BaseSceneGroupValue Value;
         
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
             if (aimSceneGroup.variable != null)
             {
-                float flag = value.Resolve(evt, aimSceneGroup.variable);
+                float flag = Value.Resolve(evt, aimSceneGroup.variable);
 
-                var val = aimSceneGroup.variable.Get(key);
+                var val = aimSceneGroup.variable.Get(Key);
                 val += flag;
-                if (limit)
+                if (Limit)
                 {
-                    val = (int) Mathf.Clamp(val, minValue, maxValue);
+                    val = (int) Mathf.Clamp(val, MinValue, MaxValue);
                 }
 
-                aimSceneGroup.variable.Set(key, val);
+                aimSceneGroup.variable.Set(Key, val);
             }
         }
     }

@@ -9,15 +9,15 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigVariableChangeEventOldValueCondition : ConfigSceneGroupCondition<VariableChangeEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
         [NinoMember(1)]
-        public CompareMode mode;
+        public CompareMode Mode;
         [NinoMember(2)]
-        public Single value;
+        public Single Value;
 
         public override bool IsMatch(VariableChangeEvent obj, SceneGroup sceneGroup)
         {
-            return IsMatch(value, obj.OldValue, mode);
+            return IsMatch(Value, obj.OldValue, Mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

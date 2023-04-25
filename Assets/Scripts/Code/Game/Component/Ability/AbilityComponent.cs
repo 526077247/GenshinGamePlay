@@ -4,26 +4,26 @@ namespace TaoTie
 {
     public class AbilityComponent : Component, IComponent<List<ConfigAbility>>
     {
-        private bool isDestroy;
-        private LinkedListComponent<ActorAbility> abilities;
+        private bool IsDestroy;
+        private LinkedListComponent<ActorAbility> Abilities;
 
-        private LinkedListComponent<ActorModifier> modifiers;
-        private UnOrderMultiMap<string, ActorModifier> modifierDictionary; //[Ability_Modifier:ActorModifier]
+        private LinkedListComponent<ActorModifier> Modifiers;
+        private UnOrderMultiMap<string, ActorModifier> ModifierDictionary; //[Ability_Modifier:ActorModifier]
 
         #region override
 
         public void Init(List<ConfigAbility> data)
         {
-            isDestroy = false;
-            abilities = LinkedListComponent<ActorAbility>.Create();
-            modifiers = LinkedListComponent<ActorModifier>.Create();
-            modifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
+            IsDestroy = false;
+            Abilities = LinkedListComponent<ActorAbility>.Create();
+            Modifiers = LinkedListComponent<ActorModifier>.Create();
+            ModifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
             if (data != null)
             {
                 for (int i = 0; i < data.Count; i++)
                 {
                     var ability = ActorAbility.Create(Id, data[i], this);
-                    abilities.AddLast(ability);
+                    Abilities.AddLast(ability);
                     ability.AfterAdd();
                 }
             }
@@ -31,31 +31,31 @@ namespace TaoTie
 
         public void Destroy()
         {
-            isDestroy = true;
-            foreach (var item in abilities)
+            IsDestroy = true;
+            foreach (var item in Abilities)
             {
                 item.BeforeRemove();
                 item.Dispose();
             }
 
-            abilities.Dispose();
+            Abilities.Dispose();
 
-            foreach (var item in modifiers)
+            foreach (var item in Modifiers)
             {
                 item.BeforeRemove();
                 item.Dispose();
             }
 
-            modifiers.Dispose();
+            Modifiers.Dispose();
 
-            modifierDictionary = null;
+            ModifierDictionary = null;
         }
 
         #endregion
         public void AddAbility(ConfigAbility config)
         {
             var ability = ActorAbility.Create(Id, config, this);
-            abilities.AddLast(ability);
+            Abilities.AddLast(ability);
             ability.AfterAdd();
         }
 
@@ -69,7 +69,7 @@ namespace TaoTie
             }
 
             string key = ability.Config.AbilityName + "_" + config.ModifierName;
-            var list = modifierDictionary[key];
+            var list = ModifierDictionary[key];
             if (list!=null && list.Count > 0)
             {
                 // 处理堆叠
@@ -92,8 +92,8 @@ namespace TaoTie
                         if (list.Count < limitNum)
                         {
                             var modifier = ActorModifier.Create(applierID, config, ability, this);
-                            modifiers.AddLast(modifier);
-                            modifierDictionary.Add(key, modifier);
+                            Modifiers.AddLast(modifier);
+                            ModifierDictionary.Add(key, modifier);
                             modifier.AfterAdd();
                             return modifier;
                         }
@@ -125,8 +125,8 @@ namespace TaoTie
             else
             {
                 var modifier = ActorModifier.Create(applierID, config, ability, this);
-                modifiers.AddLast(modifier);
-                modifierDictionary.Add(key, modifier);
+                Modifiers.AddLast(modifier);
+                ModifierDictionary.Add(key, modifier);
                 modifier.AfterAdd();
                 return modifier;
             }
@@ -136,13 +136,13 @@ namespace TaoTie
 
         public void RemoveModifier(ActorModifier modifier)
         {
-            if (isDestroy) return;
+            if (IsDestroy) return;
             string key = modifier.Ability.Config.AbilityName + "_" + modifier.Config.ModifierName;
-            if (modifierDictionary.Contains(key, modifier))
+            if (ModifierDictionary.Contains(key, modifier))
             {
                 modifier.BeforeRemove();
-                modifiers.Remove(modifier);
-                modifierDictionary.Remove(key, modifier);
+                Modifiers.Remove(modifier);
+                ModifierDictionary.Remove(key, modifier);
                 modifier.Dispose();
             }
         }
@@ -150,26 +150,26 @@ namespace TaoTie
         public void RemoveModifier(string ability, string modifier)
         {
             string key = ability + "_" + modifier;
-            for (int i = modifierDictionary[key].Count - 1; i >= 0; i--)
+            for (int i = ModifierDictionary[key].Count - 1; i >= 0; i--)
             {
-                modifierDictionary[key][i].Dispose();
+                ModifierDictionary[key][i].Dispose();
             }
         }
 
         public void RemoveAbility(ActorAbility ability)
         {
-            if (isDestroy) return;
-            if (abilities.Contains(ability))
+            if (IsDestroy) return;
+            if (Abilities.Contains(ability))
             {
                 ability.BeforeRemove();
-                abilities.Remove(ability);
+                Abilities.Remove(ability);
                 ability.Dispose();
             }
         }
 
         public void ExecuteAbility(string ability)
         {
-            foreach (var item in abilities)
+            foreach (var item in Abilities)
             {
                 if (item.Config.AbilityName == ability)
                 {

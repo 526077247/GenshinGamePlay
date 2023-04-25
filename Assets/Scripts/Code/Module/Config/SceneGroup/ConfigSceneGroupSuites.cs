@@ -16,23 +16,23 @@ namespace TaoTie
     {
 #if UNITY_EDITOR
         [SerializeField] [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
-        private string remarks;
+        private string Remarks;
         [JsonIgnore]
-        private bool RandSuite => OdinDropdownHelper.sceneGroup.randSuite;
+        private bool RandSuite => OdinDropdownHelper.sceneGroup.RandSuite;
 #endif
         [NinoMember(1)][PropertyOrder(int.MinValue)]
-        public int localId;
+        public int LocalId;
         [NinoMember(2)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
-        public int[] actors;
+        public int[] Actors;
         [NinoMember(3)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupZoneIds()")]
-        public int[] zones;
+        public int[] Zones;
         [NinoMember(4)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupTriggerIds()")]
-        public int[] triggers;
+        public int[] Triggers;
 #if UNITY_EDITOR
         [ShowIf(nameof(RandSuite))]
 #endif
         [NinoMember(5)]
-        public int randWeight;
+        public int RandWeight;
         
         
     }

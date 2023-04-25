@@ -9,15 +9,15 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigPlatformReachPointEvtPointIndexCondition : ConfigSceneGroupCondition<PlatformReachPointEvt>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
         [NinoMember(1)]
-        public CompareMode mode;
+        public CompareMode Mode;
         [NinoMember(2)]
-        public Int32 value;
+        public Int32 Value;
 
         public override bool IsMatch(PlatformReachPointEvt obj, SceneGroup sceneGroup)
         {
-            return IsMatch(value, obj.pointIndex, mode);
+            return IsMatch(Value, obj.PointIndex, Mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

@@ -30,7 +30,7 @@ namespace TaoTie
          public FsmComponent Component => _component;
          public ConfigFsm config => _config;
          public FsmState currentState => _currentState;
-         public string currentStateName => _currentState?.name;
+         public string currentStateName => _currentState?.Name;
          public float statePassTime => _statePassTime;
          public float stateTime => _stateTime;
          public float stateNormalizedTime => _stateNormalizedTime;
@@ -62,7 +62,7 @@ namespace TaoTie
          {
              if (_currentState != null)
              {
-                 var stateCfg = _currentState.config;
+                 var stateCfg = _currentState.Config;
 
                  _stateElapseTime = elapsetime;
                  _statePassTime += _stateElapseTime;
@@ -78,7 +78,7 @@ namespace TaoTie
 
              if (_currentState != null)
              {
-                 if (_currentState.config.CheckTransition(this, out transition))
+                 if (_currentState.Config.CheckTransition(this, out transition))
                  {
                      ChangeState(transition.toState, transition);
                      return;
@@ -105,11 +105,11 @@ namespace TaoTie
              }
              else
              {
-                 toCfg = toState.config;
+                 toCfg = toState.Config;
              }
 
              var fromState = _currentState;
-             var fromCfg = fromState?.config;
+             var fromCfg = fromState?.Config;
              fromState?.OnExit();
 
              if (transition != null)
@@ -138,7 +138,7 @@ namespace TaoTie
          protected virtual void InvokeOnStateChanged(FsmState fromState, FsmState toState)
          {
              if (onStateChanged != null)
-                 onStateChanged(fromState?.name, toState.name);
+                 onStateChanged(fromState?.Name, toState.Name);
              if (fromState == null||fromState.CanMove != toState.CanMove)
              {
                  Messager.Instance.Broadcast(_component.Id, MessageId.SetCanMove, toState.CanMove);

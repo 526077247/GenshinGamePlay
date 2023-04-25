@@ -10,8 +10,8 @@
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
-            knowledge.moveKnowledge.canMove = fsm.defaultFsm.currentState.CanMove;
-            knowledge.moveKnowledge.canTurn = fsm.defaultFsm.currentState.CanTurn;
+            knowledge.moveKnowledge.canMove = fsm.DefaultFsm.currentState.CanMove;
+            knowledge.moveKnowledge.canTurn = fsm.DefaultFsm.currentState.CanTurn;
         }
     }
 }

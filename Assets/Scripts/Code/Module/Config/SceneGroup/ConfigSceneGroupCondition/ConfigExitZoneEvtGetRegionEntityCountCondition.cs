@@ -10,19 +10,19 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigExitZoneEvtGetRegionEntityCountCondition : ConfigSceneGroupCondition<ExitZoneEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(value,mode)")]
+        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")]
         [NinoMember(1)]
-        public CompareMode mode;
+        public CompareMode Mode;
         [NinoMember(2)]
-        public EntityType type;
+        public EntityType Type;
         [NinoMember(3)]
-        public int value;
+        public int Value;
         public override bool IsMatch(ExitZoneEvent obj,SceneGroup sceneGroup)
         {
             var zone = sceneGroup.Parent.Get<Zone>(obj.ZoneEntityId)?.GetComponent<SceneGroupZoneComponent>();
             if (zone != null)
             {
-                return IsMatch(value, zone.GetRegionEntityCount(type), mode);
+                return IsMatch(Value, zone.GetRegionEntityCount(Type), Mode);
             }
             return false;
         }

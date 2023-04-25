@@ -28,8 +28,8 @@
         }
         private void OnNumericChange(NumericChange evt)
         {
-            if (currentState != null && currentState.config.data != null && currentState.config.data.IsDynamic 
-                && evt.NumericType == NumericType.GetKey(currentState.config.data.Key))
+            if (currentState != null && currentState.Config.data != null && currentState.Config.data.IsDynamic 
+                && evt.NumericType == NumericType.GetKey(currentState.Config.data.Key))
             {
                 var poseID = numericComponent.GetAsInt(evt.NumericType);
                 InvokeOnPoseChanged(this.poseID, poseID);
@@ -38,7 +38,7 @@
         
         protected override void InvokeOnStateChanged(FsmState fromState, FsmState toState)
         {
-            var poseID = toState?.config == null ? 0 : GetPoseID(toState.config);
+            var poseID = toState?.Config == null ? 0 : GetPoseID(toState.Config);
             InvokeOnPoseChanged(this.poseID, poseID);
             base.InvokeOnStateChanged(fromState, toState);
         }

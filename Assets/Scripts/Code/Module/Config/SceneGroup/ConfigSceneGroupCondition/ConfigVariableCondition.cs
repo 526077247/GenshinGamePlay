@@ -12,20 +12,20 @@ namespace TaoTie
     {
         [NinoMember(1)]
         [LabelText("左值")] 
-        public BaseSceneGroupValue leftValue;
+        public BaseSceneGroupValue LeftValue;
         [NinoMember(2)]
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(rightValue,mode)")]
-        public CompareMode mode;
+        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(RightValue,Mode)")]
+        public CompareMode Mode;
         [NinoMember(3)]
         [LabelText("右值")] 
-        public float rightValue;
+        public float RightValue;
 
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)
         {
             if (!base.CheckModeType(t, mode))
             {
-                this.mode = CompareMode.Equal;
+                this.Mode = CompareMode.Equal;
                 return false;
             }
 
@@ -35,8 +35,8 @@ namespace TaoTie
         
         public sealed override bool IsMatch(IEventBase obj, SceneGroup sceneGroup)
         {
-            var valLeft = leftValue.Resolve(obj, sceneGroup.variable);
-            return IsMatch(rightValue, valLeft, mode);
+            var valLeft = LeftValue.Resolve(obj, sceneGroup.variable);
+            return IsMatch(RightValue, valLeft, Mode);
         }
     }
 }
