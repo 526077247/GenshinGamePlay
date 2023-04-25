@@ -21,14 +21,14 @@ namespace TaoTie
             }
         }
         
-        public ConfigDoActionByTickMixin ConfigDoActionBy => baseConfig as ConfigDoActionByTickMixin;
+        public ConfigDoActionByTickMixin ConfigDoAction => baseConfig as ConfigDoActionByTickMixin;
 
         private long timerId;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
             base.Init(actorAbility, actorModifier, config);
-            timerId = GameTimerManager.Instance.NewRepeatedTimer(this.ConfigDoActionBy.Interval, TimerType.TickMixin, this);
-            if (this.ConfigDoActionBy.TickFirstOnAdd)
+            timerId = GameTimerManager.Instance.NewRepeatedTimer(this.ConfigDoAction.Interval, TimerType.TickMixin, this);
+            if (this.ConfigDoAction.TickFirstOnAdd)
             {
                 Execute();
             }
@@ -36,11 +36,11 @@ namespace TaoTie
         
         private void Execute()
         {
-            if (ConfigDoActionBy.Actions != null)
+            if (ConfigDoAction.Actions != null)
             {
-                for (int i = 0; i < ConfigDoActionBy.Actions.Length; i++)
+                for (int i = 0; i < ConfigDoAction.Actions.Length; i++)
                 {
-                    ConfigDoActionBy.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, null);
+                    ConfigDoAction.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, null);
                 }
             }
         }

@@ -1,6 +1,6 @@
 # GenshinGamePlay
 
-基于TaoTie，通过研究原神反编译源码(https://github.com/fengjixuchui/WorldReverse )，推导出了一套ARPG战斗框架
+基于TaoTie https://github.com/526077247/TaoTie ，通过研究原神反编译源码 https://github.com/fengjixuchui/WorldReverse ，推导出的一套ARPG战斗框架
 
 ## 导表工具
 打开 /Tools/ExcelExport/ExcelExport.sln 编译后可用

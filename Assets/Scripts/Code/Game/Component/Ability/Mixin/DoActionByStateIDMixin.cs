@@ -2,7 +2,7 @@
 {
     public class DoActionByStateIDMixin : AbilityMixin
     {
-        public ConfigDoActionByStateIDMixin config => baseConfig as ConfigDoActionByStateIDMixin;
+        public ConfigDoActionByStateIDMixin ConfigDoAction => baseConfig as ConfigDoActionByStateIDMixin;
         
         private Fsm fsm;
         private Entity owner;
@@ -10,12 +10,12 @@
         {
             base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
-            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.config.ChargeLayer);
+            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.ConfigDoAction.ChargeLayer);
             
             if (fsm != null)
             {
                 fsm.onStateChanged += OnStateChanged;
-                if (this.config.StateIDs.Contains(fsm.currentStateName))
+                if (this.ConfigDoAction.StateIDs.Contains(fsm.currentStateName))
                 {
                     OnEnter();
                 }
@@ -24,10 +24,10 @@
 
         private void OnStateChanged(string from, string to)
         {
-            if (config.StateIDs == null)
+            if (ConfigDoAction.StateIDs == null)
                 return;
 
-            bool flag = config.StateIDs.Contains(from), flag2 = config.StateIDs.Contains(to);
+            bool flag = ConfigDoAction.StateIDs.Contains(from), flag2 = ConfigDoAction.StateIDs.Contains(to);
             if (!flag && flag2)
             {
                 OnEnter();
@@ -40,11 +40,11 @@
 
         private void OnEnter()
         {
-            if (config.EnterActions!=null && EvaluatePredicate(config.EnterPredicate))
+            if (ConfigDoAction.EnterActions!=null && EvaluatePredicate(ConfigDoAction.EnterPredicate))
             {
-                for (int i = 0; i < config.EnterActions.Length; i++)
+                for (int i = 0; i < ConfigDoAction.EnterActions.Length; i++)
                 {
-                    config.EnterActions[i].DoExecute(owner, actorAbility, actorModifier, null);
+                    ConfigDoAction.EnterActions[i].DoExecute(owner, actorAbility, actorModifier, null);
                 }
             }
         }
@@ -60,11 +60,11 @@
 
         private void OnExit()
         {
-            if (config.ExitActions!=null && EvaluatePredicate(config.ExitPredicate))
+            if (ConfigDoAction.ExitActions!=null && EvaluatePredicate(ConfigDoAction.ExitPredicate))
             {
-                for (int i = 0; i < config.ExitActions.Length; i++)
+                for (int i = 0; i < ConfigDoAction.ExitActions.Length; i++)
                 {
-                    config.ExitActions[i].DoExecute(owner, actorAbility, actorModifier, null);
+                    ConfigDoAction.ExitActions[i].DoExecute(owner, actorAbility, actorModifier, null);
                 }
             }
         }

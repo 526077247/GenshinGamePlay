@@ -18,24 +18,24 @@ namespace TaoTie
         /// <summary> 上一帧决策结果 </summary>
         protected AIDecision decisionOld { get; private set; }= new AIDecision();
         /// <summary> 移动summary>
-        public AIMoveUpdater moveUpdater { get; private set; }= new AIMoveUpdater();
+        public AIMoveUpdater MoveUpdater { get; private set; }= new AIMoveUpdater();
         /// <summary> 寻路 </summary>
-        public AIPathfindingUpdater pathfinder { get; private set; }= new AIPathfindingUpdater();
+        public AIPathfindingUpdater Pathfinder { get; private set; }= new AIPathfindingUpdater();
         /// <summary> 目标 </summary>
-        public AITargetUpdater targetUpdater { get; private set; }= new AITargetUpdater();
+        public AITargetUpdater TargetUpdater { get; private set; }= new AITargetUpdater();
         /// <summary> 感知 </summary>
-        public AISensingUpdater sensingUpdater { get; private set; }= new AISensingUpdater();
+        public AISensingUpdater SensingUpdater { get; private set; }= new AISensingUpdater();
         /// <summary> 威胁 </summary>
-        public AIThreatUpdater threatUpdater { get; private set; }= new AIThreatUpdater();
+        public AIThreatUpdater ThreatUpdater { get; private set; }= new AIThreatUpdater();
         /// <summary> pose </summary>
-        public AIPoseControlUpdater poseControlUpdater { get; private set; }= new AIPoseControlUpdater();
+        public AIPoseControlUpdater PoseControlUpdater { get; private set; }= new AIPoseControlUpdater();
         /// <summary> 技能 </summary>
-        public AISkillUpdater skillUpdater { get; private set; }= new AISkillUpdater();
+        public AISkillUpdater SkillUpdater { get; private set; }= new AISkillUpdater();
 
         /// <summary> 行动执行器 </summary>
-        public AIActionControl actionController { get; private set; }= new AIActionControl();
+        public AIActionControl ActionController { get; private set; }= new AIActionControl();
         /// <summary> 移动执行器 </summary>
-        public AIMoveControl moveController { get; private set; }= new AIMoveControl();
+        public AIMoveControl MoveController { get; private set; }= new AIMoveControl();
 
 
         #region Event
@@ -55,16 +55,16 @@ namespace TaoTie
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
             knowledge.Init(GetParent<Unit>(), config, aiManager);
             
-            sensingUpdater.Init(knowledge);
-            threatUpdater.Init(knowledge);
-            targetUpdater.Init(knowledge);
-            pathfinder.Init(knowledge);
-            moveUpdater.Init(knowledge);
-            poseControlUpdater.Init(knowledge);
-            skillUpdater.Init(knowledge);
+            SensingUpdater.Init(knowledge);
+            ThreatUpdater.Init(knowledge);
+            TargetUpdater.Init(knowledge);
+            Pathfinder.Init(knowledge);
+            MoveUpdater.Init(knowledge);
+            PoseControlUpdater.Init(knowledge);
+            SkillUpdater.Init(knowledge);
 
-            actionController.Init(knowledge);
-            moveController.Init(knowledge);
+            ActionController.Init(knowledge);
+            MoveController.Init(knowledge);
             aiManager?.AddAI(this);
         }
 
@@ -72,13 +72,13 @@ namespace TaoTie
         {
             aiManager?.RemoveAI(this);
             
-            sensingUpdater.Clear();
-            threatUpdater.Clear();
-            targetUpdater.Clear();
-            pathfinder.Clear();
-            poseControlUpdater.Clear();
-            skillUpdater.Clear();
-            moveUpdater.Clear();
+            SensingUpdater.Clear();
+            ThreatUpdater.Clear();
+            TargetUpdater.Clear();
+            Pathfinder.Clear();
+            PoseControlUpdater.Clear();
+            SkillUpdater.Clear();
+            MoveUpdater.Clear();
             
             knowledge.Dispose();
             knowledge = null;
@@ -104,14 +104,14 @@ namespace TaoTie
         /// </summary>
         private void UpdateKnowledge()
         {
-            sensingUpdater.UpdateMainThread();
-            threatUpdater.UpdateMainThread();
-            targetUpdater.UpdateMainThread();
-            pathfinder.UpdateMainThread();
-            moveUpdater.UpdateMainThread();
+            SensingUpdater.UpdateMainThread();
+            ThreatUpdater.UpdateMainThread();
+            TargetUpdater.UpdateMainThread();
+            Pathfinder.UpdateMainThread();
+            MoveUpdater.UpdateMainThread();
             
-            poseControlUpdater.UpdateMainThread();
-            skillUpdater.UpdateMainThread();
+            PoseControlUpdater.UpdateMainThread();
+            SkillUpdater.UpdateMainThread();
         }
 
         /// <summary>
@@ -140,8 +140,8 @@ namespace TaoTie
         /// </summary>
         private void UpdateAction()
         {
-            actionController.ExecuteAction(decision);
-            moveController.ExecuteMove(decision);
+            ActionController.ExecuteAction(decision);
+            MoveController.ExecuteMove(decision);
         }
 
 
