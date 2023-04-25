@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4332600283408137660}
   - component: {fileID: 2922604565258859160}
   m_Layer: 0
-  m_Name: NormalAttack
+  m_Name: attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1575,4 +1575,4 @@ MonoBehaviour:
   _startTime: 0.59999996
   _animationData:
     _animatedParameters: []
-  AbilityName: Man_Attack
+  AbilityName: Knight_NormalAttack

@@ -38,8 +38,8 @@ namespace TaoTie
         [LabelText("原始AI状态机")]
         public AnimatorController aicontroller;
 
-        private const string _controllerConfigName = "FsmConfig.bytes";
-        private const string _aicontrollerConfigName = "PoseConfig.bytes";
+        private const string _controllerConfigName = "FsmConfig.json";
+        private const string _aicontrollerConfigName = "PoseConfig.json";
         [BoxGroup("导出状态机")]
         [Button("导出状态机")]
         private void Export()

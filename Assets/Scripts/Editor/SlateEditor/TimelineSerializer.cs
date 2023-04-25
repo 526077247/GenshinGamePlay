@@ -108,7 +108,7 @@ namespace TaoTie
                 {
                     outpath = UtilityEditor.ToPublishFilePath(outpath);
                 }
-                outpath = outpath.Replace(".prefab", ".bytes");
+                outpath = outpath.Replace(".prefab", ".json");
                 ConfigFsmTimeline data = new ConfigFsmTimeline();
                 bool isOld = false;
                 
