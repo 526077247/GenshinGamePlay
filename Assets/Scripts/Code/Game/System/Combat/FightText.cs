@@ -49,7 +49,7 @@ namespace TaoTie
             {
                 return;
             }
-            var text = rect.GetComponentInChildren<Text>();
+            var text = rect.GetComponentInChildren<TMPro.TMP_Text>();
             if (text != null)
             {
                 text.text = show_dmg.ToString();
