@@ -6,15 +6,15 @@ namespace TaoTie
     {
         public void Init()
         {
-            //PreloadLoadAsset().Coroutine();
+            PreloadLoadAsset().Coroutine();
         }
         /// <summary>
-        /// preload一些常用hud到pool
+        /// preload涓�浜涘父鐢╤ud鍒皃ool
         /// </summary>
         /// <returns></returns>
         private async ETTask PreloadLoadAsset()
         {
-
+            await ETTask.CompletedTask;
         }
 
         public void Destroy()
