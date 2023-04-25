@@ -31,18 +31,18 @@ namespace TaoTie
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            if (aimSceneGroup.variable != null)
+            if (aimSceneGroup.Variable != null)
             {
-                float flag = Value.Resolve(evt, aimSceneGroup.variable);
+                float flag = Value.Resolve(evt, aimSceneGroup.Variable);
 
-                var val = aimSceneGroup.variable.Get(Key);
+                var val = aimSceneGroup.Variable.Get(Key);
                 val += flag;
                 if (Limit)
                 {
                     val = (int) Mathf.Clamp(val, MinValue, MaxValue);
                 }
 
-                aimSceneGroup.variable.Set(Key, val);
+                aimSceneGroup.Variable.Set(Key, val);
             }
         }
     }

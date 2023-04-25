@@ -3,24 +3,24 @@
     public class AITimer
     {
         //开始时间
-        private long _startTick;
-        private bool _started;
+        private long startTick;
+        private bool started;
 
         public void Start(long currentTime)
         {
-            _started = true;
-            _startTick = currentTime;
+            started = true;
+            startTick = currentTime;
         }
 
         //重置开始时间
         public void Reset(long currentTime)
         {
-            _startTick = currentTime;
+            startTick = currentTime;
         }
 
         public bool IsRunning()
         {
-            return _started;
+            return started;
         }
 
         /// <summary>
@@ -31,12 +31,12 @@
         /// <returns></returns>
         public bool IsElapsed(long currentTime, long limit)
         {
-            if (!_started)
+            if (!started)
                 return false;
 
-            if(currentTime > _startTick + limit)
+            if(currentTime > startTick + limit)
             {
-                _started = false;
+                started = false;
                 return true;
             }
             return false;

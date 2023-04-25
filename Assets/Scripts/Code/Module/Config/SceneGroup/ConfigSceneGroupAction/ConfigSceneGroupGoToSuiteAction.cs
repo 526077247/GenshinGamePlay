@@ -18,7 +18,7 @@ namespace TaoTie
         public int SuiteId;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            if (!aimSceneGroup.config.RandSuite)
+            if (!aimSceneGroup.Config.RandSuite)
             {
                 aimSceneGroup.ChangeSuite(SuiteId);
             }

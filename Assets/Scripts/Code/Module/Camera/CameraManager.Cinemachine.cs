@@ -9,19 +9,19 @@ namespace TaoTie
     public partial class CameraManager
     {
         public Transform root;
-        private readonly Dictionary<int, CameraPlugin> _cameraPlugins = new();
+        private readonly Dictionary<int, CameraPlugin> cameraPlugins = new();
         private CinemachineBrain _cinemachineBrain;
 
-        public int curCameraId { get; private set; } = int.MinValue;
-        public CameraType curCameraType => curCamera.type;
+        private int curCameraId { get; set; } = int.MinValue;
+        private CameraType curCameraType => curCamera.type;
 
-        public CameraPlugin curCamera => _cameraPlugins[curCameraId];
+        private CameraPlugin curCamera => cameraPlugins[curCameraId];
 
-        public CameraState curState { get; private set; }
-        public CameraState lastState { get; private set; }
+        private CameraState curState { get; set; }
+        private CameraState lastState { get; set; }
 
-        public VirtualCameraPlugin defaultCamera =>
-            _cameraPlugins[defaultCameraId] as VirtualCameraPlugin;
+        public VirtualCameraPlugin DefaultCamera =>
+            cameraPlugins[defaultCameraId] as VirtualCameraPlugin;
 
         partial void AddInputListener();
         partial void RemoveInputListener();
@@ -58,9 +58,9 @@ namespace TaoTie
         public void Destroy()
         {
             RemoveInputListener();
-            foreach (var item in _cameraPlugins) item.Value.OnRelease();
+            foreach (var item in cameraPlugins) item.Value.OnRelease();
 
-            _cameraPlugins.Clear();
+            cameraPlugins.Clear();
 
             sceneMainCameraGo = null;
             sceneMainCamera = null;
@@ -72,7 +72,7 @@ namespace TaoTie
 
         public void Update()
         {
-            if (_cameraPlugins.TryGetValue(curCameraId, out var plugin))
+            if (cameraPlugins.TryGetValue(curCameraId, out var plugin))
             {
                 plugin.Tick();
             }
@@ -87,7 +87,7 @@ namespace TaoTie
             if (curCameraId != defaultCameraId)
             {
                 _cinemachineBrain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
-                if (_cameraPlugins.TryGetValue(curCameraId, out var plugin))
+                if (cameraPlugins.TryGetValue(curCameraId, out var plugin))
                 {
                     plugin.OnLevel(true);
                 }
@@ -105,7 +105,7 @@ namespace TaoTie
 
         private void SetCurCameraId(int id, bool clearState)
         {
-            if (!_cameraPlugins.ContainsKey(id))
+            if (!cameraPlugins.ContainsKey(id))
             {
                 CreateCamera(id);
             }
@@ -123,16 +123,16 @@ namespace TaoTie
 
         private CameraPlugin CreateCamera(ConfigCamera config)
         {
-            if (_cameraPlugins.ContainsKey(config.id))
+            if (cameraPlugins.ContainsKey(config.id))
             {
                 Log.Error("摄像机Id重复创建！Id=" + config.id);
-                return _cameraPlugins[config.id];
+                return cameraPlugins[config.id];
             }
 
             if (config is ConfigVirtualCamera configVirtualCamera)
             {
                 var virtualCameraPlugin = new VirtualCameraPlugin();
-                _cameraPlugins[config.id] = virtualCameraPlugin;
+                cameraPlugins[config.id] = virtualCameraPlugin;
                 virtualCameraPlugin.OnInit(configVirtualCamera);
                 return virtualCameraPlugin;
             }
@@ -140,7 +140,7 @@ namespace TaoTie
             if (config is ConfigFreeLookCamera configFreeLookCamera)
             {
                 var freeLookCameraPlugin = new FreeLookCameraPlugin();
-                _cameraPlugins[config.id] = freeLookCameraPlugin;
+                cameraPlugins[config.id] = freeLookCameraPlugin;
                 freeLookCameraPlugin.OnInit(configFreeLookCamera);
                 return freeLookCameraPlugin;
             }
@@ -181,10 +181,10 @@ namespace TaoTie
                 return;
             }
 
-            if (_cameraPlugins.TryGetValue(id, out var plugin))
+            if (cameraPlugins.TryGetValue(id, out var plugin))
             {
                 plugin.OnRelease();
-                _cameraPlugins.Remove(id);
+                cameraPlugins.Remove(id);
             }
         }
 

@@ -37,7 +37,7 @@ namespace TaoTie
             var aimSceneGroup = sceneGroup;
             if (IsOtherSceneGroup)
             {
-                if (sceneGroup.manager.TryGetSceneGroup(OtherSceneGroupId, out var other))
+                if (sceneGroup.Manager.TryGetSceneGroup(OtherSceneGroupId, out var other))
                 {
                     aimSceneGroup = other;
                 }

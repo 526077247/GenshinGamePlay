@@ -35,7 +35,7 @@ namespace TaoTie
         
         public sealed override bool IsMatch(IEventBase obj, SceneGroup sceneGroup)
         {
-            var valLeft = LeftValue.Resolve(obj, sceneGroup.variable);
+            var valLeft = LeftValue.Resolve(obj, sceneGroup.Variable);
             return IsMatch(RightValue, valLeft, Mode);
         }
     }

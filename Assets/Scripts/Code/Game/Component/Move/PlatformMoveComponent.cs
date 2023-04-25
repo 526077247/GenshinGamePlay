@@ -37,7 +37,7 @@ namespace TaoTie
                     }
                     else
                     {
-                        Log.Error($"路径内部错误! 请策划检查配置  SceneGroupId={sceneGroupActor.SceneGroup.config.Id} " +
+                        Log.Error($"路径内部错误! 请策划检查配置  SceneGroupId={sceneGroupActor.SceneGroup.Config.Id} " +
                                   $"actor={sceneGroupActor.LocalId} routeId={route.LocalId}");
                     }
 
