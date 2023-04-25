@@ -28,7 +28,7 @@ namespace TaoTie
 
         public void Init()
         {
-            ConfigCameras config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("EditConfig/ConfigCameras.bytes");
+            ConfigCameras config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("EditConfig/ConfigCameras");
             defaultCameraId = config.defaultCamera.id;
             configs = new Dictionary<int, ConfigCamera>();
             configs.Add(defaultCameraId,config.defaultCamera);

@@ -25,7 +25,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<ConfigEntity>(asset.text,out var entityJson))
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigEntity>(asset.text,out var entityJson))
             {
                 var win = EditorWindow.GetWindow<EntityEditor>();
                 win.Init(entityJson,path,true);

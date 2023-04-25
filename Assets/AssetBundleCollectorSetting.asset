@@ -121,7 +121,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: ability
-      - CollectPath: Assets/AssetsPackage/EditConfig/ConfigCameras.bytes
+      - CollectPath: Assets/AssetsPackage/EditConfig/ConfigCameras.json
         CollectorGUID: 21d9dc7b19a8e6d41bcf602d382c9fb4
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices

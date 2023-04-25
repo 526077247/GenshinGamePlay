@@ -27,7 +27,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<ConfigSceneGroup>(asset.text,out var json))
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigSceneGroup>(asset.text,out var json))
             {
                 var win = EditorWindow.GetWindow<SceneGroupEditor>();
                 OdinDropdownHelper.sceneGroup = json;

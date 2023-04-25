@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
-
+using MemoryPack;
 namespace TaoTie
 {
     public abstract class BaseEditorWindow<T> : OdinEditorWindow where T : class
@@ -34,7 +34,7 @@ namespace TaoTie
         [Button("打开")]
         public void Open()
         {
-            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes");
+            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes|json");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 var text = File.ReadAllText(searchPath);
@@ -52,7 +52,7 @@ namespace TaoTie
                 var bytes = File.ReadAllBytes(searchPath);
                 try
                 {
-                    data = ProtobufHelper.FromBytes<T>(bytes);
+                    data = MemoryPackSerializer.Deserialize<T>(bytes);
                     filePath = searchPath;
                     isJson = false;
                     return;
@@ -91,7 +91,7 @@ namespace TaoTie
                 isJson = false;
                 data = CreateInstance();
                 filePath = searchPath;
-                var bytes = ProtobufHelper.ToBytes(data);
+                var bytes = MemoryPackSerializer.Serialize(data);
                 File.WriteAllBytes(filePath, bytes);
                 AssetDatabase.Refresh();
             }
@@ -120,7 +120,7 @@ namespace TaoTie
         {
             if (data != null && !string.IsNullOrEmpty(filePath))
             {
-                var bytes = ProtobufHelper.ToBytes(data);
+                var bytes = MemoryPackSerializer.Serialize(data);
                 File.WriteAllBytes(filePath, bytes);
                 AssetDatabase.Refresh();
                 ShowNotification(new GUIContent("保存二进制成功"));
@@ -131,7 +131,8 @@ namespace TaoTie
         [ShowIf("@data!=null&&!isJson")]
         public void SaveNewJson()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
+            var names = filePath.Split('/', '.');
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, names[names.Length-2], "json");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = true;
@@ -146,12 +147,13 @@ namespace TaoTie
         [ShowIf("@data!=null&&isJson")]
         public void SaveNewBytes()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
+            var names = filePath.Split('/', '.');
+            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, names[names.Length-2], "bytes");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = false;
                 filePath = searchPath;
-                var bytes = ProtobufHelper.ToBytes(data);
+                var bytes = MemoryPackSerializer.Serialize(data);
                 File.WriteAllBytes(filePath, bytes);
                 AssetDatabase.Refresh();
             }

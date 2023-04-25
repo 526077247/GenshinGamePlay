@@ -23,7 +23,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<ConfigAIBeta>(asset.text,out var aiJson))
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigAIBeta>(asset.text,out var aiJson))
             {
                 var win = EditorWindow.GetWindow<AIEditor>();
                 win.Init(aiJson,path,true);

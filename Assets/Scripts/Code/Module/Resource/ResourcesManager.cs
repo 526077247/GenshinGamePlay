@@ -200,29 +200,48 @@ namespace TaoTie
         /// 同步加载json或者二进制配置
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="type">0:json,1:bytes</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T LoadConfig<T>(string path) where T : class
+        public T LoadConfig<T>(string path,int type = 0) where T : class
         {
+            if (type == 0)
+            {
+                path += ".json";
+            }
+            else if (type == 1)
+            {
+                path += ".bytes";
+            }
             var file = Load<TextAsset>(path);
-            try
-            {
-                T res = ProtobufHelper.FromBytes<T>(file.bytes);
-                ReleaseAsset(file);
-                return res;
-            }
-            catch{}
 
-            try
+            if (type == 1)
             {
-                T res = JsonHelper.FromJson<T>(file.text);
-                ReleaseAsset(file);
-                return res;
+                try
+                {
+                    T res = MemoryPack.MemoryPackSerializer.Deserialize<T>(file.bytes);
+                    ReleaseAsset(file);
+                    return res;
+                }
+                catch
+                {
+                }
             }
-            catch (Exception ex)
+
+            if (type == 0)
             {
-                Log.Error(ex);
+                try
+                {
+                    T res = JsonHelper.FromJson<T>(file.text);
+                    ReleaseAsset(file);
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
             }
+
             Log.Error($"反序列化{TypeInfo<T>.Name}失败！{path}");
             return default;
         }

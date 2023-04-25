@@ -30,7 +30,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<ConfigAIDecisionTree>(asset.text,out var decisionTreeJson))
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigAIDecisionTree>(asset.text,out var decisionTreeJson))
             {
                 var win = EditorWindow.GetWindow<DecisionTreeEditor>();
                 win.Init(decisionTreeJson,path,true);

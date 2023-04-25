@@ -22,7 +22,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (JsonHelper.TryFromJson<ConfigFsmController>(asset.text,out var json))
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigFsmController>(asset.text,out var json))
             {
                 var win = EditorWindow.GetWindow<FsmEditor>();
                 win.Init(json,path,true);
