@@ -34,6 +34,10 @@ namespace TaoTie
 
                 aiKnowledge.aiOwnerEntity.IsTurn = anchorPos.x < aiKnowledge.aiOwnerEntity.Position.x;
             }
+            else
+            {
+                handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+            }
         }
 
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamFollowMove param)

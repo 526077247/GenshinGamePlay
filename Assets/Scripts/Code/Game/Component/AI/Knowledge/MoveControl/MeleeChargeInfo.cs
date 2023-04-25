@@ -49,6 +49,18 @@ namespace TaoTie
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,
             AIManager aiManager)
         {
+            if (Status == ChargeStatus.Charging)
+            {
+                if (aiKnowledge.targetKnowledge.targetEntity == null) return;
+                ConfigAIMeleeChargeData data = aiKnowledge.meleeChargeTactic.data;
+                float stopDistance = data.stopDistance;
+                float distance = Vector3.Distance(aiKnowledge.currentPos,
+                    aiKnowledge.targetKnowledge.targetEntity.Position);
+                if (distance < stopDistance)
+                {
+                    Status = ChargeStatus.Inactive;
+                }
+            }
         }
         
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
