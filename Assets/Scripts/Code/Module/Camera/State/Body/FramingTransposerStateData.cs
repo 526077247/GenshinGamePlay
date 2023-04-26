@@ -15,8 +15,8 @@ namespace TaoTie
                 config = new ConfigFramingTransposer();
             }
 
-            trackedObjectOffset = config.trackedObjectOffset;
-            cameraDistance = config.cameraDistance;
+            trackedObjectOffset = config.TrackedObjectOffset;
+            cameraDistance = config.CameraDistance;
         }
     }
 }

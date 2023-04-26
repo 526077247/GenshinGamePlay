@@ -9,9 +9,9 @@ namespace TaoTie
     public abstract class ConfigSceneGroupActor
     {
 #if UNITY_EDITOR
-        [PropertyOrder(int.MinValue+1)]
+        [PropertyOrder(int.MinValue+1)][NinoMember(0)]
         [SerializeField] [LabelText("策划备注")]
-        private string Remarks;
+        public string Remarks;
 #endif
         [NinoMember(1)]
         [PropertyOrder(int.MinValue)]

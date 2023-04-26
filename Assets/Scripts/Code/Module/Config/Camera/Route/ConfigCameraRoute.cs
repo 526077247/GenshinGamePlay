@@ -9,10 +9,10 @@ namespace TaoTie
     public partial class ConfigCameraRoute
     {
         [NinoMember(1)]
-        public ConfigCameraRoutePoint[] points;
+        public ConfigCameraRoutePoint[] Points;
         [NinoMember(2)]
-        public int resolution;
+        public int Resolution;
         [NinoMember(3)]
-        public bool loop;
+        public bool Loop;
     }
 }

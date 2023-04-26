@@ -5,9 +5,9 @@ namespace TaoTie
     [NinoSerialize()]
     public partial class ConfigTrackCamera: ConfigCamera
     {
-        public override CameraType type => CameraType.TrackCameraPlugin;
+        public override CameraType Type => CameraType.TrackCameraPlugin;
 
         [NinoMember(20)]
-        public ConfigTrackedDolly trackedDolly;
+        public ConfigTrackedDolly TrackedDolly;
     }
 }

@@ -4,26 +4,26 @@ namespace TaoTie
 {
     public class VirtualCameraStateData : CameraStateData
     {
-        public CinemachineBodyType body;
-        public Vector3 follow;
-        public FramingTransposerStateData framingTransposer;
-        public HardLockToTargetStateData hardLockToTarget;
-        public Vector3 lookAt;
-        public TransposerStateData transposer;
-        public bool cut = false;
+        public CinemachineBodyType Body;
+        public Vector3 Follow;
+        public FramingTransposerStateData FramingTransposer;
+        public HardLockToTargetStateData HardLockToTarget;
+        public Vector3 LookAt;
+        public TransposerStateData Transposer;
+        public bool Cut = false;
         public VirtualCameraStateData()
         {
         }
 
         public VirtualCameraStateData(ConfigVirtualCamera config) : base(config)
         {
-            body = config.body;
-            if (body == CinemachineBodyType.HardLockToTarget)
-                hardLockToTarget = new HardLockToTargetStateData(config.hardLockToTarget);
-            else if (body == CinemachineBodyType.Transposer)
-                transposer = new TransposerStateData(config.transposer);
-            else if (body == CinemachineBodyType.FramingTransposer)
-                framingTransposer = new FramingTransposerStateData(config.framingTransposer);
+            Body = config.Body;
+            if (Body == CinemachineBodyType.HardLockToTarget)
+                HardLockToTarget = new HardLockToTargetStateData(config.HardLockToTarget);
+            else if (Body == CinemachineBodyType.Transposer)
+                Transposer = new TransposerStateData(config.Transposer);
+            else if (Body == CinemachineBodyType.FramingTransposer)
+                FramingTransposer = new FramingTransposerStateData(config.FramingTransposer);
         }
     }
 }

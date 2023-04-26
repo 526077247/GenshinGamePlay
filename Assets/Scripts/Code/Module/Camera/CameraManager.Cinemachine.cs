@@ -29,25 +29,28 @@ namespace TaoTie
         public void Init()
         {
             ConfigCameras config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("EditConfig/ConfigCameras");
-            defaultCameraId = config.defaultCamera.id;
+            defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();
-            configs.Add(defaultCameraId,config.defaultCamera);
-            for (int i = 0; i < config.cameras.Length; i++)
+            configs.Add(defaultCameraId,config.DefaultCamera);
+            for (int i = 0; i < config.Cameras.Length; i++)
             {
-                configs.Add(config.cameras[i].id,config.cameras[i]);
+                configs.Add(config.Cameras[i].Id,config.Cameras[i]);
             }
 
-            defaultBlend = config.defaultBlend.ToCinemachineBlendDefinition();
+            defaultBlend = config.DefaultBlend.ToCinemachineBlendDefinition();
             customBlends = new CinemachineBlenderSettings();
-            customBlends.m_CustomBlends = new CinemachineBlenderSettings.CustomBlend[config.customSetting.Length];
-            for (int i = 0; i < config.customSetting.Length; i++)
+            if (config.CustomSetting != null)
             {
-                customBlends.m_CustomBlends[i] = new CinemachineBlenderSettings.CustomBlend()
+                customBlends.m_CustomBlends = new CinemachineBlenderSettings.CustomBlend[config.CustomSetting.Length];
+                for (int i = 0; i < config.CustomSetting.Length; i++)
                 {
-                    m_Blend = config.customSetting[i].definition.ToCinemachineBlendDefinition()
-                };
+                    customBlends.m_CustomBlends[i] = new CinemachineBlenderSettings.CustomBlend()
+                    {
+                        m_Blend = config.CustomSetting[i].Definition.ToCinemachineBlendDefinition()
+                    };
+                }
             }
-            
+
             root = new GameObject("CameraRoot").transform;
             Object.DontDestroyOnLoad(root);
             Instance = this;
@@ -97,8 +100,8 @@ namespace TaoTie
                 _cinemachineBrain.m_DefaultBlend = defaultBlend;
                 curState = new CameraState()
                 {
-                    id = curCameraId,
-                    data = curCamera.stateData
+                    Id = curCameraId,
+                    Data = curCamera.stateData
                 };
             }
         }
@@ -123,16 +126,16 @@ namespace TaoTie
 
         private CameraPlugin CreateCamera(ConfigCamera config)
         {
-            if (cameraPlugins.ContainsKey(config.id))
+            if (cameraPlugins.ContainsKey(config.Id))
             {
-                Log.Error("摄像机Id重复创建！Id=" + config.id);
-                return cameraPlugins[config.id];
+                Log.Error("摄像机Id重复创建！Id=" + config.Id);
+                return cameraPlugins[config.Id];
             }
 
             if (config is ConfigVirtualCamera configVirtualCamera)
             {
                 var virtualCameraPlugin = new VirtualCameraPlugin();
-                cameraPlugins[config.id] = virtualCameraPlugin;
+                cameraPlugins[config.Id] = virtualCameraPlugin;
                 virtualCameraPlugin.OnInit(configVirtualCamera);
                 return virtualCameraPlugin;
             }
@@ -140,7 +143,7 @@ namespace TaoTie
             if (config is ConfigFreeLookCamera configFreeLookCamera)
             {
                 var freeLookCameraPlugin = new FreeLookCameraPlugin();
-                cameraPlugins[config.id] = freeLookCameraPlugin;
+                cameraPlugins[config.Id] = freeLookCameraPlugin;
                 freeLookCameraPlugin.OnInit(configFreeLookCamera);
                 return freeLookCameraPlugin;
             }
@@ -202,8 +205,8 @@ namespace TaoTie
 
             var state = new CameraState
             {
-                id = id,
-                data = curCamera.stateData
+                Id = id,
+                Data = curCamera.stateData
             };
             lastState = curState;
             curState = state;
@@ -216,19 +219,19 @@ namespace TaoTie
         {
             if (curCameraType == CameraType.FreeLookCameraPlugin)
             {
-                var data = curState.data as FreeLookCameraStateData;
-                return data.radius[1];
+                var data = curState.Data as FreeLookCameraStateData;
+                return data.Radius[1];
             }
 
             if (curCameraType == CameraType.VirtualCameraPlugin)
             {
-                var data = curState.data as VirtualCameraStateData;
-                if (data?.body == CinemachineBodyType.HardLockToTarget)
+                var data = curState.Data as VirtualCameraStateData;
+                if (data?.Body == CinemachineBodyType.HardLockToTarget)
                     return -1;
-                if (data?.body == CinemachineBodyType.Transposer)
-                    return data.transposer.followOffset.z;
-                if (data?.body == CinemachineBodyType.FramingTransposer)
-                    return data.framingTransposer.cameraDistance;
+                if (data?.Body == CinemachineBodyType.Transposer)
+                    return data.Transposer.followOffset.z;
+                if (data?.Body == CinemachineBodyType.FramingTransposer)
+                    return data.FramingTransposer.cameraDistance;
                 return -1;
             }
 

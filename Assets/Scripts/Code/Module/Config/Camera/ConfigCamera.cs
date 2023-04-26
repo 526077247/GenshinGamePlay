@@ -7,38 +7,38 @@ namespace TaoTie
 {
     public abstract partial class ConfigCamera
     {
-        public abstract CameraType type { get; }
+        public abstract CameraType Type { get; }
 
         [NinoMember(1)][PropertyOrder(int.MinValue)] [Min(0)]
-        public int id;
-
+        public int Id;
+#if UNITY_EDITOR
         [NinoMember(2)][PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
-        public string remark;
+        public string Remarks;
+#endif
+        [NinoMember(3)][Range(-180, 180)] public float Dutch;
 
-        [NinoMember(3)][Range(-180, 180)] public float dutch;
+        [NinoMember(4)][Range(1, 179)] public float Fov = 40;
 
-        [NinoMember(4)][Range(1, 179)] public float fov = 40;
+        [NinoMember(5)][Min(0.001f)] public float FarClipPlane = 5000;
 
-        [NinoMember(5)][Min(0.001f)] public float farClipPlane = 5000;
-
-        [NinoMember(6)][Min(0.001f)] public float nearClipPlane = 0.1f;
+        [NinoMember(6)][Min(0.001f)] public float NearClipPlane = 0.1f;
 
         [NinoMember(7)][LabelText("显示光标")] [BoxGroup("其他设置")]
-        public bool visibleCursor;
+        public bool VisibleCursor;
 
         [NinoMember(8)][LabelText("是否允许摄像机震动")] [BoxGroup("其他设置")]
-        public bool cameraShake;
+        public bool CameraShake;
 
         [NinoMember(9)][LabelText("开启滚轮缩放")] [BoxGroup("其他设置")]
-        public bool enableZoom;
+        public bool EnableZoom;
 
         [NinoMember(10)][LabelText("光标锁定模式")] [BoxGroup("其他设置")]
-        public CursorLockMode mode = CursorLockMode.Locked;
+        public CursorLockMode Mode = CursorLockMode.Locked;
 
-        [NinoMember(11)][ShowIf(nameof(enableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
-        public float zoomMin = -1;
+        [NinoMember(11)][ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
+        public float ZoomMin = -1;
 
-        [NinoMember(12)][ShowIf(nameof(enableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
-        public float zoomMax = 15;
+        [NinoMember(12)][ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
+        public float ZoomMax = 15;
     }
 }

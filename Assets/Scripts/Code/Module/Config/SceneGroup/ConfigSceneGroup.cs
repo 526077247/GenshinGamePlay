@@ -13,8 +13,8 @@ namespace TaoTie
         [PropertyOrder(int.MinValue)]
         public ulong Id;
 #if UNITY_EDITOR
-        [SerializeField] [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
-        private string Remarks;
+        [NinoMember(0)][SerializeField] [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
+        public string Remarks;
 #endif
         [NinoMember(2)]
         [Tooltip("实体")]

@@ -13,17 +13,17 @@ namespace TaoTie
 
         public CameraSmoothRoute(ConfigCameraRoute config)
         {
-            loop = config.loop;
-            resolution = config.resolution;
-            points = new CinemachineSmoothPath.Waypoint[config.points.Length];
-            if (config.points.Length > 0)
+            loop = config.Loop;
+            resolution = config.Resolution;
+            points = new CinemachineSmoothPath.Waypoint[config.Points.Length];
+            if (config.Points.Length > 0)
             {
-                for (int i = 0; i < config.points.Length; i++)
+                for (int i = 0; i < config.Points.Length; i++)
                 {
                     points[i] = new CinemachineSmoothPath.Waypoint()
                     {
-                        position = config.points[i].position,
-                        roll = config.points[i].roll,
+                        position = config.Points[i].Position,
+                        roll = config.Points[i].Roll,
                     };
                 }
             }

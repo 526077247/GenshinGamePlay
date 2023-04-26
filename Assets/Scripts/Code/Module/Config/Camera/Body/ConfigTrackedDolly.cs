@@ -8,10 +8,10 @@ namespace TaoTie
     public partial class ConfigTrackedDolly
     {
         [NinoMember(1)]
-        public float xdamping;
+        public float XDamping;
         [NinoMember(2)]
-        public float ydamping;
+        public float YDamping;
         [NinoMember(3)]
-        public float zdamping;
+        public float ZDamping;
     }
 }

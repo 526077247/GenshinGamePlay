@@ -2,7 +2,7 @@
 {
     public class CameraState
     {
-        public CameraStateData data;
-        public int id;
+        public CameraStateData Data;
+        public int Id;
     }
 }

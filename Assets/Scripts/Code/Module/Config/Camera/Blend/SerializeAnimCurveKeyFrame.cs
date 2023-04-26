@@ -8,32 +8,32 @@ namespace TaoTie
     public partial class SerializeAnimCurveKeyFrame 
     {
         [NinoMember(1)]
-        public float _time;
+        public float Time;
         [NinoMember(2)]
-        public float _value;
+        public float Value;
         [NinoMember(3)]
-        public float _inTangent;
+        public float InTangent;
         [NinoMember(4)]
-        public float _outTangent;
+        public float OutTangent;
         [NinoMember(5)]
-        public float _inWeight;
+        public float InWeight;
         [NinoMember(6)]
-        public float _outWeight;
+        public float OutWeight;
         [NinoMember(7)]
-        public WeightedMode _mode;
+        public WeightedMode Mode;
         public SerializeAnimCurveKeyFrame()
         {
         }
 
         public SerializeAnimCurveKeyFrame(Keyframe keyframe)
         {
-            _time = keyframe.time;
-            this._value = keyframe.value;
-            this._inTangent = keyframe.inTangent;
-            this._outTangent = keyframe.outTangent;
-            this._inWeight = keyframe.inWeight;
-            this._outWeight = keyframe.outWeight;
-            this._mode = keyframe.weightedMode;
+            Time = keyframe.time;
+            this.Value = keyframe.value;
+            this.InTangent = keyframe.inTangent;
+            this.OutTangent = keyframe.outTangent;
+            this.InWeight = keyframe.inWeight;
+            this.OutWeight = keyframe.outWeight;
+            this.Mode = keyframe.weightedMode;
         }
 
         public static implicit operator SerializeAnimCurveKeyFrame(Keyframe keyframe)
@@ -43,9 +43,9 @@ namespace TaoTie
 
         public static implicit operator Keyframe(SerializeAnimCurveKeyFrame keyframe)
         {
-            var res=new Keyframe(keyframe._time, keyframe._value, keyframe._inTangent, keyframe._outTangent,
-                keyframe._inWeight, keyframe._outWeight);
-            res.weightedMode = keyframe._mode;
+            var res=new Keyframe(keyframe.Time, keyframe.Value, keyframe.InTangent, keyframe.OutTangent,
+                keyframe.InWeight, keyframe.OutWeight);
+            res.weightedMode = keyframe.Mode;
             return res;
         }
     }

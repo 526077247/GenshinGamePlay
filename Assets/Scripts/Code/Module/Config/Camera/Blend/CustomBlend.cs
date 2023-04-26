@@ -7,9 +7,9 @@ namespace TaoTie
     [NinoSerialize]
     public partial class CustomBlend
     {
-        [NinoMember(1)] public int from;
-        [NinoMember(2)] public int to;
-        [NinoMember(3)] public BlendDefinition definition;
+        [NinoMember(1)] public int From;
+        [NinoMember(2)] public int To;
+        [NinoMember(3)] public BlendDefinition Definition;
         
     }
 }

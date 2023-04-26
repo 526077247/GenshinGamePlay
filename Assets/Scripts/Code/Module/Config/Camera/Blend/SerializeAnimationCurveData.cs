@@ -9,21 +9,21 @@ namespace TaoTie
     public partial class SerializeAnimationCurveData
     {
         [NinoMember(1)]
-        public List<SerializeAnimCurveKeyFrame> _animCurveKeyFrameList;
+        public List<SerializeAnimCurveKeyFrame> AnimCurveKeyFrameList;
 
         [JsonIgnore]
         public AnimationCurve AnimCurve
         {
             get
             {
-                if (_animCurveKeyFrameList == null || _animCurveKeyFrameList.Count == 0) return null;
+                if (AnimCurveKeyFrameList == null || AnimCurveKeyFrameList.Count == 0) return null;
                 Keyframe[] keyframeArray;
-                if (_animCurveKeyFrameList != null)
+                if (AnimCurveKeyFrameList != null)
                 {
-                    keyframeArray = new Keyframe[_animCurveKeyFrameList.Count];
-                    for (int i = 0; i < _animCurveKeyFrameList.Count; i++)
+                    keyframeArray = new Keyframe[AnimCurveKeyFrameList.Count];
+                    for (int i = 0; i < AnimCurveKeyFrameList.Count; i++)
                     {
-                        keyframeArray[i] = _animCurveKeyFrameList[i];
+                        keyframeArray[i] = AnimCurveKeyFrameList[i];
                     }
                 }
                 else
@@ -35,12 +35,12 @@ namespace TaoTie
             }
             set
             {
-                _animCurveKeyFrameList.Clear();
+                AnimCurveKeyFrameList.Clear();
                 if (value != null)
                 {
                     foreach (var keyframe in value.keys)
                     {
-                        _animCurveKeyFrameList.Add(keyframe);
+                        AnimCurveKeyFrameList.Add(keyframe);
                     }
                 }
             }
@@ -48,7 +48,7 @@ namespace TaoTie
 
         public SerializeAnimationCurveData()
         {
-            _animCurveKeyFrameList = new List<SerializeAnimCurveKeyFrame>();
+            AnimCurveKeyFrameList = new List<SerializeAnimCurveKeyFrame>();
         }
     }
 }

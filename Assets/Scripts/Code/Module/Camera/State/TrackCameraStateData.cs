@@ -1,19 +1,21 @@
-﻿using UnityEngine;
+﻿using Nino.Serialization;
+using UnityEngine;
 
 namespace TaoTie
 {
+    [NinoSerialize]
     public class TrackCameraStateData : CameraStateData
     {
-        public TrackedDollyStateData trackedDolly;
+        public TrackedDollyStateData TrackedDolly;
 
-        public CameraSmoothRoute smoothRoute;
+        public CameraSmoothRoute SmoothRoute;
 
-        public float progress = 0;
+        public float Progress = 0;
 
-        public Transform focusTrans;
+        public Transform FocusTrans;
 
         //当focusTrans==null时有效
-        public Vector3 focusPosition;
+        public Vector3 FocusPosition;
 
         public TrackCameraStateData()
         {
@@ -21,7 +23,7 @@ namespace TaoTie
 
         public TrackCameraStateData(ConfigTrackCamera config) : base(config)
         {
-            trackedDolly = new TrackedDollyStateData(config.trackedDolly);
+            TrackedDolly = new TrackedDollyStateData(config.TrackedDolly);
         }
     }
 }

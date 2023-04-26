@@ -8,7 +8,7 @@ namespace TaoTie
     public partial class ConfigHardLockToTarget
     {
         [NinoMember(1)]
-        public float damping = 0;
+        public float Damping = 0;
         
     }
 }

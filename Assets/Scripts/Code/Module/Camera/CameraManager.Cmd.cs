@@ -12,11 +12,11 @@ namespace TaoTie
         /// <param name="show"></param>
         public void ChangeCursorShowState(bool show)
         {
-            if (curState.data.visibleCursor != show)
+            if (curState.Data.VisibleCursor != show)
             {
-                var data = curState.data.Clone();
-                data.visibleCursor = show;
-                ChangeCameraState(curState.id, data);
+                var data = curState.Data.Clone();
+                data.VisibleCursor = show;
+                ChangeCameraState(curState.Id, data);
             }
         }
 
@@ -26,11 +26,11 @@ namespace TaoTie
         /// <param name="lockMode"></param>
         public void ChangeCursorLockState(CursorLockMode lockMode)
         {
-            if (curState.data.mode != lockMode)
+            if (curState.Data.Mode != lockMode)
             {
-                var data = curState.data.Clone();
-                data.mode = lockMode;
-                ChangeCameraState(curState.id, data);
+                var data = curState.Data.Clone();
+                data.Mode = lockMode;
+                ChangeCameraState(curState.Id, data);
             }
         }
 
@@ -41,12 +41,12 @@ namespace TaoTie
         /// <param name="lockMode"></param>
         public void ChangeCursorState(bool show, CursorLockMode lockMode)
         {
-            if (curState.data.visibleCursor != show || curState.data.mode != lockMode)
+            if (curState.Data.VisibleCursor != show || curState.Data.Mode != lockMode)
             {
-                var data = curState.data.Clone();
-                data.visibleCursor = show;
-                data.mode = lockMode;
-                ChangeCameraState(curState.id, data);
+                var data = curState.Data.Clone();
+                data.VisibleCursor = show;
+                data.Mode = lockMode;
+                ChangeCameraState(curState.Id, data);
             }
         }
 
@@ -59,7 +59,7 @@ namespace TaoTie
         /// </summary>
         public void BackState()
         {
-            if (lastState != null) ChangeCameraState(lastState.id, lastState.data);
+            if (lastState != null) ChangeCameraState(lastState.Id, lastState.Data);
         }
 
         /// <summary>
@@ -71,42 +71,42 @@ namespace TaoTie
             if (curCameraType == CameraType.FreeLookCameraPlugin)
             {
                 var freeLookCameraPlugin = curCamera as FreeLookCameraPlugin;
-                var data = curState.data.Clone() as FreeLookCameraStateData;
-                if (data.enableZoom)
+                var data = curState.Data.Clone() as FreeLookCameraStateData;
+                if (data.EnableZoom)
                 {
-                    bool flag = data.zoomMin < data.zoomMax;
-                    if (distance < data.zoomMin == flag) distance = data.zoomMin;
-                    if (distance > data.zoomMax == flag) distance = data.zoomMax;
+                    bool flag = data.ZoomMin < data.ZoomMax;
+                    if (distance < data.ZoomMin == flag) distance = data.ZoomMin;
+                    if (distance > data.ZoomMax == flag) distance = data.ZoomMax;
                 }
 
-                data.height = freeLookCameraPlugin.defaultConfig.height;
-                data.radius = freeLookCameraPlugin.defaultConfig.radius;
-                data.height[0] = data.height[1] + (data.height[0] - data.height[1]) * distance;
-                data.height[2] = data.height[1] + (data.height[2] - data.height[1]) * distance;
-                data.radius[1] = distance;
-                ChangeCameraState(curState.id, data);
+                data.Height = freeLookCameraPlugin.defaultConfig.Height;
+                data.Radius = freeLookCameraPlugin.defaultConfig.Radius;
+                data.Height[0] = data.Height[1] + (data.Height[0] - data.Height[1]) * distance;
+                data.Height[2] = data.Height[1] + (data.Height[2] - data.Height[1]) * distance;
+                data.Radius[1] = distance;
+                ChangeCameraState(curState.Id, data);
             }
             else if (curCameraType == CameraType.VirtualCameraPlugin)
             {
-                var curData = curState.data as VirtualCameraStateData;
-                if (curData?.body == CinemachineBodyType.HardLockToTarget)
+                var curData = curState.Data as VirtualCameraStateData;
+                if (curData?.Body == CinemachineBodyType.HardLockToTarget)
                     return;
                 var data = curData.Clone() as VirtualCameraStateData;
-                if (data.enableZoom)
+                if (data.EnableZoom)
                 {
-                    bool flag = data.zoomMin < data.zoomMax;
-                    if (distance < data.zoomMin == flag) distance = data.zoomMin;
-                    if (distance > data.zoomMax == flag) distance = data.zoomMax;
+                    bool flag = data.ZoomMin < data.ZoomMax;
+                    if (distance < data.ZoomMin == flag) distance = data.ZoomMin;
+                    if (distance > data.ZoomMax == flag) distance = data.ZoomMax;
                 }
 
-                if (data.body == CinemachineBodyType.Transposer)
-                    data.transposer.followOffset = new Vector3(data.transposer.followOffset.x,
-                        data.transposer.followOffset.y, distance);
-                else if (data.body == CinemachineBodyType.FramingTransposer)
-                    data.framingTransposer.cameraDistance = distance;
+                if (data.Body == CinemachineBodyType.Transposer)
+                    data.Transposer.followOffset = new Vector3(data.Transposer.followOffset.x,
+                        data.Transposer.followOffset.y, distance);
+                else if (data.Body == CinemachineBodyType.FramingTransposer)
+                    data.FramingTransposer.cameraDistance = distance;
                 else
                     return;
-                ChangeCameraState(curState.id, data);
+                ChangeCameraState(curState.Id, data);
             }
         }
 
@@ -131,11 +131,11 @@ namespace TaoTie
         {
             if (curCameraType == CameraType.VirtualCameraPlugin)
             {
-                var data = curState.data.Clone() as VirtualCameraStateData;
-                data.follow = position;
-                data.lookAt = position + forward;
-                data.cut = cut;
-                ChangeCameraState(curState.id, data);
+                var data = curState.Data.Clone() as VirtualCameraStateData;
+                data.Follow = position;
+                data.LookAt = position + forward;
+                data.Cut = cut;
+                ChangeCameraState(curState.Id, data);
             }
             else
             {
@@ -150,11 +150,11 @@ namespace TaoTie
         {
             if (curCameraType == CameraType.VirtualCameraPlugin)
             {
-                var data = curState.data.Clone() as VirtualCameraStateData;
-                data.follow = position;
-                data.lookAt = position + rotation * Vector3.forward;
-                data.cut = cut;
-                ChangeCameraState(curState.id, data);
+                var data = curState.Data.Clone() as VirtualCameraStateData;
+                data.Follow = position;
+                data.LookAt = position + rotation * Vector3.forward;
+                data.Cut = cut;
+                ChangeCameraState(curState.Id, data);
             }
             else
             {
@@ -176,7 +176,7 @@ namespace TaoTie
             if (configs.TryGetValue(cameraId, out var data) && data is ConfigTrackCamera config)
             {
                 var state = new TrackCameraStateData(config);
-                state.smoothRoute = new CameraSmoothRoute(route);
+                state.SmoothRoute = new CameraSmoothRoute(route);
                 ChangeCameraState(cameraId, state, false);
             }
             else

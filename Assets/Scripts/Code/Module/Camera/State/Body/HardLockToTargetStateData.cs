@@ -11,7 +11,7 @@
                 config = new ConfigHardLockToTarget();
             }
 
-            damping = config.damping;
+            damping = config.Damping;
         }
     }
 }

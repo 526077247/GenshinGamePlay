@@ -8,7 +8,7 @@ namespace TaoTie
         protected CinemachineVirtualCameraBase baseCamera;
         protected ConfigCamera config;
         protected GameObject obj;
-        public int id => config.id;
+        public int id => config.Id;
         public abstract CameraType type { get; }
         public CameraStateData stateData { get; protected set; }
         public abstract void OnInit(ConfigCamera config);
@@ -28,8 +28,8 @@ namespace TaoTie
         {
             if (stateData != null)
             {
-                Cursor.visible = stateData.visibleCursor;
-                Cursor.lockState = stateData.mode;
+                Cursor.visible = stateData.VisibleCursor;
+                Cursor.lockState = stateData.Mode;
             }
         }
 
@@ -83,9 +83,9 @@ namespace TaoTie
         protected virtual void ChangeStateInternal(V state)
         {
             stateData = state;
-            Cursor.visible = state.visibleCursor;
-            Cursor.lockState = state.mode;
-            if (stateData.cameraShake)
+            Cursor.visible = state.VisibleCursor;
+            Cursor.lockState = state.Mode;
+            if (stateData.CameraShake)
             {
                 if (_shakeListener == null)
                 {

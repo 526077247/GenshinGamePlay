@@ -22,8 +22,8 @@ namespace TaoTie
         public ConfigSceneGroupAction[] Actions;
 
 #if UNITY_EDITOR
-        [PropertyOrder(int.MinValue + 1)] [SerializeField] [LabelText("策划备注")]
-        private string Remarks;
+        [NinoMember(0)][PropertyOrder(int.MinValue + 1)] [SerializeField] [LabelText("策划备注")]
+        public string Remarks;
         
         private void Refresh()
         {

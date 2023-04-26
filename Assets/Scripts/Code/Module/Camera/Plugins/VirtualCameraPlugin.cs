@@ -49,40 +49,40 @@ namespace TaoTie
         protected override void ChangeStateInternal(VirtualCameraStateData stateData)
         {
             base.ChangeStateInternal(stateData);
-            camera.m_Lens.FieldOfView = stateData.fov;
-            camera.m_Lens.Dutch = stateData.dutch;
-            camera.m_Lens.FarClipPlane = stateData.farClipPlane;
-            camera.m_Lens.NearClipPlane = stateData.nearClipPlane;
-            Vector3 pos = stateData.follow;
-            if (stateData.body == CinemachineBodyType.Transposer)
+            camera.m_Lens.FieldOfView = stateData.Fov;
+            camera.m_Lens.Dutch = stateData.Dutch;
+            camera.m_Lens.FarClipPlane = stateData.FarClipPlane;
+            camera.m_Lens.NearClipPlane = stateData.NearClipPlane;
+            Vector3 pos = stateData.Follow;
+            if (stateData.Body == CinemachineBodyType.Transposer)
             {
                 var comp = camera.GetCinemachineComponent<CinemachineTransposer>();
                 if (comp == null)
                     comp = camera.AddCinemachineComponent<CinemachineTransposer>();
                 comp.enabled = true;
-                comp.m_XDamping = stateData.transposer.xDamping;
-                comp.m_YDamping = stateData.transposer.yDamping;
-                comp.m_ZDamping = stateData.transposer.zDamping;
-                comp.m_YawDamping = stateData.transposer.yawDamping;
-                comp.m_FollowOffset = stateData.transposer.followOffset;
-                pos += stateData.transposer.followOffset;
+                comp.m_XDamping = stateData.Transposer.xDamping;
+                comp.m_YDamping = stateData.Transposer.yDamping;
+                comp.m_ZDamping = stateData.Transposer.zDamping;
+                comp.m_YawDamping = stateData.Transposer.yawDamping;
+                comp.m_FollowOffset = stateData.Transposer.followOffset;
+                pos += stateData.Transposer.followOffset;
             }
-            else if (stateData.body == CinemachineBodyType.HardLockToTarget)
+            else if (stateData.Body == CinemachineBodyType.HardLockToTarget)
             {
                 var comp = camera.GetCinemachineComponent<CinemachineHardLockToTarget>();
                 if (comp == null)
                     comp = camera.AddCinemachineComponent<CinemachineHardLockToTarget>();
                 comp.enabled = true;
-                comp.m_Damping = stateData.hardLockToTarget.damping;
+                comp.m_Damping = stateData.HardLockToTarget.damping;
             }
-            else if (stateData.body == CinemachineBodyType.FramingTransposer)
+            else if (stateData.Body == CinemachineBodyType.FramingTransposer)
             {
                 var comp = camera.GetCinemachineComponent<CinemachineFramingTransposer>();
                 if (comp == null)
                     comp = camera.AddCinemachineComponent<CinemachineFramingTransposer>();
                 comp.enabled = true;
-                comp.m_CameraDistance = stateData.framingTransposer.cameraDistance;
-                comp.m_TrackedObjectOffset = stateData.framingTransposer.trackedObjectOffset;
+                comp.m_CameraDistance = stateData.FramingTransposer.cameraDistance;
+                comp.m_TrackedObjectOffset = stateData.FramingTransposer.trackedObjectOffset;
             }
             else
             {
@@ -90,9 +90,9 @@ namespace TaoTie
                 if (body != null) body.enabled = false;
             }
 
-            _follow.position = stateData.follow;
-            _lookAt.position = stateData.lookAt;
-            if (stateData.cut)
+            _follow.position = stateData.Follow;
+            _lookAt.position = stateData.LookAt;
+            if (stateData.Cut)
             {
                 camera.ForceCameraPosition(pos, Quaternion.Euler(_lookAt.position - pos));
             }

@@ -2,13 +2,13 @@
 {
     public class FreeLookCameraStateData : CameraStateData
     {
-        public float[] height;
-        public float nearFocusMaxDistance;
-        public float nearFocusMinDistance;
-        public bool nearFocusEnable;
-        public float[] radius;
-        public float xSpeed;
-        public float ySpeed;
+        public float[] Height;
+        public float NearFocusMaxDistance;
+        public float NearFocusMinDistance;
+        public bool NearFocusEnable;
+        public float[] Radius;
+        public float XSpeed;
+        public float YSpeed;
 
         public FreeLookCameraStateData()
         {
@@ -16,13 +16,13 @@
 
         public FreeLookCameraStateData(ConfigFreeLookCamera config) : base(config)
         {
-            height = config.height;
-            radius = config.radius;
-            ySpeed = config.ySpeed;
-            xSpeed = config.xSpeed;
-            nearFocusEnable = config.nearFocusEnable;
-            nearFocusMaxDistance = config.nearFocusMaxDistance;
-            nearFocusMinDistance = config.nearFocusMinDistance;
+            Height = config.Height;
+            Radius = config.Radius;
+            YSpeed = config.YSpeed;
+            XSpeed = config.XSpeed;
+            NearFocusEnable = config.NearFocusEnable;
+            NearFocusMaxDistance = config.NearFocusMaxDistance;
+            NearFocusMinDistance = config.NearFocusMinDistance;
         }
     }
 }

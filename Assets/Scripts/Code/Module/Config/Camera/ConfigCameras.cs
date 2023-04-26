@@ -9,13 +9,13 @@ namespace TaoTie
     public partial class ConfigCameras
     {
         [NinoMember(1)]
-        public ConfigCamera defaultCamera;
+        public ConfigCamera DefaultCamera;
         [NinoMember(2)]
-        public ConfigCamera[] cameras;
+        public ConfigCamera[] Cameras;
         [NinoMember(3)]
-        [NotNull] public BlendDefinition defaultBlend = new BlendDefinition();
+        [NotNull] public BlendDefinition DefaultBlend = new BlendDefinition();
         [NinoMember(4)]
-        [TableList] public CustomBlend[] customSetting;
+        [TableList] public CustomBlend[] CustomSetting;
         
     }
 }

@@ -65,22 +65,22 @@ namespace TaoTie
         protected override void ChangeStateInternal(TrackCameraStateData stateData)
         {
             base.ChangeStateInternal(stateData);
-            camera.m_Lens.FieldOfView = stateData.fov;
-            camera.m_Lens.Dutch = stateData.dutch;
-            camera.m_Lens.FarClipPlane = stateData.farClipPlane;
-            camera.m_Lens.NearClipPlane = stateData.nearClipPlane;
+            camera.m_Lens.FieldOfView = stateData.Fov;
+            camera.m_Lens.Dutch = stateData.Dutch;
+            camera.m_Lens.FarClipPlane = stateData.FarClipPlane;
+            camera.m_Lens.NearClipPlane = stateData.NearClipPlane;
             _trackedDolly.enabled = true;
-            _trackedDolly.m_XDamping = stateData.trackedDolly.xdamping;
-            _trackedDolly.m_YDamping = stateData.trackedDolly.ydamping;
-            _trackedDolly.m_ZDamping = stateData.trackedDolly.zdamping;
-            SetFocusTransform(stateData.focusTrans, stateData.focusPosition);
-            if (stateData.smoothRoute != null)
+            _trackedDolly.m_XDamping = stateData.TrackedDolly.xdamping;
+            _trackedDolly.m_YDamping = stateData.TrackedDolly.ydamping;
+            _trackedDolly.m_ZDamping = stateData.TrackedDolly.zdamping;
+            SetFocusTransform(stateData.FocusTrans, stateData.FocusPosition);
+            if (stateData.SmoothRoute != null)
             {
-                _path.m_Looped = stateData.smoothRoute.loop;
-                _path.m_Resolution = stateData.smoothRoute.resolution;
-                _path.m_Waypoints = stateData.smoothRoute.points;
+                _path.m_Looped = stateData.SmoothRoute.loop;
+                _path.m_Resolution = stateData.SmoothRoute.resolution;
+                _path.m_Waypoints = stateData.SmoothRoute.points;
                 UpdatePosition();
-                _isPause = stateData.smoothRoute.points.Length == 0;
+                _isPause = stateData.SmoothRoute.points.Length == 0;
             }
             else
             {
@@ -90,14 +90,14 @@ namespace TaoTie
 
         private void UpdatePosition()
         {
-            _trackedDolly.m_PathPosition = _stateData.progress;
+            _trackedDolly.m_PathPosition = _stateData.Progress;
         }
 
         public override void Tick()
         {
             base.Tick();
             if (_isPause) return;
-            _stateData.progress += Time.deltaTime;
+            _stateData.Progress += Time.deltaTime;
             UpdatePosition();
         }
 

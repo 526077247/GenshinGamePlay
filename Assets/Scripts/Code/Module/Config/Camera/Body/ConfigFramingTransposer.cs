@@ -7,9 +7,9 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigFramingTransposer
     {
-        [NinoMember(1)] [Min(0.01f)] public float cameraDistance;
+        [NinoMember(1)] [Min(0.01f)] public float CameraDistance;
 
-        [NinoMember(2)] public Vector3 trackedObjectOffset;
+        [NinoMember(2)] public Vector3 TrackedObjectOffset;
         
         
     }

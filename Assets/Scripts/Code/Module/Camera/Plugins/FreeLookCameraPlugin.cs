@@ -64,16 +64,16 @@ namespace TaoTie
         {
             for (var i = 0; i < 3; i++)
             {
-                camera.m_Orbits[i].m_Height = stateData.height[i];
-                camera.m_Orbits[i].m_Radius = stateData.radius[i];
+                camera.m_Orbits[i].m_Height = stateData.Height[i];
+                camera.m_Orbits[i].m_Radius = stateData.Radius[i];
             }
 
-            camera.m_Lens.FieldOfView = stateData.fov;
-            camera.m_Lens.Dutch = stateData.dutch;
-            camera.m_Lens.FarClipPlane = stateData.farClipPlane;
-            camera.m_Lens.NearClipPlane = stateData.nearClipPlane;
-            camera.m_XAxis.m_MaxSpeed = stateData.xSpeed;
-            camera.m_YAxis.m_MaxSpeed = stateData.ySpeed;
+            camera.m_Lens.FieldOfView = stateData.Fov;
+            camera.m_Lens.Dutch = stateData.Dutch;
+            camera.m_Lens.FarClipPlane = stateData.FarClipPlane;
+            camera.m_Lens.NearClipPlane = stateData.NearClipPlane;
+            camera.m_XAxis.m_MaxSpeed = stateData.XSpeed;
+            camera.m_YAxis.m_MaxSpeed = stateData.YSpeed;
 
             NearFocusProcess(stateData);
 
@@ -89,16 +89,16 @@ namespace TaoTie
             #region 近景模式
 
             float target = 0;
-            if (stateData.nearFocusEnable && camera.m_Orbits[1].m_Radius <= stateData.nearFocusMaxDistance)
+            if (stateData.NearFocusEnable && camera.m_Orbits[1].m_Radius <= stateData.NearFocusMaxDistance)
             {
-                float dist = camera.m_Orbits[1].m_Radius - stateData.nearFocusMinDistance;
+                float dist = camera.m_Orbits[1].m_Radius - stateData.NearFocusMinDistance;
                 if (dist <= 0)
                 {
                     target = _objHalfHeight;
                 }
-                else if (dist < stateData.nearFocusMaxDistance)
+                else if (dist < stateData.NearFocusMaxDistance)
                 {
-                    target = Mathf.Lerp(_objHalfHeight, 0f, dist / stateData.nearFocusMaxDistance);
+                    target = Mathf.Lerp(_objHalfHeight, 0f, dist / stateData.NearFocusMaxDistance);
                 }
             }
 
@@ -132,7 +132,7 @@ namespace TaoTie
             {
                 baseCamera.ForceCameraPosition(
                     followObj.position +
-                    followObj.rotation * new Vector3(0, _stateData.height[1], -_stateData.radius[1]),
+                    followObj.rotation * new Vector3(0, _stateData.Height[1], -_stateData.Radius[1]),
                     Quaternion.identity);
             }
 

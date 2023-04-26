@@ -8,8 +8,8 @@ namespace TaoTie
     public class ConfigCameraRoutePoint
     {
         [NinoMember(1)]
-        public Vector3 position;
+        public Vector3 Position;
         [NinoMember(2)]
-        public float roll;
+        public float Roll;
     }
 }

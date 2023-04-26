@@ -18,11 +18,11 @@ namespace TaoTie
                 config = new ConfigTransposer();
             }
 
-            followOffset = config.followOffset;
-            xDamping = config.xDamping;
-            yDamping = config.yDamping;
-            zDamping = config.zDamping;
-            yawDamping = config.yawDamping;
+            followOffset = config.FollowOffset;
+            xDamping = config.XDamping;
+            yDamping = config.YDamping;
+            zDamping = config.ZDamping;
+            yawDamping = config.YawDamping;
         }
     }
 }

@@ -13,9 +13,9 @@
                 config = new ConfigTrackedDolly();
             }
 
-            xdamping = config.xdamping;
-            ydamping = config.ydamping;
-            zdamping = config.zdamping;
+            xdamping = config.XDamping;
+            ydamping = config.YDamping;
+            zdamping = config.ZDamping;
         }
     }
 }
