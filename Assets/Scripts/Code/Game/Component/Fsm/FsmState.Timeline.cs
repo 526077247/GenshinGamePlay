@@ -11,15 +11,15 @@ namespace TaoTie
 
         private void StartTimeline()
         {
-            if (!config.hasTimeline)
+            if (!config.HasTimeline)
             {
                 clipIndex = -1;
             }
             else
             {
                 clipIndex = 0;
-                timeline = config.timeline;
-                nextClipTime = timeline.clips[0].StartTime;
+                timeline = config.Timeline;
+                nextClipTime = timeline.Clips[0].StartTime;
                 clipList = LinkedListComponent<FsmClip>.Create();
                 CheckNextClip();
             }
@@ -78,7 +78,7 @@ namespace TaoTie
 
             while (fsm.stateTime >= nextClipTime)
             {
-                ConfigFsmClip clipConfig = timeline.clips[clipIndex];
+                ConfigFsmClip clipConfig = timeline.Clips[clipIndex];
                 FsmClip clip = clipConfig.CreateClip(this);
                 if (clip != null)
                 {
@@ -87,9 +87,9 @@ namespace TaoTie
                 }
 
                 ++clipIndex;
-                if (clipIndex < timeline.clips.Length)
+                if (clipIndex < timeline.Clips.Length)
                 {
-                    nextClipTime = timeline.clips[clipIndex].StartTime;
+                    nextClipTime = timeline.Clips[clipIndex].StartTime;
                 }
                 else
                 {

@@ -7,23 +7,23 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigConditionByDataInt : ConfigCondition
     {
-        public string key;
-        public int value;
-        public CompareMode mode;
+        public string Key;
+        public int Value;
+        public CompareMode Mode;
         
         public ConfigConditionByDataInt(){}
         public ConfigConditionByDataInt(string key, int val, CompareMode mode)
         {
-            this.key = key;
-            this.value = val;
-            this.mode = mode;
+            this.Key = key;
+            this.Value = val;
+            this.Mode = mode;
         }
 
         public ConfigConditionByDataInt(ConfigConditionByDataInt other)
         {
-            this.key = other.key;
-            this.value = other.value;
-            this.mode = other.mode;
+            this.Key = other.Key;
+            this.Value = other.Value;
+            this.Mode = other.Mode;
         }
 
         public override ConfigCondition Copy()
@@ -33,21 +33,21 @@ namespace TaoTie
 
         public override bool IsMatch(Fsm fsm)
         {
-            int val = fsm.Component.GetInt(this.key);
-            switch (this.mode)
+            int val = fsm.Component.GetInt(this.Key);
+            switch (this.Mode)
             {
                 case CompareMode.Equal:
-                    return val == this.value;
+                    return val == this.Value;
                 case CompareMode.NotEqual:
-                    return val != this.value;
+                    return val != this.Value;
                 case CompareMode.Greater:
-                    return val > this.value;
+                    return val > this.Value;
                 case CompareMode.Less:
-                    return val < this.value;
+                    return val < this.Value;
                 case CompareMode.LEqual:
-                    return val <= this.value;
+                    return val <= this.Value;
                 case CompareMode.GEqual:
-                    return val >= this.value;
+                    return val >= this.Value;
                 default:
                     break;
             }

@@ -65,8 +65,8 @@ namespace TaoTie
 
             ConfigFsmController newController = new ConfigFsmController();
 
-            newController.fsmConfigs = fsmList.ToArray();
-            newController.paramDict = _paramDict;
+            newController.FsmConfigs = fsmList.ToArray();
+            newController.ParamDict = _paramDict;
 
             if (!_hasError)
             {
@@ -132,7 +132,7 @@ namespace TaoTie
                 var paramCfg = GenerateParameters(param);
                 if (paramCfg != null)
                 {
-                    _paramDict[paramCfg.key] = paramCfg;
+                    _paramDict[paramCfg.Key] = paramCfg;
                 }
             }
 
@@ -185,7 +185,7 @@ namespace TaoTie
             ExportStateMachine(parentStack, layer.stateMachine, ref stateList, ref anyStateTransitionList);
 
             ConfigFsm cfgFsm = new ConfigFsm(layer.name, layerIndex);
-            cfgFsm.entry = _defaultStateName;
+            cfgFsm.Entry = _defaultStateName;
             cfgFsm.SetStates(stateList);
             cfgFsm.SetAnyStateTransitions(anyStateTransitionList.ToArray());
 
@@ -253,19 +253,19 @@ namespace TaoTie
             }
             else if (timeline != null)
             {
-                stateDuration = timeline.length;
+                stateDuration = timeline.Length;
             }
 
             ConfigFsmState ret = new ConfigFsmState(state.name, stateDuration, stateLoop, mirrorParam);
-            ret.transitions = transList.ToArray();
-            ret.timeline = timeline;
+            ret.Transitions = transList.ToArray();
+            ret.Timeline = timeline;
             if (state.behaviours.Length > 0)
             {
                 for (int i = 0; i < state.behaviours.Length; i++)
                 {
                     if (state.behaviours[i] is AnimatorParam param)
                     {
-                        ret.data = param.Data;
+                        ret.Data = param.Data;
                     }
                 }
             }

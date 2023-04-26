@@ -7,23 +7,23 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigConditionByStateTime : ConfigCondition
     {
-        public float time;
-        public bool isNormalized;
-        public CompareMode mode;
+        public float Time;
+        public bool IsNormalized;
+        public CompareMode Mode;
 
         public ConfigConditionByStateTime(){}
         public ConfigConditionByStateTime(float time, bool isNormalized, CompareMode mode)
         {
-            this.time = time;
-            this.isNormalized = isNormalized;
-            this.mode = mode;
+            this.Time = time;
+            this.IsNormalized = isNormalized;
+            this.Mode = mode;
         }
 
         public ConfigConditionByStateTime(ConfigConditionByStateTime other)
         {
-            this.time = other.time;
-            this.isNormalized = other.isNormalized;
-            this.mode = other.mode;
+            this.Time = other.Time;
+            this.IsNormalized = other.IsNormalized;
+            this.Mode = other.Mode;
         }
 
         public override ConfigCondition Copy()
@@ -34,25 +34,25 @@ namespace TaoTie
         public override bool IsMatch(Fsm fsm)
         {
             float val;
-            if (this.isNormalized)
+            if (this.IsNormalized)
                 val = fsm.stateNormalizedTime;
             else
                 val = fsm.stateTime;
 
-            switch (this.mode)
+            switch (this.Mode)
             {
                 case CompareMode.Equal:
-                    return val == this.time;
+                    return val == this.Time;
                 case CompareMode.NotEqual:
-                    return val != this.time;
+                    return val != this.Time;
                 case CompareMode.Greater:
-                    return val > this.time;
+                    return val > this.Time;
                 case CompareMode.Less:
-                    return val < this.time;
+                    return val < this.Time;
                 case CompareMode.LEqual:
-                    return val <= this.time;
+                    return val <= this.Time;
                 case CompareMode.GEqual:
-                    return val >= this.time;
+                    return val >= this.Time;
                 default:
                     break;
             }

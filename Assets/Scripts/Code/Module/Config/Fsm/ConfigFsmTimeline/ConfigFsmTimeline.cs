@@ -6,7 +6,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigFsmTimeline
     {
-        public float length;
-        public ConfigFsmClip[] clips;
+        public float Length;
+        public ConfigFsmClip[] Clips;
     }
 }

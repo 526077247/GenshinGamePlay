@@ -7,17 +7,17 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
-        public string key;
+        public string Key;
 
         public ConfigConditionByDataTrigger(){}
         public ConfigConditionByDataTrigger(string key)
         {
-            this.key = key;
+            this.Key = key;
         }
 
         public ConfigConditionByDataTrigger(ConfigConditionByDataTrigger other)
         {
-            this.key = other.key;
+            this.Key = other.Key;
         }
 
         public override ConfigCondition Copy()
@@ -27,13 +27,13 @@ namespace TaoTie
 
         public override bool IsMatch(Fsm fsm)
         {
-            bool val = fsm.Component.GetBool(this.key);
+            bool val = fsm.Component.GetBool(this.Key);
             return val;
         }
 
         public override void OnTransitionApply(Fsm fsm)
         {
-            fsm.Component.SetData(this.key, false);
+            fsm.Component.SetData(this.Key, false);
         }
     }
 }

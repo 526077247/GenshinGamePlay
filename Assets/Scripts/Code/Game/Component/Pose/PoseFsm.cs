@@ -28,8 +28,8 @@
         }
         private void OnNumericChange(NumericChange evt)
         {
-            if (currentState != null && currentState.Config.data != null && currentState.Config.data.IsDynamic 
-                && evt.NumericType == NumericType.GetKey(currentState.Config.data.Key))
+            if (currentState != null && currentState.Config.Data != null && currentState.Config.Data.IsDynamic 
+                && evt.NumericType == NumericType.GetKey(currentState.Config.Data.Key))
             {
                 var poseID = numericComponent.GetAsInt(evt.NumericType);
                 InvokeOnPoseChanged(this.poseID, poseID);
@@ -45,15 +45,15 @@
 
         private int GetPoseID(ConfigFsmState state)
         {
-            if (state.data != null)
+            if (state.Data != null)
             {
-                if (state.data.IsDynamic && numericComponent!=null)
+                if (state.Data.IsDynamic && numericComponent!=null)
                 {
-                    return numericComponent.GetAsInt(NumericType.GetKey(state.data.Key));
+                    return numericComponent.GetAsInt(NumericType.GetKey(state.Data.Key));
                 }
                 else
                 {
-                    return state.data.PoseID;
+                    return state.Data.PoseID;
                 }
             }
 

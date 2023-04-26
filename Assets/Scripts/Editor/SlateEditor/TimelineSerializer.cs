@@ -112,9 +112,9 @@ namespace TaoTie
                 ConfigFsmTimeline data = new ConfigFsmTimeline();
                 bool isOld = false;
                 
-                data.length = src.length;
-                data.clips = clips.ToArray();
-                data.clips.Sort((a, b) =>
+                data.Length = src.length;
+                data.Clips = clips.ToArray();
+                data.Clips.Sort((a, b) =>
                 {
                     if (a.StartTime == b.StartTime) return 0;
                     return a.StartTime - b.StartTime > 0 ? 1 : -1;
@@ -165,9 +165,9 @@ namespace TaoTie
                 ConfigFsmTimeline data = new ConfigFsmTimeline();
                 bool isOld = false;
                 
-                data.length = src.length;
-                data.clips = clips.ToArray();
-                data.clips.Sort((a, b) =>
+                data.Length = src.length;
+                data.Clips = clips.ToArray();
+                data.Clips.Sort((a, b) =>
                 {
                     if (a.StartTime == b.StartTime) return 0;
                     return a.StartTime - b.StartTime > 0 ? 1 : -1;

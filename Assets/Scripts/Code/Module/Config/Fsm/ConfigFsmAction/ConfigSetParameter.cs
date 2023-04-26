@@ -7,9 +7,9 @@ namespace TaoTie
     [NinoSerialize]
     public abstract partial class ConfigSetParameter<T> : ConfigFsmAction
     {
-        public string key;
+        public string Key;
 
-        public T value;
+        public T Value;
         
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace TaoTie
         public override void Excute(Fsm fsm)
         {
             FsmComponent component = GetSetParameterTargetFsm(fsm);
-            component?.SetData(key, value);
+            component?.SetData(Key, Value);
         }
     }
     [NinoSerialize]
@@ -38,7 +38,7 @@ namespace TaoTie
         public override void Excute(Fsm fsm)
         {
             FsmComponent component = GetSetParameterTargetFsm(fsm);
-            component?.SetData(key, value);
+            component?.SetData(Key, Value);
         }
     }
     [NinoSerialize]
@@ -47,7 +47,7 @@ namespace TaoTie
         public override void Excute(Fsm fsm)
         {
             FsmComponent component = GetSetParameterTargetFsm(fsm);
-            component?.SetData(key, value);
+            component?.SetData(Key, Value);
         }
     }
 }

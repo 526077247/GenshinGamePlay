@@ -7,39 +7,39 @@ namespace TaoTie
     [NinoSerialize]
     public abstract partial class ConfigParam
     {
-        public string key;
-        public bool needSyncAnimator;
+        public string Key;
+        public bool NeedSyncAnimator;
 
         public void SetValue(DynDictionary dynDictionary, float val)
         {
             
-            dynDictionary.Set(this.key, val);
+            dynDictionary.Set(this.Key, val);
 
         }
 
         public void SetValue(DynDictionary dynDictionary, int val)
         {
-            dynDictionary.Set(this.key, val);
+            dynDictionary.Set(this.Key, val);
         }
 
         public void SetValue(DynDictionary dynDictionary, bool val)
         {
-            dynDictionary.Set(this.key, val?1:0);
+            dynDictionary.Set(this.Key, val?1:0);
         }
 
         public float GetFloat(DynDictionary dynDictionary)
         {
-            return dynDictionary.Get(this.key);
+            return dynDictionary.Get(this.Key);
         }
 
         public int GetInt(DynDictionary dynDictionary)
         {
-            return (int)dynDictionary.Get(this.key);
+            return (int)dynDictionary.Get(this.Key);
         }
 
         public bool GetBool(DynDictionary dynDictionary)
         {
-            return dynDictionary.Get(this.key) != 0;
+            return dynDictionary.Get(this.Key) != 0;
         }
 
         public abstract void SetDefaultValue(DynDictionary dynDictionary);
@@ -51,9 +51,9 @@ namespace TaoTie
         public ConfigParam(){}
         public ConfigParam(string key, T defaultVal, bool needSyncAnimator)
         {
-            base.key = key;
+            base.Key = key;
             this.defaultValue = defaultVal;
-            this.needSyncAnimator = needSyncAnimator;
+            this.NeedSyncAnimator = needSyncAnimator;
         }
     }
 }

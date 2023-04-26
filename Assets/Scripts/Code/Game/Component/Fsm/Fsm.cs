@@ -25,8 +25,8 @@ namespace TaoTie
          private float _statePassTime;
          private FsmTransitionInfo _transitionInfo;
 
-         public string name => _config.name;
-         public int layerIndex => _config.layerIndex;
+         public string name => _config.Name;
+         public int layerIndex => _config.LayerIndex;
          public FsmComponent Component => _component;
          public ConfigFsm config => _config;
          public FsmState currentState => _currentState;
@@ -55,7 +55,7 @@ namespace TaoTie
 
          public void Start()
          {
-             ChangeState(_config.entry);
+             ChangeState(_config.Entry);
          }
 
          public void Update(float elapsetime)
@@ -67,12 +67,12 @@ namespace TaoTie
                  _stateElapseTime = elapsetime;
                  _statePassTime += _stateElapseTime;
                  _stateTime += _stateElapseTime;
-                 _stateNormalizedTime = _stateTime / stateCfg.stateDuration;
+                 _stateNormalizedTime = _stateTime / stateCfg.StateDuration;
              }
 
              if (_config.CheckAnyTransition(this, out var transition))
              {
-                 ChangeState(transition.toState, transition);
+                 ChangeState(transition.ToState, transition);
                  return;
              }
 
@@ -80,7 +80,7 @@ namespace TaoTie
              {
                  if (_currentState.Config.CheckTransition(this, out transition))
                  {
-                     ChangeState(transition.toState, transition);
+                     ChangeState(transition.ToState, transition);
                      return;
                  }
 
@@ -126,7 +126,7 @@ namespace TaoTie
              
              _statePassTime = 0;
              _stateTime = _transitionInfo.targetTime;
-             _stateNormalizedTime = _transitionInfo.targetTime / toCfg.stateDuration;
+             _stateNormalizedTime = _transitionInfo.targetTime / toCfg.StateDuration;
 
              _currentState = toState;
              _currentState.OnEnter();

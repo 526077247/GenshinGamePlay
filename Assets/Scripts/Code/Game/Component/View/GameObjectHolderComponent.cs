@@ -52,30 +52,30 @@ namespace TaoTie
             var fsm = parent.GetComponent<FsmComponent>();
             if (fsm != null)
             {
-                foreach (var item in fsm.Config.paramDict)
+                foreach (var item in fsm.Config.ParamDict)
                 {
                     var para = item.Value;
                     if (para is ConfigParamBool paramBool)
                     {
-                        SetData(paramBool.key, fsm.GetBool(paramBool.key));
+                        SetData(paramBool.Key, fsm.GetBool(paramBool.Key));
                     }
                     else if (para is ConfigParamFloat paramFloat)
                     {
-                        SetData(paramFloat.key, fsm.GetFloat(paramFloat.key));
+                        SetData(paramFloat.Key, fsm.GetFloat(paramFloat.Key));
                     }
                     else if (para is ConfigParamInt paramInt)
                     {
-                        SetData(paramInt.key, fsm.GetInt(paramInt.key));
+                        SetData(paramInt.Key, fsm.GetInt(paramInt.Key));
                     }
                     else if (para is ConfigParamTrigger paramTrigger)
                     {
-                        SetData(paramTrigger.key, fsm.GetBool(paramTrigger.key));
+                        SetData(paramTrigger.Key, fsm.GetBool(paramTrigger.Key));
                     }
                 }
 
                 for (int i = 0; i < fsm.Fsms.Length; i++)
                 {
-                    CrossFade(fsm.Fsms[i].currentState.Name, fsm.Fsms[i].config.layerIndex);
+                    CrossFade(fsm.Fsms[i].currentState.Name, fsm.Fsms[i].config.LayerIndex);
                 }
             }
 

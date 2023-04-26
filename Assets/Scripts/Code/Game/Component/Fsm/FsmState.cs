@@ -8,15 +8,15 @@ namespace TaoTie
         private ConfigFsmState config;
 
         public Fsm Fsm => fsm;
-        public string Name => config.name;
+        public string Name => config.Name;
         public ConfigFsmState Config => config;
 
         public bool CanMove
         {
             get
             {
-                if (Config.data == null) return true;
-                return Config.data.CanMove;
+                if (Config.Data == null) return true;
+                return Config.Data.CanMove;
             }
         }
         
@@ -24,8 +24,8 @@ namespace TaoTie
         {
             get
             {
-                if (Config.data == null) return true;
-                return Config.data.CanTurn;
+                if (Config.Data == null) return true;
+                return Config.Data.CanTurn;
             }
         }
 

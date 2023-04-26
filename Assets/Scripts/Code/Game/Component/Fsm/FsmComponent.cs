@@ -44,15 +44,15 @@ namespace TaoTie
 
             config.InitDefaultParam(this);
             triggers = ListComponent<ConfigParamTrigger>.Create();
-            foreach (var item in config.paramDict)
+            foreach (var item in config.ParamDict)
             {
                 if (item.Value is ConfigParamTrigger trigger)
                 {
                     triggers.Add(trigger);
                 }
             }
-            fsms = new Fsm[config.fsmCount];
-            for (int i = 0; i < config.fsmCount; i++)
+            fsms = new Fsm[config.FsmCount];
+            for (int i = 0; i < config.FsmCount; i++)
             {
                 var fsmCfg = config.GetFsmConfig(i);
                 fsms[i] = CreateFsm(fsmCfg);
@@ -66,7 +66,7 @@ namespace TaoTie
 
         public void Start()
         {
-            for (int i = 0; i < config.fsmCount; i++)
+            for (int i = 0; i < config.FsmCount; i++)
             {
                 fsms[i].Start();
             }
@@ -134,9 +134,9 @@ namespace TaoTie
             if (config.TryGetParam(key, out var param))
             {
                 param.SetValue(DynDictionary, val);
-                if (param.needSyncAnimator)
+                if (param.NeedSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.key, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.Key, val);
                 }
             }
             else
@@ -150,9 +150,9 @@ namespace TaoTie
             if (config.TryGetParam(key, out var param))
             {
                 param.SetValue(DynDictionary, val);
-                if (param.needSyncAnimator)
+                if (param.NeedSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.key, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.Key, val);
                 }
             }
             else
@@ -166,9 +166,9 @@ namespace TaoTie
             if (config.TryGetParam(key, out var param))
             {
                 param.SetValue(DynDictionary, val);
-                if (param.needSyncAnimator)
+                if (param.NeedSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.key, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.Key, val);
                 }
             }
             else

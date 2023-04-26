@@ -17,36 +17,36 @@ namespace TaoTie
             DoNotSet,
         }
 
-        public string fromState;
-        public string toState;
-        public float toStateTime;
-        public float fadeDuration;   // fixed time in second
-        public MirrorMode mirrorMode;
-        public bool canTransitionToSelf; // just work in any state transitions
-        public ConfigCondition[] conditions;
+        public string FromState;
+        public string ToState;
+        public float ToStateTime;
+        public float FadeDuration;   // fixed time in second
+        public MirrorMode Mode;
+        public bool CanTransitionToSelf; // just work in any state transitions
+        public ConfigCondition[] Conditions;
         
         public ConfigTransition(){}
         public ConfigTransition(string fromState, string toState, ConfigCondition[] conds, float fadeDur, float toStateTime, bool canTransitionToSelf = false)
         {
-            this.fromState = fromState;
-            this.toState = toState;
-            this.conditions = conds;
-            this.fadeDuration = fadeDur;
-            this.toStateTime = toStateTime;
-            this.canTransitionToSelf = canTransitionToSelf;
-            this.mirrorMode = MirrorMode.DoNotSet;
+            this.FromState = fromState;
+            this.ToState = toState;
+            this.Conditions = conds;
+            this.FadeDuration = fadeDur;
+            this.ToStateTime = toStateTime;
+            this.CanTransitionToSelf = canTransitionToSelf;
+            this.Mode = MirrorMode.DoNotSet;
         }
 
         public bool IsMatch(Fsm fsm)
         {
-            if (!this.canTransitionToSelf && fsm.currentStateName == this.toState)
+            if (!this.CanTransitionToSelf && fsm.currentStateName == this.ToState)
                 return false;
 
-            if (this.conditions != null)
+            if (this.Conditions != null)
             {
-                for (int i = 0; i < this.conditions.Length; i++)
+                for (int i = 0; i < this.Conditions.Length; i++)
                 {
-                    if (!this.conditions[i].IsMatch(fsm))
+                    if (!this.Conditions[i].IsMatch(fsm))
                     {
                         return false;
                     }
@@ -66,40 +66,40 @@ namespace TaoTie
             float targetMirror = 0f;
             float targetTime = 0f;
             float fromMirror = 0;
-            if (!string.IsNullOrEmpty(fromStateCfg.mirrorParameter))
+            if (!string.IsNullOrEmpty(fromStateCfg.MirrorParameter))
             {
-                fromMirror = fsm.Component.GetFloat(fromStateCfg.mirrorParameter);
+                fromMirror = fsm.Component.GetFloat(fromStateCfg.MirrorParameter);
             }
-            switch (this.mirrorMode)
+            switch (this.Mode)
             {
                 case MirrorMode.Auto:
                     targetMirror = fromMirror;
-                    targetTime = this.toStateTime;
+                    targetTime = this.ToStateTime;
                     break;
                 case MirrorMode.DoNotMirror:
                     targetMirror = 0f;
-                    targetTime = toStateTime;
+                    targetTime = ToStateTime;
                     break;
                 case MirrorMode.MirrorOnly:
                     targetMirror = 1f;
-                    targetTime = toStateTime;
+                    targetTime = ToStateTime;
                     break;
                 case MirrorMode.Opposite:
                     {
                         targetMirror = fromMirror * -1 + 1;
-                        targetTime = toStateTime;
+                        targetTime = ToStateTime;
                     }
                     break;
                 case MirrorMode.DoNotChagne:
                     {
                         targetMirror = fromMirror;
-                        targetTime = toStateTime;
+                        targetTime = ToStateTime;
                     }
                     break;
                 case MirrorMode.DoNotSet:
                     {
                         // Todo: DoNotSet Add target time
-                        targetTime = toStateTime;
+                        targetTime = ToStateTime;
                     }
                     break;
                 default:
@@ -108,20 +108,20 @@ namespace TaoTie
 
             //NLog.Info(LogConst.FSM, "Transition:{0}->{1} from:[[ {2} {3} {4}]] to:[[ {5} {6} ]] Mirror:{7}", _fromState, _toState, fsm.controller.GetFloat(fromStateCfg.mirrorParameter ?? "") > 0, fsm.animatorStateTime, fsm.animatorStateNormalizedTime, targetMirror > 0, targetTime, _mirrorMode);
 
-            if (!string.IsNullOrEmpty(toStateCfg.mirrorParameter) && this.mirrorMode != MirrorMode.DoNotSet)
+            if (!string.IsNullOrEmpty(toStateCfg.MirrorParameter) && this.Mode != MirrorMode.DoNotSet)
             {
-                fsm.Component.SetData(toStateCfg.mirrorParameter, targetMirror);
+                fsm.Component.SetData(toStateCfg.MirrorParameter, targetMirror);
             }
 
-            info.targetHash = toStateCfg.nameHash;
+            info.targetHash = toStateCfg.NameHash;
             info.targetTime = targetTime;
             info.layerIndex = fsm.layerIndex;
-            info.fadeDuration = this.fadeDuration;
+            info.fadeDuration = this.FadeDuration;
         }
 
         public static void ApplyDefault(Fsm fsm, ConfigFsmState toStateCfg, ref FsmTransitionInfo info)
         {
-            info.targetHash = toStateCfg.nameHash;
+            info.targetHash = toStateCfg.NameHash;
             info.layerIndex = fsm.layerIndex;
             info.targetTime = 0;
             info.fadeDuration = 0.25f;
@@ -129,11 +129,11 @@ namespace TaoTie
 
         public void OnPostApply(Fsm fsm)
         {
-            if (this.conditions != null)
+            if (this.Conditions != null)
             {
-                for (int i = 0; i < this.conditions.Length; ++i)
+                for (int i = 0; i < this.Conditions.Length; ++i)
                 {
-                    this.conditions[i]?.OnTransitionApply(fsm);
+                    this.Conditions[i]?.OnTransitionApply(fsm);
                 }
             }
         }

@@ -8,38 +8,38 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigFsmState
     {
-        public string name;
-        public float stateDuration;
-        public string mirrorParameter;
-        public bool stateLoop;
-        public int nameHash = 0;
-        public ConfigFsmTimeline timeline;
-        public ConfigTransition[] transitions;
-        public StateData data;
+        public string Name;
+        public float StateDuration;
+        public string MirrorParameter;
+        public bool StateLoop;
+        public int NameHash = 0;
+        public ConfigFsmTimeline Timeline;
+        public ConfigTransition[] Transitions;
+        public StateData Data;
         [JsonIgnore]
         [NinoIgnore]
-        public bool hasTimeline => this.timeline?.clips?.Length > 0;
+        public bool HasTimeline => this.Timeline?.Clips?.Length > 0;
         
         
         public ConfigFsmState(){}
         public ConfigFsmState(string name, float stateDuration, bool loop, string mirrorParam)
         {
-            this.name = name;
-            this.nameHash = Animator.StringToHash(this.name);
-            this.mirrorParameter = mirrorParam;
-            this.stateDuration = stateDuration;
-            this.stateLoop = loop;
+            this.Name = name;
+            this.NameHash = Animator.StringToHash(this.Name);
+            this.MirrorParameter = mirrorParam;
+            this.StateDuration = stateDuration;
+            this.StateLoop = loop;
         }
 
         public bool CheckTransition(Fsm fsm, out ConfigTransition transtion)
         {
-            if (this.transitions != null)
+            if (this.Transitions != null)
             {
-                for (int i = 0; i < this.transitions.Length; i++)
+                for (int i = 0; i < this.Transitions.Length; i++)
                 {
-                    if (this.transitions[i].IsMatch(fsm))
+                    if (this.Transitions[i].IsMatch(fsm))
                     {
-                        transtion = this.transitions[i];
+                        transtion = this.Transitions[i];
                         return true;
                     }
                 }

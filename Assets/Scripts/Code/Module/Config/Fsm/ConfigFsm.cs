@@ -8,45 +8,45 @@ namespace TaoTie
     public partial class ConfigFsm
     {
         public ConfigFsm(){}
-        public string name;
-        public int layerIndex;
-        public string entry;
-        public Dictionary<string, ConfigFsmState> stateDict;
-        public ConfigTransition[] anyStateTransitions;
+        public string Name;
+        public int LayerIndex;
+        public string Entry;
+        public Dictionary<string, ConfigFsmState> StateDict;
+        public ConfigTransition[] AnyStateTransitions;
 
 
 #if UNITY_EDITOR
         public ConfigFsm(string name, int layerIdx)
         {
-            this.name = name;
-            this.layerIndex = layerIdx;
+            this.Name = name;
+            this.LayerIndex = layerIdx;
         }
 
         public void SetEntry(string entryName)
         {
-            this.entry = entryName;
+            this.Entry = entryName;
         }
 
         public void SetAnyStateTransitions(ConfigTransition[] transitions)
         {
-            this.anyStateTransitions = transitions;
+            this.AnyStateTransitions = transitions;
         }
 
         public void SetStates(List<ConfigFsmState> states)
         {
-            this.stateDict = new Dictionary<string, ConfigFsmState>();
+            this.StateDict = new Dictionary<string, ConfigFsmState>();
             foreach (var state in states)
             {
-                this.stateDict.Add(state.name, state);
+                this.StateDict.Add(state.Name, state);
             }
         }
 #endif
 
         public ConfigFsmState GetStateConfig(string stateName)
         {
-            if (this.stateDict != null)
+            if (this.StateDict != null)
             {
-                this.stateDict.TryGetValue(stateName, out var cfg);
+                this.StateDict.TryGetValue(stateName, out var cfg);
                 return cfg;
             }
             return null;
@@ -54,13 +54,13 @@ namespace TaoTie
 
         public bool CheckAnyTransition(Fsm fsm, out ConfigTransition transtion)
         {
-            if (this.anyStateTransitions != null)
+            if (this.AnyStateTransitions != null)
             {
-                for (int i = 0; i < this.anyStateTransitions.Length; ++i)
+                for (int i = 0; i < this.AnyStateTransitions.Length; ++i)
                 {
-                    if (this.anyStateTransitions[i].IsMatch(fsm))
+                    if (this.AnyStateTransitions[i].IsMatch(fsm))
                     {
-                        transtion = this.anyStateTransitions[i];
+                        transtion = this.AnyStateTransitions[i];
                         return true;
                     }
                 }
