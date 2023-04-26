@@ -6,20 +6,20 @@ namespace TaoTie
     public partial class ConfigAIMeleeChargeData
     {
         [NinoMember(1)]
-        public AIMoveSpeedLevel speedLevel;
+        public AIMoveSpeedLevel SpeedLevel;
         [NinoMember(2)]
-        public float turnSpeedOverride = 20f;
+        public float TurnSpeedOverride = 20f;
         [NinoMember(3)]
-        public float startDistanceMin;
+        public float StartDistanceMin;
         [NinoMember(4)]
-        public float startDistanceMax;
+        public float StartDistanceMax;
         [NinoMember(5)]
-        public float stopDistance;
+        public float StopDistance;
         [NinoMember(6)]
-        public float innerDistance;
+        public float InnerDistance;
         [NinoMember(7)]
-        public int speedLevelInner;
+        public int SpeedLevelInner;
         [NinoMember(8)]
-        public bool useMeleeSlot;
+        public bool UseMeleeSlot;
     }
 }

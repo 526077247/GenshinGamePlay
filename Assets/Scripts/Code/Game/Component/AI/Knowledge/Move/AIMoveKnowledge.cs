@@ -4,31 +4,31 @@ namespace TaoTie
 {
     public class AIMoveKnowledge :IDisposable
     {
-        public ConfigAIMove config;
-        public bool canFly;
-        public bool disableMoveTactic;
-        public bool inAir;
-        public bool inWater;
-        public bool canMove = true;
-        public bool canTurn = true;
+        public ConfigAIMove Config;
+        public bool CanFly;
+        public bool DisableMoveTactic;
+        public bool InAir;
+        public bool InWater;
+        public bool CanMove = true;
+        public bool CanTurn = true;
         public static AIMoveKnowledge Create(ConfigAIBeta config)
         {
             AIMoveKnowledge res = ObjectPool.Instance.Fetch<AIMoveKnowledge>();
-            res.config = config.moveSetting;
+            res.Config = config.MoveSetting;
             return res;
         }
 
         public void Dispose()
         {
-            config = null;
+            Config = null;
         }
         
         public float GetAlmostReachDistance(AIMoveSpeedLevel speed)
         {
             if (speed == AIMoveSpeedLevel.Walk)
-                return config.almostReachedDistanceWalk;
+                return Config.AlmostReachedDistanceWalk;
             else
-                return config.almostReachedDistanceRun;
+                return Config.AlmostReachedDistanceRun;
         }
     }
 }

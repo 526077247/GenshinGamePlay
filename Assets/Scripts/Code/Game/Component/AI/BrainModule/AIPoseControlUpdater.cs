@@ -8,15 +8,15 @@
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
-            var poseFsm = knowledge.aiOwnerEntity?.GetComponent<PoseFSMComponent>();
+            var poseFsm = knowledge.AiOwnerEntity?.GetComponent<PoseFSMComponent>();
             if (poseFsm != null)
             {
-                if (knowledge.poseID != poseFsm.DefaultFsm.PoseID)
+                if (knowledge.PoseID != poseFsm.DefaultFsm.PoseID)
                 {
-                    var old = knowledge.poseID;
-                    knowledge.poseID = poseFsm.DefaultFsm.PoseID;
-                    Messager.Instance.Broadcast(knowledge.aiOwnerEntity.Id,MessageId.PoseChange,old,knowledge.poseID);
-                    knowledge.facingMoveTactic.SwitchSetting(knowledge.poseID);
+                    var old = knowledge.PoseID;
+                    knowledge.PoseID = poseFsm.DefaultFsm.PoseID;
+                    Messager.Instance.Broadcast(knowledge.AiOwnerEntity.Id,MessageId.PoseChange,old,knowledge.PoseID);
+                    knowledge.FacingMoveTactic.SwitchSetting(knowledge.PoseID);
                 }
             }
         }

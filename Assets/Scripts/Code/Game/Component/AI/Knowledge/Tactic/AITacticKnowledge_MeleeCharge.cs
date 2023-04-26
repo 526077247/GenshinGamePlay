@@ -4,7 +4,7 @@ namespace TaoTie
 {
     public class AITacticKnowledge_MeleeCharge: AITacticKnowledge<ConfigAIMeleeChargeSetting, ConfigAIMeleeChargeData>
     {
-        protected override ConfigAIMeleeChargeData defaultSetting => config.DefaultSetting;
-        protected override Dictionary<int, ConfigAIMeleeChargeData> specifications => config.Specification;
+        protected override ConfigAIMeleeChargeData defaultSetting => Config.DefaultSetting;
+        protected override Dictionary<int, ConfigAIMeleeChargeData> specifications => Config.Specification;
     }
 }

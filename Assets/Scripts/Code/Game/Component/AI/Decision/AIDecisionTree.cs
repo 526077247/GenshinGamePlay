@@ -12,10 +12,10 @@
 		/// <param name="decision"></param>
 		public static void Think(AIKnowledge knowledge, AIDecision decision)
 		{
-			var conf = ConfigAIDecisionTreeCategory.Instance.Get(knowledge.decisionArchetype);
+			var conf = ConfigAIDecisionTreeCategory.Instance.Get(knowledge.DecisionArchetype);
 			if (conf != null)
 			{
-				if (knowledge.combatComponent != null && knowledge.combatComponent.IsInCombat)
+				if (knowledge.CombatComponent != null && knowledge.CombatComponent.IsInCombat)
 				{
 					if (conf.CombatNode != null)
 						Handler(knowledge, decision, conf.CombatNode);

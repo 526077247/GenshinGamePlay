@@ -10,32 +10,32 @@ namespace TaoTie
         [NinoMember(1)]
         public bool Enable = true;
         [NinoMember(2)]
-        public float clearThreatTargetDistance;
+        public float ClearThreatTargetDistance;
         [NinoMember(3)]
-        public float clearThreatEdgeDistance;
+        public float ClearThreatEdgeDistance;
         [NinoMember(4)]
-        public bool clearThreatByLostPath;
+        public bool ClearThreatByLostPath;
         [NinoMember(5)]
-        public bool clearThreatByTargetOutOfZone;
+        public bool ClearThreatByTargetOutOfZone;
         [NinoMember(6)]
-        public int clearThreatTimerByDistance;
+        public int ClearThreatTimerByDistance;
         [NinoMember(7)]
-        public int clearThreatTimerByLostPath;
+        public int ClearThreatTimerByLostPath;
         [NinoMember(8)]
-        public int clearThreatTimerByTargetOutOfZone;
+        public int ClearThreatTimerByTargetOutOfZone;
         [NinoMember(9)]
-        public float viewThreatGrow = 100f;
+        public float ViewThreatGrow = 100f;
         [NinoMember(10)]
-        public float hearThreatGrow;
+        public float HearThreatGrow;
         [NinoMember(11)]
-        public float feelThreatGrow = 500f;
+        public float FeelThreatGrow = 500f;
         [NinoMember(12)]
-        public float threatDecreaseSpeed = 30f;
+        public float ThreatDecreaseSpeed = 30f;
         [NinoMember(13)]
-        public float threatBroadcastRange;
+        public float ThreatBroadcastRange;
         [NinoMember(14)][LabelText("视觉感知衰减曲线")]
-        public AIPoint[] viewAttenuation;
+        public AIPoint[] ViewAttenuation;
         [NinoMember(15)][LabelText("听觉感知衰减曲线")]
-        public AIPoint[] hearAttenuation;
+        public AIPoint[] HearAttenuation;
     }
 }

@@ -33,7 +33,7 @@ namespace TaoTie
         public PathQueryTask CreatePathQueryTask(Vector3 start, Vector3 destination, NavMeshUseType type = NavMeshUseType.Auto)
         {
             var res = PathQueryTask.Create(start, destination,this,type);
-            QueryTasks.Add(res.id,res);
+            QueryTasks.Add(res.Id,res);
             return res;
         }
 
@@ -42,7 +42,7 @@ namespace TaoTie
             if (QueryTasks.TryGetValue(id, out var res))
             {
                 res.Dispose();
-                QueryTasks.Remove(res.id);
+                QueryTasks.Remove(res.Id);
             }
         }
     }

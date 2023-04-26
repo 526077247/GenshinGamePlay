@@ -13,34 +13,34 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            aiComponent = knowledge.aiOwnerEntity.GetComponent<AIComponent>();
+            aiComponent = knowledge.AiOwnerEntity.GetComponent<AIComponent>();
         }
 
 
         protected override void UpdateMainThreadInternal()
         {
-            Collect(knowledge.targetKnowledge);
-            Process(knowledge.targetKnowledge);
+            Collect(knowledge.TargetKnowledge);
+            Process(knowledge.TargetKnowledge);
         }
 
         private void Collect(AITargetKnowledge tk)
         {
             bool isSetCombatAttackTarget = false;
 
-            var mainThreat = knowledge.threatKnowledge.mainThreat;
+            var mainThreat = knowledge.ThreatKnowledge.MainThreat;
 
             if (mainThreat != null)
             {
-                if (tk.targetEntity == null)
+                if (tk.TargetEntity == null)
                 {
-                    tk.SetEntityTarget(AITargetSource.Threat, mainThreat.id, aiComponent);
+                    tk.SetEntityTarget(AITargetSource.Threat, mainThreat.Id, aiComponent);
                     isSetCombatAttackTarget = true;
                 }
-                else if (tk.targetEntity != null)
+                else if (tk.TargetEntity != null)
                 {
-                    if (tk.targetEntity.Id != mainThreat.id)
+                    if (tk.TargetEntity.Id != mainThreat.Id)
                     {
-                        tk.SetEntityTarget(AITargetSource.Threat, mainThreat.id, aiComponent);
+                        tk.SetEntityTarget(AITargetSource.Threat, mainThreat.Id, aiComponent);
                         isSetCombatAttackTarget = true;
                     }
                 }
@@ -53,60 +53,60 @@ namespace TaoTie
 
             if (isSetCombatAttackTarget)
             {
-                aiComponent.SetCombatAttackTarget(mainThreat.id);
+                aiComponent.SetCombatAttackTarget(mainThreat.Id);
             }
         }
 
         private void Process(AITargetKnowledge tk)
         {
-            if (tk.targetType== AITargetType.EntityTarget&&tk.targetEntity == null)
+            if (tk.TargetType== AITargetType.EntityTarget&&tk.TargetEntity == null)
                 return;
-            if (tk.targetType== AITargetType.InvalidTarget)
+            if (tk.TargetType== AITargetType.InvalidTarget)
                 return;
             
-            var pos = knowledge.aiOwnerEntity.Position;
-            Vector3 targetPos = tk.targetPosition;
-            if (tk.targetType == AITargetType.EntityTarget)
+            var pos = knowledge.AiOwnerEntity.Position;
+            Vector3 targetPos = tk.TargetPosition;
+            if (tk.TargetType == AITargetType.EntityTarget)
             {
-                targetPos = tk.targetEntity.Position;
+                targetPos = tk.TargetEntity.Position;
             }
 
-            tk.targetDistance = (pos - targetPos).magnitude;
-            tk.targetDistanceY = Mathf.Abs(pos.y - targetPos.y);
+            tk.TargetDistance = (pos - targetPos).magnitude;
+            tk.TargetDistanceY = Mathf.Abs(pos.y - targetPos.y);
 
             pos.y = 0;
             targetPos.y = 0;
-            tk.targetDistanceXZ = (pos - targetPos).magnitude;
+            tk.TargetDistanceXZ = (pos - targetPos).magnitude;
 
-            var dir = targetPos - knowledge.currentPos;
-            if (tk.targetPosition != targetPos && (GameTimerManager.Instance.GetTimeNow() > nextQueryTime ||
-                Vector3.SqrMagnitude(tk.targetPosition - targetPos)>1))
+            var dir = targetPos - knowledge.CurrentPos;
+            if (tk.TargetPosition != targetPos && (GameTimerManager.Instance.GetTimeNow() > nextQueryTime ||
+                Vector3.SqrMagnitude(tk.TargetPosition - targetPos)>1))
             {
                 nextQueryTime += 1;
                 targetPathQuery?.Dispose();
-                targetPathQuery = knowledge.pathFindingKnowledge.CreatePathQueryTask(knowledge.currentPos, targetPos);
+                targetPathQuery = knowledge.PathFindingKnowledge.CreatePathQueryTask(knowledge.CurrentPos, targetPos);
             }
-            tk.targetPosition = targetPos;
-            tk.targetRelativeAngleYaw = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.up);
-            tk.targetRelativeAngleYawAbs = Mathf.Abs(tk.targetRelativeAngleYaw);
-            tk.targetRelativeAnglePitch = Vector3.SignedAngle(knowledge.aiOwnerEntity.Forward, dir, Vector3.right);
-            tk.targetRelativeAnglePitchAbs = Mathf.Abs(tk.targetRelativeAnglePitch);
+            tk.TargetPosition = targetPos;
+            tk.TargetRelativeAngleYaw = Vector3.SignedAngle(knowledge.AiOwnerEntity.Forward, dir, Vector3.up);
+            tk.TargetRelativeAngleYawAbs = Mathf.Abs(tk.TargetRelativeAngleYaw);
+            tk.TargetRelativeAnglePitch = Vector3.SignedAngle(knowledge.AiOwnerEntity.Forward, dir, Vector3.right);
+            tk.TargetRelativeAnglePitchAbs = Mathf.Abs(tk.TargetRelativeAnglePitch);
             //能否看见
-            tk.hasLineOfSight = !PhysicsHelper.LinecastScene(targetPos, knowledge.eyePos, out _);
+            tk.HasLineOfSight = !PhysicsHelper.LinecastScene(targetPos, knowledge.EyePos, out _);
             //是否在防御范围内
-            tk.targetInDefendArea = knowledge.defendAreaKnowledge.CheckInDefendArea(targetPos);
+            tk.TargetInDefendArea = knowledge.DefendAreaKnowledge.CheckInDefendArea(targetPos);
             
-            var skillAnchorPosition = knowledge.targetKnowledge.skillAnchorPosition;
+            var skillAnchorPosition = knowledge.TargetKnowledge.SkillAnchorPosition;
             skillAnchorPosition.y = 0;
-            tk.skillAnchorDistance = Vector3.Distance(pos, skillAnchorPosition);
+            tk.SkillAnchorDistance = Vector3.Distance(pos, skillAnchorPosition);
 
-            tk.hasPath = AITargetHasPathType.Invalid;
+            tk.HasPath = AITargetHasPathType.Invalid;
             if (targetPathQuery != null)
             {
-                if(targetPathQuery.status == QueryStatus.Success)
-                    tk.hasPath = AITargetHasPathType.Success;
-                else if(targetPathQuery.status == QueryStatus.Fail)
-                    tk.hasPath = AITargetHasPathType.Failed;
+                if(targetPathQuery.Status == QueryStatus.Success)
+                    tk.HasPath = AITargetHasPathType.Success;
+                else if(targetPathQuery.Status == QueryStatus.Fail)
+                    tk.HasPath = AITargetHasPathType.Failed;
             }
         }
 

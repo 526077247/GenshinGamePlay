@@ -119,19 +119,19 @@ namespace TaoTie
         /// </summary>
         private void UpdateDecision()
         {
-            knowledge.tacticChanged = false;
-            knowledge.moveDecisionChanged = false;
+            knowledge.TacticChanged = false;
+            knowledge.MoveDecisionChanged = false;
             decisionOld.act = decision.act;
             decisionOld.tactic = decision.tactic;
             decisionOld.move = decision.move;
             AIDecisionTree.Think(knowledge,decision);
             if (decision.tactic != decisionOld.tactic)
             {
-                knowledge.tacticChanged = true;
+                knowledge.TacticChanged = true;
             }
             if (decision.move != decisionOld.move)
             {
-                knowledge.moveDecisionChanged = true;
+                knowledge.MoveDecisionChanged = true;
             }
         }
 

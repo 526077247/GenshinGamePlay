@@ -5,34 +5,34 @@ namespace TaoTie
 {
     public class AIDefendAreaKnowledge: IDisposable
     {
-        public ConfigAIDefendArea config;
-        public float defendRange;
-        public Vector3 defendCenter;
-        public bool isInDefendRange;
-        private float sqlDefendRange;
+        public ConfigAIDefendArea Config;
+        public float DefendRange;
+        public Vector3 DefendCenter;
+        public bool IsInDefendRange;
+        private float SqlDefendRange;
         public static AIDefendAreaKnowledge Create(ConfigAIBeta config,Vector3 bornpos)
         {
             AIDefendAreaKnowledge res = ObjectPool.Instance.Fetch<AIDefendAreaKnowledge>();
-            res.config = config.DefendArea;
-            res.defendRange = res.config.DefendRange;
-            res.defendCenter = bornpos;
-            res.sqlDefendRange = res.defendRange * res.defendRange;
+            res.Config = config.DefendArea;
+            res.DefendRange = res.Config.DefendRange;
+            res.DefendCenter = bornpos;
+            res.SqlDefendRange = res.DefendRange * res.DefendRange;
             return res;
         }
 
         public void Dispose()
         {
-            config = null;
-            defendRange = 0;
-            defendCenter = Vector3.zero;
-            isInDefendRange = false;
+            Config = null;
+            DefendRange = 0;
+            DefendCenter = Vector3.zero;
+            IsInDefendRange = false;
         }
 
         public bool CheckInDefendArea(Vector3 point)
         {
-            if (config.Enable)
+            if (Config.Enable)
             {
-                return Vector3.SqrMagnitude(point - defendCenter) < sqlDefendRange;
+                return Vector3.SqrMagnitude(point - DefendCenter) < SqlDefendRange;
             }
             return true;
         }

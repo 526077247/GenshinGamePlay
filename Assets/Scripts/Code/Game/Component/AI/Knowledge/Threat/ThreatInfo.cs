@@ -18,64 +18,64 @@ namespace TaoTie
         //TODO
         //public const float TIME_HOLDTHREAT_AVATARCHANGED = 2f;
 
-        public long id;
-        public ThreatAddReason addReason;
+        public long Id;
+        public ThreatAddReason AddReason;
         //警戒值
-        public float temperature = 0f;
+        public float Temperature = 0f;
         //威胁值
-        public float threatValue = 0f;
+        public float ThreatValue = 0f;
 
-        public Vector3 threatPos;
+        public Vector3 ThreatPos;
 
-        public float lastSeenTime;
-        public float lastFeelTime;
-        public float lastFootstepTime;
+        public float LastSeenTime;
+        public float LastFeelTime;
+        public float LastFootstepTime;
 
-        public float caredGlobalValue;
+        public float CaredGlobalValue;
 
-        public AITimer lctByFarDistance = new();
-        public AITimer lctByEntityDisappear = new();
-        public AITimer lctByOutOfZone = new();
+        public AITimer LctByFarDistance = new();
+        public AITimer LctByEntityDisappear = new();
+        public AITimer LctByOutOfZone = new();
 
         public ThreatInfo(long id, Vector3 position, ThreatAddReason reason)
         {
-            this.id = id;
-            this.threatPos = position;
-            this.addReason = reason;
+            this.Id = id;
+            this.ThreatPos = position;
+            this.AddReason = reason;
         }
 
         public void DecreaseTemper(float amount)
         {
-            temperature -= amount;
-            if (temperature < TEMPEVAL_MIN)
-                temperature = TEMPEVAL_MIN;
+            Temperature -= amount;
+            if (Temperature < TEMPEVAL_MIN)
+                Temperature = TEMPEVAL_MIN;
         }
 
         public void IncreaseTemper(float amount)
         {
-            temperature += amount;
-            if (temperature > TEMPERVAL_MAX)
-                temperature = TEMPERVAL_MAX;
+            Temperature += amount;
+            if (Temperature > TEMPERVAL_MAX)
+                Temperature = TEMPERVAL_MAX;
         }
 
         public void IncreaseThreat(float amount)
         {
-            threatValue += amount;
-            if (threatValue > THREATVAL_MAX)
-                threatValue = THREATVAL_MAX;
+            ThreatValue += amount;
+            if (ThreatValue > THREATVAL_MAX)
+                ThreatValue = THREATVAL_MAX;
         }
         public void DecreaseThreat(float amount)
         {
-            threatValue -= amount;
-            if (threatValue < THREATVAL_MIN)
-                threatValue = THREATVAL_MIN;
+            ThreatValue -= amount;
+            if (ThreatValue < THREATVAL_MIN)
+                ThreatValue = THREATVAL_MIN;
         }
 
         //TODO 不知道做什么
         public void Hold(float currentTime)
         {
-            float lastSensibleTime = lastSeenTime > lastFeelTime ? lastSeenTime : lastFeelTime;
-            lastSeenTime = lastSensibleTime > lastFootstepTime ? lastSensibleTime : lastFootstepTime;
+            float lastSensibleTime = LastSeenTime > LastFeelTime ? LastSeenTime : LastFeelTime;
+            LastSeenTime = lastSensibleTime > LastFootstepTime ? lastSensibleTime : LastFootstepTime;
         }
     }
 }

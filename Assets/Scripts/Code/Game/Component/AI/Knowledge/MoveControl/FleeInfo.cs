@@ -4,6 +4,9 @@ namespace TaoTie
 {
     public class FleeInfo: MoveInfoBase
     {
+        public const sbyte SAMPLE_COUNT = 9;
+        public const float EXPAND_FLEE_ANGLE = 120f;
+        
         public enum FleeStatus
         {
             Inactive = 0,
@@ -12,12 +15,10 @@ namespace TaoTie
             RotateToTarget = 3
         }
         
-        public FleeStatus status;
-        public Vector3? fleePoint;
-        public long nextAvailableTick;
-        public int fleeNumberRemaining;
-        public const sbyte SAMPLE_COUNT = 9;
-        public const float EXPAND_FLEE_ANGLE = 120f;
+        public FleeStatus Status;
+        public Vector3? FleePoint;
+        public long NextAvailableTick;
+        public int FleeNumberRemaining;
         
         public static FleeInfo Create()
         {
@@ -27,65 +28,65 @@ namespace TaoTie
 
         public override void Dispose()
         {
-            status = default;
-            fleePoint = null;
+            Status = default;
+            FleePoint = null;
         }
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai, AIManager aiManager)
         {
-            if (status == FleeStatus.Inactive)
+            if (Status == FleeStatus.Inactive)
             {
-                ConfigAIFleeData data = aiKnowledge.fleeTactic.data;
+                ConfigAIFleeData data = aiKnowledge.FleeTactic.Data;
 
                 FindFleePosition(aiKnowledge);
 
                 AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
                 {
-                    targetPosition = (Vector3)fleePoint,
-                    cannedTurnSpeedOverride = data.turnSpeedOverride,
-                    speedLevel = (AIMoveSpeedLevel)data.speedLevel,
+                    targetPosition = (Vector3)FleePoint,
+                    cannedTurnSpeedOverride = data.TurnSpeedOverride,
+                    speedLevel = (AIMoveSpeedLevel)data.SpeedLevel,
                 };
 
                 taskHandler.CreateGoToTask(param);
-                status = FleeStatus.Fleeing;
+                Status = FleeStatus.Fleeing;
             }
 
-            if (status == FleeStatus.Fleeing)
+            if (Status == FleeStatus.Fleeing)
             {
                 if (taskHandler.currentState == LocoTaskState.Finished)
                 {
-                    status = FleeStatus.FleeFinish;
+                    Status = FleeStatus.FleeFinish;
                 }
             }
 
-            if (status == FleeStatus.FleeFinish)
+            if (Status == FleeStatus.FleeFinish)
             {
-                if (aiKnowledge.fleeTactic.data.turnToTarget)
+                if (aiKnowledge.FleeTactic.Data.TurnToTarget)
                 {
                     if (taskHandler.currentState == LocoTaskState.Finished)
                     {
-                        Unit target = aiKnowledge.targetKnowledge.targetEntity;
+                        Unit target = aiKnowledge.TargetKnowledge.TargetEntity;
                         AILocomotionHandler.ParamRotation param = new AILocomotionHandler.ParamRotation
                         {
                             targetPosition = target.Position
                         };
                         taskHandler.CreateRotationTask(param);
 
-                        status = FleeStatus.RotateToTarget;
+                        Status = FleeStatus.RotateToTarget;
                     }
                 }
                 else
                 {
-                    status = FleeStatus.Inactive;
+                    Status = FleeStatus.Inactive;
                     TriggerCD(aiKnowledge);
                 }
             }
 
-            if (status == FleeStatus.RotateToTarget)
+            if (Status == FleeStatus.RotateToTarget)
             {
                 if (taskHandler.currentState == LocoTaskState.Finished)
                 {
-                    status = FleeStatus.Inactive;
+                    Status = FleeStatus.Inactive;
                     TriggerCD(aiKnowledge);
                 }
             }
@@ -94,55 +95,55 @@ namespace TaoTie
 
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
-            ConfigAIFleeData data = aiKnowledge.fleeTactic.data;
+            ConfigAIFleeData data = aiKnowledge.FleeTactic.Data;
 
             FindFleePosition(aiKnowledge);
 
             AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
             {
-                targetPosition = (Vector3)fleePoint,
-                cannedTurnSpeedOverride = data.turnSpeedOverride,
-                speedLevel = (AIMoveSpeedLevel)data.speedLevel,
+                targetPosition = (Vector3)FleePoint,
+                cannedTurnSpeedOverride = data.TurnSpeedOverride,
+                speedLevel = (AIMoveSpeedLevel)data.SpeedLevel,
             };
 
             taskHandler.CreateGoToTask(param);
             TriggerCD(aiKnowledge);
-            status = FleeStatus.Fleeing;
+            Status = FleeStatus.Fleeing;
         }
 
         public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             base.Leave(taskHandler, aiKnowledge,aiManager);
             TriggerCD(aiKnowledge);
-            status = FleeStatus.Inactive;
+            Status = FleeStatus.Inactive;
         }
 
 
         public void TriggerCD(AIKnowledge knowledge, bool byFail = false)
         {
-            nextAvailableTick = knowledge.fleeTactic.data.cd + GameTimerManager.Instance.GetTimeNow();
+            NextAvailableTick = knowledge.FleeTactic.Data.CD + GameTimerManager.Instance.GetTimeNow();
         }
 
         //TODO Add AIComponent param
         private bool FindFleePosition(AIKnowledge knowledge)
         {
-            Vector3 enemyPos = knowledge.targetKnowledge.targetPosition;
+            Vector3 enemyPos = knowledge.TargetKnowledge.TargetPosition;
 
-            float fleeDistanceMin = knowledge.fleeTactic.data.fleeDistanceMin;
-            float fleeDistanceMax = knowledge.fleeTactic.data.fleeDistanceMax;
+            float fleeDistanceMin = knowledge.FleeTactic.Data.FleeDistanceMin;
+            float fleeDistanceMax = knowledge.FleeTactic.Data.FleeDistanceMax;
 
             float randomDistance = Random.Range(fleeDistanceMin, fleeDistanceMax);
 
-            float fleeAngle = knowledge.fleeTactic.data.fleeAngle;
+            float fleeAngle = knowledge.FleeTactic.Data.FleeAngle;
             float randomAngle = Random.Range(fleeAngle * -0.5f, fleeAngle * 0.5f);
 
-            Vector3 fleeDirection = knowledge.currentPos - enemyPos;
+            Vector3 fleeDirection = knowledge.CurrentPos - enemyPos;
             fleeDirection.y = 0;
             fleeDirection = fleeDirection.normalized;
 
-            fleeDirection = Quaternion.AngleAxis(randomAngle, knowledge.aiOwnerEntity.Up) * fleeDirection * randomDistance;
+            fleeDirection = Quaternion.AngleAxis(randomAngle, knowledge.AiOwnerEntity.Up) * fleeDirection * randomDistance;
 
-            fleePoint = knowledge.currentPos + fleeDirection;
+            FleePoint = knowledge.CurrentPos + fleeDirection;
 
             return true;
         }

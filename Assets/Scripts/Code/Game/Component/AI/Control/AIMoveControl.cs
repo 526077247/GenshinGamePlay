@@ -13,23 +13,23 @@
         protected override void InitInternal()
         {
             base.InitInternal();
-            aiComponent = aiKnowledge.aiOwnerEntity.GetComponent<AIComponent>();
+            aiComponent = aiKnowledge.AiOwnerEntity.GetComponent<AIComponent>();
             pathfinder = aiComponent.Pathfinder;
             loco = new AILocomotionHandler(aiKnowledge,pathfinder);
-            moveFSM = aiKnowledge.moveControlState;
+            moveFSM = aiKnowledge.MoveControlState;
         }
 
         public void ExecuteMove(AIDecision decision)
         {
-            if (aiKnowledge.moveDecisionChanged)
+            if (aiKnowledge.MoveDecisionChanged)
             {
                 switch (aiComponent.GetDecisionOld().move)
                 {
                     case MoveDecision.Flee:
-                        if (moveFSM.FleeInfo.status != FleeInfo.FleeStatus.Inactive)
+                        if (moveFSM.FleeInfo.Status != FleeInfo.FleeStatus.Inactive)
                             break;
                         aiComponent.GetDecisionOld().move = decision.move;
-                        moveFSM.Goto(decision.move, loco, aiKnowledge,aiKnowledge.aiManager);
+                        moveFSM.Goto(decision.move, loco, aiKnowledge,aiKnowledge.AiManager);
                         break;
                     default:
                         if (loco.currentState == LocoTaskState.Running)
@@ -38,13 +38,13 @@
                         if (loco.currentState == LocoTaskState.Finished)
                         {
                             aiComponent.GetDecisionOld().move = decision.move;
-                            moveFSM.Goto(decision.move, loco,aiKnowledge,aiKnowledge.aiManager);
+                            moveFSM.Goto(decision.move, loco,aiKnowledge,aiKnowledge.AiManager);
                         }
                         break;
                 }
             }
-            moveFSM.UpdateMoveInfo(loco, aiKnowledge, aiComponent,aiKnowledge.aiManager);
-            AITransform currentTrans = new AITransform() { pos = aiKnowledge.currentPos, fwd = aiKnowledge.currentForward };
+            moveFSM.UpdateMoveInfo(loco, aiKnowledge, aiComponent,aiKnowledge.AiManager);
+            AITransform currentTrans = new AITransform() { pos = aiKnowledge.CurrentPos, fwd = aiKnowledge.CurrentForward };
             loco.UpdateTasks(currentTrans);
         }
     }

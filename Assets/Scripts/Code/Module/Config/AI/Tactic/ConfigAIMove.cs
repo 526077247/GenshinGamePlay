@@ -10,11 +10,11 @@ namespace TaoTie
         [NinoMember(1)]
         public bool Enable = true;
         [NinoMember(2)]
-        public MoveCategoryAI moveCategory;
+        public MoveCategoryAI MoveCategory;
         [NinoMember(5)][LabelText("步行时到达判定距离")]
-        public float almostReachedDistanceWalk;
+        public float AlmostReachedDistanceWalk;
         [NinoMember(6)][LabelText("跑步时到达判定距离")]
-        public float almostReachedDistanceRun;
-        // public ConfigAISnakelikeMove _snakelikeMoveSetting;
+        public float AlmostReachedDistanceRun;
+        // public ConfigAISnakelikeMove SnakelikeMoveSetting;
     }
 }

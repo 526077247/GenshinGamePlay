@@ -4,14 +4,14 @@ namespace TaoTie
 {
     public struct AICurve
     {
-        public List<AIPoint> data;
+        public List<AIPoint> Data;
 
         public AICurve(AIPoint[] inputData)
         {
-            data = new List<AIPoint>();
+            Data = new List<AIPoint>();
             if (inputData != null)
             {
-                data.AddRange(inputData);
+                Data.AddRange(inputData);
             }
 
             SortByX();
@@ -19,11 +19,11 @@ namespace TaoTie
 
         public bool FindY(float xVal, ref float yVal)
         {
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < Data.Count; i++)
             {
-                if (data[i].x > xVal)
+                if (Data[i].X > xVal)
                 {
-                    yVal = data[i].y;
+                    yVal = Data[i].Y;
                     return true;
                 }
             }
@@ -33,15 +33,15 @@ namespace TaoTie
         public void SortByX()
         {
             AIPoint temp;
-            for (int i = 0; i < data.Count; i++)
+            for (int i = 0; i < Data.Count; i++)
             {
-                for (int j = 0; j < data.Count - 1; j++)
+                for (int j = 0; j < Data.Count - 1; j++)
                 {
-                    if (data[i].x < data[j].x)
+                    if (Data[i].X < Data[j].X)
                     {
-                        temp = data[i];
-                        data[i] = data[j];
-                        data[j] = temp;
+                        temp = Data[i];
+                        Data[i] = Data[j];
+                        Data[j] = temp;
                     }
                 }
             }

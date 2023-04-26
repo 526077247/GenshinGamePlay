@@ -20,8 +20,8 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            this.aiManager = knowledge.aiManager;
-            sensingKnowledge = knowledge.sensingKnowledge;
+            this.aiManager = knowledge.AiManager;
+            sensingKnowledge = knowledge.SensingKnowledge;
             enemySensibles = DictionaryComponent<long, SensibleInfo>.Create();
             enemySensiblesPreparation = DictionaryComponent<long, SensibleInfo>.Create();
         }
@@ -41,41 +41,41 @@ namespace TaoTie
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
-            knowledge.defendAreaKnowledge.isInDefendRange =
-                knowledge.defendAreaKnowledge.CheckInDefendArea(knowledge.aiOwnerEntity.Position);
+            knowledge.DefendAreaKnowledge.IsInDefendRange =
+                knowledge.DefendAreaKnowledge.CheckInDefendArea(knowledge.AiOwnerEntity.Position);
             CollectEnemies();
             ProcessEnemies();
         }
 
         private void CollectEnemies()
         {
-            var entityList = aiManager.GetEnemies(knowledge.campID);
+            var entityList = aiManager.GetEnemies(knowledge.CampID);
             foreach (var item in entityList)
             {
                 foreach (var entity in item.Value)
                 {
                     var entityID = entity.Id;
                     var entityPos = entity.Position;
-                    var selfPos = knowledge.aiOwnerEntity.Position + knowledge.aiOwnerEntity.Rotation * knowledge.eyePos;
+                    var selfPos = knowledge.AiOwnerEntity.Position + knowledge.AiOwnerEntity.Rotation * knowledge.EyePos;
                     var direction = (entityPos - selfPos).normalized;
 
                     if (enemySensiblesPreparation.TryGetValue(entityID, out var sensible))
                     {
-                        sensible.distance = Vector3.Distance(entityPos, selfPos);
-                        sensible.position = entityPos;
-                        sensible.direction = direction;
+                        sensible.Distance = Vector3.Distance(entityPos, selfPos);
+                        sensible.Position = entityPos;
+                        sensible.Direction = direction;
                     }
                     else
                     {
                         SensibleInfo newSensible = new SensibleInfo()
                         {
-                            sensibleID = entityID,
-                            distance = Vector3.Distance(entityPos, selfPos),
-                            position = entityPos,
-                            direction = direction,
+                            SensibleID = entityID,
+                            Distance = Vector3.Distance(entityPos, selfPos),
+                            Position = entityPos,
+                            Direction = direction,
                         };
-                        enemySensiblesPreparation.Add(newSensible.sensibleID, newSensible);
-                        Log.Info("AI sensing updater new add entity id : {0}", newSensible.sensibleID);
+                        enemySensiblesPreparation.Add(newSensible.SensibleID, newSensible);
+                        Log.Info("AI sensing updater new add entity id : {0}", newSensible.SensibleID);
                     }
 
                 }
@@ -88,29 +88,29 @@ namespace TaoTie
             foreach (var sensible in enemySensiblesPreparation)
             {
                 enemySensibles.TryAdd(sensible.Key, sensible.Value);
-                var viewRange = knowledge.threatLevel == ThreatLevel.Alert ? 200 : sensingKnowledge.Setting.viewRange;
-                var halfHorizontalFov = sensingKnowledge.Setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.Setting.horizontalFov;
-                var halfVerticalFov = sensingKnowledge.Setting.viewPanoramic ? 180f : 0.5 * sensingKnowledge.Setting.verticalFov;
+                var viewRange = knowledge.ThreatLevel == ThreatLevel.Alert ? 200 : sensingKnowledge.Setting.ViewRange;
+                var halfHorizontalFov = sensingKnowledge.Setting.ViewPanoramic ? 180f : 0.5 * sensingKnowledge.Setting.HorizontalFov;
+                var halfVerticalFov = sensingKnowledge.Setting.ViewPanoramic ? 180f : 0.5 * sensingKnowledge.Setting.VerticalFov;
 
                 //FeelRange
-                if (sensible.Value.distance < sensingKnowledge.Setting.feelRange)
+                if (sensible.Value.Distance < sensingKnowledge.Setting.FeelRange)
                 {
                     enemySensibles.TryAdd(sensible.Key, sensible.Value);
                 }
 
                 //VisionRange
-                else if (sensible.Value.distance < viewRange)
+                else if (sensible.Value.Distance < viewRange)
                 {
-                    var horizontalDirection = sensible.Value.direction;
-                    horizontalDirection.y = knowledge.eyeTransform.forward.y;
-                    var horizontalAngle = Vector3.Angle(knowledge.aiOwnerEntity.Forward, horizontalDirection);
+                    var horizontalDirection = sensible.Value.Direction;
+                    horizontalDirection.y = knowledge.EyeTransform.forward.y;
+                    var horizontalAngle = Vector3.Angle(knowledge.AiOwnerEntity.Forward, horizontalDirection);
 
                     if (horizontalAngle < halfHorizontalFov)
                     {
-                        var verticalDirection = sensible.Value.direction;
-                        verticalDirection.x = knowledge.eyeTransform.forward.x;
+                        var verticalDirection = sensible.Value.Direction;
+                        verticalDirection.x = knowledge.EyeTransform.forward.x;
 
-                        var verticalAngle = Vector3.Angle(knowledge.aiOwnerEntity.Forward, verticalDirection);
+                        var verticalAngle = Vector3.Angle(knowledge.AiOwnerEntity.Forward, verticalDirection);
                         if (verticalAngle < halfVerticalFov)
                         {
                             enemySensibles.TryAdd(sensible.Key, sensible.Value);
@@ -125,10 +125,10 @@ namespace TaoTie
             {
                 foreach (var enemy in enemySensibles)
                 {
-                    if (sensingKnowledge.NearestEnemyDistance<0 || enemy.Value.distance < sensingKnowledge.NearestEnemyDistance)
+                    if (sensingKnowledge.NearestEnemyDistance<0 || enemy.Value.Distance < sensingKnowledge.NearestEnemyDistance)
                     {
-                        sensingKnowledge.NearestEnemyDistance = enemy.Value.distance;
-                        sensingKnowledge.NearestEnemy = enemy.Value.sensibleID;
+                        sensingKnowledge.NearestEnemyDistance = enemy.Value.Distance;
+                        sensingKnowledge.NearestEnemy = enemy.Value.SensibleID;
                     }
                 }
             }
@@ -138,13 +138,13 @@ namespace TaoTie
         //TODO 投掷物用, 同样会添加ThreatInfo
         public static bool CanSignalBeNoticed(AIKnowledge knowledge, Vector3 checkPos)
         {
-            var sourcelessHitAttractionRange = knowledge.sensingKnowledge.Setting.sourcelessHitAttractionRange;
-            var hearAttractionRange = knowledge.sensingKnowledge.Setting.hearAttractionRange;
+            var sourcelessHitAttractionRange = knowledge.SensingKnowledge.Setting.SourcelessHitAttractionRange;
+            var hearAttractionRange = knowledge.SensingKnowledge.Setting.HearAttractionRange;
             var selectRange = hearAttractionRange;
             if (sourcelessHitAttractionRange > 0)
                 selectRange = sourcelessHitAttractionRange;
 
-            var currentPos = knowledge.currentPos;
+            var currentPos = knowledge.CurrentPos;
 
             float distanceToTarget = Vector3.Distance(currentPos, checkPos);
 

@@ -4,13 +4,13 @@ namespace TaoTie
 {
     public class MeleeChargeInfo: MoveInfoBase
     {
+        public const int RETRY_TIMES = 3; 
         public enum ChargeStatus
         {
             Inactive = 0,
             Charging = 1
         }
-
-        public const int RETRY_TIMES = 3; 
+        
         public ChargeStatus Status; 
         public Vector3 CurDestination;
         private int retryTimes;
@@ -24,17 +24,17 @@ namespace TaoTie
         {
             if (Status == ChargeStatus.Inactive)
             {
-                ConfigAIMeleeChargeData data = aiKnowledge.meleeChargeTactic.data;
+                ConfigAIMeleeChargeData data = aiKnowledge.MeleeChargeTactic.Data;
 
-                float stopDistance = data.stopDistance;
-                bool useMeleeSlot = data.useMeleeSlot;
-                float turnSpeed = data.turnSpeedOverride;
+                float stopDistance = data.StopDistance;
+                bool useMeleeSlot = data.UseMeleeSlot;
+                float turnSpeed = data.TurnSpeedOverride;
 
-                AIMoveSpeedLevel speedLevel = data.speedLevel;
+                AIMoveSpeedLevel speedLevel = data.SpeedLevel;
 
                 AILocomotionHandler.ParamFollowMove param = new AILocomotionHandler.ParamFollowMove
                 {
-                    anchor = aiKnowledge.targetKnowledge.targetEntity,
+                    anchor = aiKnowledge.TargetKnowledge.TargetEntity,
                     useMeleeSlot = useMeleeSlot,
                     speedLevel = speedLevel,
                     turnSpeed = turnSpeed,
@@ -51,11 +51,11 @@ namespace TaoTie
         {
             if (Status == ChargeStatus.Charging)
             {
-                if (aiKnowledge.targetKnowledge.targetEntity == null) return;
-                ConfigAIMeleeChargeData data = aiKnowledge.meleeChargeTactic.data;
-                float stopDistance = data.stopDistance;
-                float distance = Vector3.Distance(aiKnowledge.currentPos,
-                    aiKnowledge.targetKnowledge.targetEntity.Position);
+                if (aiKnowledge.TargetKnowledge.TargetEntity == null) return;
+                ConfigAIMeleeChargeData data = aiKnowledge.MeleeChargeTactic.Data;
+                float stopDistance = data.StopDistance;
+                float distance = Vector3.Distance(aiKnowledge.CurrentPos,
+                    aiKnowledge.TargetKnowledge.TargetEntity.Position);
                 if (distance < stopDistance)
                 {
                     Status = ChargeStatus.Inactive;

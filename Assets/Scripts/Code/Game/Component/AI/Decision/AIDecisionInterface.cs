@@ -24,21 +24,21 @@ namespace TaoTie
 
 		public static bool IsOnAwareValid(AIKnowledge knowledge)
 		{
-			return knowledge.skillKnowledge.SkillsOnAware.AvailableSkills.Count > 0;
+			return knowledge.SkillKnowledge.SkillsOnAware.AvailableSkills.Count > 0;
 		}
 
 		public static bool IsOnAlertValid(AIKnowledge knowledge)
 		{
-			return knowledge.skillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0;
+			return knowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0;
 		}
 
 		public static bool IsOnNerveValid(AIKnowledge knowledge)
 		{
-			return knowledge.skillKnowledge.SkillsOnNerve.AvailableSkills.Count > 0;
+			return knowledge.SkillKnowledge.SkillsOnNerve.AvailableSkills.Count > 0;
 		}
 		public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.moveKnowledge.canMove) return false;
+			if (!knowledge.MoveKnowledge.CanMove) return false;
 			// if (!knowledge.returnToBornKnowledge.config.enable)
 			// 	return false;
 			// if (!knowledge.isReturnToBorn)
@@ -54,16 +54,16 @@ namespace TaoTie
 
 		public static bool IsFreeSkillValid(AIKnowledge knowledge)
 		{
-			return knowledge.skillKnowledge.SkillsFree.AvailableSkills.Count > 0;
+			return knowledge.SkillKnowledge.SkillsFree.AvailableSkills.Count > 0;
 		}
 		public static bool IsFollowScriptedPathValid(AIKnowledge knowledge) => default;
 		public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.moveKnowledge.canMove) return false;
-			if (knowledge.wanderTactic.config==null || !knowledge.wanderTactic.config.Enable)
+			if (!knowledge.MoveKnowledge.CanMove) return false;
+			if (knowledge.WanderTactic.Config==null || !knowledge.WanderTactic.Config.Enable)
 				return false;
-			if (knowledge.moveControlState.WanderInfo.nextAvailableTick > GameTimerManager.Instance.GetTimeNow())
+			if (knowledge.MoveControlState.WanderInfo.NextAvailableTick > GameTimerManager.Instance.GetTimeNow())
 				return false;
 			return true;
 		}
@@ -73,43 +73,43 @@ namespace TaoTie
 
 		public static bool IsCombatBuddySkillValid(AIKnowledge knowledge)
 		{
-			return knowledge.skillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0;
+			return knowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0;
 		}
 
 		public static bool IsCombatSkillExecuteValid(AIKnowledge knowledge)
 		{
-			return knowledge.actionControlState.status == SkillStatus.Prepared;
+			return knowledge.ActionControlState.Status == SkillStatus.Prepared;
 		}
 
 		public static bool IsCombatSkillPrepareValid(AIKnowledge knowledge)
 		{
-			return knowledge.skillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
+			return knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
 		}
 		public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.moveKnowledge.canMove) return false;
-			if (knowledge.moveControlState.MeleeCharge.Status == MeleeChargeInfo.ChargeStatus.Charging) return true;
-			knowledge.meleeChargeTactic.SwitchSetting(knowledge.poseID);
-			float meleeChargeStartDistanceMin = knowledge.meleeChargeTactic.data.startDistanceMin;
-			float meleeChargeStartDistanceMax = knowledge.meleeChargeTactic.data.startDistanceMax;
+			if (!knowledge.MoveKnowledge.CanMove) return false;
+			if (knowledge.MoveControlState.MeleeCharge.Status == MeleeChargeInfo.ChargeStatus.Charging) return true;
+			knowledge.MeleeChargeTactic.SwitchSetting(knowledge.PoseID);
+			float meleeChargeStartDistanceMin = knowledge.MeleeChargeTactic.Data.StartDistanceMin;
+			float meleeChargeStartDistanceMax = knowledge.MeleeChargeTactic.Data.StartDistanceMax;
 			
-			if (knowledge.meleeChargeTactic.config==null||!knowledge.meleeChargeTactic.config.Enable)
+			if (knowledge.MeleeChargeTactic.Config==null||!knowledge.MeleeChargeTactic.Config.Enable)
 				return false;
-			if (!knowledge.meleeChargeTactic.NerveCheck(knowledge))
+			if (!knowledge.MeleeChargeTactic.NerveCheck(knowledge))
 				return false;
-			if (knowledge.targetKnowledge.targetDistance > meleeChargeStartDistanceMax)
+			if (knowledge.TargetKnowledge.TargetDistance > meleeChargeStartDistanceMax)
 				return false;
-			if (knowledge.targetKnowledge.targetDistance < meleeChargeStartDistanceMin)
+			if (knowledge.TargetKnowledge.TargetDistance < meleeChargeStartDistanceMin)
 				return false;
 			return true;
 		}
 		public static bool IsCombatFacingMoveValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.moveKnowledge.canMove) return false;
-			if (knowledge.facingMoveTactic.config==null||!knowledge.facingMoveTactic.config.Enable)
+			if (!knowledge.MoveKnowledge.CanMove) return false;
+			if (knowledge.FacingMoveTactic.Config==null||!knowledge.FacingMoveTactic.Config.Enable)
 				return false;
-			if (!knowledge.facingMoveTactic.NerveCheck(knowledge))
+			if (!knowledge.FacingMoveTactic.NerveCheck(knowledge))
 				return false;
 			return true;
 		}
@@ -124,16 +124,16 @@ namespace TaoTie
 		public static bool IsExtractionValid(AIKnowledge knowledge) => default;
 		public static bool IsFleeValid(AIKnowledge knowledge)
 		{
-			if (!knowledge.moveKnowledge.canMove) return false;
-			knowledge.fleeTactic.SwitchSetting(knowledge.poseID);
-			float triggerDistance = knowledge.fleeTactic.data.triggerDistance;
-			if (knowledge.fleeTactic.config==null||!knowledge.fleeTactic.config.Enable)
+			if (!knowledge.MoveKnowledge.CanMove) return false;
+			knowledge.FleeTactic.SwitchSetting(knowledge.PoseID);
+			float triggerDistance = knowledge.FleeTactic.Data.TriggerDistance;
+			if (knowledge.FleeTactic.Config==null||!knowledge.FleeTactic.Config.Enable)
 				return false;
-			if (!knowledge.fleeTactic.NerveCheck(knowledge))
+			if (!knowledge.FleeTactic.NerveCheck(knowledge))
 				return false;
-			if (knowledge.moveControlState.FleeInfo.nextAvailableTick > GameTimerManager.Instance.GetTimeNow())
+			if (knowledge.MoveControlState.FleeInfo.NextAvailableTick > GameTimerManager.Instance.GetTimeNow())
 				return false;
-			if (knowledge.targetKnowledge.targetDistance > triggerDistance)
+			if (knowledge.TargetKnowledge.TargetDistance > triggerDistance)
 				return false;
 			return true;
 		}

@@ -4,8 +4,8 @@ namespace TaoTie
 {
     public class AIMoveControlState : IDisposable
     {
-        public MoveInfoBase[] moveInfoGroup;
-        public MoveInfoBase curMoveInfo;
+        private MoveInfoBase[] moveInfoGroup;
+        private MoveInfoBase curMoveInfo;
 
         public FacingMoveInfo FacingMoveInfo => moveInfoGroup[(int) MoveDecision.FacingMove] as FacingMoveInfo;
         public FleeInfo FleeInfo => moveInfoGroup[(int) MoveDecision.Flee] as FleeInfo;

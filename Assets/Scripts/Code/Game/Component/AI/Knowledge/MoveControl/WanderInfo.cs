@@ -4,9 +4,9 @@ namespace TaoTie
 {
     public class WanderInfo: MoveInfoBase
     {
-        public WanderStatus status;
-        public long nextAvailableTick;
-        public Vector3 wanderToPosCandidate;
+        public WanderStatus Status;
+        public long NextAvailableTick;
+        public Vector3 WanderToPosCandidate;
         public static WanderInfo Create()
         {
             var res = ObjectPool.Instance.Fetch<WanderInfo>();
@@ -19,17 +19,17 @@ namespace TaoTie
             if (taskHandler.currentState == LocoTaskState.Finished)
             {
                 TriggerCD(aiKnowledge);
-                status = WanderStatus.Inactive;
+                Status = WanderStatus.Inactive;
             }
         }
 
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
-            ConfigAIWanderData data = aiKnowledge.wanderTactic.data;
+            ConfigAIWanderData data = aiKnowledge.WanderTactic.Data;
 
             float distanceFromCurrentMin = data.DistanceFromCurrentMin;
             float distanceFromCurrentMax = data.DistanceFromCurrentMax;
-            float distanceFromBorn = aiKnowledge.wanderTactic.data.DistanceFromBorn;
+            float distanceFromBorn = aiKnowledge.WanderTactic.Data.DistanceFromBorn;
 
             float turnSpeed = data.TurnSpeedOverride;
 
@@ -38,20 +38,20 @@ namespace TaoTie
             Vector3 randomDirection = new Vector3(Random.insideUnitCircle.x, 0, Random.insideUnitCircle.y);
             randomDirection *= randomDistance;
 
-            wanderToPosCandidate = new Vector3(aiKnowledge.currentPos.x + randomDirection.x, aiKnowledge.currentPos.y, aiKnowledge.currentPos.z + randomDirection.z);
+            WanderToPosCandidate = new Vector3(aiKnowledge.CurrentPos.x + randomDirection.x, aiKnowledge.CurrentPos.y, aiKnowledge.CurrentPos.z + randomDirection.z);
 
 
-            var bornPos = aiKnowledge.bornPos;
-            bornPos.y = wanderToPosCandidate.y;
+            var bornPos = aiKnowledge.BornPos;
+            bornPos.y = WanderToPosCandidate.y;
 
-            if (Vector3.Distance(bornPos, wanderToPosCandidate) >= distanceFromBorn)
+            if (Vector3.Distance(bornPos, WanderToPosCandidate) >= distanceFromBorn)
             {
-                wanderToPosCandidate = new Vector3(aiKnowledge.bornPos.x + randomDirection.x, aiKnowledge.bornPos.y, aiKnowledge.bornPos.z + randomDirection.z);
+                WanderToPosCandidate = new Vector3(aiKnowledge.BornPos.x + randomDirection.x, aiKnowledge.BornPos.y, aiKnowledge.BornPos.z + randomDirection.z);
             }
 
             AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
             {
-                targetPosition = wanderToPosCandidate,
+                targetPosition = WanderToPosCandidate,
                 cannedTurnSpeedOverride = turnSpeed,
                 speedLevel = (AIMoveSpeedLevel)data.SpeedLevel,
             };
@@ -59,13 +59,13 @@ namespace TaoTie
             taskHandler.CreateGoToTask(param);
 
 
-            status = WanderStatus.Wandering;
+            Status = WanderStatus.Wandering;
         }
 
         public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             base.Leave(taskHandler, aiKnowledge,aiManager);
-            status = WanderStatus.Inactive;
+            Status = WanderStatus.Inactive;
             //if (taskHandler.currentState == AILocoTaskState.Running)
             //    taskHandler.currentState = AILocoTaskState.Interrupted;
         }
@@ -80,9 +80,9 @@ namespace TaoTie
 
         public void TriggerCD(AIKnowledge knowledge, bool byFail = false)
         {
-            int cdMin = knowledge.wanderTactic.data.CdMin;
-            int cdMax = knowledge.wanderTactic.data.CdMax;
-            nextAvailableTick = GameTimerManager.Instance.GetTimeNow() + Random.Range(cdMin, cdMax);
+            int cdMin = knowledge.WanderTactic.Data.CdMin;
+            int cdMax = knowledge.WanderTactic.Data.CdMax;
+            NextAvailableTick = GameTimerManager.Instance.GetTimeNow() + Random.Range(cdMin, cdMax);
         }
         public override void Dispose()
         {

@@ -5,49 +5,49 @@ namespace TaoTie
 {
     public class AIThreatKnowledge: IDisposable
     {
-        public ConfigAIThreatSetting config;
+        public ConfigAIThreatSetting Config;
         /// <summary>
         /// 视觉感知威胁增加系数
         /// </summary>
-        public float viewThreatGrowRate;
+        public float ViewThreatGrowRate;
         /// <summary>
         /// 听觉感知威胁增加系数
         /// </summary>
-        public float hearThreatGrowRate;
+        public float HearThreatGrowRate;
         /// <summary>
         /// 近身感知威胁增加系数
         /// </summary>
-        public float feelThreatGrowRate;
+        public float FeelThreatGrowRate;
 
         /// <summary>
         /// 视觉感知衰减曲线
         /// </summary>
-        public AICurve viewAttenuation;
+        public AICurve ViewAttenuation;
         /// <summary>
         /// 听觉感知衰减曲线
         /// </summary>
-        public AICurve hearAttenuation;
+        public AICurve HearAttenuation;
 
-        public bool reachAwareThisFrame;
-        public bool reachAlertThisFrame;
+        public bool ReachAwareThisFrame;
+        public bool ReachAlertThisFrame;
 
-        public Dictionary<int, ThreatInfo> candidateList = new();
-        public Dictionary<int, ThreatInfo> threatList = new();
+        private Dictionary<int, ThreatInfo> candidateList = new();
+        private Dictionary<int, ThreatInfo> threatList = new();
 
         /// <summary>
         /// 主要目标
         /// </summary>
-        public ThreatInfo mainThreat;
+        public ThreatInfo MainThreat;
 
         /// <summary>
         /// 威胁 广播 告知
         /// </summary>
-        public float threatBroadcastRange;
+        public float ThreatBroadcastRange;
         
         /// <summary>
         /// Taunt 嘲讽
         /// </summary>
-        public TauntLevel resistTauntLevel;
+        public TauntLevel ResistTauntLevel;
 
         public static AIThreatKnowledge Create(ConfigAIBeta config)
         {
@@ -59,16 +59,16 @@ namespace TaoTie
         
         private void InitSetting(ConfigAIThreatSetting configThreat)
         {
-            config = configThreat;
+            Config = configThreat;
 
-            viewThreatGrowRate = configThreat.viewThreatGrow;
-            hearThreatGrowRate = configThreat.hearThreatGrow;
-            feelThreatGrowRate = configThreat.feelThreatGrow;
+            ViewThreatGrowRate = configThreat.ViewThreatGrow;
+            HearThreatGrowRate = configThreat.HearThreatGrow;
+            FeelThreatGrowRate = configThreat.FeelThreatGrow;
 
-            threatBroadcastRange = configThreat.threatBroadcastRange;
+            ThreatBroadcastRange = configThreat.ThreatBroadcastRange;
 
-            viewAttenuation = new AICurve(configThreat.viewAttenuation);
-            hearAttenuation = new AICurve(configThreat.hearAttenuation);
+            ViewAttenuation = new AICurve(configThreat.ViewAttenuation);
+            HearAttenuation = new AICurve(configThreat.HearAttenuation);
         }
 
         public void ReInit()
@@ -82,17 +82,17 @@ namespace TaoTie
             candidateList.Clear();
             threatList.Clear();
             
-            mainThreat = null;
-            resistTauntLevel = default;
+            MainThreat = null;
+            ResistTauntLevel = default;
             
-            reachAwareThisFrame = false;
-            hearAttenuation = default;
-            viewAttenuation = default;
-            threatBroadcastRange = 0;
-            feelThreatGrowRate = 0;
-            hearThreatGrowRate = 0;
-            viewThreatGrowRate = 0;
-            config = null;
+            ReachAwareThisFrame = false;
+            HearAttenuation = default;
+            ViewAttenuation = default;
+            ThreatBroadcastRange = 0;
+            FeelThreatGrowRate = 0;
+            HearThreatGrowRate = 0;
+            ViewThreatGrowRate = 0;
+            Config = null;
             ObjectPool.Instance.Recycle(this);
         }
     }

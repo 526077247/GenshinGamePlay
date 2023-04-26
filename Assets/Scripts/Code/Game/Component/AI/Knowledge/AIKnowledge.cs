@@ -8,117 +8,117 @@ namespace TaoTie
     /// </summary>
     public class AIKnowledge: IDisposable
     {
-        public Unit aiOwnerEntity; // 0x18
-        public uint campID;
+        public Unit AiOwnerEntity; // 0x18
+        public uint CampID;
         
-        public Vector3 bornPos;
-        public Vector3 currentPos => aiOwnerEntity.Position;
-        public Vector3 currentForward => aiOwnerEntity.Forward;
-        public Vector3 eyePos;
-        public Transform eyeTransform;
+        public Vector3 BornPos;
+        public Vector3 CurrentPos => AiOwnerEntity.Position;
+        public Vector3 CurrentForward => AiOwnerEntity.Forward;
+        public Vector3 EyePos;
+        public Transform EyeTransform;
         
-        public float temperature;
+        public float Temperature;
         
-        public ThreatLevel threatLevel;
-        public ThreatLevel threatLevelOld;
-        public Vector3? enterCombatPosition;
-        public Vector3? enterCombatForward;
-        public DecisionArchetype decisionArchetype;
-        public AITactic currentTactic;
-        public bool tacticChanged;
-        public bool moveDecisionChanged;
-        public AIMoveControlState moveControlState;
-        public AIActionControlState actionControlState;
+        public ThreatLevel ThreatLevel;
+        public ThreatLevel ThreatLevelOld;
+        public Vector3? EnterCombatPosition;
+        public Vector3? EnterCombatForward;
+        public DecisionArchetype DecisionArchetype;
+        public AITactic CurrentTactic;
+        public bool TacticChanged;
+        public bool MoveDecisionChanged;
+        public AIMoveControlState MoveControlState;
+        public AIActionControlState ActionControlState;
         
-        public int poseID;
+        public int PoseID;
         
-        public AIManager aiManager;
-        public CombatComponent combatComponent => aiOwnerEntity.GetComponent<CombatComponent>();
-        public PoseFSMComponent pose => aiOwnerEntity.GetComponent<PoseFSMComponent>();
+        public AIManager AiManager;
+        public CombatComponent CombatComponent => AiOwnerEntity.GetComponent<CombatComponent>();
+        public PoseFSMComponent Pose => AiOwnerEntity.GetComponent<PoseFSMComponent>();
         
-        public AISkillKnowledge skillKnowledge;
-        public AIMoveKnowledge moveKnowledge;
-        public AIThreatKnowledge threatKnowledge;
-        public AISensingKnowledge sensingKnowledge;
-        public AIDefendAreaKnowledge defendAreaKnowledge;
-        public AITargetKnowledge targetKnowledge;
-        public AIPathFindingKnowledge pathFindingKnowledge;
+        public AISkillKnowledge SkillKnowledge;
+        public AIMoveKnowledge MoveKnowledge;
+        public AIThreatKnowledge ThreatKnowledge;
+        public AISensingKnowledge SensingKnowledge;
+        public AIDefendAreaKnowledge DefendAreaKnowledge;
+        public AITargetKnowledge TargetKnowledge;
+        public AIPathFindingKnowledge PathFindingKnowledge;
         
         
-        public AITacticKnowledge_FacingMove facingMoveTactic;
-        public AITacticKnowledge_MeleeCharge meleeChargeTactic;
-        public AITacticKnowledge_Flee fleeTactic;
-        public AITacticKnowledge_Wander wanderTactic;
+        public AITacticKnowledge_FacingMove FacingMoveTactic;
+        public AITacticKnowledge_MeleeCharge MeleeChargeTactic;
+        public AITacticKnowledge_Flee FleeTactic;
+        public AITacticKnowledge_Wander WanderTactic;
         public void Init(Unit aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
-            this.aiManager = aiManager;
-            aiOwnerEntity = aiEntity;
-            bornPos = aiOwnerEntity.Position;
-            campID = aiOwnerEntity.CampId;
-            decisionArchetype = config.DecisionArchetype;
+            this.AiManager = aiManager;
+            AiOwnerEntity = aiEntity;
+            BornPos = AiOwnerEntity.Position;
+            CampID = AiOwnerEntity.CampId;
+            DecisionArchetype = config.DecisionArchetype;
             
-            moveControlState = AIMoveControlState.Create();
-            actionControlState = AIActionControlState.Create();
+            MoveControlState = AIMoveControlState.Create();
+            ActionControlState = AIActionControlState.Create();
             
-            sensingKnowledge = AISensingKnowledge.Create(config);
-            threatKnowledge = AIThreatKnowledge.Create(config);
-            targetKnowledge = AITargetKnowledge.Create();
-            defendAreaKnowledge = AIDefendAreaKnowledge.Create(config,bornPos);
-            skillKnowledge = AISkillKnowledge.Create(config);
-            moveKnowledge = AIMoveKnowledge.Create(config);
+            SensingKnowledge = AISensingKnowledge.Create(config);
+            ThreatKnowledge = AIThreatKnowledge.Create(config);
+            TargetKnowledge = AITargetKnowledge.Create();
+            DefendAreaKnowledge = AIDefendAreaKnowledge.Create(config,BornPos);
+            SkillKnowledge = AISkillKnowledge.Create(config);
+            MoveKnowledge = AIMoveKnowledge.Create(config);
             
-            pathFindingKnowledge = AIPathFindingKnowledge.Create(config);
+            PathFindingKnowledge = AIPathFindingKnowledge.Create(config);
             
-            facingMoveTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_FacingMove>();
-            facingMoveTactic.LoadData(config.FacingMoveTactic);
-            meleeChargeTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_MeleeCharge>();
-            meleeChargeTactic.LoadData(config.MeleeChargeTactic);
-            fleeTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_Flee>();
-            fleeTactic.LoadData(config.FleeTactic);
-            wanderTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_Wander>();
-            wanderTactic.LoadData(config.WanderTactic);
+            FacingMoveTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_FacingMove>();
+            FacingMoveTactic.LoadData(config.FacingMoveTactic);
+            MeleeChargeTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_MeleeCharge>();
+            MeleeChargeTactic.LoadData(config.MeleeChargeTactic);
+            FleeTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_Flee>();
+            FleeTactic.LoadData(config.FleeTactic);
+            WanderTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_Wander>();
+            WanderTactic.LoadData(config.WanderTactic);
         }
 
         public void Dispose()
         {
             //注意清除引用类型
-            enterCombatPosition = null;
-            enterCombatForward = null;
+            EnterCombatPosition = null;
+            EnterCombatForward = null;
             
-            wanderTactic.Dispose();
-            wanderTactic = null;
-            fleeTactic.Dispose();
-            fleeTactic = null;
-            meleeChargeTactic.Dispose();
-            meleeChargeTactic = null;
-            facingMoveTactic.Dispose();
-            facingMoveTactic = null;
+            WanderTactic.Dispose();
+            WanderTactic = null;
+            FleeTactic.Dispose();
+            FleeTactic = null;
+            MeleeChargeTactic.Dispose();
+            MeleeChargeTactic = null;
+            FacingMoveTactic.Dispose();
+            FacingMoveTactic = null;
             
-            pathFindingKnowledge.Dispose();
-            pathFindingKnowledge = null;
+            PathFindingKnowledge.Dispose();
+            PathFindingKnowledge = null;
             
-            moveKnowledge.Dispose();
-            moveKnowledge = null;
-            skillKnowledge.Dispose();
-            skillKnowledge = null;
-            threatKnowledge.Dispose();
-            threatKnowledge = null;
-            sensingKnowledge.Dispose();
-            sensingKnowledge = null;
-            targetKnowledge.Dispose();
-            targetKnowledge = null;
+            MoveKnowledge.Dispose();
+            MoveKnowledge = null;
+            SkillKnowledge.Dispose();
+            SkillKnowledge = null;
+            ThreatKnowledge.Dispose();
+            ThreatKnowledge = null;
+            SensingKnowledge.Dispose();
+            SensingKnowledge = null;
+            TargetKnowledge.Dispose();
+            TargetKnowledge = null;
 
-            actionControlState.Dispose();
-            actionControlState = null;
-            moveControlState.Dispose();
-            moveControlState = null;
+            ActionControlState.Dispose();
+            ActionControlState = null;
+            MoveControlState.Dispose();
+            MoveControlState = null;
             
-            aiManager = null;
-            aiOwnerEntity = null;
-            bornPos = default;
-            campID = 0;
-            enterCombatPosition = null;
-            enterCombatForward = null;
+            AiManager = null;
+            AiOwnerEntity = null;
+            BornPos = default;
+            CampID = 0;
+            EnterCombatPosition = null;
+            EnterCombatForward = null;
             ObjectPool.Instance.Recycle(this);
         }
     }

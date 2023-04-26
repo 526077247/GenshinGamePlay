@@ -11,24 +11,24 @@ namespace TaoTie
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
-            foreach (var item in knowledge.pathFindingKnowledge.QueryTasks)
+            foreach (var item in knowledge.PathFindingKnowledge.QueryTasks)
             {
                 var task = item.Value;
-                if (task.status != QueryStatus.Pending) continue;
-                if (task.type == NavMeshUseType.NotUse ||
-                    (task.type == NavMeshUseType.Auto && knowledge.pathFindingKnowledge.Type == PathFindingType.Link))
+                if (task.Status != QueryStatus.Pending) continue;
+                if (task.Type == NavMeshUseType.NotUse ||
+                    (task.Type == NavMeshUseType.Auto && knowledge.PathFindingKnowledge.Type == PathFindingType.Link))
                 {
                     //直接冲过去
-                    task.corners.Add(task.start);
-                    task.corners.Add(task.destination);
-                    task.status = QueryStatus.Success;
+                    task.Corners.Add(task.Start);
+                    task.Corners.Add(task.Destination);
+                    task.Status = QueryStatus.Success;
                 }
-                else if (task.type == NavMeshUseType.ForceUse ||
-                         (task.type == NavMeshUseType.Auto &&
-                          knowledge.pathFindingKnowledge.Type == PathFindingType.NavMesh))
+                else if (task.Type == NavMeshUseType.ForceUse ||
+                         (task.Type == NavMeshUseType.Auto &&
+                          knowledge.PathFindingKnowledge.Type == PathFindingType.NavMesh))
                 {
                     //todo:接入navmesh
-                    task.status = QueryStatus.Fail;
+                    task.Status = QueryStatus.Fail;
                 }
             }
         }

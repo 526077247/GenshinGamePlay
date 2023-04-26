@@ -8,39 +8,39 @@ namespace TaoTie
     public class ConfigAISensingSetting
     {
         [LabelText("敏感性")]
-        public float sensitivity;
+        public float Sensitivity;
         [LabelText("启用视觉")]
-        public bool enableVision;
-        [LabelText("可视范围(m)")][ShowIf(nameof(enableVision))]
-        public float viewRange = 30;
-        [LabelText("视觉全角")][ShowIf(nameof(enableVision))]
-        public bool viewPanoramic;
+        public bool EnableVision;
+        [LabelText("可视范围(m)")][ShowIf(nameof(EnableVision))]
+        public float ViewRange = 30;
+        [LabelText("视觉全角")][ShowIf(nameof(EnableVision))]
+        public bool ViewPanoramic;
         [LabelText("水平FOV(1-360°)")][ShowIf("@enableVision&&!viewPanoramic")]
-        public float horizontalFov;
+        public float HorizontalFov;
         [LabelText("垂直FOV(1-360°)")][ShowIf("@enableVision&&!viewPanoramic")]
-        public float verticalFov;
+        public float VerticalFov;
         [LabelText("感知范围(m)")]
-        public float feelRange = 10;
+        public float FeelRange = 10;
         [LabelText("其他声音感知范围(m)")]
-        public float hearAttractionRange = 20f;
+        public float HearAttractionRange = 20f;
         [LabelText("脚步声音感知范围(m)")]
-        public float hearFootstepRange;
+        public float HearFootstepRange;
         [LabelText("无源受击感知范围(m)")]
-        public float sourcelessHitAttractionRange = 0f;
+        public float SourcelessHitAttractionRange = 0f;
 
         public ConfigAISensingSetting DeepCopy()
         {
             ConfigAISensingSetting res = new ConfigAISensingSetting();
-            res.sensitivity = sensitivity;
-            res.enableVision = enableVision;
-            res.viewRange = Mathf.Clamp(viewRange,0,200);
-            res.viewPanoramic = viewPanoramic;
-            res.horizontalFov = Mathf.Clamp(horizontalFov,1,360);
-            res.verticalFov = Mathf.Clamp(verticalFov,1,360);
-            res.feelRange = feelRange;
-            res.hearAttractionRange = hearAttractionRange;
-            res.hearFootstepRange = hearFootstepRange;
-            res.sourcelessHitAttractionRange = sourcelessHitAttractionRange;
+            res.Sensitivity = Sensitivity;
+            res.EnableVision = EnableVision;
+            res.ViewRange = Mathf.Clamp(ViewRange,0,200);
+            res.ViewPanoramic = ViewPanoramic;
+            res.HorizontalFov = Mathf.Clamp(HorizontalFov,1,360);
+            res.VerticalFov = Mathf.Clamp(VerticalFov,1,360);
+            res.FeelRange = FeelRange;
+            res.HearAttractionRange = HearAttractionRange;
+            res.HearFootstepRange = HearFootstepRange;
+            res.SourcelessHitAttractionRange = SourcelessHitAttractionRange;
             return res;
         }
     }

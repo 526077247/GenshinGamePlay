@@ -22,17 +22,17 @@ namespace TaoTie
         {
             if (Status == CombatFollowMoveStatus.Inactive)
             {
-                ConfigAIMeleeChargeData data = aiKnowledge.meleeChargeTactic.data;
+                ConfigAIMeleeChargeData data = aiKnowledge.MeleeChargeTactic.Data;
 
-                float stopDistance = data.stopDistance;
-                bool useMeleeSlot = data.useMeleeSlot;
-                float turnSpeed = data.turnSpeedOverride;
+                float stopDistance = data.StopDistance;
+                bool useMeleeSlot = data.UseMeleeSlot;
+                float turnSpeed = data.TurnSpeedOverride;
 
-                AIMoveSpeedLevel speedLevel = data.speedLevel;
+                AIMoveSpeedLevel speedLevel = data.SpeedLevel;
 
                 AILocomotionHandler.ParamFollowMove param = new AILocomotionHandler.ParamFollowMove
                 {
-                    anchor = aiKnowledge.targetKnowledge.targetEntity,
+                    anchor = aiKnowledge.TargetKnowledge.TargetEntity,
                     useMeleeSlot = useMeleeSlot,
                     speedLevel = speedLevel,
                     turnSpeed = turnSpeed,

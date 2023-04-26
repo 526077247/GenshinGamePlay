@@ -14,87 +14,87 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            actionState = aiKnowledge.actionControlState;
-            component = aiKnowledge.aiOwnerEntity.GetComponent<AIComponent>();
+            actionState = aiKnowledge.ActionControlState;
+            component = aiKnowledge.AiOwnerEntity.GetComponent<AIComponent>();
         }
 
         public void ExecuteAction(AIDecision decision)
         {
             //Inactive Status: no skill stand by, select new skill
-            if (actionState.status == SkillStatus.Inactive)
+            if (actionState.Status == SkillStatus.Inactive)
             {
                 if (decision.act == ActDecision.OnAware)
                 {
-                    if (aiKnowledge.skillKnowledge.SkillsOnAware.AvailableSkills.Count > 0)
+                    if (aiKnowledge.SkillKnowledge.SkillsOnAware.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(aiKnowledge.skillKnowledge.SkillsOnAware.AvailableSkills[0]);
+                        SelectSkill(aiKnowledge.SkillKnowledge.SkillsOnAware.AvailableSkills[0]);
                         CastSkill();
-                        actionState.status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Playing;
                     }
                 }
                 else if (decision.act == ActDecision.OnAlert)
                 {
-                    if (aiKnowledge.skillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0)
+                    if (aiKnowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(aiKnowledge.skillKnowledge.SkillsOnAlert.AvailableSkills[0]);
+                        SelectSkill(aiKnowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills[0]);
                         CastSkill();
-                        actionState.status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Playing;
                     }
                 }
                 else if (decision.act == ActDecision.FreeSkill)
                 {
-                    if (aiKnowledge.skillKnowledge.SkillsFree.AvailableSkills.Count > 0)
+                    if (aiKnowledge.SkillKnowledge.SkillsFree.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(aiKnowledge.skillKnowledge.SkillsFree.AvailableSkills[0]);
+                        SelectSkill(aiKnowledge.SkillKnowledge.SkillsFree.AvailableSkills[0]);
                         CastSkill();
-                        actionState.status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Playing;
                     }
                 }
                 else if (decision.act == ActDecision.BuddySkill)
                 {
-                    if (aiKnowledge.skillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0)
+                    if (aiKnowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(aiKnowledge.skillKnowledge.SkillsCombatBuddy.AvailableSkills[0]);
+                        SelectSkill(aiKnowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills[0]);
                         CastSkill();
-                        actionState.status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Playing;
                     }
                 }
                 else if (decision.act == ActDecision.CombatSkill)
                 {
-                    if (aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
+                    if (aiKnowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills[0]);
+                        SelectSkill(aiKnowledge.SkillKnowledge.SkillsCombat.AvailableSkills[0]);
                         CastSkill();
-                        actionState.status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Playing;
                     }
                 }
                 else if (decision.act == ActDecision.CombatSkillPrepare)
                 {
-                    if (aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
+                    if (aiKnowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {
-                        actionState.status = SkillStatus.Preparing;
-                        SelectSkill(aiKnowledge.skillKnowledge.SkillsCombat.AvailableSkills[0]);
+                        actionState.Status = SkillStatus.Preparing;
+                        SelectSkill(aiKnowledge.SkillKnowledge.SkillsCombat.AvailableSkills[0]);
                         OnSkillStart();
                     }
                 }
             }
 
             //Preparing Status: in order to meet the castRange condition
-            if (actionState.status == SkillStatus.Preparing)
+            if (actionState.Status == SkillStatus.Preparing)
             {
-                var targetKnowledge = aiKnowledge.targetKnowledge;
-                var currentSkill = actionState.skill;
+                var targetKnowledge = aiKnowledge.TargetKnowledge;
+                var currentSkill = actionState.Skill;
 
-                var castRangeMin = currentSkill.Config.CastCondition.castRangeMin;
-                var castRangeMax = currentSkill.Config.CastCondition.castRangeMax;
+                var castRangeMin = currentSkill.Config.CastCondition.CastRangeMin;
+                var castRangeMax = currentSkill.Config.CastCondition.CastRangeMax;
 
-                var targetPosition = aiKnowledge.targetKnowledge.targetPosition;
-                if (aiKnowledge.targetKnowledge.targetType == AITargetType.EntityTarget)
+                var targetPosition = aiKnowledge.TargetKnowledge.TargetPosition;
+                if (aiKnowledge.TargetKnowledge.TargetType == AITargetType.EntityTarget)
                 {
-                    targetPosition = aiKnowledge.targetKnowledge.targetEntity.Position;
+                    targetPosition = aiKnowledge.TargetKnowledge.TargetEntity.Position;
                 }
 
-                var currentPosition = aiKnowledge.currentPos;
+                var currentPosition = aiKnowledge.CurrentPos;
 
                 targetPosition.y = 0;
                 currentPosition.y = 0;
@@ -102,31 +102,31 @@ namespace TaoTie
 
                 if (castRangeMin < 0 && castRangeMax < 0)
                 {
-                    actionState.status = SkillStatus.Prepared;
+                    actionState.Status = SkillStatus.Prepared;
                 }
 
-                else if (targetKnowledge.skillAnchorDistance < castRangeMax ||
-                         targetKnowledge.targetDistanceXZ < castRangeMax)
+                else if (targetKnowledge.SkillAnchorDistance < castRangeMax ||
+                         targetKnowledge.TargetDistanceXZ < castRangeMax)
                 {
-                    actionState.status = SkillStatus.Prepared;
+                    actionState.Status = SkillStatus.Prepared;
                 }
 
             }
 
             //Prepared Status: meet all the requirements, cast skill
-            if (actionState.status == SkillStatus.Prepared)
+            if (actionState.Status == SkillStatus.Prepared)
             {
                 if (decision.act == ActDecision.CombatSkill)
                 {
-                    var skillInfo = actionState.skill;
+                    var skillInfo = actionState.Skill;
 
-                    var targetPosition = aiKnowledge.targetKnowledge.targetPosition;
-                    if (aiKnowledge.targetKnowledge.targetType == AITargetType.EntityTarget)
+                    var targetPosition = aiKnowledge.TargetKnowledge.TargetPosition;
+                    if (aiKnowledge.TargetKnowledge.TargetType == AITargetType.EntityTarget)
                     {
-                        targetPosition = aiKnowledge.targetKnowledge.targetEntity.Position;
+                        targetPosition = aiKnowledge.TargetKnowledge.TargetEntity.Position;
                     }
 
-                    var currentPosition = aiKnowledge.currentPos;
+                    var currentPosition = aiKnowledge.CurrentPos;
 
                     targetPosition.y = 0;
                     currentPosition.y = 0;
@@ -137,25 +137,25 @@ namespace TaoTie
                     }
 
                     CastSkill();
-                    actionState.status = SkillStatus.Playing;
+                    actionState.Status = SkillStatus.Playing;
                 }
             }
 
             //Playing Status: play the skill's animation
-            if (actionState.status == SkillStatus.Playing)
+            if (actionState.Status == SkillStatus.Playing)
             {
-                var skillInfo = actionState.skill;
+                var skillInfo = actionState.Skill;
 
                 bool isFinished = true;
 
                 if (skillInfo.Config.StateIds?.Length > 0)
                 {
-                    if (actionState.currentStateID == null)
+                    if (actionState.CurrentStateID == null)
                         return;
 
                     for (int i = 0; i < skillInfo.Config.StateIds.Length; i++)
                     {
-                        if (actionState.currentStateID == skillInfo.Config.StateIds[i])
+                        if (actionState.CurrentStateID == skillInfo.Config.StateIds[i])
                         {
                             isFinished = false;
                             break;
@@ -166,14 +166,14 @@ namespace TaoTie
                 if (isFinished)
                 {
                     OnSkillFinish();
-                    actionState.status = SkillStatus.Inactive;
+                    actionState.Status = SkillStatus.Inactive;
                 }
             }
         }
 
         private void SelectSkill(AISkillInfo skill)
         {
-            actionState.skill = skill;
+            actionState.Skill = skill;
         }
 
         private void SelectSkill(List<AISkillInfo> skillCandidates, bool skipPrepare = true)
@@ -183,10 +183,10 @@ namespace TaoTie
         private void CastSkill()
         {
             var now = GameTimerManager.Instance.GetTimeNow();
-            var maic = aiKnowledge.aiOwnerEntity.GetComponent<MonsterAIInputComponent>();
-            var skillInfo = actionState.skill;
-            var targetKnowledge = aiKnowledge.targetKnowledge;
-            var skillKnowledge = aiKnowledge.skillKnowledge;
+            var maic = aiKnowledge.AiOwnerEntity.GetComponent<MonsterAIInputComponent>();
+            var skillInfo = actionState.Skill;
+            var targetKnowledge = aiKnowledge.TargetKnowledge;
+            var skillKnowledge = aiKnowledge.SkillKnowledge;
 
             maic.TryDoSkill(skillInfo.SkillId);
 
@@ -195,38 +195,38 @@ namespace TaoTie
                 skillInfo.TriggerCD(now);
                 skillKnowledge.SetSkillGroupCD(skillInfo.Config.SkillGroupCDID, now);
                 if (skillInfo.Config.TriggerGCD)
-                    aiKnowledge.skillKnowledge.SetGCD(now);
+                    aiKnowledge.SkillKnowledge.SetGCD(now);
                 if (skillInfo.Config.TriggerGCD)
-                    aiKnowledge.aiManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
+                    aiKnowledge.AiManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
             }
         }
 
         private void OnSkillStart()
         {
-            var skillInfo = actionState.skill;
-            var targetKnowledge = aiKnowledge.targetKnowledge;
+            var skillInfo = actionState.Skill;
+            var targetKnowledge = aiKnowledge.TargetKnowledge;
 
-            var currentPosition = aiKnowledge.currentPos;
+            var currentPosition = aiKnowledge.CurrentPos;
             currentPosition.y = 0;
 
-            var targetDistanceXZ = targetKnowledge.targetDistanceXZ;
+            var targetDistanceXZ = targetKnowledge.TargetDistanceXZ;
 
             //Set skill anchor position
             var targetPos = currentPosition;
 
-            if (targetDistanceXZ > skillInfo.Config.CastCondition.castRangeMax)
+            if (targetDistanceXZ > skillInfo.Config.CastCondition.CastRangeMax)
             {
-                var direction = (currentPosition - targetKnowledge.targetPosition).normalized * skillInfo.Config.CastCondition.castRangeMax;
-                targetPos = targetKnowledge.targetPosition + direction;
+                var direction = (currentPosition - targetKnowledge.TargetPosition).normalized * skillInfo.Config.CastCondition.CastRangeMax;
+                targetPos = targetKnowledge.TargetPosition + direction;
             }
-            aiKnowledge.targetKnowledge.skillAnchorPosition = targetPos;
+            aiKnowledge.TargetKnowledge.SkillAnchorPosition = targetPos;
         }
 
         private void OnSkillFinish()
         {
             var now = GameTimerManager.Instance.GetTimeNow();
-            var skillInfo = actionState.skill;
-            var skillKnowledge = aiKnowledge.skillKnowledge;
+            var skillInfo = actionState.Skill;
+            var skillKnowledge = aiKnowledge.SkillKnowledge;
             if (skillInfo == null)
                 return;
             
@@ -235,9 +235,9 @@ namespace TaoTie
                 skillInfo.TriggerCD(now);
                 skillKnowledge.SetSkillGroupCD(skillInfo.Config.SkillGroupCDID, now);
                 if (skillInfo.Config.TriggerGCD)
-                    aiKnowledge.skillKnowledge.SetGCD(now);
+                    aiKnowledge.SkillKnowledge.SetGCD(now);
                 if (skillInfo.Config.TriggerGCD)
-                    aiKnowledge.aiManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
+                    aiKnowledge.AiManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
             }
 
 
@@ -248,9 +248,9 @@ namespace TaoTie
         private void OnSkillFail(bool needTriggerCD = true)
         {
             var now = GameTimerManager.Instance.GetTimeNow();
-            var skillInfo = actionState.skill;
-            var skillKnowledge = aiKnowledge.skillKnowledge;
-            var maic = aiKnowledge.aiOwnerEntity.GetComponent<MonsterAIInputComponent>();
+            var skillInfo = actionState.Skill;
+            var skillKnowledge = aiKnowledge.SkillKnowledge;
+            var maic = aiKnowledge.AiOwnerEntity.GetComponent<MonsterAIInputComponent>();
             maic.TryReleaseSkill();
             if (skillInfo != null)
             {
@@ -259,9 +259,9 @@ namespace TaoTie
                     skillInfo.TriggerCD(now);
                     skillKnowledge.SetSkillGroupCD(skillInfo.Config.SkillGroupCDID, now);
                     if (skillInfo.Config.TriggerGCD)
-                        aiKnowledge.skillKnowledge.SetGCD(now);
+                        aiKnowledge.SkillKnowledge.SetGCD(now);
                     if (skillInfo.Config.TriggerGCD)
-                        aiKnowledge.aiManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
+                        aiKnowledge.AiManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
                 }
             }
 

@@ -16,7 +16,7 @@ namespace TaoTie
             base.Init(knowledge);
             speedLevel = param.speedLevel;
             destination = param.targetPosition;
-            _getCloseDistance = knowledge.moveKnowledge.GetAlmostReachDistance(param.speedLevel);
+            _getCloseDistance = knowledge.MoveKnowledge.GetAlmostReachDistance(param.speedLevel);
             // knowledge.turnSpeed = param.cannedTurnSpeedOverride;
         }
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)

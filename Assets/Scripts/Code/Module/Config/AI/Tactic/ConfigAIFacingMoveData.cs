@@ -6,22 +6,22 @@ namespace TaoTie
     public partial class ConfigAIFacingMoveData
     {
         [NinoMember(1)]
-        public int speedLevel;
+        public int SpeedLevel;
         [NinoMember(2)]
-        public float rangeMin;
+        public float RangeMin;
         [NinoMember(3)]
-        public float rangeMax;
+        public float RangeMax;
         [NinoMember(4)]
-        public float restTimeMin;
+        public float RestTimeMin;
         [NinoMember(5)]
-        public float restTimeMax;
+        public float RestTimeMax;
         [NinoMember(6)]
-        public float facingMoveTurnInterval;
+        public float FacingMoveTurnInterval;
         [NinoMember(7)]
-        public float facingMoveMinAvoidanceVelecity;
+        public float FacingMoveMinAvoidanceVelecity;
         [NinoMember(8)]
-        public float obstacleDetectRange;
+        public float ObstacleDetectRange;
         [NinoMember(9)]
-        public ConfigAIFacingMoveWeight facingMoveWeight; 
+        public ConfigAIFacingMoveWeight FacingMoveWeight; 
     }
 }

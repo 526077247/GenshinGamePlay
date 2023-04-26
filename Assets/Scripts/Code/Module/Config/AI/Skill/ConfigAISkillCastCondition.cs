@@ -8,28 +8,28 @@ namespace TaoTie
         [NinoMember(1)]
         public int[] PoseIds;
         [NinoMember(2)]
-        public float minTargetAngleXZ;
+        public float MinTargetAngleXZ;
         [NinoMember(3)]
-        public float maxTargetAngleXZ= 90;
+        public float MaxTargetAngleXZ= 90;
         [NinoMember(4)]
-        public float maxTargetAngleY = 90;
+        public float MaxTargetAngleY = 90;
         [NinoMember(5)]
-        public float minTargetAngleY;
+        public float MinTargetAngleY;
         [NinoMember(6)]
-        public float pickRangeMin;
+        public float PickRangeMin;
         [NinoMember(7)]
-        public float pickRangeMax;
+        public float PickRangeMax;
         [NinoMember(8)]
-        public float pickRangeYMax;
+        public float PickRangeYMax;
         [NinoMember(9)]
-        public float pickRangeYMin;
+        public float PickRangeYMin;
         [NinoMember(10)]
         public float SkillAnchorRangeMin;
         [NinoMember(11)]
         public float SkillAnchorRangeMax;
         [NinoMember(12)]
-        public float castRangeMin;
+        public float CastRangeMin;
         [NinoMember(13)]
-        public float castRangeMax;
+        public float CastRangeMax;
     }
 }

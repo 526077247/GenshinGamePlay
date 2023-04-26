@@ -6,8 +6,8 @@ namespace TaoTie
     public partial class AIPoint
     {
         [NinoMember(1)]
-        public float x;
+        public float X;
         [NinoMember(2)]
-        public float y;
+        public float Y;
     }
 }

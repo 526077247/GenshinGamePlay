@@ -8,8 +8,8 @@ namespace TaoTie
     {
         protected AITacticCondition condition;
         
-        public TacticConfig config { get; protected set; }
-        public TacticDataConfig data { get; protected set;}
+        public TacticConfig Config { get; protected set; }
+        public TacticDataConfig Data { get; protected set;}
         
         protected abstract TacticDataConfig defaultSetting { get; }
         protected abstract Dictionary<int, TacticDataConfig> specifications { get; }
@@ -18,9 +18,9 @@ namespace TaoTie
         {
             if (tacticConfig != null)
             {
-                config = tacticConfig;
-                condition = AITacticCondition.Create(config.Condition);
-                data = defaultSetting;
+                Config = tacticConfig;
+                condition = AITacticCondition.Create(Config.Condition);
+                Data = defaultSetting;
             }
         }
 
@@ -28,15 +28,15 @@ namespace TaoTie
         {
             if (specifications!=null && specifications.TryGetValue(poseID, out var setting))
             {
-                data = setting;
+                Data = setting;
             }
         }
         public void Dispose()
         {
             condition.Dispose();
             condition = null;
-            config = null;
-            data = default;
+            Config = null;
+            Data = default;
         }
 
         public bool NerveCheck(AIKnowledge knowledge)

@@ -5,13 +5,13 @@
     /// </summary>
     public class AIMoveUpdater : BrainModuleBase
     {
-        private FsmComponent fsm => knowledge.aiOwnerEntity.GetComponent<FsmComponent>();
+        private FsmComponent fsm => knowledge.AiOwnerEntity.GetComponent<FsmComponent>();
         
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
-            knowledge.moveKnowledge.canMove = fsm.DefaultFsm.currentState.CanMove;
-            knowledge.moveKnowledge.canTurn = fsm.DefaultFsm.currentState.CanTurn;
+            knowledge.MoveKnowledge.CanMove = fsm.DefaultFsm.currentState.CanMove;
+            knowledge.MoveKnowledge.CanTurn = fsm.DefaultFsm.currentState.CanTurn;
         }
     }
 }

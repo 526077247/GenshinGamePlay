@@ -81,9 +81,9 @@ namespace TaoTie
         {
             if (currentState == LocoTaskState.Interrupted)
             {
-                if (!aiKnowledge.moveKnowledge.canFly)
+                if (!aiKnowledge.MoveKnowledge.CanFly)
                 {
-                    if (!aiKnowledge.moveKnowledge.inAir)
+                    if (!aiKnowledge.MoveKnowledge.InAir)
                     {
                         currentState = LocoTaskState.Finished;
                     }
@@ -115,7 +115,7 @@ namespace TaoTie
         {
             if (param.pathQuery == null)
             {
-                param.pathQuery = aiKnowledge.pathFindingKnowledge.CreatePathQueryTask(aiKnowledge.currentPos,
+                param.pathQuery = aiKnowledge.PathFindingKnowledge.CreatePathQueryTask(aiKnowledge.CurrentPos,
                     param.targetPosition, param.useNavmesh);
             }
             GoToTask goToTask = new GoToTask();
@@ -162,7 +162,7 @@ namespace TaoTie
         
         public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
         {
-            Messager.Instance.Broadcast(aiKnowledge.aiOwnerEntity.Id, MessageId.UpdateMotionFlag, newSpeed);
+            Messager.Instance.Broadcast(aiKnowledge.AiOwnerEntity.Id, MessageId.UpdateMotionFlag, newSpeed);
         }
 
         public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed)

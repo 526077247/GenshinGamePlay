@@ -11,116 +11,116 @@ namespace TaoTie
         /// <summary>
         /// 目标类型
         /// </summary>
-        public AITargetType targetType = AITargetType.InvalidTarget;
+        public AITargetType TargetType = AITargetType.InvalidTarget;
 
         /// <summary>
         /// 目标ID
         /// </summary>
-        public long targetID;
+        public long TargetID;
 
         /// <summary>
         /// 目标实体
         /// </summary>
-        public Unit targetEntity;
+        public Unit TargetEntity;
         
-        public CombatComponent targetAvatarCombat;
+        private CombatComponent targetAvatarCombat;
         
-        public AbilityComponent targetAbilityPlugin;
+        private AbilityComponent targetAbilityPlugin;
         
         /// <summary>
         /// 目标位置
         /// </summary>
-        public Vector3 targetPosition;
+        public Vector3 TargetPosition;
 
         /// <summary>
         /// 目标前方
         /// </summary>
-        public Vector3 targetForward;
+        public Vector3 TargetForward;
 
         /// <summary>
         /// 目标方向
         /// </summary>
-        public Vector3 targetDirection;
+        public Vector3 TargetDirection;
 
         /// <summary>
         /// 目标距离
         /// </summary>
-        public float targetDistance;
+        public float TargetDistance;
 
         /// <summary>
         /// 目标水平距离
         /// </summary>
-        public float targetDistanceXZ;
+        public float TargetDistanceXZ;
 
         /// <summary>
         /// 目标垂直距离
         /// </summary>
-        public float targetDistanceY;
+        public float TargetDistanceY;
 
         /// <summary>
         /// 与目标关于y轴的相对角度
         /// </summary>
-        public float targetRelativeAngleYaw;
+        public float TargetRelativeAngleYaw;
 
         /// <summary>
         /// 与目标关于y轴的相对角度绝对值
         /// </summary>
-        public float targetRelativeAngleYawAbs;
+        public float TargetRelativeAngleYawAbs;
 
         /// <summary>
         /// 与目标关于x轴的相对角度
         /// </summary>
-        public float targetRelativeAnglePitch;
+        public float TargetRelativeAnglePitch;
 
         /// <summary>
         /// 与目标关于x轴的相对角度绝对值
         /// </summary>
-        public float targetRelativeAnglePitchAbs;
+        public float TargetRelativeAnglePitchAbs;
 
         /// <summary>
         /// 目标是否在空中
         /// </summary>
-        public bool targetInAir;
+        public bool TargetInAir;
 
         /// <summary>
         /// 目标是否被击杀
         /// </summary>
-        public bool targetKilled;
+        public bool TargetKilled;
 
         /// <summary>
         /// 是否在目标的背后
         /// </summary>
-        public bool isSelfAtTargetBack;
+        public bool IsSelfAtTargetBack;
 
         /// <summary>
         /// 是否被伙伴的目标覆盖
         /// </summary>
-        public bool buddyOverride;
+        public bool BuddyOverride;
 
         /// <summary>
         /// 技能锚点位置
         /// </summary>
-        public Vector3 skillAnchorPosition;
+        public Vector3 SkillAnchorPosition;
 
         /// <summary>
         /// 距离技能锚点距离
         /// </summary>
-        public float skillAnchorDistance;
+        public float SkillAnchorDistance;
         
-        public Vector3? targetLKP;
+        public Vector3? TargetLKP;
         
         /// <summary>
         /// 目标是否在防御区域内
         /// </summary>
-        public bool targetInDefendArea;
+        public bool TargetInDefendArea;
         /// <summary>
         /// 路径寻路状态
         /// </summary>
-        public AITargetHasPathType hasPath;
+        public AITargetHasPathType HasPath;
         /// <summary>
         /// 目标是否没被遮挡物遮挡
         /// </summary>
-        public bool hasLineOfSight;
+        public bool HasLineOfSight;
 
         public static AITargetKnowledge Create()
         {
@@ -138,26 +138,26 @@ namespace TaoTie
             switch (clearType)
             {
                 case AITargetType.PointTarget:
-                    targetType = AITargetType.InvalidTarget;
-                    targetPosition = Vector3.zero;
-                    hasPath = AITargetHasPathType.Invalid;
+                    TargetType = AITargetType.InvalidTarget;
+                    TargetPosition = Vector3.zero;
+                    HasPath = AITargetHasPathType.Invalid;
                     break;
                 case AITargetType.EntityTarget:
-                    targetType = AITargetType.InvalidTarget;
-                    hasPath = AITargetHasPathType.Invalid;
-                    targetID = 0;
-                    targetEntity = null;
+                    TargetType = AITargetType.InvalidTarget;
+                    HasPath = AITargetHasPathType.Invalid;
+                    TargetID = 0;
+                    TargetEntity = null;
                     break;
             }
         }
 
         private void SetEntityTargetInternal(long newTargetID, AIComponent ai)
         {
-            if (targetID != newTargetID)
+            if (TargetID != newTargetID)
             {
-                this.targetID = newTargetID;
-                this.targetEntity = ai.GetParent<Unit>().Parent.Get<Unit>(newTargetID);
-                hasPath = AITargetHasPathType.Invalid;
+                this.TargetID = newTargetID;
+                this.TargetEntity = ai.GetParent<Unit>().Parent.Get<Unit>(newTargetID);
+                HasPath = AITargetHasPathType.Invalid;
             }
         }
 
@@ -169,7 +169,7 @@ namespace TaoTie
         /// <param name="ai">AI组件</param>
         public void SetEntityTarget(AITargetSource targetSource, long newTargetID, AIComponent ai)
         {
-            targetType = AITargetType.EntityTarget;
+            TargetType = AITargetType.EntityTarget;
             if (targetSource == AITargetSource.Threat)
             {
                 SetEntityTargetInternal(newTargetID, ai);
@@ -182,34 +182,34 @@ namespace TaoTie
         /// <param name="pos">位置坐标</param>
         public void SetPointTarget(Vector3 pos)
         {
-            targetType = AITargetType.PointTarget;
-            targetPosition = pos;
-            hasPath = AITargetHasPathType.Invalid;
+            TargetType = AITargetType.PointTarget;
+            TargetPosition = pos;
+            HasPath = AITargetHasPathType.Invalid;
         }
 
         public void Dispose()
         {
-            targetID = 0;
-            targetPosition =Vector3.zero;
-            targetForward =Vector3.zero;
-            targetDirection=Vector3.zero;
-            targetDistance = 0;
-            targetDistanceXZ = 0;
-            targetDistanceY = 0;
-            targetRelativeAngleYaw = 0;
-            targetRelativeAngleYawAbs = 0;
-            targetRelativeAnglePitch = 0;
-            targetRelativeAnglePitchAbs = 0;
-            targetInAir = false;
-            targetKilled = false;
-            isSelfAtTargetBack = false;
-            buddyOverride = false;
-            skillAnchorPosition = Vector3.zero;
-            skillAnchorDistance = 0;
-            targetLKP = null;
-            targetInDefendArea = false;
-            hasPath = AITargetHasPathType.Invalid;
-            hasLineOfSight = false;
+            TargetID = 0;
+            TargetPosition =Vector3.zero;
+            TargetForward =Vector3.zero;
+            TargetDirection=Vector3.zero;
+            TargetDistance = 0;
+            TargetDistanceXZ = 0;
+            TargetDistanceY = 0;
+            TargetRelativeAngleYaw = 0;
+            TargetRelativeAngleYawAbs = 0;
+            TargetRelativeAnglePitch = 0;
+            TargetRelativeAnglePitchAbs = 0;
+            TargetInAir = false;
+            TargetKilled = false;
+            IsSelfAtTargetBack = false;
+            BuddyOverride = false;
+            SkillAnchorPosition = Vector3.zero;
+            SkillAnchorDistance = 0;
+            TargetLKP = null;
+            TargetInDefendArea = false;
+            HasPath = AITargetHasPathType.Invalid;
+            HasLineOfSight = false;
             ObjectPool.Instance.Recycle(this);
         }
     }

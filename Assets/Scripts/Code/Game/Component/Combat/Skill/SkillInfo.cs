@@ -4,31 +4,31 @@ namespace TaoTie
 {
     public class SkillInfo
     {
-        public uint skillID;
+        public uint SkillID;
         // public AvatarSkillExcelConfig config;
-        public float cdTimer;
-        public int currChargeCount;
-        public float costStamina;
-        public bool canHold;
-        public bool canTrigger;
-        public bool useInAir;
-        public HashSet<int> canUseSkillStateWhiteList;
-        public MonitorType needMonitor;
-        public bool isLocked;
-        public bool ignoreCDMinusRatio;
-        public bool forceCanDoSkill;
-        public float maxHoldTime;
-        public float curHoldTime;
-        private float _originCDTime;
-        private float _cdDelta;
-        private float _cdRatio;
-        private float _costElem;
-        private float _costElemDelta;
-        private float _costElemRatio;
-        private int _maxChargeCount;
-        private int _maxChargeCountDelta;
-        public int skillIndex;
-        public int prority;
-        private List<float> _chargeTimes;
+        public float CdTimer;
+        public int CurrChargeCount;
+        public float CostStamina;
+        public bool CanHold;
+        public bool CanTrigger;
+        public bool UseInAir;
+        public HashSet<int> CanUseSkillStateWhiteList;
+        public MonitorType NeedMonitor;
+        public bool IsLocked;
+        public bool InoreCDMinusRatio;
+        public bool ForceCanDoSkill;
+        public float MaxHoldTime;
+        public float CurHoldTime;
+        private float orginCDTime;
+        private float cdDelta;
+        private float cdRatio;
+        private float costElem;
+        private float costElemDelta;
+        private float costElemRatio;
+        private int maxChargeCount;
+        private int maxChargeCountDelta;
+        public int SkillIndex;
+        public int Prority;
+        private List<float> chargeTimes;
     }
 }

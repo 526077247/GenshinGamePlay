@@ -11,19 +11,19 @@ namespace TaoTie
         {
             base.UpdateMainThreadInternal();
             var timeNow = GameTimerManager.Instance.GetTimeNow();
-            bool isInGcd = knowledge.skillKnowledge.NextGCDTick > timeNow;
-            for (int i = 0; i < knowledge.skillKnowledge.Skills.Length; i++)
+            bool isInGcd = knowledge.SkillKnowledge.NextGCDTick > timeNow;
+            for (int i = 0; i < knowledge.SkillKnowledge.Skills.Length; i++)
             {
-                var container = knowledge.skillKnowledge.Skills[i];
+                var container = knowledge.SkillKnowledge.Skills[i];
                 container.AvailableSkills.Clear();
                 for (int j = 0; j < container.AllSkills.Count; j++)
                 {
                     var skill = container.AllSkills[j];
                     //target过滤
                     if (!skill.Config.CanUseIfTargetInactive &&
-                        knowledge.targetKnowledge.targetType == AITargetType.InvalidTarget) continue;
+                        knowledge.TargetKnowledge.TargetType == AITargetType.InvalidTarget) continue;
                     //视线被遮挡
-                    if(skill.Config.NeedLineOfSight && !knowledge.targetKnowledge.hasLineOfSight) continue;
+                    if(skill.Config.NeedLineOfSight && !knowledge.TargetKnowledge.HasLineOfSight) continue;
                     //自己cd
                     if (skill.NextAvailableUseTick < timeNow) continue;
                     //ai公共id
@@ -31,11 +31,11 @@ namespace TaoTie
 
                     //全局公共组id
                     if (!string.IsNullOrEmpty(skill.Config.PublicCDGroup) &&
-                        !knowledge.aiManager.CanUseSkill(skill.Config.PublicCDGroup,
-                            knowledge.targetKnowledge.targetEntity)) continue;
+                        !knowledge.AiManager.CanUseSkill(skill.Config.PublicCDGroup,
+                            knowledge.TargetKnowledge.TargetEntity)) continue;
 
                     //ai公共cd组
-                    if (knowledge.skillKnowledge.SkillGroupCDs.TryGetValue(skill.Config.SkillGroupCDID,
+                    if (knowledge.SkillKnowledge.SkillGroupCDs.TryGetValue(skill.Config.SkillGroupCDID,
                             out var cdInfo) && cdInfo.NextCDTick > timeNow)
                         continue;
 
@@ -44,27 +44,27 @@ namespace TaoTie
                     {
                         // pose筛选
                         if (skill.Config.CastCondition.PoseIds != null &&
-                            !skill.Config.CastCondition.PoseIds.Contains(knowledge.poseID))
+                            !skill.Config.CastCondition.PoseIds.Contains(knowledge.PoseID))
                             continue;
                         
                         //角度筛选
-                        if (skill.Config.CastCondition.minTargetAngleY>knowledge.targetKnowledge.targetRelativeAngleYawAbs)
+                        if (skill.Config.CastCondition.MinTargetAngleY>knowledge.TargetKnowledge.TargetRelativeAngleYawAbs)
                             continue;
-                        if (skill.Config.CastCondition.maxTargetAngleY<knowledge.targetKnowledge.targetRelativeAngleYawAbs)
+                        if (skill.Config.CastCondition.MaxTargetAngleY<knowledge.TargetKnowledge.TargetRelativeAngleYawAbs)
                             continue;
-                        if (skill.Config.CastCondition.minTargetAngleXZ>knowledge.targetKnowledge.targetRelativeAnglePitchAbs)
+                        if (skill.Config.CastCondition.MinTargetAngleXZ>knowledge.TargetKnowledge.TargetRelativeAnglePitchAbs)
                             continue;
-                        if (skill.Config.CastCondition.maxTargetAngleXZ<knowledge.targetKnowledge.targetRelativeAnglePitchAbs)
+                        if (skill.Config.CastCondition.MaxTargetAngleXZ<knowledge.TargetKnowledge.TargetRelativeAnglePitchAbs)
                             continue;
                         
                         //距离筛选
-                        if (skill.Config.CastCondition.pickRangeMin>knowledge.targetKnowledge.targetDistanceXZ)
+                        if (skill.Config.CastCondition.PickRangeMin>knowledge.TargetKnowledge.TargetDistanceXZ)
                             continue;
-                        if (skill.Config.CastCondition.pickRangeMax<knowledge.targetKnowledge.targetDistanceXZ)
+                        if (skill.Config.CastCondition.PickRangeMax<knowledge.TargetKnowledge.TargetDistanceXZ)
                             continue;
-                        if (skill.Config.CastCondition.pickRangeYMin>knowledge.targetKnowledge.targetDistanceY)
+                        if (skill.Config.CastCondition.PickRangeYMin>knowledge.TargetKnowledge.TargetDistanceY)
                             continue;
-                        if (skill.Config.CastCondition.pickRangeYMax<knowledge.targetKnowledge.targetDistanceY)
+                        if (skill.Config.CastCondition.PickRangeYMax<knowledge.TargetKnowledge.TargetDistanceY)
                             continue;
                     }
                     container.AvailableSkills.Add(skill);

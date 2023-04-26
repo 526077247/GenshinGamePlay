@@ -6,15 +6,15 @@ namespace TaoTie
     public partial class ConfigAIFacingMoveWeight
     {
         [NinoMember(1)]
-        public float stop;
+        public float Stop;
         [NinoMember(2)]
-        public float forward;
+        public float Forward;
         [NinoMember(3)]
-        public float back;
+        public float Back;
         [NinoMember(4)]
-        public float left;
+        public float Left;
         [NinoMember(5)]
-        public float right;
+        public float Right;
 
     }
 }

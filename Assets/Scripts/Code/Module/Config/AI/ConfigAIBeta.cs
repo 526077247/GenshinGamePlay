@@ -31,7 +31,7 @@ namespace TaoTie
         
         
         [NinoMember(19)]
-        public ConfigAIMove moveSetting;
+        public ConfigAIMove MoveSetting;
         [NinoMember(20)][BoxGroup("行为")]
         public ConfigAIFacingMoveSetting FacingMoveTactic;
         [NinoMember(21)][BoxGroup("行为")]

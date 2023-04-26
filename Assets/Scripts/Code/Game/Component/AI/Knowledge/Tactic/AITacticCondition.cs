@@ -20,7 +20,7 @@ namespace TaoTie
 
         public bool CheckPose(AIKnowledge knowledge)
         {
-            return poseSelector.CheckValidPose(knowledge.poseID);
+            return poseSelector.CheckValidPose(knowledge.PoseID);
         }
     }
 }

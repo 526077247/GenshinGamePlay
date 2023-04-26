@@ -25,14 +25,14 @@ namespace TaoTie
                 var moveDis = numc.GetAsFloat(NumericType.Speed) * GameTimerManager.Instance.GetDeltaTime() / 1000f;
                 if (moveDis > distance)
                 {
-                    aiKnowledge.aiOwnerEntity.Position = anchorPos;
+                    aiKnowledge.AiOwnerEntity.Position = anchorPos;
                 }
                 else
                 {
-                    aiKnowledge.aiOwnerEntity.Position += desiredDirection * moveDis;
+                    aiKnowledge.AiOwnerEntity.Position += desiredDirection * moveDis;
                 }
 
-                aiKnowledge.aiOwnerEntity.IsTurn = anchorPos.x < aiKnowledge.aiOwnerEntity.Position.x;
+                aiKnowledge.AiOwnerEntity.IsTurn = anchorPos.x < aiKnowledge.AiOwnerEntity.Position.x;
             }
             else
             {
