@@ -209,13 +209,15 @@ namespace TaoTie
                 if (check_can_pop_func == null || check_can_pop_func(key.Value, _dictionary[key.Value]))
                 {
                     //can pop
-                    Remove(key.Value);
-                    pop_cb?.Invoke(key.Value, _dictionary[key.Value]);
+                    var value = _dictionary[key.Value];
+                    _dictionary.Remove(key.Value);
+                    _linkedList.Remove(key.Value);
+                    pop_cb?.Invoke(key.Value, value);
                 }
                 else
                 {
                     //the host say cannot pop
-                    cur_check_free_time = cur_check_free_time + 1;
+                    cur_check_free_time ++;
                     if (cur_check_free_time > max_check_free_times)
                     {
                         //lru cache detect check_free time is too much, please check code
