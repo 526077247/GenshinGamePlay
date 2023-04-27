@@ -15,7 +15,7 @@ namespace TaoTie
         {
             { PlatformType.Android , BuildTarget.Android },
             { PlatformType.Windows , BuildTarget.StandaloneWindows64 },
-            { PlatformType.IOS , BuildTarget.Android },
+            { PlatformType.IOS , BuildTarget.iOS },
             { PlatformType.MacOS , BuildTarget.StandaloneOSX },
             { PlatformType.Linux , BuildTarget.StandaloneLinux64 },
         };
