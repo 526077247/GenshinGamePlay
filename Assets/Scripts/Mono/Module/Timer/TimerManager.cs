@@ -167,7 +167,9 @@ namespace TaoTie
                         Log.Error($"not found timer action: {type}");
                         return;
                     }
-                    timer.Handle(timerAction.Object);
+                    object obj = timerAction.Object;
+                    Remove(timerAction.Id);
+                    timer.Handle(obj);
                     break;
                 }
                 case TimerClass.OnceWaitTimer:
