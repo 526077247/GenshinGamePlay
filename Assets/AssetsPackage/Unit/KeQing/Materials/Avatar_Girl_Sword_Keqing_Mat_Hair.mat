@@ -22,8 +22,13 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Hair
   m_Shader: {fileID: 4800000, guid: 0bb4a4d350ca3de41aed86ede804a971, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_ValidKeywords:
+  - _CELLSHADING
+  - _KAJIYAHAIR
+  - _RENDERENVSETTING
+  m_InvalidKeywords:
+  - _IS_FILTER_LIGHTCOLOR_ON
+  - _USEHALFLAMBERT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
