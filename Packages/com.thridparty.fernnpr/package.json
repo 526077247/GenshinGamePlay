@@ -1,0 +1,9 @@
+{
+    "name": "com.thridparty.fernnpr",
+    "version": "1.0.0",
+    "displayName": "FernNPR",
+    "description": "FernNPR https://github.com/FernRender/FernNPR",
+    "dependencies": {
+        "com.unity.render-pipelines.universal": "12.1.8"
+    }
+}

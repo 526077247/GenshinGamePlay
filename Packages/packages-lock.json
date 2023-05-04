@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.thridparty.fernnpr": {
+      "version": "file:com.thridparty.fernnpr",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.render-pipelines.universal": "12.1.8"
+      }
+    },
     "com.thridparty.odin": {
       "version": "file:com.thridparty.odin",
       "depth": 0,
@@ -42,7 +50,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.collab-proxy": {
-      "version": "1.17.7",
+      "version": "1.17.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -80,7 +88,7 @@
     },
     "com.unity.ide.rider": {
       "version": "3.0.16",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ext.nunit": "1.0.6"
