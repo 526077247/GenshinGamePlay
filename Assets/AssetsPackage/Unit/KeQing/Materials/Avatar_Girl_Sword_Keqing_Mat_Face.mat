@@ -152,7 +152,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Outline: 1
-    - _OutlineWidth: 4.35
+    - _OutlineWidth: 0.25
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
@@ -169,7 +169,7 @@ Material:
     - _ScreenSpaceRimThreshold: 0.01
     - _ScreenSpaceRimWidth: 0.01
     - _Shininess: 1
-    - _Smoothness: 0.31622776
+    - _Smoothness: 0.622
     - _SmoothnessTextureChannel: 0
     - _SpaceScreenVariant: 0.5
     - _SpecularAA: 0
@@ -210,7 +210,7 @@ Material:
     - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HighColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HighColor: {r: 1, g: 0.9346648, b: 0.9009434, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _PBRMetallicChannel: {r: 1, g: 0, b: 0, a: 0}
     - _PBROcclusionChannel: {r: 0, g: 1, b: 0, a: 0}

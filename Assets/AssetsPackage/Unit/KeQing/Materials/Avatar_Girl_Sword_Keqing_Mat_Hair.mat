@@ -25,6 +25,7 @@ Material:
   m_ValidKeywords:
   - _CELLSHADING
   - _KAJIYAHAIR
+  - _OUTLINE
   - _RENDERENVSETTING
   m_InvalidKeywords:
   - _IS_FILTER_LIGHTCOLOR_ON
@@ -163,8 +164,8 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Outline: 0
-    - _OutlineWidth: 1
+    - _Outline: 1
+    - _OutlineWidth: 0.25
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
@@ -175,7 +176,7 @@ Material:
     - _RimSoftness: 0.01
     - _RimThreshold: 0.2
     - _Shininess: 1
-    - _Smoothness: 0.1
+    - _Smoothness: 0.518
     - _SmoothnessTextureChannel: 0
     - _SpaceScreenVariant: 0.5
     - _SpecularAA: 0
@@ -223,7 +224,7 @@ Material:
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _PBRMetallicChannel: {r: 1, g: 0, b: 0, a: 0}
     - _PBROcclusionChannel: {r: 0, g: 1, b: 0, a: 0}
-    - _PBRSmothnessChannel: {r: 0, g: 0, b: 0, a: 1}
+    - _PBRSmothnessChannel: {r: 0, g: 0, b: 1, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}

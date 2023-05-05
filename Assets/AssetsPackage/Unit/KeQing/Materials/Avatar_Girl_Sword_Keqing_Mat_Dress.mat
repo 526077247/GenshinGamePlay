@@ -135,7 +135,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Outline: 1
-    - _OutlineWidth: 1
+    - _OutlineWidth: 0.25
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
