@@ -36,12 +36,12 @@ namespace TaoTie
             PlayerSettings.keystorePass = "123456";
         }
 
-        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder)
+        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool isBuildAll)
         {
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe,clearFolder);
+                BuildHandle(type, buildOptions, isBuildExe,clearFolder,isBuildAll);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace TaoTie
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder);
+                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, isBuildAll);
                     }
                 };
                 if(buildGroupmap.TryGetValue(type,out var group))
@@ -64,7 +64,7 @@ namespace TaoTie
                
             }
         }
-        private static void BuildInternal(BuildTarget buildTarget,bool isBuildExe)
+        private static void BuildInternal(BuildTarget buildTarget,bool isBuildExe,bool isBuildAll)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
@@ -78,14 +78,15 @@ namespace TaoTie
             BuildParameters buildParameters = new BuildParameters();
             buildParameters.OutputRoot = defaultOutputRoot;
             buildParameters.BuildTarget = buildTarget;
-            buildParameters.BuildPipeline = EBuildPipeline.ScriptableBuildPipeline;
+            buildParameters.PackageName = "DefaultPackage";
+            buildParameters.BuildPipeline = isBuildExe? EBuildPipeline.BuiltinBuildPipeline: EBuildPipeline.ScriptableBuildPipeline;
             buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
             buildParameters.BuildMode = isBuildExe?EBuildMode.ForceRebuild:EBuildMode.IncrementalBuild;
             buildParameters.PackageVersion = buildVersion.ToString();
-            buildParameters.CopyBuildinFileTags = "buildin";
+            buildParameters.CopyBuildinFileTags = isBuildAll?"all":"buildin";
             buildParameters.VerifyBuildingResult = true;
             // buildParameters.EnableAddressable = true;
-            // buildParameters.CopyBuildinTagFiles = true;
+            buildParameters.CopyBuildinFileOption = ECopyBuildinFileOption.ClearAndCopyByTags;
             // buildParameters.EncryptionServices = new GameEncryption();
             buildParameters.CompressOption = ECompressOption.LZ4;
             buildParameters.DisableWriteTypeTree = true;//禁止写入类型树结构（可以降低包体和内存并提高加载效率）
@@ -112,7 +113,7 @@ namespace TaoTie
             
 
         }
-        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder)
+        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool isBuildAll)
         {
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
             string programName = "TaoTie";
@@ -153,7 +154,7 @@ namespace TaoTie
             //处理图集资源
             // HandleAtlas();
             //打ab
-            BuildInternal(buildTarget, isBuildExe);
+            BuildInternal(buildTarget, isBuildExe, isBuildAll);
 
             if (clearFolder && Directory.Exists(relativeDirPrefix))
             {

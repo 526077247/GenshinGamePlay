@@ -46,8 +46,8 @@ namespace TaoTie
 		private PlatformType platformType;
 		private bool clearFolder;
 		private bool isBuildExe;
-		// private bool isInject;
 		private bool isContainAB;
+		private bool isBuildAll;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
 		private BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
@@ -88,8 +88,8 @@ namespace TaoTie
 
 				clearFolder = buildSettings.clearFolder;
 				isBuildExe = buildSettings.isBuildExe;
-				// isInject = buildSettings.isInject;
 				isContainAB = buildSettings.isContainAB;
+				isBuildAll = buildSettings.isBuildAll;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
 			}
@@ -124,6 +124,10 @@ namespace TaoTie
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
+            if (this.isBuildExe)
+            {
+	            this.isBuildAll = EditorGUILayout.Toggle("是否打包全量资源", this.isBuildAll);
+            }
             this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
 			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
 			//this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
@@ -162,7 +166,7 @@ namespace TaoTie
                     }
                 }
 				
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder);
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.isBuildAll);
 			}
 
 			GUILayout.Space(5);
@@ -174,6 +178,7 @@ namespace TaoTie
 			buildSettings.isBuildExe = isBuildExe;
 			buildSettings.isContainAB = isContainAB;
 			buildSettings.buildType = buildType;
+			buildSettings.isBuildAll = isBuildAll;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
 
 			EditorUtility.SetDirty(buildSettings);

@@ -8,13 +8,8 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
-  m_EditorHideFlags: 1
-  m_Script: {fileID: 11500000, guid: 6dbd40e4366dd95439decc1f046ebd41, type: 3}
-  m_Name: BuildSettings
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 188390376, guid: a4865f1ab4504ed8a368670db22f409c, type: 3}
+  m_Name: ImportSettingsConfig
   m_EditorClassIdentifier: 
-  clearFolder: 0
-  isBuildExe: 1
-  isContainAB: 0
-  isBuildAll: 0
-  buildType: 1
-  buildAssetBundleOptions: 0
+  automateBeforeBuild: 1

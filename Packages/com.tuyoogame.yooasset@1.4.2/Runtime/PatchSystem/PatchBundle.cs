@@ -135,7 +135,7 @@ namespace YooAsset
 
 			foreach (var tag in tags)
 			{
-				if (Tags.Contains(tag))
+				if (Tags.Contains(tag)|| tag =="all")
 					return true;
 			}
 			return false;
