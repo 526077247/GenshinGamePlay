@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace YooAsset.Editor
 {
@@ -45,7 +46,10 @@ namespace YooAsset.Editor
 				// 检测包裹输出目录是否存在
 				string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
 				if (Directory.Exists(packageOutputDirectory))
-					throw new Exception($"本次构建的补丁目录已经存在：{packageOutputDirectory}");
+				{
+					Directory.Delete(packageOutputDirectory,true);
+					Debug.Log($"本次构建的补丁目录已经存在：{packageOutputDirectory}");
+				}
 
 				// 保存改动的资源
 				AssetDatabase.SaveAssets();

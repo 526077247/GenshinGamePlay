@@ -15,6 +15,6 @@ MonoBehaviour:
   clearFolder: 0
   isBuildExe: 1
   isContainAB: 0
-  isBuildAll: 0
+  isBuildAll: 1
   buildType: 1
   buildAssetBundleOptions: 0
