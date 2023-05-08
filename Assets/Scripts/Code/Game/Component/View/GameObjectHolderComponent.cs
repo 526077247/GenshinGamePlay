@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using CMF;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent : Component, IComponent
+    public partial class GameObjectHolderComponent : Component, IComponent, IUpdateComponent
     {
         [Timer(TimerType.DestroyEffect)]
         public class DestroyEffectTimer : ATimer<EffectInfo>
@@ -87,6 +88,11 @@ namespace TaoTie
             ec.Id = this.Id;
             ec.EntityType = unit.Type;
             ec.CampId = unit.CampId;
+            controller = obj.GetComponent<Controller>();
+            if (controller is AdvancedWalkerController advancedWalkerController)
+            {
+                advancedWalkerController.characterInput = parent.GetComponent<LocalInputController>().InputData;
+            }
 
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
@@ -114,10 +120,25 @@ namespace TaoTie
 
                 waitFinishTask = null;
             }
+
+            if (controller != null)
+            {
+                //Connect events to controller events;
+                controller.OnLand += OnLand;
+                controller.OnJump += OnJump;
+            }
         }
 
         public void Destroy()
         {
+            if (controller != null)
+            {
+                //Disconnect events to prevent calls to disabled gameobjects;
+                controller.OnLand -= OnLand;
+                controller.OnJump -= OnJump;
+                controller = null;
+            }
+            
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
             Messager.Instance.RemoveListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);

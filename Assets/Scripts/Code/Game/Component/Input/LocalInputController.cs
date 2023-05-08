@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CMF;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -10,10 +11,12 @@ namespace TaoTie
         private SkillComponent SkillComponent => parent.GetComponent<SkillComponent>();
         private AvatarMoveComponent AvatarMoveComponent => parent.GetComponent<AvatarMoveComponent>();
         public ControlData ControlData;
+        public CharacterKeyboardInput InputData; 
         #region IComponent
 
         public void Init()
         {
+            InputData = new CharacterKeyboardInput();
             ControlData = ControlData.Create();
         }
 
@@ -60,7 +63,8 @@ namespace TaoTie
 
         public void TryMove(Vector3 direction)
         {
-            AvatarMoveComponent.TryMove(direction);
+            InputData.Direction = direction;
+            // AvatarMoveComponent.TryMove(direction);
         }
     }
 }
