@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Sirenix.OdinInspector;
 
 namespace Slate.ActionClips
 {
@@ -29,7 +30,7 @@ namespace Slate.ActionClips
         [SerializeField, HideInInspector]
         private float _blendOut = 0f;
 
-        [Required, Header("Animation Clip Settings")]
+        [Required, Header("Animation Clip Settings")][OnValueChanged(nameof(ChangeClipLen))]
         public AnimationClip animationClip;
         public float clipOffset;
         public ClipWrapMode clipWrapMode = ClipWrapMode.Loop;
@@ -85,7 +86,6 @@ namespace Slate.ActionClips
 
         public override float length {
             get { return _length; }
-            set { _length = value; }
         }
 
         public override float blendIn {
@@ -190,6 +190,9 @@ namespace Slate.ActionClips
         }
 
 #endif
-
+        private void ChangeClipLen()
+        {
+            _length = animationClip.length;
+        }
     }
 }
