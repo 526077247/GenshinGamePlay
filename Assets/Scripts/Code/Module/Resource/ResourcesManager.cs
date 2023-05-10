@@ -208,28 +208,7 @@ namespace TaoTie
             if (type == 0)
             {
                 path += ".json";
-            }
-            else if (type == 1)
-            {
-                path += ".bytes";
-            }
-            var file = Load<TextAsset>(path);
-
-            if (type == 1)
-            {
-                try
-                {
-                    T res = ProtobufHelper.FromBytes<T>(file.bytes);
-                    ReleaseAsset(file);
-                    return res;
-                }
-                catch
-                {
-                }
-            }
-
-            if (type == 0)
-            {
+                var file = Load<TextAsset>(path);
                 try
                 {
                     T res = JsonHelper.FromJson<T>(file.text);
@@ -241,7 +220,20 @@ namespace TaoTie
                     Log.Error(ex);
                 }
             }
-
+            else if (type == 1)
+            {
+                path += ".bytes";
+                var file = Load<TextAsset>(path);
+                try
+                {
+                    T res = ProtobufHelper.FromBytes<T>(file.bytes);
+                    ReleaseAsset(file);
+                    return res;
+                }
+                catch
+                {
+                }
+            }
             Log.Error($"反序列化{TypeInfo<T>.Name}失败！{path}");
             return default;
         }

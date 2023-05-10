@@ -82,20 +82,20 @@ namespace TaoTie
             }
         }
 
-        [Button("新建(二进制)")]
-        public void CreateBytes()
-        {
-            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
-            if (!string.IsNullOrEmpty(searchPath))
-            {
-                isJson = false;
-                data = CreateInstance();
-                filePath = searchPath;
-                var bytes = ProtobufHelper.ToBytes(data);
-                File.WriteAllBytes(filePath, bytes);
-                AssetDatabase.Refresh();
-            }
-        }
+        // [Button("新建(二进制)")]
+        // public void CreateBytes()
+        // {
+        //     string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
+        //     if (!string.IsNullOrEmpty(searchPath))
+        //     {
+        //         isJson = false;
+        //         data = CreateInstance();
+        //         filePath = searchPath;
+        //         var bytes = ProtobufHelper.ToBytes(data);
+        //         File.WriteAllBytes(filePath, bytes);
+        //         AssetDatabase.Refresh();
+        //     }
+        // }
 
         #endregion
 
@@ -114,18 +114,18 @@ namespace TaoTie
             }
         }
 
-        [Button("保存(二进制)")]
-        [ShowIf("@data!=null&&!isJson")]
-        public void SaveBytes()
-        {
-            if (data != null && !string.IsNullOrEmpty(filePath))
-            {
-                var bytes = ProtobufHelper.ToBytes(data);
-                File.WriteAllBytes(filePath, bytes);
-                AssetDatabase.Refresh();
-                ShowNotification(new GUIContent("保存二进制成功"));
-            }
-        }
+        // [Button("保存(二进制)")]
+        // [ShowIf("@data!=null&&!isJson")]
+        // public void SaveBytes()
+        // {
+        //     if (data != null && !string.IsNullOrEmpty(filePath))
+        //     {
+        //         var bytes = ProtobufHelper.ToBytes(data);
+        //         File.WriteAllBytes(filePath, bytes);
+        //         AssetDatabase.Refresh();
+        //         ShowNotification(new GUIContent("保存二进制成功"));
+        //     }
+        // }
 
         [Button("另存为(Json)")]
         [ShowIf("@data!=null&&!isJson")]
@@ -145,23 +145,23 @@ namespace TaoTie
             }
         }
 
-        [Button("另存为(二进制)")]
-        [ShowIf("@data!=null&&isJson")]
-        public void SaveNewBytes()
-        {
-            var names = filePath.Split('/', '.');
-            string name = names[names.Length - 2];
-            var paths = filePath.Split(name);
-            string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", paths[0], name, "bytes");
-            if (!string.IsNullOrEmpty(searchPath))
-            {
-                var bytes = ProtobufHelper.ToBytes(data);
-                File.WriteAllBytes(filePath, bytes);
-                AssetDatabase.Refresh();
-                isJson = false;
-                filePath = searchPath;
-            }
-        }
+        // [Button("另存为(二进制)")]
+        // [ShowIf("@data!=null&&isJson")]
+        // public void SaveNewBytes()
+        // {
+        //     var names = filePath.Split('/', '.');
+        //     string name = names[names.Length - 2];
+        //     var paths = filePath.Split(name);
+        //     string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", paths[0], name, "bytes");
+        //     if (!string.IsNullOrEmpty(searchPath))
+        //     {
+        //         var bytes = ProtobufHelper.ToBytes(data);
+        //         File.WriteAllBytes(filePath, bytes);
+        //         AssetDatabase.Refresh();
+        //         isJson = false;
+        //         filePath = searchPath;
+        //     }
+        // }
 
         protected override void OnDestroy()
         {
@@ -177,7 +177,7 @@ namespace TaoTie
                     }
                     else
                     {
-                        SaveBytes();
+                        // SaveBytes();
                     }
                 }
             }
