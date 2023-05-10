@@ -27,7 +27,7 @@ namespace TaoTie
 
 
         [ShowIf("@data!=null")] [ReadOnly] public string filePath;
-        [ShowIf("@data!=null")] public T data;
+        [ShowIf("@data!=null")] [HideReferenceObjectPicker] public T data;
 
         #region Create
 
@@ -70,7 +70,7 @@ namespace TaoTie
         [Button("新建(Json)")]
         public void CreateJson()
         {
-            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
+            string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 isJson = true;
