@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 
 namespace Slate.ActionClips
 {
@@ -23,7 +24,7 @@ namespace Slate.ActionClips
         private float _blendOut = 0f;
 
 
-        [Required]
+        [Required][OnValueChanged(nameof(ChangeLength))]
         public AnimationClip animationClip;
         public float clipOffset;
         [Range(0.1f, 5)]
@@ -57,7 +58,6 @@ namespace Slate.ActionClips
 
         public override float length {
             get { return _length; }
-            set { _length = value; }
         }
 
         public override float blendIn {
@@ -148,5 +148,10 @@ namespace Slate.ActionClips
         }
 
 #endif
+
+        private void ChangeLength()
+        {
+            _length = animationClip.length;
+        }
     }
 }

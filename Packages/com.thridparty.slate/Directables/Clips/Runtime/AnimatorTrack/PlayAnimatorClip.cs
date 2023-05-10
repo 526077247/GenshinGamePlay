@@ -29,8 +29,10 @@ namespace Slate.ActionClips
         private float _blendIn = 0f;
         [SerializeField, HideInInspector]
         private float _blendOut = 0f;
-
-        [Required, Header("Animation Clip Settings")][OnValueChanged(nameof(ChangeClipLen))]
+        
+        [Header("Animation Clip Settings")] [ValueDropdown(nameof(GetShowClipName))] [OnValueChanged(nameof(ChangeClipLen))]
+        public string clipName;
+        [SerializeField, ReadOnly]
         public AnimationClip animationClip;
         public float clipOffset;
         public ClipWrapMode clipWrapMode = ClipWrapMode.Loop;
@@ -192,7 +194,35 @@ namespace Slate.ActionClips
 #endif
         private void ChangeClipLen()
         {
-            _length = animationClip.length;
+            var data = animator.runtimeAnimatorController.animationClips;
+            if (data.Length > 0)
+            {
+                foreach (var clip in data)
+                {
+                    if (clip.name == clipName)
+                    {
+                        animationClip = clip;
+                        _length = animationClip.length;
+                        return;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable GetShowClipName()
+        {
+            if(animator==null) return null;
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            var data = animator.runtimeAnimatorController.animationClips;
+            if (data.Length > 0)
+            {
+                foreach (var clip in data)
+                {
+                    list.Add(clip.name, clip.name);
+                }
+               
+            }
+            return list;
         }
     }
 }
