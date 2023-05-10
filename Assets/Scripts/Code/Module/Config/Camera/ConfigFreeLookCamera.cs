@@ -38,7 +38,7 @@ namespace TaoTie
         [NinoMember(28)] [LabelText("近镜模式开关")] [BoxGroup("近镜模式")]
         public bool NearFocusEnable = true;
 
-        [ShowIf("nearFocusEnable")]
+        [ShowIf(nameof(NearFocusEnable))]
         [BoxGroup("近镜模式")]
         [LabelText("近镜模式开始距离")]
         [Range(0.1f, 12f)]
@@ -46,7 +46,7 @@ namespace TaoTie
         [NinoMember(29)]
         public float NearFocusMaxDistance = 3f;
 
-        [ShowIf("nearFocusEnable")]
+        [ShowIf(nameof(NearFocusEnable))]
         [BoxGroup("近镜模式")]
         [LabelText("近镜模式结束距离")]
         [Range(0.1f, 12f)]

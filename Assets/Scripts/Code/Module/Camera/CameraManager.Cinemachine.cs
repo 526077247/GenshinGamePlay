@@ -118,7 +118,7 @@ namespace TaoTie
             curCameraId = id;
             curCamera.OnEnter();
 
-            if (clearState)
+            if (clearState && oldId!= defaultCameraId)
             {
                 DestroyCamera(oldId);
             }

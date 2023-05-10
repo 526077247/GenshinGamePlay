@@ -163,6 +163,26 @@ namespace TaoTie
         }
 
         #endregion
+
+        #region FreeLock
+
+        /// <summary>
+        ///     设置FreeLock
+        /// </summary>
+        public void SetFreeLockCameraFollow(Transform transform)
+        {
+            if (curCameraType == CameraType.FreeLookCameraPlugin)
+            {
+                var camera = curCamera as FreeLookCameraPlugin;
+                camera?.SetFollowTransform(transform,0.75f,true);
+            }
+            else
+            {
+                Log.Error("相机类型不匹配");
+            }
+        }
+
+        #endregion
         
         #region TrackCamera
 
