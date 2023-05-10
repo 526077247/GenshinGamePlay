@@ -274,6 +274,8 @@ MonoBehaviour:
   _length: 1.9333334
   _blendIn: 0
   _blendOut: 0
+  Animator: {fileID: 9100000, guid: 568cf4cd0dc9cb848821933ae06d9566, type: 2}
+  clipName: Sword_Keqing_Attack_01_30
   animationClip: {fileID: 7400000, guid: e00e7f706e2c0a348b7a3bfc1e4b0199, type: 2}
   clipOffset: 0
   clipWrapMode: 0

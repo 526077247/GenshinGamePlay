@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Sirenix.OdinInspector;
+using UnityEditor.Animations;
 
 namespace Slate.ActionClips
 {
@@ -29,8 +30,10 @@ namespace Slate.ActionClips
         private float _blendIn = 0f;
         [SerializeField, HideInInspector]
         private float _blendOut = 0f;
-        
-        [Header("Animation Clip Settings")] [ValueDropdown(nameof(GetShowClipName))] [OnValueChanged(nameof(ChangeClipLen))]
+
+        [Header("Animation Clip Settings")] 
+        public RuntimeAnimatorController Animator;
+        [ValueDropdown(nameof(GetShowClipName))] [OnValueChanged(nameof(ChangeClipLen))]
         public string clipName;
         [SerializeField, ReadOnly]
         public AnimationClip animationClip;
@@ -194,7 +197,9 @@ namespace Slate.ActionClips
 #endif
         private void ChangeClipLen()
         {
-            var data = animator.runtimeAnimatorController.animationClips;
+            var anim = Animator;
+            if (anim == null) anim = animator.runtimeAnimatorController;
+            var data = anim.animationClips;
             if (data.Length > 0)
             {
                 foreach (var clip in data)
@@ -211,9 +216,11 @@ namespace Slate.ActionClips
 
         private IEnumerable GetShowClipName()
         {
-            if(animator==null) return null;
+            var anim = Animator;
+            if (anim == null) anim = animator.runtimeAnimatorController;
+            if(anim==null) return null;
             ValueDropdownList<string> list = new ValueDropdownList<string>();
-            var data = animator.runtimeAnimatorController.animationClips;
+            var data = anim.animationClips;
             if (data.Length > 0)
             {
                 foreach (var clip in data)
