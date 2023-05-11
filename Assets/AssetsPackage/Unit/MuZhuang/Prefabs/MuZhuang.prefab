@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3337037590447006867}
   - component: {fileID: 4825874413203856325}
+  - component: {fileID: 3943969689556441946}
   m_Layer: 0
   m_Name: MuZhuang
   m_TagString: Untagged
@@ -136,6 +137,26 @@ MonoBehaviour:
     gameObject: {fileID: 5760224977030901534}
   - key: HitBoxHead
     gameObject: {fileID: 5711878686839376009}
+--- !u!95 &3943969689556441946
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3337037590447006866}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4ed934c288a89c24f997adbf13b03cbb, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &3337037590681139165
 GameObject:
   m_ObjectHideFlags: 0

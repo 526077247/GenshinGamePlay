@@ -205,6 +205,7 @@ namespace TaoTie
         /// <returns></returns>
         public T LoadConfig<T>(string path,int type = 0) where T : class
         {
+            if (string.IsNullOrEmpty(path)) return default;
             if (type == 0)
             {
                 path += ".json";

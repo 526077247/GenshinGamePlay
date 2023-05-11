@@ -51,7 +51,7 @@ namespace TaoTie
             animator.runtimeAnimatorController =
                 ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
             var fsm = parent.GetComponent<FsmComponent>();
-            if (fsm != null)
+            if (fsm != null && fsm.Config.ParamDict != null)
             {
                 foreach (var item in fsm.Config.ParamDict)
                 {
@@ -91,14 +91,15 @@ namespace TaoTie
             controller = obj.GetComponent<Controller>();
             if (controller is AdvancedWalkerController advancedWalkerController)
             {
-                advancedWalkerController.characterInput = parent.GetComponent<LocalInputController>().InputData;
+                advancedWalkerController.characterInput = parent.GetComponent<AvatarMoveComponent>().InputData;
+                advancedWalkerController.cameraTransform = CameraManager.Instance.MainCamera().transform;
             }
 
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.AddListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
+            // Messager.Instance.AddListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
@@ -133,6 +134,11 @@ namespace TaoTie
         {
             if (controller != null)
             {
+                if (controller is AdvancedWalkerController advancedWalkerController)
+                {
+                    advancedWalkerController.characterInput = null;
+                    advancedWalkerController.cameraTransform = null;
+                }
                 //Disconnect events to prevent calls to disabled gameobjects;
                 controller.OnLand -= OnLand;
                 controller.OnJump -= OnJump;
@@ -141,7 +147,7 @@ namespace TaoTie
             
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.RemoveListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
+            // Messager.Instance.RemoveListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
@@ -174,17 +180,17 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
         }
 
-        public void OnChangeTurn(Unit unit, bool old)
-        {
-            GameObject obj = GetCollectorObj<GameObject>("Obj");
-            if (obj)
-            {
-                if ((unit.IsTurn && obj.transform.localScale.x > 0) || (!unit.IsTurn && obj.transform.localScale.x < 0))
-                {
-                    obj.transform.localScale = new Vector3(-obj.transform.localScale.x, obj.transform.localScale.y, obj.transform.localScale.z);
-                }
-            }
-        }
+        // public void OnChangeTurn(Unit unit, bool old)
+        // {
+        //     GameObject obj = GetCollectorObj<GameObject>("Obj");
+        //     if (obj)
+        //     {
+        //         if ((unit.IsTurn && obj.transform.localScale.x > 0) || (!unit.IsTurn && obj.transform.localScale.x < 0))
+        //         {
+        //             obj.transform.localScale = new Vector3(-obj.transform.localScale.x, obj.transform.localScale.y, obj.transform.localScale.z);
+        //         }
+        //     }
+        // }
 
         public async ETTask WaitLoadGameObjectOver()
         {

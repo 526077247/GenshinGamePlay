@@ -33,7 +33,7 @@
         /// <summary> 修改是否可以旋转</summary>
         public const int SetCanTurn = 14;
         /// <summary> 方向变化 </summary>
-        public const int ChangeTurnEvt = 15;
+        // public const int ChangeTurnEvt = 15;
         /// <summary> 游戏时间计时 </summary>
         public const int GameTimeEventTrigger = 16;
         /// <summary> 伤害飘字 </summary>

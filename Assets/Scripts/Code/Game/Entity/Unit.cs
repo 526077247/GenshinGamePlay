@@ -50,18 +50,6 @@ namespace TaoTie
             }
         }
 
-        private bool isTurn;
-        public bool IsTurn
-        {
-            get => isTurn;
-            set
-            {
-                var oldTurn = this.isTurn;
-                this.isTurn = value;
-                Messager.Instance.Broadcast(Id, MessageId.ChangeTurnEvt, this, oldTurn);
-            }
-        }
-
         #endregion
 
     }

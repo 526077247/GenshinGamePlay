@@ -39,18 +39,27 @@ namespace TaoTie
 
         private void InitWithConfig(ConfigFsmController cfg)
         {
+            if (cfg == null)
+            {
+                Log.Error("FSM为空");
+                return;
+            }
             config = cfg;
             dynDictionary = ObjectPool.Instance.Fetch<DynDictionary>();
 
             config.InitDefaultParam(this);
             triggers = ListComponent<ConfigParamTrigger>.Create();
-            foreach (var item in config.ParamDict)
+            if (config.ParamDict != null)
             {
-                if (item.Value is ConfigParamTrigger trigger)
+                foreach (var item in config.ParamDict)
                 {
-                    triggers.Add(trigger);
+                    if (item.Value is ConfigParamTrigger trigger)
+                    {
+                        triggers.Add(trigger);
+                    }
                 }
             }
+
             fsms = new Fsm[config.FsmCount];
             for (int i = 0; i < config.FsmCount; i++)
             {
