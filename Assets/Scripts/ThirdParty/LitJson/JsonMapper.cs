@@ -24,6 +24,7 @@ namespace LitJson
         public MemberInfo Info;
         public bool IsField;
         public Type Type;
+        public string Name;
     }
 
 
@@ -252,8 +253,12 @@ namespace LitJson
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = p_info;
                 p_data.Type = p_info.PropertyType;
-
-                data.Properties.Add(p_info.Name, p_data);
+                var attr = p_info.GetCustomAttributes(JsonNode.Type,false);
+                if (attr.Length > 0)
+                    p_data.Name = (attr[0] as JsonNode)?.Name;
+                else
+                    p_data.Name = p_info.Name;
+                data.Properties.Add(p_data.Name, p_data);
             }
 
             foreach (FieldInfo f_info in type.GetFields())
@@ -262,8 +267,12 @@ namespace LitJson
                 p_data.Info = f_info;
                 p_data.IsField = true;
                 p_data.Type = f_info.FieldType;
-
-                data.Properties.Add(f_info.Name, p_data);
+                var attr = f_info.GetCustomAttributes(JsonNode.Type,false);
+                if (attr.Length > 0)
+                    p_data.Name = (attr[0] as JsonNode)?.Name;
+                else
+                    p_data.Name = f_info.Name;
+                data.Properties.Add(p_data.Name, p_data);
             }
 
             lock (object_metadata_lock)
@@ -295,6 +304,11 @@ namespace LitJson
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = p_info;
                 p_data.IsField = false;
+                attr = p_info.GetCustomAttributes(JsonNode.Type,false);
+                if (attr.Length > 0)
+                    p_data.Name = (attr[0] as JsonNode)?.Name;
+                else
+                    p_data.Name = p_info.Name;
                 props.Add(p_data);
             }
 
@@ -305,7 +319,11 @@ namespace LitJson
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = f_info;
                 p_data.IsField = true;
-
+                attr = f_info.GetCustomAttributes(JsonNode.Type,false);
+                if (attr.Length > 0)
+                    p_data.Name = (attr[0] as JsonNode)?.Name;
+                else
+                    p_data.Name = f_info.Name;
                 props.Add(p_data);
             }
 
@@ -992,7 +1010,7 @@ namespace LitJson
                 {
                     var value = ((FieldInfo) p_data.Info).GetValue(obj);
                     if(value == default) continue;
-                    writer.WritePropertyName(p_data.Info.Name);
+                    writer.WritePropertyName(p_data.Name);
                     WriteValue(value, writer, writer_is_private, depth + 1);
                 }
                 else
@@ -1003,7 +1021,7 @@ namespace LitJson
                     {
                         var value = p_info.GetValue(obj, null);
                         if(value==default) continue;
-                        writer.WritePropertyName(p_data.Info.Name);
+                        writer.WritePropertyName(p_data.Name);
                         WriteValue(value, writer, writer_is_private, depth + 1);
                     }
                 }

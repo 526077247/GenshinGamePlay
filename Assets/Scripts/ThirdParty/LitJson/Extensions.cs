@@ -37,4 +37,18 @@ namespace LitJson.Extensions {
     {
 	    public static readonly Type Type = typeof(JsonIgnore);
     }
+    
+    /// <summary>
+    /// 覆盖json节点读写名称
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    public sealed class JsonNode : Attribute
+    {
+	    public string Name;
+	    public JsonNode(string name)
+	    {
+		    Name = name;
+	    }
+	    public static readonly Type Type = typeof(JsonNode);
+    }
 }
