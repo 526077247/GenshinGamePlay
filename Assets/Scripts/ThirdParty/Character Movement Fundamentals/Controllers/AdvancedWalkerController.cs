@@ -94,7 +94,18 @@ namespace CMF
 		{
 			HandleJumpKeyInput();
 		}
+		void LateUpdate()
+		{
+			if (savedMovementVelocity != Vector3.zero)
+			{
+				//Calculate up and forwward direction;
+				Vector3 _forwardDirection = savedMovementVelocity;
+				Vector3 _upDirection = transform.up;
 
+				//Set rotation;
+				tr.rotation = Quaternion.LookRotation(_forwardDirection, _upDirection);
+			}
+		}
         //Handle jump booleans for later use in FixedUpdate;
         void HandleJumpKeyInput()
         {

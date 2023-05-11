@@ -26,7 +26,6 @@ Material:
   - _CELLSHADING
   - _DEPTHSHADOW
   - _GGX
-  - _NORMALMAP
   - _OUTLINE
   - _RENDERENVSETTING
   m_InvalidKeywords:
@@ -117,7 +116,7 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _Blend: 0
-    - _BumpMapKeyword: 1
+    - _BumpMapKeyword: 0
     - _BumpScale: 1
     - _CELLSmoothing: 0.001
     - _CELLThreshold: 0.5

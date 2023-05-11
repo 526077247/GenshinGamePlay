@@ -10,7 +10,7 @@ namespace TaoTie
     {
         public Transform root;
         private readonly Dictionary<int, CameraPlugin> cameraPlugins = new();
-        private CinemachineBrain _cinemachineBrain;
+        private CinemachineBrain cinemachineBrain;
 
         private int curCameraId { get; set; } = int.MinValue;
         private CameraType curCameraType => curCamera.type;
@@ -83,13 +83,14 @@ namespace TaoTie
 
         private void SetCameraAtLoadingDone()
         {
-            _cinemachineBrain = sceneMainCameraGo.GetComponent<CinemachineBrain>();
-            if (_cinemachineBrain == null) _cinemachineBrain = sceneMainCameraGo.AddComponent<CinemachineBrain>();
-            _cinemachineBrain.m_DefaultBlend = defaultBlend;
-            _cinemachineBrain.m_CustomBlends = customBlends;
+            cinemachineBrain = sceneMainCameraGo.GetComponent<CinemachineBrain>();
+            if (cinemachineBrain == null) cinemachineBrain = sceneMainCameraGo.AddComponent<CinemachineBrain>();
+            cinemachineBrain.m_UpdateMethod = CinemachineBrain.UpdateMethod.FixedUpdate;
+            cinemachineBrain.m_DefaultBlend = defaultBlend;
+            cinemachineBrain.m_CustomBlends = customBlends;
             if (curCameraId != defaultCameraId)
             {
-                _cinemachineBrain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+                cinemachineBrain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
                 if (cameraPlugins.TryGetValue(curCameraId, out var plugin))
                 {
                     plugin.OnLevel(true);
@@ -97,7 +98,7 @@ namespace TaoTie
 
                 curCameraId = defaultCameraId;
                 curCamera.OnEnter();
-                _cinemachineBrain.m_DefaultBlend = defaultBlend;
+                cinemachineBrain.m_DefaultBlend = defaultBlend;
                 curState = new CameraState()
                 {
                     Id = curCameraId,

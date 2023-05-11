@@ -60,12 +60,12 @@ namespace TaoTie
 
         private void MoveStart()
         {
-            // FsmComponent.SetData(FSMConst.MotionFlag, 1);
+            FsmComponent.SetData(FSMConst.MotionFlag, 2);
         }
 
         private void MoveStop()
         {
-            // FsmComponent.SetData(FSMConst.MotionFlag, 0);
+            FsmComponent.SetData(FSMConst.MotionFlag, 0);
         }
     }
 }

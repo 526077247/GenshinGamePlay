@@ -6,5 +6,6 @@
         public const string SkillId = "SkillId";
         public const string Alertness = "Alertness";
         public const string MotionFlag = "MotionFlag";
+        public const string Shake = "Shake";
     }
 }
