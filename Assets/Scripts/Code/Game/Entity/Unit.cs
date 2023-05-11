@@ -20,6 +20,7 @@ namespace TaoTie
 
         private Vector3 position; //坐标
 
+        public ConfigEntity ConfigEntity;
         public Vector3 Position
         {
             get => this.position;

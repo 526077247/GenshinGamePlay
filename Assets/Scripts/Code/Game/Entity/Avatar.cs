@@ -17,15 +17,15 @@ namespace TaoTie
             CampId = CampConst.Player;
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
-            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
+            ConfigEntity = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<NumericComponent,ConfigCombatProperty[]>(entityConfig.Combat?.DefaultProperty);
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigEntity.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
             AddComponent<SkillComponent>();
             AddComponent<LocalInputController>();
             AddComponent<AvatarMoveComponent>();
-            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(entityConfig.Abilities);
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigEntity.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             InitAsync().Coroutine();
         }
@@ -35,11 +35,12 @@ namespace TaoTie
             var ghc = GetComponent<GameObjectHolderComponent>();
             await ghc.WaitLoadGameObjectOver();
             CameraManager.Instance.ChangeCamera(2);
-            CameraManager.Instance.SetFreeLockCameraFollow(ghc.EntityView);
+            CameraManager.Instance.SetFreeLockCameraFollow(ghc.EntityView, ConfigEntity.Common.Height/3f*2f);
         }
 
         public void Destroy()
         {
+            ConfigEntity = null;
             ConfigId = default;
             CampId = 0;
         }

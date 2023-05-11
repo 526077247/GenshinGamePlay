@@ -18,12 +18,12 @@ namespace TaoTie
             CampId = campId;
             var monster = AddComponent<MonsterComponent,int>(configId);
             ConfigId = monster.Config.UnitId;
-            var entityConfig = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
+            ConfigEntity = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<NumericComponent,ConfigCombatProperty[]>(entityConfig.Combat?.DefaultProperty);
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigEntity.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
-            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(entityConfig.Abilities);
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigEntity.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(monster.Config.AIPath))
             {
@@ -39,6 +39,7 @@ namespace TaoTie
         
         public void Destroy()
         {
+            ConfigEntity = null;
             ConfigId = default;
             CampId = 0;
         }
