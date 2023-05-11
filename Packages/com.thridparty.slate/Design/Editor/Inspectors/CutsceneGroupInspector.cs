@@ -5,12 +5,13 @@ using UnityEngine;
 using System.Collections;
 using System.Reflection;
 using System.Linq;
+using Sirenix.OdinInspector.Editor;
 
 namespace Slate
 {
 
     [CustomEditor(typeof(CutsceneGroup), true)]
-    public class CutsceneGroupInspector : Editor
+    public class CutsceneGroupInspector : OdinEditor
     {
 
         private CutsceneGroup group {

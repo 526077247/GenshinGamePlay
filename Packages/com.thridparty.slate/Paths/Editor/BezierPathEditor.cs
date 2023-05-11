@@ -5,12 +5,13 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using Sirenix.OdinInspector.Editor;
 
 namespace Slate
 {
 
     [CustomEditor(typeof(BezierPath))]
-    public class BezierPathEditor : Editor
+    public class BezierPathEditor : OdinEditor
     {
         private BezierPoint selectedPoint;
         private BezierPath path { get { return (BezierPath)target; } }

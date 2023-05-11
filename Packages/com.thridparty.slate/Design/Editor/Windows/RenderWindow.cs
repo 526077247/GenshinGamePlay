@@ -3,6 +3,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections;
+using Sirenix.OdinInspector.Editor;
 
 #if SLATE_USE_FRAMECAPTURER
 using RenderSettings = Slate.Prefs.RenderSettings;
@@ -13,7 +14,7 @@ using Slate.UTJ.FrameCapturer;
 namespace Slate
 {
 
-    public class RenderWindow : EditorWindow
+    public class RenderWindow : OdinEditorWindow
     {
 
 #if !SLATE_USE_FRAMECAPTURER

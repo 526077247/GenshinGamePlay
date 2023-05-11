@@ -4,12 +4,13 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector.Editor;
 
 namespace Slate
 {
 
     [CustomEditor(typeof(Character))]
-    public class CharacterInspector : Editor
+    public class CharacterInspector : OdinEditor
     {
 
         private Dictionary<BlendShapeGroup, bool> foldStates = new Dictionary<BlendShapeGroup, bool>();

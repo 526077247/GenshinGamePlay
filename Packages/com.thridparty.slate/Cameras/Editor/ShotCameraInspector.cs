@@ -3,12 +3,13 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections;
+using Sirenix.OdinInspector.Editor;
 
 namespace Slate
 {
 
     [CustomEditor(typeof(ShotCamera))]
-    public class ShotCameraInspector : Editor
+    public class ShotCameraInspector : OdinEditor
     {
 
         private SerializedProperty focalDistanceProp;

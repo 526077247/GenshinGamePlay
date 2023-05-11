@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Slate
 {
 
     [CustomEditor(typeof(DirectorCamera))]
-    public class DirectorCameraInspector : Editor
+    public class DirectorCameraInspector : OdinEditor
     {
 
         public override void OnInspectorGUI() {

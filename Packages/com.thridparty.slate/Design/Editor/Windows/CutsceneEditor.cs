@@ -4,11 +4,12 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using Sirenix.OdinInspector.Editor;
 
 namespace Slate
 {
 
-    public class CutsceneEditor : EditorWindow
+    public class CutsceneEditor : OdinEditorWindow
     {
 
         enum EditorPlaybackState

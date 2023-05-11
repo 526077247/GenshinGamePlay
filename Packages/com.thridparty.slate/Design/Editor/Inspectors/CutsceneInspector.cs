@@ -6,12 +6,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using Sirenix.OdinInspector.Editor;
 
 namespace Slate
 {
 
     [CustomEditor(typeof(Cutscene))]
-    public class CutsceneInspector : Editor
+    public class CutsceneInspector : OdinEditor
     {
 
         private bool optionsFold = true;
