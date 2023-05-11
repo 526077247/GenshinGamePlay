@@ -49,7 +49,7 @@ MonoBehaviour:
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
   m_RenderingMode: 0
-  m_DepthPrimingMode: 0
+  m_DepthPrimingMode: 1
   m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
   m_ClusteredRendering: 0
@@ -65,11 +65,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: RenderObjects
+  m_Name: Outline
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: RenderObjects
+    passTag: Outline
     Event: 300
     filterSettings:
       RenderQueueType: 0

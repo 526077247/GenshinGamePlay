@@ -24,6 +24,7 @@ Material:
   m_Shader: {fileID: 4800000, guid: 4466465ffd73f3e42bae37fdf7e6ed2e, type: 3}
   m_ValidKeywords:
   - _CELLSHADING
+  - _DEPTHSHADOW
   - _GGX
   - _OUTLINE
   m_InvalidKeywords:
@@ -182,7 +183,7 @@ Material:
     - _StylizedSpecularSoftness: 0.05
     - _Surface: 4.44
     - _UVSec: 0
-    - _UseDepthShadow: 0
+    - _UseDepthShadow: 1
     - _UseEmissionTex: 0
     - _UseHalfLambert: 1
     - _UseRadianceOcclusion: 0

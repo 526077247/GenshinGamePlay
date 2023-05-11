@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6385732621474082152
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -7,11 +20,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MuZhuang
+  m_Name: Default
   m_Shader: {fileID: 4800000, guid: 335dcad6d9fdba943a91b0a9295ee10e, type: 3}
   m_ValidKeywords:
   - _CELLSHADING
-  - _FRESNELRIM
   - _GGX
   - _OUTLINE
   - _RENDERENVSETTING
@@ -21,7 +33,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -166,7 +178,7 @@ Material:
     - _ZWrite: 1
     - _enum_diffuse: 0
     - _enum_env: 1
-    - _enum_rim: 1
+    - _enum_rim: 0
     - _enum_specular: 1
     - _group: 0
     - _group1: 1
@@ -180,7 +192,7 @@ Material:
     - _groupShadowSetting: 1
     - _groupSpecular: 1
     m_Colors:
-    - _BaseColor: {r: 0.5, g: 0.25765565, b: 0, a: 1}
+    - _BaseColor: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}
@@ -195,16 +207,3 @@ Material:
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularIntensityChannel: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &8679348436009955470
-MonoBehaviour:
-  m_ObjectHideFlags: 11
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 5

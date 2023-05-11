@@ -148,13 +148,13 @@ namespace TaoTie
                 return freeLookCameraPlugin;
             }
 
-            // if (config is ConfigTrackCamera configTrackCamera)
-            // {
-            //     var trackCameraPlugin = new TrackCameraPlugin();
-            //     _cameraPlugins[config.id] = trackCameraPlugin;
-            //     trackCameraPlugin.OnInit(configTrackCamera);
-            //     return trackCameraPlugin;
-            // }
+            if (config is ConfigTrackCamera configTrackCamera)
+            {
+                var trackCameraPlugin = new TrackCameraPlugin();
+                cameraPlugins[config.Id] = trackCameraPlugin;
+                trackCameraPlugin.OnInit(configTrackCamera);
+                return trackCameraPlugin;
+            }
 
             throw new Exception("指定相机功能未实现");
         }
