@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class GameTools
+    public class CommonEditor
     {
         [MenuItem("Tools/帮助/启动场景 #_b")]
         static void ChangeInitScene()
@@ -15,12 +15,12 @@ namespace TaoTie
         }
 
         
-        [MenuItem("Tools/帮助/创建子目录")]
+        [MenuItem("Tools/工具/创建子目录")]
         [MenuItem("Assets/工具/创建子目录")]
         public static void CreateArtSubFolder()
         {
             string[] ArtFolderNames = { "Animations", "Materials", "Models", "Textures", "Prefabs" };
-            string[] UnitFolderNames = { "Animations", "Edit", "Prefabs" };
+            string[] UnitFolderNames = { "Animations", "Edit", "Materials", "Models", "Textures", "Prefabs" };
             string[] UIFolderNames = { "Animations", "Atlas", "DiscreteImages","DynamicAtlas", "Prefabs" };
             string[] guids = Selection.assetGUIDs;
             for (int i = 0; i < guids.Length; i++)

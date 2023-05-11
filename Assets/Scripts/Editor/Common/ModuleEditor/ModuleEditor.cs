@@ -9,7 +9,7 @@ namespace TaoTie
 
     public class ModuleEditor : EditorWindow
     {
-        private const string settingAsset = "Assets/Scripts/Editor/ModuleEditor/ModuleInfo.asset";
+        private const string settingAsset = "Assets/Scripts/Editor/Common/ModuleEditor/ModuleInfo.asset";
         private string Source = "Modules";
         private string ModulePath = "Packages";
         private ModuleInfo info;
