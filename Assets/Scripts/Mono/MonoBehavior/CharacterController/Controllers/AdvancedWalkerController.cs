@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TaoTie;
 using UnityEngine;
 
 namespace CMF
@@ -33,7 +34,7 @@ namespace CMF
 
 		//Jump duration variables;
 		public float jumpDuration = 0.2f;
-		float currentJumpStartTime = 0f;
+		long currentJumpStartTime = 0;
 
 		//'AirFriction' determines how fast the controller loses its momentum while in the air;
 		//'GroundFriction' is used instead, if the controller is grounded;
@@ -325,7 +326,7 @@ namespace CMF
 			if(currentControllerState == ControllerState.Jumping)
 			{
 				//Check for jump timeout;
-				if((Time.time - currentJumpStartTime) > jumpDuration)
+				if((GameTimerManager.Instance.GetTimeNow() - currentJumpStartTime)/1000f > jumpDuration)
 					return ControllerState.Rising;
 
 				//Check if jump key was let go;
@@ -383,7 +384,7 @@ namespace CMF
 			}
 
 			//Add gravity to vertical momentum;
-			_verticalMomentum -= tr.up * gravity * Time.deltaTime;
+			_verticalMomentum -= tr.up * gravity * GameTimerManager.Instance.GetDeltaTime()/1000f;
 
 			//Remove any downward force if the controller is grounded;
 			if(currentControllerState == ControllerState.Grounded && VectorMath.GetDotProduct(_verticalMomentum, tr.up) < 0f)
@@ -403,13 +404,13 @@ namespace CMF
 					
 					//Lower air control slightly with a multiplier to add some 'weight' to any momentum applied to the controller;
 					float _airControlMultiplier = 0.25f;
-					_horizontalMomentum += _movementVelocity * Time.deltaTime * airControlRate * _airControlMultiplier;
+					_horizontalMomentum += _movementVelocity * GameTimerManager.Instance.GetDeltaTime()/1000f * airControlRate * _airControlMultiplier;
 				}
 				//If controller has not received additional momentum;
 				else
 				{
 					//Clamp _horizontal velocity to prevent accumulation of speed;
-					_horizontalMomentum += _movementVelocity * Time.deltaTime * airControlRate;
+					_horizontalMomentum += _movementVelocity * GameTimerManager.Instance.GetDeltaTime()/1000f * airControlRate;
 					_horizontalMomentum = Vector3.ClampMagnitude(_horizontalMomentum, movementSpeed);
 				}
 			}
@@ -431,9 +432,9 @@ namespace CMF
 
 			//Apply friction to horizontal momentum based on whether the controller is grounded;
 			if(currentControllerState == ControllerState.Grounded)
-				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, groundFriction, Time.deltaTime, Vector3.zero);
+				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, groundFriction, GameTimerManager.Instance.GetDeltaTime()/1000f, Vector3.zero);
 			else
-				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, airFriction, Time.deltaTime, Vector3.zero); 
+				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, airFriction, GameTimerManager.Instance.GetDeltaTime()/1000f, Vector3.zero); 
 
 			//Add horizontal and vertical momentum back together;
 			momentum = _horizontalMomentum + _verticalMomentum;
@@ -450,7 +451,7 @@ namespace CMF
 
 				//Apply additional slide gravity;
 				Vector3 _slideDirection = Vector3.ProjectOnPlane(-tr.up, mover.GetGroundNormal()).normalized;
-				momentum += _slideDirection * slideGravity * Time.deltaTime;
+				momentum += _slideDirection * slideGravity * GameTimerManager.Instance.GetDeltaTime()/1000f;
 			}
 			
 			//If controller is jumping, override vertical velocity with jumpSpeed;
@@ -477,7 +478,7 @@ namespace CMF
 			momentum += tr.up * jumpSpeed;
 
 			//Set jump start time;
-			currentJumpStartTime = Time.time;
+			currentJumpStartTime = GameTimerManager.Instance.GetTimeNow();
 
             //Lock jump input until jump key is released again;
             jumpInputIsLocked = true;
