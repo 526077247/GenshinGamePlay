@@ -38,10 +38,10 @@ namespace TaoTie
             animator.SetBool(key, data);
         }
 
-        private void CrossFadeInFixedTime(int targetHash, float fadeDuration, int layerIndex, float targetTime)
+        private void CrossFadeInFixedTime(string stateName, float fadeDuration, int layerIndex, float targetTime)
         {
             if (animator == null) return;
-            animator.CrossFadeInFixedTime(targetHash, fadeDuration, layerIndex, targetTime);
+            animator.CrossFadeInFixedTime(stateName, fadeDuration, layerIndex, targetTime);
         }
 
         private void CrossFade(string stateName, int layerIndex)

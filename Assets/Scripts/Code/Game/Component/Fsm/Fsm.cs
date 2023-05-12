@@ -6,7 +6,7 @@ namespace TaoTie
 {
      public struct FsmTransitionInfo
      {
-         public int targetHash;
+         public string targetName;
          public int layerIndex;
          public float targetTime;
          public float fadeDuration;
@@ -121,7 +121,7 @@ namespace TaoTie
                  ConfigTransition.ApplyDefault(this, toCfg, ref _transitionInfo);
              }
 
-             Messager.Instance.Broadcast(_component.Id, MessageId.CrossFadeInFixedTime, _transitionInfo.targetHash,
+             Messager.Instance.Broadcast(_component.Id, MessageId.CrossFadeInFixedTime, _transitionInfo.targetName,
                  _transitionInfo.fadeDuration, _transitionInfo.layerIndex, _transitionInfo.targetTime);
              
              _statePassTime = 0;

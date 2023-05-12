@@ -101,7 +101,7 @@ namespace TaoTie
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
             // Messager.Instance.AddListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
-            Messager.Instance.AddListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
+            Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
@@ -151,7 +151,7 @@ namespace TaoTie
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
-            Messager.Instance.RemoveListener<int, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
+            Messager.Instance.RemoveListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
 
             if (EntityView != null)

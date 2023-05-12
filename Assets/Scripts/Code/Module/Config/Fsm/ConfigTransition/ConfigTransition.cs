@@ -113,7 +113,7 @@ namespace TaoTie
                 fsm.Component.SetData(toStateCfg.MirrorParameter, targetMirror);
             }
 
-            info.targetHash = toStateCfg.NameHash;
+            info.targetName = toStateCfg.Name;
             info.targetTime = targetTime;
             info.layerIndex = fsm.layerIndex;
             info.fadeDuration = this.FadeDuration;
@@ -121,7 +121,7 @@ namespace TaoTie
 
         public static void ApplyDefault(Fsm fsm, ConfigFsmState toStateCfg, ref FsmTransitionInfo info)
         {
-            info.targetHash = toStateCfg.NameHash;
+            info.targetName = toStateCfg.Name;
             info.layerIndex = fsm.layerIndex;
             info.targetTime = 0;
             info.fadeDuration = 0.25f;

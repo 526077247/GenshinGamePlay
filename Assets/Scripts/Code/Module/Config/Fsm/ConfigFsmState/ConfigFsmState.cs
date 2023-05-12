@@ -12,7 +12,6 @@ namespace TaoTie
         public float StateDuration;
         public string MirrorParameter;
         public bool StateLoop;
-        public int NameHash = 0;
         public ConfigFsmTimeline Timeline;
         public ConfigTransition[] Transitions;
         public StateData Data;
@@ -25,7 +24,6 @@ namespace TaoTie
         public ConfigFsmState(string name, float stateDuration, bool loop, string mirrorParam)
         {
             this.Name = name;
-            this.NameHash = Animator.StringToHash(this.Name);
             this.MirrorParameter = mirrorParam;
             this.StateDuration = stateDuration;
             this.StateLoop = loop;
