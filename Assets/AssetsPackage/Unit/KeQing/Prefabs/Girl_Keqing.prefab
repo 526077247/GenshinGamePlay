@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 825769113795510220}
   - component: {fileID: 6743459254859523510}
-  - component: {fileID: 346356575052967412}
   - component: {fileID: 2381862194090851813}
   - component: {fileID: 765581295828156040}
   - component: {fileID: 3585709557367256208}
@@ -62,36 +61,13 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 3621bbe7579fe0649af518a2d1602027, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!114 &346356575052967412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17565861601961334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d11acb5e46764e39ba9e618f24c0d2c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementSpeed: 7
-  airControlRate: 2
-  jumpSpeed: 10
-  jumpDuration: 0.2
-  airFriction: 0.5
-  groundFriction: 100
-  gravity: 30
-  slideGravity: 5
-  slopeLimit: 80
-  useLocalMomentum: 0
-  cameraTransform: {fileID: 0}
 --- !u!114 &2381862194090851813
 MonoBehaviour:
   m_ObjectHideFlags: 0
