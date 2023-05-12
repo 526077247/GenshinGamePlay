@@ -64,7 +64,8 @@ namespace TaoTie
         private bool canTurn = true;
         private FsmComponent FsmComponent => parent.GetComponent<FsmComponent>();
         private NumericComponent NumericComponent => parent.GetComponent<NumericComponent>();
-        
+
+        private Unit unit => parent as Unit;
         public void Init()
         {
 	        characterInput = new CharacterKeyboardInput();
@@ -135,6 +136,8 @@ namespace TaoTie
 		{
 			if(tr == null) return;
 			ControllerUpdate();
+			HandlerForward();
+			unit.SyncViewPosition(tr.position);
 		}
 		void HandlerForward()
 		{
@@ -145,7 +148,7 @@ namespace TaoTie
 				Vector3 _upDirection = tr.up;
 
 				//Set rotation;
-				tr.rotation = Quaternion.LookRotation(_forwardDirection, _upDirection);
+				unit.Rotation = Quaternion.LookRotation(_forwardDirection, _upDirection);
 			}
 		}
 
@@ -161,8 +164,6 @@ namespace TaoTie
 
 			//Apply friction and gravity to 'momentum';
 			HandleMomentum();
-
-			HandlerForward();
 
 			//Calculate movement velocity;
 			Vector3 _velocity = Vector3.zero;
@@ -189,8 +190,7 @@ namespace TaoTie
 		
 			//Save controller movement velocity;
 			savedMovementVelocity = CalculateMovementVelocity();
-
-
+			
 			//Reset ceiling detector, if one is attached to this gameobject;
 			if(ceilingDetector != null)
 				ceilingDetector.ResetFlags();

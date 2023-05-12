@@ -32,6 +32,12 @@ namespace TaoTie
             }
         }
 
+        public void SyncViewPosition(Vector3 value)
+        {
+            var oldPos = this.position;
+            this.position = value;
+            // Messager.Instance.Broadcast(Id, MessageId.ChangePositionEvt, this, oldPos);
+        }
         public Vector3 Forward
         {
             get => this.Rotation * Vector3.forward;

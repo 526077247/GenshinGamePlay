@@ -28,7 +28,9 @@ Material:
   - _GGX
   - _OUTLINE
   m_InvalidKeywords:
+  - _DEPTHOFFSETSHADOWREVERSEX_ON
   - _IS_FILTER_LIGHTCOLOR_ON
+  - _USEEMISSIONTEX
   - _USEHALFLAMBERT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -132,12 +134,12 @@ Material:
     - _Cull: 2
     - _Cutoff: 0.5
     - _DepthOffsetRimReverseX: 0
-    - _DepthOffsetShadowReverseX: 0
+    - _DepthOffsetShadowReverseX: 1
     - _DepthRimOffset: 0.01
     - _DepthRimThresoldOffset: 0.01
-    - _DepthShadowOffset: -0.17
+    - _DepthShadowOffset: -2
     - _DepthShadowSoftness: 0
-    - _DepthShadowThresoldOffset: 0
+    - _DepthShadowThresoldOffset: -1
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -147,11 +149,11 @@ Material:
     - _Glossiness: 0.31622776
     - _GlossyReflections: 1
     - _Is_Filter_LightColor: 1
-    - _LightDirectionObliqueWeight: 0
+    - _LightDirectionObliqueWeight: 0.768
     - _LightIntensityClamp: 1
     - _Metallic: 0
     - _Mode: 0
-    - _OcclusionStrength: 1
+    - _OcclusionStrength: 0.652
     - _Outline: 1
     - _OutlineWidth: 0.25
     - _Parallax: 0.02
@@ -170,7 +172,7 @@ Material:
     - _ScreenSpaceRimThreshold: 0.01
     - _ScreenSpaceRimWidth: 0.01
     - _Shininess: 1
-    - _Smoothness: 0.622
+    - _Smoothness: 0.774
     - _SmoothnessTextureChannel: 0
     - _SpaceScreenVariant: 0.5
     - _SpecularAA: 0
