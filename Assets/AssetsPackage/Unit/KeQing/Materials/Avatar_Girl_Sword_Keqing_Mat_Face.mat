@@ -172,7 +172,7 @@ Material:
     - _ScreenSpaceRimThreshold: 0.01
     - _ScreenSpaceRimWidth: 0.01
     - _Shininess: 1
-    - _Smoothness: 0.774
+    - _Smoothness: 0.365
     - _SmoothnessTextureChannel: 0
     - _SpaceScreenVariant: 0.5
     - _SpecularAA: 0

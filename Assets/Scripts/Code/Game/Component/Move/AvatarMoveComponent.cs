@@ -124,11 +124,13 @@ namespace TaoTie
 
         private void MoveStart()
         {
+	        characterInput.MotionFlag = MotionFlag.Run;
             FsmComponent.SetData(FSMConst.MotionFlag, 2);
         }
 
         private void MoveStop()
         {
+	        characterInput.MotionFlag = MotionFlag.Idle;
             FsmComponent.SetData(FSMConst.MotionFlag, 0);
         }
 
@@ -141,14 +143,24 @@ namespace TaoTie
 		}
 		void HandlerForward()
 		{
-			if (savedMovementVelocity != Vector3.zero)
+			var lookDir = CalculateMovementDirection();
+			if (lookDir != Vector3.zero)
 			{
-				//Calculate up and forwward direction;
-				Vector3 _forwardDirection = savedMovementVelocity;
+				Vector3 dir;
+				var angle = Vector3.Angle(lookDir, tr.forward);
+				if (angle > 3)
+				{
+					var flag = Vector3.Cross(lookDir, tr.forward);
+					var temp = (flag.y > 0 ? -1 : 1) * 360 * GameTimerManager.Instance.GetDeltaTime() / 1000f;
+					if (Mathf.Abs(temp - angle)<0) temp = angle;
+					dir = Quaternion.Euler(0, temp, 0) * tr.forward;
+				}
+				else
+				{
+					dir = lookDir;
+				}
 				Vector3 _upDirection = tr.up;
-
-				//Set rotation;
-				unit.Rotation = Quaternion.LookRotation(_forwardDirection, _upDirection);
+				unit.Rotation = Quaternion.LookRotation(dir, _upDirection);
 			}
 		}
 
@@ -230,13 +242,17 @@ namespace TaoTie
 		//Calculate and return movement velocity based on player input, controller state, ground normal [...];
 		protected virtual Vector3 CalculateMovementVelocity()
 		{
-			//Calculate (normalized) movement direction;
-			Vector3 _velocity = CalculateMovementDirection();
+			if (characterInput.MotionFlag == MotionFlag.Run || characterInput.MotionFlag == MotionFlag.Walk)
+			{
+				//Calculate (normalized) movement direction;
+				Vector3 _velocity = tr.forward;
 
-			//Multiply (normalized) velocity with movement speed;
-			_velocity *= NumericComponent.GetAsFloat(NumericType.Speed);
+				//Multiply (normalized) velocity with movement speed;
+				_velocity *= NumericComponent.GetAsFloat(NumericType.Speed);
+				return _velocity;
+			}
 
-			return _velocity;
+			return Vector3.zero;
 		}
 
 		//Determine current controller state based on current momentum and whether the controller is grounded (or not);
