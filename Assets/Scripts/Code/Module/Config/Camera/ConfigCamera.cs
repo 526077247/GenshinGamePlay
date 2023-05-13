@@ -36,9 +36,12 @@ namespace TaoTie
         public CursorLockMode Mode = CursorLockMode.Locked;
 
         [NinoMember(11)][ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
-        public float ZoomMin = -1;
+        public float ZoomMin = 1f;
 
         [NinoMember(12)][ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
-        public float ZoomMax = 15;
+        public float ZoomMax = 4;
+        
+        [NinoMember(13)][ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("其他设置")]
+        public float ZoomDefault = 2.5f;
     }
 }

@@ -15,6 +15,7 @@ namespace TaoTie
         public float ZoomMin;
         public float ZoomMax;
         public CursorLockMode Mode;
+        public float Zoom;
         public CameraStateData()
         {
         }
@@ -31,6 +32,7 @@ namespace TaoTie
             ZoomMin = config.ZoomMin;
             ZoomMax = config.ZoomMax;
             Mode = config.Mode;
+            Zoom = config.ZoomDefault;
         }
 
         public CameraStateData Clone()

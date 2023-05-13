@@ -35,7 +35,7 @@ namespace TaoTie
             var ghc = GetComponent<GameObjectHolderComponent>();
             await ghc.WaitLoadGameObjectOver();
             CameraManager.Instance.ChangeCamera(2);
-            CameraManager.Instance.SetFreeLockCameraFollow(ghc.EntityView, ConfigEntity.Common.Height/3f*2f);
+            CameraManager.Instance.SetFreeLockCameraFollow(ghc.EntityView, ConfigEntity.Common.Height);
         }
 
         public void Destroy()

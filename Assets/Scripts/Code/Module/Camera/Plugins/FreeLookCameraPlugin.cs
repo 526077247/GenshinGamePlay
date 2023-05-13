@@ -15,7 +15,7 @@ namespace TaoTie
 
         private float _objHalfHeight;
         private FreeLookCameraStateData _stateData => stateData as FreeLookCameraStateData;
-
+        private float lerpScroll;
         protected override void OnInitInternal(ConfigFreeLookCamera data)
         {
             base.OnInitInternal(data);
@@ -60,6 +60,20 @@ namespace TaoTie
             base.OnRelease();
         }
 
+        public override void Tick()
+        {
+            base.Tick();
+            
+            lerpScroll = Mathf.Lerp(lerpScroll,-InputManager.Instance.MouseScrollWheel,0.1f);
+            if (lerpScroll != 0)
+            {
+                _stateData.Zoom += lerpScroll * GameTimerManager.Instance.GetDeltaTime() / 10f;
+                _stateData.Zoom = Mathf.Clamp(_stateData.Zoom, _stateData.ZoomMin, _stateData.ZoomMax);
+                UpdateDistance(_stateData);
+            }
+
+        }
+
         protected override void ChangeStateInternal(FreeLookCameraStateData stateData)
         {
             for (var i = 0; i < 3; i++)
@@ -75,9 +89,17 @@ namespace TaoTie
             camera.m_XAxis.m_MaxSpeed = stateData.XSpeed;
             camera.m_YAxis.m_MaxSpeed = stateData.YSpeed;
 
-            NearFocusProcess(stateData);
+            UpdateDistance(stateData);
 
             base.ChangeStateInternal(stateData);
+        }
+
+        private void UpdateDistance(FreeLookCameraStateData stateData)
+        {
+            camera.m_Orbits[0].m_Height = camera.m_Orbits[1].m_Height+stateData.Zoom;
+            camera.m_Orbits[1].m_Radius = stateData.Zoom;
+            camera.m_Orbits[2].m_Height = camera.m_Orbits[1].m_Height-stateData.Zoom;
+            NearFocusProcess(stateData);
         }
 
         /// <summary>
@@ -98,8 +120,10 @@ namespace TaoTie
                 }
                 else if (dist < stateData.NearFocusMaxDistance)
                 {
-                    target = Mathf.Lerp(_objHalfHeight, 0f, dist / stateData.NearFocusMaxDistance);
+                    target = Mathf.Lerp(_objHalfHeight, 0f, dist / (stateData.NearFocusMaxDistance - stateData.NearFocusMinDistance));
                 }
+
+                target /= 2;
             }
 
             target += _objHalfHeight;

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4884047153676873963}
   - component: {fileID: 7834349465534878828}
   - component: {fileID: 6105457838890286682}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 3337037590447006867}
   - component: {fileID: 4825874413203856325}
   - component: {fileID: 3943969689556441946}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MuZhuang
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 3337037590681139166}
   - component: {fileID: 3337037590681139137}
   - component: {fileID: 3337037590681139136}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

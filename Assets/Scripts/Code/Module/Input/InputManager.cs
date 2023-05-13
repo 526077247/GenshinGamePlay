@@ -21,6 +21,8 @@ namespace TaoTie
         public static InputManager Instance { get; private set; }
         public bool IsPause;
 
+        public float MouseScrollWheel { get; private set; }
+
         /// <summary>
         /// 按键绑定
         /// </summary>
@@ -71,6 +73,8 @@ namespace TaoTie
                 }
                 keyStatus[i] = val;
             }
+
+            MouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
         }
 
         /// <summary>

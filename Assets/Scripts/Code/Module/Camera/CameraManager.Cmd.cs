@@ -169,7 +169,7 @@ namespace TaoTie
         /// <summary>
         ///     设置FreeLock
         /// </summary>
-        public void SetFreeLockCameraFollow(Transform transform, float height = 0.75f)
+        public void SetFreeLockCameraFollow(Transform transform, float height = 1.5f)
         {
             if (curCameraType == CameraType.FreeLookCameraPlugin)
             {
