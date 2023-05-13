@@ -15,7 +15,7 @@ namespace TaoTie
             KeyCode.S,
             KeyCode.A,
             KeyCode.D,
-            KeyCode.Alpha1,
+            KeyCode.Mouse0,
         };
         
         public static InputManager Instance { get; private set; }

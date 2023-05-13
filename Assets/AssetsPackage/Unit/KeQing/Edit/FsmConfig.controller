@@ -7,7 +7,13 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: UseSkill
+    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: SkillId
+    m_EventTreshold: 1001
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5836900828080085207}
   m_Solo: 0
@@ -16,7 +22,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
-  m_ExitTime: 0.91477275
+  m_ExitTime: 0.35
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -60,7 +66,9 @@ AnimatorState:
   m_Transitions:
   - {fileID: 199724476944373531}
   - {fileID: -2018495290745915019}
-  m_StateMachineBehaviours: []
+  - {fileID: -6749553675002586013}
+  m_StateMachineBehaviours:
+  - {fileID: -4944633556724694188}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -100,6 +108,31 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1101 &-6749553675002586013
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 3
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 0}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 1
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.52
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1109 &-6579697488991277161
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -117,6 +150,31 @@ AnimatorTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 1
+--- !u!1101 &-6410329999860568228
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 3
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 0}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 1
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.52
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1102 &-5235966087562201756
 AnimatorState:
   serializedVersion: 6
@@ -130,7 +188,9 @@ AnimatorState:
   m_Transitions:
   - {fileID: -8668903937547888577}
   - {fileID: -5069111793173680765}
-  m_StateMachineBehaviours: []
+  - {fileID: 4266794146028343297}
+  m_StateMachineBehaviours:
+  - {fileID: 8389659897833517089}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -152,7 +212,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -167,6 +230,31 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &-4944633556724694188
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 3932124358132891649
+  references:
+    version: 2
+    RefIds:
+    - rid: 3932124358132891649
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
 --- !u!1102 &-4867738824078306946
 AnimatorState:
   serializedVersion: 6
@@ -207,9 +295,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: UseSkill
     m_EventTreshold: 0
-  - m_ConditionMode: 3
+  - m_ConditionMode: 6
     m_ConditionEvent: SkillId
-    m_EventTreshold: 0
+    m_EventTreshold: 1001
   m_DstStateMachine: {fileID: 2050181242708935422}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -231,7 +319,13 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: UseSkill
+    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: SkillId
+    m_EventTreshold: 1001
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7366890906572552221}
   m_Solo: 0
@@ -240,7 +334,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
-  m_ExitTime: 0.87068963
+  m_ExitTime: 0.35
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -279,7 +373,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -316,14 +413,17 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!1101 &-310015166491834352
+--- !u!1101 &-1005691150163798685
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -386,14 +486,14 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: UseSkill
-    m_Type: 9
+  - m_Name: SkillId
+    m_Type: 3
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: SkillId
-    m_Type: 3
+  - m_Name: UseSkill
+    m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -423,6 +523,31 @@ AnimatorController:
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
+--- !u!114 &29432554639074390
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 3932124358132891648
+  references:
+    version: 2
+    RefIds:
+    - rid: 3932124358132891648
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
 --- !u!1102 &171785100232014949
 AnimatorState:
   serializedVersion: 6
@@ -459,7 +584,13 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: UseSkill
+    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: SkillId
+    m_EventTreshold: 1001
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5235966087562201756}
   m_Solo: 0
@@ -468,7 +599,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
-  m_ExitTime: 0.875
+  m_ExitTime: 0.35
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -499,6 +630,23 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1109 &1082401948591834806
+AnimatorTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 3
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: -99970714858603394}
+  m_DstState: {fileID: 0}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 1
 --- !u!1101 &1101351291853649554
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -603,6 +751,7 @@ AnimatorStateMachine:
   - first: {fileID: 2050181242708935422}
     second:
     - {fileID: 7352101366192419579}
+    - {fileID: 1082401948591834806}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -24, y: -12, z: 0}
   m_EntryPosition: {x: -204, y: 132, z: 0}
@@ -620,7 +769,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 8741091868187195979}
-    m_Position: {x: 420, y: 10, z: 0}
+    m_Position: {x: 430, y: 10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7366890906572552221}
     m_Position: {x: 430, y: 100, z: 0}
@@ -661,6 +810,31 @@ AnimatorStateTransition:
   m_TransitionOffset: 0
   m_ExitTime: 0.75
   m_HasExitTime: 0
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
+--- !u!1101 &4266794146028343297
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions:
+  - m_ConditionMode: 3
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 0}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 1
+  serializedVersion: 3
+  m_TransitionDuration: 0.24999988
+  m_TransitionOffset: 0.0067483215
+  m_ExitTime: 0.6166217
+  m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -718,9 +892,9 @@ AnimatorTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: UseSkill
     m_EventTreshold: 0
-  - m_ConditionMode: 3
+  - m_ConditionMode: 6
     m_ConditionEvent: SkillId
-    m_EventTreshold: 0
+    m_EventTreshold: 1001
   m_DstStateMachine: {fileID: 2050181242708935422}
   m_DstState: {fileID: 0}
   m_Solo: 0
@@ -739,7 +913,8 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -1902272531576429203}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: 6590230723698155371}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -754,6 +929,31 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!114 &6590230723698155371
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 3932124358132891651
+  references:
+    version: 2
+    RefIds:
+    - rid: 3932124358132891651
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
 --- !u!1109 &6732828117111530671
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -778,7 +978,10 @@ AnimatorTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102059769633159636}
   m_Solo: 0
@@ -833,6 +1036,31 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &8389659897833517089
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 3932124358132891650
+  references:
+    version: 2
+    RefIds:
+    - rid: 3932124358132891650
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
 --- !u!1101 &8631561747106241960
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -870,8 +1098,10 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -3425207453192004634}
-  - {fileID: -310015166491834352}
-  m_StateMachineBehaviours: []
+  - {fileID: -1005691150163798685}
+  - {fileID: -6410329999860568228}
+  m_StateMachineBehaviours:
+  - {fileID: 29432554639074390}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1

@@ -6,7 +6,7 @@
         MoveBack,
         MoveLeft,
         MoveRight,
-        Skill,
+        NormalAttack,
         
         Max
     }
