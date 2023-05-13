@@ -32,6 +32,7 @@ namespace TaoTie
             if (showFightTexts.Count == 0) return;
             for (int i = showFightTexts.Count - 1; i >= 0; i--)
             {
+	            showFightTexts[i].UpdateText();
                 if (showFightTexts[i].expire_time < GameTimerManager.Instance.GetTimeNow())
                 {
 					showFightTexts[i].SetActive(false);

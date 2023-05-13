@@ -53,7 +53,7 @@ namespace TaoTie
             if (text != null)
             {
                 text.text = show_dmg.ToString();
-                Vector2 pt = Camera.main.WorldToScreenPoint(show_pos) * UIManager.Instance.ScreenSizeflag;
+                Vector2 pt = CameraManager.Instance.MainCamera().WorldToScreenPoint(show_pos) * UIManager.Instance.ScreenSizeflag;
                 rect.anchoredPosition = pt;
             }
         }
