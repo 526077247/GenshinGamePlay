@@ -102,7 +102,7 @@ namespace TaoTie
             {
 	            characterInput.Direction = Vector3.zero;
             }
-            if (characterInput.Direction != Vector3.zero)
+            if (direction != Vector3.zero)
             {
 	            MoveStart();
             }
@@ -221,21 +221,18 @@ namespace TaoTie
 			//If no camera transform has been assigned, use the character's transform axes to calculate the movement direction;
 			if(cameraTransform == null)
 			{
-				_velocity += tr.right * characterInput.GetHorizontalMovementInput();
-				_velocity += tr.forward * characterInput.GetVerticalMovementInput();
+				_velocity += tr.right * characterInput.Direction.x;
+				_velocity += tr.forward * characterInput.Direction.z;
 			}
 			else
 			{
 				//If a camera transform has been assigned, use the assigned transform's axes for movement direction;
 				//Project movement direction so movement stays parallel to the ground;
-				_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * characterInput.GetHorizontalMovementInput();
-				_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * characterInput.GetVerticalMovementInput();
+				_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * characterInput.Direction.x;
+				_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * characterInput.Direction.z;
 			}
-
-			//If necessary, clamp movement vector to magnitude of 1f;
-			if(_velocity.magnitude > 1f)
-				_velocity.Normalize();
-
+			
+			_velocity.Normalize();
 			return _velocity;
 		}
 
@@ -255,7 +252,7 @@ namespace TaoTie
 			return Vector3.zero;
 		}
 
-		//Determine current controller state based on current momentum and whether the controller is grounded (or not);
+		//Determine current controller state based on current momentuml and whether the controller is grounded (or not);
 		//Handle state transitions;
 		ControllerState DetermineControllerState()
 		{
@@ -370,32 +367,6 @@ namespace TaoTie
 			//Remove any downward force if the controller is grounded;
 			if(currentControllerState == ControllerState.Grounded && VectorMath.GetDotProduct(_verticalMomentum, tr.up) < 0f)
 				_verticalMomentum = Vector3.zero;
-
-			var speed= NumericComponent.GetAsFloat(NumericType.Speed);
-			//Manipulate momentum to steer controller in the air (if controller is not grounded or sliding);
-			if(!IsGrounded())
-			{
-				Vector3 _movementVelocity = CalculateMovementVelocity();
-
-				//If controller has received additional momentum from somewhere else;
-				if(_horizontalMomentum.magnitude > speed)
-				{
-					//Prevent unwanted accumulation of speed in the direction of the current momentum;
-					if(VectorMath.GetDotProduct(_movementVelocity, _horizontalMomentum.normalized) > 0f)
-						_movementVelocity = VectorMath.RemoveDotVector(_movementVelocity, _horizontalMomentum.normalized);
-					
-					//Lower air control slightly with a multiplier to add some 'weight' to any momentum applied to the controller;
-					float _airControlMultiplier = 0.25f;
-					_horizontalMomentum += _movementVelocity * deltaTime * airControlRate * _airControlMultiplier;
-				}
-				//If controller has not received additional momentum;
-				else
-				{
-					//Clamp _horizontal velocity to prevent accumulation of speed;
-					_horizontalMomentum += _movementVelocity * deltaTime * airControlRate;
-					_horizontalMomentum = Vector3.ClampMagnitude(_horizontalMomentum, speed);
-				}
-			}
 
 			//Steer controller on slopes;
 			if(currentControllerState == ControllerState.Sliding)

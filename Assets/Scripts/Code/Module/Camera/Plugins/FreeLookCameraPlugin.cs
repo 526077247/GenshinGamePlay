@@ -126,7 +126,7 @@ namespace TaoTie
                 target /= 2;
             }
 
-            target += _objHalfHeight;
+            // target += _objHalfHeight;
             var offset = _middleComposer.m_TrackedObjectOffset;
             if (Mathf.Abs(offset.y - target) > float.Epsilon)
             {
