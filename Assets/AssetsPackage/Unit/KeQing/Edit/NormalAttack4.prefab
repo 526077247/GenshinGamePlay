@@ -58,8 +58,8 @@ MonoBehaviour:
   - {fileID: 2091911517754099961}
   - {fileID: 7867130123916076872}
   _length: 3.0000002
-  _viewTimeMin: -0.11582348
-  _viewTimeMax: 1.1222206
+  _viewTimeMin: 0.030208718
+  _viewTimeMax: 3.0352275
 --- !u!1 &537289654914704725
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,6 +504,9 @@ GameObject:
   - component: {fileID: 266275259505563813}
   - component: {fileID: 6773554592750754668}
   - component: {fileID: 3026666297484350786}
+  - component: {fileID: 3335152699806340160}
+  - component: {fileID: 2080736869575364658}
+  - component: {fileID: 3877520300686973622}
   m_Layer: 0
   m_Name: "\u72B6\u6001\u673A\u8F68\u9053"
   m_TagString: Untagged
@@ -545,6 +548,9 @@ MonoBehaviour:
   _actionClips:
   - {fileID: 6773554592750754668}
   - {fileID: 3026666297484350786}
+  - {fileID: 3335152699806340160}
+  - {fileID: 2080736869575364658}
+  - {fileID: 3877520300686973622}
   _customHeight: 300
 --- !u!114 &6773554592750754668
 MonoBehaviour:
@@ -578,3 +584,51 @@ MonoBehaviour:
   _animationData:
     _animatedParameters: []
   AbilityName: KeQing_NormalAttack1
+--- !u!114 &3335152699806340160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979032274250458980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2519f6607d41e1b8b0cac939bc1d45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startTime: 0.77
+  _animationData:
+    _animatedParameters: []
+  AbilityName: KeQing_NormalAttack4_Hide
+--- !u!114 &2080736869575364658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979032274250458980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2519f6607d41e1b8b0cac939bc1d45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startTime: 1.41
+  _animationData:
+    _animatedParameters: []
+  AbilityName: KeQing_NormalAttack4_Show
+--- !u!114 &3877520300686973622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5979032274250458980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2519f6607d41e1b8b0cac939bc1d45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startTime: 1.41
+  _animationData:
+    _animatedParameters: []
+  AbilityName: KeQing_NormalAttack4_Show

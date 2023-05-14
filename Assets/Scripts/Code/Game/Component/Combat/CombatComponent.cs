@@ -102,5 +102,30 @@ namespace TaoTie
             await ghc.WaitLoadGameObjectOver();
             ghc.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
         }
+        
+        /// <summary>
+        /// 开启或关闭objview
+        /// </summary>
+        /// <param name="enable"></param>
+        public async ETTask EnableObjView(bool enable)
+        {
+            GameObjectHolderComponent ghc = parent.GetComponent<GameObjectHolderComponent>();
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
+                await ghc.WaitLoadGameObjectOver();
+                var renders = ghc.EntityView.GetComponentsInChildren<Renderer>();
+                for (int i = 0; i < renders.Length; i++)
+                {
+                    renders[i].enabled = enable;
+                }
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+            
+        }
     }
 }

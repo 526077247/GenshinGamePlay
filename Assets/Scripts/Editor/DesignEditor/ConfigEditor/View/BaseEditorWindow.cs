@@ -34,7 +34,7 @@ namespace TaoTie
         [Button("打开")]
         public void Open()
         {
-            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "bytes|json");
+            string searchPath = EditorUtility.OpenFilePanel($"选择{typeof(T).Name}配置文件", folderPath, "json");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 var text = File.ReadAllText(searchPath);
