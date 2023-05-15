@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public class PriorityStack<T> where T: IPriorityStackItem
+    public class PriorityStack<T> :IEnumerable<T> where T: IPriorityStackItem
     {
         protected UnOrderMultiMap<int, T> priorityStacks;
         protected LinkedList<int> priorityList;
@@ -81,6 +82,29 @@ namespace TaoTie
         public T Peek(int index = 0)
         {
             return this[index];
+        }
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            foreach (var kv in priorityStacks)
+            {
+                if(kv.Value==null) continue;
+                foreach (var item in kv.Value)
+                {
+                    yield return item;
+                }
+            }
+        }
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            foreach (var kv in priorityStacks)
+            {
+                if(kv.Value==null) continue;
+                foreach (var item in kv.Value)
+                {
+                    yield return item;
+                }
+            }
         }
     }
 }

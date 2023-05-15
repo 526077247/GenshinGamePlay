@@ -2,8 +2,8 @@
 
 namespace TaoTie
 {
-    [NinoSerialize]
-    public abstract partial class ConfigCameraHead
+
+    public abstract class ConfigCameraPlugin
     {
         
     }

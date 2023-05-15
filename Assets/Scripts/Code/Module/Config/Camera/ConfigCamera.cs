@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract partial class ConfigCamera
+    [NinoSerialize]
+    public partial class ConfigCamera
     {
-        public abstract CameraType Type { get; }
 
         [NinoMember(1)][PropertyOrder(int.MinValue)] [Min(0)]
         public int Id;
@@ -16,9 +16,18 @@ namespace TaoTie
         public string Remarks;
 #endif
         [NinoMember(3)]
-        public ConfigCameraHead Head;
+        public ConfigCameraHeadPlugin HeadPlugin;
         
         [NinoMember(4)]
-        public ConfigCameraBody Body;
+        public ConfigCameraBodyPlugin BodyPlugin;
+
+        [NinoMember(5)] [Tooltip("顺序会影响最终效果")]
+        public ConfigCameraOtherPlugin[] OtherPlugin;
+
+        [NinoMember(6)]
+        public ConfigCameraBleed Enter;
+
+        [NinoMember(7)]
+        public ConfigCameraBleed Level;
     }
 }
