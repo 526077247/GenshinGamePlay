@@ -12,10 +12,6 @@ namespace TaoTie
         public ConfigCamera DefaultCamera;
         [NinoMember(2)]
         public ConfigCamera[] Cameras;
-        [NinoMember(3)]
-        [NotNull] public BlendDefinition DefaultBlend = new BlendDefinition();
-        [NinoMember(4)]
-        [TableList] public CustomBlend[] CustomSetting;
-        
+
     }
 }
