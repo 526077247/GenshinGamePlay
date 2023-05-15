@@ -59,5 +59,10 @@ namespace TaoTie
         {
             return parent as T;
         }
+
+        public T GetComponent<T>() where T : Component, IComponentDestroy
+        {
+            return parent?.GetComponent<T>();
+        }
     }
 }

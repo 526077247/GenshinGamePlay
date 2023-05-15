@@ -48,6 +48,7 @@ namespace TaoTie
 		private bool isBuildExe;
 		private bool isContainAB;
 		private bool isBuildAll;
+		private bool isPackAtlas;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
 		private BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
@@ -90,6 +91,7 @@ namespace TaoTie
 				isBuildExe = buildSettings.isBuildExe;
 				isContainAB = buildSettings.isContainAB;
 				isBuildAll = buildSettings.isBuildAll;
+				isPackAtlas = buildSettings.isPackAtlas;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
 			}
@@ -123,6 +125,7 @@ namespace TaoTie
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
+            this.isPackAtlas = EditorGUILayout.Toggle("是否需要重新打图集: ", isPackAtlas);
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
@@ -166,7 +169,7 @@ namespace TaoTie
                     }
                 }
 				
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.isBuildAll);
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.isBuildAll,this.isPackAtlas);
 			}
 
 			GUILayout.Space(5);
@@ -179,6 +182,7 @@ namespace TaoTie
 			buildSettings.isContainAB = isContainAB;
 			buildSettings.buildType = buildType;
 			buildSettings.isBuildAll = isBuildAll;
+			buildSettings.isPackAtlas = isPackAtlas;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
 
 			EditorUtility.SetDirty(buildSettings);

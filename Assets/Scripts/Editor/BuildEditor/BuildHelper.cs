@@ -36,12 +36,13 @@ namespace TaoTie
             PlayerSettings.keystorePass = "123456";
         }
 
-        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool isBuildAll)
+        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,
+            bool isBuildAll,bool packAtlas)
         {
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe,clearFolder,isBuildAll);
+                BuildHandle(type, buildOptions, isBuildExe,clearFolder,isBuildAll,packAtlas);
             }
             else
             {
@@ -50,7 +51,7 @@ namespace TaoTie
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, isBuildAll);
+                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, isBuildAll,packAtlas);
                     }
                 };
                 if(buildGroupmap.TryGetValue(type,out var group))
@@ -105,20 +106,12 @@ namespace TaoTie
         public static void HandleAtlas()
         {
             //清除图集
-            AltasHelper.ClearAllAtlas();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
+            AtlasHelper.ClearAllAtlas();
             //生成图集
-            AltasHelper.GeneratingAtlas();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            
-
+            AtlasHelper.GeneratingAtlas();
         }
-        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool isBuildAll)
+        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,
+            bool isBuildAll,bool packAtlas)
         {
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
             string programName = "TaoTie";
@@ -157,7 +150,8 @@ namespace TaoTie
             BuildAssemblieEditor.BuildCodeRelease();
             
             //处理图集资源
-            // HandleAtlas();
+            if(packAtlas) HandleAtlas();
+            
             //打ab
             BuildInternal(buildTarget, isBuildExe, isBuildAll);
 

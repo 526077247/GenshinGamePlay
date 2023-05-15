@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace TaoTie
 {
 
-    public class AltasHelper
+    public class AtlasHelper
     {
         ///=========================================================================================
         public static string AtlasName = "Atlas";
