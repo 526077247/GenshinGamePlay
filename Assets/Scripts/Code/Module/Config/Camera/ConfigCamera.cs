@@ -24,10 +24,10 @@ namespace TaoTie
         [NinoMember(5)] [Tooltip("其他后处理，如遮挡前推、震动等，顺序会影响最终效果")][TabGroup("Plugin")]
         public ConfigCameraOtherPlugin[] OtherPlugin;
 
-        [NinoMember(6)] [Tooltip("相机入栈过渡混合动画")][TabGroup("Bleed")]
-        public ConfigCameraBleed Enter;
+        [NinoMember(6)] [Tooltip("相机入栈过渡混合动画")][TabGroup("Blender")]
+        public ConfigCameraBlender Enter;
 
-        [NinoMember(7)] [Tooltip("相机出栈过渡混合动画")][TabGroup("Bleed")]
-        public ConfigCameraBleed Level;
+        [NinoMember(7)] [Tooltip("相机出栈过渡混合动画")][TabGroup("Blender")]
+        public ConfigCameraBlender Level;
     }
 }

@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ConfigCameraBleed
+    public partial class ConfigCameraBlender
     {
         [NinoMember(0)]
         public EasingFunction.Ease Ease = EasingFunction.Ease.Linear;
