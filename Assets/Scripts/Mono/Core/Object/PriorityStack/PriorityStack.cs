@@ -75,6 +75,7 @@ namespace TaoTie
                 {
                     priorityList.Remove(res.Priority);
                 }
+                count--;
             }
             return res;
         }
@@ -82,6 +83,19 @@ namespace TaoTie
         public T Peek(int index = 0)
         {
             return this[index];
+        }
+
+        public T Remove(T res)
+        {
+            if (priorityStacks.Remove(res.Priority, res))
+            {
+                if (priorityStacks[res.Priority]==null||priorityStacks[res.Priority].Count == 0)
+                {
+                    priorityList.Remove(res.Priority);
+                }
+                count--;
+            }
+            return res;
         }
         
         IEnumerator IEnumerable.GetEnumerator()

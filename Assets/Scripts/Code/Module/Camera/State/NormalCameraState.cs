@@ -5,17 +5,21 @@ namespace TaoTie
     public class NormalCameraState: CameraState
     {
         public override bool IsBlenderState => false;
+
         public ConfigCamera Config { get; private set; }
         
         private CameraPluginRunner body;
         private CameraPluginRunner head;
         private ListComponent<CameraPluginRunner> others;
 
-        public static NormalCameraState Create(ConfigCamera config)
+        public static NormalCameraState Create(ConfigCamera config, int priority)
         {
             NormalCameraState res = ObjectPool.Instance.Fetch<NormalCameraState>();
+            res.Priority = priority;
+            res.Id = IdGenerater.Instance.GenerateId();
             res.Config = config;
             res.Data = CameraStateData.Create();
+            res.IsOver = false;
             res.CreateRunner();
             return res;
         }
@@ -45,6 +49,7 @@ namespace TaoTie
         
         public override void Update()
         {
+            if(IsOver) return;
             head?.Update();
             body.Update();
             if (others != null)
@@ -74,7 +79,7 @@ namespace TaoTie
 
             Data.Dispose();
             Data = null;
-            
+            IsOver = true;
             ObjectPool.Instance.Recycle(this);
         }
     }
