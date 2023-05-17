@@ -63,6 +63,15 @@ namespace TaoTie
 
         public override void Dispose()
         {
+            CameraManager.Instance.RemoveState(Id);
+            //base
+            Id = default;
+            Priority = default;
+            Data.Dispose();
+            Data = null;
+            IsOver = true;
+            
+            //this
             body.Dispose();
             body = null;
             head.Dispose();
@@ -76,10 +85,7 @@ namespace TaoTie
                 others.Dispose();
                 others = null;
             }
-
-            Data.Dispose();
-            Data = null;
-            IsOver = true;
+            
             ObjectPool.Instance.Recycle(this);
         }
     }

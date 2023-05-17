@@ -17,10 +17,12 @@ namespace TaoTie
 
         private CameraState curCameraState;
 
-        private bool isUpdate;
+        public ConfigCameraBlender defaultBlend;
+        
         private partial void AfterInit()
         {
             var config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("");
+            defaultBlend = config.DefaultBlend;
             defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();
             configs.Add(config.DefaultCamera.Id,config.DefaultCamera);
@@ -42,12 +44,12 @@ namespace TaoTie
         
         public void Update()
         {
-            isUpdate = true;
+
             foreach (var item in cameraStack)
             {
                 item.Update();
             }
-            isUpdate = false;
+
             var top = cameraStack.Peek();
             if (curCameraState != top)//栈顶相机机位变更，需要变换
             {
@@ -110,16 +112,31 @@ namespace TaoTie
                     curCameraState = blender;
                 }
             }
+            top = cameraStack.Peek();
+            if (top != null)
+            {
+                ApplyData(top.Data);
+            }
+        }
+
+        private void ApplyData(CameraStateData data)
+        {
+            sceneMainCamera.fieldOfView = data.Fov;
+            //todo: 
         }
 
         private NormalCameraState CreateCameraState(ConfigCamera config, int priority)
         {
-            return NormalCameraState.Create(config, priority);
+            var state = NormalCameraState.Create(config, priority);
+            states.Add(state.Id,state);
+            return state;
         }
 
         private BlenderCameraState CreateCameraState(NormalCameraState from, NormalCameraState to, bool isEnter)
         {
-            return BlenderCameraState.Create(from, to, isEnter);
+            var state = BlenderCameraState.Create(from, to, isEnter);
+            states.Add(state.Id,state);
+            return state;
         }
 
         /// <summary>
@@ -132,7 +149,6 @@ namespace TaoTie
             if (configs.TryGetValue(configId, out var config))
             {
                 var res = CreateCameraState(config, priority);
-                res.Priority = priority;
                 cameraStack.Push(res);
                 return res.Id;
             }
@@ -167,6 +183,15 @@ namespace TaoTie
                     state.Dispose();
                 }
             }
+        }
+
+
+        /// <summary>
+        /// 从索引中删除，请不要手动调用
+        /// </summary>
+        public void RemoveState(long id)
+        {
+            states.Remove(id);
         }
         #endregion
     }

@@ -31,7 +31,9 @@
             {
                 res.config = from.Config.Level;
             }
-
+            if (res.config == null)
+                res.config = CameraManager.Instance.defaultBlend;
+            
             res.IsOver = false;
             res.lerpFunc = EasingFunction.GetEasingFunction(res.config.Ease);
             res.startlerpTime = GameTimerManager.Instance.GetTimeNow();
@@ -67,6 +69,9 @@
             {
                 config = From.Config.Level;
             }
+
+            if (config == null)
+                config = CameraManager.Instance.defaultBlend;
             Priority = to.Priority;
             IsOver = false;
             lerpFunc = EasingFunction.GetEasingFunction(config.Ease);
@@ -75,18 +80,24 @@
 
         public override void Dispose()
         {
+            CameraManager.Instance.RemoveState(Id);
+            //base
+            Id = default;
+            Priority = default;
+            Data.Dispose();
+            Data = null;
+            IsOver = true;
+            
+            //this
             if (From.IsOver)
             {
                 From.Dispose();
             }
-            Data.Dispose();
-            Data = null;
             From = null;
             To = null;
             config = null;
             lerpFunc = null;
             startlerpTime = default;
-            IsOver = true;
             ObjectPool.Instance.Recycle(this);
         }
     }

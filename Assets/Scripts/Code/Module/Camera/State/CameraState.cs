@@ -9,7 +9,7 @@ namespace TaoTie
         public CameraStateData Data;
 
         public long Id { get; set; }
-        public int Priority { get; set; }
+        public int Priority { get; protected set; }
         public abstract void Update();
 
         public abstract void Dispose();
