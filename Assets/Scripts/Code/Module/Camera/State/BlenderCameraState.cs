@@ -44,10 +44,13 @@
         {
             if (To.IsOver) IsOver = true;
             if (IsOver) return;
-            if (GameTimerManager.Instance.GetTimeNow() > startlerpTime + config.DeltaTime)
+            var timeNow = GameTimerManager.Instance.GetTimeNow();
+            if (timeNow > startlerpTime + config.DeltaTime)
             {
                 IsOver = true;
             }
+            var lerpVal = lerpFunc(timeNow, startlerpTime, startlerpTime + config.DeltaTime);
+            Data.Lerp(formData, toData, lerpVal);
         }
 
         /// <summary>

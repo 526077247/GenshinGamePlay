@@ -7,7 +7,9 @@ namespace TaoTie
     {
         
         #region CameraStack
-        
+
+        private Dictionary<Type, Type> configRunnerType;
+
         private int defaultCameraId;
 
         private Dictionary<int, ConfigCamera> configs;
@@ -21,7 +23,9 @@ namespace TaoTie
         
         private partial void AfterInit()
         {
-            var config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("");
+            #region Config
+
+            var config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("EditConfig/ConfigCameras");
             defaultBlend = config.DefaultBlend;
             defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();
@@ -33,7 +37,23 @@ namespace TaoTie
                     configs.Add(config.Cameras[i].Id,config.Cameras[i]);
                 }
             }
+            #endregion
 
+            #region RunnerType
+
+            configRunnerType = new Dictionary<Type, Type>();
+            var allTypes = AssemblyManager.Instance.GetTypes();
+            var runnerType = TypeInfo<CameraPluginRunner>.Type;
+            foreach (var item in allTypes)
+            {
+                var type = item.Value;
+                if (!type.IsAbstract && runnerType.IsAssignableFrom(type))
+                {
+                    configRunnerType.Add(type.BaseType.GenericTypeArguments[0],type);
+                }
+            }
+
+            #endregion
             states = new Dictionary<long, CameraState>();
             cameraStack = new PriorityStack<CameraState>();
             
@@ -93,7 +113,7 @@ namespace TaoTie
                         curCameraState = cameraStack.Peek();
                         top.Dispose();
                     }
-                    else//变换时，目标机位被销毁，需要变换到新的机位
+                    else//变换时，目标机位改变，需要变换到新的机位
                     {
                         blender.ChangeTo(newTop as NormalCameraState, false);
                         cameraStack.Push(blender);
@@ -112,10 +132,10 @@ namespace TaoTie
                     curCameraState = blender;
                 }
             }
-            top = cameraStack.Peek();
-            if (top != null)
+
+            if (curCameraState != null)
             {
-                ApplyData(top.Data);
+                ApplyData(curCameraState.Data);
             }
         }
 
@@ -160,7 +180,7 @@ namespace TaoTie
         /// 销毁相机
         /// </summary>
         /// <param name="id"></param>
-        public void Remove(long id)
+        public void Remove(ref long id)
         {
             if(id == defaultCameraId) return;//默认相机不销毁
 
@@ -183,8 +203,25 @@ namespace TaoTie
                     state.Dispose();
                 }
             }
+
+            id = 0;
         }
 
+        /// <summary>
+        /// 获取机位
+        /// </summary>
+        /// <param name="id"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T Get<T>(long id) where T :CameraState
+        {
+            if (states.TryGetValue(id, out var data))
+            {
+                return data as T;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// 从索引中删除，请不要手动调用
@@ -193,6 +230,26 @@ namespace TaoTie
         {
             states.Remove(id);
         }
+        
+        /// <summary>
+        /// 创建Runner，请不要手动调用
+        /// </summary>
+        /// <param name="config"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public CameraPluginRunner CreatePluginRunner<T>(T config)where T :ConfigCameraPlugin
+        {
+            if(configRunnerType.TryGetValue(config.GetType(), out var runnerType))
+            {
+                var res = ObjectPool.Instance.Fetch(runnerType) as CameraPluginRunner;
+                res.Init(config);
+                return res;
+            }
+            Log.Error($"CreatePluginRunner失败， 未实现{config.GetType()}对应的Runner");
+            return null;
+        }
+        
+        
         #endregion
     }
 }

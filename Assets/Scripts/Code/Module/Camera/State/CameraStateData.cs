@@ -55,5 +55,22 @@ namespace TaoTie
             ForwardElevDeltaAngle = default;
             ObjectPool.Instance.Recycle(this);
         }
+
+        public void Lerp(CameraStateData from, CameraStateData to, float lerpVal)
+        {
+            lerpVal = Mathf.Clamp01(lerpVal);
+            Fov = Mathf.Lerp(from.Fov, to.Fov, lerpVal);
+            // NearClipPlane = default;
+            // Dutch = default;
+            // Up = default;
+            // Position = default;
+            // Orientation = default;
+            // Spherical = default;
+            // LookAt = default;
+            // TargetForward = default;
+            // Forward = default;
+            // ForwardPoleDeltaAngle = default;
+            // ForwardElevDeltaAngle = default;
+        }
     }
 }

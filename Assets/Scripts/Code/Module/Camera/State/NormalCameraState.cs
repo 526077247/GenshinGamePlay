@@ -28,12 +28,12 @@ namespace TaoTie
         {
             if (Config.HeadPlugin != null)
             {
-                head = RunnerFactory.CreateHeadPluginRunner(Config.HeadPlugin);
+                head = CameraManager.Instance.CreatePluginRunner(Config.HeadPlugin);
             }
 
             if (Config.BodyPlugin != null)
             {
-                body = RunnerFactory.CreateBodyPluginRunner(Config.BodyPlugin);
+                body =  CameraManager.Instance.CreatePluginRunner(Config.BodyPlugin);
             }
             
             if (Config.OtherPlugin != null)
@@ -42,7 +42,7 @@ namespace TaoTie
                 for (int i = 0; i < Config.OtherPlugin.Length; i++)
                 {
                     if(Config.OtherPlugin[i] == null) continue;
-                    others.Add(RunnerFactory.CreateOtherPluginRunner(Config.OtherPlugin[i]));
+                    others.Add( CameraManager.Instance.CreatePluginRunner(Config.OtherPlugin[i]));
                 }
             }
         }

@@ -1,1 +1,1 @@
-{"_t":"TaoTie.ConfigCameras","Cameras":[]}
+{"_t":"TaoTie.ConfigCameras","DefaultCamera":{"_t":"TaoTie.ConfigCamera","Id":0},"Cameras":[{"_t":"TaoTie.ConfigCamera","Id":1,"Remarks":"3rdPlayerCamera","HeadPlugin":{"_t":"TaoTie.ConfigCameraHardLookAtPlugin"},"BodyPlugin":{"_t":"TaoTie.ConfigCameraHardLockToTargetPlugin","Damping":0},"OtherPlugin":[]}],"DefaultBlend":{"_t":"TaoTie.ConfigCameraBlender","Ease":21,"DeltaTime":1000}}
