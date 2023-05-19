@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -11,6 +12,9 @@ namespace TaoTie
         private CameraPluginRunner body;
         private CameraPluginRunner head;
         private ListComponent<CameraPluginRunner> others;
+
+        private Transform follow;
+        private Transform target;
 
         public static NormalCameraState Create(ConfigCamera config, int priority)
         {
@@ -72,6 +76,8 @@ namespace TaoTie
             IsOver = true;
             
             //this
+            target = null;
+            follow = null;
             body.Dispose();
             body = null;
             head.Dispose();
@@ -87,6 +93,16 @@ namespace TaoTie
             }
             
             ObjectPool.Instance.Recycle(this);
+        }
+
+        public void SetTarget(Transform transform)
+        {
+            this.target = transform;
+        }
+
+        public void SetFollow(Transform transform)
+        {
+            this.follow = transform;
         }
     }
 }

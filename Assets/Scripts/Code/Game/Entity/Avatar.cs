@@ -39,6 +39,11 @@ namespace TaoTie
             {
                 thirdCameraId = CameraManager.Instance.Create(GameConst.ThirdCameraConfigId);
             }
+
+            var camera = CameraManager.Instance.Get<NormalCameraState>(thirdCameraId);
+            var trans = ghc.EntityView;
+            camera.SetFollow(trans);
+            camera.SetTarget(trans);
         }
 
         public void Destroy()

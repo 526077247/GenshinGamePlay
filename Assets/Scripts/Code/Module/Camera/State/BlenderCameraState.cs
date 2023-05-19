@@ -49,7 +49,7 @@
             {
                 IsOver = true;
             }
-            var lerpVal = lerpFunc(timeNow, startlerpTime, startlerpTime + config.DeltaTime);
+            var lerpVal = lerpFunc((float)(timeNow-startlerpTime)/config.DeltaTime, 0, 1);
             Data.Lerp(formData, toData, lerpVal);
         }
 
