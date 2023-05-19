@@ -60,20 +60,20 @@ namespace TaoTie
         async ETTask<int> ShowMsgBoxView(string content, string confirmBtnText, string cancelBtnText)
         {
             ETTask<int> tcs = ETTask<int>.Create();
-            Action confirmBtnFunc = () =>
-             {
-                 tcs.SetResult(this.BTN_CONFIRM);
-             };
-
-            Action cancelBtnFunc = () =>
+            void ConfirmBtnFunc()
+            { 
+                tcs.SetResult(this.BTN_CONFIRM);
+            }
+            void CancelBtnFunc()
             {
                 tcs.SetResult(this.BTN_CANCEL);
-            };
+            }
+            
             I18NManager.Instance.I18NTryGetText(content, out this.para.Content);
             I18NManager.Instance.I18NTryGetText(confirmBtnText, out this.para.ConfirmText);
             I18NManager.Instance.I18NTryGetText(cancelBtnText, out this.para.CancelText);
-            this.para.ConfirmCallback = confirmBtnFunc;
-            this.para.CancelCallback = cancelBtnFunc;
+            this.para.ConfirmCallback = ConfirmBtnFunc;
+            this.para.CancelCallback = CancelBtnFunc;
             await UIManager.Instance.OpenWindow<UIMsgBoxWin, MsgBoxPara>(UIMsgBoxWin.PrefabPath,
                 this.para,UILayerNames.TipLayer);
             var result = await tcs;
