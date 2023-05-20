@@ -53,11 +53,11 @@ namespace TaoTie
         {
             lerpVal = Mathf.Clamp01(lerpVal);
             Fov = Mathf.Lerp(from.Fov, to.Fov, lerpVal);
-            // NearClipPlane = default;
+            NearClipPlane = Mathf.Lerp(from.NearClipPlane, to.NearClipPlane, lerpVal);
             // Up = default;
             // Forward = default;
-            // Position = default;
-            // Orientation = default;
+            Position = Vector3.Lerp(from.Position, to.Position, lerpVal);
+            Orientation = Quaternion.Lerp(from.Orientation, to.Orientation, lerpVal);
             // LookAt = default;
             // TargetForward = default;
         }
