@@ -1,4 +1,6 @@
-﻿namespace TaoTie
+﻿using UnityEngine;
+
+namespace TaoTie
 {
     public sealed class CameraHardLookAtPluginRunner: CameraHeadPluginRunner<ConfigCameraHardLookAtPlugin>
     {
@@ -16,12 +18,31 @@
         {
             
         }
+        
+        public override void OnSetTarget()
+        {
+            base.OnSetTarget();
+            Calculating();
+        }
 
         private void Calculating()
         {
-            if (state.follow != null)
+            if (state.target != null)
             {
-                data.Position = state.follow.position;
+                var dir = state.target.position - data.Position;
+                if (dir == Vector3.zero)
+                {
+                    if (state.follow != null)
+                    {
+                        data.Orientation = state.follow.rotation;
+                    }
+                }
+                else
+                {
+                    
+                    data.Orientation = Quaternion.FromToRotation(data.Forward, dir);
+                }
+                
             }
         }
     }

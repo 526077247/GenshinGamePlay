@@ -100,11 +100,29 @@ namespace TaoTie
         public void SetTarget(Transform transform)
         {
             this.target = transform;
+            this.body?.OnSetTarget();
+            this.head?.OnSetTarget();
+            if (others != null)
+            {
+                for (int i = 0; i < this.others.Count; i++)
+                {
+                    this.others[i]?.OnSetTarget();
+                }
+            }
         }
 
         public void SetFollow(Transform transform)
         {
             this.follow = transform;
+            this.body?.OnSetFollow();
+            this.head?.OnSetFollow();
+            if (others != null)
+            {
+                for (int i = 0; i < this.others.Count; i++)
+                {
+                    this.others[i]?.OnSetFollow();
+                }
+            }
         }
     }
 }

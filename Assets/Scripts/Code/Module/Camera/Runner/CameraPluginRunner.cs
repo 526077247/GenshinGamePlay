@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -7,6 +8,10 @@ namespace TaoTie
         public abstract void Init(ConfigCameraPlugin config,NormalCameraState state);
         public abstract void Update();
         public abstract void Dispose();
+        
+        public virtual void OnSetTarget() { }
+
+        public virtual void OnSetFollow() { }
     }
     public abstract class CameraPluginRunner<T>: CameraPluginRunner where T: ConfigCameraPlugin
     {

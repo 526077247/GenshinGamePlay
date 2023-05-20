@@ -4,8 +4,12 @@ namespace TaoTie
 {
     public class CameraThirdPersonFollowPluginRunner: CameraBodyPluginRunner<ConfigCameraThirdPersonFollowPlugin>
     {
+        private float angleOffsetX;
+        private float angleOffsetY;
         protected override void InitInternal()
         {
+            angleOffsetX = 0;
+            angleOffsetY = 0;
             Calculating();
         }
 
@@ -18,25 +22,21 @@ namespace TaoTie
         {
             
         }
+        
+        public override void OnSetFollow()
+        {
+            base.OnSetFollow();
+            Calculating();
+        }
 
         private void Calculating()
         {
-            if (state.target != null)
+            if (state.follow != null)
             {
-                var dir = state.target.position - data.Position;
-                if (dir == Vector3.zero)
-                {
-                    if (state.follow != null)
-                    {
-                        data.Orientation = state.follow.rotation;
-                    }
-                }
-                else
-                {
-                    
-                    data.Orientation = Quaternion.FromToRotation(Vector3.forward, dir);
-                }
+                data.Forward = state.follow.forward;
+                data.Up = state.follow.up;
                 
+                data.Position = state.follow.position - config.ZoomDefault * data.Forward;
             }
         }
     }
