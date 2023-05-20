@@ -20,7 +20,6 @@ namespace TaoTie
         {
             get
             {
-                int temp = 0;
                 foreach (var item in priorityList)
                 {
                     var list = priorityStacks[item];
@@ -40,11 +39,10 @@ namespace TaoTie
 
         public void Push(T item)
         {
-            var priority = item.Priority;
             bool add = false;
             for (var node = priorityList.First; node!=null; node = node.Next)
             {
-                if (node.Value == priority)
+                if (node.Value == item.Priority)
                 {
                     add = true;
                     break;
@@ -62,7 +60,7 @@ namespace TaoTie
             {
                 priorityList.AddLast(item.Priority);
             }
-            priorityStacks.Add(priority, item);
+            priorityStacks.Add(item.Priority, item);
             count++;
         }
 
