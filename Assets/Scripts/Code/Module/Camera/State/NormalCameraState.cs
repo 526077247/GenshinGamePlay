@@ -13,8 +13,8 @@ namespace TaoTie
         private CameraPluginRunner head;
         private ListComponent<CameraPluginRunner> others;
 
-        private Transform follow;
-        private Transform target;
+        public Transform follow { get; private set; }
+        public Transform target { get; private set; }
 
         public static NormalCameraState Create(ConfigCamera config, int priority)
         {
@@ -23,6 +23,8 @@ namespace TaoTie
             res.Id = IdGenerater.Instance.GenerateId();
             res.Config = config;
             res.Data = CameraStateData.Create();
+            res.Data.Fov = res.Config.Fov;
+            res.Data.NearClipPlane = res.Config.NearClipPlane;
             res.IsOver = false;
             res.CreateRunner();
             return res;
@@ -32,12 +34,12 @@ namespace TaoTie
         {
             if (Config.HeadPlugin != null)
             {
-                head = CameraManager.Instance.CreatePluginRunner(Config.HeadPlugin);
+                head = CameraManager.Instance.CreatePluginRunner(Config.HeadPlugin, this);
             }
 
             if (Config.BodyPlugin != null)
             {
-                body =  CameraManager.Instance.CreatePluginRunner(Config.BodyPlugin);
+                body =  CameraManager.Instance.CreatePluginRunner(Config.BodyPlugin, this);
             }
             
             if (Config.OtherPlugin != null)
@@ -46,7 +48,7 @@ namespace TaoTie
                 for (int i = 0; i < Config.OtherPlugin.Length; i++)
                 {
                     if(Config.OtherPlugin[i] == null) continue;
-                    others.Add( CameraManager.Instance.CreatePluginRunner(Config.OtherPlugin[i]));
+                    others.Add(CameraManager.Instance.CreatePluginRunner(Config.OtherPlugin[i], this));
                 }
             }
         }
@@ -55,7 +57,7 @@ namespace TaoTie
         {
             if(IsOver) return;
             head?.Update();
-            body.Update();
+            body?.Update();
             if (others != null)
             {
                 for (int i = 0; i < others.Count; i++)

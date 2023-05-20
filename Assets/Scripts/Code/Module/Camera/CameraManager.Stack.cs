@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public partial class CameraManager: IUpdateComponent
+    public partial class CameraManager: IUpdateManager
     {
         
         #region CameraStack
@@ -141,7 +141,11 @@ namespace TaoTie
 
         private void ApplyData(CameraStateData data)
         {
+            if (sceneMainCamera == null || data == null) return;
             sceneMainCamera.fieldOfView = data.Fov;
+            sceneMainCamera.nearClipPlane = data.NearClipPlane;
+            sceneMainCamera.gameObject.transform.position = data.Position;
+            sceneMainCamera.gameObject.transform.rotation = data.Orientation;
             //todo: 
         }
 
@@ -237,12 +241,12 @@ namespace TaoTie
         /// <param name="config"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public CameraPluginRunner CreatePluginRunner<T>(T config)where T :ConfigCameraPlugin
+        public CameraPluginRunner CreatePluginRunner<T>(T config, NormalCameraState state)where T :ConfigCameraPlugin
         {
             if(configRunnerType.TryGetValue(config.GetType(), out var runnerType))
             {
                 var res = ObjectPool.Instance.Fetch(runnerType) as CameraPluginRunner;
-                res.Init(config);
+                res.Init(config,state);
                 return res;
             }
             Log.Error($"CreatePluginRunner失败， 未实现{config.GetType()}对应的Runner");

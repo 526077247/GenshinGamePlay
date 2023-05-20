@@ -4,20 +4,23 @@ namespace TaoTie
 {
     public abstract class CameraPluginRunner: IDisposable
     {
-        public abstract void Init(ConfigCameraPlugin config);
+        public abstract void Init(ConfigCameraPlugin config,NormalCameraState state);
         public abstract void Update();
         public abstract void Dispose();
     }
     public abstract class CameraPluginRunner<T>: CameraPluginRunner where T: ConfigCameraPlugin
     {
-        protected T plugin { get; private set; }
+        protected T config { get; private set; }
+        protected NormalCameraState state { get; private set; }
 
-        public sealed override void Init(ConfigCameraPlugin config)
+        protected CameraStateData data => state.Data;
+        public sealed override void Init(ConfigCameraPlugin config,NormalCameraState state)
         {
-            plugin = config as T;
-            InitInternal(plugin);
+            this.config = config as T;
+            this.state = state;
+            InitInternal();
         }
-        protected abstract void InitInternal(T config);
+        protected abstract void InitInternal();
         public sealed override void Update()
         {
             UpdateInternal();
@@ -27,8 +30,9 @@ namespace TaoTie
         
         public sealed override void Dispose()
         {
-            plugin = null;
             DisposeInternal();
+            config = null;
+            state = null;
             ObjectPool.Instance.Recycle(this);
         }
 

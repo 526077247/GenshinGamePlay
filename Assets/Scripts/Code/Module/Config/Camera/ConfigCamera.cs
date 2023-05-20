@@ -29,5 +29,11 @@ namespace TaoTie
 
         [NinoMember(7)] [Tooltip("相机出栈过渡混合动画")][TabGroup("Blender")]
         public ConfigCameraBlender Level;
+        
+        [NinoMember(8)] [Range(1,179)]
+        public float Fov = 90;
+        
+        [NinoMember(9)][MinValue(0.01)]
+        public float NearClipPlane = 0.3f;
     }
 }

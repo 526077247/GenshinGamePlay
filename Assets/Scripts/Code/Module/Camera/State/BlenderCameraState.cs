@@ -21,6 +21,8 @@
             res.Id = IdGenerater.Instance.GenerateId();
             res.From = from;
             res.To = to;
+            res.formData = res.From.Data;
+            res.toData = res.To.Data;
             res.Data = CameraStateData.DeepClone(res.From.Data);
             res.Priority = to.Priority;
             if (isEnter)
