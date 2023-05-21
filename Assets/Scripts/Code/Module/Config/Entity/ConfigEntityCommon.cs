@@ -12,6 +12,7 @@ namespace TaoTie
         public float ModelHeight;
         [NinoMember(3)]
         public float Scale;
-        
+        [NinoMember(3)][Tooltip("近景模式偏移高度")]
+        public float NearFocusOffsetHeight = 0.5f;
     }
 }

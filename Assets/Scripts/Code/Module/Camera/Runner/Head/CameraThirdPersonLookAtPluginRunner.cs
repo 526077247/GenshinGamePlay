@@ -50,14 +50,12 @@ namespace TaoTie
         private void Calculating()
         {
             Vector3 dir;
+            
             if (entityCommon != null)
             {
-                dir = data.LookAt + data.TargetUp * entityCommon.Height / 2 - data.Position;
+                data.LookAt += data.TargetUp * entityCommon.Height / 2;
             }
-            else
-            {
-                dir = data.LookAt - data.Position;
-            }
+            dir = data.LookAt - data.Position;
             if (dir == Vector3.zero)
             {
                 data.Orientation = Quaternion.LookRotation(data.TargetForward, data.TargetUp);
@@ -68,7 +66,18 @@ namespace TaoTie
                 if (config.NearFocusEnable)
                 {
                     var distance = dir.magnitude;
-                    
+                    if (distance >= config.NearFocusMaxDistance)
+                    {
+                        return;
+                    }
+
+                    distance = Mathf.Clamp(distance, config.NearFocusMinDistance, config.NearFocusMaxDistance);
+                    var progress = 1 - (distance - config.NearFocusMinDistance) /
+                                  (config.NearFocusMaxDistance - config.NearFocusMinDistance);
+                    var offset = data.TargetUp * progress * entityCommon.NearFocusOffsetHeight;
+                    data.Position += offset;
+                    data.LookAt += offset;
+
                 }
             }
         }

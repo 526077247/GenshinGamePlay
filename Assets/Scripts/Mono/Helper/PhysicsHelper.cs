@@ -177,5 +177,17 @@ namespace TaoTie
         }
 
         #endregion
+
+
+        #region Camera
+
+        public static bool SphereCast(Vector3 start, Vector3 end,float radius, LayerMask layer, out RaycastHit hit)
+        {
+            var dir = end - start;
+            return Physics.SphereCast(start,radius,dir, out hit,dir.magnitude, layer);
+        }
+
+
+        #endregion
     }
 }
