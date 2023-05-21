@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class PlatformMoveComponent:Component,IComponent<ConfigRoute>,IUpdateComponent
+    public class PlatformMoveComponent:Component,IComponent<ConfigRoute>,IUpdate
     {
         public bool IsStart { get; private set; }
         

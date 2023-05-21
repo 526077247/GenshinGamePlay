@@ -3,7 +3,7 @@ using CMF;
 
 namespace TaoTie
 {
-    public class AvatarMoveComponent : Component, IComponent,IUpdateComponent
+    public class AvatarMoveComponent : Component, IComponent,IUpdate
     {
 	    #region Param
 

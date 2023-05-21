@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace TaoTie
 {
-    public class HudSystem : IManager, IUpdateManager
+    public class HudSystem : IManager, IUpdate
     {
         public void Init()
         {

@@ -9,13 +9,17 @@ namespace TaoTie
         
         public Vector3 Up;
         public Vector3 Forward;
+        /// <summary>
+        /// 相机相对目标的旋转
+        /// </summary>
+        public Quaternion SphereQuaternion;
         
         public Vector3 Position;
         public Quaternion Orientation;
         
         public Vector3 LookAt;
         public Vector3 TargetForward;
-
+        public Vector3 TargetUp;
         public static CameraStateData Create()
         {
             return ObjectPool.Instance.Fetch<CameraStateData>();

@@ -104,10 +104,10 @@ namespace TaoTie
         }
         
         /// <summary>
-        /// 开启或关闭objview
+        /// 开启或关闭Renderer
         /// </summary>
         /// <param name="enable"></param>
-        public async ETTask EnableObjView(bool enable)
+        public async ETTask EnableRenderer(bool enable)
         {
             GameObjectHolderComponent ghc = parent.GetComponent<GameObjectHolderComponent>();
             CoroutineLock coroutineLock = null;

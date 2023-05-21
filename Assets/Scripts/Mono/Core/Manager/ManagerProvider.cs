@@ -7,19 +7,19 @@ namespace TaoTie
     {
         private ManagerProvider()
         {
-            AllManagers = new LinkedList<object>();
-            _managersDictionary = new UnOrderDoubleKeyDictionary<Type,string, object>();
-            UpdateManagers = new LinkedList<IUpdateManager>();
+            allManagers = new LinkedList<object>();
+            managersDictionary = new UnOrderDoubleKeyDictionary<Type,string, object>();
+            updateManagers = new LinkedList<IUpdate>();
         }
         static ManagerProvider Instance { get; } = new ManagerProvider();
         
-        UnOrderDoubleKeyDictionary<Type,string, object> _managersDictionary;
-        private LinkedList<object> AllManagers;
-        private LinkedList<IUpdateManager> UpdateManagers;
+        UnOrderDoubleKeyDictionary<Type,string, object> managersDictionary;
+        private LinkedList<object> allManagers;
+        private LinkedList<IUpdate> updateManagers;
         public static T GetManager<T>(string name = "") where T :class,IManagerDestroy
         {
             var type = TypeInfo<T>.Type;
-            if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
+            if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 return null;
             }
@@ -28,65 +28,64 @@ namespace TaoTie
         public static T RegisterManager<T>(string name = "") where T :class,IManager
         {
             var type = TypeInfo<T>.Type;
-            if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
+            if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
-                if (res is IUpdateManager u)
+                if (res is IUpdate u)
                 {
-                    Instance.UpdateManagers.AddLast(u);
+                    Instance.updateManagers.AddLast(u);
                 }
-
                 (res as T).Init();
-                Instance._managersDictionary.Add(type,name,res);
-                Instance.AllManagers.AddLast(res);
+                Instance.managersDictionary.Add(type,name,res);
+                Instance.allManagers.AddLast(res);
             }
             return res as T;
         }
         public static T RegisterManager<T,P1>(P1 p1,string name = "") where T :class,IManager<P1>
         {
             var type = TypeInfo<T>.Type;
-            if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
+            if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
-                if (res is IUpdateManager u)
+                if (res is IUpdate u)
                 {
-                    Instance.UpdateManagers.AddLast(u);
+                    Instance.updateManagers.AddLast(u);
                 }
                 (res as T).Init(p1);
-                Instance._managersDictionary.Add(type,name,res);
-                Instance.AllManagers.AddLast(res);
+                Instance.managersDictionary.Add(type,name,res);
+                Instance.allManagers.AddLast(res);
             }
             return res as T;
         }
         public static T RegisterManager<T,P1,P2>(P1 p1,P2 p2,string name = "") where T :class,IManager<P1,P2>
         {
             var type = TypeInfo<T>.Type;
-            if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
+            if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
-                if (res is IUpdateManager u)
+                if (res is IUpdate u)
                 {
-                    Instance.UpdateManagers.AddLast(u);
+                    Instance.updateManagers.AddLast(u);
                 }
                 (res as T).Init(p1,p2);
-                Instance._managersDictionary.Add(type,name,res);
-                Instance.AllManagers.AddLast(res);
+                Instance.managersDictionary.Add(type,name,res);
+                Instance.allManagers.AddLast(res);
             }
             return res as T;
         }
         public static T RegisterManager<T,P1,P2,P3>(P1 p1,P2 p2,P3 p3,string name = "") where T :class,IManager<P1,P2,P3>
         {
             var type = TypeInfo<T>.Type;
-            if (!Instance._managersDictionary.TryGetValue(type, name, out var res))
+            if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
-                if (res is IUpdateManager u)
+                if (res is IUpdate u)
                 {
-                    Instance.UpdateManagers.AddLast(u);
+                    Instance.updateManagers.AddLast(u);
                 }
                 (res as T).Init(p1,p2,p3);
-                Instance._managersDictionary.Add(type,name,res);
-                Instance.AllManagers.AddLast(res);
+                Instance.managersDictionary.Add(type,name,res);
+                Instance.allManagers.AddLast(res);
             }
             return res as T;
         }
@@ -94,33 +93,31 @@ namespace TaoTie
         public static void RemoveManager<T>(string name = "")
         {
             var type = TypeInfo<T>.Type;
-            if (Instance._managersDictionary.TryGetValue(type, name, out var res))
+            if (Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
-                if (res is IUpdateManager u)
+                if (res is IUpdate u)
                 {
-                    Instance.UpdateManagers.Remove(u);
+                    Instance.updateManagers.Remove(u);
                 }
-                
-                Instance._managersDictionary.Remove(type,name);
-                Instance.AllManagers.Remove(res);
+                Instance.managersDictionary.Remove(type,name);
+                Instance.allManagers.Remove(res);
                 (res as IManagerDestroy)?.Destroy();
             }
         }
 
         public static void Clear()
         {
-            Instance._managersDictionary.Clear();
-            Instance.UpdateManagers.Clear();
-            
-            foreach (var item in Instance.AllManagers)
+            Instance.managersDictionary.Clear();
+            Instance.updateManagers.Clear();
+            foreach (var item in Instance.allManagers)
             {
                 (item as IManagerDestroy)?.Destroy();
             }
-            Instance.AllManagers.Clear();
+            Instance.allManagers.Clear();
         }
         public static void Update()
         {
-            for (var node = Instance.UpdateManagers.First; node !=null; node=node.Next)
+            for (var node = Instance.updateManagers.First; node !=null; node=node.Next)
             {
                 node.Value.Update();
             }

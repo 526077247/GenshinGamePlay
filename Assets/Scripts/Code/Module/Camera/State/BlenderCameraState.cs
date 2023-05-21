@@ -1,4 +1,6 @@
-﻿namespace TaoTie
+﻿using UnityEngine;
+
+namespace TaoTie
 {
     public class BlenderCameraState: CameraState
     {
@@ -31,7 +33,7 @@
             }
             else
             {
-                res.config = from.Config.Level;
+                res.config = from.Config.Leave;
             }
             if (res.config == null)
                 res.config = CameraManager.Instance.defaultBlend;
@@ -41,17 +43,33 @@
             res.startlerpTime = GameTimerManager.Instance.GetTimeNow();
             return res;
         }
-
+        public override void OnEnter()
+        {
+            base.OnEnter();
+            Cursor.visible = To.Config.VisibleCursor;
+            Cursor.lockState = To.Config.Mode;
+        }
+        
         public override void Update()
         {
             if (To.IsOver) IsOver = true;
             if (IsOver) return;
             var timeNow = GameTimerManager.Instance.GetTimeNow();
-            if (timeNow > startlerpTime + config.DeltaTime)
+            if (timeNow >= startlerpTime + config.DeltaTime)
             {
                 IsOver = true;
             }
-            var lerpVal = lerpFunc((float)(timeNow-startlerpTime)/config.DeltaTime, 0, 1);
+
+            float lerpVal;
+            if (config.DeltaTime > 0)
+            {
+                lerpVal = lerpFunc((float) (timeNow - startlerpTime) / config.DeltaTime, 0, 1);
+                lerpVal = Mathf.Clamp01(lerpVal);
+            }
+            else
+            {
+                lerpVal = 1;
+            }
             Data.Lerp(formData, toData, lerpVal);
         }
 
@@ -72,7 +90,7 @@
             }
             else
             {
-                config = From.Config.Level;
+                config = From.Config.Leave;
             }
 
             if (config == null)
@@ -81,17 +99,14 @@
             IsOver = false;
             lerpFunc = EasingFunction.GetEasingFunction(config.Ease);
             startlerpTime = GameTimerManager.Instance.GetTimeNow();
+            
+            Cursor.visible = To.Config.VisibleCursor;
+            Cursor.lockState = To.Config.Mode;
         }
 
         public override void Dispose()
         {
-            CameraManager.Instance.RemoveState(Id);
-            //base
-            Id = default;
-            Priority = default;
-            Data.Dispose();
-            Data = null;
-            IsOver = true;
+            base.Dispose();
             
             //this
             if (From.IsOver)

@@ -27,22 +27,14 @@ namespace TaoTie
 
         private void Calculating()
         {
-            if (state.target != null)
+            var dir = data.LookAt - data.Position;
+            if (dir == Vector3.zero)
             {
-                var dir = state.target.position - data.Position;
-                if (dir == Vector3.zero)
-                {
-                    if (state.follow != null)
-                    {
-                        data.Orientation = state.follow.rotation;
-                    }
-                }
-                else
-                {
-                    
-                    data.Orientation = Quaternion.FromToRotation(data.Forward, dir);
-                }
-                
+                data.Orientation = Quaternion.LookRotation(data.TargetForward,data.TargetUp);
+            }
+            else
+            {
+                data.Orientation = Quaternion.LookRotation(dir);
             }
         }
     }

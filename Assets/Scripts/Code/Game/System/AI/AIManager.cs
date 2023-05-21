@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class AIManager:IManager<BaseMapScene>,IUpdateManager
+    public class AIManager:IManager<BaseMapScene>,IUpdate
     {
         private const int CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME = 10;
         private BaseMapScene scene;

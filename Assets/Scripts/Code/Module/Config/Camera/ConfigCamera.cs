@@ -28,7 +28,7 @@ namespace TaoTie
         public ConfigCameraBlender Enter;
 
         [NinoMember(7)] [Tooltip("相机出栈过渡混合动画")] [BoxGroup("Blender")]
-        public ConfigCameraBlender Level;
+        public ConfigCameraBlender Leave;
 
         [NinoMember(8)] [Range(1, 179)] public float Fov = 90;
 

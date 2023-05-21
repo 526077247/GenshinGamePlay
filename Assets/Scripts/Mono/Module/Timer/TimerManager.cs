@@ -12,7 +12,7 @@ namespace TaoTie
         RepeatedTimer,
     }
     
-    public class TimerManager:IUpdateManager,IManager
+    public class TimerManager:IUpdate,IManager
     {
 
         public static TimerManager Instance { get; private set; }

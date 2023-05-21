@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public partial class CameraManager: IUpdateManager
+    public partial class CameraManager: IUpdate
     {
         
         #region CameraStack
@@ -57,7 +57,7 @@ namespace TaoTie
             states = new Dictionary<long, CameraState>();
             cameraStack = new PriorityStack<CameraState>();
             
-            curCameraState = CreateCameraState(config.DefaultCamera, 0);
+            SetCurCameraState(CreateCameraState(config.DefaultCamera, 0));
             states[defaultCameraId] = curCameraState;
             cameraStack.Push(curCameraState);
         }
@@ -92,9 +92,9 @@ namespace TaoTie
                         cameraStack.Pop().Dispose();
                     }
                     blender = CreateCameraState(curCameraState as NormalCameraState, cameraStack.Peek() as NormalCameraState,
-                        false);
+                        true);
                     cameraStack.Push(blender);
-                    curCameraState = blender;
+                    SetCurCameraState(blender);
                 }
             }
             else if(top.IsOver)//播放完毕，需要变换相机机位
@@ -110,7 +110,7 @@ namespace TaoTie
                     var newTop = cameraStack.Peek();
                     if (blender.To.Id == newTop.Id)//是变换完成了
                     {
-                        curCameraState = cameraStack.Peek();
+                        SetCurCameraState(cameraStack.Peek());
                         top.Dispose();
                     }
                     else//变换时，目标机位改变，需要变换到新的机位
@@ -129,7 +129,7 @@ namespace TaoTie
                     blender = CreateCameraState(top as NormalCameraState, cameraStack.Peek() as NormalCameraState,
                         false);
                     cameraStack.Push(blender);
-                    curCameraState = blender;
+                    SetCurCameraState(blender);
                 }
             }
 
@@ -144,9 +144,16 @@ namespace TaoTie
             if (sceneMainCamera == null || data == null) return;
             sceneMainCamera.fieldOfView = data.Fov;
             sceneMainCamera.nearClipPlane = data.NearClipPlane;
-            sceneMainCamera.gameObject.transform.position = data.Position;
             sceneMainCamera.gameObject.transform.rotation = data.Orientation;
+            sceneMainCamera.gameObject.transform.position = data.Position;
             //todo: 
+        }
+
+        private void SetCurCameraState(CameraState state)
+        {
+            if(curCameraState!=null && !curCameraState.IsBackground) curCameraState.OnLeave();
+            curCameraState = state;
+            curCameraState.OnEnter();
         }
 
         private NormalCameraState CreateCameraState(ConfigCamera config, int priority)
@@ -232,7 +239,10 @@ namespace TaoTie
         /// </summary>
         public void RemoveState(long id)
         {
-            states.Remove(id);
+            if (states.TryGetValue(id, out var state))
+            {
+                states.Remove(id);
+            }
         }
         
         /// <summary>

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class InputManager : IManager, IUpdateManager
+    public class InputManager : IManager, IUpdate
     {
         private const int KeyDown = 1;
         private const int KeyUp = 2;
@@ -22,6 +22,8 @@ namespace TaoTie
         public bool IsPause;
 
         public float MouseScrollWheel { get; private set; }
+        public float MouseAxisX{ get; private set; }
+        public float MouseAxisY{ get; private set; }
 
         /// <summary>
         /// 按键绑定
@@ -75,6 +77,8 @@ namespace TaoTie
             }
 
             MouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+            MouseAxisX = Input.GetAxis("Mouse X");
+            MouseAxisY = Input.GetAxis("Mouse Y");
         }
 
         /// <summary>

@@ -21,27 +21,5 @@ namespace TaoTie
 
         [NinoMember(6)] [ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("滚轮缩放")]
         public float ZoomMax = 4;
-
-        [NinoMember(7)] [ShowIf(nameof(EnableZoom))] [Range(-1, 20)] [BoxGroup("滚轮缩放")]
-        public float ZoomOffsetStart = 1.5f;
-
-        [NinoMember(8)] [LabelText("近镜模式开关")] [BoxGroup("近镜模式")]
-        public bool NearFocusEnable = true;
-
-        [ShowIf(nameof(NearFocusEnable))]
-        [BoxGroup("近镜模式")]
-        [LabelText("近镜模式开始距离")]
-        [Range(0.1f, 12f)]
-        [NinoMember(9)]
-        [Tooltip("从这个距离开始偏移")]
-        public float NearFocusMaxDistance = 2f;
-
-        [ShowIf(nameof(NearFocusEnable))]
-        [BoxGroup("近镜模式")]
-        [LabelText("近镜模式结束距离")]
-        [Range(0.1f, 12f)]
-        [Tooltip("这个距离达到偏移最大值")]
-        [NinoMember(10)]
-        public float NearFocusMinDistance = 1.5f;
     }
 }

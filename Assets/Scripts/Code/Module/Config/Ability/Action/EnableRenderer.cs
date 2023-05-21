@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class EnableObjView: ConfigAbilityAction
+    public partial class EnableRenderer: ConfigAbilityAction
     {
         [NinoMember(10)]
         public bool SetEnable;
@@ -11,7 +11,7 @@ namespace TaoTie
         {
             
             CombatComponent holderComponent = target.GetComponent<CombatComponent>();
-            holderComponent?.EnableObjView(SetEnable).Coroutine();
+            holderComponent?.EnableRenderer(SetEnable).Coroutine();
             
         }
     }

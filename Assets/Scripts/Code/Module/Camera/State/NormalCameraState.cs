@@ -52,12 +52,20 @@ namespace TaoTie
                 }
             }
         }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+            Cursor.visible = Config.VisibleCursor;
+            Cursor.lockState = Config.Mode;
+        }
         
         public override void Update()
         {
             if(IsOver) return;
-            head?.Update();
+            Calculating();
             body?.Update();
+            head?.Update();
             if (others != null)
             {
                 for (int i = 0; i < others.Count; i++)
@@ -67,15 +75,24 @@ namespace TaoTie
             }
         }
 
+        private void Calculating()
+        {
+            if (target != null)
+            {
+                Data.TargetForward = target.forward;
+                Data.LookAt = target.position;
+                Data.TargetUp = target.up;
+            }
+            else
+            {
+                Data.TargetForward = Vector3.forward;
+                Data.TargetUp = Vector3.up;
+            }
+        }
+
         public override void Dispose()
         {
-            CameraManager.Instance.RemoveState(Id);
-            //base
-            Id = default;
-            Priority = default;
-            Data.Dispose();
-            Data = null;
-            IsOver = true;
+            base.Dispose();
             
             //this
             target = null;
