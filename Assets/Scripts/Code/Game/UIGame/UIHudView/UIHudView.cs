@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace TaoTie
 {
-	public class UIHudView : UIBaseView, IOnCreate, IOnEnable,IOnDisable, IUpdateManager
+	public class UIHudView : UIBaseView, IOnCreate, IOnEnable,IOnDisable, IUpdate
     {
 		public static string PrefabPath => "UIGame/UIBattle/Prefabs/UIHudView.prefab";
 		private  Queue<FightText> fightTexts = new();

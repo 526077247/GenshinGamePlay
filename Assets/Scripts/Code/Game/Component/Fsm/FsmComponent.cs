@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdateComponent
+    public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdate
     {
         private Fsm[] fsms;
         public Fsm[] Fsms => fsms;

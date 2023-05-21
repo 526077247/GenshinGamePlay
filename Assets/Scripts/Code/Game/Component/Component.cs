@@ -8,9 +8,9 @@ namespace TaoTie
     public abstract class Component : IDisposable
     {
         [Timer(TimerType.ComponentUpdate)]
-        public class ComponentUpdate : ATimer<IUpdateComponent>
+        public class ComponentUpdate : ATimer<IUpdate>
         {
-            public override void Run(IUpdateComponent t)
+            public override void Run(IUpdate t)
             {
                 try
                 {
@@ -31,7 +31,7 @@ namespace TaoTie
         }
         public void AfterInit()
         {
-            if(this is IUpdateComponent updater)
+            if(this is IUpdate updater)
                 timerId = GameTimerManager.Instance.NewFrameTimer(TimerType.ComponentUpdate, updater);
         }
         public void AfterDestroy()

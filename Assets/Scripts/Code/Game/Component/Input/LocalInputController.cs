@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 玩家的输入
     /// </summary>
-    public class LocalInputController : Component, IComponent, IUpdateComponent
+    public class LocalInputController : Component, IComponent, IUpdate
     {
         private SkillComponent SkillComponent => parent.GetComponent<SkillComponent>();
         private AvatarMoveComponent AvatarMoveComponent => parent.GetComponent<AvatarMoveComponent>();

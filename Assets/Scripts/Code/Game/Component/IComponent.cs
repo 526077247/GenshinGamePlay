@@ -30,9 +30,4 @@ namespace TaoTie
         public void Init(P1 p1, P2 p2, P3 p3);
 
     }
-    
-    public interface IUpdateComponent
-    {
-        public void Update();
-    }
 }

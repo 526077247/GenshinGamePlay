@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent : Component, IComponent, IUpdateComponent
+    public partial class GameObjectHolderComponent : Component, IComponent, IUpdate
     {
         [Timer(TimerType.DestroyEffect)]
         public class DestroyEffectTimer : ATimer<EffectInfo>

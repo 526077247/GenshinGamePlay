@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 namespace TaoTie
 {
-    public class CoroutineLockManager:IUpdateManager,IManager
+    public class CoroutineLockManager:IUpdate,IManager
     {
 
         public static CoroutineLockManager Instance { get; private set; }

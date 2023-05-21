@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class SkillComponent:Component,IComponent,IUpdateComponent
+    public class SkillComponent:Component,IComponent,IUpdate
     {
         private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
         public Dictionary<uint, SkillInfo> SkillInfoMap;

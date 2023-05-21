@@ -8,6 +8,7 @@ namespace TaoTie
     /// </summary>
     public class Avatar:Unit,IEntity<int>
     {
+        private long thirdCameraId;
         #region IEntity
 
         public override EntityType Type => EntityType.Avatar;
@@ -34,12 +35,23 @@ namespace TaoTie
         {
             var ghc = GetComponent<GameObjectHolderComponent>();
             await ghc.WaitLoadGameObjectOver();
-            CameraManager.Instance.ChangeCamera(2);
-            CameraManager.Instance.SetFreeLockCameraFollow(ghc.GetCollectorObj<GameObject>("CameraLook").transform, ConfigEntity.Common.Height);
+            if (thirdCameraId == 0)
+            {
+                thirdCameraId = CameraManager.Instance.Create(GameConst.ThirdCameraConfigId);
+            }
+
+            var camera = CameraManager.Instance.Get<NormalCameraState>(thirdCameraId);
+            var trans = ghc.EntityView;
+            camera.SetFollow(trans);
+            camera.SetTarget(trans);
         }
 
         public void Destroy()
         {
+            if (thirdCameraId != 0)
+            {
+                CameraManager.Instance.Remove(ref thirdCameraId);
+            }
             ConfigEntity = null;
             ConfigId = default;
             CampId = 0;
