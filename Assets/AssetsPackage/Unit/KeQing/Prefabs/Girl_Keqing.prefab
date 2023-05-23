@@ -118,6 +118,10 @@ MonoBehaviour:
     gameObject: {fileID: 6026641182164640730}
   - key: HitBox
     gameObject: {fileID: 248510517417847487}
+  - key: WeaponL
+    gameObject: {fileID: 8019388696331482130}
+  - key: WeaponR
+    gameObject: {fileID: 4719210459658680367}
 --- !u!95 &5001083197151544805
 Animator:
   serializedVersion: 5

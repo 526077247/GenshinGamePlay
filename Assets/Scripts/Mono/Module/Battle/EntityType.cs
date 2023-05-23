@@ -7,6 +7,7 @@
         Gadget = 3,
         SceneGroup = 4,
         Zone = 5,
+        Weapon = 6,
         
         
         MAX,
