@@ -62,6 +62,7 @@ namespace TaoTie
                     }
                     euips[equipType] = equip;
                     attachComponent.AddChild(equip);
+                    equip.GetComponent<FsmComponent>()?.SetData(FSMConst.ShowWeapon,showWeaponState);
                     await gameObjectHolderComponent.WaitLoadGameObjectOver();
                     var goh = equip.GetComponent<GameObjectHolderComponent>();
                     await goh.WaitLoadGameObjectOver();
