@@ -255,6 +255,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1102 &-4867738824078306946
 AnimatorState:
   serializedVersion: 6
@@ -548,6 +549,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1102 &171785100232014949
 AnimatorState:
   serializedVersion: 6
@@ -954,6 +956,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1109 &6732828117111530671
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -1061,6 +1064,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1101 &8631561747106241960
 AnimatorStateTransition:
   m_ObjectHideFlags: 1

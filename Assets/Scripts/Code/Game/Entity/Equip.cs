@@ -17,7 +17,7 @@
             }
             AddComponent<AttachComponent>();
             AddComponent<GameObjectHolderComponent>();
-            // AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
         }
 
         public void Destroy()

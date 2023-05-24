@@ -67,7 +67,7 @@ AnimatorState:
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
-  m_WriteDefaultValues: 0
+  m_WriteDefaultValues: 1
   m_Mirror: 0
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
@@ -185,7 +185,7 @@ AnimatorState:
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
-  m_WriteDefaultValues: 0
+  m_WriteDefaultValues: 1
   m_Mirror: 0
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
@@ -247,6 +247,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1102 &-4867738824078306946
 AnimatorState:
   serializedVersion: 6
@@ -511,6 +512,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1102 &171785100232014949
 AnimatorState:
   serializedVersion: 6
@@ -865,7 +867,7 @@ AnimatorState:
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
-  m_WriteDefaultValues: 0
+  m_WriteDefaultValues: 1
   m_Mirror: 0
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
@@ -902,6 +904,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1109 &6732828117111530671
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -1008,6 +1011,7 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 0
         CanTurn: 0
+        ShowWeapon: 1
 --- !u!1101 &8631561747106241960
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -1047,7 +1051,7 @@ AnimatorState:
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
-  m_WriteDefaultValues: 0
+  m_WriteDefaultValues: 1
   m_Mirror: 0
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0

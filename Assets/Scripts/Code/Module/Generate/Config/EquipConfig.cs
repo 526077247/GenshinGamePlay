@@ -85,7 +85,7 @@ namespace TaoTie
 		public int UnitId { get; set; }
 		/// <summary>挂点</summary>
 		[NinoMember(3)]
-		public string AttachPointType { get; set; }
+		public string EquipType { get; set; }
 
 	}
 }

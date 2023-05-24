@@ -147,6 +147,10 @@ namespace TaoTie
              {
                  Messager.Instance.Broadcast(_component.Id, MessageId.SetCanTurn, toState.CanTurn);
              }
+             if (fromState == null || fromState.ShowWeapon != toState.ShowWeapon)
+             {
+                 Messager.Instance.Broadcast(_component.Id, MessageId.SetShowWeapon, toState.ShowWeapon);
+             }
          }
 
          public ConfigFsmState GetStateConfig(string stateName)

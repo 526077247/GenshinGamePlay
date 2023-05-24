@@ -29,6 +29,15 @@ namespace TaoTie
             }
         }
 
+        public bool ShowWeapon
+        {
+            get
+            {
+                if (Config.Data == null) return false;
+                return Config.Data.ShowWeapon;
+            }
+        }
+
         public static FsmState Create(Fsm fsm, ConfigFsmState cfg)
         {
             FsmState ret = ObjectPool.Instance.Fetch<FsmState>();

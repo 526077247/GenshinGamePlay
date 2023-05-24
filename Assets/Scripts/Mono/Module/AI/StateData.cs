@@ -4,15 +4,17 @@ namespace TaoTie
 {
     public class StateData
     {
-        [BoxGroup("Pose")]
+        [TabGroup("Pose")]
         public bool IsDynamic;
-        [ShowIf("@IsDynamic")][BoxGroup("Pose")]
+        [ShowIf("@IsDynamic")][TabGroup("Pose")]
         public string Key;
-        [ShowIf("@!IsDynamic")][BoxGroup("Pose")]
+        [ShowIf("@!IsDynamic")][TabGroup("Pose")]
         public int PoseID;
-        [LabelText("是否能移动")][BoxGroup("FSM")]
+        [LabelText("是否能移动")][TabGroup("FSM")]
         public bool CanMove;
-        [LabelText("是否能转向")][BoxGroup("FSM")]
+        [LabelText("是否能转向")][TabGroup("FSM")]
         public bool CanTurn;
+        [LabelText("是否展示武器")][TabGroup("FSM")]
+        public bool ShowWeapon;
     }
 }
