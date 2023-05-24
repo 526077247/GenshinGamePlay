@@ -8,7 +8,6 @@ namespace TaoTie
         private float angleOffsetY;
         private float distance;
         private ConfigEntityCommon entityCommon;
-        private Vector3 position;
         private float wheel;
         private float mx;
         private float my;
@@ -18,13 +17,13 @@ namespace TaoTie
             angleOffsetY = 0;
             distance = config.ZoomDefault;
             LoadCommonConfig();
-            Calculating(false);
+            Calculating();
         }
 
         protected override void UpdateInternal()
         {
             CalculatingPara();
-            Calculating(true);
+            Calculating();
         }
 
         protected override void DisposeInternal()
@@ -38,7 +37,7 @@ namespace TaoTie
         {
             base.OnSetFollow();
             LoadCommonConfig();
-            Calculating(false);
+            Calculating();
         }
 
         
@@ -60,21 +59,15 @@ namespace TaoTie
             }
         }
         
-        private void Calculating(bool lerp)
+        private void Calculating()
         {
             if (state.follow != null && entityCommon != null)
             { 
                 data.SphereQuaternion = Quaternion.Euler(new Vector3(angleOffsetY, angleOffsetX, 0));
                 data.Forward = state.follow.forward;
                 data.Up = state.follow.up;
-                var newPosition = state.follow.position;
-                if (lerp)
-                {
-                    newPosition = Vector3.Lerp(newPosition, position, 0.5f);
-                }
-                position = newPosition;
-                
-                data.Position = position - data.SphereQuaternion * Vector3.forward * distance +
+
+                data.Position = state.follow.position - data.SphereQuaternion * Vector3.forward * distance +
                                 data.Up * entityCommon.Height / 2;
             }
         }
