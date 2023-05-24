@@ -7,7 +7,7 @@ namespace TaoTie
     public partial class ConfigEquipController
     {
         [NinoMember(1)]
-        public Dictionary<string, string> AttachPoints;
+        public Dictionary<AttachPointType, string> AttachPoints;
         [NinoMember(2)]
         public string SheathPoint;
     }

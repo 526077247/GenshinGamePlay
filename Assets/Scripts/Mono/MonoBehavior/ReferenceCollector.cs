@@ -122,7 +122,19 @@ public class ReferenceCollector: MonoBehaviour, ISerializationCallbackReceiver
 		{
 			return null;
 		}
-		return dictGo as T;
+		var res = dictGo as T;
+		if (res == null)
+		{
+			if (dictGo is GameObject obj)
+			{
+				return obj.GetComponent<T>();
+			}
+			if (dictGo is Component comp)
+			{
+				return comp.GetComponent<T>();
+			}
+		}
+		return res;
 	}
 
 	public Object GetObject(string key)

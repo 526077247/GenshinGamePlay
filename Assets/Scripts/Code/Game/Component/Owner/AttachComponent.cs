@@ -41,7 +41,7 @@ namespace TaoTie
 
         #endregion
 
-        public void AddChild(Entity entity,bool lifeByOwnerIsAlive)
+        public void AddChild(Entity entity,bool lifeByOwnerIsAlive = true)
         {
             var ac = entity.GetOrAddComponent<AttachComponent>();
             if (ac.ParentEntity != null)

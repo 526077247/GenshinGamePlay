@@ -7,7 +7,7 @@ namespace TaoTie
     public partial class ConfigBillboard
     {
         [NinoMember(1)]
-        public string AttachPoint;
+        public AttachPointType AttachPoint;
         [NinoMember(2)]
         public Vector3 Offset;
     }

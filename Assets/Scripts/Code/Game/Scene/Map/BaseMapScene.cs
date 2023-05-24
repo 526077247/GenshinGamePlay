@@ -74,7 +74,7 @@ namespace TaoTie
             
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
-            
+            Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();
             RegisterManager<AIManager,BaseMapScene>(this);
 
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);

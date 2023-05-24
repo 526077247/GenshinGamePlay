@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent : Component, IComponent, IUpdate
+    public partial class GameObjectHolderComponent : Component, IComponent
     {
         [Timer(TimerType.DestroyEffect)]
         public class DestroyEffectTimer : ATimer<EffectInfo>
@@ -48,35 +48,38 @@ namespace TaoTie
             }
 
             animator = obj.GetComponentInChildren<Animator>();
-            animator.runtimeAnimatorController =
-                ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
-            var fsm = parent.GetComponent<FsmComponent>();
-            if (fsm != null && fsm.Config.ParamDict != null)
+            if (animator != null && !string.IsNullOrEmpty(unit.Config.Controller))
             {
-                foreach (var item in fsm.Config.ParamDict)
+                animator.runtimeAnimatorController =
+                    ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
+                var fsm = parent.GetComponent<FsmComponent>();
+                if (fsm != null && fsm.Config.ParamDict != null)
                 {
-                    var para = item.Value;
-                    if (para is ConfigParamBool paramBool)
+                    foreach (var item in fsm.Config.ParamDict)
                     {
-                        SetData(paramBool.Key, fsm.GetBool(paramBool.Key));
+                        var para = item.Value;
+                        if (para is ConfigParamBool paramBool)
+                        {
+                            SetData(paramBool.Key, fsm.GetBool(paramBool.Key));
+                        }
+                        else if (para is ConfigParamFloat paramFloat)
+                        {
+                            SetData(paramFloat.Key, fsm.GetFloat(paramFloat.Key));
+                        }
+                        else if (para is ConfigParamInt paramInt)
+                        {
+                            SetData(paramInt.Key, fsm.GetInt(paramInt.Key));
+                        }
+                        else if (para is ConfigParamTrigger paramTrigger)
+                        {
+                            SetData(paramTrigger.Key, fsm.GetBool(paramTrigger.Key));
+                        }
                     }
-                    else if (para is ConfigParamFloat paramFloat)
-                    {
-                        SetData(paramFloat.Key, fsm.GetFloat(paramFloat.Key));
-                    }
-                    else if (para is ConfigParamInt paramInt)
-                    {
-                        SetData(paramInt.Key, fsm.GetInt(paramInt.Key));
-                    }
-                    else if (para is ConfigParamTrigger paramTrigger)
-                    {
-                        SetData(paramTrigger.Key, fsm.GetBool(paramTrigger.Key));
-                    }
-                }
 
-                for (int i = 0; i < fsm.Fsms.Length; i++)
-                {
-                    CrossFade(fsm.Fsms[i].currentState.Name, fsm.Fsms[i].config.LayerIndex);
+                    for (int i = 0; i < fsm.Fsms.Length; i++)
+                    {
+                        CrossFade(fsm.Fsms[i].currentState.Name, fsm.Fsms[i].config.LayerIndex);
+                    }
                 }
             }
 
@@ -140,6 +143,7 @@ namespace TaoTie
             if (animator != null)
             {
                 ResourcesManager.Instance.ReleaseAsset(animator.runtimeAnimatorController);
+                animator = null;
             }
         }
 

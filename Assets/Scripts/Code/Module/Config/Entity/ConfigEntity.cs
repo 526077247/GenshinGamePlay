@@ -10,8 +10,6 @@ namespace TaoTie
         public string[] Abilities;
         [NinoMember(1)]
         public ConfigEntityCommon Common;
-        [NinoMember(2)][LabelText("挂点索引")]
-        public ConfigEntityPoint SpecialPoint;
         [NinoMember(3)]
         public ConfigCombat Combat;
         [NinoMember(4)]

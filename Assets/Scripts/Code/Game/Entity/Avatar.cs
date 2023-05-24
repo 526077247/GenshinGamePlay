@@ -19,6 +19,7 @@ namespace TaoTie
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
             ConfigEntity = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
+            AddComponent<AttachComponent>();
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigEntity.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
@@ -28,6 +29,7 @@ namespace TaoTie
             AddComponent<AvatarMoveComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigEntity.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
+            AddComponent<EquipHoldComponent>();
             InitAsync().Coroutine();
         }
 
