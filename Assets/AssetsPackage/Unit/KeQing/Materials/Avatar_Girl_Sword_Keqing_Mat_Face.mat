@@ -124,7 +124,7 @@ Material:
     - _BumpMapKeyword: 0
     - _BumpScale: 1
     - _CELLSmoothing: 0.001
-    - _CELLThreshold: 0.5
+    - _CELLThreshold: 0.416
     - _CellBandSoftness: 0.001
     - _CellBands: 1
     - _ClearCoat: 0
@@ -134,12 +134,12 @@ Material:
     - _Cull: 2
     - _Cutoff: 0.5
     - _DepthOffsetRimReverseX: 0
-    - _DepthOffsetShadowReverseX: 1
+    - _DepthOffsetShadowReverseX: 0
     - _DepthRimOffset: 0.01
     - _DepthRimThresoldOffset: 0.01
-    - _DepthShadowOffset: -2
-    - _DepthShadowSoftness: 0
-    - _DepthShadowThresoldOffset: -1
+    - _DepthShadowOffset: 2
+    - _DepthShadowSoftness: 0.806
+    - _DepthShadowThresoldOffset: 0.59
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -149,7 +149,7 @@ Material:
     - _Glossiness: 0.31622776
     - _GlossyReflections: 1
     - _Is_Filter_LightColor: 1
-    - _LightDirectionObliqueWeight: 0.768
+    - _LightDirectionObliqueWeight: 0.5
     - _LightIntensityClamp: 1
     - _Metallic: 0
     - _Mode: 0

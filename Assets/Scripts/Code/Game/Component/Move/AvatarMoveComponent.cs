@@ -11,7 +11,6 @@ namespace TaoTie
 	    protected Transform tr;
 	    protected Mover mover;
 	    public CharacterKeyboardInput characterInput;
-	    protected CeilingDetector ceilingDetector;
 
 	    //'AirFriction' determines how fast the controller loses its momentum while in the air;
 	    //'GroundFriction' is used instead, if the controller is grounded;
@@ -62,7 +61,6 @@ namespace TaoTie
 	        await gh.WaitLoadGameObjectOver();
 	        mover = gh.EntityView.GetComponent<Mover>();
 	        tr = gh.EntityView;
-	        ceilingDetector = gh.EntityView.GetComponent<CeilingDetector>();
 	        cameraTransform = CameraManager.Instance.MainCamera().transform;
         }
 
@@ -175,10 +173,6 @@ namespace TaoTie
 
 			//Set mover velocity;		
 			mover.SetVelocity(_velocity);
-
-			//Reset ceiling detector, if one is attached to this gameobject;
-			if(ceilingDetector != null)
-				ceilingDetector.ResetFlags();
 		}
 		
 		protected virtual Vector3 CalculateLookDirection()
