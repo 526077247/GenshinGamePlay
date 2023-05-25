@@ -5,7 +5,7 @@ namespace TaoTie
     public sealed class CameraThirdPersonLookAtPluginRunner: CameraHeadPluginRunner<ConfigCameraThirdPersonLookAtPlugin>
     {
         private ConfigEntityCommon entityCommon;
-
+        private float nearFocusOffset;
         protected override void InitInternal()
         {
             LoadCommonConfig();
@@ -74,9 +74,11 @@ namespace TaoTie
                     distance = Mathf.Clamp(distance, config.NearFocusMinDistance, config.NearFocusMaxDistance);
                     var progress = 1 - (distance - config.NearFocusMinDistance) /
                                   (config.NearFocusMaxDistance - config.NearFocusMinDistance);
-                    var offset = data.TargetUp * progress * entityCommon.NearFocusOffsetHeight;
-                    data.Position += offset;
-                    data.LookAt += offset;
+                    var offset =  progress * entityCommon.NearFocusOffsetHeight;
+                    nearFocusOffset = Mathf.Lerp(nearFocusOffset, offset, 0.5f);
+                    var offsetV3 = data.TargetUp * nearFocusOffset;
+                    data.Position += offsetV3;
+                    data.LookAt += offsetV3;
 
                 }
             }

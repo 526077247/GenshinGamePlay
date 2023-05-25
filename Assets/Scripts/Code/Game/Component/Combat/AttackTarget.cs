@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct AttackTarget
+    public class AttackTarget
     {
         public long RuntimeID;
         public string LockedPoint;

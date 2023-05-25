@@ -37,7 +37,7 @@ namespace TaoTie
         public event Action<AttackResult, CombatComponent> afterAttack;
 
         /// <summary>
-        /// 造成伤害后
+        /// 受到伤害后
         /// </summary>
         public event Action<AttackResult, CombatComponent> afterBeAttack;
 
