@@ -8,22 +8,18 @@ namespace TaoTie
     {
         public IConfigLoader ConfigLoader { get; set; }
 
-        public ConfigManager Instance;
-
         public Dictionary<Type, object> AllConfig = new Dictionary<Type, object>();
 
         #region override
 
         public void Init()
         {
-            Instance = this;
             ConfigLoader = new ConfigLoader();
             Load();
         }
 
         public void Destroy()
         {
-            Instance = null;
         }
 
         #endregion
