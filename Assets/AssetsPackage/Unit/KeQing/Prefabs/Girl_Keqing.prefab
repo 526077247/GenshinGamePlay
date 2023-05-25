@@ -14,6 +14,9 @@ GameObject:
   - component: {fileID: 3585709557367256208}
   - component: {fileID: 7779619946453701086}
   - component: {fileID: 5001083197151544805}
+  - component: {fileID: 6685136000211786254}
+  - component: {fileID: 3759918019329461393}
+  - component: {fileID: 4246832413715209846}
   m_Layer: 6
   m_Name: Girl_Keqing
   m_TagString: Untagged
@@ -142,6 +145,88 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+--- !u!114 &6685136000211786254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17565861601961334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2880a43a6dc5a5b468991f96f9a9d3ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mFootID: 0
+  mForwardVector: {x: 0, y: 0, z: 1}
+  mIKHintOffset: {x: -0.1, y: 0, z: 0}
+  mUpVector: {x: 0, y: 1, z: 0}
+  mFootOffsetDist: 0.5
+  mFootLength: 0.22
+  mFootHalfWidth: 0.03
+  mFootHeight: 0.1
+  mTransitionTime: 0.15
+  mExtraRayDistanceCheck: 0
+  mFootRotationLimit: 60
+  mPlantFoot: 0
+  mDisablePlantFromDistance: 0.3
+  mDisablePlantFromAngle: 60
+  mSetExtraRayDistanceCheckAutomatically: 0
+  mFootDistanceFromGroundThreshold: 0.1
+  mExtraRayDistanceCheckMin: 0
+  mExtraRayDistanceCheckMax: 2
+  mDrawDebugRay: 0
+--- !u!114 &3759918019329461393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17565861601961334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2880a43a6dc5a5b468991f96f9a9d3ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mFootID: 1
+  mForwardVector: {x: 0, y: 0, z: 1}
+  mIKHintOffset: {x: 0.1, y: 0, z: 0}
+  mUpVector: {x: 0, y: 1, z: 0}
+  mFootOffsetDist: 0.5
+  mFootLength: 0.22
+  mFootHalfWidth: 0.03
+  mFootHeight: 0.1
+  mTransitionTime: 0.15
+  mExtraRayDistanceCheck: 0
+  mFootRotationLimit: 60
+  mPlantFoot: 0
+  mDisablePlantFromDistance: 0.3
+  mDisablePlantFromAngle: 60
+  mSetExtraRayDistanceCheckAutomatically: 0
+  mFootDistanceFromGroundThreshold: 0.1
+  mExtraRayDistanceCheckMin: 0
+  mExtraRayDistanceCheckMax: 2
+  mDrawDebugRay: 0
+--- !u!114 &4246832413715209846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17565861601961334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e796d52b745d0c4ebe4c471b5cf65bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mAdjustPelvisVertically: 1
+  mDampPelvis: 1
+  mMaxLegLength: 0.9
+  mMinLegLength: 0.2
+  mPelvisAdjustmentSpeed: 0.4
+  mLayersToIgnore:
+  - Entity
+  - HitBox
 --- !u!1 &34142008150350984
 GameObject:
   m_ObjectHideFlags: 0
