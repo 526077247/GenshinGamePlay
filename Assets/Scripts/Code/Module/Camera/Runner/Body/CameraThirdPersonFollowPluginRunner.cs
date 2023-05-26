@@ -7,7 +7,7 @@ namespace TaoTie
         private float angleOffsetX;
         private float angleOffsetY;
         private float distance;
-        private ConfigEntityCommon entityCommon;
+        private ConfigActorCommon _actorCommon;
         private float wheel;
         private float mx;
         private float my;
@@ -28,7 +28,7 @@ namespace TaoTie
 
         protected override void DisposeInternal()
         {
-            entityCommon = null;
+            _actorCommon = null;
             angleOffsetX = default;
             angleOffsetY = default;
         }
@@ -43,7 +43,7 @@ namespace TaoTie
         
         private void LoadCommonConfig()
         {
-            entityCommon = null;
+            _actorCommon = null;
             if (state.follow != null)
             {
                 var ec = state.follow.GetComponent<EntityComponent>();
@@ -52,8 +52,8 @@ namespace TaoTie
                     var entityId = ec.Id;
                     if (SceneManager.Instance.CurrentScene is BaseMapScene map)
                     {
-                        var unit = map.GetManager<EntityManager>().Get<Unit>(entityId);
-                        entityCommon = unit.ConfigEntity.Common;
+                        var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
+                        _actorCommon = unit.configActor.Common;
                     }
                 }
             }
@@ -61,14 +61,14 @@ namespace TaoTie
         
         private void Calculating()
         {
-            if (state.follow != null && entityCommon != null)
+            if (state.follow != null && _actorCommon != null)
             { 
                 data.SphereQuaternion = Quaternion.Euler(new Vector3(angleOffsetY, angleOffsetX, 0));
                 data.Forward = state.follow.forward;
                 data.Up = state.follow.up;
 
                 data.Position = state.follow.position - data.SphereQuaternion * Vector3.forward * distance +
-                                data.Up * entityCommon.Height / 2;
+                                data.Up * _actorCommon.Height / 2;
             }
         }
 

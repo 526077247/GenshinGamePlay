@@ -4,13 +4,13 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ConfigEntity
+    public partial class ConfigActor
     {
         [NinoMember(7)]
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
         public string[] Abilities;
         [NinoMember(1)]
-        public ConfigEntityCommon Common;
+        public ConfigActorCommon Common;
         [NinoMember(3)]
         public ConfigCombat Combat;
         [NinoMember(4)]

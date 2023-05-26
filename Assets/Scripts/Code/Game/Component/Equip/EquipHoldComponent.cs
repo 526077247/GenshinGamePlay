@@ -54,7 +54,7 @@ namespace TaoTie
             var apt = equip.GetComponent<EquipComponent>().Config.EquipType;
             if (EquipType.TryParse(apt, out EquipType equipType))
             {
-                if((parent as Unit).ConfigEntity.EquipController.AttachPoints.TryGetValue(equipType,out var pointName))
+                if((parent as Actor).configActor.EquipController.AttachPoints.TryGetValue(equipType,out var pointName))
                 {
                     if (euips.TryGetValue(equipType, out var old))
                     {
@@ -73,7 +73,7 @@ namespace TaoTie
                     goh.EntityView.localRotation = Quaternion.identity;
                     return;
                 }
-                Log.Error((parent as Unit).Config.EntityConfig + " 未找到挂点: "+equipType);
+                Log.Error((parent as Actor).Config.ActorConfig + " 未找到挂点: "+equipType);
             }
             else
             {

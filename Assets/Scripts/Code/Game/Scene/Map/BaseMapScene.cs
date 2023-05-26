@@ -12,7 +12,7 @@ namespace TaoTie
         /// </summary>
         public long MyId;
 
-        public Unit Self => GetManager<EntityManager>().Get<Unit>(MyId);
+        public Actor Self => GetManager<EntityManager>().Get<Actor>(MyId);
 
         #endregion
         private UILoadingView win;

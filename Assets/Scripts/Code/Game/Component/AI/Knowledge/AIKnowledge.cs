@@ -8,7 +8,7 @@ namespace TaoTie
     /// </summary>
     public class AIKnowledge: IDisposable
     {
-        public Unit AiOwnerEntity; // 0x18
+        public Actor AiOwnerEntity; // 0x18
         public uint CampID;
         
         public Vector3 BornPos;
@@ -49,7 +49,7 @@ namespace TaoTie
         public AITacticKnowledge_MeleeCharge MeleeChargeTactic;
         public AITacticKnowledge_Flee FleeTactic;
         public AITacticKnowledge_Wander WanderTactic;
-        public void Init(Unit aiEntity, ConfigAIBeta config, AIManager aiManager)
+        public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
             this.AiManager = aiManager;
             AiOwnerEntity = aiEntity;

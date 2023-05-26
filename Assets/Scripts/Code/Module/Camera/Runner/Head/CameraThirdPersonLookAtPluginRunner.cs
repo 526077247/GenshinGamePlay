@@ -4,7 +4,7 @@ namespace TaoTie
 {
     public sealed class CameraThirdPersonLookAtPluginRunner: CameraHeadPluginRunner<ConfigCameraThirdPersonLookAtPlugin>
     {
-        private ConfigEntityCommon entityCommon;
+        private ConfigActorCommon _actorCommon;
         private float nearFocusOffset;
         protected override void InitInternal()
         {
@@ -19,7 +19,7 @@ namespace TaoTie
 
         protected override void DisposeInternal()
         {
-            entityCommon = null;
+            _actorCommon = null;
         }
         
         public override void OnSetTarget()
@@ -31,7 +31,7 @@ namespace TaoTie
         
         private void LoadCommonConfig()
         {
-            entityCommon = null;
+            _actorCommon = null;
             if (state.follow != null)
             {
                 var ec = state.follow.GetComponent<EntityComponent>();
@@ -40,8 +40,8 @@ namespace TaoTie
                     var entityId = ec.Id;
                     if (SceneManager.Instance.CurrentScene is BaseMapScene map)
                     {
-                        var unit = map.GetManager<EntityManager>().Get<Unit>(entityId);
-                        entityCommon = unit.ConfigEntity.Common;
+                        var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
+                        _actorCommon = unit.configActor.Common;
                     }
                 }
             }
@@ -51,9 +51,9 @@ namespace TaoTie
         {
             Vector3 dir;
             
-            if (entityCommon != null)
+            if (_actorCommon != null)
             {
-                data.LookAt += data.TargetUp * entityCommon.Height / 2;
+                data.LookAt += data.TargetUp * _actorCommon.Height / 2;
             }
             dir = data.LookAt - data.Position;
             if (dir == Vector3.zero)
@@ -74,7 +74,7 @@ namespace TaoTie
                     distance = Mathf.Clamp(distance, config.NearFocusMinDistance, config.NearFocusMaxDistance);
                     var progress = 1 - (distance - config.NearFocusMinDistance) /
                                   (config.NearFocusMaxDistance - config.NearFocusMinDistance);
-                    var offset =  progress * entityCommon.NearFocusOffsetHeight;
+                    var offset =  progress * _actorCommon.NearFocusOffsetHeight;
                     nearFocusOffset = Mathf.Lerp(nearFocusOffset, offset, 0.5f);
                     var offsetV3 = data.TargetUp * nearFocusOffset;
                     data.Position += offsetV3;

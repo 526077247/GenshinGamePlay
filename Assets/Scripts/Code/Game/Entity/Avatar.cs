@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 玩家
     /// </summary>
-    public class Avatar:Unit,IEntity<int>
+    public class Avatar:Actor,IEntity<int>
     {
         private long thirdCameraId;
         #region IEntity
@@ -18,16 +18,16 @@ namespace TaoTie
             CampId = CampConst.Player;
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
-            ConfigEntity = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
+            configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
             AddComponent<AttachComponent>();
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigEntity.Combat?.DefaultProperty);
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
             AddComponent<SkillComponent>();
             AddComponent<LocalInputController>();
             AddComponent<AvatarMoveComponent>();
-            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigEntity.Abilities);
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             AddComponent<EquipHoldComponent>();
             InitAsync().Coroutine();
@@ -54,7 +54,7 @@ namespace TaoTie
             {
                 CameraManager.Instance.Remove(ref thirdCameraId);
             }
-            ConfigEntity = null;
+            configActor = null;
             ConfigId = default;
             CampId = 0;
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class EntityEditor: BaseEditorWindow<ConfigEntity>
+    public class EntityEditor: BaseEditorWindow<ConfigActor>
     {
         protected override string folderPath => base.folderPath + "/Unit";
         
@@ -25,7 +25,7 @@ namespace TaoTie
         public static bool InitializeData(TextAsset asset,string path)
         {
             if (asset == null) return false;
-            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigEntity>(asset.text,out var entityJson))
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigActor>(asset.text,out var entityJson))
             {
                 var win = EditorWindow.GetWindow<EntityEditor>();
                 win.Init(entityJson,path,true);

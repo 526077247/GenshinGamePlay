@@ -53,7 +53,7 @@ namespace TaoTie
                 aiManager = scene.GetManager<AIManager>();
             }
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
-            knowledge.Init(GetParent<Unit>(), config, aiManager);
+            knowledge.Init(GetParent<Actor>(), config, aiManager);
             
             SensingUpdater.Init(knowledge);
             ThreatUpdater.Init(knowledge);

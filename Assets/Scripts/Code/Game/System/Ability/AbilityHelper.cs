@@ -70,7 +70,7 @@ namespace TaoTie
             }
         }
         
-        public static bool IsTarget(Unit self, Unit other, TargetType type)
+        public static bool IsTarget(Actor self, Actor other, TargetType type)
         {
             switch (type)
             {

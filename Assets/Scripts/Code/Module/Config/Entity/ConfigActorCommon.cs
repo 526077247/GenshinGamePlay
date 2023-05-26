@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ConfigEntityCommon
+    public partial class ConfigActorCommon
     {
         [NinoMember(1)][Tooltip("会影响相机机位")]
         public float Height = 1.5f;

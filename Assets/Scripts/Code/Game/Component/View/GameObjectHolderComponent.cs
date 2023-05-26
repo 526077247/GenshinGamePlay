@@ -90,7 +90,8 @@ namespace TaoTie
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
             ec.EntityType = unit.Type;
-            ec.CampId = unit.CampId;
+            if(unit is Actor actor)
+                ec.CampId = actor.CampId;
 
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;

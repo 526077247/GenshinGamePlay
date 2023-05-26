@@ -5,7 +5,7 @@ namespace TaoTie
     /// <summary>
     /// 做一些技能生成物、小动物、场景可交互物件什么的小工具
     /// </summary>
-    public class Gadget: Unit,IEntity<int,uint>,IEntity<int,GadgetState,uint>
+    public class Gadget: Actor,IEntity<int,uint>,IEntity<int,GadgetState,uint>
     {
         public override EntityType Type => EntityType.Gadget;
 
@@ -20,12 +20,12 @@ namespace TaoTie
             CampId = campId;
             var gadget = AddComponent<GadgetComponent,int,GadgetState>(id,state);
             ConfigId = gadget.Config.UnitId;
-            ConfigEntity = ResourcesManager.Instance.LoadConfig<ConfigEntity>(Config.EntityConfig);
+            configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigEntity.Combat?.DefaultProperty);
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent>();
-            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigEntity.Abilities);
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(gadget.Config.AIPath))
             {
@@ -34,7 +34,7 @@ namespace TaoTie
         }
         public void Destroy()
         {
-            ConfigEntity = null;
+            configActor = null;
             ConfigId = default;
             CampId = 0;
         }

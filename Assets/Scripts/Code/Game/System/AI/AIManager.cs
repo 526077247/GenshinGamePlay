@@ -10,16 +10,16 @@ namespace TaoTie
         private LinkedList<AIComponent> allAIUnit;
         private List<AIComponent> localAvatarAlertEnemies;
         private List<AIComponent> localAvatarAwareEnemies;
-        private Unit localAvatar;
+        private Actor localAvatar;
         private LocalInputController avatarInputController;
         /// <summary>
         /// [campId:[campId:Units]] campId（左）的敌对campId（右）
         /// </summary>
-        public UnOrderDoubleKeyDictionary<uint, uint, List<Unit>> aiEnemyEntityTable;
+        public UnOrderDoubleKeyDictionary<uint, uint, List<Actor>> aiEnemyEntityTable;
         /// <summary>
         /// [campId:Units]
         /// </summary>
-        private UnOrderMultiMap<uint, Unit> configIDEntityTable;
+        private UnOrderMultiMap<uint, Actor> configIDEntityTable;
         
         private Dictionary<string, long> publicCDs;
         #region IManager
@@ -29,8 +29,8 @@ namespace TaoTie
             scene = mapScene;
             localAvatar = scene.Self;
             avatarInputController = localAvatar.GetComponent<LocalInputController>();
-            configIDEntityTable = new UnOrderMultiMap<uint, Unit>();
-            aiEnemyEntityTable = new UnOrderDoubleKeyDictionary<uint, uint, List<Unit>>();
+            configIDEntityTable = new UnOrderMultiMap<uint, Actor>();
+            aiEnemyEntityTable = new UnOrderDoubleKeyDictionary<uint, uint, List<Actor>>();
             aiUnits = new Dictionary<long, AIComponent>();
             allAIUnit = new LinkedList<AIComponent>();
             localAvatarAlertEnemies = new List<AIComponent>();
@@ -61,7 +61,7 @@ namespace TaoTie
         {
             aiUnits.Add(aiComponent.Id,aiComponent);
             allAIUnit.AddLast(aiComponent);
-            var unit = aiComponent.GetParent<Unit>();
+            var unit = aiComponent.GetParent<Actor>();
             bool isNew = !configIDEntityTable.ContainsKey(unit.CampId);
             configIDEntityTable.Add(unit.CampId,unit);
             if (isNew)
@@ -79,7 +79,7 @@ namespace TaoTie
         
         public void RemoveAI(AIComponent aiComponent)
         {
-            var unit = aiComponent.GetParent<Unit>();
+            var unit = aiComponent.GetParent<Actor>();
             configIDEntityTable.Remove(unit.CampId,unit);
             localAvatarAwareEnemies.Remove(aiComponent);
             localAvatarAlertEnemies.Remove(aiComponent);
@@ -102,7 +102,7 @@ namespace TaoTie
                 publicCDs[pCDName] = GameTimerManager.Instance.GetTimeNow() + CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME;
         }
 
-        public Dictionary<uint, List<Unit>> GetEnemies(uint campID)
+        public Dictionary<uint, List<Actor>> GetEnemies(uint campID)
         {
             if(aiEnemyEntityTable.ContainsKey(campID))
                 return aiEnemyEntityTable[campID];

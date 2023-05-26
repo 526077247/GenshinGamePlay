@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public class Zone:Entity,IEntity
+    public class Zone: Unit,IEntity
     {
         #region IEntity
 
