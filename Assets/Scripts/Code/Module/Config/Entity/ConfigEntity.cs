@@ -6,7 +6,8 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigEntity
     {
-        [NinoMember(7)][ValueDropdown("@OdinDropdownHelper.GetAbilities()")]
+        [NinoMember(7)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
         public string[] Abilities;
         [NinoMember(1)]
         public ConfigEntityCommon Common;

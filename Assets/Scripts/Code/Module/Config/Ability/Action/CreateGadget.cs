@@ -21,7 +21,8 @@ namespace TaoTie
         public CheckGround checkGround;
         [NinoMember(16)]
         public int GadgetID;
-        [NinoMember(17)][ValueDropdown("@OdinDropdownHelper.GetCampTypeId()")]
+        [NinoMember(17)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
         public uint CampID;
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {

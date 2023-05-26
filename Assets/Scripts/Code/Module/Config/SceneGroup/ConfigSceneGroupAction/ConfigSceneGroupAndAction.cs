@@ -12,7 +12,7 @@ namespace TaoTie
     {
         [NinoMember(10)]
         [LabelText("条件")]
-        [TypeFilter("@OdinDropdownHelper.GetFilteredConditionTypeList(handleType)")]
+        [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]
         public ConfigSceneGroupCondition[] Conditions;
         [NinoMember(11)]
         [LabelText("所有条件都满足后执行")]
@@ -20,7 +20,7 @@ namespace TaoTie
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
 #endif
-        [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
+        [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(HandleType)+")")]
         public ConfigSceneGroupAction[] Success;
         [NinoMember(12)]
         [LabelText("任意一个条件不满足执行")]
@@ -28,7 +28,7 @@ namespace TaoTie
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
 #endif
-        [TypeFilter("@OdinDropdownHelper.GetFilteredActionTypeList(handleType)")]
+        [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(HandleType)+")")]
         public ConfigSceneGroupAction[] Fail;
 
 #if UNITY_EDITOR

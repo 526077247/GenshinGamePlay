@@ -22,11 +22,14 @@ namespace TaoTie
 #endif
         [NinoMember(1)][PropertyOrder(int.MinValue)]
         public int LocalId;
-        [NinoMember(2)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
+        [NinoMember(2)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
         public int[] Actors;
-        [NinoMember(3)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupZoneIds()")]
+        [NinoMember(3)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()",AppendNextDrawer = true)]
         public int[] Zones;
-        [NinoMember(4)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupTriggerIds()")]
+        [NinoMember(4)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupTriggerIds)+"()",AppendNextDrawer = true)]
         public int[] Triggers;
 #if UNITY_EDITOR
         [ShowIf(nameof(RandSuite))]

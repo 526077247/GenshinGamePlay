@@ -10,7 +10,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigEnterZoneEvtGetRegionEntityCountCondition : ConfigSceneGroupCondition<EnterZoneEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")]
+        [Tooltip(SceneGroupTooltips.CompareMode)][OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")] 
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]

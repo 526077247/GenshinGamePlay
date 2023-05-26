@@ -30,6 +30,7 @@ namespace TaoTie
                     }
                 }
             }
+            Debug.Log("导出完成");
         }
 
         private static string GenerateContent(Type type, FieldInfo fieldInfo,out string className)
@@ -47,16 +48,17 @@ namespace TaoTie
             sb.AppendLine("    [NinoSerialize]");
             sb.AppendLine($"    public partial class {className} : ConfigSceneGroupCondition<{type.Name}>");
             sb.AppendLine("    {");
-            sb.AppendLine("        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged(\"@CheckModeType(Value,Mode)\")] ");
+            sb.AppendLine("        [Tooltip(SceneGroupTooltips.CompareMode)]");
+            sb.AppendLine("        [OnValueChanged(\"@\"+nameof(CheckModeType)+\"(\"+nameof(Value)+\",\"+nameof(Mode)+\")\")]");
             sb.AppendLine("        [NinoMember(1)]");
             sb.AppendLine("        public CompareMode Mode;");
             sb.AppendLine("        [NinoMember(2)]");
             if(fieldInfo.GetCustomAttributes(typeof(SceneGroupZoneIdAttribute),false).Length!=0)
-                sb.AppendLine("        [ValueDropdown(\"@OdinDropdownHelper.GetSceneGroupZoneIds()\")]");
+                sb.AppendLine("        [ValueDropdown(\"@\"+nameof(OdinDropdownHelper)+\".\"+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+\"()\",AppendNextDrawer = true)]");
             if(fieldInfo.GetCustomAttributes(typeof(SceneGroupSuiteIdAttribute),false).Length!=0)
-                sb.AppendLine("        [ValueDropdown(\"@OdinDropdownHelper.GetSceneGroupSuiteIds()\")]");
+                sb.AppendLine("        [ValueDropdown(\"@\"+nameof(OdinDropdownHelper)+\".\"+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+\"()\",AppendNextDrawer = true)]");
             if(fieldInfo.GetCustomAttributes(typeof(SceneGroupActorIdAttribute),false).Length!=0)
-                sb.AppendLine("        [ValueDropdown(\"@OdinDropdownHelper.GetSceneGroupActorIds()\")]");
+                sb.AppendLine("        [ValueDropdown(\"@\"+nameof(OdinDropdownHelper)+\".\"+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+\"()\",AppendNextDrawer = true)]");
             sb.AppendLine($"        public {fieldInfo.FieldType.Name} Value;");
             sb.AppendLine();
             sb.AppendLine($"        public override bool IsMatch({type.Name} obj, SceneGroup sceneGroup)");

@@ -9,11 +9,12 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigEnterZoneEventZoneLocalIdCondition : ConfigSceneGroupCondition<EnterZoneEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)]
+        [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]
-        [ValueDropdown("@OdinDropdownHelper.GetSceneGroupZoneIds()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()",AppendNextDrawer = true)]
         public Int32 Value;
 
         public override bool IsMatch(EnterZoneEvent obj, SceneGroup sceneGroup)

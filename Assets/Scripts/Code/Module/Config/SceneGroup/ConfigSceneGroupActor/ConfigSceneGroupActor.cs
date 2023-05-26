@@ -18,7 +18,8 @@ namespace TaoTie
         public int LocalId;
         [NinoMember(2)]
         public Vector3 Position;
-        [NinoMember(3)][ValueDropdown("@OdinDropdownHelper.GetCampTypeId()")]
+        [NinoMember(3)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
         public uint CampId;
         
         public abstract Entity CreateActor(SceneGroup sceneGroup);

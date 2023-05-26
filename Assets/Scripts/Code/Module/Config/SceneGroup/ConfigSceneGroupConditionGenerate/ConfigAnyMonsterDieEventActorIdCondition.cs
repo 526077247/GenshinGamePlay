@@ -9,11 +9,12 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAnyMonsterDieEventActorIdCondition : ConfigSceneGroupCondition<AnyMonsterDieEvent>
     {
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@CheckModeType(Value,Mode)")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)]
+        [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]
-        [ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
         public Int32 Value;
 
         public override bool IsMatch(AnyMonsterDieEvent obj, SceneGroup sceneGroup)

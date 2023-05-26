@@ -9,7 +9,8 @@ namespace TaoTie
     {
         [NinoMember(10)]
         public int ConfigID;
-        [NinoMember(11)][ValueDropdown("@OdinDropdownHelper.GetSceneGroupRouteIds()")]
+        [NinoMember(11)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()")]
         public int RouteId;
         [NinoMember(12)][LabelText("延迟启动(ms)")][Tooltip("<0不启动；0立刻；>0延迟多久")]
         public int Delay;

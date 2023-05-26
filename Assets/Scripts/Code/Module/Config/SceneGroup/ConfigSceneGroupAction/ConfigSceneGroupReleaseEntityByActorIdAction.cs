@@ -10,7 +10,7 @@ namespace TaoTie
     public partial class ConfigSceneGroupReleaseEntityByActorIdAction:ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        [ValueDropdown("@OdinDropdownHelper.GetSceneGroupActorIds()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()")]
         public int ActorId;
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)

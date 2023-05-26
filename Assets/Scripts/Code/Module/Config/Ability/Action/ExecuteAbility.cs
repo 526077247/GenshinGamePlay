@@ -6,7 +6,8 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ExecuteAbility: ConfigAbilityAction
     {
-        [NinoMember(10)] [ValueDropdown("@OdinDropdownHelper.GetAbilities()")]
+        [NinoMember(10)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
         public string AbilityName;
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
