@@ -25,7 +25,7 @@ namespace FernRender.Material
         [Header("Face Right(Object Space)")] public FaceMeshAxisEnum rightEnum = FaceMeshAxisEnum.X;
 
         private static readonly int faceObjectToWorld = Shader.PropertyToID("_FaceObjectToWorld");
-        private new MeshRenderer renderer;
+        private new Renderer renderer;
         private MaterialPropertyBlock faceMaterialblock;
 
         private Vector3 forward;
@@ -33,7 +33,9 @@ namespace FernRender.Material
 
         private void OnEnable()
         {
-            renderer = GetComponent<MeshRenderer>();
+            renderer = GetComponent<SkinnedMeshRenderer>();
+            if(renderer==null)
+                renderer = GetComponent<MeshRenderer>();
             if (faceMaterialblock == null)
             {
                 faceMaterialblock = new MaterialPropertyBlock();

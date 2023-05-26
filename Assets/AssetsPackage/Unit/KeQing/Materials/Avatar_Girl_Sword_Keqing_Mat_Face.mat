@@ -23,20 +23,22 @@ Material:
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Face
   m_Shader: {fileID: 4800000, guid: 4466465ffd73f3e42bae37fdf7e6ed2e, type: 3}
   m_ValidKeywords:
-  - _CELLSHADING
   - _DEPTHSHADOW
   - _GGX
   - _OUTLINE
+  - _SDFFACE
   m_InvalidKeywords:
   - _DEPTHOFFSETSHADOWREVERSEX_ON
   - _IS_FILTER_LIGHTCOLOR_ON
+  - _SDFDIRECTIONREVERSAL_ON
   - _USEEMISSIONTEX
   - _USEHALFLAMBERT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -65,6 +67,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DissolveNoiseTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -73,8 +79,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _LightMap:
+    - _FaceLightMap:
         m_Texture: {fileID: 2800000, guid: b199365a0c3cfa84fa9f99df72742363, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -94,7 +104,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SDFFaceTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: b199365a0c3cfa84fa9f99df72742363, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ShadingMap01:
@@ -125,16 +135,19 @@ Material:
     - _BumpScale: 1
     - _CELLSmoothing: 0.001
     - _CELLThreshold: 0.416
+    - _CasterShadow: 1
     - _CellBandSoftness: 0.001
     - _CellBands: 1
     - _ClearCoat: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _ClearCoatTexSource: 0
+    - _ClearShading: 0
     - _Cull: 2
     - _Cutoff: 0.5
     - _DepthOffsetRimReverseX: 0
     - _DepthOffsetShadowReverseX: 0
+    - _DepthPrePass: 0
     - _DepthRimOffset: 0.01
     - _DepthRimThresoldOffset: 0.01
     - _DepthShadowOffset: 2
@@ -142,6 +155,7 @@ Material:
     - _DepthShadowThresoldOffset: 0.59
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DissolveThreshold: 0
     - _DstBlend: 0
     - _EmissionColorAlbedoWeight: 0
     - _EnvironmentReflections: 1
@@ -149,6 +163,7 @@ Material:
     - _Glossiness: 0.31622776
     - _GlossyReflections: 1
     - _Is_Filter_LightColor: 1
+    - _Is_SDInPaint: 0
     - _LightDirectionObliqueWeight: 0.5
     - _LightIntensityClamp: 1
     - _Metallic: 0
@@ -165,14 +180,14 @@ Material:
     - _RimDirectionLightContribution: 1
     - _RimSoftness: 0.01
     - _RimThreshold: 0.2
-    - _SDFDirectionReversal: 0
-    - _SDFFaceArea: 0
-    - _SDFShadingSoftness: 0.3
+    - _SDFDirectionReversal: 1
+    - _SDFFaceArea: 45
+    - _SDFShadingSoftness: 0
     - _ScreenSpaceRimSoftness: 0.01
     - _ScreenSpaceRimThreshold: 0.01
     - _ScreenSpaceRimWidth: 0.01
     - _Shininess: 1
-    - _Smoothness: 0.365
+    - _Smoothness: 0.1
     - _SmoothnessTextureChannel: 0
     - _SpaceScreenVariant: 0.5
     - _SpecularAA: 0
@@ -183,22 +198,28 @@ Material:
     - _StylizedSpecularAlbedoWeight: 0
     - _StylizedSpecularSize: 0.1
     - _StylizedSpecularSoftness: 0.05
-    - _Surface: 4.44
+    - _Surface: 0
     - _UVSec: 0
     - _UseDepthShadow: 1
+    - _UseDissolveEffect: 0
     - _UseEmissionTex: 0
     - _UseHalfLambert: 1
     - _UseRadianceOcclusion: 0
     - _WorkflowMode: 1
+    - _ZOffset: 0
     - _ZWrite: 1
-    - _enum_diffuse: 0
+    - _enum_diffuse: 4
     - _enum_env: 1
+    - _enum_outline_color: 0
+    - _enum_outline_smoothed: 0
+    - _enum_outline_width: 0
     - _enum_rim: 0
     - _enum_specular: 1
     - _group: 0
     - _group1: 1
     - _groupAdditionLight: 1
     - _groupClearCoat: 1
+    - _groupDissolveSetting: 0
     - _groupEmission: 0
     - _groupEnvironment: 1
     - _groupLightDirectionOffset: 0
@@ -207,10 +228,11 @@ Material:
     - _groupShadingMask: 0
     - _groupShadowSetting: 1
     - _groupSpecular: 1
+    - _groupSurface: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _DarkColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighColor: {r: 1, g: 0.9346648, b: 0.9009434, a: 1}

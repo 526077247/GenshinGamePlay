@@ -2513,6 +2513,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9034702023826339209}
   - component: {fileID: 6029639232648675606}
+  - component: {fileID: 6786895990912390343}
   m_Layer: 6
   m_Name: Face
   m_TagString: Untagged
@@ -2591,6 +2592,20 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.07123007, y: 0.052874096, z: -0.000000603497}
     m_Extent: {x: 0.10310663, y: 0.06316023, z: 0.088355616}
   m_DirtyAABB: 0
+--- !u!114 &6786895990912390343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3048901045745512647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b042810c03c8a4fa30855ce8e21af1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  forwardEnum: 5
+  rightEnum: 0
 --- !u!1 &3092902788611440075
 GameObject:
   m_ObjectHideFlags: 0
@@ -6527,6 +6542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5623996288009155527}
   - component: {fileID: 5479916978203501558}
+  - component: {fileID: 8215980745287830013}
   m_Layer: 6
   m_Name: Face_Eye
   m_TagString: Untagged
@@ -6603,6 +6619,20 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.055475846, y: 0.0774672, z: -0.0000005289912}
     m_Extent: {x: 0.052581325, y: 0.03302461, z: 0.08221989}
   m_DirtyAABB: 0
+--- !u!114 &8215980745287830013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8494609274527487072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b042810c03c8a4fa30855ce8e21af1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  forwardEnum: 5
+  rightEnum: 0
 --- !u!1 &8507947797376056705
 GameObject:
   m_ObjectHideFlags: 0
