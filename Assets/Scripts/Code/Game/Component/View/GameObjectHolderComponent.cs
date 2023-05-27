@@ -40,11 +40,19 @@ namespace TaoTie
         private async ETTask LoadGameObjectAsync()
         {
             var unit = this.GetParent<Unit>();
-            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(unit.Config.Perfab);
-            if (this.IsDispose)
+            GameObject obj;
+            if (unit.ConfigId < 0)//约定小于0的id都是用空物体
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                return;
+                obj = new GameObject("Empty");
+            }
+            else
+            {
+                obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(unit.Config.Perfab);
+                if (this.IsDispose)
+                {
+                    GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                    return;
+                }
             }
 
             animator = obj.GetComponentInChildren<Animator>();
@@ -97,7 +105,6 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            // Messager.Instance.AddListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
@@ -126,7 +133,6 @@ namespace TaoTie
         {
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            // Messager.Instance.RemoveListener<Unit, bool>(Id, MessageId.ChangeTurnEvt, OnChangeTurn);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
@@ -134,7 +140,17 @@ namespace TaoTie
                 CrossFadeInFixedTime);
 
             if (EntityView != null)
-                GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
+            {
+                var unit = this.GetParent<Unit>();
+                if (unit.ConfigId < 0)
+                {
+                    GameObject.Destroy(EntityView.gameObject);
+                }
+                else
+                {
+                    GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
+                }
+            }
             while (waitFinishTask.TryDequeue(out var task))
             {
                 task.SetResult();
@@ -159,18 +175,6 @@ namespace TaoTie
         {
             EntityView.rotation = unit.Rotation;
         }
-
-        // public void OnChangeTurn(Unit unit, bool old)
-        // {
-        //     GameObject obj = GetCollectorObj<GameObject>("Obj");
-        //     if (obj)
-        //     {
-        //         if ((unit.IsTurn && obj.transform.localScale.x > 0) || (!unit.IsTurn && obj.transform.localScale.x < 0))
-        //         {
-        //             obj.transform.localScale = new Vector3(-obj.transform.localScale.x, obj.transform.localScale.y, obj.transform.localScale.z);
-        //         }
-        //     }
-        // }
 
         public async ETTask WaitLoadGameObjectOver()
         {

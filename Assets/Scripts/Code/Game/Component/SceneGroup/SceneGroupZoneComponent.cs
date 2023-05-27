@@ -4,27 +4,80 @@ namespace TaoTie
 {
     public class SceneGroupZoneComponent: Component,IComponent<int,long>
     {
-        private int LocalId;
+        private int localId;
 
         private long sceneGroupId;
         private SceneGroup sceneGroup => parent.Parent.Get<SceneGroup>(sceneGroupId);
         
         private List<long> innerEntity;
+        private ColliderComponent colliderComponent;
         #region IComponent
 
         public void Init(int p1, long p2)
         {
-            LocalId = p1;
+            innerEntity = new List<long>();
+            localId = p1;
             sceneGroupId = p2;
+            var ghc = parent.GetComponent<GameObjectHolderComponent>();
+            colliderComponent = ghc.EntityView.GetComponent<ColliderComponent>();
+            if (colliderComponent == null)
+            {
+                colliderComponent = ghc.EntityView.gameObject.AddComponent<ColliderComponent>();
+            }
+            colliderComponent.OnEntityTrigger = OnEntityTrigger;
         }
 
         public void Destroy()
         {
+            if (colliderComponent != null)
+            {
+                colliderComponent.OnEntityTrigger = null;
+                colliderComponent = null;
+            }
             sceneGroupId = 0;
-            LocalId = 0;
+            localId = 0;
+            innerEntity = null;
         }
 
         #endregion
+
+        private void OnEntityTrigger(long id, bool isEnter)
+        {
+            if (isEnter)
+            {
+                if (!innerEntity.Contains(id))
+                {
+                    innerEntity.Add(id);
+                    Messager.Instance.Broadcast(sceneGroupId,MessageId.SceneGroupEvent,new EnterZoneEvent()
+                    {
+                        ZoneLocalId = localId,
+                        ZoneEntityId = Id,
+                        EntityId = id
+                    });
+                }
+                else
+                {
+                    Log.Error($"重复进入sceneGroupId{sceneGroupId} localId{localId} entityId{id}");
+                }
+            }
+            else
+            {
+                if (innerEntity.Contains(id))
+                {
+                    Messager.Instance.Broadcast(sceneGroupId,MessageId.SceneGroupEvent,new ExitZoneEvent()
+                    {
+                       ZoneLocalId = localId,
+                       ZoneEntityId = Id,
+                       EntityId = id
+                    });
+                    innerEntity.Remove(id);
+                }
+                else
+                {
+                    Log.Error($"重复离开 sceneGroupId{sceneGroupId} localId{localId} entityId{id}");
+                }
+            }
+        }
         
         public int GetRegionEntityCount(EntityType type)
         {

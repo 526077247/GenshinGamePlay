@@ -15,6 +15,12 @@ namespace TaoTie
         public override Zone CreateZone(SceneGroup sceneGroup)
         {
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
+            entity.Position = Position;
+            var ghc = entity.GetComponent<GameObjectHolderComponent>();
+            ghc.EntityView.gameObject.layer = LayerMask.NameToLayer("Entity");
+            var collider = ghc.EntityView.gameObject.AddComponent<SphereCollider>();
+            collider.isTrigger = true;
+            collider.radius = Radius;
             entity.AddComponent<SceneGroupZoneComponent, int, long>(LocalId, sceneGroup.Id);
             return entity;
         }
