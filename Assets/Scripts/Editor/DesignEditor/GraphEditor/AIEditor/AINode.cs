@@ -7,7 +7,7 @@ namespace TaoTie
 {
     public class AINode:Node
     {
-        protected override NodeView GetNodeView()
+        public override NodeView GetNodeView()
         {
             return new AINodeView();
         }

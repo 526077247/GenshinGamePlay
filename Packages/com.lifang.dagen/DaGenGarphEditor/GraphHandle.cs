@@ -1091,7 +1091,7 @@ namespace DaGenGraph.Editor
         protected virtual void AddNode(Node node)
         {
             if (node == null) return;
-            var nodeView = new NodeView();
+            var nodeView = node.GetNodeView();
             nodeView.Init(++m_Graph.windowID, node, m_Graph);
             m_NodeViews.Add(node.id, nodeView);
             if (!m_Graph.nodes.Values.ToList().Exists(n => n.id == node.id))

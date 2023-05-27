@@ -10,26 +10,19 @@ namespace DaGenGraph.Editor
 {
     public partial class GraphWindow : EditorWindow
     {
-        private static GraphWindow s_Instance;
-
-        public static T GetInstance<T>() where T : GraphWindow
+        public static GraphWindow initance;
+        
+        [MenuItem("Tools/DaGenGraph")]
+        public static void ShowAIGraph()
         {
-            if (s_Instance == null)
+            if (initance==null)
             {
-                s_Instance = CreateWindow<T>();
+                initance = CreateWindow<GraphWindow>();
+                initance.titleContent = new GUIContent("DaGenGraph");
             }
-
-            return s_Instance as T;
+            initance.Show();
         }
-
-
-        [MenuItem("DaGenGraph/Graph")]
-        public static void GetWindow()
-        {
-            GetInstance<GraphWindow>().titleContent = new GUIContent("DaGenGraph");
-            GetInstance<GraphWindow>().Show();
-        }
-
+        
         protected Graph m_Graph;
         private GraphMode m_Mode = GraphMode.None;
         private float m_Timer;
@@ -192,7 +185,7 @@ namespace DaGenGraph.Editor
             var count = 0;
             foreach (var node in m_Graph.nodes.Values)
             {
-                var nodeView = new NodeView();
+                var nodeView = node.GetNodeView();
                 nodeView.Init(count++, node, m_Graph);
                 m_NodeViews.Add(nodeView.node.id, nodeView);
             }

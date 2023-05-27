@@ -7,11 +7,17 @@ namespace TaoTie
 {
     public class AIGraphWindow : GraphWindow
     {
-        [MenuItem("Tool/AiGraph")]
-        public static void GetAIGraphWindow()
+        public static AIGraphWindow initance;
+        
+        [MenuItem("Tools/AiGraph")]
+        public static void ShowAIGraph()
         {
-            GetInstance<AIGraphWindow>().titleContent = new GUIContent("AI");
-            GetInstance<AIGraphWindow>().Show();
+            if (initance==null)
+            {
+                initance = CreateWindow<AIGraphWindow>();
+                initance.titleContent = new GUIContent("AI");
+            }
+            initance.Show();
         }
 
         protected override void ShowGraphContextMenu()

@@ -187,7 +187,7 @@ namespace DaGenGraph
 
         #region Protected  Methods
 
-        protected virtual NodeView GetNodeView()
+        public virtual NodeView GetNodeView()
         {
             return new NodeView();
         }
