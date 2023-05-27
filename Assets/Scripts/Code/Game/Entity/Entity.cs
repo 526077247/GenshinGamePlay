@@ -16,9 +16,6 @@ namespace TaoTie
         {
             if (IsDispose) return;
             IsDispose = true;
-            (this as IEntityDestroy)?.Destroy();
-            Parent?.Remove(this);
-            Parent = null;
             foreach (var item in Components)
             {
                 (item.Value as IComponentDestroy)?.Destroy();
@@ -27,6 +24,9 @@ namespace TaoTie
 
             Components.Dispose();
             Components = null;
+            (this as IEntityDestroy)?.Destroy();
+            Parent?.Remove(this);
+            Parent = null;
             CreateTime = 0;
             ObjectPool.Instance.Recycle(this);
         }

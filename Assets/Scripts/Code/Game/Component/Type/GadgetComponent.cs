@@ -8,6 +8,7 @@ namespace TaoTie
         public int ConfigId { get; private set; }
         public GadgetConfig Config => GadgetConfigCategory.Instance.Get(ConfigId);
         public event Action<GadgetState, GadgetState> onGadgetStateChange;
+        private FsmComponent fsmComponent => parent.GetComponent<FsmComponent>();
         #region IComponent
         public void Init(int p1,GadgetState state)
         {
@@ -33,6 +34,7 @@ namespace TaoTie
         {
             var oldState = GadgetState;
             GadgetState = state;
+            fsmComponent.SetData(FSMConst.GadgetState,(int)state);
             onGadgetStateChange?.Invoke(oldState,state);
         }
     }

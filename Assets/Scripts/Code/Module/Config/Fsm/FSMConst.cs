@@ -8,5 +8,6 @@
         public const string MotionFlag = "MotionFlag";
         public const string Shake = "Shake";
         public const string ShowWeapon = "ShowWeapon";
+        public const string GadgetState = "GadgetState";
     }
 }

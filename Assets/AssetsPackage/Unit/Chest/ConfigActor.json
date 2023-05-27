@@ -1,0 +1,1 @@
+{"_t":"TaoTie.ConfigActor","Abilities":[],"Common":{"_t":"TaoTie.ConfigActorCommon","Height":0.5,"ModelHeight":0.5,"Scale":0.5,"NearFocusOffsetHeight":0},"Combat":{"_t":"TaoTie.ConfigCombat","DefaultProperty":[]},"Billboard":{"_t":"TaoTie.ConfigBillboard","Offset":{"x":0.0,"y":0.0,"z":0.0}},"Intee":{"_t":"TaoTie.ConfigIntee","Radius":0,"Height":0,"CheckInterval":0}}

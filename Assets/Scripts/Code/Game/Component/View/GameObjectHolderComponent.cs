@@ -98,8 +98,11 @@ namespace TaoTie
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
             ec.EntityType = unit.Type;
-            if(unit is Actor actor)
+            if (unit is Actor actor)
+            {
                 ec.CampId = actor.CampId;
+                EntityView.localScale = Vector3.one * actor.configActor.Common.Scale;
+            }
 
             EntityView.position = unit.Position;
             EntityView.rotation = unit.Rotation;
@@ -151,12 +154,16 @@ namespace TaoTie
                     GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
                 }
             }
-            while (waitFinishTask.TryDequeue(out var task))
+
+            if (waitFinishTask != null)
             {
-                task.SetResult();
+                while (waitFinishTask.TryDequeue(out var task))
+                {
+                    task.SetResult();
+                }
+                waitFinishTask = null;
             }
 
-            waitFinishTask = null;
             if (animator != null)
             {
                 ResourcesManager.Instance.ReleaseAsset(animator.runtimeAnimatorController);

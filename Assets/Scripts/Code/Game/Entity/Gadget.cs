@@ -23,7 +23,8 @@ namespace TaoTie
             configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
-            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            var fsm = AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            fsm.SetData(FSMConst.GadgetState,(int)state);
             AddComponent<CombatComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);

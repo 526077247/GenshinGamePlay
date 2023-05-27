@@ -30,6 +30,10 @@ namespace TaoTie
                         _list.Add(item);
                         _dict[item.Id] = item;
                     }
+                    else
+                    {
+                        Log.Error("ConfigSceneGroup id重复 "+item.Id);
+                    }
                 }
                 op.Release();
             }
