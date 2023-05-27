@@ -1,0 +1,21 @@
+{
+    "name": "DaGenGraph",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Sirenix.OdinInspector.Editor.dll",
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.Serialization.Config.dll",
+        "Sirenix.Serialization.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

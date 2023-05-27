@@ -1,0 +1,15 @@
+{
+    "name": "DaGenGraphEditor",
+    "references": [
+        "GUID:b637e77054d21444096d4d4e5637ed30"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

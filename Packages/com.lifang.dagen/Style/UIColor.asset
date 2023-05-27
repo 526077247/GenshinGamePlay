@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d62153adfe14b47838b7e9be2b9ab2b, type: 3}
+  m_Name: UIColor
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  nodeGlowColor: {r: 1, g: 1, b: 1, a: 1}
+  nodeHeaderAndFooterBackgroundColor: {r: 0.745283, g: 0.745283, b: 0.745283, a: 1}
+  nodeBodyColor: {r: 0, g: 0.6603774, b: 0.6130958, a: 1}
+  nodeOutlineColor: {r: 1, g: 0, b: 0.51282024, a: 1}
+  nodePlayingOutlineColor: {r: 0, g: 1, b: 0.017543793, a: 1}
+  nodeHeaderIconColor: {r: 1, g: 1, b: 1, a: 1}
+  nodeDividerColor: {r: 0, g: 1, b: 0.3212328, a: 1}
+  portInputColor: {r: 0, g: 1, b: 0.025779486, a: 1}
+  portOutputColor: {r: 1, g: 0.058691405, b: 0, a: 1}
+  edgeInputColor: {r: 0.25207186, g: 0, b: 1, a: 1}
+  edgeOutputColor: {r: 1, g: 0, b: 0, a: 1}
+  edgeNormalColor: {r: 1, g: 1, b: 1, a: 1}

@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.lifang.dagen": {
+      "version": "file:com.lifang.dagen",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.thridparty.fernnpr": {
       "version": "file:com.thridparty.fernnpr",
       "depth": 0,
