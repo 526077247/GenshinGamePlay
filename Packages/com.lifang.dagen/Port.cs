@@ -101,7 +101,7 @@ namespace DaGenGraph
 
         #region Private Variables
         
-        [SerializeField] private Node m_Node;
+        [SerializeField] public Node m_Node;
         [SerializeField] private List<Edge> m_Edges;
         [SerializeField] private List<Vector2> m_EdgePoints;
         [SerializeField] private PortDirection m_Direction;
