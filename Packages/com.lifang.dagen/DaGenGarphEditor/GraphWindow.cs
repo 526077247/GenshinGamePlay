@@ -10,19 +10,19 @@ namespace DaGenGraph.Editor
 {
     public partial class GraphWindow : EditorWindow
     {
-        public static GraphWindow initance;
+        public static GraphWindow instance;
         
         [MenuItem("Tools/DaGenGraph")]
         public static void ShowAIGraph()
         {
-            if (initance==null)
+            if (instance==null)
             {
-                initance = CreateWindow<GraphWindow>();
-                initance.titleContent = new GUIContent("DaGenGraph");
+                instance = CreateWindow<GraphWindow>();
+                instance.titleContent = new GUIContent("DaGenGraph");
             }
-            initance.Show();
+            instance.Show();
         }
-        
+
         protected Graph m_Graph;
         private GraphMode m_Mode = GraphMode.None;
         private float m_Timer;
@@ -167,20 +167,15 @@ namespace DaGenGraph.Editor
             get { return m_NodeViews; }
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             m_AltKeyPressedAnimBool = new AnimBool(false, Repaint);
-            var graphAssets = AssetDatabase.FindAssets($"t:{typeof(Graph)}");
-            var sceneName = SceneManager.GetActiveScene().name;
-            foreach (var graphAsset in graphAssets)
-            {
-                var graph = AssetDatabase.LoadAssetAtPath<Graph>(AssetDatabase.GUIDToAssetPath(graphAsset));
-                if (graph.scene != sceneName) continue;
-                m_Graph = graph;
-                break;
-            }
+            Init(null);
+        }
 
-            m_Graph = m_Graph == null ? CreateInstance<Graph>() : m_Graph;
+        protected void Init(Graph graph)
+        {
+            m_Graph = graph == null ? CreateInstance<Graph>() : graph;
             m_NodeViews = new Dictionary<string, NodeView>();
             var count = 0;
             foreach (var node in m_Graph.nodes.Values)

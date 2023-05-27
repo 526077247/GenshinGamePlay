@@ -465,9 +465,9 @@ namespace DaGenGraph
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        public Port AddOutputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
+        public Port AddOutputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered,string name = "")
         {
-            return AddPort("", PortDirection.Output, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
+            return AddPort(name, PortDirection.Output, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
                 canBeReordered);
         }
 

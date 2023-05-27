@@ -94,7 +94,7 @@ namespace DaGenGraph.Editor
         
         protected virtual GraphWindow GetWindow()
         {
-            return GraphWindow.initance;
+            return GraphWindow.instance;
         }
 
         public virtual void Init(int windowId, Node node, Graph graph)

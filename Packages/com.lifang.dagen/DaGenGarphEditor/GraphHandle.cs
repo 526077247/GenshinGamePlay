@@ -319,13 +319,13 @@ namespace DaGenGraph.Editor
                     m_SelectedNodes.Add(m_CurrentHoveredNode);
                     ExecuteGraphAction(GraphAction.DeleteNodes);
                 });
-                menu.AddItem(new GUIContent("SetDefault"), false, () =>
-                {
-                    m_SelectedNodes.Clear();
-                    m_Graph.startNode = m_CurrentHoveredNode;
-                });
-                menu.AddItem(new GUIContent("AddOutputPort"), false,
-                    () => { m_CurrentHoveredNode.AddOutputPort("DefaultOutPutName", EdgeMode.Multiple, true, true); });
+                // menu.AddItem(new GUIContent("SetDefault"), false, () =>
+                // {
+                //     m_SelectedNodes.Clear();
+                //     m_Graph.startNode = m_CurrentHoveredNode;
+                // });
+                // menu.AddItem(new GUIContent("AddOutputPort"), false,
+                //     () => { m_CurrentHoveredNode.AddOutputPort("DefaultOutPutName", EdgeMode.Multiple, true, true); });
 
                 menu.ShowAsContext();
                 return;
@@ -1079,10 +1079,10 @@ namespace DaGenGraph.Editor
 
         #endregion
 
-        protected virtual Node CreateNode(Vector2 pos, string _name = "Node")
+        private Node CreateNode(Vector2 pos, string name = "Node")
         {
             var node = CreateInstance<Node>();
-            node.InitNode(m_Graph, WorldToGridPosition(pos), _name);
+            node.InitNode(m_Graph, WorldToGridPosition(pos), name);
             node.AddDefaultPorts();
             EditorUtility.SetDirty(node);
             return node;

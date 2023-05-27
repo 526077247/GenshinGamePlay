@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 namespace DaGenGraph
 {
-    [CreateAssetMenu(fileName = "UIGraph", menuName = "DaGenGraph/Graph", order = 0)]
     public class Graph : SerializedScriptableObject
     {
         [HideInInspector] public Vector2 currentPanOffset = Vector2.zero;
@@ -17,7 +16,7 @@ namespace DaGenGraph
         [HideInInspector] public int windowID;
         [HideInInspector] public string scene;
         [HideInInspector] public Node startNode;
-        public bool leftInRightOut;
+        public bool leftInRightOut = true;
         [SerializeField, HideInInspector] private string m_Guid;
         [SerializeField] public Dictionary<string, Node> nodes { private set; get; }
         private Node activeNode { get; set; }
