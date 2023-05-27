@@ -91,7 +91,7 @@ namespace DaGenGraph.Editor
             current.Use();
         }
 
-        private Vector2 WorldToGridPosition(Vector2 worldPosition)
+        protected Vector2 WorldToGridPosition(Vector2 worldPosition)
         {
             return (worldPosition - m_Graph.currentPanOffset) / m_Graph.currentZoom;
         }
@@ -335,7 +335,7 @@ namespace DaGenGraph.Editor
             current.Use();
         }
 
-        private void ShowGraphContextMenu()
+        protected virtual void ShowGraphContextMenu()
         {
             var current = Event.current;
             var menu = new GenericMenu();
@@ -1079,7 +1079,7 @@ namespace DaGenGraph.Editor
 
         #endregion
 
-        private Node CreateNode(Vector2 pos, string _name = "Node")
+        protected virtual Node CreateNode(Vector2 pos, string _name = "Node")
         {
             var node = CreateInstance<Node>();
             node.InitNode(m_Graph, WorldToGridPosition(pos), _name);
@@ -1088,7 +1088,7 @@ namespace DaGenGraph.Editor
             return node;
         }
 
-        private void AddNode(Node node)
+        protected virtual void AddNode(Node node)
         {
             if (node == null) return;
             var nodeView = new NodeView();
@@ -1108,7 +1108,7 @@ namespace DaGenGraph.Editor
             m_Graph.startNode = uiNode;
         }
 
-        public void RemovePort(Port port)
+        public  void RemovePort(Port port)
         {
             if (!m_Graph.nodes[port.nodeId].CanDeletePort(port)) return;
             DisconnectPort(port);

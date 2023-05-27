@@ -7,6 +7,7 @@ namespace DaGenGraph.Editor
 {
     public class NodeView
     {
+       
         #region Private Variables
 
         private Node m_Node;
@@ -90,10 +91,15 @@ namespace DaGenGraph.Editor
         #endregion
 
         #region Virtual Methods
+        
+        protected virtual GraphWindow GetWindow()
+        {
+            return GraphWindow.GetInstance<GraphWindow>();
+        }
 
         public virtual void Init(int windowId, Node node, Graph graph)
         {
-            node.deletePort = GraphWindow.instance.RemovePort;
+            node.deletePort = GetWindow().RemovePort;
             m_WindowId = windowId;
             m_Node = node;
             m_Graph = graph;
@@ -142,7 +148,7 @@ namespace DaGenGraph.Editor
             dividerColor.a = opacity * 0.8f;
 
             //check if we are in delete mode -> if true -> set the socket color to red (ONLY if the socket can be deleted)
-            if (GraphWindow.instance.altKeyPressed)
+            if (GetWindow().altKeyPressed)
             {
                 //since we're in delete mode and this socket can be deConnect -> set its color to red
                 if (port.isConnected)

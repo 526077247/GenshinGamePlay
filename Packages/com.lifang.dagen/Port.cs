@@ -101,6 +101,7 @@ namespace DaGenGraph
 
         #region Private Variables
         
+        [SerializeField] private Node m_Node;
         [SerializeField] private List<Edge> m_Edges;
         [SerializeField] private List<Vector2> m_EdgePoints;
         [SerializeField] private PortDirection m_Direction;
@@ -131,6 +132,8 @@ namespace DaGenGraph
             {
                 id=guid;
             }
+
+            m_Node = node;
             m_NodeId = node.id;
             m_PortName = portName;
             m_Direction = direction;
@@ -313,7 +316,7 @@ namespace DaGenGraph
             if (nodeId == other.nodeId) return false; //check that we are not connecting sockets on the same baseNode
             if (isInput && other.isInput) return false; //check that the sockets are not both input sockets
             if (isOutput && other.isOutput) return false; //check that the sockets are not both output sockets
-            return true;
+            return m_Node.CanConnect(other.m_Node);
         }
         
         /// <summary> Removes a edge with the given edge id from this Port </summary>

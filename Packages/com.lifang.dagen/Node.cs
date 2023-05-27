@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DaGenGraph.Editor;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -186,6 +187,16 @@ namespace DaGenGraph
 
         #region Protected  Methods
 
+        protected virtual NodeView GetNodeView()
+        {
+            return new NodeView();
+        }
+
+        public virtual bool CanConnect(Node target)
+        {
+            return true;
+        }
+        
         protected virtual void OnEnable()
         {
         }

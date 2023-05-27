@@ -10,29 +10,27 @@ namespace DaGenGraph.Editor
 {
     public partial class GraphWindow : EditorWindow
     {
-        internal static GraphWindow instance
+        private static GraphWindow s_Instance;
+
+        public static T GetInstance<T>() where T : GraphWindow
         {
-            get
+            if (s_Instance == null)
             {
-                if (s_Instance != null) return s_Instance;
-                var windows = Resources.FindObjectsOfTypeAll<GraphWindow>();
-                s_Instance = windows.Length > 0 ? windows[0] : null;
-                if (s_Instance != null) return s_Instance;
-                s_Instance = CreateWindow<GraphWindow>();
-                return s_Instance;
+                s_Instance = CreateWindow<T>();
             }
+
+            return s_Instance as T;
         }
 
-        private static GraphWindow s_Instance;
 
         [MenuItem("DaGenGraph/Graph")]
         public static void GetWindow()
         {
-            instance.titleContent = new GUIContent("DaGenGraph");
-            instance.Show();
+            GetInstance<GraphWindow>().titleContent = new GUIContent("DaGenGraph");
+            GetInstance<GraphWindow>().Show();
         }
 
-        private Graph m_Graph;
+        protected Graph m_Graph;
         private GraphMode m_Mode = GraphMode.None;
         private float m_Timer;
         private float m_LastUpdateTime;
@@ -71,15 +69,19 @@ namespace DaGenGraph.Editor
 
                         //check if the EdgeViews id has been added to the dictionary
                         if (!m_EdgeViews.ContainsKey(edge.id))
-                            m_EdgeViews.Add(edge.id, new EdgeView {edgeId = edge.id});
+                            m_EdgeViews.Add(edge.id, new EdgeView { edgeId = edge.id });
                         if (edge.inputPortId == port.id)
-                            m_EdgeViews[edge.id].inputPort = port; //reference this Prot if it is the EdgeViews's InputProt
+                            m_EdgeViews[edge.id].inputPort =
+                                port; //reference this Prot if it is the EdgeViews's InputProt
                         if (edge.inputNodeId == port.nodeId)
-                            m_EdgeViews[edge.id].inputNode = nodeViews[port.nodeId].node; //reference this Prot's parent as the InputNode
+                            m_EdgeViews[edge.id].inputNode =
+                                nodeViews[port.nodeId].node; //reference this Prot's parent as the InputNode
                         if (edge.outputPortId == port.id)
-                            m_EdgeViews[edge.id].outputPort = port; //reference this socket if it is the EdgeView's OutputProt
+                            m_EdgeViews[edge.id].outputPort =
+                                port; //reference this socket if it is the EdgeView's OutputProt
                         if (edge.outputNodeId == port.nodeId)
-                            m_EdgeViews[edge.id].outputNode = nodeViews[port.nodeId].node; //reference this Prot's parent as the OutputNode
+                            m_EdgeViews[edge.id].outputNode =
+                                nodeViews[port.nodeId].node; //reference this Prot's parent as the OutputNode
                     }
                 }
 
@@ -212,12 +214,13 @@ namespace DaGenGraph.Editor
                     if (evt.type == EventType.DragPerform)
                     {
                         DragAndDrop.AcceptDrag();
-                        OnGameObjectsDragIn(DragAndDrop.objectReferences.Cast<GameObject>().ToArray(), evt.mousePosition);
+                        OnGameObjectsDragIn(DragAndDrop.objectReferences.Cast<GameObject>().ToArray(),
+                            evt.mousePosition);
                     }
 
                     break;
             }
-            
+
             DrawViewGraph();
         }
 
@@ -311,7 +314,8 @@ namespace DaGenGraph.Editor
                             continue;
                         }
 
-                        virtualPoint.CalculateRect(); //recalculate the rect to reflect the new values (the new WorldPosition)
+                        virtualPoint
+                            .CalculateRect(); //recalculate the rect to reflect the new values (the new WorldPosition)
                     }
                 }
 
@@ -338,7 +342,8 @@ namespace DaGenGraph.Editor
                             continue;
                         }
 
-                        virtualPoint.CalculateRect(); //recalculate the rect to reflect the new values (the new WorldPosition)
+                        virtualPoint
+                            .CalculateRect(); //recalculate the rect to reflect the new values (the new WorldPosition)
                     }
                 }
 
@@ -358,7 +363,8 @@ namespace DaGenGraph.Editor
                     }
 
                     if (ev.inputNode.id != selectedNode.id && ev.outputNode.id != selectedNode.id) continue;
-                    CalculateConnectionCurve(ev); //recalculate the connection curve to reflect the new values (the new WorldPosition)
+                    CalculateConnectionCurve(
+                        ev); //recalculate the connection curve to reflect the new values (the new WorldPosition)
                 }
             }
 
@@ -510,15 +516,14 @@ namespace DaGenGraph.Editor
             //get position values needed to determine the connection points and curve settings
             var outputPortCenter = outputPortWorldRect.center.x;
             var inputPortCenter = inputPortWorldRect.center.x;
-            
+
             //get the closest virtual points for both Ports
             float minDistance = 100000;
             if (m_Graph.leftInRightOut)
             {
                 ev.outputVirtualPoint = outputVirtualPoints[1];
                 ev.inputVirtualPoint = inputVirtualPoints[0];
-                minDistance=Vector2.Distance(ev.outputVirtualPoint.rect.position, ev.inputVirtualPoint.rect.position);
-                
+                minDistance = Vector2.Distance(ev.outputVirtualPoint.rect.position, ev.inputVirtualPoint.rect.position);
             }
             else
             {
@@ -526,7 +531,8 @@ namespace DaGenGraph.Editor
                 {
                     foreach (var inputVirtualPoint in inputVirtualPoints)
                     {
-                        var currentDistance = Vector2.Distance(outputVirtualPoint.rect.position, inputVirtualPoint.rect.position);
+                        var currentDistance = Vector2.Distance(outputVirtualPoint.rect.position,
+                            inputVirtualPoint.rect.position);
                         if (currentDistance > minDistance) continue;
                         ev.outputVirtualPoint = outputVirtualPoint;
                         ev.inputVirtualPoint = inputVirtualPoint;
@@ -534,7 +540,7 @@ namespace DaGenGraph.Editor
                     }
                 }
             }
-            
+
             //set both the output and the input points as their respective tangents
             var zoomedPanOffset = m_Graph.currentPanOffset / m_Graph.currentZoom;
 
@@ -542,7 +548,9 @@ namespace DaGenGraph.Editor
             var inputPoint = ev.inputVirtualPoint.rect.position - zoomedPanOffset;
             var outputNodeWidth = ev.outputNode.GetWidth();
             var inputNodeWidth = ev.inputNode.GetWidth();
-            var widthDifference = outputNodeWidth > inputNodeWidth ? outputNodeWidth - inputNodeWidth : inputNodeWidth - outputNodeWidth;
+            var widthDifference = outputNodeWidth > inputNodeWidth
+                ? outputNodeWidth - inputNodeWidth
+                : inputNodeWidth - outputNodeWidth;
 
             ev.outputTangent = outputPoint + zoomedPanOffset;
             ev.inputTangent = inputPoint + zoomedPanOffset;
@@ -555,7 +563,8 @@ namespace DaGenGraph.Editor
 
             //OUTPUT RIGHT CONNECTION
             if (outputPortCenter < inputPortCenter && outputPortCenter <= inputPoint.x ||
-                outputPortCenter >= inputPortCenter && outputPoint.x >= inputPortCenter && outputPortCenter <= inputPoint.x)
+                outputPortCenter >= inputPortCenter && outputPoint.x >= inputPortCenter &&
+                outputPortCenter <= inputPoint.x)
             {
                 if (outputPoint.x <= inputPortCenter + widthDifference / 2 && inputPortCenter > outputPoint.x)
                 {

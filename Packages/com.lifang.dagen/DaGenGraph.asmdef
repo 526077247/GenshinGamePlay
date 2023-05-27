@@ -1,7 +1,9 @@
 {
     "name": "DaGenGraph",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:82c60e129e644f1a875828179b3e9c80"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
