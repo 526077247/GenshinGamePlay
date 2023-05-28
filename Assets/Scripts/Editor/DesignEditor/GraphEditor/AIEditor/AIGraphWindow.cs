@@ -91,7 +91,7 @@ namespace TaoTie
         {
             if (string.IsNullOrEmpty(path))
             {
-                path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage", "AIGraph", "asset");
+                path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/GraphAssets/AITree/", "AIGraph", "asset");
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
@@ -109,8 +109,91 @@ namespace TaoTie
         }
         private void Export()
         {
-            
-            
+            if (!string.IsNullOrEmpty(path))
+            {
+                var name = Path.GetFileNameWithoutExtension(this.path);
+                var path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "json");
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+
+                var jstr = JsonHelper.ToJson(Convert(m_Graph));
+                File.WriteAllText(path,jstr);
+            }
+            else
+            {
+                Log.Error("请先保存");   
+            }
+
+        }
+
+        private ConfigAIDecisionTree Convert(Graph graph)
+        {
+            ConfigAIDecisionTree res = null;
+            if (graph.startNode is AIRootNode node)
+            {
+                res = new ConfigAIDecisionTree();
+                res.Type = node.Type;
+                for (int i = 0; i < node.outputPorts.Count; i++)
+                {
+                    if (node.outputPorts[i].portName == "Root")
+                    {
+                        if (node.outputPorts[i].edges != null && node.outputPorts[i].edges.Count > 0)
+                        {
+                            res.Node = Convert(m_Graph.FindNode(node.outputPorts[i].edges[0].inputNodeId));
+                        }
+                    }
+                    else if (node.outputPorts[i].portName == "CombatRoot")
+                    {
+                        if (node.outputPorts[i].edges != null && node.outputPorts[i].edges.Count > 0)
+                        {
+                            res.CombatNode = Convert(m_Graph.FindNode(node.outputPorts[i].edges[0].inputNodeId));
+                        }
+                    }
+                }
+              
+            }
+
+            return res;
+        }
+        
+        
+        private DecisionNode Convert(Node aiNode)
+        {
+            if (aiNode is AIConditionNode cnode)
+            {
+                var res = new DecisionConditionNode();
+                res.Condition = cnode.Condition;
+                for (int i = 0; i < cnode.outputPorts.Count; i++)
+                {
+                    if (cnode.outputPorts[i].portName == "True")
+                    {
+                        if(cnode.outputPorts[i].edges!=null && cnode.outputPorts[i].edges.Count>0)
+                        {
+                            res.True = Convert(m_Graph.FindNode(cnode.outputPorts[i].edges[0].inputNodeId));
+                        }
+                        
+                    }
+                    else if (cnode.outputPorts[i].portName == "False")
+                    {
+                        if (cnode.outputPorts[i].edges != null && cnode.outputPorts[i].edges.Count > 0)
+                        {
+                            res.False = Convert(m_Graph.FindNode(cnode.outputPorts[i].edges[0].inputNodeId));
+                        }
+                    }
+                }
+                return res;
+            }
+            if (aiNode is AIActionNode anode)
+            {
+                var res = new DecisionActionNode();
+                res.Act = anode.Data.Act;
+                res.Tactic = anode.Data.Tactic;
+                res.Move = anode.Data.Move;
+                return res;
+            }
+            return null;
         }
     }
 }
