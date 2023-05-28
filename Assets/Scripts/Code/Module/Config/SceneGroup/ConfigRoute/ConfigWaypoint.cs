@@ -21,8 +21,8 @@ namespace TaoTie
         [ShowIf("@"+nameof(UseAnimMove))]
         [NinoMember(4)] public int SpeedLevel;
         [LabelText("移动速度（m/s）")]
-        [ShowIf("@!"+nameof(UseAnimMove))]
-        [NinoMember(5)] public float TargetVelocity;
+        [ShowIf("@!"+nameof(UseAnimMove))][MinValue(0.1f)]
+        [NinoMember(5)] public float TargetVelocity = 2;
 
         [LabelText("有最终抵达事件")]
         [NinoMember(6)] public bool HasReachEvent;

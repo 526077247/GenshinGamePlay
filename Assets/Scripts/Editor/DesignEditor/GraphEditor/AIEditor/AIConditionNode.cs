@@ -7,8 +7,8 @@ namespace TaoTie
 {
     public class AIConditionNode:Node
     {
-        [HideReferenceObjectPicker]
-        public DecisionConditionNode Data = new DecisionConditionNode();
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAIDecisionInterface)+"()")]
+        public string Condition;
         public override NodeView GetNodeView()
         {
             return new AINodeView();

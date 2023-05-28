@@ -83,12 +83,13 @@ namespace TaoTie
 
         public void Update()
         {
+            if(fsms==null) return;
             for (int i = 0; i < fsms.Length; i++)
             {
                 if (fsms[i] == null) continue; //可能在其他状态中entity被销毁了
                 fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
             }
-
+            if(triggers==null) return;
             for (int i = 0; i < triggers.Count; i++)
             {
                 triggers[i].SetValue(DynDictionary,false);

@@ -155,7 +155,7 @@ namespace TaoTie
 
 
         /// <summary>
-        /// 判断距离的平方
+        /// 判断角色靠近距离的平方
         /// </summary>
         private float _sqlAvatarTriggerEventDistance;
 
@@ -362,7 +362,7 @@ namespace TaoTie
                 var sceneGroupActor = unit.GetComponent<SceneGroupActorComponent>();
                 if (sceneGroupActor != null)
                 {
-                    Messager.Instance.Broadcast(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new PlatformReachPointEvt
+                    Messager.Instance.BroadcastNextFrame(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new PlatformReachPointEvt
                     {
                         ActorId = sceneGroupActor.LocalId,
                         RouteId = route.LocalId,
@@ -695,6 +695,7 @@ namespace TaoTie
                 }
 
                 _sqlArriveRange = this.route.ArriveRange * this.route.ArriveRange;
+                _sqlAvatarTriggerEventDistance = this.route.AvatarNearRange * this.route.AvatarNearRange;
                 if (this.route.RotAngleType == RotAngleType.ROT_ANGLE_X)
                 {
                     _axis = Vector3.forward;
@@ -708,7 +709,10 @@ namespace TaoTie
                     _axis = Vector3.left;
                 }
 
-                DelayStart(startDelay);
+                if (startDelay >= 0)
+                {
+                    DelayStart(startDelay);
+                }
             }
         }
 

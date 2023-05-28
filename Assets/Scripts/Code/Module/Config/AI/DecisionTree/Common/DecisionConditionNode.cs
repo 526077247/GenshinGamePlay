@@ -6,7 +6,8 @@ namespace TaoTie
     [NinoSerialize]
     public partial class DecisionConditionNode: DecisionNode
     {
-        [NinoMember(10)][ValueDropdown("@OdinDropdownHelper.GetAIDecisionInterface()")]
+        [NinoMember(10)]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAIDecisionInterface)+"()")]
         public string Condition;
         [NinoMember(11)][NotNull]
         public DecisionNode True;

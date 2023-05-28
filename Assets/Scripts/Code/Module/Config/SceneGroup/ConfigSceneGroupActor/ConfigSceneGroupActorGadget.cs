@@ -10,7 +10,7 @@ namespace TaoTie
         [NinoMember(10)]
         public int ConfigID;
         [NinoMember(11)]
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()", AppendNextDrawer = true)]
         public int RouteId;
         [NinoMember(12)][LabelText("延迟启动(ms)")][Tooltip("<0不启动；0立刻；>0延迟多久")]
         public int Delay;
@@ -20,10 +20,11 @@ namespace TaoTie
         public override Entity CreateActor(SceneGroup sceneGroup)
         {
             var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState, uint>(ConfigID,DefaultState,CampId);
+            entity.AddComponent<SceneGroupActorComponent, int, long>(LocalId, sceneGroup.Id);
             entity.Position = Position;
             if (sceneGroup.TryGetRoute(RouteId, out var route))
             {
-                var pmc = sceneGroup.AddComponent<PlatformMoveComponent, ConfigRoute>(route);
+                var pmc = entity.AddComponent<PlatformMoveComponent, ConfigRoute>(route);
                 if (Delay >= 0)
                 {
                     pmc.DelayStart(Delay);

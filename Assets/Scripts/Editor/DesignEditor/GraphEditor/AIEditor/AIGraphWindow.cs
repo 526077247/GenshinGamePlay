@@ -103,7 +103,8 @@ namespace TaoTie
             }
             else
             {
-                AssetDatabase.SaveAssets();
+                EditorUtility.SetDirty(m_Graph);
+                AssetDatabase.SaveAssetIfDirty(m_Graph);
             }
         }
         private void Export()

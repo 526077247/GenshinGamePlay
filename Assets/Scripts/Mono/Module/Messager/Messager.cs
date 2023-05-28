@@ -261,7 +261,16 @@ namespace TaoTie
                     await TimerManager.Instance.WaitAsync(1);
                     foreach (var item in evt)
                     {
-                        (item as Action<P1>)?.Invoke(p1);
+                        if (item is Action<P1> action)
+                        {
+                            action.Invoke(p1);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if(param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
+                                item.DynamicInvoke(p1);
+                        }
                     }
                 }
             }
