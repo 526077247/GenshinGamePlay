@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2395224567168844718}
   - component: {fileID: 2395224567168844719}
   m_Layer: 6
-  m_Name: Chest _Fx_D
+  m_Name: ChestLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

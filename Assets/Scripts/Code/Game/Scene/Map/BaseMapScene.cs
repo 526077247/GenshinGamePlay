@@ -78,9 +78,11 @@ namespace TaoTie
             RegisterManager<AIManager,BaseMapScene>(this);
 
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
-
-            await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath,UILayerNames.GameBackgroudLayer);
+            
+            await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath,UILayerNames.GameLayer);
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
+            var selfGhc = Self.GetComponent<GameObjectHolderComponent>();
+            await selfGhc.WaitLoadGameObjectOver();
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;
             Log.Info("进入场景 " + GetScenePath());

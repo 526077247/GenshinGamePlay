@@ -37,6 +37,7 @@ namespace TaoTie
         {
             var ghc = GetComponent<GameObjectHolderComponent>();
             await ghc.WaitLoadGameObjectOver();
+            if(ghc.IsDispose) return;
             if (thirdCameraId == 0)
             {
                 thirdCameraId = CameraManager.Instance.Create(GameConst.ThirdCameraConfigId);

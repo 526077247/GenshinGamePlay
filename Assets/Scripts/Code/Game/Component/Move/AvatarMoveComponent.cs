@@ -59,6 +59,7 @@ namespace TaoTie
         {
 	        var gh = parent.GetComponent<GameObjectHolderComponent>();
 	        await gh.WaitLoadGameObjectOver();
+	        if(gh.IsDispose) return;
 	        mover = gh.EntityView.GetComponent<Mover>();
 	        tr = gh.EntityView;
 	        cameraTransform = CameraManager.Instance.MainCamera().transform;

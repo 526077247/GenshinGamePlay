@@ -100,6 +100,7 @@ namespace TaoTie
         {
             GameObjectHolderComponent ghc = parent.GetComponent<GameObjectHolderComponent>();
             await ghc.WaitLoadGameObjectOver();
+            if(ghc.IsDispose) return;
             ghc.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
         }
         
@@ -115,6 +116,7 @@ namespace TaoTie
             {
                 coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
                 await ghc.WaitLoadGameObjectOver();
+                if(ghc.IsDispose) return;
                 var renders = ghc.EntityView.GetComponentsInChildren<Renderer>();
                 for (int i = 0; i < renders.Length; i++)
                 {

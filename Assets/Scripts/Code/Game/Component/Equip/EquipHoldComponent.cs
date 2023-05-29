@@ -64,14 +64,20 @@ namespace TaoTie
                     attachComponent.AddChild(equip);
                     equip.GetComponent<FsmComponent>()?.SetData(FSMConst.ShowWeapon,showWeaponState);
                     await gameObjectHolderComponent.WaitLoadGameObjectOver();
-                    var goh = equip.GetComponent<GameObjectHolderComponent>();
-                    await goh.WaitLoadGameObjectOver();
-                    var point = gameObjectHolderComponent.GetCollectorObj<Transform>(pointName);
-                    goh.EntityView.SetParent(point,false);
-                    goh.EntityView.localScale = Vector3.one;
-                    goh.EntityView.localPosition = Vector3.zero;
-                    goh.EntityView.localRotation = Quaternion.identity;
-                    return;
+                    if (!gameObjectHolderComponent.IsDispose)
+                    {
+                        var goh = equip.GetComponent<GameObjectHolderComponent>();
+                        await goh.WaitLoadGameObjectOver();
+                        if (!goh.IsDispose)
+                        {
+                            var point = gameObjectHolderComponent.GetCollectorObj<Transform>(pointName);
+                            goh.EntityView.SetParent(point, false);
+                            goh.EntityView.localScale = Vector3.one;
+                            goh.EntityView.localPosition = Vector3.zero;
+                            goh.EntityView.localRotation = Quaternion.identity;
+                            return;
+                        }
+                    }
                 }
                 Log.Error((parent as Actor).Config.ActorConfig + " 未找到挂点: "+equipType);
             }

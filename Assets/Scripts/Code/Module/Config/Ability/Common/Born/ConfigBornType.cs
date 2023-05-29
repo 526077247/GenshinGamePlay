@@ -16,5 +16,10 @@ namespace TaoTie
         public abstract Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);
 
         public abstract Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);
+
+        public virtual async ETTask AfterBorn(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target, Entity bornEntity)
+        {
+            await ETTask.CompletedTask;
+        }
     }
 }

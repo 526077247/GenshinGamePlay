@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent : Component, IComponent
+    public partial class GameObjectHolderComponent : Component, IComponent, IComponent<string>
     {
         [Timer(TimerType.DestroyEffect)]
         public class DestroyEffectTimer : ATimer<EffectInfo>
@@ -37,6 +37,10 @@ namespace TaoTie
             LoadGameObjectAsync().Coroutine();
         }
 
+        public void Init(string path)
+        {
+            LoadGameObjectAsync(path).Coroutine();
+        }
         private async ETTask LoadGameObjectAsync()
         {
             var unit = this.GetParent<Unit>();
@@ -97,8 +101,8 @@ namespace TaoTie
             var ec = obj.GetComponent<EntityComponent>();
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
-            ec.EntityType = unit.Type;
-            if (unit is Actor actor)
+            ec.EntityType = parent.Type;
+            if (parent is Actor actor)
             {
                 ec.CampId = actor.CampId;
                 EntityView.localScale = Vector3.one * actor.configActor.Common.Scale;
@@ -132,6 +136,64 @@ namespace TaoTie
             
         }
 
+        private async ETTask LoadGameObjectAsync(string path)
+        {
+            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(path);
+            if (this.IsDispose)
+            {
+                GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                return;
+            }
+            animator = obj.GetComponentInChildren<Animator>();
+            EntityView = obj.transform;
+            collector = obj.GetComponent<ReferenceCollector>();
+            EntityView.SetParent(this.parent.Parent.GameObjectRoot);
+            var ec = obj.GetComponent<EntityComponent>();
+            if (ec == null) ec = obj.AddComponent<EntityComponent>();
+            ec.Id = this.Id;
+            ec.EntityType = parent.Type;
+            if (parent is Actor actor)
+            {
+                ec.CampId = actor.CampId;
+                EntityView.localScale = Vector3.one * actor.configActor.Common.Scale;
+            }
+
+            if (parent is Unit unit)
+            {
+                EntityView.position = unit.Position;
+                EntityView.rotation = unit.Rotation;
+            }
+            else if (parent is Effect effect)
+            {
+                EntityView.position = effect.Position;
+                EntityView.rotation = effect.Rotation;
+            }
+
+            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
+            Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
+                CrossFadeInFixedTime);
+            Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
+            Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
+            Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            // var hud = unit.GetComponent<HudComponent>();
+            // if (hud != null)
+            // {
+            //     HudSystem hudSys = ManagerProvider.GetManager<HudSystem>();
+            //     hudSys?.ShowHeadInfo(hud.Info);
+            // }
+            if (waitFinishTask != null)
+            {
+                while (waitFinishTask.TryDequeue(out var task))
+                {
+                    task.SetResult();
+                }
+
+                waitFinishTask = null;
+            }
+        }
+
         public void Destroy()
         {
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
@@ -144,8 +206,7 @@ namespace TaoTie
 
             if (EntityView != null)
             {
-                var unit = this.GetParent<Unit>();
-                if (unit.ConfigId < 0)
+                if (parent is Unit unit && unit.ConfigId < 0)
                 {
                     GameObject.Destroy(EntityView.gameObject);
                 }
@@ -183,6 +244,9 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
         }
 
+        /// <summary>
+        /// 等待预制体加载完成，注意判断加载完之后Component是否已经销毁
+        /// </summary>
         public async ETTask WaitLoadGameObjectOver()
         {
             if (EntityView == null)

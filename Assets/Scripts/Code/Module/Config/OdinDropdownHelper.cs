@@ -272,6 +272,23 @@ namespace TaoTie
             }
             return list;
         }
+
+        /// <summary>
+        /// 获取所有Effect
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetEffects()
+        {
+            var files = AssetDatabase.FindAssets("t:Prefab",new []{"Assets/AssetsPackage/Effect"});
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            for (int i = 0; i < files.Length; i++)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(files[i]);
+
+                list.Add(Path.GetFileNameWithoutExtension(path));
+            }
+            return list;
+        }
         #endregion
 
         #region AI

@@ -8,7 +8,7 @@
         SceneGroup = 4,
         Zone = 5,
         Equip = 6,
-        
+        Effect = 7,
         
         MAX,
         ALL,

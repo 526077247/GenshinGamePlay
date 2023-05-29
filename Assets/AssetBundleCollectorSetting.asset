@@ -128,3 +128,10 @@ MonoBehaviour:
         PackRuleName: PackGroup
         FilterRuleName: CollectAll
         AssetTags: 
+      - CollectPath: Assets/AssetsPackage/Effect
+        CollectorGUID: 37d4fb95948cc8a429c6be93fbaefafd
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackTopDirectory
+        FilterRuleName: CollectPrefab
+        AssetTags: 
