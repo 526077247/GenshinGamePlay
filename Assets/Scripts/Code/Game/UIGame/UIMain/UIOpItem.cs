@@ -31,7 +31,9 @@ namespace TaoTie
 
 		public void SetData(ConfigInteeItem config, bool active)
 		{
-			
+			Active.SetActive(active);
+			Icon.SetActive(false);//Icon先屏蔽
+			Content.SetI18NKey(config.I18NKey, config.I18NParams);
 		}
 	}
 }

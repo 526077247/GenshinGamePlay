@@ -5,8 +5,9 @@
 ## 目前完成效果
 动画文件有点问题，但是不影响测试效果。模型来源 [模之屋](https://www.aplaybox.com/details/model/MmroYfxfeCtc)
 
-![Preview.gif](ReadMeRes%2FPreview.gif)
+![战斗技能.gif](ReadMeRes%2FPreview.gif)
 
+![寻宝解谜.gif](ReadMeRes%2FPreview2.gif)
 
 ## todo：
 1. 怪物AI
