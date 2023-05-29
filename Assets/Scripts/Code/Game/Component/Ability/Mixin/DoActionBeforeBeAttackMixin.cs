@@ -2,7 +2,7 @@
 {
     public class DoActionBeforeBeAttackMixin: AbilityMixin
     {
-        public ConfigDoActionBeforeBeAttackMixin ConfigDoAction => baseConfig as ConfigDoActionBeforeBeAttackMixin;
+        public ConfigDoActionBeforeBeAttackMixin Config => baseConfig as ConfigDoActionBeforeBeAttackMixin;
 
         private CombatComponent combatComponent;
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
@@ -18,11 +18,11 @@
 
         private void Execute(AttackResult result, CombatComponent other)
         {
-            if (ConfigDoAction.Actions != null)
+            if (Config.Actions != null)
             {
-                for (int i = 0; i < ConfigDoAction.Actions.Length; i++)
+                for (int i = 0; i < Config.Actions.Length; i++)
                 {
-                    ConfigDoAction.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, other.GetParent<Entity>());
+                    Config.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, other.GetParent<Entity>());
                 }
             }
         }

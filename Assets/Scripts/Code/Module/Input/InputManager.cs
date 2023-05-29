@@ -6,9 +6,9 @@ namespace TaoTie
 {
     public class InputManager : IManager, IUpdate
     {
-        private const int KeyDown = 1;
-        private const int KeyUp = 2;
-        private const int Key = 4;
+        public const int KeyDown = 1;
+        public const int KeyUp = 2;
+        public const int Key = 4;
         public static KeyCode[] Default = new KeyCode[(int) GameKeyCode.Max]
         {
             KeyCode.W,
@@ -16,6 +16,7 @@ namespace TaoTie
             KeyCode.A,
             KeyCode.D,
             KeyCode.Mouse0,
+            KeyCode.F,
         };
         
         public static InputManager Instance { get; private set; }
@@ -73,7 +74,12 @@ namespace TaoTie
                     if (Input.GetKey(key))
                         val += Key;
                 }
-                keyStatus[i] = val;
+
+                if (keyStatus[i] != val)
+                {
+                    keyStatus[i] = val;
+                    Messager.Instance.Broadcast(0, MessageId.OnKeyInput, i, val);
+                }
             }
 
             MouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");

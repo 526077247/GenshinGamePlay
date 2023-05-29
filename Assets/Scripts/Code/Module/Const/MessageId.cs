@@ -38,5 +38,9 @@
         public const int GameTimeEventTrigger = 16;
         /// <summary> 伤害飘字 </summary>
         public const int ShowDamageText = 17;
+        /// <summary> 交互面板 </summary>
+        public const int ShowIntee = 18;
+        /// <summary> 按键状态改变 </summary>
+        public const int OnKeyInput = 19;
     }
 }

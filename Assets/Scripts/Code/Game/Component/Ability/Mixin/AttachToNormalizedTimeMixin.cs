@@ -19,7 +19,7 @@ namespace TaoTie
                 }
             }
         }
-        public ConfigAttachToNormalizedTimeMixin ConfigAttachTo => baseConfig as ConfigAttachToNormalizedTimeMixin;
+        public ConfigAttachToNormalizedTimeMixin Config => baseConfig as ConfigAttachToNormalizedTimeMixin;
 
         private Fsm fsm;
         private bool hasAddModifier;
@@ -30,7 +30,7 @@ namespace TaoTie
         {
             base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
-            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.ConfigAttachTo.ChargeLayer);
+            fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.Config.ChargeLayer);
             abilityComponent = owner?.GetComponent<AbilityComponent>();
             if (fsm != null)
             {
@@ -40,12 +40,12 @@ namespace TaoTie
 
         private void OnStateChanged(string from, string to)
         {
-            if (from == ConfigAttachTo.ModifierName)
+            if (from == Config.ModifierName)
             {
                 GameTimerManager.Instance.Remove(ref timerId);
                 RemoveModifier();
             }
-            else if (to == ConfigAttachTo.ModifierName)
+            else if (to == Config.ModifierName)
             {
                 timerId = GameTimerManager.Instance.NewFrameTimer(TimerType.AttachToNormalizedTimeMixinUpdate, this);
             }
@@ -53,11 +53,11 @@ namespace TaoTie
 
         private void Update()
         {
-            if (fsm.stateNormalizedTime > ConfigAttachTo.normalizeStartRawNum)
+            if (fsm.stateNormalizedTime > Config.normalizeStartRawNum)
             {
                 ApplyModifier();
             }
-            else if (fsm.stateNormalizedTime > ConfigAttachTo.normalizeEndRawNum)
+            else if (fsm.stateNormalizedTime > Config.normalizeEndRawNum)
             {
                 RemoveModifier();
             }
@@ -67,16 +67,16 @@ namespace TaoTie
         {
             if (EvaluatePredicate())
             {
-                abilityComponent.ApplyModifier(owner.Id, actorAbility, ConfigAttachTo.ModifierName);
+                abilityComponent.ApplyModifier(owner.Id, actorAbility, Config.ModifierName);
                 hasAddModifier = true;
             }
         }
 
         private bool EvaluatePredicate()
         {
-            if (ConfigAttachTo.Predicate != null)
+            if (Config.Predicate != null)
             {
-                return ConfigAttachTo.Predicate.Evaluate(owner, actorAbility, actorModifier, owner);
+                return Config.Predicate.Evaluate(owner, actorAbility, actorModifier, owner);
             }
             return true;
         }
@@ -85,7 +85,7 @@ namespace TaoTie
         {
             if (hasAddModifier)
             {
-                abilityComponent.RemoveModifier(actorAbility.Config.AbilityName, ConfigAttachTo.ModifierName);
+                abilityComponent.RemoveModifier(actorAbility.Config.AbilityName, Config.ModifierName);
             }
 
             hasAddModifier = false;

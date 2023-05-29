@@ -12,7 +12,7 @@ namespace TaoTie
         [NinoMember(1)]
         public string ChargeLayer;
         [NinoMember(2)]
-        public HashSet<string> StateIDs;
+        public List<string> StateIDs;
         [NinoMember(3)]
         public ConfigAbilityPredicate EnterPredicate;
         [NinoMember(4)]

@@ -10,7 +10,7 @@ namespace TaoTie
     public partial class ConfigDoActionByGadgetStateMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]
-        public HashSet<GadgetState> StateIDs;
+        public List<GadgetState> StateIDs;
         [NinoMember(2)]
         public ConfigAbilityPredicate EnterPredicate;
         [NinoMember(3)]

@@ -220,7 +220,29 @@ namespace TaoTie
             }
             return list;
         }
-
+        /// <summary>
+        /// GadgetState
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetGadgetState()
+        {
+            var fields = typeof(GadgetState).GetFields();
+            ValueDropdownList<int> list = new ValueDropdownList<int>();
+            if (fields.Length > 0)
+            {
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    if (!fields[i].IsStatic)
+                    {
+                        continue;
+                    }
+                    var val = (int)fields[i].GetValue(null);
+                    list.Add($"{fields[i].Name}({val})", val);
+                }
+               
+            }
+            return list;
+        }
         /// <summary>
         /// 获取所有abilityName
         /// </summary>

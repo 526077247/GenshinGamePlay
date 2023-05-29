@@ -92,6 +92,7 @@ namespace TaoTie
             strBuilder.AppendLine("using System.Collections;")
                 .AppendLine("using System.Collections.Generic;")
                 .AppendLine("using System;")
+                .AppendLine("using SuperScrollView;")
                 .AppendLine("using UnityEngine;")
                 .AppendLine("using UnityEngine.UI;\r\n");
 

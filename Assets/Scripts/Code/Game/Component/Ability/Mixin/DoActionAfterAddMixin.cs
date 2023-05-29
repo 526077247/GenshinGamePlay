@@ -2,7 +2,7 @@
 {
     public class DoActionAfterAddMixin : AbilityMixin
     {
-        public ConfigDoActionAfterAddMixin ConfigDoAction => baseConfig as ConfigDoActionAfterAddMixin;
+        public ConfigDoActionAfterAddMixin Config => baseConfig as ConfigDoActionAfterAddMixin;
 
         public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
         {
@@ -20,11 +20,11 @@
 
         private void Execute()
         {
-            if (ConfigDoAction.Actions != null)
+            if (Config.Actions != null)
             {
-                for (int i = 0; i < ConfigDoAction.Actions.Length; i++)
+                for (int i = 0; i < Config.Actions.Length; i++)
                 {
-                    ConfigDoAction.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, null);
+                    Config.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, null);
                 }
             }
         }

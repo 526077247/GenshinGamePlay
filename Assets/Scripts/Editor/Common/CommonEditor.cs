@@ -31,7 +31,7 @@ namespace TaoTie
                 {
                     var names = ArtFolderNames;
                     selectPath.Replace("\\", "/");
-                    if (selectPath.Contains("UI/") || selectPath.Contains("UIHall/") || selectPath.Contains("UIGames/"))
+                    if (selectPath.Contains("UI/") || selectPath.Contains("UIHall/") || selectPath.Contains("UIGame/"))
                     {
                         names = UIFolderNames;
                     }

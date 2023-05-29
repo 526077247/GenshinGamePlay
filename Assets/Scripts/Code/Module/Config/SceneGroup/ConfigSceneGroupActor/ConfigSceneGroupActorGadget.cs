@@ -16,6 +16,7 @@ namespace TaoTie
         public int Delay;
 
         [NinoMember(13)] 
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
         public GadgetState DefaultState;
         public override Entity CreateActor(SceneGroup sceneGroup)
         {

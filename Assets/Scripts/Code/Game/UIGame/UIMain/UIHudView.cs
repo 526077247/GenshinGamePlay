@@ -4,12 +4,13 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.InteropServices;
+using Random = UnityEngine.Random;
 
 namespace TaoTie
 {
 	public class UIHudView : UIBaseView, IOnCreate, IOnEnable,IOnDisable, IUpdate
     {
-		public static string PrefabPath => "UIGame/UIBattle/Prefabs/UIHudView.prefab";
+		public static string PrefabPath => "UIGame/UIMain/Prefabs/UIHudView.prefab";
 		private  Queue<FightText> fightTexts = new();
 		private List<FightText>showFightTexts = new();
 		private long fightTextExpireTime = 1000;	//毫秒
@@ -54,7 +55,7 @@ namespace TaoTie
             FightText ft = fightTexts.Dequeue();
 			ft.SetActive(true);
 			long expire_time = GameTimerManager.Instance.GetTimeNow() + fightTextExpireTime;
-			ft.SetData(ar.FinalRealDamage, ar.HitInfo.HitPos,expire_time);
+			ft.SetData(ar.FinalRealDamage, ar.HitInfo.HitPos + Random.onUnitSphere / 10, expire_time);
 			showFightTexts.Add(ft);
         }
 	}

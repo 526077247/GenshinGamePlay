@@ -10,7 +10,8 @@
 
 ## todo：
 1. 怪物AI
-2. 二进制序列化多态支持
+2. 剧情演出
+3. 二进制序列化多态支持
 
 ## 导表工具
 打开 /Tools/ExcelExport/ExcelExport.sln 编译后可用

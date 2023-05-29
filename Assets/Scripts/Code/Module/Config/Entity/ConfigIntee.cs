@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Nino.Serialization;
+using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -14,8 +16,10 @@ namespace TaoTie
         [NinoMember(2)]
         public float Height;
         [NinoMember(3)]
-        public int CheckInterval;
+        public Vector3 Offset;
         [NinoMember(4)] 
-        public Dictionary<int, string[]> Params;
+        public ConfigInteeItem[] Params;
+        [NinoMember(5)] [LabelText("默认启用")]
+        public bool DefaultEnable;
     }
 }

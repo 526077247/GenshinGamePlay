@@ -18,7 +18,7 @@ namespace TaoTie
         public async ETTask OnInit(UIHudView uiHudView)
         {
             _uiHudView = uiHudView;
-            string res_path = "UIGame/UIBattle/Prefabs/UIFightText.prefab";
+            string res_path = "UIGame/UIMain/Prefabs/UIFightText.prefab";
             var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(res_path);
             rect = obj.GetComponent<RectTransform>();
             OnGameObjectLoad();

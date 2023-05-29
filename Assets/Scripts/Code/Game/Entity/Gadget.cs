@@ -21,6 +21,10 @@ namespace TaoTie
             var gadget = AddComponent<GadgetComponent,int,GadgetState>(id,state);
             ConfigId = gadget.Config.UnitId;
             configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
+            if (configActor.Intee != null)
+            {
+                AddComponent<InteeComponent, ConfigIntee>(configActor.Intee);
+            }
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             var fsm = AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
