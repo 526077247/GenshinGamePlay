@@ -45,30 +45,30 @@ namespace TaoTie
                 this.bgAutoFit =  this.GetGameObject().GetComponent<BgAutoFit>();
             }
         }
-        public async ETTask SetSpritePath(string sprite_path,bool setNativeSize = false)
+        public async ETTask SetSpritePath(string path,bool setNativeSize = false)
         {
             CoroutineLock coroutine = null;
             try
             {
                 coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.id);
-                if (sprite_path == this.spritePath) return;
+                if (path == this.spritePath) return;
                 this.ActivatingComponent();
                 if (this.bgAutoFit != null) this.bgAutoFit.enabled = false;
                 this.image.enabled = false;
-                var base_sprite_path = this.spritePath;
-                this.spritePath = sprite_path;
-                if (string.IsNullOrEmpty(sprite_path))
+                var baseSpritePath = this.spritePath;
+                this.spritePath = path;
+                if (string.IsNullOrEmpty(path))
                 {
                     this.image.sprite = null;
                     this.image.enabled = true;
                 }
                 else
                 {
-                    var sprite = await ImageLoaderManager.Instance.LoadImageAsync(sprite_path);
+                    var sprite = await ImageLoaderManager.Instance.LoadImageAsync(path);
                     this.image.enabled = true;
                     if (sprite == null)
                     {
-                        ImageLoaderManager.Instance.ReleaseImage(sprite_path);
+                        ImageLoaderManager.Instance.ReleaseImage(path);
                         return;
                     }
                     this.image.sprite = sprite;
@@ -80,8 +80,8 @@ namespace TaoTie
                         this.bgAutoFit.enabled = true;
                     }
                 }
-                if(!string.IsNullOrEmpty(base_sprite_path))
-                    ImageLoaderManager.Instance.ReleaseImage(base_sprite_path);
+                if(!string.IsNullOrEmpty(baseSpritePath))
+                    ImageLoaderManager.Instance.ReleaseImage(baseSpritePath);
             }
             finally
             {

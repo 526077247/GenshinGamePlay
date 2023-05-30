@@ -57,27 +57,15 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 21300000, guid: 60cfd84ae231a4943b3f0f6cf0dcf409, type: 3}
-    - {fileID: 21300000, guid: 040be0e474e09894ca320b08d9462cc8, type: 3}
-    - {fileID: 21300000, guid: 1258ac417dd158a48b05eeedb739c469, type: 3}
-    - {fileID: 21300000, guid: 28c51f93b6260224c867f45f411a0e85, type: 3}
-    - {fileID: 21300000, guid: fa9ec1936cfc1f24cb402d0cf8e46e82, type: 3}
+    - {fileID: 21300000, guid: 82cac846f8602ff469238d722598ee74, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 1258ac417dd158a48b05eeedb739c469, type: 3}
-  - {fileID: 21300000, guid: fa9ec1936cfc1f24cb402d0cf8e46e82, type: 3}
-  - {fileID: 21300000, guid: 28c51f93b6260224c867f45f411a0e85, type: 3}
-  - {fileID: 21300000, guid: 040be0e474e09894ca320b08d9462cc8, type: 3}
-  - {fileID: 21300000, guid: 60cfd84ae231a4943b3f0f6cf0dcf409, type: 3}
+  - {fileID: 21300000, guid: 82cac846f8602ff469238d722598ee74, type: 3}
   m_PackedSpriteNamesToIndex:
-  - Orange_gradient
-  - whiteblock
-  - Red_gradient
-  - Green_gradient
-  - Blue_gradient
+  - Chest
   m_RenderDataMap: {}
   m_Tag: Atlas
   m_IsVariant: 0

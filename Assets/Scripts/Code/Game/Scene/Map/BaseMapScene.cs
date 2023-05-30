@@ -47,12 +47,13 @@ namespace TaoTie
             RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
+            RemoveManager<HudSystem>();   
             RemoveManager<GameTimerManager>();
         }
 
         public async ETTask OnPrepare()
         {
-            await ETTask.CompletedTask;
+            await RegisterManager<HudSystem>().PreloadLoadAsset();
         }
 
         public async ETTask OnComplete()
@@ -71,7 +72,6 @@ namespace TaoTie
         public virtual async ETTask OnSwitchSceneEnd()
         {
             RegisterManager<GameTimerManager>();
-            
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();
@@ -79,7 +79,7 @@ namespace TaoTie
 
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
             
-            await UIManager.Instance.OpenWindow<UIHudView>(UIHudView.PrefabPath,UILayerNames.GameLayer);
+            await UIManager.Instance.OpenWindow<UIDamageView>(UIDamageView.PrefabPath,UILayerNames.GameLayer);
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
             var selfGhc = Self.GetComponent<GameObjectHolderComponent>();
             await selfGhc.WaitLoadGameObjectOver();

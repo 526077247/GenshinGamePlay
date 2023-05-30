@@ -264,5 +264,42 @@ namespace TaoTie
             if (collector == null) return null;
             return collector.Get<T>(name);
         }
+        
+        /// <summary>
+        /// 开启或关闭Renderer
+        /// </summary>
+        /// <param name="enable"></param>
+        public async ETTask EnableRenderer(bool enable)
+        {
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
+                await this.WaitLoadGameObjectOver();
+                if(this.IsDispose) return;
+                var renders = this.EntityView.GetComponentsInChildren<Renderer>();
+                for (int i = 0; i < renders.Length; i++)
+                {
+                    renders[i].enabled = enable;
+                }
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+            
+        }
+        
+        /// <summary>
+        /// 开启或关闭hitBox
+        /// </summary>
+        /// <param name="hitBox"></param>
+        /// <param name="enable"></param>
+        public async ETTask EnableHitBox(string hitBox, bool enable)
+        {
+            await this.WaitLoadGameObjectOver();
+            if(this.IsDispose) return;
+            this.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
+        }
     }
 }

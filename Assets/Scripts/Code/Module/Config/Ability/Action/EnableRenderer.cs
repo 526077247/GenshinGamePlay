@@ -9,10 +9,8 @@ namespace TaoTie
         public bool SetEnable;
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            
-            CombatComponent holderComponent = target.GetComponent<CombatComponent>();
+            GameObjectHolderComponent holderComponent = target.GetComponent<GameObjectHolderComponent>();
             holderComponent?.EnableRenderer(SetEnable).Coroutine();
-            
         }
     }
 }

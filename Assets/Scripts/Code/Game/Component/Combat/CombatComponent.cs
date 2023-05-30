@@ -8,6 +8,7 @@ namespace TaoTie
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget;
         public bool IsInCombat;
+        public DieStateFlag DieStateFlag;
         public virtual void Init()
         {
             attackTarget = new AttackTarget();
@@ -91,43 +92,15 @@ namespace TaoTie
             fsm.SetData(FSMConst.UseSkill, false);
             fsm.SetData(FSMConst.SkillId, 0);
         }
+
         /// <summary>
-        /// 开启或关闭hitBox
+        /// 被击杀
         /// </summary>
-        /// <param name="hitBox"></param>
-        /// <param name="enable"></param>
-        public async ETTask EnableHitBox(string hitBox, bool enable)
+        /// <param name="killerID"></param>
+        /// <param name="dieType"></param>
+        public void DoKill(long killerID, DieStateFlag dieType)
         {
-            GameObjectHolderComponent ghc = parent.GetComponent<GameObjectHolderComponent>();
-            await ghc.WaitLoadGameObjectOver();
-            if(ghc.IsDispose) return;
-            ghc.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
-        }
-        
-        /// <summary>
-        /// 开启或关闭Renderer
-        /// </summary>
-        /// <param name="enable"></param>
-        public async ETTask EnableRenderer(bool enable)
-        {
-            GameObjectHolderComponent ghc = parent.GetComponent<GameObjectHolderComponent>();
-            CoroutineLock coroutineLock = null;
-            try
-            {
-                coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
-                await ghc.WaitLoadGameObjectOver();
-                if(ghc.IsDispose) return;
-                var renders = ghc.EntityView.GetComponentsInChildren<Renderer>();
-                for (int i = 0; i < renders.Length; i++)
-                {
-                    renders[i].enabled = enable;
-                }
-            }
-            finally
-            {
-                coroutineLock?.Dispose();
-            }
-            
+            DieStateFlag = dieType;
         }
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5296216462975698380}
   - component: {fileID: 5296216462975698371}
   m_Layer: 5
-  m_Name: UIHudView
+  m_Name: UIDamageView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -13,7 +13,7 @@ namespace TaoTie
         {
             if (HitBoxNames != null)
             {
-                CombatComponent holderComponent = target.GetComponent<CombatComponent>();
+                GameObjectHolderComponent holderComponent = target.GetComponent<GameObjectHolderComponent>();
                 for (int i = 0; i < HitBoxNames.Length; i++)
                 {
                     holderComponent?.EnableHitBox(HitBoxNames[i], SetEnable).Coroutine();
