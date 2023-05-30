@@ -234,7 +234,6 @@ namespace TaoTie
 
         private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
         {
-            fsm.SetData(FSMConst.Die, true);
             if (configDie != null)
             {
                 var unit = GetParent<Unit>();
@@ -259,8 +258,9 @@ namespace TaoTie
                 }
                 
                 // 死亡动画
-                if (configDie.HasAnimatorDie && animator != null)
+                if (configDie.HasAnimatorDie)
                 {
+                    fsm?.SetData(FSMConst.Die, true);
                     delayRecycle = true;
                 }
                 
@@ -282,8 +282,12 @@ namespace TaoTie
                 }
                 else
                 {
-                    parent.Dispose();
+                    parent.DelayDispose(1);
                 }
+            }
+            else
+            {
+                parent.DelayDispose(1);
             }
         }
         #endregion

@@ -14,6 +14,8 @@ namespace TaoTie
 
         public bool TryGetParam(string key, out ConfigParam param)
         {
+            param = null;
+            if (ParamDict == null) return false;
             return this.ParamDict.TryGetValue(key, out param);
         }
 
