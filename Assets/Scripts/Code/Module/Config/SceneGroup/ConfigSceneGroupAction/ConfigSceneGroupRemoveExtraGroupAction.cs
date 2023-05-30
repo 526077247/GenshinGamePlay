@@ -10,7 +10,7 @@ namespace TaoTie
     public partial class ConfigSceneGroupRemoveExtraGroupAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        [ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
+        [ValueDropdown("@"+ nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
         public int GroupId;
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)

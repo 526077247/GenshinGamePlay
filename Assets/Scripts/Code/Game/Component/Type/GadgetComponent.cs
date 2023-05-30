@@ -36,6 +36,16 @@ namespace TaoTie
             GadgetState = state;
             fsmComponent.SetData(FSMConst.GadgetState,(int)state);
             onGadgetStateChange?.Invoke(oldState,state);
+            var sgac = parent.GetComponent<SceneGroupActorComponent>();
+            if (sgac != null)
+            {
+                Messager.Instance.Broadcast(sgac.SceneGroup.Id,MessageId.SceneGroupEvent,new GadgetStateChangeEvt()
+                {
+                    GadgetId = sgac.LocalId,
+                    OldState = oldState,
+                    State = state
+                });
+            }
         }
     }
 }

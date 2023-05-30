@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct EnterZoneEvent: IEventBase
+    public class EnterZoneEvent: IEventBase
     {
         public long EntityId;
         public long ZoneEntityId;

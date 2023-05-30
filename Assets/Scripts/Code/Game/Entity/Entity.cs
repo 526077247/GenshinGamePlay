@@ -5,17 +5,36 @@ namespace TaoTie
 {
     public abstract class Entity : IDisposable
     {
+        [Timer(TimerType.DelayDestroyEntity)]
+        public class DelayDestroyEntityTimer : ATimer<Entity>
+        {
+            public override void Run(Entity self)
+            {
+                try
+                {
+                    self.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"move timer error: {self.Id}\n{e}");
+                }
+            }
+        }
+        
         public long Id { get; private set; }
         public bool IsDispose { get; private set; }
         public EntityManager Parent { get; private set; }
         public abstract EntityType Type { get; }
         public long CreateTime { get; private set; }
+
+        private long delayDestroyTimerId;
         #region override
 
         public void Dispose()
         {
             if (IsDispose) return;
             IsDispose = true;
+            if (delayDestroyTimerId != 0) GameTimerManager.Instance.Remove(ref delayDestroyTimerId);
             foreach (var item in Components)
             {
                 (item.Value as IComponentDestroy)?.Destroy();
@@ -156,5 +175,12 @@ namespace TaoTie
         }
 
         #endregion
+
+        public void DelayDispose(long delay)
+        {
+            if (delayDestroyTimerId != 0) GameTimerManager.Instance.Remove(ref delayDestroyTimerId);
+            delayDestroyTimerId = GameTimerManager.Instance.NewOnceTimer(GameTimerManager.Instance.GetTimeNow() + delay,
+                TimerType.DelayDestroyEntity, this);
+        }
     }
 }

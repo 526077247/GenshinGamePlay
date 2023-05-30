@@ -21,8 +21,11 @@ namespace TaoTie
 
         public void Destroy()
         {
-            ParentEntity.Childs.Remove(Id);
-            for (int i = 0; i < Childs.Count; i++)
+            if (ParentEntity!=null && ParentEntity.Childs != null)
+            {
+                ParentEntity.Childs.Remove(Id);
+            }
+            for (int i = Childs.Count-1; i >=0; i--)
             {
                 var e = parent.Parent.Get<Entity>(Childs[i]);
                 var ac =  e.GetComponent<AttachComponent>();

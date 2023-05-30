@@ -7,7 +7,7 @@ namespace TaoTie
     {
         [NinoMember(1)][LabelText("Action目标")][BoxGroup("Common")]
         public AbilityTargetting Targetting;
-        [NinoMember(2)][ShowIf("@Targetting == AbilityTargetting.Other")][BoxGroup("Common")]
+        [NinoMember(2)][ShowIf(nameof(Targetting), AbilityTargetting.Other)][BoxGroup("Common")]
         public ConfigSelectTargets OtherTargets;
         [NinoMember(3)][BoxGroup("Common")]
         public ConfigAbilityPredicate Predicate;

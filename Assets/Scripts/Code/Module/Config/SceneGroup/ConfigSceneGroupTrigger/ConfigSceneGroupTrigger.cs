@@ -55,7 +55,7 @@ namespace TaoTie
             {
                 for (int i = 0; i < Actions.Length; i++)
                 {
-                    Actions[i].ExecuteAction(evt, sceneGroup);
+                    Actions[i].ExecuteAction(evt, sceneGroup, sceneGroup);
                 }
             }
         }

@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct VariableChangeEvent: IEventBase
+    public class VariableChangeEvent: IEventBase
     {
         public string Key;
         public float OldValue;

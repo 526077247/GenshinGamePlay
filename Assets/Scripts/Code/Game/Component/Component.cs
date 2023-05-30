@@ -36,7 +36,8 @@ namespace TaoTie
         }
         public void AfterDestroy()
         {
-            parent = null;
+            GameTimerManager.Instance?.Remove(ref timerId);
+            ObjectPool.Instance.Recycle(this);
         }
 
         public bool IsDispose { get; private set; }
@@ -51,8 +52,7 @@ namespace TaoTie
                 parent.RemoveComponent(GetType());
                 parent = null;
             }
-            GameTimerManager.Instance?.Remove(ref timerId);
-            ObjectPool.Instance.Recycle(this);
+            AfterDestroy();
         }
 
         public T GetParent<T>() where T : Entity

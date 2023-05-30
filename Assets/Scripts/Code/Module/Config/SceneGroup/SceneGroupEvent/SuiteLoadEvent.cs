@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct SuiteLoadEvent: IEventBase
+    public class SuiteLoadEvent: IEventBase
     {
         [SceneGroupSuiteId]
         public int SuiteId;

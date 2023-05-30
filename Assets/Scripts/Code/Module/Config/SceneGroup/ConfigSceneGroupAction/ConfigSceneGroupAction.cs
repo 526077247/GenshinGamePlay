@@ -27,7 +27,7 @@ namespace TaoTie
         [ShowIf(nameof(IsOtherSceneGroup))]
         [NinoMember(4)]
         public ulong OtherSceneGroupId;
-        public void ExecuteAction(IEventBase evt, SceneGroup sceneGroup)
+        public void ExecuteAction(IEventBase evt, SceneGroup sceneGroup, SceneGroup fromSceneGroup)
         {
             if (Disable)
             {
@@ -48,7 +48,7 @@ namespace TaoTie
                 }
             }
 
-            Execute(evt, aimSceneGroup, sceneGroup);
+            Execute(evt, aimSceneGroup, fromSceneGroup);
         }
 
         protected abstract void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup);

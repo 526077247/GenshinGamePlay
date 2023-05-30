@@ -96,6 +96,7 @@ namespace TaoTie
         
         private void ShowIntee(bool show)
         {
+            if(IsDispose) return;
             if (config.Params != null)
             {
                 for (int i = 0; i < config.Params.Length; i++)

@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class Effect : Entity, IEntity<string>
+    public class Effect : Entity, IEntity<string>,IEntity<string,long>
     {
         public override EntityType Type => EntityType.Effect;
 
@@ -45,7 +45,28 @@ namespace TaoTie
             EffectName = name;
             AddComponent<GameObjectHolderComponent, string>($"Effect/{name}/Prefabs/{name}.prefab");
         }
+        public void Init(string name, long delay)
+        {
+            EffectName = name;
+            string path = $"Effect/{name}/Prefabs/{name}.prefab";
+            if (delay <= 0)
+            {
+                AddComponent<GameObjectHolderComponent, string>(path);
+            }
+            else
+            {
+                GameObjectPoolManager.Instance.PreLoadGameObjectAsync(path,1).Coroutine();
+                InitViewAsync(path, delay).Coroutine();
+            }
+        }
 
+        private async ETTask InitViewAsync(string path, long delay)
+        {
+            await GameTimerManager.Instance.WaitAsync(delay);
+            if(IsDispose) return;
+            AddComponent<GameObjectHolderComponent, string>(path);
+        }
+        
         public void Destroy()
         {
             EffectName = null;

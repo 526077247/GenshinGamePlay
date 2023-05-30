@@ -76,14 +76,14 @@ namespace TaoTie
             {
                 for (int i = 0; i < (Success == null ? 0 : Success.Length); i++)
                 {
-                    Success[i]?.ExecuteAction(evt,aimSceneGroup);
+                    Success[i]?.ExecuteAction(evt,aimSceneGroup,fromSceneGroup);
                 }
             }
             else
             {
                 for (int i = 0; i < (Fail==null?0:Fail.Length); i++)
                 {
-                    Fail[i]?.ExecuteAction(evt,aimSceneGroup);
+                    Fail[i]?.ExecuteAction(evt,aimSceneGroup,fromSceneGroup);
                 }
             }
         }

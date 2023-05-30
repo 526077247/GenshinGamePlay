@@ -402,7 +402,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6351343577100320390}
   - component: {fileID: 266275259505563813}
-  - component: {fileID: 6773554592750754668}
   - component: {fileID: 1854206549681001422}
   m_Layer: 0
   m_Name: "\u72B6\u6001\u673A\u8F68\u9053"
@@ -443,25 +442,8 @@ MonoBehaviour:
   _active: 1
   _isLocked: 0
   _actionClips:
-  - {fileID: 6773554592750754668}
   - {fileID: 1854206549681001422}
   _customHeight: 300
---- !u!114 &6773554592750754668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5979032274250458980}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b2519f6607d41e1b8b0cac939bc1d45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startTime: 0.8333334
-  _animationData:
-    _animatedParameters: []
-  AbilityName: Chest_Open
 --- !u!114 &1854206549681001422
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -31,8 +31,14 @@
 
         public override void Dispose()
         {
-            actorAbility.afterAdd -= Execute;
-            actorModifier.afterAdd -= Execute;
+            if (actorModifier == null)
+            {
+                actorAbility.afterAdd -= Execute;
+            }
+            else
+            {
+                actorModifier.afterAdd -= Execute;
+            }
             base.Dispose();
         }
     }

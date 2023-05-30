@@ -14,6 +14,20 @@ namespace TaoTie
     {
         public abstract bool IsMatch(IEventBase obj, SceneGroup sceneGroup);
 
+        public bool IsMatch(Enum configValue, Enum evtValue, CompareMode mode)
+        {
+            switch (mode)
+            {
+                case CompareMode.Equal:
+                    return evtValue.Equals(configValue);
+                case CompareMode.NotEqual:
+                    return !evtValue.Equals(configValue);
+                default:
+                    Log.Error("Enum类型不支持" + mode);
+                    return false;
+            }
+        }
+        
         public bool IsMatch(int configValue, int evtValue, CompareMode mode)
         {
             switch (mode)

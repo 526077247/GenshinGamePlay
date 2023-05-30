@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct PlatformReachPointEvt: IEventBase
+    public class PlatformReachPointEvt: IEventBase
     {
         /// <summary>
         /// 靠近单位的actorid

@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct GameTimeChange: IEventBase
+    public class GameTimeChange: IEventBase
     {
         public long GameTimeNow;
     }

@@ -10,11 +10,11 @@ namespace TaoTie
     public partial class ConfigSceneGroupRestartPlatformMove : ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
         public int ActorId;
         
         [NinoMember(11)]
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()",AppendNextDrawer = true)]
         public int RouteId;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {

@@ -11,7 +11,8 @@ namespace TaoTie
     public partial class ConfigSceneGroupAddExtraGroupAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        [LabelText("要附加的组id")][ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
+        [LabelText("要附加的组id")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
         public int GroupId;
 
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)

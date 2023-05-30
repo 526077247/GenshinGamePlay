@@ -105,7 +105,7 @@ namespace TaoTie
             DieStateFlag = dieType;
             var myId = Id;
             Messager.Instance.Broadcast(myId, MessageId.OnBeKill, config?.Die, dieType);
-            parent.Dispose();
+            Dispose();
             if(killerID != myId)
                 Messager.Instance.Broadcast(killerID, MessageId.OnKill, myId);
         }

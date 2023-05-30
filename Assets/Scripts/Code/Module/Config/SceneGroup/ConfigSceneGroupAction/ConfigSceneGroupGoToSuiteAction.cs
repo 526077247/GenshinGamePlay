@@ -13,7 +13,7 @@ namespace TaoTie
     public partial class ConfigSceneGroupGoToSuiteAction:ConfigSceneGroupAction
     {
         [LabelText("要跳转的组Id")]
-        [ValueDropdown("@OdinDropdownHelper.GetSceneGroupSuiteIds()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
         [NinoMember(10)]
         public int SuiteId;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)

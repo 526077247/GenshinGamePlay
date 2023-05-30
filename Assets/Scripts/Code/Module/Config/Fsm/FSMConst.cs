@@ -9,5 +9,6 @@
         public const string Shake = "Shake";
         public const string ShowWeapon = "ShowWeapon";
         public const string GadgetState = "GadgetState";
+        public const string Die = "Die";
     }
 }

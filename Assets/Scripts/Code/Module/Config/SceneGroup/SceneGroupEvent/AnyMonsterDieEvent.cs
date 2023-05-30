@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public struct AnyMonsterDieEvent: IEventBase
+    public class AnyMonsterDieEvent: IEventBase
     {
         [SceneGroupActorId]
         public int ActorId;

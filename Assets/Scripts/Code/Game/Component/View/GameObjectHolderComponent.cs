@@ -211,7 +211,7 @@ namespace TaoTie
                 waitFinishTask = null;
             }
 
-            if (animator != null)
+            if (animator != null && animator.runtimeAnimatorController != null)
             {
                 ResourcesManager.Instance.ReleaseAsset(animator.runtimeAnimatorController);
                 animator = null;
@@ -234,31 +234,55 @@ namespace TaoTie
 
         private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
         {
+            fsm.SetData(FSMConst.Die, true);
             if (configDie != null)
             {
                 var unit = GetParent<Unit>();
+                if (unit == null) return;
+                bool delayRecycle = false;//模型是否还需要用到
                 //特效
                 if (!string.IsNullOrWhiteSpace(configDie.DieDisappearEffect))
                 {
-                    if (configDie.DieDisappearEffectDelay == 0)
-                    {
-                        var res = parent.Parent.CreateEntity<Effect, string>(configDie.DieDisappearEffect);
-                        res.Position = unit.Position;
-                        res.Rotation = unit.Rotation;
-                        GameTimerManager.Instance.NewOnceTimer(
-                            GameTimerManager.Instance.GetTimeNow() + configDie.DieEndTime,
-                            TimerType.DestroyEffect, res);
-                    }
+                    var res = parent.Parent.CreateEntity<Effect, string, long>(configDie.DieDisappearEffect, configDie.DieDisappearEffectDelay);
+                    res.Position = unit.Position;
+                    res.Rotation = unit.Rotation;
+                    parent.GetOrAddComponent<AttachComponent>().AddChild(res);
+                }
+
+                if (configDie.DieModelFadeDelay > 0)
+                {
+                    delayRecycle = true;
+                }
+                else
+                {
+                    configDie.DieModelFadeDelay = 0;
+                }
+                
+                // 死亡动画
+                if (configDie.HasAnimatorDie && animator != null)
+                {
+                    delayRecycle = true;
                 }
                 
                 //布娃娃系统
                 if (configDie.UseRagDoll)
                 {
+                    delayRecycle = true;
                 }
                 
                 // 消融
                 if (configDie.DieShaderData != ShaderData.None)
                 {
+                    delayRecycle = true;
+                }
+                
+                if (delayRecycle)
+                {
+                    parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
+                }
+                else
+                {
+                    parent.Dispose();
                 }
             }
         }

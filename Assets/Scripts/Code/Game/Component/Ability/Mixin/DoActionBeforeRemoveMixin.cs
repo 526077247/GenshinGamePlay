@@ -31,8 +31,14 @@
 
         public override void Dispose()
         {
-            actorAbility.beforeRemove -= Execute;
-            actorModifier.beforeRemove -= Execute;
+            if (actorModifier == null)
+            {
+                actorAbility.beforeRemove -= Execute;
+            }
+            else
+            {
+                actorModifier.beforeRemove -= Execute;
+            }
             base.Dispose();
         }
     }

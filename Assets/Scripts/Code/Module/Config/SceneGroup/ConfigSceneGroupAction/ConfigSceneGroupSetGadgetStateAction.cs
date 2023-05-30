@@ -10,7 +10,7 @@ namespace TaoTie
     public partial class ConfigSceneGroupSetGadgetStateAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
         public int ActorId;
         [NinoMember(11)]
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
