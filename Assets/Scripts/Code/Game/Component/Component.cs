@@ -34,9 +34,14 @@ namespace TaoTie
             if(this is IUpdate updater)
                 timerId = GameTimerManager.Instance.NewFrameTimer(TimerType.ComponentUpdate, updater);
         }
+        public void BeforeDestroy()
+        {
+            IsDispose = true;
+            GameTimerManager.Instance?.Remove(ref timerId);
+        }
         public void AfterDestroy()
         {
-            GameTimerManager.Instance?.Remove(ref timerId);
+            parent = null;
             ObjectPool.Instance.Recycle(this);
         }
 
@@ -45,12 +50,11 @@ namespace TaoTie
         public void Dispose()
         {
             if (IsDispose) return;
-            IsDispose = true;
+            BeforeDestroy();
             (this as IComponentDestroy)?.Destroy();
             if (parent != null)
             {
                 parent.RemoveComponent(GetType());
-                parent = null;
             }
             AfterDestroy();
         }

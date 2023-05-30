@@ -10,5 +10,7 @@ namespace TaoTie
         public string AttachPoint;
         [NinoMember(2)]
         public Vector3 Offset;
+        [NinoMember(3)]
+        public ConfigBillboardPlugin[] Plugins;
     }
 }

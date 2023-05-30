@@ -36,7 +36,8 @@ namespace TaoTie
             IsDispose = true;
             if (delayDestroyTimerId != 0) GameTimerManager.Instance.Remove(ref delayDestroyTimerId);
             foreach (var item in Components)
-            {
+            { 
+                (item.Value as Component)?.BeforeDestroy();
                 (item.Value as IComponentDestroy)?.Destroy();
                 (item.Value as Component)?.AfterDestroy();
             }
