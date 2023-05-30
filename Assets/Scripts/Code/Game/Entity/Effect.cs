@@ -5,6 +5,8 @@ namespace TaoTie
     public class Effect : Entity, IEntity<string>
     {
         public override EntityType Type => EntityType.Effect;
+
+        public string EffectName;
         
         private Vector3 position; //坐标
 
@@ -40,12 +42,13 @@ namespace TaoTie
 
         public void Init(string name)
         {
+            EffectName = name;
             AddComponent<GameObjectHolderComponent, string>($"Effect/{name}/Prefabs/{name}.prefab");
         }
 
         public void Destroy()
         {
-            
+            EffectName = null;
         }
     }
 }

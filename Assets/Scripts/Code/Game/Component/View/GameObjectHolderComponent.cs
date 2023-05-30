@@ -8,22 +8,6 @@ namespace TaoTie
 {
     public partial class GameObjectHolderComponent : Component, IComponent, IComponent<string>
     {
-        [Timer(TimerType.DestroyEffect)]
-        public class DestroyEffectTimer : ATimer<EffectInfo>
-        {
-            public override void Run(EffectInfo self)
-            {
-                try
-                {
-                    self.Dispose();
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"move timer error: {self.ConfigId}\n{e}");
-                }
-            }
-        }
-
         public Transform EntityView;
 
         private ReferenceCollector collector;
@@ -34,11 +18,13 @@ namespace TaoTie
 
         public void Init()
         {
+            Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             LoadGameObjectAsync().Coroutine();
         }
 
         public void Init(string path)
         {
+            Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             LoadGameObjectAsync(path).Coroutine();
         }
         private async ETTask LoadGameObjectAsync()
@@ -162,15 +148,15 @@ namespace TaoTie
             {
                 EntityView.position = unit.Position;
                 EntityView.rotation = unit.Rotation;
+                Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+                Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
             }
             else if (parent is Effect effect)
             {
                 EntityView.position = effect.Position;
                 EntityView.rotation = effect.Rotation;
             }
-
-            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
-            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            
             Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
@@ -203,7 +189,7 @@ namespace TaoTie
             Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
             Messager.Instance.RemoveListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
-
+            Messager.Instance.RemoveListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             if (EntityView != null)
             {
                 if (parent is Unit unit && unit.ConfigId < 0)
@@ -234,16 +220,49 @@ namespace TaoTie
 
         #endregion
 
-        public void OnChangePosition(Unit unit, Vector3 old)
+        #region Event
+        
+        private void OnChangePosition(Unit unit, Vector3 old)
         {
             EntityView.position = unit.Position;
         }
 
-        public void OnChangeRotation(Unit unit, Quaternion old)
+        private void OnChangeRotation(Unit unit, Quaternion old)
         {
             EntityView.rotation = unit.Rotation;
         }
 
+        private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
+        {
+            if (configDie != null)
+            {
+                var unit = GetParent<Unit>();
+                //特效
+                if (!string.IsNullOrWhiteSpace(configDie.DieDisappearEffect))
+                {
+                    if (configDie.DieDisappearEffectDelay == 0)
+                    {
+                        var res = parent.Parent.CreateEntity<Effect, string>(configDie.DieDisappearEffect);
+                        res.Position = unit.Position;
+                        res.Rotation = unit.Rotation;
+                        GameTimerManager.Instance.NewOnceTimer(
+                            GameTimerManager.Instance.GetTimeNow() + configDie.DieEndTime,
+                            TimerType.DestroyEffect, res);
+                    }
+                }
+                
+                //布娃娃系统
+                if (configDie.UseRagDoll)
+                {
+                }
+                
+                // 消融
+                if (configDie.DieShaderData != ShaderData.None)
+                {
+                }
+            }
+        }
+        #endregion
         /// <summary>
         /// 等待预制体加载完成，注意判断加载完之后Component是否已经销毁
         /// </summary>

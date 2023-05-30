@@ -3,14 +3,16 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class CombatComponent : Component, IComponent
+    public class CombatComponent : Component, IComponent<ConfigCombat>
     {
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget;
         public bool IsInCombat;
         public DieStateFlag DieStateFlag;
-        public virtual void Init()
+        private ConfigCombat config;
+        public virtual void Init(ConfigCombat config)
         {
+            this.config = config;
             attackTarget = new AttackTarget();
         }
 
@@ -101,6 +103,11 @@ namespace TaoTie
         public void DoKill(long killerID, DieStateFlag dieType)
         {
             DieStateFlag = dieType;
+            var myId = Id;
+            Messager.Instance.Broadcast(myId, MessageId.OnBeKill, config?.Die, dieType);
+            parent.Dispose();
+            if(killerID != myId)
+                Messager.Instance.Broadcast(killerID, MessageId.OnKill, myId);
         }
     }
 }

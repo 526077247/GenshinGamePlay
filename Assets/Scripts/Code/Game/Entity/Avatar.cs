@@ -23,7 +23,7 @@ namespace TaoTie
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
-            AddComponent<CombatComponent>();
+            AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             AddComponent<SkillComponent>();
             AddComponent<LocalInputController>();
             AddComponent<AvatarMoveComponent>();

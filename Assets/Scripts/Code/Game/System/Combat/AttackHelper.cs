@@ -110,7 +110,9 @@ namespace TaoTie
                 (result.IsCritical ? (result.BonusCriticalHurt + 1) : 1) + result.DamageExtra);
             Log.Info("最终伤害： "+result.FinalRealDamage);
             //修改血量
-            numD.Set(NumericType.HpBase, numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage);
+            var finalHp = numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage;
+            if (finalHp < 0) finalHp = 0;
+            numD.Set(NumericType.HpBase, finalHp);
             //破霸体
             if (result.EnBreak.TryGetValue(result.HitInfo.HitBoxType,out float value))
             {
@@ -119,6 +121,11 @@ namespace TaoTie
             
             combatD.AfterBeAttack(result, combatA);
             combatA.AfterAttack(result, combatD);
+
+            if (finalHp == 0)
+            {
+                combatD.DoKill(combatA.Id, DieStateFlag.None); //todo: State
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace TaoTie
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
-            AddComponent<CombatComponent>();
+            AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(monster.Config.AIPath))

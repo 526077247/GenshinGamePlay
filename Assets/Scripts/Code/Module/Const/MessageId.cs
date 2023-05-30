@@ -42,5 +42,9 @@
         public const int ShowIntee = 18;
         /// <summary> 按键状态改变 </summary>
         public const int OnKeyInput = 19;
+        /// <summary> 当被击杀 </summary>
+        public const int OnBeKill = 20;
+        /// <summary> 当击杀 </summary>
+        public const int OnKill = 21;
     }
 }

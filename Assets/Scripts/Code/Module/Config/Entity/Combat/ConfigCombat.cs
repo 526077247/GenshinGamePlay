@@ -7,11 +7,11 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigCombat
     {
-        [NinoMember(1)][LabelText("基础属性")]
+        [NinoMember(1)][LabelText("基础属性")] [BoxGroup("属性")]
         public ConfigCombatProperty[] DefaultProperty;
         
         #if UNITY_EDITOR
-        [Button("初始化")]
+        [Button("初始化")] [BoxGroup("属性")]
         private void Init()
         {
             var list = new List<int>();
@@ -38,5 +38,7 @@ namespace TaoTie
         }
         
         #endif
+        [NinoMember(2)]
+        public ConfigDie Die;
     }
 }

@@ -10,7 +10,15 @@ namespace TaoTie
         
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            target.GetComponent<CombatComponent>().DoKill(applier.Id, DieFlag);
+            var cc = target.GetComponent<CombatComponent>();
+            if (cc != null)
+            {
+                target.GetComponent<CombatComponent>().DoKill(applier.Id, DieFlag);
+            }
+            else
+            {
+                target.Dispose();
+            }
         }
     }
 }
