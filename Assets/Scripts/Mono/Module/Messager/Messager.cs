@@ -145,7 +145,8 @@ namespace TaoTie
             {
                 if (evts.TryGetValue(name, out var evt))
                 {
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action)?.Invoke();
                     }
@@ -159,7 +160,8 @@ namespace TaoTie
             {
                 if (evts.TryGetValue(name, out var evt))
                 {
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         if (item is Action<P1> action)
                         {
@@ -168,7 +170,7 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if(param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
+                            if (param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
                                 item.DynamicInvoke(p1);
                         }
                     }
@@ -182,7 +184,8 @@ namespace TaoTie
             {
                 if (evts.TryGetValue(name, out var evt))
                 {
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2>)?.Invoke(p1, p2);
                     }
@@ -196,7 +199,8 @@ namespace TaoTie
             {
                 if (evts.TryGetValue(name, out var evt))
                 {
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2, P3>)?.Invoke(p1, p2, p3);
                     }
@@ -210,7 +214,8 @@ namespace TaoTie
             {
                 if (evts.TryGetValue(name, out var evt))
                 {
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2, P3, P4>)?.Invoke(p1, p2, p3, p4);
                     }
@@ -224,7 +229,8 @@ namespace TaoTie
             {
                 if (evts.TryGetValue(name, out var evt))
                 {
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2, P3, P4, P5>)?.Invoke(p1, p2, p3, p4, p5);
                     }
@@ -244,7 +250,8 @@ namespace TaoTie
                 {
                     await TimerManager.Instance.WaitAsync(1);
 
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action)?.Invoke();
                     }
@@ -259,7 +266,8 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     await TimerManager.Instance.WaitAsync(1);
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         if (item is Action<P1> action)
                         {
@@ -268,7 +276,7 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if(param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
+                            if (param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
                                 item.DynamicInvoke(p1);
                         }
                     }
@@ -283,7 +291,8 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     await TimerManager.Instance.WaitAsync(1);
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2>)?.Invoke(p1, p2);
                     }
@@ -298,7 +307,8 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     await TimerManager.Instance.WaitAsync(1);
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2, P3>)?.Invoke(p1, p2, p3);
                     }
@@ -313,7 +323,8 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     await TimerManager.Instance.WaitAsync(1);
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2, P3, P4>)?.Invoke(p1, p2, p3, p4);
                     }
@@ -328,7 +339,8 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     await TimerManager.Instance.WaitAsync(1);
-                    foreach (var item in evt)
+                    using var list = ToList(evt);
+                    foreach (var item in list)
                     {
                         (item as Action<P1, P2, P3, P4, P5>)?.Invoke(p1, p2, p3, p4, p5);
                     }
@@ -337,5 +349,19 @@ namespace TaoTie
         }
 
         #endregion
+
+        public ListComponent<MulticastDelegate> ToList(HashSet<MulticastDelegate> set)
+        {
+            ListComponent<MulticastDelegate> res = ListComponent<MulticastDelegate>.Create();
+            if (set != null)
+            {
+                foreach (var item in set)
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
+        }
     }
 }

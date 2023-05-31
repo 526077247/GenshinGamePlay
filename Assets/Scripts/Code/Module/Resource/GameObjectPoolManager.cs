@@ -83,8 +83,7 @@ namespace TaoTie
         /// <summary>
 		/// 预加载一系列资源
 		/// </summary>
-		/// <param name="this"></param>
-		/// <param name="res"></param>
+        /// <param name="res"></param>
 		public async ETTask LoadDependency(List<string> res)
 		{
 			if (res.Count <= 0) return;

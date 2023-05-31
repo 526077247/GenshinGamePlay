@@ -200,6 +200,8 @@ namespace TaoTie
                 {
                     GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
                 }
+
+                EntityView = null;
             }
 
             if (waitFinishTask != null)
@@ -285,12 +287,12 @@ namespace TaoTie
                 }
                 else
                 {
-                    parent.DelayDispose(1);
+                    parent.Dispose();
                 }
             }
             else
             {
-                parent.DelayDispose(1);
+                parent.Dispose();
             }
         }
         #endregion
