@@ -36,6 +36,8 @@ namespace TaoTie
             {
                 AddComponent<AIComponent,ConfigAIBeta>(ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(gadget.Config.AIPath));
             }
+
+            AddComponent<BillboardComponent, ConfigBillboard>(configActor.Billboard);
         }
         public void Destroy()
         {

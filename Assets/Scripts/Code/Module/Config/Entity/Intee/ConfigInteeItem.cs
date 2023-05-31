@@ -1,7 +1,9 @@
 ﻿using LitJson.Extensions;
 using Nino.Serialization;
 using Sirenix.OdinInspector;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace TaoTie
