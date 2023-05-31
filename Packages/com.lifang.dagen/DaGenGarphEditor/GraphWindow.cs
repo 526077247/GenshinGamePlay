@@ -12,7 +12,7 @@ namespace DaGenGraph.Editor
     {
         public static GraphWindow instance;
         
-        [MenuItem("Tools/DaGenGraph")]
+        // [MenuItem("Tools/DaGenGraph")]
         public static void ShowAIGraph()
         {
             if (instance==null)

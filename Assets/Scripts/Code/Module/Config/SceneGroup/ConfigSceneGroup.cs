@@ -36,7 +36,8 @@ namespace TaoTie
         public bool RandSuite;
         [NinoMember(8)]
         [LabelText("初始组")]
-        [ShowIf("@!"+nameof(RandSuite))] [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
+        [ShowIf("@!"+nameof(RandSuite))]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
         public int InitSuite;
     }
 }
