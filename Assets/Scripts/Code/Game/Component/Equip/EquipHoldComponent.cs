@@ -15,7 +15,7 @@ namespace TaoTie
         public void Init()
         {
             euips = new Dictionary<EquipType, Equip>();
-            showWeaponState = parent.GetComponent<FsmComponent>().DefaultFsm.currentState.ShowWeapon;
+            showWeaponState = parent.GetComponent<FsmComponent>().DefaultFsm.CurrentState.ShowWeapon;
             Messager.Instance.AddListener<bool>(Id,MessageId.SetShowWeapon,SetShowWeapon);
         }
 
@@ -29,6 +29,7 @@ namespace TaoTie
         
         private void SetShowWeapon(bool show)
         {
+            if(IsDispose) return;
             showWeaponState = show;
             if (euips.TryGetValue(EquipType.Equip01,out var equip))
             {

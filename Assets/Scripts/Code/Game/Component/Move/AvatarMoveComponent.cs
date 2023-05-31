@@ -48,8 +48,8 @@ namespace TaoTie
         public void Init()
         {
 	        characterInput = new CharacterKeyboardInput();
-            canMove = FsmComponent.DefaultFsm.currentState.CanMove;
-            canTurn = FsmComponent.DefaultFsm.currentState.CanTurn;
+            canMove = FsmComponent.DefaultFsm.CurrentState.CanMove;
+            canTurn = FsmComponent.DefaultFsm.CurrentState.CanTurn;
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
             InitAsync().Coroutine();
@@ -93,11 +93,13 @@ namespace TaoTie
 
         private void SetCanMove(bool canMove)
         {
+	        if(IsDispose) return;
             this.canMove = canMove;
         }
 
         private void SetCanTurn(bool canTurn)
         {
+	        if(IsDispose) return;
             this.canTurn = canTurn;
         }
 

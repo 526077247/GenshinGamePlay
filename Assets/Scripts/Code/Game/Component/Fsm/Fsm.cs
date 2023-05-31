@@ -6,39 +6,40 @@ namespace TaoTie
 {
      public struct FsmTransitionInfo
      {
-         public string targetName;
-         public int layerIndex;
-         public float targetTime;
-         public float fadeDuration;
+         public string TargetName;
+         public int LayerIndex;
+         public float TargetTime;
+         public float FadeDuration;
      }
 
      public class Fsm : IDisposable
      {
-         protected FsmComponent _component;
-         private ConfigFsm _config;
+         public bool IsDispose { get; private set; }
+         protected FsmComponent component;
+         private ConfigFsm config;
 
-         private readonly Dictionary<string, FsmState> _stateDict = new Dictionary<string, FsmState>();
-         private FsmState _currentState;
-         private float _stateTime;
-         private float _stateNormalizedTime;
-         private float _stateElapseTime;
-         private float _statePassTime;
-         private FsmTransitionInfo _transitionInfo;
+         private readonly Dictionary<string, FsmState> stateDict = new Dictionary<string, FsmState>();
+         private FsmState currentState;
+         private float stateTime;
+         private float stateNormalizedTime;
+         private float stateElapseTime;
+         private float statePassTime;
+         private FsmTransitionInfo transitionInfo;
 
-         public string name => _config.Name;
-         public int layerIndex => _config.LayerIndex;
-         public FsmComponent Component => _component;
-         public ConfigFsm config => _config;
-         public FsmState currentState => _currentState;
-         public string currentStateName => _currentState?.Name;
-         public float statePassTime => _statePassTime;
-         public float stateTime => _stateTime;
-         public float stateNormalizedTime => _stateNormalizedTime;
+         public string Name => config.Name;
+         public int LayerIndex => config.LayerIndex;
+         public FsmComponent Component => component;
+         public ConfigFsm Config => config;
+         public FsmState CurrentState => currentState;
+         public string CurrentStateName => currentState?.Name;
+         public float StatePassTime => statePassTime;
+         public float StateTime => stateTime;
+         public float StateNormalizedTime => stateNormalizedTime;
 
-         public float stateElapseTime => _stateElapseTime;
+         public float StateElapseTime => stateElapseTime;
 
          public delegate void StateChangedDelegate(string from, string to);
-         public StateChangedDelegate onStateChanged;
+         public StateChangedDelegate OnStateChanged;
 
          public static Fsm Create(FsmComponent ctrl, ConfigFsm cfg)
          {
@@ -49,51 +50,52 @@ namespace TaoTie
 
          protected virtual void Init(FsmComponent ctrl, ConfigFsm cfg)
          {
-             _component = ctrl;
-             _config = cfg;
+             IsDispose = false;
+             component = ctrl;
+             config = cfg;
          }
 
          public void Start()
          {
-             ChangeState(_config.Entry);
+             ChangeState(config.Entry);
          }
 
          public void Update(float elapsetime)
          {
-             if (_currentState != null)
+             if (currentState != null)
              {
-                 var stateCfg = _currentState.Config;
+                 var stateCfg = currentState.Config;
 
-                 _stateElapseTime = elapsetime;
-                 _statePassTime += _stateElapseTime;
-                 _stateTime += _stateElapseTime;
-                 _stateNormalizedTime = _stateTime / stateCfg.StateDuration;
+                 stateElapseTime = elapsetime;
+                 statePassTime += stateElapseTime;
+                 stateTime += stateElapseTime;
+                 stateNormalizedTime = stateTime / stateCfg.StateDuration;
              }
 
-             if (_config.CheckAnyTransition(this, out var transition))
+             if (config.CheckAnyTransition(this, out var transition))
              {
                  ChangeState(transition.ToState, transition);
                  return;
              }
 
-             if (_currentState != null)
+             if (currentState != null)
              {
-                 if (_currentState.Config.CheckTransition(this, out transition))
+                 if (currentState.Config.CheckTransition(this, out transition))
                  {
                      ChangeState(transition.ToState, transition);
                      return;
                  }
 
-                 _currentState.OnUpdate();
+                 currentState.OnUpdate();
              }
          }
 
          public void ChangeState(string name, ConfigTransition transition = null)
          {
              ConfigFsmState toCfg = null;
-             if (!_stateDict.TryGetValue(name, out var toState))
+             if (!stateDict.TryGetValue(name, out var toState))
              {
-                 toCfg = _config.GetStateConfig(name);
+                 toCfg = config.GetStateConfig(name);
                  if (toCfg == null)
                  {
                      Log.Error("ChangeState Missing State {0}", name);
@@ -101,35 +103,35 @@ namespace TaoTie
                  }
 
                  toState = FsmState.Create(this, toCfg);
-                 _stateDict[name] = toState;
+                 stateDict[name] = toState;
              }
              else
              {
                  toCfg = toState.Config;
              }
 
-             var fromState = _currentState;
+             var fromState = currentState;
              var fromCfg = fromState?.Config;
              fromState?.OnExit();
 
              if (transition != null)
              {
-                 transition.OnApply(this, fromCfg, toCfg, ref _transitionInfo);
+                 transition.OnApply(this, fromCfg, toCfg, ref transitionInfo);
              }
              else
              {
-                 ConfigTransition.ApplyDefault(this, toCfg, ref _transitionInfo);
+                 ConfigTransition.ApplyDefault(this, toCfg, ref transitionInfo);
              }
 
-             Messager.Instance.Broadcast(_component.Id, MessageId.CrossFadeInFixedTime, _transitionInfo.targetName,
-                 _transitionInfo.fadeDuration, _transitionInfo.layerIndex, _transitionInfo.targetTime);
+             Messager.Instance.Broadcast(component.Id, MessageId.CrossFadeInFixedTime, transitionInfo.TargetName,
+                 transitionInfo.FadeDuration, transitionInfo.LayerIndex, transitionInfo.TargetTime);
              
-             _statePassTime = 0;
-             _stateTime = _transitionInfo.targetTime;
-             _stateNormalizedTime = _transitionInfo.targetTime / toCfg.StateDuration;
+             statePassTime = 0;
+             stateTime = transitionInfo.TargetTime;
+             stateNormalizedTime = transitionInfo.TargetTime / toCfg.StateDuration;
 
-             _currentState = toState;
-             _currentState.OnEnter();
+             currentState = toState;
+             currentState.OnEnter();
              transition?.OnPostApply(this);
 
              InvokeOnStateChanged(fromState, toState);
@@ -137,34 +139,36 @@ namespace TaoTie
 
          protected virtual void InvokeOnStateChanged(FsmState fromState, FsmState toState)
          {
-             if (onStateChanged != null)
-                 onStateChanged(fromState?.Name, toState.Name);
+             if (OnStateChanged != null)
+                 OnStateChanged(fromState?.Name, toState.Name);
              if (fromState == null||fromState.CanMove != toState.CanMove)
              {
-                 Messager.Instance.Broadcast(_component.Id, MessageId.SetCanMove, toState.CanMove);
+                 Messager.Instance.Broadcast(component.Id, MessageId.SetCanMove, toState.CanMove);
              }
              if (fromState == null || fromState.CanTurn != toState.CanTurn)
              {
-                 Messager.Instance.Broadcast(_component.Id, MessageId.SetCanTurn, toState.CanTurn);
+                 Messager.Instance.Broadcast(component.Id, MessageId.SetCanTurn, toState.CanTurn);
              }
              if (fromState == null || fromState.ShowWeapon != toState.ShowWeapon)
              {
-                 Messager.Instance.Broadcast(_component.Id, MessageId.SetShowWeapon, toState.ShowWeapon);
+                 Messager.Instance.Broadcast(component.Id, MessageId.SetShowWeapon, toState.ShowWeapon);
              }
          }
 
          public ConfigFsmState GetStateConfig(string stateName)
          {
-             return _config?.GetStateConfig(stateName);
+             return config?.GetStateConfig(stateName);
          }
 
          #region IDisposable
          public virtual void Dispose()
          {
-             _component = null;
-             _config = null;
-             _currentState = null;
-             _stateDict.Clear();
+             if(IsDispose) return;
+             IsDispose = true;
+             component = null;
+             config = null;
+             currentState = null;
+             stateDict.Clear();
          }
          #endregion
      }

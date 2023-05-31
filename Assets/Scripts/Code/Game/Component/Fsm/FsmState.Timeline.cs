@@ -52,8 +52,8 @@ namespace TaoTie
             if (clipList == null || clipList.Count == 0)
                 return;
 
-            var nowtime = fsm.stateTime;
-            var elapseTime = fsm.stateElapseTime;
+            var nowtime = fsm.StateTime;
+            var elapseTime = fsm.StateElapseTime;
             for (var node = clipList.First; node!=null; )
             {
                 var next = node.Next;
@@ -76,13 +76,13 @@ namespace TaoTie
             if (clipIndex < 0)
                 return;
 
-            while (fsm.stateTime >= nextClipTime)
+            while (fsm.StateTime >= nextClipTime)
             {
                 ConfigFsmClip clipConfig = timeline.Clips[clipIndex];
                 FsmClip clip = clipConfig.CreateClip(this);
                 if (clip != null)
                 {
-                    clip.Start(fsm.stateTime);
+                    clip.Start(fsm.StateTime);
                     clipList.AddLast(clip);
                 }
 

@@ -39,7 +39,7 @@ namespace TaoTie
 
         public bool IsMatch(Fsm fsm)
         {
-            if (!this.CanTransitionToSelf && fsm.currentStateName == this.ToState)
+            if (!this.CanTransitionToSelf && fsm.CurrentStateName == this.ToState)
                 return false;
 
             if (this.Conditions != null)
@@ -113,18 +113,18 @@ namespace TaoTie
                 fsm.Component.SetData(toStateCfg.MirrorParameter, targetMirror);
             }
 
-            info.targetName = toStateCfg.Name;
-            info.targetTime = targetTime;
-            info.layerIndex = fsm.layerIndex;
-            info.fadeDuration = this.FadeDuration;
+            info.TargetName = toStateCfg.Name;
+            info.TargetTime = targetTime;
+            info.LayerIndex = fsm.LayerIndex;
+            info.FadeDuration = this.FadeDuration;
         }
 
         public static void ApplyDefault(Fsm fsm, ConfigFsmState toStateCfg, ref FsmTransitionInfo info)
         {
-            info.targetName = toStateCfg.Name;
-            info.layerIndex = fsm.layerIndex;
-            info.targetTime = 0;
-            info.fadeDuration = 0.25f;
+            info.TargetName = toStateCfg.Name;
+            info.LayerIndex = fsm.LayerIndex;
+            info.TargetTime = 0;
+            info.FadeDuration = 0.25f;
         }
 
         public void OnPostApply(Fsm fsm)

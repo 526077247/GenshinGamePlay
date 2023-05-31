@@ -47,13 +47,12 @@ namespace TaoTie
             RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
-            RemoveManager<HudSystem>();   
             RemoveManager<GameTimerManager>();
         }
 
         public async ETTask OnPrepare()
         {
-            await RegisterManager<HudSystem>().PreloadLoadAsset();
+            await BillboardSystem.Instance.PreloadLoadAsset();
         }
 
         public async ETTask OnComplete()

@@ -16,8 +16,8 @@
             abilityComponent = owner?.GetComponent<AbilityComponent>();
             if (fsm != null)
             {
-                fsm.onStateChanged += OnStateChanged;
-                if (this.Config.StateIDs.Contains(fsm.currentStateName))
+                fsm.OnStateChanged += OnStateChanged;
+                if (this.Config.StateIDs.Contains(fsm.CurrentStateName))
                 {
                     ApplyModifier();
                 }
@@ -72,7 +72,7 @@
         {
             if (fsm != null)
             {
-                fsm.onStateChanged -= OnStateChanged;
+                fsm.OnStateChanged -= OnStateChanged;
                 fsm = null;
             }
 

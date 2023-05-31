@@ -167,6 +167,7 @@ namespace TaoTie
 
         private void OnEvent(IEventBase evt)
         {
+            if(IsDispose) return;
             for (var node = this.activeHandlers.First; node != null; node = node.Next)
             {
                 var trigger = this.triggers[node.Value];

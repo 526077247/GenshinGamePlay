@@ -2,12 +2,12 @@
 {
     public class PoseFsm: Fsm
     {
-        private NumericComponent numericComponent => _component.GetParent<Entity>().GetComponent<NumericComponent>();
+        private NumericComponent numericComponent => component.GetParent<Entity>().GetComponent<NumericComponent>();
         private int poseID;
         public int PoseID => poseID;
         
         public delegate void PoseChangedDelegate(int from, int to);
-        public PoseChangedDelegate onPoseChanged;
+        public PoseChangedDelegate OnPoseChanged;
         public static PoseFsm Create(PoseFSMComponent ctrl, ConfigFsm cfg)
         {
             PoseFsm ret = ObjectPool.Instance.Fetch<PoseFsm>();
@@ -23,13 +23,15 @@
 
         public override void Dispose()
         {
+            if(IsDispose) return;
             base.Dispose();
-            Messager.Instance.RemoveListener<NumericChange>(_component.Id, MessageId.NumericChangeEvt, OnNumericChange);
+            Messager.Instance.RemoveListener<NumericChange>(component.Id, MessageId.NumericChangeEvt, OnNumericChange);
         }
         private void OnNumericChange(NumericChange evt)
         {
-            if (currentState != null && currentState.Config.Data != null && currentState.Config.Data.IsDynamic 
-                && evt.NumericType == NumericType.GetKey(currentState.Config.Data.Key))
+            if(IsDispose) return;
+            if (CurrentState != null && CurrentState.Config.Data != null && CurrentState.Config.Data.IsDynamic 
+                && evt.NumericType == NumericType.GetKey(CurrentState.Config.Data.Key))
             {
                 var poseID = numericComponent.GetAsInt(evt.NumericType);
                 InvokeOnPoseChanged(this.poseID, poseID);
@@ -65,7 +67,7 @@
             if (from != to)
             {
                 poseID = to;
-                onPoseChanged?.Invoke(from, poseID);
+                OnPoseChanged?.Invoke(from, poseID);
             }
         }
 

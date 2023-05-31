@@ -27,6 +27,7 @@ namespace TaoTie
         private long timerId;
         public void BeforeInit(Entity entity)
         {
+            IsDispose = false;
             parent = entity;
         }
         public void AfterInit()

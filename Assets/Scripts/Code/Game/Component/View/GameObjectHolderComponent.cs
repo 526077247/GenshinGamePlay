@@ -76,7 +76,7 @@ namespace TaoTie
 
                     for (int i = 0; i < fsm.Fsms.Length; i++)
                     {
-                        CrossFade(fsm.Fsms[i].currentState.Name, fsm.Fsms[i].config.LayerIndex);
+                        CrossFade(fsm.Fsms[i].CurrentState.Name, fsm.Fsms[i].Config.LayerIndex);
                     }
                 }
             }
@@ -224,16 +224,19 @@ namespace TaoTie
         
         private void OnChangePosition(Unit unit, Vector3 old)
         {
+            if(EntityView == null) return;
             EntityView.position = unit.Position;
         }
 
         private void OnChangeRotation(Unit unit, Quaternion old)
         {
+            if(EntityView == null) return;
             EntityView.rotation = unit.Rotation;
         }
 
         private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
         {
+            if (parent == null) return;
             if (configDie != null)
             {
                 var unit = GetParent<Unit>();

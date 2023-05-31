@@ -28,7 +28,7 @@ namespace TaoTie
 
             foreach (var fsm in fsms)
             {
-                if (fsm.name == name)
+                if (fsm.Name == name)
                 {
                     return fsm;
                 }

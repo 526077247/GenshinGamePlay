@@ -35,9 +35,9 @@ namespace TaoTie
         {
             float val;
             if (this.IsNormalized)
-                val = fsm.stateNormalizedTime;
+                val = fsm.StateNormalizedTime;
             else
-                val = fsm.stateTime;
+                val = fsm.StateTime;
 
             switch (this.Mode)
             {

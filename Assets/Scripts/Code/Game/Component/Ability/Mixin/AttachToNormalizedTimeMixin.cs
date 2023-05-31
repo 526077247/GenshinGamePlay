@@ -34,7 +34,7 @@ namespace TaoTie
             abilityComponent = owner?.GetComponent<AbilityComponent>();
             if (fsm != null)
             {
-                fsm.onStateChanged += OnStateChanged;
+                fsm.OnStateChanged += OnStateChanged;
             }
         }
 
@@ -53,11 +53,11 @@ namespace TaoTie
 
         private void Update()
         {
-            if (fsm.stateNormalizedTime > Config.normalizeStartRawNum)
+            if (fsm.StateNormalizedTime > Config.normalizeStartRawNum)
             {
                 ApplyModifier();
             }
-            else if (fsm.stateNormalizedTime > Config.normalizeEndRawNum)
+            else if (fsm.StateNormalizedTime > Config.normalizeEndRawNum)
             {
                 RemoveModifier();
             }
@@ -95,7 +95,7 @@ namespace TaoTie
         {
             if (fsm != null)
             {
-                fsm.onStateChanged -= OnStateChanged;
+                fsm.OnStateChanged -= OnStateChanged;
                 fsm = null;
             }
 

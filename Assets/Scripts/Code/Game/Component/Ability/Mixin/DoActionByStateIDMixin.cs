@@ -14,8 +14,8 @@
             
             if (fsm != null)
             {
-                fsm.onStateChanged += OnStateChanged;
-                if (this.Config.StateIDs.Contains(fsm.currentStateName))
+                fsm.OnStateChanged += OnStateChanged;
+                if (this.Config.StateIDs.Contains(fsm.CurrentStateName))
                 {
                     OnEnter();
                 }
@@ -73,7 +73,7 @@
         {
             if (fsm != null)
             {
-                fsm.onStateChanged -= OnStateChanged;
+                fsm.OnStateChanged -= OnStateChanged;
                 fsm = null;
             }
             
