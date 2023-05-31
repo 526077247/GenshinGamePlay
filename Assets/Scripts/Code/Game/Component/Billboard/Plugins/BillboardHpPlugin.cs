@@ -81,8 +81,8 @@ namespace TaoTie
             filter.mesh.vertices = vertices;
             filter.mesh.triangles = triangles;
             filter.mesh.colors = colors;
-            
-            rend.material = Resources.Load<Material>("Vertx");//todo: 
+
+            rend.material = MaterialManager.Instance.GetFromCache("Unit/Common/Materials/ProgressBar.mat");
             rend.shadowCastingMode = ShadowCastingMode.Off;
             rend.receiveShadows = false;
             rend.lightProbeUsage = LightProbeUsage.Off;

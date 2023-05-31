@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System.Linq;
 
 namespace YooAsset.Editor
 {
@@ -68,7 +69,8 @@ namespace YooAsset.Editor
 		{
 			if (data.AssetPath.Contains("/Edit/")) return false;
 			var ext = Path.GetExtension(data.AssetPath);
-			return ext == ".prefab" || ext == ".bytes"|| ext == ".json" || ext == ".controller";
+			return ext == ".prefab" || ext == ".bytes"|| ext == ".json" || ext == ".controller" || 
+			       data.AssetPath.Contains("Common");
 		}
 	}
 }

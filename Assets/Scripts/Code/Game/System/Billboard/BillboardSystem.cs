@@ -31,7 +31,7 @@ namespace TaoTie
         /// <returns></returns>
         public async ETTask PreloadLoadAsset()
         {
-            await ETTask.CompletedTask;
+            await MaterialManager.Instance.PreLoadMaterial("Unit/Common/Materials/ProgressBar.mat");
         }
 
         public void Destroy()

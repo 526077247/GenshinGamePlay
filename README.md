@@ -27,5 +27,5 @@
 4. [Nino](https://github.com/JasonXuDeveloper/Nino) 实用的高性能C#序列化模块
 5. [FernNPR](https://github.com/FernRender/FernNPR) NPR渲染库
 6. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) 节点编辑器
-7. [ETTask](https://github.com/egametang/ET) 单线程异步、协程锁
+7. [ET](https://github.com/egametang/ET) 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
 8. [UnityScriptHotReload](https://github.com/Misaka-Mikoto-Tech/UnityScriptHotReload) 运行中无感重载C#代码

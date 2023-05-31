@@ -1,4 +1,4 @@
-﻿Shader "Unlit/VertxFragShader"
+﻿Shader "Billboard/ProgressBar"
 {
     Properties
     {
