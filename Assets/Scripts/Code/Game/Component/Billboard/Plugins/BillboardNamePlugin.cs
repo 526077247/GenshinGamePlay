@@ -39,8 +39,8 @@ namespace TaoTie
             font.fontSize = 36;
             font.alignment = TextAlignment.Center;
             font.anchor = TextAnchor.MiddleCenter;
-            font.color = Color.black;
-            font.text = "Test";
+            font.color = config.BaseColor;//todo:受其他影响
+            SetName();
         }
 
         protected override void UpdateInternal()
@@ -64,5 +64,19 @@ namespace TaoTie
         }
         
         #endregion
+
+        private void SetName()
+        {
+            if (config.ShowUnitName)
+            {
+                var unit = billboardComponent.GetParent<Unit>();
+                if (unit != null && !string.IsNullOrEmpty(unit.Config.Name))
+                {
+                    font.text = I18NManager.Instance.I18NGetText(unit.Config.Name);
+                    return;
+                }
+            }
+            font.text = I18NManager.Instance.I18NGetText(config.NameI18NKey);
+        }
     }
 }
