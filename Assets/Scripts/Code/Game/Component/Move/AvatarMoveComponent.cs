@@ -141,8 +141,7 @@ namespace TaoTie
 				{
 					dir = lookDir;
 				}
-				Vector3 _upDirection = tr.up;
-				unit.Rotation = Quaternion.LookRotation(dir, _upDirection);
+				unit.Rotation = Quaternion.LookRotation(dir, Vector3.up);
 			}
 		}
 
@@ -307,6 +306,19 @@ namespace TaoTie
 		public bool IsGrounded()
 		{
 			return currentControllerState == ControllerState.Grounded;
+		}
+		
+		
+		/// <summary>
+		/// 强制朝向
+		/// </summary>
+		/// <param name="target"></param>
+		public void ForceLookAt(Vector3 target)
+		{
+			if(!canTurn) return;
+			Vector3 dir = target - unit.Position;
+			dir.y = 0;
+			unit.Rotation = Quaternion.LookRotation(dir, Vector3.up);
 		}
     }
 }

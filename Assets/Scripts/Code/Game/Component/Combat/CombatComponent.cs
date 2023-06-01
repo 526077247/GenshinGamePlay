@@ -10,6 +10,7 @@ namespace TaoTie
         public bool IsInCombat;
         public DieStateFlag DieStateFlag;
         private ConfigCombat config;
+        private const int selectDistance = 3;//todo:索敌范围
         public virtual void Init(ConfigCombat config)
         {
             this.config = config;
@@ -158,6 +159,47 @@ namespace TaoTie
             else
             {
                 parent.Dispose();
+            }
+        }
+
+        public Entity GetAttackTarget()
+        {
+            if (attackTarget.RuntimeID != 0)
+            {
+                return parent.Parent.Get(attackTarget.RuntimeID);
+            }
+
+            return null;
+        }
+        public void SetAttackTarget(long attackTargetRuntimeID, string lockPoint)
+        {
+            attackTarget.RuntimeID = attackTargetRuntimeID;
+            attackTarget.LockedPoint = lockPoint;
+        }
+        public void SelectAttackTarget(bool force)
+        {
+            if (attackTarget.RuntimeID == 0 || force)
+            {
+                var unit = GetParent<Unit>();
+                var count = PhysicsHelper.OverlapSphereNonAllocHitInfo(unit.Position, selectDistance,
+                    new[] {EntityType.Monster, EntityType.Avatar}, CheckHitLayerType.OnlyHitBox,
+                    out var hitInfos);
+                float angle = 180;
+                for (int i = 0; i < count; i++)
+                {
+                    var hitEntity = unit.Parent.Get(hitInfos[i].EntityId);
+                    if (hitEntity is Unit other && AttackHelper.CheckIsEnemy(unit, hitEntity))
+                    {
+                        var dir = other.Position - unit.Position;
+                        var a = Mathf.Abs(Vector3.Angle(dir, unit.Forward));
+                        if (a < angle)
+                        {
+                            attackTarget.LockedPoint = null;
+                            attackTarget.RuntimeID = hitInfos[i].EntityId;
+                            angle = a;
+                        }
+                    }
+                }
             }
         }
     }

@@ -24,7 +24,7 @@ namespace TaoTie
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
-            AddComponent<SkillComponent>();
+            AddComponent<AvatarSkillComponent>();
             AddComponent<LocalInputController>();
             AddComponent<AvatarMoveComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);

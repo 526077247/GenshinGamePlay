@@ -18,6 +18,8 @@ namespace TaoTie
                 new[] {EntityType.ALL}, out var infos);
             for (int i = 0; i < len; i++)
             {
+                if (TargetType == TargetType.None)
+                    continue;
                 var info = infos[i];
                 var hitEntity = target.Parent.Get<Entity>(info.EntityId);
                 if (TargetType == TargetType.Self && info.EntityId != target.Id)
@@ -27,6 +29,8 @@ namespace TaoTie
                 if (TargetType == TargetType.Enemy && !AttackHelper.CheckIsEnemy(target, hitEntity))
                     continue;
                 if (TargetType == TargetType.SelfCamp && !AttackHelper.CheckIsCamp(target, hitEntity))
+                    continue;
+                if (TargetType == TargetType.Alliance && !AttackHelper.CheckIsAlliance(target, hitEntity))
                     continue;
                 AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo);
                 AttackHelper.DamageClose(ability, modifier, result);

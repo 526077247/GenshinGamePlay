@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class SkillComponent:Component,IComponent,IUpdate
+    public class AvatarSkillComponent:Component,IComponent,IUpdate
     {
         private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
+        private AvatarMoveComponent moveComponent => parent.GetComponent<AvatarMoveComponent>();
         public Dictionary<uint, SkillInfo> SkillInfoMap;
         #region IComponent
 
@@ -29,7 +30,17 @@ namespace TaoTie
         public void TryDoSkill(int skillId)
         {
             //todo: 冷却消耗等判断
-            combatComponent.UseSkillImmediately(skillId);
+            //if()
+            {
+                combatComponent.SelectAttackTarget(true);
+                var target = combatComponent.GetAttackTarget();
+                if (target is Unit unit)
+                {
+                    moveComponent.ForceLookAt(unit.Position);
+                }
+
+                combatComponent.UseSkillImmediately(skillId);
+            }
         }
     }
 }

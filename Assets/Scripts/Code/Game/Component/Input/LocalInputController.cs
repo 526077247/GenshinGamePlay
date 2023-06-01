@@ -8,7 +8,7 @@ namespace TaoTie
     /// </summary>
     public class LocalInputController : Component, IComponent, IUpdate
     {
-        private SkillComponent SkillComponent => parent.GetComponent<SkillComponent>();
+        private AvatarSkillComponent AvatarSkillComponent => parent.GetComponent<AvatarSkillComponent>();
         private AvatarMoveComponent AvatarMoveComponent => parent.GetComponent<AvatarMoveComponent>();
         public ControlData ControlData;
        
@@ -58,7 +58,7 @@ namespace TaoTie
 
         public void TryDoSkill(int skillID)
         {
-            SkillComponent.TryDoSkill(skillID);
+            AvatarSkillComponent.TryDoSkill(skillID);
         }
 
         public void TryMove(Vector3 direction)

@@ -14,12 +14,14 @@ namespace TaoTie
         /// <returns></returns>
         public static bool CheckIsEnemy(Entity actor, Entity other)
         {
+            if (actor is Actor a && other is Actor b)
+            {
+                return a.CampId != b.CampId;
+            }
             if (actor.Type == EntityType.Avatar && other.Type == EntityType.Monster)
                 return true;
             if (actor.Type == EntityType.Monster && other.Type == EntityType.Avatar)
                 return true;
-            
-            //todo:
             return false;
         }
         /// <summary>
@@ -29,6 +31,20 @@ namespace TaoTie
         /// <param name="other"></param>
         /// <returns></returns>
         public static bool CheckIsCamp(Entity actor, Entity other)
+        {
+            if (actor is Actor a && other is Actor b)
+            {
+                return a.CampId == b.CampId;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 检查是否同阵营
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public static bool CheckIsAlliance(Entity actor, Entity other)
         {
             //todo:
             return actor.Type == other.Type;
