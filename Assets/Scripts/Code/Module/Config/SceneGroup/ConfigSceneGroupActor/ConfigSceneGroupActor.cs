@@ -19,6 +19,8 @@ namespace TaoTie
         [NinoMember(2)]
         public Vector3 Position;
         [NinoMember(3)]
+        public Vector3 Rotation;
+        [NinoMember(4)]
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
         public uint CampId;
         

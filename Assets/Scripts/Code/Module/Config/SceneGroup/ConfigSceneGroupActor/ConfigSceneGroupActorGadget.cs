@@ -23,6 +23,7 @@ namespace TaoTie
             var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState, uint>(ConfigID,DefaultState,CampId);
             entity.AddComponent<SceneGroupActorComponent, int, long>(LocalId, sceneGroup.Id);
             entity.Position = Position;
+            entity.Rotation = Quaternion.Euler(Rotation);
             if (sceneGroup.TryGetRoute(RouteId, out var route))
             {
                 var pmc = entity.AddComponent<PlatformMoveComponent, ConfigRoute>(route);

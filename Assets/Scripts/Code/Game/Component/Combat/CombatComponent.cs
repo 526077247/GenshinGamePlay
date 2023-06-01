@@ -105,12 +105,12 @@ namespace TaoTie
             DieStateFlag = dieType;
             var myId = Id;
             Messager.Instance.Broadcast(myId, MessageId.OnBeKill, config?.Die, dieType);
-            OnBeKill(killerID, dieType);
+            OnBeKill();
             if(killerID != myId)
                 Messager.Instance.Broadcast(killerID, MessageId.OnKill, myId);
         }
 
-        public void OnBeKill(long killerID, DieStateFlag dieType)
+        public void OnBeKill()
         {
             var configDie = config?.Die;
             if (configDie != null)

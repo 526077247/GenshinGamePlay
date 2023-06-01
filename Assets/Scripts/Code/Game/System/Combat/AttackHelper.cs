@@ -89,8 +89,10 @@ namespace TaoTie
             //非真伤，防御减免
             if (!result.TrueDamage)
             {
-                var flag = 100 * numD.GetAsFloat(NumericType.Lv);
-                result.DamagePercentageRatio *= flag / (numD.GetAsFloat(NumericType.DEF) + flag);
+                var lv = Mathf.Max(1, numD.GetAsFloat(NumericType.Lv));
+                var flag = 100 * lv;
+                var def = Mathf.Max(numD.GetAsFloat(NumericType.DEF), 1);
+                result.DamagePercentageRatio *= flag / (def + flag);
             }
             
             //暴击
@@ -108,7 +110,7 @@ namespace TaoTie
             result.FinalRealDamage = (int) (
                 result.DamagePercentage * result.DamagePercentageRatio *
                 (result.IsCritical ? (result.BonusCriticalHurt + 1) : 1) + result.DamageExtra);
-            Log.Info("最终伤害： "+result.FinalRealDamage);
+            Log.Info("最终伤害： "+result.FinalRealDamage +" HitBoxType: "+ result.HitInfo.HitBoxType);
             //修改血量
             var finalHp = numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage;
             if (finalHp < 0) finalHp = 0;

@@ -24,8 +24,8 @@
         public override void Dispose()
         {
             if(IsDispose) return;
-            base.Dispose();
             Messager.Instance.RemoveListener<NumericChange>(component.Id, MessageId.NumericChangeEvt, OnNumericChange);
+            base.Dispose();
         }
         private void OnNumericChange(NumericChange evt)
         {

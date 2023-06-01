@@ -97,6 +97,11 @@ namespace TaoTie
                 obj.transform.rotation = mainC.transform.rotation;
                 obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
             }
+
+            if (obj != null && obj.activeSelf!= billboardComponent.Enable)
+            {
+                obj.SetActive(billboardComponent.Enable);
+            }
         }
 
         protected override void DisposeInternal()

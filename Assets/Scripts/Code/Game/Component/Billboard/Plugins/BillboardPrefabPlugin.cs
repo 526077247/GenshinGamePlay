@@ -21,7 +21,21 @@ namespace TaoTie
                 obj = null;
             }
         }
-        
+
+        protected override void UpdateInternal()
+        {
+            var mainC = CameraManager.Instance.MainCamera();
+            if (mainC != null && obj != null)
+            {
+                obj.transform.rotation = mainC.transform.rotation;
+                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
+            }
+            if (obj != null && obj.activeSelf!= billboardComponent.Enable)
+            {
+                obj.SetActive(billboardComponent.Enable);
+            }
+        }
+
         private async ETTask LoadObj()
         {
             if(string.IsNullOrWhiteSpace(config.PrefabPath)) return;
@@ -48,7 +62,12 @@ namespace TaoTie
             this.obj = obj;
             this.obj.transform.SetParent(pointer);
             this.obj.transform.localPosition = billboardComponent.Config.Offset + config.Offset;
-            this.obj.transform.localScale = Vector3.one;
+            var mainC = CameraManager.Instance.MainCamera();
+            if (mainC != null && obj != null)
+            {
+                obj.transform.rotation = mainC.transform.rotation;
+                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
+            }
             OnGameObjectLoaded();
         }
         protected abstract void OnGameObjectLoaded();

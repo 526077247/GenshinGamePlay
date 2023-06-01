@@ -33,7 +33,7 @@ namespace TaoTie
         }
         public void Dispose()
         {
-            condition.Dispose();
+            condition?.Dispose();
             condition = null;
             Config = null;
             Data = default;

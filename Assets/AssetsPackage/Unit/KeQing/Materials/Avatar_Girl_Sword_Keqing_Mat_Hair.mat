@@ -23,7 +23,7 @@ Material:
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Hair
   m_Shader: {fileID: 4800000, guid: 0bb4a4d350ca3de41aed86ede804a971, type: 3}
   m_ValidKeywords:
-  - _ANGLERING
+  - _KAJIYAHAIR
   - _OUTLINE
   - _RAMPSHADING
   - _RENDERENVSETTING
@@ -212,7 +212,7 @@ Material:
     - _enum_outline_smoothed: 0
     - _enum_outline_width: 0
     - _enum_rim: 0
-    - _enum_specular: 2
+    - _enum_specular: 1
     - _group: 0
     - _group1: 1
     - _groupAI: 1

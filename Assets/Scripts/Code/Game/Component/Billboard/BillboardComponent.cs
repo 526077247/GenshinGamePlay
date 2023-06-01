@@ -6,18 +6,20 @@ namespace TaoTie
     {
         private List<BillboardPlugin> plugins;
         public ConfigBillboard Config { get; private set; }
-
+        public bool Enable { get; private set; }
         #region IComponent
 
         public void Init(ConfigBillboard config)
         {
             this.Config = config;
+            Enable = true;
             plugins = new List<BillboardPlugin>();
             if (config != null && config.Plugins != null)
             {
                 for (int i = 0; i < config.Plugins.Length; i++)
                 {
-                    plugins.Add(BillboardSystem.Instance.CreateBillboardPlugin(config.Plugins[i], this));
+                    var plugin = BillboardSystem.Instance.CreateBillboardPlugin(config.Plugins[i], this);
+                    plugins.Add(plugin);
                 }
             }
         }
@@ -41,5 +43,10 @@ namespace TaoTie
         }
 
         #endregion
+
+        public void SetEnable(bool enable)
+        {
+            Enable = enable;
+        }
     }
 }
