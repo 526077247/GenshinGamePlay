@@ -145,7 +145,7 @@ namespace TaoTie
                 return (T) res;
             }
 
-            Log.Error($"不存在{type.Name}");
+            // Log.Error($"不存在{type.Name}");
             return default;
         }
         

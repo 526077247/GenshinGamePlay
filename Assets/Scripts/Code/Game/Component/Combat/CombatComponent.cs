@@ -105,9 +105,60 @@ namespace TaoTie
             DieStateFlag = dieType;
             var myId = Id;
             Messager.Instance.Broadcast(myId, MessageId.OnBeKill, config?.Die, dieType);
-            Dispose();
+            OnBeKill(killerID, dieType);
             if(killerID != myId)
                 Messager.Instance.Broadcast(killerID, MessageId.OnKill, myId);
+        }
+
+        public void OnBeKill(long killerID, DieStateFlag dieType)
+        {
+            var configDie = config?.Die;
+            if (configDie != null)
+            {
+                var unit = GetParent<Unit>();
+                if (unit == null) return;
+                bool delayRecycle = false;//模型是否还需要用到
+
+                if (configDie.DieModelFadeDelay > 0)
+                {
+                    delayRecycle = true;
+                }
+                else
+                {
+                    configDie.DieModelFadeDelay = 0;
+                }
+                
+                // 死亡动画
+                if (configDie.HasAnimatorDie)
+                {
+                    delayRecycle = true;
+                }
+                
+                //布娃娃系统
+                if (configDie.UseRagDoll)
+                {
+                    delayRecycle = true;
+                }
+                
+                // 消融
+                if (configDie.DieShaderData != ShaderData.None)
+                {
+                    delayRecycle = true;
+                }
+                if (delayRecycle)
+                {
+                    Dispose();
+                    parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
+                }
+                else
+                {
+                    parent.Dispose();
+                }
+            }
+            else
+            {
+                parent.Dispose();
+            }
         }
     }
 }

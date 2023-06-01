@@ -12,10 +12,12 @@
         {
             LocalId = p1;
             sceneGroupId = p2;
+            Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
         }
 
         public void Destroy()
         {
+            Messager.Instance.RemoveListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             SceneGroup?.OnActorRelease(LocalId);
             sceneGroupId = 0;
             LocalId = 0;
@@ -29,6 +31,15 @@
         public void RemoveFromSceneGroup()
         {
             SceneGroup?.OnActorRelease(LocalId);
+        }
+
+        private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
+        {
+            Messager.Instance.Broadcast(sceneGroupId, MessageId.SceneGroupEvent, new AnyMonsterDieEvent()
+            {
+                ActorId = LocalId
+            });
+            Dispose();
         }
     }
 }

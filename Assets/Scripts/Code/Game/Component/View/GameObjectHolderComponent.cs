@@ -243,7 +243,6 @@ namespace TaoTie
             {
                 var unit = GetParent<Unit>();
                 if (unit == null) return;
-                bool delayRecycle = false;//模型是否还需要用到
                 //特效
                 if (!string.IsNullOrWhiteSpace(configDie.DieDisappearEffect))
                 {
@@ -255,7 +254,7 @@ namespace TaoTie
 
                 if (configDie.DieModelFadeDelay > 0)
                 {
-                    delayRecycle = true;
+                    
                 }
                 else
                 {
@@ -266,33 +265,19 @@ namespace TaoTie
                 if (configDie.HasAnimatorDie)
                 {
                     fsm?.SetData(FSMConst.Die, true);
-                    delayRecycle = true;
                 }
                 
                 //布娃娃系统
                 if (configDie.UseRagDoll)
                 {
-                    delayRecycle = true;
+                    
                 }
                 
                 // 消融
                 if (configDie.DieShaderData != ShaderData.None)
                 {
-                    delayRecycle = true;
+                   
                 }
-                
-                if (delayRecycle)
-                {
-                    parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
-                }
-                else
-                {
-                    parent.Dispose();
-                }
-            }
-            else
-            {
-                parent.Dispose();
             }
         }
         #endregion
