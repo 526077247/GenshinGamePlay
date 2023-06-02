@@ -23,13 +23,13 @@
         {
             if (aiKnowledge.MoveDecisionChanged)
             {
-                switch (aiComponent.GetDecisionOld().move)
+                switch (aiComponent.GetDecisionOld().Move)
                 {
                     case MoveDecision.Flee:
                         if (moveFSM.FleeInfo.Status != FleeInfo.FleeStatus.Inactive)
                             break;
-                        aiComponent.GetDecisionOld().move = decision.move;
-                        moveFSM.Goto(decision.move, loco, aiKnowledge,aiKnowledge.AiManager);
+                        aiComponent.GetDecisionOld().Move = decision.Move;
+                        moveFSM.Goto(decision.Move, loco, aiKnowledge,aiKnowledge.AiManager);
                         break;
                     default:
                         if (loco.currentState == LocoTaskState.Running)
@@ -37,8 +37,8 @@
 
                         if (loco.currentState == LocoTaskState.Finished)
                         {
-                            aiComponent.GetDecisionOld().move = decision.move;
-                            moveFSM.Goto(decision.move, loco,aiKnowledge,aiKnowledge.AiManager);
+                            aiComponent.GetDecisionOld().Move = decision.Move;
+                            moveFSM.Goto(decision.Move, loco,aiKnowledge,aiKnowledge.AiManager);
                         }
                         break;
                 }

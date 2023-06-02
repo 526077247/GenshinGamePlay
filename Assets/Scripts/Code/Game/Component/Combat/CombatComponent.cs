@@ -13,7 +13,7 @@ namespace TaoTie
         public bool IsInCombat;
         public bool CanHeHit;
 
-        public virtual void Init(ConfigCombat config)
+        public void Init(ConfigCombat config)
         {
             this.config = config;
             if(config!=null && config.BeHit!=null)
@@ -21,7 +21,7 @@ namespace TaoTie
             attackTarget = new AttackTarget();
         }
 
-        public virtual void Destroy()
+        public void Destroy()
         {
             beforeAttack = null;
             beforeBeAttack = null;
@@ -156,8 +156,8 @@ namespace TaoTie
                 }
                 if (delayRecycle)
                 {
-                    Dispose();
                     parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
+                    Dispose();
                 }
                 else
                 {

@@ -121,18 +121,31 @@ namespace TaoTie
         {
             knowledge.TacticChanged = false;
             knowledge.MoveDecisionChanged = false;
-            decisionOld.act = decision.act;
-            decisionOld.tactic = decision.tactic;
-            decisionOld.move = decision.move;
+            decisionOld.Act = decision.Act;
+            decisionOld.Tactic = decision.Tactic;
+            decisionOld.Move = decision.Move;
             AIDecisionTree.Think(knowledge,decision);
-            if (decision.tactic != decisionOld.tactic)
+            if (decision.Tactic != decisionOld.Tactic)
             {
                 knowledge.TacticChanged = true;
             }
-            if (decision.move != decisionOld.move)
+            if (decision.Move != decisionOld.Move)
             {
                 knowledge.MoveDecisionChanged = true;
             }
+#if UNITY_EDITOR
+            var transform = parent.GetComponent<GameObjectHolderComponent>()?.EntityView;
+            if (transform != null)
+            {
+                var aiDebug = transform.GetComponent<AIDebug>();
+                if (aiDebug != null)
+                {
+                    aiDebug.Act = decision.Act.ToString();
+                    aiDebug.Tactic = decision.Tactic.ToString();
+                    aiDebug.Move = decision.Move.ToString();
+                }
+            }
+#endif
         }
 
         /// <summary>

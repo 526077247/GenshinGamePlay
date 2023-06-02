@@ -23,7 +23,7 @@ namespace TaoTie
             //Inactive Status: no skill stand by, select new skill
             if (actionState.Status == SkillStatus.Inactive)
             {
-                if (decision.act == ActDecision.OnAware)
+                if (decision.Act == ActDecision.OnAware)
                 {
                     if (aiKnowledge.SkillKnowledge.SkillsOnAware.AvailableSkills.Count > 0)
                     {
@@ -32,7 +32,7 @@ namespace TaoTie
                         actionState.Status = SkillStatus.Playing;
                     }
                 }
-                else if (decision.act == ActDecision.OnAlert)
+                else if (decision.Act == ActDecision.OnAlert)
                 {
                     if (aiKnowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0)
                     {
@@ -41,7 +41,7 @@ namespace TaoTie
                         actionState.Status = SkillStatus.Playing;
                     }
                 }
-                else if (decision.act == ActDecision.FreeSkill)
+                else if (decision.Act == ActDecision.FreeSkill)
                 {
                     if (aiKnowledge.SkillKnowledge.SkillsFree.AvailableSkills.Count > 0)
                     {
@@ -50,7 +50,7 @@ namespace TaoTie
                         actionState.Status = SkillStatus.Playing;
                     }
                 }
-                else if (decision.act == ActDecision.BuddySkill)
+                else if (decision.Act == ActDecision.BuddySkill)
                 {
                     if (aiKnowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0)
                     {
@@ -59,7 +59,7 @@ namespace TaoTie
                         actionState.Status = SkillStatus.Playing;
                     }
                 }
-                else if (decision.act == ActDecision.CombatSkill)
+                else if (decision.Act == ActDecision.CombatSkill)
                 {
                     if (aiKnowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {
@@ -68,7 +68,7 @@ namespace TaoTie
                         actionState.Status = SkillStatus.Playing;
                     }
                 }
-                else if (decision.act == ActDecision.CombatSkillPrepare)
+                else if (decision.Act == ActDecision.CombatSkillPrepare)
                 {
                     if (aiKnowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {
@@ -116,7 +116,7 @@ namespace TaoTie
             //Prepared Status: meet all the requirements, cast skill
             if (actionState.Status == SkillStatus.Prepared)
             {
-                if (decision.act == ActDecision.CombatSkill)
+                if (decision.Act == ActDecision.CombatSkill)
                 {
                     var skillInfo = actionState.Skill;
 

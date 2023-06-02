@@ -15,9 +15,9 @@ namespace TaoTie
         public float ViewRange = 30;
         [LabelText("视觉全角")][ShowIf(nameof(EnableVision))]
         public bool ViewPanoramic;
-        [LabelText("水平FOV(1-360°)")][ShowIf("@enableVision&&!viewPanoramic")]
+        [LabelText("水平FOV(1-360°)")][ShowIf("@"+nameof(EnableVision)+"&&!"+nameof(ViewPanoramic))]
         public float HorizontalFov;
-        [LabelText("垂直FOV(1-360°)")][ShowIf("@enableVision&&!viewPanoramic")]
+        [LabelText("垂直FOV(1-360°)")][ShowIf("@"+nameof(EnableVision)+"&&!"+nameof(ViewPanoramic))]
         public float VerticalFov;
         [LabelText("感知范围(m)")]
         public float FeelRange = 10;

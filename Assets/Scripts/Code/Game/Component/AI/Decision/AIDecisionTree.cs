@@ -34,9 +34,9 @@
 		{
 			if (tree is DecisionActionNode actionNode)
 			{
-				decision.act = actionNode.Act;
-				decision.move = actionNode.Move;
-				decision.tactic = actionNode.Tactic;
+				decision.Act = actionNode.Act;
+				decision.Move = actionNode.Move;
+				decision.Tactic = actionNode.Tactic;
 			}
 			else if (tree is DecisionConditionNode conditionNode)
 			{
