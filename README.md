@@ -29,3 +29,9 @@
 6. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) 节点编辑器
 7. [ET](https://github.com/egametang/ET) 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
 8. [UnityScriptHotReload](https://github.com/Misaka-Mikoto-Tech/UnityScriptHotReload) 运行中无感重载C#代码
+
+## 付费插件
+1. [Odin Inspector](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041) 编辑器扩展
+2. [Slate](https://assetstore.unity.com/packages/tools/animation/slate-cinematic-sequencer-56558) Timeline编辑器
+3. [SuperScrollView](https://assetstore.unity.com/packages/tools/gui/ugui-super-scrollview-86572) UI滑动列表扩展
+4. [Dynamic Bone](https://assetstore.unity.com/packages/tools/animation/dynamic-bone-16743) 动态骨骼
