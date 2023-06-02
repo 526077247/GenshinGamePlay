@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Sirenix.OdinInspector;
-using UnityEditor.Animations;
 
 namespace Slate.ActionClips
 {

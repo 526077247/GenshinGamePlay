@@ -15,7 +15,9 @@ namespace TaoTie
         public BaseSceneGroupValue LeftValue;
         [NinoMember(2)]
         [Tooltip(SceneGroupTooltips.CompareMode)]
+#if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(RightValue)+","+nameof(Mode)+")")] 
+#endif
         public CompareMode Mode;
         [NinoMember(3)]
         [LabelText("右值")] 

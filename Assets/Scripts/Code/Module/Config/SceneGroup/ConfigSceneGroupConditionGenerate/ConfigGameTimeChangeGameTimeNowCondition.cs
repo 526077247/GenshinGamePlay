@@ -10,7 +10,9 @@ namespace TaoTie
     public partial class ConfigGameTimeChangeGameTimeNowCondition : ConfigSceneGroupCondition<GameTimeChange>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
+#if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
+#endif
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]

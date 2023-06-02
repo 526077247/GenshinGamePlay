@@ -12,7 +12,10 @@ namespace TaoTie
     public partial class ConfigGetSuiteMonsterCountCondition : ConfigSceneGroupCondition
     {
         [NinoMember(1)]
-        [Tooltip(SceneGroupTooltips.CompareMode)] [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")] 
+        [Tooltip(SceneGroupTooltips.CompareMode)]
+#if UNITY_EDITOR
+        [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")] 
+#endif
         public CompareMode Mode;
         [NinoMember(2)]
         public int Value;

@@ -23,8 +23,8 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
-#endif
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(HandleType)+")")]
+#endif
         public ConfigSceneGroupAction[] Actions;
         
 #if UNITY_EDITOR

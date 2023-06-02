@@ -49,7 +49,9 @@ namespace TaoTie
             sb.AppendLine($"    public partial class {className} : ConfigSceneGroupCondition<{type.Name}>");
             sb.AppendLine("    {");
             sb.AppendLine("        [Tooltip(SceneGroupTooltips.CompareMode)]");
+            sb.AppendLine("#if UNITY_EDITOR");
             sb.AppendLine("        [OnValueChanged(\"@\"+nameof(CheckModeType)+\"(\"+nameof(Value)+\",\"+nameof(Mode)+\")\")]");
+            sb.AppendLine("#endif");
             sb.AppendLine("        [NinoMember(1)]");
             sb.AppendLine("        public CompareMode Mode;");
             sb.AppendLine("        [NinoMember(2)]");
