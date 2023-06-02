@@ -6,6 +6,7 @@ namespace TaoTie
     {
         private TextMesh font;
         private GameObject obj;
+        private Transform target;
         #region BillboardPlugin
 
         protected override void InitInternal()
@@ -18,8 +19,8 @@ namespace TaoTie
             await goh.WaitLoadGameObjectOver();
             if(goh.IsDispose || billboardComponent.IsDispose) return;
             
-            var pointer = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
-            if (pointer == null)
+            target = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
+            if (target == null)
             {
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);
                 return;
@@ -27,13 +28,11 @@ namespace TaoTie
             
             obj = new GameObject("Name");
             obj.transform.localScale = 0.1f * Vector3.one;
-            obj.transform.SetParent(pointer);
-            obj.transform.localPosition = billboardComponent.Config.Offset + config.Offset;
+            obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
             }
             font = obj.AddComponent<TextMesh>();
             font.fontSize = 36;
@@ -49,7 +48,7 @@ namespace TaoTie
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
+                obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             }
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)
             {
@@ -65,6 +64,8 @@ namespace TaoTie
                 Object.Destroy(obj);
                 obj = null;
             }
+
+            target = null;
         }
         
         #endregion

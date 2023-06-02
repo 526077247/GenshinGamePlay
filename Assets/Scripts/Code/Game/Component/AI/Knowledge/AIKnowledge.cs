@@ -8,7 +8,7 @@ namespace TaoTie
     /// </summary>
     public class AIKnowledge: IDisposable
     {
-        public Actor AiOwnerEntity; // 0x18
+        public Actor AiOwnerEntity;
         public uint CampID;
         
         public Vector3 BornPos;
@@ -35,6 +35,7 @@ namespace TaoTie
         public AIManager AiManager;
         public CombatComponent CombatComponent => AiOwnerEntity.GetComponent<CombatComponent>();
         public PoseFSMComponent Pose => AiOwnerEntity.GetComponent<PoseFSMComponent>();
+        public MoveComponent Mover => AiOwnerEntity.GetComponent<MoveComponent>();
         
         public AISkillKnowledge SkillKnowledge;
         public AIMoveKnowledge MoveKnowledge;

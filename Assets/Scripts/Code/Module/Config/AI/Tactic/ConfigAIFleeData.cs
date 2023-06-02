@@ -9,7 +9,7 @@ namespace TaoTie
         [NinoMember(1)]
         public int SpeedLevel;
         [NinoMember(2)]
-        public float TurnSpeedOverride;
+        public float TurnSpeedOverride = 180;
         [NinoMember(3)]
         public int CD;
 

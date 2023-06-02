@@ -5,6 +5,7 @@ namespace TaoTie
 {
     public class BillboardHpPlugin: BillboardPlugin<ConfigBillboardHpPlugin>
     {
+        private Transform target;
         private GameObject obj;
         private Vector3[] vertices;
         private Color[] colors;
@@ -28,8 +29,8 @@ namespace TaoTie
             await goh.WaitLoadGameObjectOver();
             if(goh.IsDispose || billboardComponent.IsDispose) return;
             
-            var pointer = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
-            if (pointer == null)
+            target = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
+            if (target == null)
             {
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);
                 return;
@@ -38,13 +39,11 @@ namespace TaoTie
             x = 0.01f * config.Size.x;
             y = 0.01f * config.Size.y;
             obj = new GameObject("Hp");
-            obj.transform.SetParent(pointer);
-            obj.transform.localPosition = billboardComponent.Config.Offset + config.Offset;
+            obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
             }
             filter = obj.AddComponent<MeshFilter>();
             var rend = obj.AddComponent<MeshRenderer>();
@@ -95,7 +94,7 @@ namespace TaoTie
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
+                obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             }
 
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)

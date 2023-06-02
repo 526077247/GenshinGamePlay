@@ -81,13 +81,7 @@ namespace TaoTie
         {
             if (currentState == LocoTaskState.Interrupted)
             {
-                if (!aiKnowledge.MoveKnowledge.CanFly)
-                {
-                    if (!aiKnowledge.MoveKnowledge.InAir)
-                    {
-                        currentState = LocoTaskState.Finished;
-                    }
-                }
+                currentState = LocoTaskState.Finished;
             }
 
             if (currentState == LocoTaskState.Finished)
@@ -98,9 +92,12 @@ namespace TaoTie
             if (currentState == LocoTaskState.Running)
             {
                 currentTask.UpdateLoco(this, currentTransform, ref currentState);
+                aiKnowledge.Mover.TryMove(currentTask.GetDestination() - currentTransform.pos);
             }
 
         }
+        
+        #region CreateTask
         private void CreateTask_Internal(LocoBaseTask task/*, bool delayStopping, float? movingYawSpeedOverride*/)
         {
             if (currentTask != null)
@@ -142,7 +139,7 @@ namespace TaoTie
 
             CreateTask_Internal(followMoveTask);
         }
-
+        #endregion
         public bool TaskEnded()
         {
             return currentTask == null;
@@ -158,22 +155,23 @@ namespace TaoTie
         {
             if (currentTask != null)
                 currentTask.OnCloseTask(this);
+            aiKnowledge.Mover.TryMove(Vector3.zero);
         }
         
         public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
         {
-            Messager.Instance.Broadcast(aiKnowledge.AiOwnerEntity.Id, MessageId.UpdateMotionFlag, newSpeed);
+            if(!currentTask.stopped)
+                aiKnowledge.Mover.ForceLookAt(currentTask.GetDestination());
+            aiKnowledge.Mover.TryMove(currentTask.GetDestination() - aiKnowledge.AiOwnerEntity.Position, (MotionFlag)newSpeed);
         }
 
         public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed)
         {
             currentTask.UpdateLocoSpeed(newSpeed);
-        } 
-        public void SetGroundFollowAnimationRotation(bool enabled) {} 
-        public void Teleport(Vector3 targetPosition) {} 
-        public void SwitchRotation(bool rotate) {} 
-        public void SetForwardImmediately(Vector3 dir) {}
-        public float GetDistanceToPathEnd(Vector3 currentPos) => default;
-        public float GetAlmostReachedDistance() => default;
+        }
+        public void UpdateTurnSpeed(float speed)
+        {
+            aiKnowledge.Mover.RotateSpeed = speed;
+        }
     }
 }

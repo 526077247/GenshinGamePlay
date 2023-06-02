@@ -7,7 +7,7 @@ namespace TaoTie
     public class AvatarSkillComponent:Component,IComponent,IUpdate
     {
         private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
-        private AvatarMoveComponent moveComponent => parent.GetComponent<AvatarMoveComponent>();
+        private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         public Dictionary<uint, SkillInfo> SkillInfoMap;
         #region IComponent
 

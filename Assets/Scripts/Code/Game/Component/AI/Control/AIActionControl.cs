@@ -183,12 +183,12 @@ namespace TaoTie
         private void CastSkill()
         {
             var now = GameTimerManager.Instance.GetTimeNow();
-            var maic = aiKnowledge.AiOwnerEntity.GetComponent<MonsterAIInputComponent>();
+            var maic = aiKnowledge.CombatComponent;
             var skillInfo = actionState.Skill;
             var targetKnowledge = aiKnowledge.TargetKnowledge;
             var skillKnowledge = aiKnowledge.SkillKnowledge;
 
-            maic.TryDoSkill(skillInfo.SkillId);
+            maic.UseSkillImmediately(skillInfo.SkillId);
 
             if (skillInfo.Config.TriggerCDOnStart)
             {
@@ -250,8 +250,8 @@ namespace TaoTie
             var now = GameTimerManager.Instance.GetTimeNow();
             var skillInfo = actionState.Skill;
             var skillKnowledge = aiKnowledge.SkillKnowledge;
-            var maic = aiKnowledge.AiOwnerEntity.GetComponent<MonsterAIInputComponent>();
-            maic.TryReleaseSkill();
+            var maic = aiKnowledge.CombatComponent;
+            maic.ReleaseSkillImmediately();
             if (skillInfo != null)
             {
                 if (needTriggerCD)

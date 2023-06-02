@@ -5,10 +5,7 @@ namespace TaoTie
     public class AIMoveKnowledge :IDisposable
     {
         public ConfigAIMove Config;
-        public bool CanFly;
         public bool DisableMoveTactic;
-        public bool InAir;
-        public bool InWater;
         public bool CanMove = true;
         public bool CanTurn = true;
         public static AIMoveKnowledge Create(ConfigAIBeta config)

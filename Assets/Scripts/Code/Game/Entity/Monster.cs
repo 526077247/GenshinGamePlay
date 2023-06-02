@@ -27,7 +27,6 @@ namespace TaoTie
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(monster.Config.AIPath))
             {
-                AddComponent<MonsterAIInputComponent>();
                 AddComponent<AIComponent,ConfigAIBeta>(ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(monster.Config.AIPath));
             }
             if (!string.IsNullOrEmpty(monster.Config.PoseFSM))
@@ -35,6 +34,7 @@ namespace TaoTie
                 AddComponent<PoseFSMComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(monster.Config.PoseFSM));
             }
             AddComponent<BillboardComponent, ConfigBillboard>(configActor.Billboard);
+            AddComponent<MoveComponent>();
         }
         
         public void Destroy()

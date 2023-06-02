@@ -22,14 +22,5 @@ namespace TaoTie
                 state = LocoTaskState.Finished;
             }
         }
-
-        public override void OnCloseTask(AILocomotionHandler handler)
-        {
-            
-        }
-        public override void Deallocate()
-        {
-            
-        }
     }
 }

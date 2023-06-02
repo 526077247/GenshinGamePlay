@@ -5,6 +5,7 @@ namespace TaoTie
 
     public abstract class BillboardPrefabPlugin<T>: BillboardPlugin<T> where T : ConfigBillboardPrefabPlugin
     {
+        protected Transform target;
         protected GameObject obj { get; private set; }
         
         protected override void InitInternal()
@@ -28,7 +29,7 @@ namespace TaoTie
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
+                obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             }
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)
             {
@@ -52,21 +53,19 @@ namespace TaoTie
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);
                 return;
             }
-            var pointer = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
-            if (pointer == null)
+            target = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
+            if (target == null)
             {
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);
                 return;
             }
 
             this.obj = obj;
-            this.obj.transform.SetParent(pointer);
-            this.obj.transform.localPosition = billboardComponent.Config.Offset + config.Offset;
+            obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.localPosition = obj.transform.localRotation*(billboardComponent.Config.Offset + config.Offset);
             }
             OnGameObjectLoaded();
         }

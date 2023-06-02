@@ -3,31 +3,31 @@ using CMF;
 
 namespace TaoTie
 {
-    public class AvatarMoveComponent : Component, IComponent,IUpdate
+    public class MoveComponent : Component, IComponent,IUpdate
     {
 	    #region Param
 
 	    //References to attached components;
-	    protected Transform tr;
-	    protected Mover mover;
-	    public CharacterKeyboardInput characterInput;
+	    private Transform transform;
+	    private Mover mover;
+	    private MoveInput moveInput;
 
 	    //'AirFriction' determines how fast the controller loses its momentum while in the air;
 	    //'GroundFriction' is used instead, if the controller is grounded;
-	    public float airFriction = 0.5f;
-	    public float groundFriction = 100f;
+	    private float airFriction = 0.5f;
+	    private float groundFriction = 100f;
 
 	    //Current momentum;
-	    protected Vector3 momentum = Vector3.zero;
+	    private Vector3 momentum = Vector3.zero;
 
 	    //Amount of downward gravity;
-	    public float gravity = 20f;
+	    private float gravity = 20f;
 
-	    [Tooltip("Whether to calculate and apply momentum relative to the controller's transform.")]
-	    public bool useLocalMomentum = false;
+	    //Whether to calculate and apply momentum relative to the controller's transform.
+	    private bool useLocalMomentum = true;
 
 	    //Enum describing basic controller states; 
-	    public enum ControllerState
+	    private enum ControllerState
 	    {
 		    Grounded,
 		    Falling
@@ -36,7 +36,8 @@ namespace TaoTie
 	    ControllerState currentControllerState = ControllerState.Falling;
 
 
-	    public Transform cameraTransform;
+	    private Transform cameraTransform;
+	    public float RotateSpeed = 180;
 	    
 	    #endregion
 	    
@@ -47,7 +48,7 @@ namespace TaoTie
         private Unit unit => parent as Unit;
         public void Init()
         {
-	        characterInput = new CharacterKeyboardInput();
+	        moveInput = new MoveInput();
             canMove = FsmComponent.DefaultFsm.CurrentState.CanMove;
             canTurn = FsmComponent.DefaultFsm.CurrentState.CanTurn;
             Messager.Instance.AddListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
@@ -61,7 +62,7 @@ namespace TaoTie
 	        await gh.WaitLoadGameObjectOver();
 	        if(gh.IsDispose) return;
 	        mover = gh.EntityView.GetComponent<Mover>();
-	        tr = gh.EntityView;
+	        transform = gh.EntityView;
 	        cameraTransform = CameraManager.Instance.MainCamera().transform;
         }
 
@@ -71,26 +72,44 @@ namespace TaoTie
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
         }
 
-        public void TryMove(Vector3 direction)
+        public void TryMove(Vector3 direction, MotionFlag flag)
         {
             if (canMove)
             {
-                characterInput.Direction = direction;
+                moveInput.Direction = direction;
             }
             else
             {
-	            characterInput.Direction = Vector3.zero;
+	            moveInput.Direction = Vector3.zero;
             }
             if (direction != Vector3.zero)
             {
-	            MoveStart();
+	            MoveStart(flag);
             }
             else
             {
 	            MoveStop();
             }
         }
-
+        public void TryMove(Vector3 direction)
+        {
+	        if (canMove)
+	        {
+		        moveInput.Direction = direction;
+	        }
+	        else
+	        {
+		        moveInput.Direction = Vector3.zero;
+	        }
+	        if (direction != Vector3.zero)
+	        {
+		        MoveStart(moveInput.MotionFlag);
+	        }
+	        else
+	        {
+		        MoveStop();
+	        }
+        }
         private void SetCanMove(bool canMove)
         {
 	        if(IsDispose) return;
@@ -103,24 +122,25 @@ namespace TaoTie
             this.canTurn = canTurn;
         }
 
-        private void MoveStart()
+        private void MoveStart(MotionFlag flag)
         {
-	        characterInput.MotionFlag = MotionFlag.Run;
+	        moveInput.MotionFlag = flag;
             FsmComponent.SetData(FSMConst.MotionFlag, 2);
         }
 
         private void MoveStop()
         {
-	        characterInput.MotionFlag = MotionFlag.Idle;
+	        RotateSpeed = 180;
+	        moveInput.MotionFlag = MotionFlag.Idle;
             FsmComponent.SetData(FSMConst.MotionFlag, 0);
         }
 
         public void Update()
 		{
-			if(tr == null) return;
+			if(transform == null || mover==null) return;
 			ControllerUpdate();
 			HandlerForward();
-			unit.SyncViewPosition(tr.position);
+			unit.SyncViewPosition(transform.position);
 		}
 		void HandlerForward()
 		{
@@ -129,13 +149,13 @@ namespace TaoTie
 			if (lookDir != Vector3.zero)
 			{
 				Vector3 dir;
-				var angle = Vector3.Angle(lookDir, tr.forward);
+				var angle = Vector3.Angle(lookDir, transform.forward);
 				if (angle > 3)
 				{
-					var flag = Vector3.Cross(lookDir, tr.forward);
-					var temp = (flag.y > 0 ? -1 : 1) * 360 * GameTimerManager.Instance.GetDeltaTime() / 1000f;
+					var flag = Vector3.Cross(lookDir, transform.forward);
+					var temp = (flag.y > 0 ? -1 : 1) * RotateSpeed * GameTimerManager.Instance.GetDeltaTime() / 500f;
 					if (Mathf.Abs(temp - angle)<0) temp = angle;
-					dir = Quaternion.Euler(0, temp, 0) * tr.forward;
+					dir = Quaternion.Euler(0, temp, 0) * transform.forward;
 				}
 				else
 				{
@@ -159,48 +179,48 @@ namespace TaoTie
 			HandleMomentum();
 
 			//Calculate movement velocity;
-			Vector3 _velocity = Vector3.zero;
+			Vector3 v = Vector3.zero;
 
 			//If local momentum is used, transform momentum into world space first;
-			Vector3 _worldMomentum = momentum;
+			Vector3 worldMomentum = momentum;
 			if(useLocalMomentum)
-				_worldMomentum = tr.localToWorldMatrix * momentum;
+				worldMomentum = transform.localToWorldMatrix * momentum;
 
 			//Add current momentum to velocity;
-			_velocity += _worldMomentum;
+			v += worldMomentum;
 			
 			//If player is grounded or sliding on a slope, extend mover's sensor range;
 			//This enables the player to walk up/down stairs and slopes without losing ground contact;
 			mover.SetExtendSensorRange(IsGrounded());
 
 			//Set mover velocity;		
-			mover.SetVelocity(_velocity);
+			mover.SetVelocity(v);
 		}
 		
 		protected virtual Vector3 CalculateLookDirection()
 		{
 			//If no character input script is attached to this object, return;
-			if(characterInput == null)
+			if(moveInput == null)
 				return Vector3.zero;
 
-			Vector3 _velocity = Vector3.zero;
+			Vector3 v = Vector3.zero;
 
 			//If no camera transform has been assigned, use the character's transform axes to calculate the movement direction;
 			if(cameraTransform == null)
 			{
-				_velocity += tr.right * characterInput.Direction.x;
-				_velocity += tr.forward * characterInput.Direction.z;
+				v += transform.right * moveInput.Direction.x;
+				v += transform.forward * moveInput.Direction.z;
 			}
 			else
 			{
 				//If a camera transform has been assigned, use the assigned transform's axes for movement direction;
 				//Project movement direction so movement stays parallel to the ground;
-				_velocity += Vector3.ProjectOnPlane(cameraTransform.right, tr.up).normalized * characterInput.Direction.x;
-				_velocity += Vector3.ProjectOnPlane(cameraTransform.forward, tr.up).normalized * characterInput.Direction.z;
+				v += Vector3.ProjectOnPlane(cameraTransform.right, transform.up).normalized * moveInput.Direction.x;
+				v += Vector3.ProjectOnPlane(cameraTransform.forward, transform.up).normalized * moveInput.Direction.z;
 			}
 			
-			_velocity.Normalize();
-			return _velocity;
+			v.Normalize();
+			return v;
 		}
 
 		//Determine current controller state based on current momentuml and whether the controller is grounded (or not);
@@ -237,36 +257,36 @@ namespace TaoTie
 	        float deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
 			//If local momentum is used, transform momentum into world coordinates first;
 			if(useLocalMomentum)
-				momentum = tr.localToWorldMatrix * momentum;
+				momentum = transform.localToWorldMatrix * momentum;
 
-			Vector3 _verticalMomentum = Vector3.zero;
-			Vector3 _horizontalMomentum = Vector3.zero;
+			Vector3 vm = Vector3.zero;
+			Vector3 hm = Vector3.zero;
 
 			//Split momentum into vertical and horizontal components;
 			if(momentum != Vector3.zero)
 			{
-				_verticalMomentum = VectorMath.ExtractDotVector(momentum, tr.up);
-				_horizontalMomentum = momentum - _verticalMomentum;
+				vm = VectorMath.ExtractDotVector(momentum, transform.up);
+				hm = momentum - vm;
 			}
 
 			//Add gravity to vertical momentum;
-			_verticalMomentum -= tr.up * gravity * deltaTime;
+			vm -= transform.up * gravity * deltaTime;
 
 			//Remove any downward force if the controller is grounded;
-			if(currentControllerState == ControllerState.Grounded && VectorMath.GetDotProduct(_verticalMomentum, tr.up) < 0f)
-				_verticalMomentum = Vector3.zero;
+			if(currentControllerState == ControllerState.Grounded && VectorMath.GetDotProduct(vm, transform.up) < 0f)
+				vm = Vector3.zero;
 
 			//Apply friction to horizontal momentum based on whether the controller is grounded;
 			if(currentControllerState == ControllerState.Grounded)
-				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, groundFriction, deltaTime, Vector3.zero);
+				hm = VectorMath.IncrementVectorTowardTargetVector(hm, groundFriction, deltaTime, Vector3.zero);
 			else
-				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, airFriction, deltaTime, Vector3.zero); 
+				hm = VectorMath.IncrementVectorTowardTargetVector(hm, airFriction, deltaTime, Vector3.zero); 
 
 			//Add horizontal and vertical momentum back together;
-			momentum = _horizontalMomentum + _verticalMomentum;
+			momentum = hm + vm;
 			
 			if(useLocalMomentum)
-				momentum = tr.worldToLocalMatrix * momentum;
+				momentum = transform.worldToLocalMatrix * momentum;
 		}
         
 		//This function is called when the controller has lost ground contact, i.e. is either falling or rising, or generally in the air;
@@ -274,32 +294,32 @@ namespace TaoTie
 		{
 			//If local momentum is used, transform momentum into world coordinates first;
 			if(useLocalMomentum)
-				momentum = tr.localToWorldMatrix * momentum;
+				momentum = transform.localToWorldMatrix * momentum;
 
 			//Get current movement velocity;
-			Vector3 _velocity = Vector3.zero;
+			Vector3 v = Vector3.zero;
 
 			//Check if the controller has both momentum and a current movement velocity;
-			if(_velocity.sqrMagnitude >= 0f && momentum.sqrMagnitude > 0f)
+			if(v.sqrMagnitude >= 0f && momentum.sqrMagnitude > 0f)
 			{
 				//Project momentum onto movement direction;
-				Vector3 _projectedMomentum = Vector3.Project(momentum, _velocity.normalized);
+				Vector3 projectedMomentum = Vector3.Project(momentum, v.normalized);
 				//Calculate dot product to determine whether momentum and movement are aligned;
-				float _dot = VectorMath.GetDotProduct(_projectedMomentum.normalized, _velocity.normalized);
+				float dot = VectorMath.GetDotProduct(projectedMomentum.normalized, v.normalized);
 
 				//If current momentum is already pointing in the same direction as movement velocity,
 				//Don't add further momentum (or limit movement velocity) to prevent unwanted speed accumulation;
-				if(_projectedMomentum.sqrMagnitude >= _velocity.sqrMagnitude && _dot > 0f)
-					_velocity = Vector3.zero;
-				else if(_dot > 0f)
-					_velocity -= _projectedMomentum;	
+				if(projectedMomentum.sqrMagnitude >= v.sqrMagnitude && dot > 0f)
+					v = Vector3.zero;
+				else if(dot > 0f)
+					v -= projectedMomentum;	
 			}
 
 			//Add movement velocity to momentum;
-			momentum += _velocity;
+			momentum += v;
 
 			if(useLocalMomentum)
-				momentum = tr.worldToLocalMatrix * momentum;
+				momentum = transform.worldToLocalMatrix * momentum;
 		}
 		
 		//Returns 'true' if controller is grounded (or sliding down a slope);

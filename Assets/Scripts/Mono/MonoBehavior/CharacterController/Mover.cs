@@ -134,14 +134,14 @@ namespace CMF
 			//Set collider dimensions based on collider variables;
 			if(boxCollider)
 			{
-				Vector3 _size = Vector3.zero;
-				_size.x = colliderThickness;
-				_size.z = colliderThickness;
+				Vector3 size = Vector3.zero;
+				size.x = colliderThickness;
+				size.z = colliderThickness;
 
 				boxCollider.center = colliderOffset * colliderHeight;
 
-				_size.y = colliderHeight * (1f - stepHeightRatio);
-				boxCollider.size = _size;
+				size.y = colliderHeight * (1f - stepHeightRatio);
+				boxCollider.size = size;
 
 				boxCollider.center = boxCollider.center + new Vector3(0f, stepHeightRatio * colliderHeight/2f, 0f);
 			}
@@ -185,30 +185,30 @@ namespace CMF
 			sensor.castType = sensorType;
 
 			//Calculate sensor radius/width;
-			float _radius = colliderThickness/2f * sensorRadiusModifier;
+			float radius = colliderThickness/2f * sensorRadiusModifier;
 
-			//Multiply all sensor lengths with '_safetyDistanceFactor' to compensate for floating point errors;
-			float _safetyDistanceFactor = 0.001f;
+			//Multiply all sensor lengths with 'safetyDistanceFactor' to compensate for floating point errors;
+			float safetyDistanceFactor = 0.001f;
 
 			//Fit collider height to sensor radius;
 			if(boxCollider)
-				_radius = Mathf.Clamp(_radius, _safetyDistanceFactor, (boxCollider.size.y/2f) * (1f - _safetyDistanceFactor));
+				radius = Mathf.Clamp(radius, safetyDistanceFactor, (boxCollider.size.y/2f) * (1f - safetyDistanceFactor));
 			else if(sphereCollider)
-				_radius = Mathf.Clamp(_radius, _safetyDistanceFactor, sphereCollider.radius * (1f - _safetyDistanceFactor));
+				radius = Mathf.Clamp(radius, safetyDistanceFactor, sphereCollider.radius * (1f - safetyDistanceFactor));
 			else if(capsuleCollider)
-				_radius = Mathf.Clamp(_radius, _safetyDistanceFactor, (capsuleCollider.height/2f) * (1f - _safetyDistanceFactor));
+				radius = Mathf.Clamp(radius, safetyDistanceFactor, (capsuleCollider.height/2f) * (1f - safetyDistanceFactor));
 
 			//Set sensor variables;
 
 			//Set sensor radius;
-			sensor.sphereCastRadius = _radius * tr.localScale.x;
+			sensor.sphereCastRadius = radius * tr.localScale.x;
 
 			//Calculate and set sensor length;
-			float _length = 0f;
-			_length += (colliderHeight * (1f - stepHeightRatio)) * 0.5f;
-			_length += colliderHeight * stepHeightRatio;
-			baseSensorRange = _length * (1f + _safetyDistanceFactor) * tr.localScale.x;
-			sensor.castLength = _length * tr.localScale.x;
+			float length = 0f;
+			length += (colliderHeight * (1f - stepHeightRatio)) * 0.5f;
+			length += colliderHeight * stepHeightRatio;
+			baseSensorRange = length * (1f + safetyDistanceFactor) * tr.localScale.x;
+			sensor.castLength = length * tr.localScale.x;
 
 			//Set sensor array variables;
 			sensor.ArrayRows = sensorArrayRows;
@@ -227,27 +227,27 @@ namespace CMF
 		//Recalculate sensor layermask based on current physics settings;
 		void RecalculateSensorLayerMask()
 		{
-			int _layerMask = 0;
-			int _objectLayer = this.gameObject.layer;
+			int layerMask = 0;
+			int objectLayer = this.gameObject.layer;
  
 			//Calculate layermask;
             for (int i = 0; i < 32; i++)
             {
-                if (!Physics.GetIgnoreLayerCollision(_objectLayer, i)) 
-					_layerMask = _layerMask | (1 << i);
+                if (!Physics.GetIgnoreLayerCollision(objectLayer, i)) 
+					layerMask = layerMask | (1 << i);
 			}
 
 			//Make sure that the calculated layermask does not include the 'Ignore Raycast' layer;
-			if(_layerMask == (_layerMask | (1 << LayerMask.NameToLayer("Ignore Raycast"))))
+			if(layerMask == (layerMask | (1 << LayerMask.NameToLayer("Ignore Raycast"))))
 			{
-				_layerMask ^= (1 << LayerMask.NameToLayer("Ignore Raycast"));
+				layerMask ^= (1 << LayerMask.NameToLayer("Ignore Raycast"));
 			}
  
 			//Set sensor layermask;
-            sensor.layermask = _layerMask;
+            sensor.layermask = layerMask;
 
 			//Save current layer;
-			currentLayer = _objectLayer;
+			currentLayer = objectLayer;
 		}
 
 		//Returns the collider's center in world coordinates;
@@ -286,15 +286,15 @@ namespace CMF
 			isGrounded = true;
 
 			//Get distance that sensor ray reached;
-			float _distance = sensor.GetDistance();
+			float distance = sensor.GetDistance();
 
 			//Calculate how much mover needs to be moved up or down;
-			float _upperLimit = ((colliderHeight * tr.localScale.x) * (1f - stepHeightRatio)) * 0.5f;
-			float _middle = _upperLimit + (colliderHeight * tr.localScale.x) * stepHeightRatio;
-			float _distanceToGo = _middle - _distance;
+			float upperLimit = ((colliderHeight * tr.localScale.x) * (1f - stepHeightRatio)) * 0.5f;
+			float middle = upperLimit + (colliderHeight * tr.localScale.x) * stepHeightRatio;
+			float distanceToGo = middle - distance;
 
 			//Set new ground adjustment velocity for the next frame;
-			currentGroundAdjustmentVelocity = tr.up * (_distanceToGo/Time.fixedDeltaTime);
+			currentGroundAdjustmentVelocity = tr.up * (distanceToGo/Time.fixedDeltaTime);
 		}
 
 		//Check if mover is grounded;
@@ -309,12 +309,12 @@ namespace CMF
 		}
 
 		//Set mover velocity;
-		public void SetVelocity(Vector3 _velocity)
+		public void SetVelocity(Vector3 velocity)
 		{
-			rig.velocity = _velocity + currentGroundAdjustmentVelocity;	
+			rig.velocity = velocity + currentGroundAdjustmentVelocity;	
 		}	
 
-		//Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slope_limit);
+		//Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slopelimit);
 		public bool IsGrounded()
 		{
 			return isGrounded;
@@ -323,39 +323,39 @@ namespace CMF
 		//Setters;
 
 		//Set whether sensor range should be extended;
-		public void SetExtendSensorRange(bool _isExtended)
+		public void SetExtendSensorRange(bool isExtended)
 		{
-			IsUsingExtendedSensorRange = _isExtended;
+			IsUsingExtendedSensorRange = isExtended;
 		}
 
 		//Set height of collider;
-		public void SetColliderHeight(float _newColliderHeight)
+		public void SetColliderHeight(float newColliderHeight)
 		{
-			if(colliderHeight == _newColliderHeight)
+			if(colliderHeight == newColliderHeight)
 				return;
 
-			colliderHeight = _newColliderHeight;
+			colliderHeight = newColliderHeight;
 			RecalculateColliderDimensions();
 		}
 
 		//Set thickness/width of collider;
-		public void SetColliderThickness(float _newColliderThickness)
+		public void SetColliderThickness(float newColliderThickness)
 		{
-			if(colliderThickness == _newColliderThickness)
+			if(colliderThickness == newColliderThickness)
 				return;
 
-			if(_newColliderThickness < 0f)
-				_newColliderThickness = 0f;
+			if(newColliderThickness < 0f)
+				newColliderThickness = 0f;
 
-			colliderThickness = _newColliderThickness;
+			colliderThickness = newColliderThickness;
 			RecalculateColliderDimensions();
 		}
 
 		//Set acceptable step height;
-		public void SetStepHeightRatio(float _newStepHeightRatio)
+		public void SetStepHeightRatio(float newStepHeightRatio)
 		{
-			_newStepHeightRatio = Mathf.Clamp(_newStepHeightRatio, 0f, 1f);
-			stepHeightRatio = _newStepHeightRatio;
+			newStepHeightRatio = Mathf.Clamp(newStepHeightRatio, 0f, 1f);
+			stepHeightRatio = newStepHeightRatio;
 			RecalculateColliderDimensions();
 		}
 

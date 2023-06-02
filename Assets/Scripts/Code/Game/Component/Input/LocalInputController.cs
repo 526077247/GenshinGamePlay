@@ -9,21 +9,18 @@ namespace TaoTie
     public class LocalInputController : Component, IComponent, IUpdate
     {
         private AvatarSkillComponent AvatarSkillComponent => parent.GetComponent<AvatarSkillComponent>();
-        private AvatarMoveComponent AvatarMoveComponent => parent.GetComponent<AvatarMoveComponent>();
-        public ControlData ControlData;
-       
+        private MoveComponent MoveComponent => parent.GetComponent<MoveComponent>();
+        
         #region IComponent
 
         public void Init()
         {
-
-            ControlData = ControlData.Create();
+            
         }
 
         public void Destroy()
         {
-            ControlData.Dispose();
-            ControlData = null;
+
         }
 
         public void Update()
@@ -63,7 +60,7 @@ namespace TaoTie
 
         public void TryMove(Vector3 direction)
         {
-            AvatarMoveComponent.TryMove(direction);
+            MoveComponent.TryMove(direction, MotionFlag.Run);
         }
     }
 }

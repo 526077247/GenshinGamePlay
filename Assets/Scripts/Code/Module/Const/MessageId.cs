@@ -12,8 +12,8 @@
         public const int SceneGroupEvent = 4;
         /// <summary> PoseChange </summary>
         public const int PoseChange = 5;
-        /// <summary> UpdateMotionFlag </summary>
-        public const int UpdateMotionFlag = 6;
+        // /// <summary> UpdateMotionFlag </summary>
+        // public const int UpdateMotionFlag = 6;
         /// <summary> UpdateTurnTargetPos </summary>
         public const int UpdateTurnTargetPos = 7;
 

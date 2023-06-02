@@ -98,7 +98,6 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
@@ -157,7 +156,6 @@ namespace TaoTie
                 EntityView.rotation = effect.Rotation;
             }
             
-            Messager.Instance.AddListener<AIMoveSpeedLevel>(Id, MessageId.UpdateMotionFlag, UpdateMotionFlag);
             Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);

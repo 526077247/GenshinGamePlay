@@ -861,11 +861,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4361374554138886284}
-  - component: {fileID: 7666986768240843510}
-  - component: {fileID: 2123714148945600007}
   - component: {fileID: 620061310314078448}
   - component: {fileID: 8043493818362539045}
   - component: {fileID: 3132875742151801884}
+  - component: {fileID: 7666986768240843510}
+  - component: {fileID: 2123714148945600007}
   - component: {fileID: 664531596513850732}
   m_Layer: 6
   m_Name: Fox
@@ -893,45 +893,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &7666986768240843510
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4020983980232809014}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 6b4cfcebccb0e8749b8e79547d5759a7, type: 2}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
---- !u!114 &2123714148945600007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4020983980232809014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e8a4ae2fbad43488cfdddcf6e992414, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data:
-  - key: Hud
-    gameObject: {fileID: 4524147240236023201}
-  - key: HitBox
-    gameObject: {fileID: 5985967735808678411}
-  - key: HeadHitBox
-    gameObject: {fileID: 3429611560951177163}
 --- !u!114 &620061310314078448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -984,6 +945,45 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!95 &7666986768240843510
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4020983980232809014}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 6b4cfcebccb0e8749b8e79547d5759a7, type: 2}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+--- !u!114 &2123714148945600007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4020983980232809014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8a4ae2fbad43488cfdddcf6e992414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+  - key: Hud
+    gameObject: {fileID: 4524147240236023201}
+  - key: HitBox
+    gameObject: {fileID: 5985967735808678411}
+  - key: HeadHitBox
+    gameObject: {fileID: 3429611560951177163}
 --- !u!114 &664531596513850732
 MonoBehaviour:
   m_ObjectHideFlags: 0

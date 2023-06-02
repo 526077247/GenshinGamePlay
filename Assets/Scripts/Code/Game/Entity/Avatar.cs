@@ -26,7 +26,7 @@ namespace TaoTie
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             AddComponent<AvatarSkillComponent>();
             AddComponent<LocalInputController>();
-            AddComponent<AvatarMoveComponent>();
+            AddComponent<MoveComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             AddComponent<EquipHoldComponent>();

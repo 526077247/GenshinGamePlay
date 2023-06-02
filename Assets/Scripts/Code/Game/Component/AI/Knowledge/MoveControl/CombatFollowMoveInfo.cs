@@ -39,7 +39,7 @@ namespace TaoTie
                     stopDistance = stopDistance
                 };
 
-                taskHandler.CreateFollowMoveTask(param);
+                // taskHandler.CreateFollowMoveTask(param);
                 Status = CombatFollowMoveStatus.CloseTo;
             }
         }

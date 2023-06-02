@@ -66,8 +66,8 @@ namespace TaoTie
         {
             base.Leave(taskHandler, aiKnowledge,aiManager);
             Status = WanderStatus.Inactive;
-            //if (taskHandler.currentState == AILocoTaskState.Running)
-            //    taskHandler.currentState = AILocoTaskState.Interrupted;
+            if (taskHandler.currentState == LocoTaskState.Running)
+                taskHandler.currentState = LocoTaskState.Interrupted;
         }
 
         public bool InWanderArea(Vector3 bornPos, Vector3 checkPos, ConfigAIWanderData wanderSetting)

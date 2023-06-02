@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
 
-    public class CharacterKeyboardInput
+    public class MoveInput
     {
 	    public MotionFlag MotionFlag;
 	    public Vector3 Direction;
