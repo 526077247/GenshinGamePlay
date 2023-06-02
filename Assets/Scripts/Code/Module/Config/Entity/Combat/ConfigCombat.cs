@@ -40,5 +40,11 @@ namespace TaoTie
         #endif
         [NinoMember(2)]
         public ConfigDie Die;
+
+        [NinoMember(3)]
+        public ConfigCombatLock CombatLock;
+
+        [NinoMember(4)]
+        public ConfigCombatBeHit BeHit;
     }
 }

@@ -65,6 +65,7 @@ namespace TaoTie
             var combatA = attacker.GetComponent<CombatComponent>();
             var combatD = defence.GetComponent<CombatComponent>();
             if (combatA == null || combatD == null) return;
+            if (!combatD.CanHeHit) return;
             var numA = attacker.GetComponent<NumericComponent>();
             var numD = defence.GetComponent<NumericComponent>();
             if (numA == null || numD == null) return;

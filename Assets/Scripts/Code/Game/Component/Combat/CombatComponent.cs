@@ -7,13 +7,17 @@ namespace TaoTie
     {
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget;
-        public bool IsInCombat;
         public DieStateFlag DieStateFlag;
         private ConfigCombat config;
-        private const int selectDistance = 3;//todo:索敌范围
+
+        public bool IsInCombat;
+        public bool CanHeHit;
+
         public virtual void Init(ConfigCombat config)
         {
             this.config = config;
+            if(config!=null && config.BeHit!=null)
+                CanHeHit = !config.BeHit.MuteAllHit;
             attackTarget = new AttackTarget();
         }
 
@@ -75,7 +79,10 @@ namespace TaoTie
         public void AfterBeAttack(AttackResult result, CombatComponent other)
         {
             afterBeAttack?.Invoke(result, other);
-            Messager.Instance.Broadcast(0,MessageId.ShowDamageText,result);
+            if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText)
+            {
+                Messager.Instance.Broadcast(0, MessageId.ShowDamageText, result);
+            }
         }
 
         /// <summary>
@@ -113,6 +120,7 @@ namespace TaoTie
 
         public void OnBeKill()
         {
+            CanHeHit = false;
             var configDie = config?.Die;
             if (configDie != null)
             {
@@ -178,10 +186,11 @@ namespace TaoTie
         }
         public void SelectAttackTarget(bool force)
         {
+            if(config.CombatLock == null) return;
             if (attackTarget.RuntimeID == 0 || force)
             {
                 var unit = GetParent<Unit>();
-                var count = PhysicsHelper.OverlapSphereNonAllocHitInfo(unit.Position, selectDistance,
+                var count = PhysicsHelper.OverlapSphereNonAllocHitInfo(unit.Position, config.CombatLock.OverrideRange,
                     new[] {EntityType.Monster, EntityType.Avatar}, CheckHitLayerType.OnlyHitBox,
                     out var hitInfos);
                 float angle = 180;
