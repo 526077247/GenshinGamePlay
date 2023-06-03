@@ -11,21 +11,31 @@ namespace TaoTie
         private float targetAngle; 
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
         {
-            Vector3 anchorPos = anchor.Position;
-
-            float distance = Vector3.Distance(currentTransform.pos, anchorPos);
-            if (distance > stopDistance)
+            if (anchor == null)
             {
-                var desiredDirection = (anchorPos - currentTransform.pos);
-                desiredDirection.y = 0;
-                desiredDirection = desiredDirection.normalized;
-                // handler.aiKnowledge.desiredForward = desiredDirection;
-
-                handler.UpdateMotionFlag(speedLevel);
+                stopped = true;
+                handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                state = LocoTaskState.Finished;
+            }
+            destination = anchor.Position;
+            if (!stopped)
+            {
+                float distance = Vector3.Distance(currentTransform.pos, destination);
+                if (distance > stopDistance)
+                {
+                    handler.UpdateMotionFlag(speedLevel);
+                }
+                else
+                {
+                    stopped = true;
+                    handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                    state = LocoTaskState.Finished;
+                }
             }
             else
             {
                 handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                state = LocoTaskState.Finished;
             }
         }
 

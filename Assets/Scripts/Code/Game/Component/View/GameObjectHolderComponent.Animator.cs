@@ -42,6 +42,7 @@ namespace TaoTie
         private void CrossFadeInFixedTime(string stateName, float fadeDuration, int layerIndex, float targetTime)
         {
             if (animator == null) return;
+            Log.Info(stateName+" "+Id);
             animator.CrossFadeInFixedTime(stateName, fadeDuration, layerIndex, targetTime);
         }
 

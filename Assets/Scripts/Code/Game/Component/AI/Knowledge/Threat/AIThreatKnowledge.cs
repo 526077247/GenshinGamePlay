@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -22,11 +23,11 @@ namespace TaoTie
         /// <summary>
         /// 视觉感知衰减曲线
         /// </summary>
-        public AICurve ViewAttenuation;
+        public AnimationCurve ViewAttenuation;
         /// <summary>
         /// 听觉感知衰减曲线
         /// </summary>
-        public AICurve HearAttenuation;
+        public AnimationCurve HearAttenuation;
 
         public bool ReachAwareThisFrame;
         public bool ReachAlertThisFrame;
@@ -67,8 +68,8 @@ namespace TaoTie
 
             ThreatBroadcastRange = configThreat.ThreatBroadcastRange;
 
-            ViewAttenuation = new AICurve(configThreat.ViewAttenuation);
-            HearAttenuation = new AICurve(configThreat.HearAttenuation);
+            ViewAttenuation = configThreat.ViewAttenuationCurve;
+            HearAttenuation = configThreat.HearAttenuationCurve;
         }
 
         public void ReInit()

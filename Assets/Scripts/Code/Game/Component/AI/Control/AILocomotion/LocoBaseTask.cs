@@ -54,6 +54,7 @@ namespace TaoTie
 
         public virtual void OnCloseTask(AILocomotionHandler handler)
         {
+            stopped = true;
             handler.UpdateMotionFlag(0);
         }
 

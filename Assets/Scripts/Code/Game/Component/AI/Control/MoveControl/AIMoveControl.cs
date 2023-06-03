@@ -28,7 +28,7 @@
                     case MoveDecision.Flee:
                         if (moveFSM.FleeInfo.Status != FleeInfo.FleeStatus.Inactive)
                             break;
-                        aiComponent.GetDecisionOld().Move = decision.Move;
+                        aiKnowledge.MoveDecisionChanged = false;
                         moveFSM.Goto(decision.Move, loco, aiKnowledge,aiKnowledge.AiManager);
                         break;
                     default:
@@ -37,7 +37,7 @@
 
                         if (loco.currentState == LocoTaskState.Finished)
                         {
-                            aiComponent.GetDecisionOld().Move = decision.Move;
+                            aiKnowledge.MoveDecisionChanged = false;
                             moveFSM.Goto(decision.Move, loco,aiKnowledge,aiKnowledge.AiManager);
                         }
                         break;

@@ -120,7 +120,6 @@ namespace TaoTie
         private void UpdateDecision()
         {
             knowledge.TacticChanged = false;
-            knowledge.MoveDecisionChanged = false;
             decisionOld.Act = decision.Act;
             decisionOld.Tactic = decision.Tactic;
             decisionOld.Move = decision.Move;
@@ -143,6 +142,18 @@ namespace TaoTie
                     aiDebug.Act = decision.Act.ToString();
                     aiDebug.Tactic = decision.Tactic.ToString();
                     aiDebug.Move = decision.Move.ToString();
+                    aiDebug.Target = knowledge.TargetKnowledge?.TargetEntity?.Id.ToString();
+                    if (knowledge.TargetKnowledge?.TargetEntity != null)
+                    {
+                        aiDebug.TargetPos = knowledge.TargetKnowledge.TargetEntity.Position;
+                    }
+                    else
+                    {
+                        aiDebug.TargetPos = null;
+                    }
+
+                    aiDebug.ViewRange = knowledge.SensingKnowledge.Setting.ViewRange;
+                    aiDebug.Alertness = knowledge.ThreatLevel.ToString();
                 }
             }
 #endif
@@ -166,6 +177,10 @@ namespace TaoTie
         }
         public long GetCombatAttackTarget()
         {
+            if (knowledge.TargetKnowledge?.TargetEntity != null)
+            {
+                return knowledge.TargetKnowledge.TargetEntity.Id;
+            }
             return 0;
         }
         

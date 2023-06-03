@@ -7,12 +7,12 @@ namespace TaoTie
     public partial class ConfigAIWanderData
     {
         [NinoMember(1)] 
-        public int SpeedLevel;
+        public AIMoveSpeedLevel SpeedLevel;
         [NinoMember(2)] 
         public float TurnSpeedOverride;
-        [NinoMember(3)]
+        [NinoMember(3)][LabelText("CD随机范围最大值(ms)")]
         public int CdMax;
-        [NinoMember(4)] 
+        [NinoMember(4)][LabelText("CD随机范围最小值(ms)")]
         public int CdMin;
         [NinoMember(5)][LabelText("最大漫游半径")]
         public float DistanceFromBorn;

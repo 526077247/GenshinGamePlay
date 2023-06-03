@@ -4,6 +4,12 @@ namespace TaoTie
 {
     public class WanderInfo: MoveInfoBase
     {
+        public enum WanderStatus
+        {
+            Inactive = 0,
+            Wandering = 1
+        }
+        
         public WanderStatus Status;
         public long NextAvailableTick;
         public Vector3 WanderToPosCandidate;
@@ -86,7 +92,9 @@ namespace TaoTie
         }
         public override void Dispose()
         {
-
+            NextAvailableTick = 0;
+            Status = default;
+            WanderToPosCandidate = default;
         }
 
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)

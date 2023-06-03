@@ -61,7 +61,7 @@ namespace TaoTie
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
-			if (knowledge.MoveControlState.WanderInfo.Status == WanderStatus.Wandering) return true;
+			if (knowledge.MoveControlState.WanderInfo.Status == WanderInfo.WanderStatus.Wandering) return true;
 			if (knowledge.WanderTactic.Config==null || !knowledge.WanderTactic.Config.Enable)
 				return false;
 			if (knowledge.MoveControlState.WanderInfo.NextAvailableTick > GameTimerManager.Instance.GetTimeNow())

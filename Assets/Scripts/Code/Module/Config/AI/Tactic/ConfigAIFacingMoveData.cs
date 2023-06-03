@@ -6,7 +6,7 @@ namespace TaoTie
     public partial class ConfigAIFacingMoveData
     {
         [NinoMember(1)]
-        public int SpeedLevel;
+        public AIMoveSpeedLevel SpeedLevel;
         [NinoMember(2)]
         public float RangeMin;
         [NinoMember(3)]
@@ -18,7 +18,7 @@ namespace TaoTie
         [NinoMember(6)]
         public float FacingMoveTurnInterval;
         [NinoMember(7)]
-        public float FacingMoveMinAvoidanceVelecity;
+        public float FacingMoveMinAvoidanceVelocity;
         [NinoMember(8)]
         public float ObstacleDetectRange;
         [NinoMember(9)]

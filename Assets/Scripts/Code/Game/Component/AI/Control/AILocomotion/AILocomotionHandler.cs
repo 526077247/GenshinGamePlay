@@ -154,12 +154,21 @@ namespace TaoTie
         public void FinishTask() 
         {
             if (currentTask != null)
+            {
                 currentTask.OnCloseTask(this);
+                currentTask = null;
+            }
             aiKnowledge.Mover.TryMove(Vector3.zero);
         }
         
         public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
         {
+            if (newSpeed == AIMoveSpeedLevel.Idle)
+            {
+                aiKnowledge.Mover.TryMove(Vector3.zero);
+                return;
+            }
+            if(currentTask==null) return;
             if(!currentTask.stopped)
                 aiKnowledge.Mover.ForceLookAt(currentTask.GetDestination());
             aiKnowledge.Mover.TryMove(currentTask.GetDestination() - aiKnowledge.AiOwnerEntity.Position, (MotionFlag)newSpeed);

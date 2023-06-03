@@ -21,7 +21,6 @@ namespace TaoTie
         {
             var transfomPos = currentTransform.pos;
             transfomPos.y = 0;
-            var destination = this.destination;
             destination.y = 0;
             
             if (!stopped)
