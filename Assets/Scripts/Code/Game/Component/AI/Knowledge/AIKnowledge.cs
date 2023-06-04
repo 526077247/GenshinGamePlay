@@ -8,12 +8,12 @@ namespace TaoTie
     /// </summary>
     public class AIKnowledge: IDisposable
     {
-        public Actor AiOwnerEntity;
+        public Actor Entity;
         public uint CampID;
         
         public Vector3 BornPos;
-        public Vector3 CurrentPos => AiOwnerEntity.Position;
-        public Vector3 CurrentForward => AiOwnerEntity.Forward;
+        public Vector3 CurrentPos => Entity.Position;
+        public Vector3 CurrentForward => Entity.Forward;
         public Vector3 EyePos;
         public Transform EyeTransform;
         
@@ -33,9 +33,9 @@ namespace TaoTie
         public int PoseID;
         
         public AIManager AiManager;
-        public CombatComponent CombatComponent => AiOwnerEntity.GetComponent<CombatComponent>();
-        public PoseFSMComponent Pose => AiOwnerEntity.GetComponent<PoseFSMComponent>();
-        public MoveComponent Mover => AiOwnerEntity.GetComponent<MoveComponent>();
+        public CombatComponent CombatComponent => Entity.GetComponent<CombatComponent>();
+        public PoseFSMComponent Pose => Entity.GetComponent<PoseFSMComponent>();
+        public MoveComponent Mover => Entity.GetComponent<MoveComponent>();
         
         public AISkillKnowledge SkillKnowledge;
         public AIMoveKnowledge MoveKnowledge;
@@ -53,9 +53,9 @@ namespace TaoTie
         public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
             this.AiManager = aiManager;
-            AiOwnerEntity = aiEntity;
-            BornPos = AiOwnerEntity.Position;
-            CampID = AiOwnerEntity.CampId;
+            Entity = aiEntity;
+            BornPos = Entity.Position;
+            CampID = Entity.CampId;
             DecisionArchetype = config.DecisionArchetype;
             
             MoveControlState = AIMoveControlState.Create();
@@ -115,7 +115,7 @@ namespace TaoTie
             MoveControlState = null;
             
             AiManager = null;
-            AiOwnerEntity = null;
+            Entity = null;
             BornPos = default;
             CampID = 0;
             EnterCombatPosition = null;

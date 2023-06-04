@@ -13,7 +13,7 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            aiComponent = knowledge.AiOwnerEntity.GetComponent<AIComponent>();
+            aiComponent = knowledge.Entity.GetComponent<AIComponent>();
         }
 
 
@@ -64,7 +64,7 @@ namespace TaoTie
             if (tk.TargetType== AITargetType.InvalidTarget)
                 return;
             
-            var pos = knowledge.AiOwnerEntity.Position;
+            var pos = knowledge.Entity.Position;
             Vector3 targetPos = tk.TargetPosition;
             if (tk.TargetType == AITargetType.EntityTarget)
             {
@@ -87,9 +87,9 @@ namespace TaoTie
                 targetPathQuery = knowledge.PathFindingKnowledge.CreatePathQueryTask(knowledge.CurrentPos, targetPos);
             }
             tk.TargetPosition = targetPos;
-            tk.TargetRelativeAngleYaw = Vector3.SignedAngle(knowledge.AiOwnerEntity.Forward, dir, Vector3.up);
+            tk.TargetRelativeAngleYaw = Vector3.SignedAngle(knowledge.Entity.Forward, dir, Vector3.up);
             tk.TargetRelativeAngleYawAbs = Mathf.Abs(tk.TargetRelativeAngleYaw);
-            tk.TargetRelativeAnglePitch = Vector3.SignedAngle(knowledge.AiOwnerEntity.Forward, dir, Vector3.right);
+            tk.TargetRelativeAnglePitch = Vector3.SignedAngle(knowledge.Entity.Forward, dir, Vector3.right);
             tk.TargetRelativeAnglePitchAbs = Mathf.Abs(tk.TargetRelativeAnglePitch);
             //能否看见
             tk.HasLineOfSight = !PhysicsHelper.LinecastScene(targetPos, knowledge.EyePos, out _);

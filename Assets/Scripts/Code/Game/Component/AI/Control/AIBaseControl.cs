@@ -2,11 +2,11 @@
 {
     public abstract class AIBaseControl
     {
-        protected AIKnowledge aiKnowledge;
+        protected AIKnowledge knowledge;
 
         public void Init(AIKnowledge aiKnowledge)
         {
-            this.aiKnowledge = aiKnowledge;
+            this.knowledge = aiKnowledge;
             InitInternal();
         }
         protected virtual void InitInternal()

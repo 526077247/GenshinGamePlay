@@ -14,7 +14,7 @@ namespace TaoTie
             if (anchor == null)
             {
                 stopped = true;
-                handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                handler.UpdateMotionFlag(MotionFlag.Idle);
                 state = LocoTaskState.Finished;
             }
             destination = anchor.Position;
@@ -24,17 +24,18 @@ namespace TaoTie
                 if (distance > stopDistance)
                 {
                     handler.UpdateMotionFlag(speedLevel);
+                    handler.ForceLookAt();
                 }
                 else
                 {
                     stopped = true;
-                    handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                    handler.UpdateMotionFlag(MotionFlag.Idle);
                     state = LocoTaskState.Finished;
                 }
             }
             else
             {
-                handler.UpdateMotionFlag(AIMoveSpeedLevel.Idle);
+                handler.UpdateMotionFlag(MotionFlag.Idle);
                 state = LocoTaskState.Finished;
             }
         }

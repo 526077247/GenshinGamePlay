@@ -5,8 +5,8 @@ namespace TaoTie
 {
     public class AISensingKnowledge: IDisposable
     {
-        public ConfigAISensingSetting Setting;
-        public Dictionary<string, ConfigAISensingSetting> TemplateInUse;
+        private ConfigAISensingSetting Setting;
+        private Dictionary<string, ConfigAISensingSetting> TemplateInUse;
 
         public Dictionary<long, SensibleInfo> EnemySensibles;
         //用于决策选取的敌人，只选最近的
@@ -35,5 +35,16 @@ namespace TaoTie
             Scared = false;
             ObjectPool.Instance.Recycle(this);
         }
+
+        public bool EnableVision => Setting.EnableVision;
+        public float ViewRange => Setting.ViewRange * Setting.Sensitivity;
+        public bool ViewPanoramic => Setting.ViewPanoramic;
+        public float HorizontalFov => Setting.HorizontalFov;
+        public float VerticalFov => Setting.VerticalFov;
+        public float FeelRange  => Setting.FeelRange * Setting.Sensitivity;
+        public float HearAttractionRange  => Setting.HearAttractionRange * Setting.Sensitivity;
+        public float HearFootstepRange => Setting.HearFootstepRange * Setting.Sensitivity;
+        public float SourcelessHitAttractionRange  => Setting.SourcelessHitAttractionRange * Setting.Sensitivity;
+
     }
 }

@@ -7,17 +7,18 @@ namespace TaoTie
     public class PathQueryTask: IDisposable
     {
         public long Id;
+        public long TargetId;
         public ListComponent<Vector3> Corners;
         public Vector3 Start;
         public Vector3 Destination;
         public QueryStatus Status;
         public NavMeshUseType Type;
-        private AIPathFindingKnowledge PathFindingKnowledge;
+        private AIPathFindingKnowledge pathFindingKnowledge;
 
         public static PathQueryTask Create(Vector3 start,Vector3 destination,AIPathFindingKnowledge knowledge,NavMeshUseType type=NavMeshUseType.Auto)
         {
             PathQueryTask res = ObjectPool.Instance.Fetch<PathQueryTask>();
-            res.PathFindingKnowledge = knowledge;
+            res.pathFindingKnowledge = knowledge;
             res.Id = IdGenerater.Instance.GenerateId();
             res.Start = start;
             res.Destination = destination;
@@ -29,19 +30,21 @@ namespace TaoTie
 
         public void Dispose()
         {
-            if (PathFindingKnowledge != null)
+            if (pathFindingKnowledge != null)
             {
-                var know = PathFindingKnowledge;
-                PathFindingKnowledge = null;
+                var know = pathFindingKnowledge;
+                pathFindingKnowledge = null;
                 know.ReleasePathQueryTask(Id);
-                Id = 0;
-                Corners?.Dispose();
-                Corners = null;
-                Start = default;
-                Destination = default;
-                Status = QueryStatus.Inactive;
-                Type = NavMeshUseType.Auto;
             }
+            Id = 0;
+            Corners?.Dispose();
+            Corners = null;
+            Start = default;
+            Destination = default;
+            Status = QueryStatus.Inactive;
+            Type = NavMeshUseType.Auto;
+            TargetId = 0;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

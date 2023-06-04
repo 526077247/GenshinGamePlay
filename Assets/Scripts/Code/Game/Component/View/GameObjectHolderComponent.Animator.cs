@@ -15,7 +15,7 @@ namespace TaoTie
             }
         }
 
-        private void UpdateMotionFlag(AIMoveSpeedLevel level)
+        private void UpdateMotionFlag(MotionFlag level)
         {
 	        if (fsm == null) return;
             fsm.SetData(FSMConst.MotionFlag,(int)level);

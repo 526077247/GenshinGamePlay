@@ -29,6 +29,7 @@ namespace TaoTie
                 {
                     //todo:接入navmesh
                     task.Status = QueryStatus.Fail;
+                    Log.Error("未接入navmesh");
                 }
             }
         }

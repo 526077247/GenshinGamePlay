@@ -9,5 +9,6 @@ namespace TaoTie
     {
 	    public MotionFlag MotionFlag;
 	    public Vector3 Direction;
+	    public MotionDirection MotionDirection;
     }
 }

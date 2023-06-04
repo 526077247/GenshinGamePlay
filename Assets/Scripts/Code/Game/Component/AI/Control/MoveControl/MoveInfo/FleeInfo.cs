@@ -44,7 +44,7 @@ namespace TaoTie
                 {
                     targetPosition = (Vector3)FleePoint,
                     cannedTurnSpeedOverride = data.TurnSpeedOverride,
-                    speedLevel = (AIMoveSpeedLevel)data.SpeedLevel,
+                    speedLevel = (MotionFlag)data.SpeedLevel,
                 };
 
                 taskHandler.CreateGoToTask(param);
@@ -103,7 +103,7 @@ namespace TaoTie
             {
                 targetPosition = (Vector3)FleePoint,
                 cannedTurnSpeedOverride = data.TurnSpeedOverride,
-                speedLevel = (AIMoveSpeedLevel)data.SpeedLevel,
+                speedLevel = (MotionFlag)data.SpeedLevel,
             };
 
             taskHandler.CreateGoToTask(param);
@@ -141,7 +141,7 @@ namespace TaoTie
             fleeDirection.y = 0;
             fleeDirection = fleeDirection.normalized;
 
-            fleeDirection = Quaternion.AngleAxis(randomAngle, knowledge.AiOwnerEntity.Up) * fleeDirection * randomDistance;
+            fleeDirection = Quaternion.AngleAxis(randomAngle, knowledge.Entity.Up) * fleeDirection * randomDistance;
 
             FleePoint = knowledge.CurrentPos + fleeDirection;
 

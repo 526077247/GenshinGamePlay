@@ -72,7 +72,7 @@ namespace TaoTie
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
         }
 
-        public void TryMove(Vector3 direction, MotionFlag flag)
+        public void TryMove(Vector3 direction, MotionFlag flag, MotionDirection mDirection)
         {
             if (canMove)
             {
@@ -84,7 +84,7 @@ namespace TaoTie
             }
             if (direction != Vector3.zero)
             {
-	            MoveStart(flag);
+	            MoveStart(flag, mDirection);
             }
             else
             {
@@ -103,7 +103,7 @@ namespace TaoTie
 	        }
 	        if (direction != Vector3.zero)
 	        {
-		        MoveStart(moveInput.MotionFlag);
+		        MoveStart(moveInput.MotionFlag, moveInput.MotionDirection);
 	        }
 	        else
 	        {
@@ -122,17 +122,23 @@ namespace TaoTie
             this.canTurn = canTurn;
         }
 
-        private void MoveStart(MotionFlag flag)
+        private void MoveStart(MotionFlag flag, MotionDirection mDirection)
         {
 	        moveInput.MotionFlag = flag;
-            FsmComponent.SetData(FSMConst.MotionFlag, 2);
+	        moveInput.MotionDirection = mDirection;
+            FsmComponent.SetData(FSMConst.MotionFlag, (int)flag);
+            if(FsmComponent.KeyExist(FSMConst.MotionDirection))
+				FsmComponent.SetData(FSMConst.MotionDirection, (int)mDirection);
         }
 
         private void MoveStop()
         {
 	        RotateSpeed = 180;
 	        moveInput.MotionFlag = MotionFlag.Idle;
+	        moveInput.MotionDirection = MotionDirection.Idle;
             FsmComponent.SetData(FSMConst.MotionFlag, 0);
+            if(FsmComponent.KeyExist(FSMConst.MotionDirection))
+				FsmComponent.SetData(FSMConst.MotionDirection, 0);
         }
 
         public void Update()

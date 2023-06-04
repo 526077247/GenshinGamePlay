@@ -5,8 +5,7 @@ namespace TaoTie
 {
     public class AILocomotionHandler
     {
-        public AIKnowledge aiKnowledge;
-        public AIPathfindingUpdater pathfinder;
+        public AIKnowledge knowledge;
         public LocoBaseTask currentTask;
         public LocoTaskState currentState;
         private float? _originalYawSpeed;
@@ -15,8 +14,7 @@ namespace TaoTie
         {
             public bool scripted;
             public Vector3 targetPosition;
-            public AIMoveSpeedLevel speedLevel;
-            public PathQueryTask pathQuery;
+            public MotionFlag speedLevel;
             public LocoBaseTask.ObstacleHandling obstacleHandling;
             public float cannedTurnSpeedOverride;
             public bool delayStopping;
@@ -29,9 +27,9 @@ namespace TaoTie
 
         public struct ParamFacingMove
         {
-            public Entity anchor;
-            public AIMoveSpeedLevel speedLevel;
-            // public VCMoveData.MotionDirection movingDirection;
+            public Unit anchor;
+            public MotionFlag speedLevel;
+            public MotionDirection movingDirection;
             public float duration;
         }
 
@@ -40,7 +38,7 @@ namespace TaoTie
 
             public Entity anchorEntity;
             public Vector3? anchorFixedPoint;
-            public AIMoveSpeedLevel speedLevel;
+            public MotionFlag speedLevel;
             public float cannedTurnSpeedOverride;
             public bool spacial;
             public bool spacialRoll;
@@ -59,16 +57,15 @@ namespace TaoTie
         {
             public Unit anchor;
             public bool useMeleeSlot;
-            public AIMoveSpeedLevel speedLevel;
+            public MotionFlag speedLevel;
             public float turnSpeed;
             public float targetAngle;
             public float stopDistance;
         }
 
-        public AILocomotionHandler(AIKnowledge knowledge, AIPathfindingUpdater pPathfinding)
+        public AILocomotionHandler(AIKnowledge knowledge)
         {
-            aiKnowledge = knowledge;
-            pathfinder = pPathfinding;
+            this.knowledge = knowledge;
             currentState = LocoTaskState.Finished;
         }
 
@@ -92,7 +89,7 @@ namespace TaoTie
             if (currentState == LocoTaskState.Running)
             {
                 currentTask.UpdateLoco(this, currentTransform, ref currentState);
-                aiKnowledge.Mover.TryMove(currentTask.GetDestination() - currentTransform.pos);
+                knowledge.Mover.TryMove(currentTask.GetDestination() - currentTransform.pos);
             }
 
         }
@@ -110,22 +107,25 @@ namespace TaoTie
 
         public void CreateGoToTask(ParamGoTo param)
         {
-            if (param.pathQuery == null)
-            {
-                param.pathQuery = aiKnowledge.PathFindingKnowledge.CreatePathQueryTask(aiKnowledge.CurrentPos,
-                    param.targetPosition, param.useNavmesh);
-            }
             GoToTask goToTask = new GoToTask();
-            goToTask.Init(aiKnowledge, param);
+            goToTask.Init(knowledge, param);
             CreateTask_Internal(goToTask);
         }
-        public void CreateFacingMoveTask(ParamFacingMove param) {} 
+
+        public void CreateFacingMoveTask(ParamFacingMove param)
+        {
+            FacingMoveTask facingMoveTask = new FacingMoveTask();
+            facingMoveTask.Init(knowledge, param);
+
+
+            CreateTask_Internal(facingMoveTask);
+        } 
         public void CreateSurroundDashTask(ParamSurroundDash param) {}
 
         public void CreateRotationTask(ParamRotation param)
         {
             RotationTask rotationTask = new RotationTask();
-            rotationTask.Init(aiKnowledge, param);
+            rotationTask.Init(knowledge, param);
 
 
             CreateTask_Internal(rotationTask);
@@ -134,7 +134,7 @@ namespace TaoTie
         public void CreateFollowMoveTask(ParamFollowMove param)
         {
             FollowMoveTask followMoveTask = new FollowMoveTask();
-            followMoveTask.Init(aiKnowledge, param);
+            followMoveTask.Init(knowledge, param);
 
 
             CreateTask_Internal(followMoveTask);
@@ -158,29 +158,33 @@ namespace TaoTie
                 currentTask.OnCloseTask(this);
                 currentTask = null;
             }
-            aiKnowledge.Mover.TryMove(Vector3.zero);
+            knowledge.Mover.TryMove(Vector3.zero);
         }
         
-        public void UpdateMotionFlag(AIMoveSpeedLevel newSpeed)
+        public void UpdateMotionFlag(MotionFlag newSpeed, MotionDirection direction = MotionDirection.Forward)
         {
-            if (newSpeed == AIMoveSpeedLevel.Idle)
+            if (newSpeed == MotionFlag.Idle)
             {
-                aiKnowledge.Mover.TryMove(Vector3.zero);
+                knowledge.Mover.TryMove(Vector3.zero);
                 return;
             }
             if(currentTask==null) return;
-            if(!currentTask.stopped)
-                aiKnowledge.Mover.ForceLookAt(currentTask.GetDestination());
-            aiKnowledge.Mover.TryMove(currentTask.GetDestination() - aiKnowledge.AiOwnerEntity.Position, (MotionFlag)newSpeed);
+            knowledge.Mover.TryMove(currentTask.GetDestination() - knowledge.Entity.Position, newSpeed, direction);
         }
 
-        public void UpdateTaskSpeed(AIMoveSpeedLevel newSpeed)
+        public void UpdateTaskSpeed(MotionFlag newSpeed)
         {
             currentTask.UpdateLocoSpeed(newSpeed);
         }
         public void UpdateTurnSpeed(float speed)
         {
-            aiKnowledge.Mover.RotateSpeed = speed;
+            knowledge.Mover.RotateSpeed = speed;
+        }
+
+        public void ForceLookAt()
+        {
+            if(currentTask==null) return;
+            knowledge.Mover.ForceLookAt(currentTask.GetDestination());
         }
     }
 }

@@ -30,7 +30,7 @@ namespace TaoTie
                 bool useMeleeSlot = data.UseMeleeSlot;
                 float turnSpeed = data.TurnSpeedOverride;
 
-                AIMoveSpeedLevel speedLevel = data.SpeedLevel;
+                MotionFlag speedLevel = data.SpeedLevel;
 
                 AILocomotionHandler.ParamFollowMove param = new AILocomotionHandler.ParamFollowMove
                 {
@@ -56,6 +56,11 @@ namespace TaoTie
                 float stopDistance = data.StopDistance;
                 float distance = Vector3.Distance(aiKnowledge.CurrentPos,
                     aiKnowledge.TargetKnowledge.TargetEntity.Position);
+                
+                if (distance < data.InnerDistance)
+                {
+                    taskHandler.UpdateTaskSpeed(data.SpeedLevelInner);
+                }
                 if (distance < stopDistance)
                 {
                     Status = ChargeStatus.Inactive;

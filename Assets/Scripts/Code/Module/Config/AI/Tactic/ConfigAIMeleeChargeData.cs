@@ -6,7 +6,7 @@ namespace TaoTie
     public partial class ConfigAIMeleeChargeData
     {
         [NinoMember(1)]
-        public AIMoveSpeedLevel SpeedLevel;
+        public MotionFlag SpeedLevel;
         [NinoMember(2)]
         public float TurnSpeedOverride = 20f;
         [NinoMember(3)]
@@ -18,7 +18,7 @@ namespace TaoTie
         [NinoMember(6)]
         public float InnerDistance;
         [NinoMember(7)]
-        public int SpeedLevelInner;
+        public MotionFlag SpeedLevelInner = MotionFlag.Run;
         [NinoMember(8)]
         public bool UseMeleeSlot;
     }

@@ -21,7 +21,7 @@ namespace TaoTie
         private ThreatInfo mainTarget = null;
 
         //强制离开战斗
-        private bool _forceLeaveCombat = false;
+        private bool forceLeaveCombat = false;
         
         private readonly List<ThreatInfo> disqualifiedCandidates = new List<ThreatInfo>();
         private readonly List<ThreatInfo> disqualifiedThreats = new List<ThreatInfo>();
@@ -29,9 +29,38 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            this.aiComponent = knowledge.AiOwnerEntity.GetComponent<AIComponent>();
+            knowledge.CombatComponent.afterBeAttack += AfterBeAttack;
+            this.aiComponent = knowledge.Entity.GetComponent<AIComponent>();
         }
 
+        protected override void ClearInternal()
+        {
+            base.ClearInternal();
+            knowledge.CombatComponent.afterBeAttack -= AfterBeAttack;
+            candidateList.Clear();
+            threatList.Clear();
+            disqualifiedCandidates.Clear();
+            disqualifiedThreats.Clear();
+            aiComponent = null;
+        }
+
+        private void AfterBeAttack(AttackResult result, CombatComponent other)
+        {
+            var sourcelessHitAttractionRange = knowledge.SensingKnowledge.SourcelessHitAttractionRange;
+            if (other.GetParent<Entity>() is Unit unit)
+            {
+                if (result.AttackType == AttackType.Range)
+                {
+                    var currentPos = knowledge.CurrentPos;
+                    float distanceToTarget = Vector3.Distance(currentPos, unit.Position);
+                    if (distanceToTarget < sourcelessHitAttractionRange) return;
+                }
+
+                ExternalAddCandidate(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
+                ExternalAddThreat(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
+                ForceEnterCombat();
+            }
+        }
         protected override void UpdateMainThreadInternal()
         {
             if (!knowledge.ThreatKnowledge.Config.Enable)
@@ -54,7 +83,7 @@ namespace TaoTie
         /// <param name="pos"></param>
         /// <param name="reason"></param>
         /// <param name="threatIncrementAmount"></param>
-        public void ExternalAddThreat(int targetID, Vector3 pos, ThreatAddReason reason, float threatIncrementAmount)
+        public void ExternalAddThreat(long targetID, Vector3 pos, ThreatAddReason reason, float threatIncrementAmount)
         {
             if (threatList.TryGetValue(targetID, out var target))
             {
@@ -62,22 +91,24 @@ namespace TaoTie
             }
             else
             {
-                Log.Debug("Add threat value fail, do not have this target");
+                ThreatInfo info = new ThreatInfo(targetID, pos, reason);
+                info.IncreaseThreat(threatIncrementAmount);
+                threatList.Add(info.Id, info);
             }
         }
-        
-        public void ExternalAddCandidate(int targetID, Vector3 pos, ThreatAddReason reason, float temperatureIncrementAmount)
+
+        public void ExternalAddCandidate(long targetID, Vector3 pos, ThreatAddReason reason, float temperatureIncrementAmount)
         {
             //调用AISensingUpdater.CanSignalBeNoticed()方法进行check 是否能加入感知列表
             if (candidateList.TryGetValue(targetID, out var target))
             {
                 target.ThreatPos = pos;
-                target.Temperature += temperatureIncrementAmount;
+                target.IncreaseTemper(temperatureIncrementAmount);
             }
             else
             {
                 ThreatInfo info = new ThreatInfo(targetID, pos, reason);
-                info.Temperature = temperatureIncrementAmount;
+                info.IncreaseTemper(temperatureIncrementAmount);
                 candidateList.Add(info.Id, info);
             }
         }
@@ -166,13 +197,13 @@ namespace TaoTie
             {
                 float distanceToSensible = sensible.Value.Distance;
 
-                var feelRange = knowledge.SensingKnowledge.Setting.FeelRange;
+                var feelRange = knowledge.SensingKnowledge.FeelRange;
 
                 if (distanceToSensible <= feelRange)//Feel
                 {
                     ProcessSensible(sensible.Value, ThreatAddReason.Feel);
                 }
-                else if (knowledge.SensingKnowledge.Setting.EnableVision)//Vision
+                else if (knowledge.SensingKnowledge.EnableVision)//Vision
                 {
                     ProcessSensible(sensible.Value, ThreatAddReason.Vision);
                 }
@@ -215,12 +246,9 @@ namespace TaoTie
             if (threatLevelChange)
             {
                 aiComponent.OnThreatLevelChanged?.Invoke(knowledge.ThreatLevelOld, knowledge.ThreatLevel);
-                knowledge.AiOwnerEntity?.GetComponent<PoseFSMComponent>()?
+                knowledge.Entity?.GetComponent<PoseFSMComponent>()?
                     .SetData(FSMConst.Alertness, (int)knowledge.ThreatLevel);
-                if (!knowledge.CombatComponent.IsInCombat)
-                {
-                    knowledge.CombatComponent.IsInCombat = knowledge.ThreatLevel == ThreatLevel.Alert;
-                }
+                knowledge.CombatComponent.IsInCombat = knowledge.ThreatLevel == ThreatLevel.Alert;
             }
 
             knowledge.ThreatKnowledge.MainThreat = mainTarget;
@@ -341,7 +369,7 @@ namespace TaoTie
         {
             var timeNow = GameTimerManager.Instance.GetTimeNow();
             var distanceFromDefendCenter = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, threatInfo.ThreatPos);
-            var distanceFromSelf = Vector3.Distance(knowledge.AiOwnerEntity.Position, threatInfo.ThreatPos);
+            var distanceFromSelf = Vector3.Distance(knowledge.Entity.Position, threatInfo.ThreatPos);
 
             //防守区域范围
             var defendRange = knowledge.DefendAreaKnowledge.DefendRange;
@@ -431,6 +459,16 @@ namespace TaoTie
             {
                 Log.Info("Threat List dont contain target id {0}.", id);
             }
+        }
+
+        public void ForceLeaveCombat()
+        {
+            forceLeaveCombat = true;
+        }
+
+        public void ForceEnterCombat()
+        {
+            knowledge.Temperature = ThreatInfo.TEMPERVAL_ALERT;
         }
     }
 }

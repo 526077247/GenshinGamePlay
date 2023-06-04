@@ -5,7 +5,7 @@
     /// </summary>
     public class AIMoveUpdater : BrainModuleBase
     {
-        private FsmComponent fsm => knowledge.AiOwnerEntity.GetComponent<FsmComponent>();
+        private FsmComponent fsm => knowledge.Entity.GetComponent<FsmComponent>();
         
         protected override void UpdateMainThreadInternal()
         {

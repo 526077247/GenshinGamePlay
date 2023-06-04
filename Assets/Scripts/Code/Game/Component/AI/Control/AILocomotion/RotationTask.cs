@@ -12,7 +12,7 @@ namespace TaoTie
             base.Init(knowledge);
             targetPosition = param.targetPosition;
             timeoutTick = GameTimerManager.Instance.GetTimeNow() + TIMEOUT;
-            Messager.Instance.Broadcast(aiKnowledge.AiOwnerEntity.Id, MessageId.UpdateTurnTargetPos, targetPosition,
+            Messager.Instance.Broadcast(base.knowledge.Entity.Id, MessageId.UpdateTurnTargetPos, targetPosition,
                 TIMEOUT);
         }
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)

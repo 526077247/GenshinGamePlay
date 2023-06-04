@@ -3670,8 +3670,8 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  currentPanOffset: {x: -76.28265, y: 149.34634}
-  currentZoom: 0.8
+  currentPanOffset: {x: 218.27974, y: 232.14644}
+  currentZoom: 0.3
   graphAreaIncludingTab:
     serializedVersion: 2
     x: 0
@@ -3682,9 +3682,9 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1268.75
-    height: 632.5
-  windowID: 20
+    width: 3383.3333
+    height: 1686.6666
+  windowID: 21
   scene: Init
   startNode: {fileID: -4694229386027097793}
   leftInRightOut: 1
@@ -4032,7 +4032,7 @@ MonoBehaviour:
       Data: 12|DaGenGraph.Edge, DaGenGraph
     - Name: m_ID
       Entry: 1
-      Data: ccbd532b-fd05-4dc9-838a-027562101d86
+      Data: 854038f5-ccae-4f80-b606-e31d50188923
     - Name: m_InputEdgePoint
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -4219,7 +4219,7 @@ MonoBehaviour:
   m_CanBeDeleted: 1
   m_Height: 128
   m_Width: 216
-  m_X: 1188
+  m_X: 1176
   m_Y: 360
   m_MinimumInputPortsCount: 1
   m_MinimumOutputPortsCount: 0
@@ -5090,7 +5090,7 @@ MonoBehaviour:
       Data: 3|DaGenGraph.Edge, DaGenGraph
     - Name: m_ID
       Entry: 1
-      Data: ccbd532b-fd05-4dc9-838a-027562101d86
+      Data: 854038f5-ccae-4f80-b606-e31d50188923
     - Name: m_InputEdgePoint
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -5298,10 +5298,10 @@ MonoBehaviour:
       Data: 0
     - Name: Move
       Entry: 3
-      Data: 11
+      Data: 12
     - Name: Tactic
       Entry: 3
-      Data: 111
+      Data: 105
     - Name: 
       Entry: 8
       Data: 
@@ -5311,7 +5311,7 @@ MonoBehaviour:
   m_Height: 80
   m_Width: 216
   m_X: 1512
-  m_Y: 384
+  m_Y: 396
   m_MinimumInputPortsCount: 1
   m_MinimumOutputPortsCount: 0
   m_GraphId: ed5ddaa0-2fc6-4f65-82f8-ec98b05e4181

@@ -7,8 +7,8 @@ namespace TaoTie
     [NinoSerialize]
     public class ConfigAISensingSetting
     {
-        [LabelText("敏感性")]
-        public float Sensitivity;
+        [LabelText("敏感性")][Min(0)]
+        public float Sensitivity = 1;
         [LabelText("启用视觉")]
         public bool EnableVision;
         [LabelText("可视范围(m)")][ShowIf(nameof(EnableVision))]

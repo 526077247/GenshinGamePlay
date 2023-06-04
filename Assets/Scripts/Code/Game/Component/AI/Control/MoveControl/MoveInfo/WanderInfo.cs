@@ -59,7 +59,7 @@ namespace TaoTie
             {
                 targetPosition = WanderToPosCandidate,
                 cannedTurnSpeedOverride = turnSpeed,
-                speedLevel = (AIMoveSpeedLevel)data.SpeedLevel,
+                speedLevel = (MotionFlag)data.SpeedLevel,
             };
 
             taskHandler.CreateGoToTask(param);

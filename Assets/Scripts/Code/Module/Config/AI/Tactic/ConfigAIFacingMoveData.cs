@@ -6,7 +6,7 @@ namespace TaoTie
     public partial class ConfigAIFacingMoveData
     {
         [NinoMember(1)]
-        public AIMoveSpeedLevel SpeedLevel;
+        public MotionFlag SpeedLevel;
         [NinoMember(2)]
         public float RangeMin;
         [NinoMember(3)]

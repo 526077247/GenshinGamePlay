@@ -152,7 +152,7 @@ namespace TaoTie
                         aiDebug.TargetPos = null;
                     }
 
-                    aiDebug.ViewRange = knowledge.SensingKnowledge.Setting.ViewRange;
+                    aiDebug.ViewRange = knowledge.SensingKnowledge.ViewRange;
                     aiDebug.Alertness = knowledge.ThreatLevel.ToString();
                 }
             }

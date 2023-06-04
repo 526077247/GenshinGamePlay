@@ -20,9 +20,9 @@ namespace TaoTie
             Config = null;
         }
         
-        public float GetAlmostReachDistance(AIMoveSpeedLevel speed)
+        public float GetAlmostReachDistance(MotionFlag speed)
         {
-            if (speed == AIMoveSpeedLevel.Walk)
+            if (speed == MotionFlag.Walk)
                 return Config.AlmostReachedDistanceWalk;
             else
                 return Config.AlmostReachedDistanceRun;

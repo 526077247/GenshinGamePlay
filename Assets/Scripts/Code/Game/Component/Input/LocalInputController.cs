@@ -60,7 +60,7 @@ namespace TaoTie
 
         public void TryMove(Vector3 direction)
         {
-            MoveComponent.TryMove(direction, MotionFlag.Run);
+            MoveComponent.TryMove(direction, MotionFlag.Run, MotionDirection.Forward);
         }
     }
 }

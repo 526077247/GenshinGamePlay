@@ -6,10 +6,10 @@ namespace TaoTie
     {
         public bool delayStopping;
         protected Vector3 destination;
-        protected AIMoveSpeedLevel speedLevel;
+        protected MotionFlag speedLevel;
         protected long startTick;
         protected ObstacleHandling obstacleHandling;
-        protected AIKnowledge aiKnowledge;
+        protected AIKnowledge knowledge;
         protected const float CHECKFAIL_PRE_TIME = 1.5f;
         protected Vector3? prevPos;
         protected AITimer moveFailTimer;
@@ -44,24 +44,22 @@ namespace TaoTie
         public abstract void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state);
 
 
-        public virtual void UpdateLocoSpeed(AIMoveSpeedLevel speed)
+        public virtual void UpdateLocoSpeed(MotionFlag speed)
         {
             this.speedLevel = speed;
         }
 
         public virtual Vector3 GetDestination() => destination;
-        public virtual bool NeedPathfinder() => default;
 
         public virtual void OnCloseTask(AILocomotionHandler handler)
         {
             stopped = true;
             handler.UpdateMotionFlag(0);
         }
-
-        public virtual void ShowPath() {}
+        
         protected void Init(AIKnowledge knowledge)
         {
-            this.aiKnowledge = knowledge;
+            this.knowledge = knowledge;
             this.startTick = GameTimerManager.Instance.GetTimeNow();
         }
 
