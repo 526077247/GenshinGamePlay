@@ -15,8 +15,11 @@
                 {
                     var old = knowledge.PoseID;
                     knowledge.PoseID = poseFsm.DefaultFsm.PoseID;
-                    Messager.Instance.Broadcast(knowledge.Entity.Id,MessageId.PoseChange,old,knowledge.PoseID);
                     knowledge.FacingMoveTactic.SwitchSetting(knowledge.PoseID);
+                    knowledge.MeleeChargeTactic.SwitchSetting(knowledge.PoseID);
+                    knowledge.FleeTactic.SwitchSetting(knowledge.PoseID);
+                    knowledge.WanderTactic.SwitchSetting(knowledge.PoseID);
+                    Messager.Instance.Broadcast(knowledge.Entity.Id,MessageId.PoseChange,old,knowledge.PoseID);
                 }
             }
         }

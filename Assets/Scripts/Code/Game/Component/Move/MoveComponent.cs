@@ -151,6 +151,7 @@ namespace TaoTie
 		void HandlerForward()
 		{
 			if(!canTurn) return;
+			if(!(parent is Avatar)) return;
 			var lookDir = CalculateLookDirection();
 			if (lookDir != Vector3.zero)
 			{

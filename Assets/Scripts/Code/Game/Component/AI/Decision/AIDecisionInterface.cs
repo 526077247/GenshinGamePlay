@@ -91,7 +91,6 @@ namespace TaoTie
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
 			if (knowledge.MoveControlState.MeleeCharge.Status == MeleeChargeInfo.ChargeStatus.Charging) return true;
-			knowledge.MeleeChargeTactic.SwitchSetting(knowledge.PoseID);
 			float meleeChargeStartDistanceMin = knowledge.MeleeChargeTactic.Data.StartDistanceMin;
 			float meleeChargeStartDistanceMax = knowledge.MeleeChargeTactic.Data.StartDistanceMax;
 			

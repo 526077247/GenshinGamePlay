@@ -168,7 +168,7 @@ namespace TaoTie
                 knowledge.Mover.TryMove(Vector3.zero);
                 return;
             }
-            if(currentTask==null) return;
+            if(currentTask == null) return;
             knowledge.Mover.TryMove(currentTask.GetDestination() - knowledge.Entity.Position, newSpeed, direction);
         }
 
