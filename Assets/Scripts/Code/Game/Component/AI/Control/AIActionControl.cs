@@ -10,12 +10,14 @@ namespace TaoTie
         private AIActionControlState actionState;
         private List<AISkillInfo> validCandidates;
         private AIComponent component;
+        private FsmComponent fsm;
 
         protected override void InitInternal()
         {
             base.InitInternal();
             actionState = knowledge.ActionControlState;
             component = knowledge.Entity.GetComponent<AIComponent>();
+            fsm = knowledge.Entity.GetComponent<FsmComponent>();
         }
 
         public void ExecuteAction(AIDecision decision)
@@ -83,9 +85,13 @@ namespace TaoTie
                 var targetKnowledge = knowledge.TargetKnowledge;
                 var currentSkill = actionState.Skill;
 
-                var castRangeMin = currentSkill.Config.CastCondition.CastRangeMin;
-                var castRangeMax = currentSkill.Config.CastCondition.CastRangeMax;
-
+                float castRangeMin = -1;
+                float castRangeMax = -1;
+                if (currentSkill.Config.CastCondition != null)
+                {
+                    castRangeMin = currentSkill.Config.CastCondition.CastRangeMin;
+                    castRangeMax = currentSkill.Config.CastCondition.CastRangeMax;
+                }
                 var targetPosition = knowledge.TargetKnowledge.TargetPosition;
                 if (knowledge.TargetKnowledge.TargetType == AITargetType.EntityTarget)
                 {
@@ -109,6 +115,10 @@ namespace TaoTie
                     actionState.Status = SkillStatus.Prepared;
                 }
 
+                if (actionState.Skill.Config.FaceTarget)
+                {
+                    knowledge.Mover.ForceLookAt(targetPosition);
+                }
             }
             
             if (actionState.Status == SkillStatus.Prepared)
@@ -128,11 +138,6 @@ namespace TaoTie
                     targetPosition.y = 0;
                     currentPosition.y = 0;
 
-                    if (skillInfo.Config.FaceTarget)
-                    {
-                        knowledge.Mover.ForceLookAt(targetPosition);
-                    }
-
                     CastSkill();
                     actionState.Status = SkillStatus.Playing;
                 }
@@ -146,12 +151,9 @@ namespace TaoTie
 
                 if (skillInfo.Config.StateIds?.Length > 0)
                 {
-                    if (actionState.CurrentStateID == null)
-                        return;
-
                     for (int i = 0; i < skillInfo.Config.StateIds.Length; i++)
                     {
-                        if (actionState.CurrentStateID == skillInfo.Config.StateIds[i])
+                        if (fsm.DefaultFsm.CurrentStateName == skillInfo.Config.StateIds[i])
                         {
                             isFinished = false;
                             break;
@@ -209,7 +211,7 @@ namespace TaoTie
 
             var targetPos = currentPosition;
 
-            if (targetDistanceXZ > skillInfo.Config.CastCondition.CastRangeMax)
+            if (skillInfo.Config.CastCondition!=null && targetDistanceXZ > skillInfo.Config.CastCondition.CastRangeMax)
             {
                 var direction = (currentPosition - targetKnowledge.TargetPosition).normalized * skillInfo.Config.CastCondition.CastRangeMax;
                 targetPos = targetKnowledge.TargetPosition + direction;

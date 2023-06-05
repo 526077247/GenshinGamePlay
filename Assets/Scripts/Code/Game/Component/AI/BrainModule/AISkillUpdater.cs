@@ -25,7 +25,7 @@ namespace TaoTie
                     //视线被遮挡
                     if(skill.Config.NeedLineOfSight && !knowledge.TargetKnowledge.HasLineOfSight) continue;
                     //自己cd
-                    if (skill.NextAvailableUseTick < timeNow) continue;
+                    if (skill.NextAvailableUseTick > timeNow) continue;
                     //ai公共id
                     if (!skill.Config.IgnoreGCD && isInGcd) continue;
 

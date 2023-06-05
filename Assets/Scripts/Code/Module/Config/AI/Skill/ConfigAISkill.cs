@@ -25,8 +25,8 @@ namespace TaoTie
 
         #region 自身cd
 
-        [NinoMember(7)][BoxGroup("自身cd")]
-        public int CD;
+        [NinoMember(7)][BoxGroup("自身cd")][Min(100)]
+        public int CD = 10000;
         [NinoMember(8)][LabelText("自身cd增长随机最大值")][BoxGroup("自身cd")]
         public int CdUpperRange;
 

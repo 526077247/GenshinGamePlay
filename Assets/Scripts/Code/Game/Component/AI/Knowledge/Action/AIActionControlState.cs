@@ -8,7 +8,6 @@ namespace TaoTie
         public AISkillInfo Skill;
         public SkillStatus Status;
         private float QuerySkillDiscardTick;
-        public string CurrentStateID;
 
         public static AIActionControlState Create()
         {
@@ -21,13 +20,11 @@ namespace TaoTie
             Skill = null;
             Status = default;
             QuerySkillDiscardTick = 0;
-            CurrentStateID = null;
         }
 
         public void Reset()
         {
             Skill = null;
-            CurrentStateID = null;
             Status = SkillStatus.Inactive;
         }
     }
