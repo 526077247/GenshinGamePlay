@@ -612,7 +612,10 @@ namespace TaoTie
 		/// <returns></returns>
 		bool IsOpenCheck()
 		{
-			return Define.Debug;
+#if UNITY_EDITOR
+			return true;
+#endif
+			return false;
 		}
 
 		/// <summary>

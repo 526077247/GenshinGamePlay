@@ -20,7 +20,6 @@ namespace TaoTie
 
         public void ExecuteAction(AIDecision decision)
         {
-            //Inactive Status: no skill stand by, select new skill
             if (actionState.Status == SkillStatus.Inactive)
             {
                 if (decision.Act == ActDecision.OnAware)
@@ -79,7 +78,6 @@ namespace TaoTie
                 }
             }
 
-            //Preparing Status: in order to meet the castRange condition
             if (actionState.Status == SkillStatus.Preparing)
             {
                 var targetKnowledge = knowledge.TargetKnowledge;
@@ -112,8 +110,7 @@ namespace TaoTie
                 }
 
             }
-
-            //Prepared Status: meet all the requirements, cast skill
+            
             if (actionState.Status == SkillStatus.Prepared)
             {
                 if (decision.Act == ActDecision.CombatSkill)
@@ -130,18 +127,17 @@ namespace TaoTie
 
                     targetPosition.y = 0;
                     currentPosition.y = 0;
-                    //face target all the time when playing the skill
+
                     if (skillInfo.Config.FaceTarget)
                     {
-                        // aiKnowledge.desiredForward = (targetPosition - currentPosition).normalized;
+                        knowledge.Mover.ForceLookAt(targetPosition);
                     }
 
                     CastSkill();
                     actionState.Status = SkillStatus.Playing;
                 }
             }
-
-            //Playing Status: play the skill's animation
+            
             if (actionState.Status == SkillStatus.Playing)
             {
                 var skillInfo = actionState.Skill;
@@ -211,7 +207,6 @@ namespace TaoTie
 
             var targetDistanceXZ = targetKnowledge.TargetDistanceXZ;
 
-            //Set skill anchor position
             var targetPos = currentPosition;
 
             if (targetDistanceXZ > skillInfo.Config.CastCondition.CastRangeMax)
@@ -241,7 +236,6 @@ namespace TaoTie
             }
 
 
-            //Reset action control state
             actionState.Reset();
         }
 
@@ -265,7 +259,6 @@ namespace TaoTie
                 }
             }
 
-            //Reset action control state
             actionState.Reset();
         }
     }

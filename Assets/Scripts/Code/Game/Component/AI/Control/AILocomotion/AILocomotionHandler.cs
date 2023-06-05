@@ -183,7 +183,7 @@ namespace TaoTie
 
         public void ForceLookAt()
         {
-            if(currentTask==null) return;
+            if (currentTask == null) return;
             knowledge.Mover.ForceLookAt(currentTask.GetDestination());
         }
     }

@@ -35,8 +35,9 @@ namespace TaoTie
 
         protected override void ClearInternal()
         {
+            if (knowledge.CombatComponent != null)
+                knowledge.CombatComponent.afterBeAttack -= AfterBeAttack;
             base.ClearInternal();
-            knowledge.CombatComponent.afterBeAttack -= AfterBeAttack;
             candidateList.Clear();
             threatList.Clear();
             disqualifiedCandidates.Clear();

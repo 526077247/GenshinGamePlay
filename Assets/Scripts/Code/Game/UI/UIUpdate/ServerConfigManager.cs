@@ -19,8 +19,9 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
-            if(Define.Debug)
+#if UNITY_EDITOR
                 this.curConfig = ServerConfigCategory.Instance.Get(PlayerPrefs.GetInt(this.serverKey, this.defaultServer));
+#endif
             if (this.curConfig == null)
             {
                 foreach (var item in ServerConfigCategory.Instance.GetAll())
@@ -55,8 +56,9 @@ namespace TaoTie
             if(conf!=null)
             {
                 this.curConfig = conf;
-                if (Define.Debug)
-                    PlayerPrefs.SetInt(this.serverKey, id);
+#if UNITY_EDITOR
+                PlayerPrefs.SetInt(this.serverKey, id);
+#endif
             }
             return this.curConfig;
 

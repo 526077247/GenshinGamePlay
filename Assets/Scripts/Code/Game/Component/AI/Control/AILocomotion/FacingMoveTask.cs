@@ -16,6 +16,8 @@ namespace TaoTie
         private float finishTick;
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
         {
+            if(anchor!=null)
+                destination = anchor.Position;
             if (innerState == FacingMoveTaskState.Start)
             {
                 handler.UpdateMotionFlag(speedLevel, movingDirection);
@@ -29,6 +31,7 @@ namespace TaoTie
                 {
                     innerState = FacingMoveTaskState.Start;
                 }
+                handler.ForceLookAt();
             }
 
             if (stopped)

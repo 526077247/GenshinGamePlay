@@ -91,8 +91,7 @@ namespace TaoTie
             }
 
             formulaNodeList = templist;
-            if (Define.Debug)
-                Print();
+            // Print();
         }
 
         public void Destroy()
