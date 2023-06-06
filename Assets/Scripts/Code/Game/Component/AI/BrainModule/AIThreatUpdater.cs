@@ -170,14 +170,15 @@ namespace TaoTie
             {
                 float decreaseTemperatureAmount = knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed * deltaTime;
 
-                foreach (var item in candidateList)
+                var keys = candidateList.Keys.ToArray();
+                foreach (var key in keys)
                 {
-                    var candidate = item.Value;
+                    var candidate = candidateList[key];
 
                     candidate.DecreaseTemper(decreaseTemperatureAmount);
                     if (!ValidateCandidate(candidate))
                     {
-                        candidateList.Remove(candidate.Id);
+                        candidateList.Remove(key);
                         disqualifiedCandidates.Add(candidate);
                     }
                 }

@@ -9,9 +9,7 @@
             this.knowledge = aiKnowledge;
             InitInternal();
         }
-        protected virtual void InitInternal()
-        {
-            
-        }
+
+        protected abstract void InitInternal();
     }
 }

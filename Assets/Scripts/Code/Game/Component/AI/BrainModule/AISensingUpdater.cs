@@ -20,7 +20,7 @@ namespace TaoTie
         protected override void InitInternal()
         {
             base.InitInternal();
-            this.aiManager = knowledge.AiManager;
+            aiManager = knowledge.AIManager;
             sensingKnowledge = knowledge.SensingKnowledge;
             enemySensibles = DictionaryComponent<long, SensibleInfo>.Create();
             enemySensiblesPreparation = DictionaryComponent<long, SensibleInfo>.Create();

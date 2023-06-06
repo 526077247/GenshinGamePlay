@@ -31,7 +31,7 @@ namespace TaoTie
 
                     //全局公共组id
                     if (!string.IsNullOrEmpty(skill.Config.PublicCDGroup) &&
-                        !knowledge.AiManager.CanUseSkill(skill.Config.PublicCDGroup,
+                        !knowledge.AIManager.CanUseSkill(skill.Config.PublicCDGroup,
                             knowledge.TargetKnowledge.TargetEntity)) continue;
 
                     //ai公共cd组

@@ -12,11 +12,9 @@ namespace TaoTie
 
         public const float THREATVAL_MIN = 0F;
         public const float THREATVAL_MAX = 99999f;
-        public const float THREATVAL_HIT_ONCE = 20f;
         public const float THREATVAL_MAINTHREATE_DROP = 0.03f;
         public const float THREATVAL_THREATLOST = 1f;
-        //TODO
-        //public const float TIME_HOLDTHREAT_AVATARCHANGED = 2f;
+        public const float TIME_HOLDTHREAT_AVATARCHANGED = 2f;
 
         public long Id;
         public ThreatAddReason AddReason;
@@ -69,13 +67,6 @@ namespace TaoTie
             ThreatValue -= amount;
             if (ThreatValue < THREATVAL_MIN)
                 ThreatValue = THREATVAL_MIN;
-        }
-
-        //TODO 不知道做什么
-        public void Hold(float currentTime)
-        {
-            float lastSensibleTime = LastSeenTime > LastFeelTime ? LastSeenTime : LastFeelTime;
-            LastSeenTime = lastSensibleTime > LastFootstepTime ? lastSensibleTime : LastFootstepTime;
         }
     }
 }

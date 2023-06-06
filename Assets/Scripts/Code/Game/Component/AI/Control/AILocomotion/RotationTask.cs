@@ -4,8 +4,9 @@ namespace TaoTie
 {
     public class RotationTask: LocoBaseTask
     {
+        private const int TIMEOUT = 1000;
+        
         private Vector3 targetPosition;
-        private static readonly int TIMEOUT = 1000;
         private long timeoutTick;
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamRotation param)
         {

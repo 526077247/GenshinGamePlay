@@ -13,14 +13,14 @@ namespace TaoTie
         {
             if (anchor == null)
             {
-                stopped = true;
+                Stopped = true;
                 handler.UpdateMotionFlag(MotionFlag.Idle);
                 state = LocoTaskState.Finished;
             }
             destination = anchor.Position;
-            if (!stopped)
+            if (!Stopped)
             {
-                float distance = Vector3.Distance(currentTransform.pos, destination);
+                float distance = Vector3.Distance(currentTransform.Position, destination);
                 if (distance > stopDistance)
                 {
                     handler.UpdateMotionFlag(speedLevel);
@@ -28,7 +28,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    stopped = true;
+                    Stopped = true;
                     handler.UpdateMotionFlag(MotionFlag.Idle);
                     state = LocoTaskState.Finished;
                 }

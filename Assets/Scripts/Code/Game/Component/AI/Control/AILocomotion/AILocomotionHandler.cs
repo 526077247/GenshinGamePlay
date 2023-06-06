@@ -5,10 +5,10 @@ namespace TaoTie
 {
     public class AILocomotionHandler
     {
-        public AIKnowledge knowledge;
-        public LocoBaseTask currentTask;
+        private AIKnowledge knowledge;
+        private LocoBaseTask currentTask;
         public LocoTaskState currentState;
-        private float? _originalYawSpeed;
+        private float? originalYawSpeed;
         
         public struct ParamGoTo
         {
@@ -89,7 +89,7 @@ namespace TaoTie
             if (currentState == LocoTaskState.Running)
             {
                 currentTask.UpdateLoco(this, currentTransform, ref currentState);
-                knowledge.Mover.TryMove(currentTask.GetDestination() - currentTransform.pos);
+                knowledge.Mover.TryMove(currentTask.GetDestination() - currentTransform.Position);
             }
 
         }

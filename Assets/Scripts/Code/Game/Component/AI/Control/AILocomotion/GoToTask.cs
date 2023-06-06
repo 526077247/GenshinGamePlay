@@ -21,6 +21,7 @@ namespace TaoTie
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamGoTo param)
         {
             base.Init(knowledge);
+            obstacleHandling = param.obstacleHandling;
             speedLevel = param.speedLevel;
             destination = param.targetPosition;
             useNavMesh = param.useNavmesh;
@@ -34,7 +35,7 @@ namespace TaoTie
             if (innerState == GoToTaskState.QueryPathfinder)
             {
                 if(pathQuery!=null) pathQuery.Dispose();
-                pathQuery = knowledge.PathFindingKnowledge.CreatePathQueryTask(currentTransform.pos, destination, useNavMesh);
+                pathQuery = knowledge.PathFindingKnowledge.CreatePathQueryTask(currentTransform.Position, destination, useNavMesh);
                 innerState = GoToTaskState.WaitPathfinder;
             }
 
@@ -51,7 +52,7 @@ namespace TaoTie
                     }
                     else if (pathQuery.Status == QueryStatus.Fail)
                     {
-                        stopped = true;
+                        Stopped = true;
                         state = LocoTaskState.Finished;
                         handler.UpdateMotionFlag(0);
                     }
@@ -64,12 +65,12 @@ namespace TaoTie
 
             if (innerState == GoToTaskState.Moving)
             {
-                var transfomPos = currentTransform.pos;
+                var transfomPos = currentTransform.Position;
                 transfomPos.y = 0;
                 var target = destination;
                 target.y = 0;
 
-                if (!stopped)
+                if (!Stopped)
                 {
                     var currentDistance = Vector3.Distance(transfomPos, target);
                     if (currentDistance <= getCloseDistance)
@@ -77,7 +78,7 @@ namespace TaoTie
                         index++;
                         if (index >= pathQuery.Corners.Count)
                         {
-                            stopped = true;
+                            Stopped = true;
                             state = LocoTaskState.Finished;
                             handler.UpdateMotionFlag(0);
                         }
@@ -110,7 +111,7 @@ namespace TaoTie
         }
         public override void RefreshTask(AILocomotionHandler handler, Vector3 positoin)
         {
-            stopped = false;
+            Stopped = false;
             destination = positoin;
             innerState = GoToTaskState.QueryPathfinder;
         }

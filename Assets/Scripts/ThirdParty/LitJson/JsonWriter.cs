@@ -328,7 +328,19 @@ namespace LitJson
             DoValidation (Condition.Value);
             PutNewline ();
 
-            string str = Convert.ToString (number, number_format);
+            string str;
+            if (double.IsInfinity(number))
+            {
+                str ="\"INFINITY\"";
+            }
+            else if (double.IsNaN(number))
+            {
+                str ="\"NaN\"";
+            }
+            else
+            {
+                str = Convert.ToString (number, number_format);
+            }
             Put (str);
 
             if (str.IndexOf ('.') == -1 &&
@@ -470,7 +482,20 @@ namespace LitJson
             DoValidation(Condition.Value);
             PutNewline();
  
-            string str = number.ToString();
+            string str;
+            if (double.IsInfinity(number))
+            {
+                str ="\"INFINITY\"";
+            }
+            else if (double.IsNaN(number))
+            {
+                str ="\"NaN\"";
+            }
+            else
+            {
+                str = number.ToString();
+            }
+
             Put(str);
  
             context.ExpectingValue = false;

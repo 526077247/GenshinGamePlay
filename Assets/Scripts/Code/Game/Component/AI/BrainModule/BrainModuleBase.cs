@@ -4,7 +4,6 @@
     {
 
         protected AIKnowledge knowledge { get; private set; }
-        protected long nextTick;
 
         public void Init(AIKnowledge aiKnowledge)
         {
@@ -26,18 +25,15 @@
             UpdateMainThreadInternal();
         }
 
-        protected virtual void UpdateComputeThreadInternal()
-        {
-        }
-
-        public void UpdateComputeThread()
-        {
-            UpdateComputeThreadInternal();
-        }
-
-        public void UpdateNextInterval()
-        {
-        }
+        // protected virtual void UpdateComputeThreadInternal()
+        // {
+        // }
+        //
+        // public void UpdateComputeThread()
+        // {
+        //     UpdateComputeThreadInternal();
+        // }
+        
 
         public void Clear()
         {
@@ -47,7 +43,6 @@
         protected virtual void ClearInternal()
         {
             this.knowledge = null;
-            this.nextTick = 0;
         }
     }
 }

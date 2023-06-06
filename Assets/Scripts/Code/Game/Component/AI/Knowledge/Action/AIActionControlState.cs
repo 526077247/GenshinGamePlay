@@ -7,7 +7,7 @@ namespace TaoTie
         private bool isPrepared;
         public AISkillInfo Skill;
         public SkillStatus Status;
-        private float QuerySkillDiscardTick;
+        private float querySkillDiscardTick;
 
         public static AIActionControlState Create()
         {
@@ -19,7 +19,7 @@ namespace TaoTie
             isPrepared = false;
             Skill = null;
             Status = default;
-            QuerySkillDiscardTick = 0;
+            querySkillDiscardTick = 0;
         }
 
         public void Reset()

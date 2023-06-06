@@ -11,7 +11,6 @@
 
         protected override void InitInternal()
         {
-            base.InitInternal();
             aiComponent = knowledge.Entity.GetComponent<AIComponent>();
             loco = new AILocomotionHandler(knowledge);
             moveFSM = knowledge.MoveControlState;
@@ -27,7 +26,7 @@
                         if (moveFSM.FleeInfo.Status != FleeInfo.FleeStatus.Inactive)
                             break;
                         knowledge.MoveDecisionChanged = false;
-                        moveFSM.Goto(decision.Move, loco, knowledge,knowledge.AiManager);
+                        moveFSM.Goto(decision.Move, loco, knowledge,knowledge.AIManager);
                         break;
                     default:
                         if (loco.currentState == LocoTaskState.Running)
@@ -36,13 +35,13 @@
                         if (loco.currentState == LocoTaskState.Finished)
                         {
                             knowledge.MoveDecisionChanged = false;
-                            moveFSM.Goto(decision.Move, loco,knowledge,knowledge.AiManager);
+                            moveFSM.Goto(decision.Move, loco,knowledge,knowledge.AIManager);
                         }
                         break;
                 }
             }
-            moveFSM.UpdateMoveInfo(loco, knowledge, aiComponent,knowledge.AiManager);
-            AITransform currentTrans = new AITransform() { pos = knowledge.CurrentPos, fwd = knowledge.CurrentForward };
+            moveFSM.UpdateMoveInfo(loco, knowledge, aiComponent,knowledge.AIManager);
+            AITransform currentTrans = new AITransform() { Position = knowledge.CurrentPos, Forward = knowledge.CurrentForward };
             loco.UpdateTasks(currentTrans);
         }
     }

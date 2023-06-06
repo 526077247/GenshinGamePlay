@@ -336,7 +336,20 @@ namespace LitJson
                 }
 
             } else if (current_symbol == (int) ParserToken.CharSeq) {
-                token_value = lexer.StringValue;
+                if (lexer.StringValue == "INFINITY")
+                {
+                    token = JsonToken.Double;
+                    token_value = double.PositiveInfinity;
+                }
+                else if (lexer.StringValue == "NaN")
+                {
+                    token = JsonToken.Double;
+                    token_value = double.NaN;
+                }
+                else
+                {
+                    token_value = lexer.StringValue;
+                }
 
             } else if (current_symbol == (int) ParserToken.False)  {
                 token = JsonToken.Boolean;

@@ -4,21 +4,21 @@ namespace TaoTie
 {
     public abstract class LocoBaseTask
     {
-        public bool delayStopping;
+        protected const float CHECKFAIL_PRE_TIME = 1.5f;
+        
         protected Vector3 destination;
         protected MotionFlag speedLevel;
         protected long startTick;
         protected ObstacleHandling obstacleHandling;
         protected AIKnowledge knowledge;
-        protected const float CHECKFAIL_PRE_TIME = 1.5f;
         protected Vector3? prevPos;
         protected AITimer moveFailTimer;
         protected float distanceMoved;
         protected Vector3? moveFailStartPos;
-        public bool stopped { get; protected set; }
         protected DirectionLock directionLock;
 
-
+        public bool Stopped { get; protected set; }
+        
         public enum ObstacleHandling
         {
             KeepMoving = 0,
@@ -53,7 +53,7 @@ namespace TaoTie
 
         public virtual void OnCloseTask(AILocomotionHandler handler)
         {
-            stopped = true;
+            Stopped = true;
             handler.UpdateMotionFlag(0);
         }
         

@@ -34,7 +34,7 @@ namespace TaoTie
                 handler.ForceLookAt();
             }
 
-            if (stopped)
+            if (Stopped)
             {
                 state = LocoTaskState.Finished;
                 handler.UpdateMotionFlag(0);

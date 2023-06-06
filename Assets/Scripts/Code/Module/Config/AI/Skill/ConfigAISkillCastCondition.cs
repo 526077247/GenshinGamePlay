@@ -1,4 +1,5 @@
 ﻿using Nino.Serialization;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -7,29 +8,29 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public int[] PoseIds;
-        [NinoMember(2)]
+        [NinoMember(2)][Min(0)]
         public float MinTargetAngleXZ;
-        [NinoMember(3)]
+        [NinoMember(3)][Min(0)]
         public float MaxTargetAngleXZ= 90;
-        [NinoMember(4)]
-        public float MaxTargetAngleY = 90;
-        [NinoMember(5)]
+        [NinoMember(4)][Min(0)]
         public float MinTargetAngleY;
-        [NinoMember(6)]
+        [NinoMember(5)][Min(0)]
+        public float MaxTargetAngleY = 90;
+        [NinoMember(6)][Min(0)]
         public float PickRangeMin;
-        [NinoMember(7)]
-        public float PickRangeMax;
-        [NinoMember(8)]
-        public float PickRangeYMax;
-        [NinoMember(9)]
+        [NinoMember(7)][Min(0)]
+        public float PickRangeMax = 1;
+        [NinoMember(8)][Min(0)]
         public float PickRangeYMin;
-        [NinoMember(10)]
+        [NinoMember(9)][Min(0)]
+        public float PickRangeYMax = 1;
+        [NinoMember(10)][Min(0)]
         public float SkillAnchorRangeMin;
-        [NinoMember(11)]
-        public float SkillAnchorRangeMax;
-        [NinoMember(12)]
+        [NinoMember(11)][Min(0)]
+        public float SkillAnchorRangeMax = 1;
+        [NinoMember(12)][Min(0)]
         public float CastRangeMin;
-        [NinoMember(13)]
-        public float CastRangeMax;
+        [NinoMember(13)][Min(0)]
+        public float CastRangeMax = 1;
     }
 }

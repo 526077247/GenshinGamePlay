@@ -84,6 +84,7 @@ namespace TaoTie
 
 		public static bool IsCombatSkillPrepareValid(AIKnowledge knowledge)
 		{
+			if (knowledge.ActionControlState.Status != SkillStatus.Inactive) return false;
 			return knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
 		}
 		public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;

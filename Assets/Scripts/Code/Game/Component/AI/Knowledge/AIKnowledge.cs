@@ -32,7 +32,7 @@ namespace TaoTie
         
         public int PoseID;
         
-        public AIManager AiManager;
+        public AIManager AIManager;
         public CombatComponent CombatComponent => Entity.GetComponent<CombatComponent>();
         public PoseFSMComponent Pose => Entity.GetComponent<PoseFSMComponent>();
         public MoveComponent Mover => Entity.GetComponent<MoveComponent>();
@@ -52,7 +52,7 @@ namespace TaoTie
         public AITacticKnowledge_Wander WanderTactic;
         public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager)
         {
-            this.AiManager = aiManager;
+            AIManager = aiManager;
             Entity = aiEntity;
             BornPos = Entity.Position;
             CampID = Entity.CampId;
@@ -114,7 +114,7 @@ namespace TaoTie
             MoveControlState.Dispose();
             MoveControlState = null;
             
-            AiManager = null;
+            AIManager = null;
             Entity = null;
             BornPos = default;
             CampID = 0;
