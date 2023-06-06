@@ -1,4 +1,5 @@
 ﻿using System;
+using Random = UnityEngine.Random;
 
 namespace TaoTie
 {
@@ -30,6 +31,10 @@ namespace TaoTie
         public void TriggerCD(long currentTime)
         {
             NextAvailableUseTick = currentTime + CD;
+            if (Config.CdUpperRange > 0)
+            {
+                NextAvailableUseTick += Random.Range(0, Config.CdUpperRange);
+            }
         }
     }
 }

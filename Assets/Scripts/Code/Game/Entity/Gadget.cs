@@ -34,7 +34,9 @@ namespace TaoTie
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(gadget.Config.AIPath))
             {
-                AddComponent<AIComponent,ConfigAIBeta>(ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(gadget.Config.AIPath));
+                var config = ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(gadget.Config.AIPath);
+                if(config!=null && config.Enable)
+                    AddComponent<AIComponent,ConfigAIBeta>(config);
             }
 
             AddComponent<BillboardComponent, ConfigBillboard>(configActor.Billboard);

@@ -64,7 +64,7 @@ namespace TaoTie
             ConfigAIFacingMoveData data = aiKnowledge.FacingMoveTactic.Data;
             
             bool canLR = CheckLRHitWall(aiKnowledge, data.ObstacleDetectRange);
-            var during = (long)Random.Range(data.RestTimeMin, data.RestTimeMax);
+            var during = Random.Range(data.RestTimeMin, data.RestTimeMax);
             nextTickPickDirection = GameTimerManager.Instance.GetTimeNow() + during;
             if(!needUpdate)
                 dir = GetNewMoveDirection(data.FacingMoveWeight);

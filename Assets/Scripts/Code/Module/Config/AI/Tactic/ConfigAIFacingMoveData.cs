@@ -14,11 +14,11 @@ namespace TaoTie
         [NinoMember(3)][Min(0.1f)]
         public float RangeMax;
         [NinoMember(4)][LabelText("随机重置时间min（ms）")]
-        public long RestTimeMin;
+        public int RestTimeMin;
         [NinoMember(5)][LabelText("随机重置时间max（ms）")]
-        public long RestTimeMax;
+        public int RestTimeMax;
         [NinoMember(6)]
-        public long FacingMoveTurnInterval;
+        public int FacingMoveTurnInterval;
         [NinoMember(7)]
         public float FacingMoveMinAvoidanceVelocity;
         [NinoMember(8)][LabelText("检测靠近障碍的距离")]

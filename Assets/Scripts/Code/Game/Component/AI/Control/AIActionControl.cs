@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -25,7 +26,7 @@ namespace TaoTie
                 {
                     if (knowledge.SkillKnowledge.SkillsOnAware.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(knowledge.SkillKnowledge.SkillsOnAware.AvailableSkills[0]);
+                        SelectSkill(knowledge.SkillKnowledge.SkillsOnAware.AvailableSkills);
                         CastSkill();
                         actionState.Status = SkillStatus.Playing;
                     }
@@ -34,7 +35,7 @@ namespace TaoTie
                 {
                     if (knowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(knowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills[0]);
+                        SelectSkill(knowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills);
                         CastSkill();
                         actionState.Status = SkillStatus.Playing;
                     }
@@ -43,7 +44,7 @@ namespace TaoTie
                 {
                     if (knowledge.SkillKnowledge.SkillsFree.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(knowledge.SkillKnowledge.SkillsFree.AvailableSkills[0]);
+                        SelectSkill(knowledge.SkillKnowledge.SkillsFree.AvailableSkills);
                         CastSkill();
                         actionState.Status = SkillStatus.Playing;
                     }
@@ -52,7 +53,7 @@ namespace TaoTie
                 {
                     if (knowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(knowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills[0]);
+                        SelectSkill(knowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills);
                         CastSkill();
                         actionState.Status = SkillStatus.Playing;
                     }
@@ -61,7 +62,7 @@ namespace TaoTie
                 {
                     if (knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {
-                        SelectSkill(knowledge.SkillKnowledge.SkillsCombat.AvailableSkills[0]);
+                        SelectSkill(knowledge.SkillKnowledge.SkillsCombat.AvailableSkills);
                         CastSkill();
                         actionState.Status = SkillStatus.Playing;
                     }
@@ -71,7 +72,7 @@ namespace TaoTie
                     if (knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0)
                     {
                         actionState.Status = SkillStatus.Preparing;
-                        SelectSkill(knowledge.SkillKnowledge.SkillsCombat.AvailableSkills[0]);
+                        SelectSkill(knowledge.SkillKnowledge.SkillsCombat.AvailableSkills);
                         OnSkillStart();
                     }
                 }
@@ -164,6 +165,40 @@ namespace TaoTie
             actionState.Skill = skill;
         }
 
+        private void SelectSkill(List<AISkillInfo> skillCandidates, bool skipPrepare = false)
+        {
+            if (skillCandidates.Count == 1)
+            {
+                SelectSkill(skillCandidates[0]);
+                if (skipPrepare)
+                {
+                    actionState.Status = SkillStatus.Playing;
+                }
+                return;
+            }
+            int total = 0;
+            for (int i = 0; i < skillCandidates.Count; i++)
+            {
+                total += skillCandidates[i].Config.Weights;
+            }
+
+            var value = Random.Range(0, total * 10) % 10;
+            for (int i = 0; i < skillCandidates.Count; i++)
+            {
+                value -= skillCandidates[i].Config.Weights;
+                if (value <= 0)
+                {
+                    actionState.Skill = skillCandidates[i];
+                    if (skipPrepare)
+                    {
+                        actionState.Status = SkillStatus.Playing;
+                    }
+                    
+                    return;
+                }
+            }
+            OnSkillFail();
+        }
         private void CastSkill()
         {
             var now = GameTimerManager.Instance.GetTimeNow();
@@ -179,8 +214,7 @@ namespace TaoTie
                 skillKnowledge.SetSkillGroupCD(skillInfo.Config.SkillGroupCDID, now);
                 if (skillInfo.Config.TriggerGCD)
                     knowledge.SkillKnowledge.SetGCD(now);
-                if (skillInfo.Config.TriggerGCD)
-                    knowledge.AIManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
+                knowledge.AIManager.SetSkillUsed(skillInfo.Config.PublicCDGroup);
             }
         }
 

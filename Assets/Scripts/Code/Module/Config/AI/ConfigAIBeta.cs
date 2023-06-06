@@ -18,9 +18,9 @@ namespace TaoTie
         [NinoMember(4)][LabelText("威胁")][NotNull]
         public ConfigAIThreatSetting Threat;
         
-        [NinoMember(5)][BoxGroup("技能")]
+        [NinoMember(5)][BoxGroup("技能")][LabelText("单位CD")][Tooltip("该单位每两次使用技能最少间隔时间")]
         public int GloabCD;
-        [NinoMember(6)][BoxGroup("技能")]
+        [NinoMember(6)][BoxGroup("技能")][LabelText("单位CD组")]
         public Dictionary<int, int> SkillGroupCDConfigs;
         [NinoMember(7)][BoxGroup("技能")]
         public ConfigAISkill[] Skills;

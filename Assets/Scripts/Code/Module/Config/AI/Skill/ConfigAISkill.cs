@@ -11,8 +11,8 @@ namespace TaoTie
         public int SkillID;
         [NinoMember(2)]
         public ConfigAISkillType SkillType;
-        [NinoMember(3)][LabelText("优先级")]
-        public int Priority;
+        [NinoMember(3)][LabelText("随机权值")]
+        public int Weights;
         [NinoMember(4)][LabelText("需要进入可视范围")]
         public bool NeedLineOfSight;
         [NinoMember(5)] [LabelText("释放时朝向目标？")]
@@ -23,31 +23,29 @@ namespace TaoTie
         /// CD有4块，aimanager管理的publiccd-全场AI通用，gcd-该ai内部通用，GroupCDID该ai内部指定组通用，cd-skill的cd
         /// </summary>
 
-        #region 自身cd
+        #region 技能cd
 
-        [NinoMember(7)][BoxGroup("自身cd")][Min(100)]
-        public int CD = 10000;
-        [NinoMember(8)][LabelText("自身cd增长随机最大值")][BoxGroup("自身cd")]
+        [NinoMember(7)][BoxGroup("技能cd")][Min(100)]
+        public int CD = 1000;
+        [NinoMember(8)][LabelText("技能cd增长随机最大值")][BoxGroup("技能cd")][Min(0)]
         public int CdUpperRange;
 
         #endregion
 
         #region aimanager管理的publiccd-全场AI通用
 
-        [NinoMember(9)][LabelText("全场公共CD")][BoxGroup("全场公共CD")]
+        [NinoMember(9)][LabelText("场景公共CD")][BoxGroup("场景公共CD")]
         public string PublicCDGroup;
 
         #endregion
 
         #region 该ai内部公共cd
-        [NinoMember(10)][LabelText("忽略公共CD？")][BoxGroup("公共CD")][BoxGroup("AI公共CD")]
+        [NinoMember(10)][LabelText("忽略单位CD？")][BoxGroup("单位CD")]
         public bool IgnoreGCD;
-        [NinoMember(11)][LabelText("公共CD是否需要进入冷却")][ShowIf("@!IgnoreGCD")][BoxGroup("公共CD")][BoxGroup("AI公共CD")]
-        public bool TriggerGCD;
-        #endregion
+        [NinoMember(11)][LabelText("单位CD是否需要进入冷却")][ShowIf("@!"+nameof(IgnoreGCD))][BoxGroup("单位CD")]
+        public bool TriggerGCD = true;
         
-        #region 该ai内部公共组cd
-        [NinoMember(12)] [LabelText("公共CD时长配置id")][BoxGroup("AI公共CD组")]
+        [NinoMember(12)] [LabelText("单位CD组时长配置id")][BoxGroup("单位CD")]
         public int SkillGroupCDID;
         #endregion
         
