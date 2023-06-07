@@ -4,15 +4,15 @@ namespace TaoTie
 {
     public abstract class FsmClip : IDisposable
     {
-        public FsmState state = null;
-        public ConfigFsmClip cfg = null;
-        public float starttime = 0.0f;
-        public float endtime = 0.0f;
-        public bool isPlaying = false;
+        private FsmState state = null;
+        protected ConfigFsmClip cfg = null;
+        private float starttime = 0.0f;
+        private float endtime = 0.0f;
+        public bool IsPlaying = false;
 
-        public float length => this.cfg.Length;
+        private float length => this.cfg.Length;
 
-        protected Entity _actor => this.state.Fsm.Component.GetParent<Entity>();
+        protected Entity actor => this.state.Fsm.Component.GetParent<Entity>();
 
         #region IDisposable
         public virtual void OnInit(FsmState state, ConfigFsmClip cfg)
@@ -33,7 +33,7 @@ namespace TaoTie
         {
             this.starttime = nowtime;
             this.endtime = this.starttime + this.cfg.Length;
-            isPlaying = true;
+            IsPlaying = true;
             OnStart();
         }
 
@@ -52,7 +52,7 @@ namespace TaoTie
         public void Stop()
         {
             OnStop();
-            isPlaying = false;
+            IsPlaying = false;
         }
 
         protected abstract void OnStart();

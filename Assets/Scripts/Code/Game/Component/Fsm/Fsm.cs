@@ -20,10 +20,9 @@ namespace TaoTie
 
         private readonly Dictionary<string, FsmState> stateDict = new Dictionary<string, FsmState>();
         private FsmState currentState;
-        private float stateTime;
-        private float stateNormalizedTime;
-        private float stateElapseTime;
-        private float statePassTime;
+        private FsmState preState;
+
+        
         private FsmTransitionInfo transitionInfo;
 
         public string Name => config.Name;
@@ -32,11 +31,11 @@ namespace TaoTie
         public ConfigFsm Config => config;
         public FsmState CurrentState => currentState;
         public string CurrentStateName => currentState?.Name;
-        public float StatePassTime => statePassTime;
-        public float StateTime => stateTime;
-        public float StateNormalizedTime => stateNormalizedTime;
-
-        public float StateElapseTime => stateElapseTime;
+        public float StatePassTime => currentState.StatePassTime;
+        public float StateTime => currentState.StateTime;
+        public float StateNormalizedTime => currentState.StateNormalizedTime;
+        
+        public float StateElapseTime => currentState.StateElapseTime;
 
         public delegate void StateChangedDelegate(string from, string to);
 
@@ -67,10 +66,22 @@ namespace TaoTie
             {
                 var stateCfg = currentState.Config;
 
-                stateElapseTime = elapsetime;
-                statePassTime += stateElapseTime;
-                stateTime += stateElapseTime;
-                stateNormalizedTime = stateTime / stateCfg.StateDuration;
+                currentState.StateElapseTime = elapsetime;
+                currentState.StatePassTime += currentState.StateElapseTime;
+                currentState.StateTime += currentState.StateElapseTime;
+                currentState.StateNormalizedTime = currentState.StateTime / stateCfg.StateDuration;
+                
+                if (preState!=null )
+                {
+                    preState.StateElapseTime = elapsetime;
+                    preState.StatePassTime += preState.StateElapseTime;
+                    preState.StateTime += preState.StateElapseTime;
+                    preState.StateNormalizedTime = preState.StateTime / stateCfg.StateDuration;
+                    if (preState.StateExitTime <= preState.StatePassTime)
+                    {
+                        preState = null;
+                    }
+                }
             }
 
             if (config.CheckAnyTransition(this, out var transition))
@@ -88,6 +99,7 @@ namespace TaoTie
                 }
 
                 currentState.OnUpdate();
+                preState?.OnUpdate();
             }
         }
 
@@ -130,10 +142,18 @@ namespace TaoTie
                     transitionInfo.FadeDuration, transitionInfo.LayerIndex, transitionInfo.TargetTime);
             }
 
-            statePassTime = 0;
-            stateTime = transitionInfo.TargetTime;
-            stateNormalizedTime = transitionInfo.TargetTime / toCfg.StateDuration;
+            toState.StatePassTime = 0;
+            toState.StateTime = transitionInfo.TargetTime;
+            toState.StateNormalizedTime = transitionInfo.TargetTime / toCfg.StateDuration;
 
+            if (transitionInfo.FadeDuration > 0)
+            {
+                preState = currentState;
+                if (preState != null && transitionInfo.FadeDuration > 0)
+                {
+                    preState.StateExitTime = preState.StatePassTime + transitionInfo.FadeDuration;
+                }
+            }
             currentState = toState;
             currentState.OnEnter();
             transition?.OnPostApply(this);

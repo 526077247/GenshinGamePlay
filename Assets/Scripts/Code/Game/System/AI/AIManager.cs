@@ -6,7 +6,7 @@ namespace TaoTie
     {
         private const int CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME = 10;
         private BaseMapScene scene;
-        private Dictionary<long, AIComponent> aiUnits;
+        private Dictionary<long, AIComponent> unitIdUnits;
         private LinkedList<AIComponent> allAIUnit;
         private List<AIComponent> localAvatarAlertEnemies;
         private List<AIComponent> localAvatarAwareEnemies;
@@ -15,11 +15,11 @@ namespace TaoTie
         /// <summary>
         /// [campId:[campId:Units]] campId（左）的敌对campId（右）
         /// </summary>
-        public UnOrderDoubleKeyDictionary<uint, uint, List<Actor>> aiEnemyEntityTable;
+        public UnOrderDoubleKeyDictionary<uint, uint, List<Actor>> campIdCampIdEntityTable;
         /// <summary>
         /// [campId:Units]
         /// </summary>
-        private UnOrderMultiMap<uint, Actor> configIDEntityTable;
+        private UnOrderMultiMap<uint, Actor> campIdEntityTable;
         
         private Dictionary<string, long> publicCDs;
         #region IManager
@@ -29,22 +29,24 @@ namespace TaoTie
             scene = mapScene;
             localAvatar = scene.Self;
             avatarInputController = localAvatar.GetComponent<LocalInputController>();
-            configIDEntityTable = new UnOrderMultiMap<uint, Actor>();
-            aiEnemyEntityTable = new UnOrderDoubleKeyDictionary<uint, uint, List<Actor>>();
-            aiUnits = new Dictionary<long, AIComponent>();
+            campIdEntityTable = new UnOrderMultiMap<uint, Actor>();
+            campIdCampIdEntityTable = new UnOrderDoubleKeyDictionary<uint, uint, List<Actor>>();
+            unitIdUnits = new Dictionary<long, AIComponent>();
             allAIUnit = new LinkedList<AIComponent>();
             localAvatarAlertEnemies = new List<AIComponent>();
             localAvatarAwareEnemies = new List<AIComponent>();
             
-            configIDEntityTable.Add(localAvatar.CampId,localAvatar);
+            campIdEntityTable.Add(localAvatar.CampId,localAvatar);
+            Messager.Instance.AddListener<Actor>(0,MessageId.OnBeKill,Remove);
         }
 
         public void Destroy()
         {
+            Messager.Instance.RemoveListener<Actor>(0,MessageId.OnBeKill,Remove);
             localAvatarAwareEnemies = null;
             localAvatarAlertEnemies = null;
             allAIUnit = null;
-            aiUnits = null;
+            unitIdUnits = null;
         }
 
         public void Update()
@@ -59,19 +61,19 @@ namespace TaoTie
 
         public void AddAI(AIComponent aiComponent)
         {
-            aiUnits.Add(aiComponent.Id,aiComponent);
+            unitIdUnits.Add(aiComponent.Id,aiComponent);
             allAIUnit.AddLast(aiComponent);
             var unit = aiComponent.GetParent<Actor>();
-            bool isNew = !configIDEntityTable.ContainsKey(unit.CampId);
-            configIDEntityTable.Add(unit.CampId,unit);
+            bool isNew = !campIdEntityTable.ContainsKey(unit.CampId);
+            campIdEntityTable.Add(unit.CampId,unit);
             if (isNew)
             {
-                foreach (var item in configIDEntityTable)
+                foreach (var item in campIdEntityTable)
                 {
-                    if (item.Key != unit.CampId)//todo:
+                    if (AttackHelper.CheckIsEnemyCamp(item.Key,unit.CampId))
                     {
-                        aiEnemyEntityTable.Add(unit.CampId,item.Key,item.Value);
-                        aiEnemyEntityTable.Add(item.Key,unit.CampId,configIDEntityTable[unit.CampId]);
+                        campIdCampIdEntityTable.Add(unit.CampId,item.Key,item.Value);
+                        campIdCampIdEntityTable.Add(item.Key,unit.CampId,campIdEntityTable[unit.CampId]);
                     }
                 }
             }
@@ -80,11 +82,23 @@ namespace TaoTie
         public void RemoveAI(AIComponent aiComponent)
         {
             var unit = aiComponent.GetParent<Actor>();
-            configIDEntityTable.Remove(unit.CampId,unit);
+            campIdEntityTable.Remove(unit.CampId,unit);
             localAvatarAwareEnemies.Remove(aiComponent);
             localAvatarAlertEnemies.Remove(aiComponent);
             allAIUnit.Remove(aiComponent);
-            aiUnits.Remove(aiComponent.Id);
+            unitIdUnits.Remove(aiComponent.Id);
+        }
+        
+        private void Remove(Actor unit)
+        {
+            if (unitIdUnits.TryGetValue(unit.Id, out var aiComponent))
+            {
+                localAvatarAwareEnemies.Remove(aiComponent);
+                localAvatarAlertEnemies.Remove(aiComponent);
+                allAIUnit.Remove(aiComponent);
+                unitIdUnits.Remove(aiComponent.Id);
+            }
+            campIdEntityTable.Remove(unit.CampId,unit);
         }
 
         public bool CanUseSkill(string pCDName, Entity targetEntity)
@@ -104,8 +118,8 @@ namespace TaoTie
 
         public Dictionary<uint, List<Actor>> GetEnemies(uint campID)
         {
-            if(aiEnemyEntityTable.ContainsKey(campID))
-                return aiEnemyEntityTable[campID];
+            if(campIdCampIdEntityTable.ContainsKey(campID))
+                return campIdCampIdEntityTable[campID];
             return null;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Nino.Serialization;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
@@ -7,21 +8,23 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAttackInfo
     {
-        [NinoMember(1)][Tooltip("攻击标识，其他地方可通过这个标记筛选过滤")]
+        [NinoMember(1)][LabelText("攻击标识")][Tooltip("攻击标识，其他地方可通过这个标记筛选过滤")]
         public string AttackTag;
-        [NinoMember(2)][Tooltip("衰减类型标记")]
+        [NinoMember(2)][LabelText("衰减类型标记")]
         public string AttenuationTag;
-        [NinoMember(3)][Tooltip("衰减分组")]
+        [NinoMember(3)][LabelText("衰减分组")]
         public string AttenuationGroup;
-        [NinoMember(4)][Tooltip("伤害数据")] [NotNull]
+        [NinoMember(4)][LabelText("伤害数据")][NotNull]
         public ConfigAttackProperty AttackProperty;
-        [NinoMember(5)][Tooltip("打击数据")]
-        public Dictionary<HitBoxType, ConfigHitPattern> HitPattern;
-        [NinoMember(6)][Tooltip("强制抖动摄像机")]
+        [NinoMember(5)][LabelText("默认打击数据")][NotNull]
+        public ConfigHitPattern HitPattern;
+        [NinoMember(6)][LabelText("打击数据")]
+        public Dictionary<HitBoxType, ConfigHitPattern> HitPatternOverwrite;
+        [NinoMember(7)][LabelText("强制抖动摄像机")]
         public bool ForceCameraShake;
-        [NinoMember(7)][Tooltip("抖动摄像机参数")]
+        [NinoMember(8)][LabelText("抖动摄像机参数")][ShowIf(nameof(ForceCameraShake))][NotNull]
         public ConfigCameraShake CameraShake;
-        [NinoMember(8)][Tooltip("子弹衰减")]
+        [NinoMember(9)][LabelText("子弹衰减")]
         public ConfigBulletWane BulletWane;
     }
 }

@@ -79,9 +79,26 @@ namespace TaoTie
         public void AfterBeAttack(AttackResult result, CombatComponent other)
         {
             afterBeAttack?.Invoke(result, other);
-            if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText)
+            if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText 
+                && (result.HitPattern == null || !result.HitPattern.MuteHitText))
             {
                 Messager.Instance.Broadcast(0, MessageId.ShowDamageText, result);
+            }
+            //相机震动
+            if (result.ConfigAttackInfo.ForceCameraShake && (result.ConfigAttackInfo.CameraShake.BroadcastOnHit ||
+                result.ConfigAttackInfo.CameraShake.ShakeType == CameraShakeType.HitVector))
+            {
+                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, result.ConfigAttackInfo.CameraShake,
+                    new CameraShakeParam
+                    {
+                        Source = result.HitInfo.HitPos,
+                        ShakeDir = result.HitInfo.HitDir,
+                        ShakeRange = result.ConfigAttackInfo.CameraShake.ShakeRange,
+                        ShakeFrequency = result.ConfigAttackInfo.CameraShake.ShakeFrequency,
+                        ShakeTime = result.ConfigAttackInfo.CameraShake.ShakeTime,
+                        ShakeDistance = result.ConfigAttackInfo.CameraShake.ShakeDistance,
+                        RangeAttenuation = result.ConfigAttackInfo.CameraShake.RangeAttenuation
+                    });
             }
         }
 
@@ -111,11 +128,11 @@ namespace TaoTie
         public void DoKill(long killerID, DieStateFlag dieType)
         {
             DieStateFlag = dieType;
-            var myId = Id;
-            Messager.Instance.Broadcast(myId, MessageId.OnBeKill, config?.Die, dieType);
+            Messager.Instance.Broadcast(Id, MessageId.OnBeKill, config?.Die, dieType);
+            Messager.Instance.Broadcast(0, MessageId.OnBeKill, GetParent<Actor>());
             OnBeKill();
-            if(killerID != myId)
-                Messager.Instance.Broadcast(killerID, MessageId.OnKill, myId);
+            if(killerID != Id)
+                Messager.Instance.Broadcast(killerID, MessageId.OnKill, Id);
         }
 
         public void OnBeKill()
@@ -126,17 +143,13 @@ namespace TaoTie
             {
                 var unit = GetParent<Unit>();
                 if (unit == null) return;
-                bool delayRecycle = false;//模型是否还需要用到
+                bool delayRecycle = false; //模型是否还需要用到
 
-                if (configDie.DieModelFadeDelay > 0)
+                if (configDie.DieModelFadeDelay != 0)
                 {
                     delayRecycle = true;
                 }
-                else
-                {
-                    configDie.DieModelFadeDelay = 0;
-                }
-                
+
                 // 死亡动画
                 if (configDie.HasAnimatorDie)
                 {
@@ -156,7 +169,10 @@ namespace TaoTie
                 }
                 if (delayRecycle)
                 {
-                    parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
+                    if (configDie.DieModelFadeDelay > 0)
+                    {
+                        parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
+                    }
                     Dispose();
                 }
                 else

@@ -11,6 +11,13 @@ namespace TaoTie
         public string Name => config.Name;
         public ConfigFsmState Config => config;
 
+        public float StateTime;
+        public float StateNormalizedTime;
+        public float StateElapseTime;
+        public float StatePassTime;
+        public float StateExitTime;
+        
+        
         public bool CanMove
         {
             get

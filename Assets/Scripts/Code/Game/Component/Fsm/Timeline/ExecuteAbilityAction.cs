@@ -8,7 +8,7 @@
         }
         protected override void OnStart()
         {
-            _actor.GetComponent<AbilityComponent>().ExecuteAbility(config.AbilityName);
+            actor.GetComponent<AbilityComponent>().ExecuteAbility(config.AbilityName);
         }
 
         protected override void OnStop()

@@ -29,6 +29,7 @@ namespace TaoTie
         
         public void TryDoSkill(int skillId)
         {
+            if(combatComponent==null) return;
             //todo: 冷却消耗等判断
             //if()
             {

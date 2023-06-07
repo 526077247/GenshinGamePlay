@@ -999,6 +999,9 @@ MonoBehaviour:
   Act: 
   Tactic: 
   Move: 
+  Target: 
+  ViewRange: 0
+  Alertness: 
 --- !u!1 &4246927435662846628
 GameObject:
   m_ObjectHideFlags: 0

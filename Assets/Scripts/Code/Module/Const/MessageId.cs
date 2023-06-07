@@ -26,8 +26,8 @@
 
         #endregion
 
-        /// <summary> 执行ability的 Execute节点</summary>
-        public const int ExecuteAbility = 12;
+        /// <summary> 相机震动</summary>
+        public const int ShakeCamera = 12;
         /// <summary> 修改是否可以移动</summary>
         public const int SetCanMove = 13;
         /// <summary> 修改是否可以旋转</summary>

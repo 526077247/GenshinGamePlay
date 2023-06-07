@@ -254,11 +254,7 @@ namespace TaoTie
                 {
                     
                 }
-                else
-                {
-                    configDie.DieModelFadeDelay = 0;
-                }
-                
+
                 // 死亡动画
                 if (configDie.HasAnimatorDie)
                 {

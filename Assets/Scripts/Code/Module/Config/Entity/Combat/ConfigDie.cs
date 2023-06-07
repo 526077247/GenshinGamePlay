@@ -37,7 +37,7 @@ namespace TaoTie
 		[NinoMember(10), LabelText("离开消融shader持续时间")] //暂不清楚
 		public long DieShaderDisableDurationTime;
 
-		[NinoMember(11), LabelText("死亡模型消失时间"), Min(0)]
+		[NinoMember(11), LabelText("死亡模型消失时间"), Min(-1)][Tooltip("单位ms，-1不消失")]
 		public long DieModelFadeDelay;
 
 		[NinoMember(12), LabelText("是否使用RagDoll")]

@@ -1,14 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
+    /// <summary>
+    /// 伤害句柄，其他地方不要持有引用
+    /// </summary>
     public class AttackResult: IDisposable
     {
+        public bool IsBullet;
         public long AttackerId;
         public long DefenseId;
         public HitInfo HitInfo;
         public ConfigAttackInfo ConfigAttackInfo;
+        public ConfigHitPattern HitPattern;
+        public long StartTime;
+
+        #region 伤害数据
         
         /// <summary>
         /// 伤害值
@@ -25,7 +33,7 @@ namespace TaoTie
         /// <summary>
         /// 破霸体值
         /// </summary>
-        public readonly Dictionary<HitBoxType, float> EnBreak = new Dictionary<HitBoxType, float>();
+        public int EnBreak;
         /// <summary>
         /// 攻击类型
         /// </summary>
@@ -64,15 +72,42 @@ namespace TaoTie
         /// 最后真正造成的伤害(造成伤害后才会赋值)
         /// </summary>
         public int FinalRealDamage;
-        public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config)
+        
+        #endregion
+
+        #region 击退数据
+
+        /// <summary>
+        /// 击退力度
+        /// </summary>
+        public HitLevel HitLevel;
+
+        public float HitImpulseX;
+
+        public float HitImpulseY; 
+        /// <summary>
+        /// 击退方向
+        /// </summary>
+        public Vector3 RetreatDir;
+        #endregion
+        public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config,bool isBullet = false,long startTime = 0)
         {
             AttackResult res = new AttackResult();
             res.AttackerId = attackerId;
             res.DefenseId = defenseId;
             res.HitInfo = info;
             res.ConfigAttackInfo = config;
-            res.EnBreak.Clear();
+            if (config != null)
+            {
+                config.HitPatternOverwrite?.TryGetValue(info.HitBoxType, out res.HitPattern);
+                if(res.HitPattern == null)
+                {
+                    res.HitPattern = config.HitPattern;
+                }
+            }
             res.IsEffective = true;
+            res.IsBullet = isBullet;
+            res.StartTime = startTime;
             return res;
         }
 
@@ -85,7 +120,7 @@ namespace TaoTie
             DamagePercentage = default;
             DamagePercentageRatio = default;
             StrikeType = default;
-            EnBreak.Clear();
+            EnBreak = default;
             AttackType = default;
             DamageExtra = default;
             BonusCritical = default;
@@ -94,6 +129,9 @@ namespace TaoTie
             TrueDamage = default;
             IsEffective = default;
             FinalRealDamage = default;
+            HitPattern = default;
+            IsBullet = default;
+            StartTime = default;
         }
     }
 }

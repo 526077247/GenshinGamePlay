@@ -8,7 +8,7 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public PathFindingType Type;
-        [NinoMember(2)][ShowIf("@Type == PathFindingType.NavMesh")]
+        [NinoMember(2)][ShowIf(nameof(Type),PathFindingType.NavMesh)]
         public string NavMeshAgentName;
     }
 }

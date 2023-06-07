@@ -30,7 +30,7 @@ namespace TaoTie
             if (CheckGround != null && CheckGround.Enable)
             {
                 if (!PhysicsHelper.LinecastScene(pos + Vector3.up * CheckGround.RaycastUpHeight,
-                        pos + Vector3.down * CheckGround.RaycastUpHeight, out var newPos))
+                        pos + Vector3.down * CheckGround.RaycastDownHeight, out var newPos))
                 {
                     if (CheckGround.DontCreateIfInvalid) return;
                 }
