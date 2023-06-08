@@ -5,7 +5,6 @@ namespace TaoTie
 {
     public abstract class BaseMapScene:SceneManagerProvider,IScene
     {
-        public abstract string Name { get; }
         #region 玩家信息
         /// <summary>
         /// 玩家unitId
