@@ -103,6 +103,7 @@ namespace TaoTie
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             // var hud = unit.GetComponent<HudComponent>();
             // if (hud != null)
             // {
@@ -161,6 +162,7 @@ namespace TaoTie
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             // var hud = unit.GetComponent<HudComponent>();
             // if (hud != null)
             // {
@@ -180,6 +182,7 @@ namespace TaoTie
 
         public void Destroy()
         {
+            Messager.Instance.RemoveListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
@@ -250,11 +253,6 @@ namespace TaoTie
                     parent.GetOrAddComponent<AttachComponent>().AddChild(res);
                 }
 
-                if (configDie.DieModelFadeDelay > 0)
-                {
-                    
-                }
-
                 // 死亡动画
                 if (configDie.HasAnimatorDie)
                 {
@@ -264,7 +262,7 @@ namespace TaoTie
                 //布娃娃系统
                 if (configDie.UseRagDoll)
                 {
-                    
+                    SetUseRagDoll(configDie.UseRagDoll);
                 }
                 
                 // 消融

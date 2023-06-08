@@ -238,25 +238,17 @@ namespace TaoTie
 
             float stateDuration = 1f;
             var stateLoop = false;
-            string mirrorParam = null;
             if (state.motion != null)
             {
                 stateLoop = state.motion.isLooping;
                 stateDuration = state.motion.averageDuration;
-                if (state.motion is BlendTree bt)
-                {
-                    if (bt.blendParameter != null && bt.blendParameter.StartsWith("@"))
-                        mirrorParam = bt.blendParameter;
-                    else if (bt.blendParameterY != null && bt.blendParameterY.StartsWith("@"))
-                        mirrorParam = bt.blendParameterY;
-                }
             }
             else if (timeline != null)
             {
                 stateDuration = timeline.Length;
             }
 
-            ConfigFsmState ret = new ConfigFsmState(state.name, stateDuration, stateLoop, mirrorParam);
+            ConfigFsmState ret = new ConfigFsmState(state.name, stateDuration, stateLoop);
             ret.Transitions = transList.ToArray();
             ret.Timeline = timeline;
             if (state.behaviours.Length > 0)

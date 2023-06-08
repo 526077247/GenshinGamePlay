@@ -143,35 +143,13 @@ namespace TaoTie
             {
                 var unit = GetParent<Unit>();
                 if (unit == null) return;
-                bool delayRecycle = false; //模型是否还需要用到
-
-                if (configDie.DieModelFadeDelay != 0)
-                {
-                    delayRecycle = true;
-                }
-
-                // 死亡动画
-                if (configDie.HasAnimatorDie)
-                {
-                    delayRecycle = true;
-                }
+                bool delayRecycle = configDie.DieEndTime != 0;
                 
-                //布娃娃系统
-                if (configDie.UseRagDoll)
-                {
-                    delayRecycle = true;
-                }
-                
-                // 消融
-                if (configDie.DieShaderData != ShaderData.None)
-                {
-                    delayRecycle = true;
-                }
                 if (delayRecycle)
                 {
-                    if (configDie.DieModelFadeDelay > 0)
+                    if (configDie.DieEndTime > 0)
                     {
-                        parent.DelayDispose(configDie.DieEndTime + configDie.DieModelFadeDelay);
+                        parent.DelayDispose(configDie.DieEndTime);
                     }
                     Dispose();
                 }

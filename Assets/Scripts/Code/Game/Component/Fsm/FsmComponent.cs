@@ -6,20 +6,14 @@ namespace TaoTie
     public class FsmComponent: Component, IComponent<ConfigFsmController>,IUpdate
     {
         private Fsm[] fsms;
-        public Fsm[] Fsms => fsms;
         private ConfigFsmController config;
-        public ConfigFsmController Config => config;
         protected DynDictionary dynDictionary;
-        
-        public DynDictionary DynDictionary => dynDictionary;
         private ListComponent<ConfigParamTrigger> triggers;
-        public Fsm DefaultFsm
-        {
-            get
-            {
-                return fsms?.Length > 0? fsms[0] : null;
-            }
-        }
+        
+        public Fsm[] Fsms => fsms;
+        public ConfigFsmController Config => config;
+        public DynDictionary DynDictionary => dynDictionary;
+        public Fsm DefaultFsm => fsms?.Length > 0 ? fsms[0] : null;
 
         public Fsm GetFsm(string name)
         {
@@ -83,22 +77,20 @@ namespace TaoTie
 
         public void Update()
         {
-            if(fsms==null) return;
+            if (fsms == null) return;
             for (int i = 0; i < fsms.Length; i++)
             {
                 if (fsms[i] == null) continue; //可能在其他状态中entity被销毁了
                 fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
             }
-            if(triggers==null) return;
+
+            if (triggers == null) return;
             for (int i = 0; i < triggers.Count; i++)
             {
-                triggers[i].SetValue(DynDictionary,false);
+                triggers[i].SetValue(DynDictionary, false);
             }
         }
-
-        public void Stop()
-        {
-        }
+        
 
         #region IComponent
 
@@ -110,7 +102,6 @@ namespace TaoTie
 
         public virtual void Destroy()
         {
-            Stop();
             if (fsms != null)
             {
                 for (int i = 0; i < fsms.Length; i++)

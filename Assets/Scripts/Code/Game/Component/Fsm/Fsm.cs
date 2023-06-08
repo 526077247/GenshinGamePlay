@@ -17,8 +17,7 @@ namespace TaoTie
         public bool IsDispose { get; private set; }
         protected FsmComponent component;
         private ConfigFsm config;
-
-        private readonly Dictionary<string, FsmState> stateDict = new Dictionary<string, FsmState>();
+        
         private FsmState currentState;
         private FsmState preState;
 
@@ -79,6 +78,8 @@ namespace TaoTie
                     preState.StateNormalizedTime = preState.StateTime / stateCfg.StateDuration;
                     if (preState.StateExitTime <= preState.StatePassTime)
                     {
+                        preState.OnExit();
+                        preState.Dispose();
                         preState = null;
                     }
                 }
@@ -106,26 +107,17 @@ namespace TaoTie
         public void ChangeState(string name, ConfigTransition transition = null)
         {
             ConfigFsmState toCfg = null;
-            if (!stateDict.TryGetValue(name, out var toState))
+            toCfg = config.GetStateConfig(name);
+            if (toCfg == null)
             {
-                toCfg = config.GetStateConfig(name);
-                if (toCfg == null)
-                {
-                    Log.Error("ChangeState Missing State {0}", name);
-                    return;
-                }
+                Log.Error("ChangeState Missing State {0}", name);
+                return;
+            }
 
-                toState = FsmState.Create(this, toCfg);
-                stateDict[name] = toState;
-            }
-            else
-            {
-                toCfg = toState.Config;
-            }
+            FsmState toState = FsmState.Create(this, toCfg);
 
             var fromState = currentState;
             var fromCfg = fromState?.Config;
-            fromState?.OnExit();
 
             if (transition != null)
             {
@@ -154,6 +146,12 @@ namespace TaoTie
                     preState.StateExitTime = preState.StatePassTime + transitionInfo.FadeDuration;
                 }
             }
+            else
+            {
+                currentState.OnExit();
+                currentState.Dispose();
+                currentState = null;
+            }
             currentState = toState;
             currentState.OnEnter();
             transition?.OnPostApply(this);
@@ -179,6 +177,11 @@ namespace TaoTie
             {
                 Messager.Instance.Broadcast(component.Id, MessageId.SetShowWeapon, toState.ShowWeapon);
             }
+            
+            if (fromState == null || fromState.UseRagDoll != toState.UseRagDoll)
+            {
+                Messager.Instance.Broadcast(component.Id, MessageId.SetUseRagDoll, toState.UseRagDoll);
+            }
         }
 
         public ConfigFsmState GetStateConfig(string stateName)
@@ -195,7 +198,6 @@ namespace TaoTie
             component = null;
             config = null;
             currentState = null;
-            stateDict.Clear();
         }
 
         #endregion

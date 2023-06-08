@@ -5,6 +5,8 @@ namespace TaoTie
 {
     public partial class GameObjectHolderComponent
     {
+        private bool fsmUseRagDoll;
+        private bool useRagDoll;
         private Animator animator;
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         public void SetWeight(int index, float weight)
@@ -50,6 +52,36 @@ namespace TaoTie
         {
             if (animator == null) return;
             animator.CrossFade(stateName, 0, layerIndex);
+        }
+
+        private void FSMSetUseRagDoll(bool use)
+        {
+            if (fsmUseRagDoll != use)
+            {
+                fsmUseRagDoll = use;
+                if (useRagDoll)
+                {
+                    UpdateRagDollState();
+                }
+            }
+        }
+        
+        private void SetUseRagDoll(bool use)
+        {
+            if (useRagDoll != use)
+            {
+                useRagDoll = use;
+                if (fsmUseRagDoll)
+                {
+                    UpdateRagDollState();
+                }
+            }
+        }
+
+        private void UpdateRagDollState()
+        {
+            var use = fsmUseRagDoll && useRagDoll;
+            //todo:
         }
     }
 }

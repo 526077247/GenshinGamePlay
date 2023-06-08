@@ -28,11 +28,11 @@
 
         /// <summary> 相机震动</summary>
         public const int ShakeCamera = 12;
-        /// <summary> 修改是否可以移动</summary>
+        /// <summary> FSM修改是否可以移动</summary>
         public const int SetCanMove = 13;
-        /// <summary> 修改是否可以旋转</summary>
+        /// <summary> FSM修改是否可以旋转</summary>
         public const int SetCanTurn = 14;
-        /// <summary> 设置武器显示隐藏 </summary>
+        /// <summary> FSM设置武器显示隐藏 </summary>
         public const int SetShowWeapon = 15;
         /// <summary> 游戏时间计时 </summary>
         public const int GameTimeEventTrigger = 16;
@@ -46,5 +46,7 @@
         public const int OnBeKill = 20;
         /// <summary> 当击杀 </summary>
         public const int OnKill = 21;
+        /// <summary> FSM设置使用RagDoll </summary>
+        public const int SetUseRagDoll = 22;
     }
 }

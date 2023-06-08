@@ -45,6 +45,15 @@ namespace TaoTie
             }
         }
 
+        public bool UseRagDoll
+        {
+            get
+            {
+                if (Config.Data == null) return false;
+                return Config.Data.UseRagDoll;
+            }
+        }
+
         public static FsmState Create(Fsm fsm, ConfigFsmState cfg)
         {
             FsmState ret = ObjectPool.Instance.Fetch<FsmState>();

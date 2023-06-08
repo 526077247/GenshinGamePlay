@@ -10,7 +10,6 @@ namespace TaoTie
     {
         public string Name;
         public float StateDuration;
-        public string MirrorParameter;
         public bool StateLoop;
         public ConfigFsmTimeline Timeline;
         public ConfigTransition[] Transitions;
@@ -21,10 +20,9 @@ namespace TaoTie
         
         
         public ConfigFsmState(){}
-        public ConfigFsmState(string name, float stateDuration, bool loop, string mirrorParam)
+        public ConfigFsmState(string name, float stateDuration, bool loop)
         {
             this.Name = name;
-            this.MirrorParameter = mirrorParam;
             this.StateDuration = stateDuration;
             this.StateLoop = loop;
         }
