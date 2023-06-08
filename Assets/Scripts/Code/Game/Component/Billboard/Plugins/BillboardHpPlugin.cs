@@ -5,13 +5,12 @@ namespace TaoTie
 {
     public class BillboardHpPlugin: BillboardPlugin<ConfigBillboardHpPlugin>
     {
-        private Transform target;
         private GameObject obj;
         private Vector3[] vertices;
         private Color[] colors;
         private int[] triangles;
         private MeshFilter filter;
-        float x = 2f, y = 0.1f, z = 0f;
+        float x = 0.5f, y = 0.02f, z = 0f;
         
         private NumericComponent numericComponent;
         #region BillboardPlugin
@@ -20,26 +19,11 @@ namespace TaoTie
         {
             numericComponent = billboardComponent.GetParent<Entity>().GetComponent<NumericComponent>();
             Messager.Instance.AddListener<NumericChange>(billboardComponent.Id,MessageId.NumericChangeEvt, OnNumericChange);
-            InitInternalAsync().Coroutine();
-        }
-        
-        private async ETTask InitInternalAsync()
-        {
-            var goh = billboardComponent.GetParent<Entity>().GetComponent<GameObjectHolderComponent>();
-            await goh.WaitLoadGameObjectOver();
-            if(goh.IsDispose || billboardComponent.IsDispose) return;
-            
-            target = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
-            if (target == null)
-            {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                return;
-            }
-            
             x = 0.01f * config.Size.x;
             y = 0.01f * config.Size.y;
             obj = new GameObject("Hp");
-            obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
+            obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset) * billboardComponent.Scale;
+            obj.transform.localScale = Vector3.one * billboardComponent.Scale;
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
             {
@@ -94,7 +78,8 @@ namespace TaoTie
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
+                obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset)* billboardComponent.Scale;
+                obj.transform.localScale = Vector3.one * billboardComponent.Scale;
             }
 
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)

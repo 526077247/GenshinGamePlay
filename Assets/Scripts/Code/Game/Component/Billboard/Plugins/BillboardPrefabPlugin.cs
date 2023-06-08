@@ -5,7 +5,6 @@ namespace TaoTie
 
     public abstract class BillboardPrefabPlugin<T>: BillboardPlugin<T> where T : ConfigBillboardPrefabPlugin
     {
-        protected Transform target;
         protected GameObject obj { get; private set; }
         
         protected override void InitInternal()
@@ -40,21 +39,8 @@ namespace TaoTie
         private async ETTask LoadObj()
         {
             if(string.IsNullOrWhiteSpace(config.PrefabPath)) return;
-            var goh = billboardComponent.GetParent<Entity>().GetComponent<GameObjectHolderComponent>();
             var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(config.PrefabPath);
-            if (billboardComponent.IsDispose || goh.IsDispose)
-            {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                return;
-            }
-            await goh.WaitLoadGameObjectOver();
-            if (billboardComponent.IsDispose || goh.IsDispose)
-            {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                return;
-            }
-            target = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
-            if (target == null)
+            if (billboardComponent.IsDispose)
             {
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);
                 return;

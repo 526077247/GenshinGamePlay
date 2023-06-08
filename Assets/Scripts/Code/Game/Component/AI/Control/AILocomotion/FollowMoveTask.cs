@@ -17,7 +17,10 @@ namespace TaoTie
                 handler.UpdateMotionFlag(MotionFlag.Idle);
                 state = LocoTaskState.Finished;
             }
-            destination = anchor.Position;
+            else
+            {
+                destination = anchor.Position;
+            }
             if (!Stopped)
             {
                 float distance = Vector3.Distance(currentTransform.Position, destination);

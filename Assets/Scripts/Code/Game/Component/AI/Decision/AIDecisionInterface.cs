@@ -46,18 +46,18 @@ namespace TaoTie
 			return true;
 		}
 
-		public static bool IsInvestigateValid(AIKnowledge knowledge) => default;
-		public static bool IsReactActionPointValid(AIKnowledge knowledge) => default;
-		public static bool IsPatrolFollowValid(AIKnowledge knowledge) => default;
-		public static bool IsFollowServerRouteValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatFollowMoveValid(AIKnowledge knowledge) => default;
+		// public static bool IsInvestigateValid(AIKnowledge knowledge) => default;
+		// public static bool IsReactActionPointValid(AIKnowledge knowledge) => default;
+		// public static bool IsPatrolFollowValid(AIKnowledge knowledge) => default;
+		// public static bool IsFollowServerRouteValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatFollowMoveValid(AIKnowledge knowledge) => default;
 
 		public static bool IsFreeSkillValid(AIKnowledge knowledge)
 		{
 			return knowledge.SkillKnowledge.SkillsFree.AvailableSkills.Count > 0;
 		}
-		public static bool IsFollowScriptedPathValid(AIKnowledge knowledge) => default;
-		public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
+		// public static bool IsFollowScriptedPathValid(AIKnowledge knowledge) => default;
+		// public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -69,8 +69,8 @@ namespace TaoTie
 			return true;
 		}
 
-		public static bool IsIdleValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatValid(AIKnowledge knowledge) => default;
+		// public static bool IsIdleValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatValid(AIKnowledge knowledge) => default;
 
 		public static bool IsCombatBuddySkillValid(AIKnowledge knowledge)
 		{
@@ -87,7 +87,7 @@ namespace TaoTie
 			if (knowledge.ActionControlState.Status != SkillStatus.Inactive) return false;
 			return knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
 		}
-		public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -114,15 +114,15 @@ namespace TaoTie
 				return false;
 			return true;
 		}
-		public static bool IsCombatSurroundValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatFindBackValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatCrabMoveValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatSpacialChaseValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatSpacialAdjustValid(AIKnowledge knowledge) => default;
-		public static bool IsCombatIdleValid(AIKnowledge knowledge) => default;
-		public static bool IsScriptedMoveToValid(AIKnowledge knowledge) => default;
-		public static bool IsLandingValid(AIKnowledge knowledge) => default;
-		public static bool IsExtractionValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatSurroundValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatFindBackValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatCrabMoveValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatSpacialChaseValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatSpacialAdjustValid(AIKnowledge knowledge) => default;
+		// public static bool IsCombatIdleValid(AIKnowledge knowledge) => default;
+		// public static bool IsScriptedMoveToValid(AIKnowledge knowledge) => default;
+		// public static bool IsLandingValid(AIKnowledge knowledge) => default;
+		// public static bool IsExtractionValid(AIKnowledge knowledge) => default;
 		public static bool IsFleeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -138,10 +138,10 @@ namespace TaoTie
 				return false;
 			return true;
 		}
-		public static bool IsBirdCirclingValid(AIKnowledge knowledge) => default;
-		public static bool IsBrownianMotionValid(AIKnowledge knowledge) => default;
-		public static bool IsAutoPlayerFollowTargetValid(AIKnowledge knowledge) => default;
-		public static bool IsAutoPlayerCombatSkillExecuteValid(AIKnowledge knowledge) => default;
-		public static bool IsAutoPlayerCombatSkillPrepareValid(AIKnowledge knowledge) => default;
+		// public static bool IsBirdCirclingValid(AIKnowledge knowledge) => default;
+		// public static bool IsBrownianMotionValid(AIKnowledge knowledge) => default;
+		// public static bool IsAutoPlayerFollowTargetValid(AIKnowledge knowledge) => default;
+		// public static bool IsAutoPlayerCombatSkillExecuteValid(AIKnowledge knowledge) => default;
+		// public static bool IsAutoPlayerCombatSkillPrepareValid(AIKnowledge knowledge) => default;
 	}
 }

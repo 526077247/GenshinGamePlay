@@ -15,6 +15,8 @@ namespace TaoTie
         protected T config { get; private set; }
 
         protected BillboardComponent billboardComponent;
+
+        protected Transform target => billboardComponent.Target;
         
         public sealed override void Init(ConfigBillboardPlugin config, BillboardComponent comp)
         {

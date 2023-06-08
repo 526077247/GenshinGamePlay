@@ -6,36 +6,20 @@ namespace TaoTie
     {
         private TextMesh font;
         private GameObject obj;
-        private Transform target;
         #region BillboardPlugin
 
         protected override void InitInternal()
         {
-            InitInternalAsync().Coroutine();
-        }
-        private async ETTask InitInternalAsync()
-        {
-            var goh = billboardComponent.GetParent<Entity>().GetComponent<GameObjectHolderComponent>();
-            await goh.WaitLoadGameObjectOver();
-            if(goh.IsDispose || billboardComponent.IsDispose) return;
-            
-            target = goh.GetCollectorObj<Transform>(billboardComponent.Config.AttachPoint);
-            if (target == null)
-            {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
-                return;
-            }
-            
             obj = new GameObject("Name");
-            obj.transform.localScale = 0.1f * Vector3.one;
-            obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
+            obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset) * billboardComponent.Scale;
+            obj.transform.localScale = Vector3.one * (billboardComponent.Scale * 0.1f);
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
             }
             font = obj.AddComponent<TextMesh>();
-            font.fontSize = 36;
+            font.fontSize = 20;
             font.alignment = TextAlignment.Center;
             font.anchor = TextAnchor.MiddleCenter;
             font.color = config.BaseColor;//todo:受其他影响
@@ -48,7 +32,8 @@ namespace TaoTie
             if (mainC != null && obj != null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
+                obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset)* billboardComponent.Scale;
+                obj.transform.localScale = Vector3.one * (billboardComponent.Scale * 0.1f);
             }
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)
             {
@@ -64,8 +49,7 @@ namespace TaoTie
                 Object.Destroy(obj);
                 obj = null;
             }
-
-            target = null;
+            
         }
         
         #endregion
