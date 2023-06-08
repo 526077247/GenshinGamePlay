@@ -51,6 +51,7 @@ namespace TaoTie
 
         private void CollectEnemies()
         {
+            enemySensiblesPreparation.Clear();
             var entityList = aiManager.GetEnemies(knowledge.CampID);
             foreach (var item in entityList)
             {

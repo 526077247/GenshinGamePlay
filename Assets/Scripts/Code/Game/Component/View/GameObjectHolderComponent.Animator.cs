@@ -7,13 +7,13 @@ namespace TaoTie
     {
         private bool fsmUseRagDoll;
         private bool useRagDoll;
-        private Animator animator;
+        public Animator Animator;
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         public void SetWeight(int index, float weight)
         {
-            if (animator != null)
+            if (Animator != null)
             {
-                animator.SetLayerWeight(index, weight);
+                Animator.SetLayerWeight(index, weight);
             }
         }
 
@@ -25,33 +25,33 @@ namespace TaoTie
 
         private void SetData(string key, int data)
         {
-            if (animator == null) return;
-            animator.SetInteger(key, data);
+            if (Animator == null) return;
+            Animator.SetInteger(key, data);
         }
 
         private void SetData(string key, float data)
         {
-            if (animator == null) return;
-            animator.SetFloat(key, data);
+            if (Animator == null) return;
+            Animator.SetFloat(key, data);
         }
 
         private void SetData(string key, bool data)
         {
-            if (animator == null) return;
-            animator.SetBool(key, data);
+            if (Animator == null) return;
+            Animator.SetBool(key, data);
         }
 
         private void CrossFadeInFixedTime(string stateName, float fadeDuration, int layerIndex, float targetTime)
         {
-            if (animator == null) return;
+            if (Animator == null) return;
             Log.Info(stateName+" "+Id);
-            animator.CrossFadeInFixedTime(stateName, fadeDuration, layerIndex, targetTime);
+            Animator.CrossFadeInFixedTime(stateName, fadeDuration, layerIndex, targetTime);
         }
 
         private void CrossFade(string stateName, int layerIndex)
         {
-            if (animator == null) return;
-            animator.CrossFade(stateName, 0, layerIndex);
+            if (Animator == null) return;
+            Animator.CrossFade(stateName, 0, layerIndex);
         }
 
         private void FSMSetUseRagDoll(bool use)

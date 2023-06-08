@@ -3,7 +3,7 @@ using CMF;
 
 namespace TaoTie
 {
-    public class MoveComponent : Component, IComponent,IUpdate
+    public partial class MoveComponent : Component, IComponent,IUpdate
     {
 	    #region Param
 
@@ -48,6 +48,9 @@ namespace TaoTie
         private Unit unit => parent as Unit;
         public void Init()
         {
+	        currentControllerState = ControllerState.Falling;
+	        RotateSpeed = 180;
+	        momentum = Vector3.zero;
 	        moveInput = new MoveInput();
             canMove = FsmComponent.DefaultFsm.CurrentState.CanMove;
             canTurn = FsmComponent.DefaultFsm.CurrentState.CanTurn;
@@ -62,12 +65,22 @@ namespace TaoTie
 	        await gh.WaitLoadGameObjectOver();
 	        if(gh.IsDispose) return;
 	        mover = gh.EntityView.GetComponent<Mover>();
+	        if (mover != null) mover.OnAnimatorMoveEvt = OnAnimatorMove;
 	        transform = gh.EntityView;
 	        cameraTransform = CameraManager.Instance.MainCamera().transform;
         }
 
         public void Destroy()
         {
+	        if (mover != null)
+	        {
+		        mover.OnAnimatorMoveEvt = null;
+		        mover = null;
+	        }
+
+	        transform = null;
+	        cameraTransform = null;
+	        moveInput = null;
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
         }

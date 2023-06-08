@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
 namespace CMF
@@ -6,7 +7,9 @@ namespace CMF
 	//This script handles all physics, collision detection and ground detection;
 	//It expects a movement velocity (via 'SetVelocity') every 'FixedUpdate' frame from an external script (like a controller script) to work;
 	//It also provides several getter methods for important information (whether the mover is grounded, the current surface normal [...]);
-	public class Mover : MonoBehaviour {
+	public class Mover : MonoBehaviour
+	{
+		public Action OnAnimatorMoveEvt;
 
 		//Collider variables;
 		[Header("Mover Options :")]
@@ -114,6 +117,11 @@ namespace CMF
 				sensor.DrawDebug();
 		}
 
+		void OnAnimatorMove()
+		{
+			OnAnimatorMoveEvt?.Invoke();
+		}
+		
 		//Recalculate collider height/width/thickness;
 		public void RecalculateColliderDimensions()
 		{

@@ -120,7 +120,7 @@ namespace TaoTie
         private void UpdateCandidateList()
         {
             UpdateCandidateFromSensibles();
-            var timeNow = GameTimerManager.Instance.GetDeltaTime();
+            var timeNow = GameTimerManager.Instance.GetTimeNow();
             var deltaTime = GameTimerManager.Instance.GetDeltaTime();
             foreach (var candidate in candidateList)
             {
@@ -139,7 +139,7 @@ namespace TaoTie
                             viewAttenuationAmount = viewAttenuation.Evaluate(distanceToCandidate);
                         }
                         //TODO 加上感知随机偏差系数
-                        temperatureAmount = knowledge.ThreatKnowledge.ViewThreatGrowRate * deltaTime * viewAttenuationAmount;
+                        temperatureAmount = knowledge.ThreatKnowledge.ViewThreatGrowRate * deltaTime * viewAttenuationAmount / 1000;
                         candidate.Value.IncreaseTemper(temperatureAmount);
                         break;
                     case ThreatAddReason.Feel:
@@ -151,7 +151,7 @@ namespace TaoTie
                             hearAttenuationAmount = hearAttenuation.Evaluate(distanceToCandidate);
                         }
                         //TODO 加上感知随机偏差系数
-                        temperatureAmount = knowledge.ThreatKnowledge.FeelThreatGrowRate * deltaTime * hearAttenuationAmount;
+                        temperatureAmount = knowledge.ThreatKnowledge.FeelThreatGrowRate * deltaTime * hearAttenuationAmount / 1000;
                         candidate.Value.IncreaseTemper(temperatureAmount);
                         break;
                 }
@@ -168,7 +168,7 @@ namespace TaoTie
 
             if (knowledge.Temperature < ThreatInfo.TEMPERVAL_ALERT)
             {
-                float decreaseTemperatureAmount = knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed * deltaTime;
+                float decreaseTemperatureAmount = knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed * deltaTime / 1000;
 
                 var keys = candidateList.Keys.ToArray();
                 foreach (var key in keys)
@@ -294,7 +294,7 @@ namespace TaoTie
                 return;
             }
             var deltaTime = GameTimerManager.Instance.GetDeltaTime();
-            var decreaseThreat = deltaTime * knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed/1000;
+            var decreaseThreat = deltaTime * knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed / 1000;
             foreach (var item in threatList)
             {
                 item.Value.DecreaseThreat(decreaseThreat);
@@ -369,6 +369,12 @@ namespace TaoTie
         /// <returns></returns>
         private bool ValidateThreat(ThreatInfo threatInfo)
         {
+            
+            if (threatInfo.ThreatValue <= ThreatInfo.THREATVAL_THREATLOST)
+            {
+                return false;
+            }
+            
             var timeNow = GameTimerManager.Instance.GetTimeNow();
             var distanceFromDefendCenter = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, threatInfo.ThreatPos);
             var distanceFromSelf = Vector3.Distance(knowledge.Entity.Position, threatInfo.ThreatPos);
@@ -382,6 +388,7 @@ namespace TaoTie
 
             var clearThreatTimerByDistance = knowledge.ThreatKnowledge.Config.ClearThreatTimerByDistance;
             var clearThreatTimerByOutOfZone = knowledge.ThreatKnowledge.Config.ClearThreatTimerByTargetOutOfZone;
+
             
             //超距
             //目标与AI距离 > 目标距离限制
@@ -425,11 +432,6 @@ namespace TaoTie
                 {
                     threatInfo.LctByOutOfZone.Reset(timeNow);
                 }
-            }
-
-            if (knowledge.ThreatKnowledge.Config.ClearThreatByLostPath)
-            {
-                //todo:
             }
 
             return true;

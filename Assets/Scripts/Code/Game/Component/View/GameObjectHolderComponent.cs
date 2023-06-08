@@ -18,12 +18,18 @@ namespace TaoTie
 
         public void Init()
         {
+            if(fsm?.DefaultFsm?.CurrentState!=null)
+                fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
+            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             LoadGameObjectAsync().Coroutine();
         }
 
         public void Init(string path)
         {
+            if(fsm?.DefaultFsm?.CurrentState!=null)
+                fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
+            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             LoadGameObjectAsync(path).Coroutine();
         }
@@ -45,10 +51,10 @@ namespace TaoTie
                 }
             }
 
-            animator = obj.GetComponentInChildren<Animator>();
-            if (animator != null && !string.IsNullOrEmpty(unit.Config.Controller))
+            Animator = obj.GetComponentInChildren<Animator>();
+            if (Animator != null && !string.IsNullOrEmpty(unit.Config.Controller))
             {
-                animator.runtimeAnimatorController =
+                Animator.runtimeAnimatorController =
                     ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
                 var fsm = parent.GetComponent<FsmComponent>();
                 if (fsm != null && fsm.Config.ParamDict != null)
@@ -103,13 +109,7 @@ namespace TaoTie
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
-            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
-            // var hud = unit.GetComponent<HudComponent>();
-            // if (hud != null)
-            // {
-            //     HudSystem hudSys = ManagerProvider.GetManager<HudSystem>();
-            //     hudSys?.ShowHeadInfo(hud.Info);
-            // }
+            UpdateRagDollState();
             if (waitFinishTask != null)
             {
                 while (waitFinishTask.TryDequeue(out var task))
@@ -130,7 +130,7 @@ namespace TaoTie
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);
                 return;
             }
-            animator = obj.GetComponentInChildren<Animator>();
+            Animator = obj.GetComponentInChildren<Animator>();
             EntityView = obj.transform;
             collector = obj.GetComponent<ReferenceCollector>();
             EntityView.SetParent(this.parent.Parent.GameObjectRoot);
@@ -162,13 +162,7 @@ namespace TaoTie
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
-            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
-            // var hud = unit.GetComponent<HudComponent>();
-            // if (hud != null)
-            // {
-            //     HudSystem hudSys = ManagerProvider.GetManager<HudSystem>();
-            //     hudSys?.ShowHeadInfo(hud.Info);
-            // }
+            UpdateRagDollState();
             if (waitFinishTask != null)
             {
                 while (waitFinishTask.TryDequeue(out var task))
@@ -214,10 +208,10 @@ namespace TaoTie
                 waitFinishTask = null;
             }
 
-            if (animator != null && animator.runtimeAnimatorController != null)
+            if (Animator != null && Animator.runtimeAnimatorController != null)
             {
-                ResourcesManager.Instance.ReleaseAsset(animator.runtimeAnimatorController);
-                animator = null;
+                ResourcesManager.Instance.ReleaseAsset(Animator.runtimeAnimatorController);
+                Animator = null;
             }
         }
 

@@ -36,12 +36,28 @@ namespace TaoTie
                     tk.SetEntityTarget(AITargetSource.Threat, mainThreat.Id, aiComponent);
                     isSetCombatAttackTarget = true;
                 }
-                else if (tk.TargetEntity != null)
+                else
                 {
                     if (tk.TargetEntity.Id != mainThreat.Id)
                     {
                         tk.SetEntityTarget(AITargetSource.Threat, mainThreat.Id, aiComponent);
                         isSetCombatAttackTarget = true;
+                    }
+
+                    if (tk.TargetEntity.GetComponent<CombatComponent>() == null)
+                    {
+                        mainThreat.ThreatValue = ThreatInfo.THREATVAL_THREATLOST;
+                    }
+                }
+                            
+                if (knowledge.ThreatKnowledge.Config.ClearThreatByLostPath)
+                {
+                    var timeNow = GameTimerManager.Instance.GetTimeNow();
+                    if (tk.HasPath != AITargetHasPathType.Failed)
+                        mainThreat.LctByEntityDisappear.Start(timeNow);
+                    if (mainThreat.LctByFarDistance.IsElapsed(timeNow, knowledge.ThreatKnowledge.Config.ClearThreatTimerByLostPath))
+                    {
+                        mainThreat.ThreatValue = ThreatInfo.THREATVAL_THREATLOST;
                     }
                 }
             }
@@ -82,7 +98,7 @@ namespace TaoTie
             if (tk.TargetPosition != targetPos && (GameTimerManager.Instance.GetTimeNow() > nextQueryTime ||
                 Vector3.SqrMagnitude(tk.TargetPosition - targetPos)>1))
             {
-                nextQueryTime += 1;
+                nextQueryTime += 1000;
                 targetPathQuery?.Dispose();
                 targetPathQuery = knowledge.PathFindingKnowledge.CreatePathQueryTask(knowledge.CurrentPos, targetPos);
             }
