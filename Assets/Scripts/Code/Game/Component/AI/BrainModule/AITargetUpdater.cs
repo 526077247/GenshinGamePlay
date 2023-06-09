@@ -88,7 +88,7 @@ namespace TaoTie
             }
 
             tk.TargetDistance = (pos - targetPos).magnitude;
-            tk.TargetDistanceY = Mathf.Abs(pos.y - targetPos.y);
+            tk.TargetDistanceY = pos.y - targetPos.y;
 
             pos.y = 0;
             targetPos.y = 0;

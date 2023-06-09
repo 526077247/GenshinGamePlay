@@ -55,5 +55,12 @@ namespace TaoTie
         public bool TriggerCDOnStart;
         [NinoMember(15)][LabelText("技能使用条件判断")]
         public ConfigAISkillCastCondition CastCondition;
+
+        [NinoMember(16)][BoxGroup("技能准备")]
+        public bool EnableSkillPrepare = true;
+        [NinoMember(17)][BoxGroup("技能准备")]
+        public int SkillPrepareTimeout = 1000;
+        [NinoMember(18)][BoxGroup("技能准备")]
+        public MotionFlag SkillPrepareSpeedLevel = MotionFlag.Walk;
     }
 }

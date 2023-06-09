@@ -79,6 +79,10 @@ namespace TaoTie
         public void AfterBeAttack(AttackResult result, CombatComponent other)
         {
             afterBeAttack?.Invoke(result, other);
+            if (result.HitLevel >= HitLevel.Shake)//todo: 击退击飞
+            {
+                fsm.SetData(FSMConst.Shake, true);
+            }
             if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText 
                 && (result.HitPattern == null || !result.HitPattern.MuteHitText))
             {

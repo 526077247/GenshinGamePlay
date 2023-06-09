@@ -80,29 +80,35 @@ namespace TaoTie
 
             if (actionState.Status == SkillStatus.Preparing)
             {
-                var targetKnowledge = knowledge.TargetKnowledge;
                 var currentSkill = actionState.Skill;
-
-                float rangeMin = -1;
-                float rangeMax = -1;
-                if (currentSkill.Config.CastCondition != null)
-                {
-                    rangeMin = currentSkill.Config.CastCondition.SkillAnchorRangeMin;
-                    rangeMax = currentSkill.Config.CastCondition.SkillAnchorRangeMax;
-                }
-                
-                if (rangeMin < 0 && rangeMax < 0)
-                {
-                    actionState.Status = SkillStatus.Prepared;
-                }
-                else if (targetKnowledge.SkillAnchorDistance <= rangeMax &&
-                         targetKnowledge.SkillAnchorDistance >= rangeMin)
+                if (!currentSkill.Config.EnableSkillPrepare)
                 {
                     actionState.Status = SkillStatus.Prepared;
                 }
                 else
                 {
-                    OnSkillFail();
+                    var targetKnowledge = knowledge.TargetKnowledge;
+                    float rangeMin = -1;
+                    float rangeMax = -1;
+                    if (currentSkill.Config.CastCondition != null)
+                    {
+                        rangeMin = currentSkill.Config.CastCondition.CastRangeMin;
+                        rangeMax = currentSkill.Config.CastCondition.CastRangeMax;
+                    }
+                
+                    if (rangeMin < 0 && rangeMax < 0)
+                    {
+                        actionState.Status = SkillStatus.Prepared;
+                    }
+                    else if (targetKnowledge.TargetDistanceXZ <= rangeMax &&
+                             targetKnowledge.TargetDistanceXZ >= rangeMin)
+                    {
+                        actionState.Status = SkillStatus.Prepared;
+                    }
+                    else
+                    {
+                        OnSkillFail();
+                    }
                 }
             }
             
@@ -129,6 +135,18 @@ namespace TaoTie
             if (actionState.Status == SkillStatus.Playing)
             {
                 var skillInfo = actionState.Skill;
+                
+                var rangeMin = skillInfo.Config.CastCondition.SkillAnchorRangeMin;
+                var rangeMax = skillInfo.Config.CastCondition.SkillAnchorRangeMax;
+                if (rangeMin > 0 && rangeMax > 0) 
+                {
+                    if (knowledge.TargetKnowledge.SkillAnchorDistance <= rangeMax &&
+                        knowledge.TargetKnowledge.SkillAnchorDistance >= rangeMin)//技能释放中被击退到可释放范围外
+                    {
+                        OnSkillFail();
+                        return;
+                    }
+                }
 
                 bool isFinished = true;
 
