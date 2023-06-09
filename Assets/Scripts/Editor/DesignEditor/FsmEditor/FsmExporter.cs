@@ -26,38 +26,41 @@ namespace TaoTie
 
     public class FsmExporter
     {
-        private AnimatorController _controller = null;
-        private string _fsmActionsPath = null;
-        private bool _publish = false;
-        private Dictionary<string, ConfigFsmTimeline> _fsmTimelineDict;
-        private Dictionary<string, ConfigParam> _paramDict;
-        private bool _hasError = false;
-        private AnimatorStateMachine _baseSm = null;
-        private string _defaultStateName = null;
+        const string EditDirName = "Edit";
+        const string PublishDirName = "Animations";
 
-        public FsmExporter(AnimatorController controller,  string actionPath,bool publish)
+        private AnimatorController controller = null;
+        private string fsmActionsPath = null;
+        private bool publish = false;
+        private Dictionary<string, ConfigFsmTimeline> fsmTimelineDict;
+        private Dictionary<string, ConfigParam> paramDict;
+        private bool hasError = false;
+        private AnimatorStateMachine baseSm = null;
+        private string defaultStateName = null;
+
+        public FsmExporter(AnimatorController controller, string actionPath, bool publish)
         {
-            _publish = publish;
-            _controller = controller;
-            _fsmActionsPath = actionPath;
+            this.publish = publish;
+            this.controller = controller;
+            fsmActionsPath = actionPath;
         }
 
         public void Generate(string _controllerConfigName)
         {
-            bool isNew = false;
-            string controllerPath = AssetDatabase.GetAssetPath(_controller);
-            string controllerSavePath = controllerPath.Replace(UtilityEditor.EditDirName,UtilityEditor.PublishDirName);
-            string configSavePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(controllerPath)), _controllerConfigName);
+            string controllerPath = AssetDatabase.GetAssetPath(controller);
+            string controllerSavePath = controllerPath.Replace(EditDirName, PublishDirName);
+            string configSavePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(controllerPath)),
+                _controllerConfigName);
 
-            _hasError = false;
+            hasError = false;
             ExportController(controllerPath, controllerSavePath);
             ExportParam();
 
             LoadFsmTimeline();
             List<ConfigFsm> fsmList = new List<ConfigFsm>();
-            for (int i = 0; i < _controller.layers.Length; ++i)
+            for (int i = 0; i < controller.layers.Length; ++i)
             {
-                if (_controller.layers[i].syncedLayerIndex >= 0)
+                if (controller.layers[i].syncedLayerIndex >= 0)
                     continue;
                 var cfgFsm = ExportLayer(i);
                 fsmList.Add(cfgFsm);
@@ -66,9 +69,9 @@ namespace TaoTie
             ConfigFsmController newController = new ConfigFsmController();
 
             newController.FsmConfigs = fsmList.ToArray();
-            newController.ParamDict = _paramDict;
+            newController.ParamDict = paramDict;
 
-            if (!_hasError)
+            if (!hasError)
             {
                 File.WriteAllText(configSavePath, JsonHelper.ToJson(newController));
                 AssetDatabase.Refresh();
@@ -90,19 +93,22 @@ namespace TaoTie
         }
 
         #region Fsm Controller
+
         private void ExportController(string srcPath, string savePath)
         {
             string dir = Path.GetDirectoryName(savePath);
             EnsureDir(dir);
-            AnimatorControllerExporter.Export(srcPath, savePath, _publish);
+            AnimatorControllerExporter.Export(srcPath, savePath, publish);
         }
+
         #endregion
 
         #region Fsm Timeline
+
         private void LoadFsmTimeline()
         {
-            _fsmTimelineDict = new Dictionary<string, ConfigFsmTimeline>();
-            LoadFsmTimelineInPath(_fsmActionsPath);
+            fsmTimelineDict = new Dictionary<string, ConfigFsmTimeline>();
+            LoadFsmTimelineInPath(fsmActionsPath);
         }
 
         private void LoadFsmTimelineInPath(string path)
@@ -118,25 +124,27 @@ namespace TaoTie
             foreach (FileInfo fileInfo in fileInfos)
             {
                 ConfigFsmTimeline timeline = TimelineSerializer.GetFromTimeline(Path.Combine(path, fileInfo.Name));
-                _fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
+                fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
             }
         }
+
         #endregion
 
         #region Fsm Param
+
         private Dictionary<string, ConfigParam> ExportParam()
         {
-            _paramDict = new Dictionary<string, ConfigParam>();
-            foreach (var param in _controller.parameters)
+            paramDict = new Dictionary<string, ConfigParam>();
+            foreach (var param in controller.parameters)
             {
                 var paramCfg = GenerateParameters(param);
                 if (paramCfg != null)
                 {
-                    _paramDict[paramCfg.Key] = paramCfg;
+                    paramDict[paramCfg.Key] = paramCfg;
                 }
             }
 
-            return _paramDict;
+            return paramDict;
         }
 
         private ConfigParam GenerateParameters(AnimatorControllerParameter param)
@@ -147,67 +155,73 @@ namespace TaoTie
             {
                 case AnimatorControllerParameterType.Bool:
                 {
-                        return new ConfigParamBool(param.name, param.defaultBool, animUse);
-                    }
+                    return new ConfigParamBool(param.name, param.defaultBool, animUse);
+                }
                 case AnimatorControllerParameterType.Trigger:
-                    {
-                        return new ConfigParamTrigger(param.name, param.defaultBool, animUse);
-                    }
+                {
+                    return new ConfigParamTrigger(param.name, param.defaultBool, animUse);
+                }
                 case AnimatorControllerParameterType.Int:
-                    {
-                        return new ConfigParamInt(param.name, param.defaultInt, animUse);
-                    }
+                {
+                    return new ConfigParamInt(param.name, param.defaultInt, animUse);
+                }
                 case AnimatorControllerParameterType.Float:
-                    {
-                        return new ConfigParamFloat(param.name, param.defaultFloat, animUse);
-                    }
+                {
+                    return new ConfigParamFloat(param.name, param.defaultFloat, animUse);
+                }
                 default:
                     break;
             }
+
             return null;
         }
 
         private AnimatorControllerParameter GetParameter(string name)
         {
-            return Array.Find(_controller.parameters, a => a.name == name);
+            return Array.Find(controller.parameters, a => a.name == name);
         }
+
         #endregion
 
         private ConfigFsm ExportLayer(int layerIndex)
         {
-            AnimatorControllerLayer layer = _controller.layers[layerIndex];
+            AnimatorControllerLayer layer = controller.layers[layerIndex];
             List<ConfigFsmState> stateList = new List<ConfigFsmState>();
             List<ConfigTransition> anyStateTransitionList = new List<ConfigTransition>();
 
             List<AnimatorStateMachine> parentStack = new List<AnimatorStateMachine>();
-            _baseSm = layer.stateMachine;
-            _defaultStateName = layer.stateMachine.defaultState.name;
+            baseSm = layer.stateMachine;
+            defaultStateName = layer.stateMachine.defaultState.name;
             ExportStateMachine(parentStack, layer.stateMachine, ref stateList, ref anyStateTransitionList);
 
             ConfigFsm cfgFsm = new ConfigFsm(layer.name, layerIndex);
-            cfgFsm.Entry = _defaultStateName;
+            cfgFsm.Entry = defaultStateName;
             cfgFsm.SetStates(stateList);
             cfgFsm.SetAnyStateTransitions(anyStateTransitionList.ToArray());
 
             return cfgFsm;
         }
 
-        private void ExportStateMachine(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm, ref List<ConfigFsmState> stateList, ref List<ConfigTransition> anyStateTransitionList)
+        private void ExportStateMachine(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
+            ref List<ConfigFsmState> stateList, ref List<ConfigTransition> anyStateTransitionList)
         {
             foreach (var state in sm.states)
             {
                 stateList.Add(ExportState(parentStack, sm, state.state));
             }
+
             ExportAnyStateTransitions(parentStack, sm, ref anyStateTransitionList);
             parentStack.Add(sm);
             foreach (var state in sm.stateMachines)
             {
                 ExportStateMachine(parentStack, state.stateMachine, ref stateList, ref anyStateTransitionList);
             }
+
             parentStack.RemoveAt(parentStack.Count - 1);
         }
 
-        private void ExportAnyStateTransitions(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm, ref List<ConfigTransition> anyStateTransitionList)
+        private void ExportAnyStateTransitions(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
+            ref List<ConfigTransition> anyStateTransitionList)
         {
             AnimatorStateTransition[] transitions = sm.anyStateTransitions;
             if (transitions != null)
@@ -220,12 +234,14 @@ namespace TaoTie
                         // 没有条件的AnyStateTransition不生效
                         continue;
                     }
+
                     ExportStateTransition(parentStack, sm, null, transition, true, ref anyStateTransitionList);
                 }
             }
         }
 
-        private ConfigFsmState ExportState(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm, AnimatorState state)
+        private ConfigFsmState ExportState(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
+            AnimatorState state)
         {
             List<ConfigTransition> transList = new List<ConfigTransition>();
             foreach (var tran in state.transitions)
@@ -234,7 +250,7 @@ namespace TaoTie
             }
 
             ConfigFsmTimeline timeline;
-            _fsmTimelineDict.TryGetValue(state.name, out timeline);
+            fsmTimelineDict.TryGetValue(state.name, out timeline);
 
             float stateDuration = 1f;
             var stateLoop = false;
@@ -242,10 +258,6 @@ namespace TaoTie
             {
                 stateLoop = state.motion.isLooping;
                 stateDuration = state.motion.averageDuration;
-            }
-            else if (timeline != null)
-            {
-                stateDuration = timeline.Length;
             }
 
             ConfigFsmState ret = new ConfigFsmState(state.name, stateDuration, stateLoop);
@@ -261,16 +273,20 @@ namespace TaoTie
                     }
                 }
             }
+
             return ret;
         }
 
-        private void ExportStateTransition(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm, AnimatorState state, AnimatorStateTransition tran, bool isAnyStateTransition, ref List<ConfigTransition> ret)
+        private void ExportStateTransition(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
+            AnimatorState state, AnimatorStateTransition tran, bool isAnyStateTransition,
+            ref List<ConfigTransition> ret)
         {
             List<ConfigCondition> conditionList = new List<ConfigCondition>();
             foreach (var item in tran.conditions)
             {
                 conditionList.Add(ExportCondition(item));
             }
+
             if (tran.hasExitTime)
             {
                 conditionList.Add(new ConfigConditionByStateTime(tran.exitTime, true, CompareMode.GEqual));
@@ -287,7 +303,8 @@ namespace TaoTie
             }
             else
             {
-                Debug.LogWarning($"[FsmExporter:ExportTransition] transition {tran.name} can not use fade duration in normalized time");
+                Debug.LogWarning(
+                    $"[FsmExporter:ExportTransition] transition {tran.name} can not use fade duration in normalized time");
             }
 
             float offset = tran.offset;
@@ -298,8 +315,12 @@ namespace TaoTie
                 {
                     offset *= tran.destinationState.motion.averageDuration;
                 }
-                bool canTransitionToSelf = isAnyStateTransition ? tran.canTransitionToSelf : state?.name == tran.destinationState.name;
-                ret.Add(new ConfigTransition(state?.name, tran.destinationState.name, conditionList.ToArray(), fadeDur, offset, canTransitionToSelf));
+
+                bool canTransitionToSelf = isAnyStateTransition
+                    ? tran.canTransitionToSelf
+                    : state?.name == tran.destinationState.name;
+                ret.Add(new ConfigTransition(state?.name, tran.destinationState.name, conditionList.ToArray(), fadeDur,
+                    offset, canTransitionToSelf));
             }
             else if (tran.destinationStateMachine != null)
             {
@@ -314,7 +335,8 @@ namespace TaoTie
                         tmp.Clear();
                         tmp.AddRange(from condition in conditionList select condition.Copy());
                         tmp.AddRange(from condition in entryTransition.conditionList select condition.Copy());
-                        ret.Add(new ConfigTransition(state?.name, entryTransition.toState, tmp.ToArray(), fadeDur, offset, false));
+                        ret.Add(new ConfigTransition(state?.name, entryTransition.toState, tmp.ToArray(), fadeDur,
+                            offset, false));
                     }
                 }
             }
@@ -333,14 +355,15 @@ namespace TaoTie
                         tmp.Clear();
                         tmp.AddRange(from condition in conditionList select condition.Copy());
                         tmp.AddRange(from condition in exitTransition.conditionList select condition.Copy());
-                        ret.Add(new ConfigTransition(state?.name, exitTransition.toState, tmp.ToArray(), fadeDur, offset, false));
+                        ret.Add(new ConfigTransition(state?.name, exitTransition.toState, tmp.ToArray(), fadeDur,
+                            offset, false));
                     }
                 }
                 else
                 {
                     // reach the root layer
                     List<Transition> entryTransitionList = new List<Transition>();
-                    CollectEntryTransitionToStates(entryTransitionList, null, _baseSm, true);
+                    CollectEntryTransitionToStates(entryTransitionList, null, baseSm, true);
                     if (entryTransitionList.Count > 0)
                     {
                         List<ConfigCondition> tmp = new List<ConfigCondition>();
@@ -349,14 +372,16 @@ namespace TaoTie
                             tmp.Clear();
                             tmp.AddRange(from condition in conditionList select condition.Copy());
                             tmp.AddRange(from condition in entryTransition.conditionList select condition.Copy());
-                            ret.Add(new ConfigTransition(state?.name, entryTransition.toState, tmp.ToArray(), fadeDur, offset, false));
+                            ret.Add(new ConfigTransition(state?.name, entryTransition.toState, tmp.ToArray(), fadeDur,
+                                offset, false));
                         }
                     }
                 }
             }
         }
 
-        private void CollectEntryTransitionToStates(List<Transition> ret, Transition parentTransition, AnimatorStateMachine sm, bool isRecursive)
+        private void CollectEntryTransitionToStates(List<Transition> ret, Transition parentTransition,
+            AnimatorStateMachine sm, bool isRecursive)
         {
             // 因为AnimatorController不允许从entry到exit的连线，所以不用考虑entryTransition.isExit的情况
             foreach (AnimatorTransition entryTransition in sm.entryTransitions)
@@ -370,10 +395,12 @@ namespace TaoTie
                     {
                         transition.CombineConditions(parentTransition);
                     }
+
                     foreach (AnimatorCondition condition in entryTransition.conditions)
                     {
                         transition.conditionList.Add(ExportCondition(condition));
                     }
+
                     ret.Add(transition);
                 }
                 else if (entryTransition.destinationStateMachine != null && isRecursive)
@@ -384,14 +411,19 @@ namespace TaoTie
                     {
                         transition.CombineConditions(parentTransition);
                     }
+
                     foreach (AnimatorCondition condition in entryTransition.conditions)
                     {
                         transition.conditionList.Add(ExportCondition(condition));
                     }
-                    CollectEntryTransitionToStates(ret, transition, entryTransition.destinationStateMachine, isRecursive);
+
+                    CollectEntryTransitionToStates(ret, transition, entryTransition.destinationStateMachine,
+                        isRecursive);
                 }
             }
-            if (sm.defaultState != null && ret.FindIndex((transition) => transition.toState == sm.defaultState.name) < 0)
+
+            if (sm.defaultState != null &&
+                ret.FindIndex((transition) => transition.toState == sm.defaultState.name) < 0)
             {
                 ret.Add(new Transition()
                 {
@@ -400,7 +432,8 @@ namespace TaoTie
             }
         }
 
-        private void CollectExitTransitionsToStates(List<Transition> ret, Transition exitTransitionInChild, List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm)
+        private void CollectExitTransitionsToStates(List<Transition> ret, Transition exitTransitionInChild,
+            List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm)
         {
             if (parentStack.Count == 0)
                 return;
@@ -411,13 +444,15 @@ namespace TaoTie
             {
                 if (parentSm.defaultState != null)
                 {
-                    Transition transition = new Transition() { toState = parentSm.defaultState.name };
+                    Transition transition = new Transition() {toState = parentSm.defaultState.name};
                     if (exitTransitionInChild != null)
                     {
                         transition.CombineConditions(exitTransitionInChild);
                     }
+
                     ret.Add(transition);
                 }
+
                 return;
             }
 
@@ -430,29 +465,33 @@ namespace TaoTie
                 {
                     conditionList.Add(ExportCondition(condition));
                 }
+
                 if (conditionList.Count == 0)
                     hasTransitionWithoutConditions = true;
 
                 if (transitionInParent.destinationState != null)
                 {
-                    Transition transition = new Transition() { toState = transitionInParent.destinationState.name };
+                    Transition transition = new Transition() {toState = transitionInParent.destinationState.name};
                     if (exitTransitionInChild != null)
                     {
                         transition.CombineConditions(exitTransitionInChild);
                     }
+
                     transition.conditionList.AddRange(from condition in conditionList select condition.Copy());
                     ret.Add(transition);
                 }
                 else if (transitionInParent.destinationStateMachine != null)
                 {
                     List<Transition> entryTransitionList = new List<Transition>();
-                    CollectEntryTransitionToStates(entryTransitionList, null, transitionInParent.destinationStateMachine, true);
+                    CollectEntryTransitionToStates(entryTransitionList, null,
+                        transitionInParent.destinationStateMachine, true);
                     foreach (Transition entryTransition in entryTransitionList)
                     {
                         if (exitTransitionInChild != null)
                         {
                             entryTransition.CombineConditions(exitTransitionInChild);
                         }
+
                         entryTransition.conditionList.AddRange(from condition in conditionList select condition.Copy());
                         ret.Add(entryTransition);
                     }
@@ -468,6 +507,7 @@ namespace TaoTie
                         {
                             transition.CombineConditions(exitTransitionInChild);
                         }
+
                         transition.conditionList.AddRange(from condition in conditionList select condition.Copy());
                         parentStack.RemoveAt(parentStack.Count - 1);
                         CollectExitTransitionsToStates(ret, transition, parentStack, parentSm);
@@ -476,27 +516,31 @@ namespace TaoTie
                     {
                         // if reach the root layer
                         List<Transition> entryTransitionList = new List<Transition>();
-                        CollectEntryTransitionToStates(entryTransitionList, null, _baseSm, true);
+                        CollectEntryTransitionToStates(entryTransitionList, null, baseSm, true);
                         foreach (Transition entryTransition in entryTransitionList)
                         {
                             if (exitTransitionInChild != null)
                             {
                                 entryTransition.CombineConditions(exitTransitionInChild);
                             }
-                            entryTransition.conditionList.AddRange(from condition in conditionList select condition.Copy());
+
+                            entryTransition.conditionList.AddRange(from condition in conditionList
+                                select condition.Copy());
                             ret.Add(entryTransition);
                         }
                     }
                 }
             }
+
             if (!hasTransitionWithoutConditions)
             {
                 // make a transtion to default state
-                Transition transition = new Transition() { toState = _defaultStateName };
+                Transition transition = new Transition() {toState = defaultStateName};
                 if (exitTransitionInChild != null)
                 {
                     transition.CombineConditions(exitTransitionInChild);
                 }
+
                 ret.Add(transition);
             }
         }
@@ -506,7 +550,7 @@ namespace TaoTie
             var param = GetParameter(cond.parameter);
             if (param == null)
             {
-                _hasError = true;
+                hasError = true;
                 Debug.LogErrorFormat("ExportCondition Fail Because Param Not Found {0}", cond.parameter);
                 return null;
             }
@@ -550,25 +594,26 @@ namespace TaoTie
                 switch (param.type)
                 {
                     case AnimatorControllerParameterType.Trigger:
-                        {
-                            cfg = new ConfigConditionByDataTrigger(cond.parameter);
-                            break;
-                        }
+                    {
+                        cfg = new ConfigConditionByDataTrigger(cond.parameter);
+                        break;
+                    }
                     case AnimatorControllerParameterType.Bool:
-                        {
-                            cfg = new ConfigConditionByDataBool(cond.parameter, cond.mode == AnimatorConditionMode.If, CompareMode.Equal);
-                            break;
-                        }
+                    {
+                        cfg = new ConfigConditionByDataBool(cond.parameter, cond.mode == AnimatorConditionMode.If,
+                            CompareMode.Equal);
+                        break;
+                    }
                     case AnimatorControllerParameterType.Int:
-                        {
-                            cfg = new ConfigConditionByDataInt(cond.parameter, (int)cond.threshold, mode);
-                            break;
-                        }
+                    {
+                        cfg = new ConfigConditionByDataInt(cond.parameter, (int) cond.threshold, mode);
+                        break;
+                    }
                     case AnimatorControllerParameterType.Float:
-                        {
-                            cfg = new ConfigConditionByDataFloat(cond.parameter, cond.threshold, mode);
-                            break;
-                        }
+                    {
+                        cfg = new ConfigConditionByDataFloat(cond.parameter, cond.threshold, mode);
+                        break;
+                    }
                 }
             }
 

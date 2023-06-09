@@ -28,7 +28,7 @@ namespace TaoTie
             for (int i = paramList.Count-1; i >=0; i--)
             {
                 var param = paramList[i];
-                if (timeNow > param.StartTime + param.StartTime)
+                if (timeNow > param.StartTime + param.ShakeTime)
                 {
                     paramList.RemoveAt(i);
                     continue;

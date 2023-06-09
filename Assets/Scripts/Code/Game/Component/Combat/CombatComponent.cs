@@ -88,8 +88,7 @@ namespace TaoTie
             if (result.ConfigAttackInfo.ForceCameraShake && (result.ConfigAttackInfo.CameraShake.BroadcastOnHit ||
                 result.ConfigAttackInfo.CameraShake.ShakeType == CameraShakeType.HitVector))
             {
-                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, result.ConfigAttackInfo.CameraShake,
-                    new CameraShakeParam
+                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
                     {
                         Source = result.HitInfo.HitPos,
                         ShakeDir = result.HitInfo.HitDir,

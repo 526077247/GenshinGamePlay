@@ -25,9 +25,6 @@ namespace TaoTie
                 }
             }
             ConfigFsmTimeline data = new ConfigFsmTimeline();
-            bool isOld = false;
-                
-            data.Length = (float)a.duration;
             data.Clips = clips.ToArray();
             data.Clips.Sort((a, b) =>
             {

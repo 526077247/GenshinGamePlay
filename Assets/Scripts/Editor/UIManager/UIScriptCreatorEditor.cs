@@ -40,8 +40,8 @@ namespace TaoTie
                 return;
             }
 
-            string PREFAB_PATH = GetPrefabPath();
-            UIScriptController.GenerateUICode(go, PREFAB_PATH);
+            string prefabPath = GetPrefabPath();
+            UIScriptController.GenerateUICode(go, prefabPath);
             if (IsMarking)
             {
                 IsMarking = false;
