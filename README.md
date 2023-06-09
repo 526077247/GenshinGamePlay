@@ -1,6 +1,6 @@
 # GenshinGamePlay
 
-通过研究原神逆向工程 https://github.com/fengjixuchui/WorldReverse ，推导出的一套GamePlay框架，包括战斗、解密，后续将加入AI、剧情
+通过研究原神逆向工程 https://github.com/fengjixuchui/WorldReverse ，推导出的一套GamePlay框架，包括战斗、解密、怪物AI，后续将加入剧情
 
 ## 目前完成效果
 动画文件有点问题，但是不影响测试效果。模型来源 [模之屋](https://www.aplaybox.com/details/model/MmroYfxfeCtc)
@@ -9,10 +9,11 @@
 
 ![寻宝解谜.gif](ReadMeRes%2FPreview2.gif)
 
+![怪物AI.gif](ReadMeRes%2FPreview3.gif)
+
 ## todo：
-1. 怪物AI
-2. 剧情演出
-3. 二进制序列化多态支持
+1. 剧情演出
+2. 二进制序列化多态支持
 
 ## 导表工具
 打开 /Tools/ExcelExport/ExcelExport.sln 编译后可用
