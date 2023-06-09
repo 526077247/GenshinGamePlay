@@ -62,5 +62,7 @@ namespace TaoTie
         public int SkillPrepareTimeout = 1000;
         [NinoMember(18)][BoxGroup("技能准备")]
         public MotionFlag SkillPrepareSpeedLevel = MotionFlag.Walk;
+        [NinoMember(19)][BoxGroup("技能准备")]
+        public int SkillQueryingTime = 1000;
     }
 }

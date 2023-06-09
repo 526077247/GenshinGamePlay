@@ -53,5 +53,13 @@ namespace TaoTie
             duration = param.duration;
             
         }
+
+        public override void OnCloseTask(AILocomotionHandler handler)
+        {
+            base.OnCloseTask(handler);
+            speedLevel = MotionFlag.Idle;
+            movingDirection = MotionDirection.Idle;
+            handler.UpdateMotionFlag(speedLevel, movingDirection);
+        }
     }
 }

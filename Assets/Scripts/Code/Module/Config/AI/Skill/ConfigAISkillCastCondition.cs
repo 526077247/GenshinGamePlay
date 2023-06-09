@@ -21,9 +21,9 @@ namespace TaoTie
         public float PickRangeMin;
         [NinoMember(7)][Min(0)][LabelText("距离max")][BoxGroup("目标选取")]
         public float PickRangeMax = 1;
-        [NinoMember(8)][Min(0)][LabelText("高度差min")][BoxGroup("目标选取")]
+        [NinoMember(8)][LabelText("高度差min")][BoxGroup("目标选取")]
         public float PickRangeYMin = -1;
-        [NinoMember(9)][Min(0)][LabelText("高度差max")][BoxGroup("目标选取")]
+        [NinoMember(9)][LabelText("高度差max")][BoxGroup("目标选取")]
         public float PickRangeYMax = 1;
         [NinoMember(10)][Min(0)][LabelText("持续施法距离min")]
         public float SkillAnchorRangeMin;

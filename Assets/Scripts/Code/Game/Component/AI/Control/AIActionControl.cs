@@ -28,7 +28,7 @@ namespace TaoTie
                     {
                         SelectSkill(knowledge.SkillKnowledge.SkillsOnAware.AvailableSkills);
                         CastSkill();
-                        actionState.Status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Querying;
                     }
                 }
                 else if (decision.Act == ActDecision.OnAlert)
@@ -37,7 +37,7 @@ namespace TaoTie
                     {
                         SelectSkill(knowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills);
                         CastSkill();
-                        actionState.Status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Querying;
                     }
                 }
                 else if (decision.Act == ActDecision.FreeSkill)
@@ -46,7 +46,7 @@ namespace TaoTie
                     {
                         SelectSkill(knowledge.SkillKnowledge.SkillsFree.AvailableSkills);
                         CastSkill();
-                        actionState.Status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Querying;
                     }
                 }
                 else if (decision.Act == ActDecision.BuddySkill)
@@ -55,7 +55,7 @@ namespace TaoTie
                     {
                         SelectSkill(knowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills);
                         CastSkill();
-                        actionState.Status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Querying;
                     }
                 }
                 else if (decision.Act == ActDecision.CombatSkill)
@@ -64,7 +64,7 @@ namespace TaoTie
                     {
                         SelectSkill(knowledge.SkillKnowledge.SkillsCombat.AvailableSkills);
                         CastSkill();
-                        actionState.Status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Querying;
                     }
                 }
                 else if (decision.Act == ActDecision.CombatSkillPrepare)
@@ -105,10 +105,6 @@ namespace TaoTie
                     {
                         actionState.Status = SkillStatus.Prepared;
                     }
-                    else
-                    {
-                        OnSkillFail();
-                    }
                 }
             }
             
@@ -123,7 +119,7 @@ namespace TaoTie
                     }
 
                     CastSkill();
-                    actionState.Status = SkillStatus.Playing;
+                    actionState.Status = SkillStatus.Querying;
                     
                     if (actionState.Skill.Config.FaceTarget)
                     {
@@ -131,6 +127,34 @@ namespace TaoTie
                     }
                 }
             }
+            
+            if (actionState.Status == SkillStatus.Querying)
+            {
+                if (actionState.QuerySkillDiscardTick < GameTimerManager.Instance.GetTimeNow())
+                {
+                    OnSkillFail();
+                    return;
+                }
+                bool isplay = false;
+                var skillInfo = actionState.Skill;
+                if (skillInfo.Config.StateIds?.Length > 0)
+                {
+                    for (int i = 0; i < skillInfo.Config.StateIds.Length; i++)
+                    {
+                        if (fsm.DefaultFsm.CurrentStateName == skillInfo.Config.StateIds[i])
+                        {
+                            isplay = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isplay)
+                {
+                    actionState.Status = SkillStatus.Playing;
+                }
+            }
+
             
             if (actionState.Status == SkillStatus.Playing)
             {
@@ -190,7 +214,7 @@ namespace TaoTie
                 SelectSkill(skillCandidates[0]);
                 if (skipPrepare)
                 {
-                    actionState.Status = SkillStatus.Playing;
+                    actionState.Status = SkillStatus.Prepared;
                 }
                 return;
             }
@@ -209,7 +233,7 @@ namespace TaoTie
                     actionState.Skill = skillCandidates[i];
                     if (skipPrepare)
                     {
-                        actionState.Status = SkillStatus.Playing;
+                        actionState.Status = SkillStatus.Prepared;
                     }
                     
                     return;
@@ -223,7 +247,9 @@ namespace TaoTie
             var maic = knowledge.CombatComponent;
             var skillInfo = actionState.Skill;
             var skillKnowledge = knowledge.SkillKnowledge;
-
+            
+            actionState.QuerySkillDiscardTick = now + skillInfo.Config.SkillQueryingTime;
+            
             maic.UseSkillImmediately(skillInfo.SkillId);
 
             if (skillInfo.Config.TriggerCDOnStart)

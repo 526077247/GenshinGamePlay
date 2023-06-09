@@ -18,7 +18,7 @@
 
         public void ExecuteMove(AIDecision decision)
         {
-            if (knowledge.MoveDecisionChanged)
+            if (knowledge.MoveDecisionChanged || loco.currentState == LocoTaskState.Finished)
             {
                 switch (aiComponent.GetDecisionOld().Move)
                 {

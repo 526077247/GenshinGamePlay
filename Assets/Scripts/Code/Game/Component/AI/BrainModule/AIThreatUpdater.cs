@@ -197,10 +197,13 @@ namespace TaoTie
 
             foreach (var sensible in sensibles)
             {
+                //防守区域范围
+                var distanceFromDefendCenter = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, sensible.Value.Position);
+                var defendRange = knowledge.DefendAreaKnowledge.DefendRange;
+                if(distanceFromDefendCenter>defendRange) continue;
+                
                 float distanceToSensible = sensible.Value.Distance;
-
                 var feelRange = knowledge.SensingKnowledge.FeelRange;
-
                 if (distanceToSensible <= feelRange)//Feel
                 {
                     ProcessSensible(sensible.Value, ThreatAddReason.Feel);
@@ -402,12 +405,12 @@ namespace TaoTie
                     return false;
                 }
             }
-            //目表处于(防守区域 + 边缘距离限制)外
+            //目标处于(防守区域 + 边缘距离限制)外
             else if (distanceFromDefendCenter > (defendRange + edgeRange))
             {
                 if (!threatInfo.LctByFarDistance.IsRunning())
                     threatInfo.LctByFarDistance.Start(timeNow);
-                if (threatInfo.LctByFarDistance.IsElapsed(timeNow, clearThreatTimerByDistance))
+                if (threatInfo.LctByFarDistance.IsElapsed(timeNow, clearThreatTimerByOutOfZone))
                 {
                     return false;
                 }

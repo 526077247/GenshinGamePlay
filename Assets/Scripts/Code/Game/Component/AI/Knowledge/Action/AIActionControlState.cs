@@ -4,10 +4,10 @@ namespace TaoTie
 {
     public class AIActionControlState: IDisposable
     {
-        private bool isPrepared;
+        public bool IsPrepared => Status >= SkillStatus.Prepared;
         public AISkillInfo Skill;
         public SkillStatus Status;
-        private float querySkillDiscardTick;
+        public long QuerySkillDiscardTick;
 
         public static AIActionControlState Create()
         {
@@ -16,16 +16,16 @@ namespace TaoTie
         
         public void Dispose()
         {
-            isPrepared = false;
             Skill = null;
             Status = default;
-            querySkillDiscardTick = 0;
+            QuerySkillDiscardTick = 0;
         }
 
         public void Reset()
         {
             Skill = null;
             Status = SkillStatus.Inactive;
+            QuerySkillDiscardTick = 0;
         }
     }
 }

@@ -79,11 +79,12 @@ namespace TaoTie
 
 		public static bool IsCombatSkillExecuteValid(AIKnowledge knowledge)
 		{
-			return knowledge.ActionControlState.Status == SkillStatus.Prepared;
+			return knowledge.ActionControlState.IsPrepared;
 		}
 
 		public static bool IsCombatSkillPrepareValid(AIKnowledge knowledge)
 		{
+			if (knowledge.ActionControlState.Status == SkillStatus.Preparing) return true;
 			if (knowledge.ActionControlState.Status != SkillStatus.Inactive) return false;
 			return knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
 		}
