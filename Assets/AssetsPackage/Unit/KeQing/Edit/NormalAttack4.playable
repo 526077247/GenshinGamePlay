@@ -14,20 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 0.77
   AbilityName: KeQing_NormalAttack4_Hide
---- !u!114 &-1161639268509030298
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Execute Ability Signal
-  m_EditorClassIdentifier: Assembly-CSharp-Editor:TaoTie:ExecuteAbilitySignal
-  m_Time: 0.3333333333333333
-  AbilityName: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50,6 +36,20 @@ MonoBehaviour:
     m_ScenePreview: 1
   m_DurationMode: 0
   m_MarkerTrack: {fileID: 8210969050633043834}
+--- !u!114 &1023130104606674719
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0462c0eb3c84f4ea20d8be9817ca50d, type: 3}
+  m_Name: Execute Ability Signal
+  m_EditorClassIdentifier: 
+  m_Time: 0.31
+  AbilityName: KeQing_NormalAttack1
 --- !u!114 &1896085639909525354
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -73,11 +73,10 @@ MonoBehaviour:
   m_Clips: []
   m_Markers:
     m_Objects:
-    - {fileID: -1161639268509030298}
     - {fileID: 6159423364177759226}
-    - {fileID: 7063862333980004222}
     - {fileID: -5118505942505270991}
     - {fileID: 5461582552290552815}
+    - {fileID: 1023130104606674719}
 --- !u!114 &5461582552290552815
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -216,20 +215,6 @@ MonoBehaviour:
   m_OpenClipOffsetRotation: {x: 0, y: 0, z: 0, w: 1}
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
   m_ApplyOffsets: 0
---- !u!114 &7063862333980004222
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0462c0eb3c84f4ea20d8be9817ca50d, type: 3}
-  m_Name: Execute Ability Signal
-  m_EditorClassIdentifier: 
-  m_Time: 0.31
-  AbilityName: 
 --- !u!114 &8210969050633043834
 MonoBehaviour:
   m_ObjectHideFlags: 1
