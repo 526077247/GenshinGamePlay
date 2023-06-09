@@ -1,58 +1,40 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Sirenix.Utilities;
-using UnityEngine;
 using UnityEditor;
-using Slate;
+using UnityEngine.Timeline;
 
 namespace TaoTie
 {
     public static class TimelineSerializer
     {
-        public static ConfigFsmTimeline GetTimeline(string path)
+        public static ConfigFsmTimeline GetFromTimeline(string path)
         {
-            var a = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            if (a != null)
+            var a = AssetDatabase.LoadAssetAtPath<TimelineAsset>(path);
+            if (a == null) return null;
+            List<ConfigFsmClip> clips = new List<ConfigFsmClip>();
+            for (int i = 0; i < a.rootTrackCount; i++)
             {
-                List<ConfigFsmClip> clips = new List<ConfigFsmClip>();
-                var src = a.GetComponent<Cutscene>();
-                List<CutsceneGroup> groups = src.groups;
-                for (int i = 0; i < groups.Count; i++)
+                var track = a.GetRootTrack(i);
+                for (int j = 0; j < track.GetMarkerCount(); j++)
                 {
-                    CutsceneGroup group = groups[i];
-                    if (!(group is ActorGroup))
+                    var marker = track.GetMarker(j);
+                    if (marker is ISerializableClip signal)
                     {
-                        continue;
-                    }
-
-                    for (int j = 0; j < group.tracks.Count; j++)
-                    {
-                        if (group.tracks[j] is FSMTrack track)
-                        {
-                            for (int k = 0; k < track.clips.Count; k++)
-                            {
-                                if (track.clips[k] is ISerializableClip clip)
-                                {
-                                    clip.DoSerialize(clips);
-                                }
-                            }
-                        }
+                        signal.DoSerialize(clips);
                     }
                 }
-                ConfigFsmTimeline data = new ConfigFsmTimeline();
-                bool isOld = false;
-                
-                data.Length = src.length;
-                data.Clips = clips.ToArray();
-                data.Clips.Sort((a, b) =>
-                {
-                    if (a.StartTime == b.StartTime) return 0;
-                    return a.StartTime - b.StartTime > 0 ? 1 : -1;
-                });
-                return data;
             }
-
-            return null;
+            ConfigFsmTimeline data = new ConfigFsmTimeline();
+            bool isOld = false;
+                
+            data.Length = (float)a.duration;
+            data.Clips = clips.ToArray();
+            data.Clips.Sort((a, b) =>
+            {
+                if (a.StartTime == b.StartTime) return 0;
+                return a.StartTime - b.StartTime > 0 ? 1 : -1;
+            });
+            return data;
         }
     }
 }

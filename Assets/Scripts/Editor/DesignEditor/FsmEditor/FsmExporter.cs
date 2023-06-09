@@ -114,10 +114,10 @@ namespace TaoTie
             if (!dirInfo.Exists)
                 return;
 
-            FileInfo[] fileInfos = dirInfo.GetFiles("*.prefab", SearchOption.TopDirectoryOnly);
+            FileInfo[] fileInfos = dirInfo.GetFiles("*.playable", SearchOption.TopDirectoryOnly);
             foreach (FileInfo fileInfo in fileInfos)
             {
-                ConfigFsmTimeline timeline = TimelineSerializer.GetTimeline(Path.Combine(path, fileInfo.Name));
+                ConfigFsmTimeline timeline = TimelineSerializer.GetFromTimeline(Path.Combine(path, fileInfo.Name));
                 _fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
             }
         }

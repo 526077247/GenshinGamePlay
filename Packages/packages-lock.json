@@ -20,12 +20,6 @@
       "source": "embedded",
       "dependencies": {}
     },
-    "com.thridparty.slate": {
-      "version": "file:com.thridparty.slate",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.tuyoogame.yooasset": {
       "version": "file:com.tuyoogame.yooasset@1.4.2",
       "depth": 0,
