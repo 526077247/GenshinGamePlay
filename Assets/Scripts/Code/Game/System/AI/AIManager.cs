@@ -2,10 +2,10 @@
 
 namespace TaoTie
 {
-    public class AIManager:IManager<BaseMapScene>,IUpdate
+    public class AIManager:IManager<MapScene>,IUpdate
     {
         private const int CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME = 10;
-        private BaseMapScene scene;
+        private MapScene scene;
         private Dictionary<long, AIComponent> unitIdUnits;
         private LinkedList<AIComponent> allAIUnit;
         private List<AIComponent> localAvatarAlertEnemies;
@@ -24,7 +24,7 @@ namespace TaoTie
         private Dictionary<string, long> publicCDs;
         #region IManager
 
-        public void Init(BaseMapScene mapScene)
+        public void Init(MapScene mapScene)
         {
             scene = mapScene;
             localAvatar = scene.Self;

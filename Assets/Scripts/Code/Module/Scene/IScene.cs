@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
     public interface IScene
     {
+        public string GetName();
         public string GetScenePath();
 
         public string[] GetDontDestroyWindow();

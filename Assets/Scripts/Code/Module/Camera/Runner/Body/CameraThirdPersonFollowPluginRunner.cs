@@ -50,7 +50,7 @@ namespace TaoTie
                 if (ec != null)
                 {
                     var entityId = ec.Id;
-                    if (SceneManager.Instance.CurrentScene is BaseMapScene map)
+                    if (SceneManager.Instance.CurrentScene is MapScene map)
                     {
                         var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
                         _actorCommon = unit.configActor.Common;

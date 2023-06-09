@@ -25,7 +25,7 @@ namespace TaoTie
 		#region 事件绑定
 		public void OnClickbtn_start()
 		{
-			SceneManager.Instance.SwitchScene<HeavenScene>().Coroutine();
+			SceneManager.Instance.SwitchMapScene("Sample").Coroutine();
 		}
 		#endregion
 	}

@@ -303,6 +303,7 @@ namespace TaoTie
             {
                 if (threatList.ContainsKey(candidate.Value.Id))
                     continue;
+                candidate.Value.IncreaseThreat(candidate.Value.Temperature);
                 threatList.Add(candidate.Value.Id, candidate.Value);
             }
 

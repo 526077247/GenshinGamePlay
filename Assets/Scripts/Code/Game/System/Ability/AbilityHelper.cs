@@ -48,7 +48,7 @@ namespace TaoTie
                     entities = null;
                     return 0;
                 case AbilityTargetting.CurLocalAvatar:
-                    var scene = SceneManager.Instance.GetCurrentScene<BaseMapScene>();
+                    var scene = SceneManager.Instance.GetCurrentScene<MapScene>();
                     if (scene != null)
                     {
                         entities = new[] { scene.Self };

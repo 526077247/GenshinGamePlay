@@ -11,79 +11,50 @@ namespace TaoTie
     /// </summary>
     public class SceneManager:IManager
     {
-        public static SceneManager Instance;
-
-        private Dictionary<Type, IScene> scenes;
-
-        private Dictionary<string, Type> nameMapScenes;
+        public static SceneManager Instance{ get; private set; }
+        
         //当前场景
-        public IScene CurrentScene;
+        public IScene CurrentScene{ get; private set; }
         //是否忙
-        public bool Busing = false;
+        public bool Busing { get; private set; } = false;
         
         private readonly Queue<ETTask> waitFinishTask = new Queue<ETTask>();
         #region override
 
         public void Init()
         {
-            scenes = new Dictionary<Type, IScene>();
-            nameMapScenes = new Dictionary<string, Type>();
             Instance = this;
-            var allTypes = AssemblyManager.Instance.GetTypes();
-            var scene = TypeInfo<IScene>.Type;
-            foreach (var item in allTypes)
-            {
-                var type = item.Value;
-                if (!type.IsAbstract && scene.IsAssignableFrom(type))
-                {
-                    nameMapScenes.Add(type.Name, type);
-                }
-            }
         }
 
         public void Destroy()
         {
-            nameMapScenes.Clear();
             waitFinishTask.Clear();
-            nameMapScenes = null;
-            scenes = null;
             Instance = null;
         }
 
         #endregion
 
-        async ETTask<IScene> GetScene<T>() where T : IScene
+        async ETTask<IScene> GetScene<T>() where T : class,IScene
         {
-            if (scenes.TryGetValue(TypeInfo<T>.Type, out var res))
-            {
-                return res;
-            }
-            res = Activator.CreateInstance<T>();
+            var res = ObjectPool.Instance.Fetch<T>();
             await res.OnCreate();
-            scenes.Add(TypeInfo<T>.Type,res);
             return res;
         }
-        
-        async ETTask<IScene> GetScene(Type type)
-        {
-            if (scenes.TryGetValue(type, out var res))
-            {
-                return res;
-            }
-            res = Activator.CreateInstance(type) as IScene;
-            await res.OnCreate();
-            scenes.Add(type,res);
-            return res;
-        }
-
         //切换场景
-        async ETTask InnerSwitchScene(Type type, bool needClean = false)
+        async ETTask InnerSwitchScene<T>(bool needClean = false,int id = 0) where T:class,IScene
         {
             float slidValue = 0;
             Log.Info("InnerSwitchScene start open uiLoading");
-            var scene = await GetScene(type);
-            if(CurrentScene!=null)
+            var scene = await GetScene<T>();
+            if (CurrentScene != null)
+            {
                 await CurrentScene.OnLeave();
+                ObjectPool.Instance.Recycle(CurrentScene);
+            }
+            if (scene is MapScene map)
+            {
+                map.ConfigId = id;
+            }
             await scene.OnEnter();
             await scene.SetProgress(slidValue);
 
@@ -178,14 +149,14 @@ namespace TaoTie
             FinishLoad();
         }
         //切换场景
-        public async ETTask SwitchScene<T>(bool needClean = false)where T:IScene
+        public async ETTask SwitchScene<T>(bool needClean = false)where T:class,IScene
         {
             if (this.Busing) return;
             if (IsInTargetScene<T>())
                 return;
             this.Busing = true;
 
-            await this.InnerSwitchScene(TypeInfo<T>.Type, needClean);
+            await this.InnerSwitchScene<T>(needClean);
 
             //释放loading界面引用的资源
             GameObjectPoolManager.Instance.CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
@@ -196,12 +167,12 @@ namespace TaoTie
         public async ETTask SwitchMapScene(string typeName, bool needClean = false)
         {
             if (this.Busing) return;
-            if(!nameMapScenes.TryGetValue(typeName,out var type)) return;
-            if (IsInTargetScene(type))
+            if(!SceneConfigCategory.Instance.TryGetByName(typeName,out var config)) return;
+            if (IsInTargetMapScene(config.Name))
                 return;
             this.Busing = true;
 
-            await this.InnerSwitchScene(type, needClean);
+            await this.InnerSwitchScene<MapScene>(needClean, config.Id);
 
             //释放loading界面引用的资源
             GameObjectPoolManager.Instance.CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
@@ -216,15 +187,15 @@ namespace TaoTie
         {
             return (T)this.CurrentScene;
         }
-        public bool IsInTargetScene<T>()where T:IScene
+        public bool IsInTargetScene<T>() where T:IScene
         {
             if (this.CurrentScene == null) return false;
-            return this.CurrentScene.GetType() == TypeInfo<T>.Type;
+            return this.CurrentScene is T;
         }
-        public bool IsInTargetScene(Type type)
+        public bool IsInTargetMapScene(string name)
         {
             if (this.CurrentScene == null) return false;
-            return this.CurrentScene.GetType() == type;
+            return this.CurrentScene.GetName() == name;
         }
         public ETTask WaitLoadOver()
         {

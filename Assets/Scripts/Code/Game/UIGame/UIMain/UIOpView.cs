@@ -95,7 +95,7 @@ namespace TaoTie
 				if (showList.Count > activeIndex)
 				{
 					var data = showList[activeIndex];
-					if (SceneManager.Instance.GetCurrentScene() is BaseMapScene map)
+					if (SceneManager.Instance.GetCurrentScene() is MapScene map)
 					{
 						var unit = map.GetManager<EntityManager>()?.Get<Unit>(data.Item1);
 						if (unit != null)

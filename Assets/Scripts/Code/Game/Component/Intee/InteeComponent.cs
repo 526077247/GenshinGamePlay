@@ -21,7 +21,7 @@ namespace TaoTie
         {
             enable = conf.DefaultEnable;
             config = conf;
-            if (SceneManager.Instance.GetCurrentScene() is BaseMapScene scene)
+            if (SceneManager.Instance.GetCurrentScene() is MapScene scene)
             {
                 avatar = scene.Self as Avatar;
             }

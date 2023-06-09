@@ -46,7 +46,7 @@ namespace TaoTie
 
                     if (tk.TargetEntity.GetComponent<CombatComponent>() == null)
                     {
-                        mainThreat.ThreatValue = ThreatInfo.THREATVAL_THREATLOST;
+                        mainThreat.DecreaseThreat(ThreatInfo.THREATVAL_MAX);
                     }
                 }
                             
@@ -57,7 +57,7 @@ namespace TaoTie
                         mainThreat.LctByEntityDisappear.Start(timeNow);
                     if (mainThreat.LctByFarDistance.IsElapsed(timeNow, knowledge.ThreatKnowledge.Config.ClearThreatTimerByLostPath))
                     {
-                        mainThreat.ThreatValue = ThreatInfo.THREATVAL_THREATLOST;
+                        mainThreat.DecreaseThreat(ThreatInfo.THREATVAL_MAX);
                     }
                 }
             }

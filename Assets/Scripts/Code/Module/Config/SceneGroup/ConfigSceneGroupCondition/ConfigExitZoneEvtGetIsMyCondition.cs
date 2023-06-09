@@ -12,7 +12,7 @@ namespace TaoTie
     {
         public override bool IsMatch(ExitZoneEvent obj, SceneGroup sceneGroup)
         {
-            var scene = SceneManager.Instance.CurrentScene as BaseMapScene;
+            var scene = SceneManager.Instance.CurrentScene as MapScene;
             if (scene != null)
                 return obj.EntityId == scene.MyId;
             return false;

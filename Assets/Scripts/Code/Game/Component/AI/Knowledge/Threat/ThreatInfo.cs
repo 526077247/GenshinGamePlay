@@ -19,9 +19,9 @@ namespace TaoTie
         public long Id;
         public ThreatAddReason AddReason;
         //警戒值
-        public float Temperature = 0f;
+        public float Temperature { get; private set; }= 0f;
         //威胁值
-        public float ThreatValue = 0f;
+        public float ThreatValue { get; private set; }= 0f;
 
         public Vector3 ThreatPos;
 

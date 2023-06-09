@@ -48,7 +48,7 @@ namespace TaoTie
 
         public virtual void Init(ConfigAIBeta config)
         {
-            if (SceneManager.Instance.CurrentScene is BaseMapScene scene)
+            if (SceneManager.Instance.CurrentScene is MapScene scene)
             {
                 aiManager = scene.GetManager<AIManager>();
             }

@@ -4,6 +4,10 @@ namespace TaoTie
 {
     public class LoadingScene:IScene
     {
+        public string GetName()
+        {
+            return "Loading";
+        }
         public string[] GetDontDestroyWindow()
         {
             return null;
@@ -51,6 +55,11 @@ namespace TaoTie
         public async ETTask OnSwitchSceneEnd()
         {
             await ETTask.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

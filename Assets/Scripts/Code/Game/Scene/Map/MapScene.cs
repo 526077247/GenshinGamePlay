@@ -3,8 +3,20 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class BaseMapScene:SceneManagerProvider,IScene
+    public class MapScene:SceneManagerProvider,IScene
     {
+        public int ConfigId;
+        private SceneConfig config => SceneConfigCategory.Instance.Get(ConfigId);
+        public string GetName()
+        {
+            return config.Name;
+        }
+
+        public string GetScenePath()
+        {
+            return config.Perfab;
+        }
+        
         #region 玩家信息
         /// <summary>
         /// 玩家unitId
@@ -65,15 +77,13 @@ namespace TaoTie
             await ETTask.CompletedTask;
         }
 
-        public abstract string GetScenePath();
-
         public virtual async ETTask OnSwitchSceneEnd()
         {
             RegisterManager<GameTimerManager>();
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();
-            RegisterManager<AIManager,BaseMapScene>(this);
+            RegisterManager<AIManager,MapScene>(this);
 
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
             
