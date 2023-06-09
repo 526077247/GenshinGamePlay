@@ -12,8 +12,8 @@
         public const int SceneGroupEvent = 4;
         /// <summary> PoseChange </summary>
         public const int PoseChange = 5;
-        // /// <summary> UpdateMotionFlag </summary>
-        // public const int UpdateMotionFlag = 6;
+        /// <summary> UpdateMotionFlag </summary>
+        public const int UpdateMotionFlag = 6;
         /// <summary> UpdateTurnTargetPos </summary>
         public const int UpdateTurnTargetPos = 7;
 
@@ -48,5 +48,7 @@
         public const int OnKill = 21;
         /// <summary> FSM设置使用RagDoll </summary>
         public const int SetUseRagDoll = 22;
+        /// <summary> 战斗状态改变 </summary>
+        public const int CombatStateChange = 6;
     }
 }

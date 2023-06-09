@@ -10,7 +10,7 @@ namespace TaoTie
         public DieStateFlag DieStateFlag;
         private ConfigCombat config;
 
-        public bool IsInCombat;
+        public bool IsInCombat { get; private set; }
         public bool CanHeHit;
 
         public void Init(ConfigCombat config)
@@ -202,6 +202,15 @@ namespace TaoTie
                         }
                     }
                 }
+            }
+        }
+
+        public void SetCombatState(bool inCombat)
+        {
+            if (inCombat != IsInCombat)
+            {
+                IsInCombat = inCombat;
+                Messager.Instance.Broadcast(Id, MessageId.CombatStateChange, IsInCombat);
             }
         }
     }

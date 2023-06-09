@@ -18,13 +18,14 @@ namespace TaoTie
         public void Init(ConfigBillboard config)
         {
             Config = config;
-            Enable = true;
+            Enable = false;
             plugins = new List<BillboardPlugin>();
             Scale = 1;
             if (Config != null && Config.Plugins != null)
             {
                 InitInternal().Coroutine();
             }
+            Messager.Instance.AddListener<bool>(Id, MessageId.CombatStateChange, SetEnable);
         }
 
         private async ETTask InitInternal()
@@ -42,6 +43,7 @@ namespace TaoTie
 
         public void Destroy()
         {
+            Messager.Instance.RemoveListener<bool>(Id, MessageId.CombatStateChange, SetEnable);
             for (int i = 0; i < plugins.Count; i++)
             {
                 plugins[i].Dispose();
