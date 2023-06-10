@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: Execute Ability Signal
   m_EditorClassIdentifier: 
   m_Time: 0.6166666666666667
-  AbilityName: Fox_Attack1
+  AbilityName: Fox_Attack2
 --- !u!114 &6159423364177759226
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Name: Execute Ability Signal
   m_EditorClassIdentifier: 
   m_Time: 0.3
-  AbilityName: Fox_Attack1
+  AbilityName: Fox_Attack2
 --- !u!114 &6692269853049155522
 MonoBehaviour:
   m_ObjectHideFlags: 1
