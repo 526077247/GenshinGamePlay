@@ -14,9 +14,7 @@ namespace TaoTie
         private int retryTimes;
         public static CombatFollowMoveInfo Create()
         {
-            var res = ObjectPool.Instance.Fetch<CombatFollowMoveInfo>();
-
-            return res;
+            return ObjectPool.Instance.Fetch<CombatFollowMoveInfo>();
         }
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
@@ -63,7 +61,7 @@ namespace TaoTie
 
         public override void Dispose()
         {
-
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

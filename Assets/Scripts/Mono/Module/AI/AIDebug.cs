@@ -15,6 +15,7 @@ namespace TaoTie
         public Vector3? TargetPos;
         public float ViewRange;
         public string Alertness;
+        public string SkillStatus;
 
         private void Awake()
         {
@@ -39,6 +40,7 @@ namespace TaoTie
             GUI.Label(new Rect(10, 90, 200, 90), "Move: " + Move, style);
             GUI.Label(new Rect(10, 130, 200, 90), "Target: " + Target, style);
             GUI.Label(new Rect(10, 170, 200, 90), "Alertness: " + Alertness, style);
+            GUI.Label(new Rect(10, 210, 200, 90), "SkillStatus: " + SkillStatus, style);
         }
 
         private void OnDrawGizmos()

@@ -22,14 +22,14 @@ namespace TaoTie
         
         public static FleeInfo Create()
         {
-            FleeInfo res = ObjectPool.Instance.Fetch<FleeInfo>();
-            return res;
+            return ObjectPool.Instance.Fetch<FleeInfo>();
         }
 
         public override void Dispose()
         {
             Status = default;
             FleePoint = null;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai, AIManager aiManager)

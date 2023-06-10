@@ -7,28 +7,21 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigConditionByStateTime : ConfigCondition
     {
+        [NinoMember(1)]
         public float Time;
+        [NinoMember(2)]
         public bool IsNormalized;
+        [NinoMember(3)]
         public CompareMode Mode;
-
-        public ConfigConditionByStateTime(){}
-        public ConfigConditionByStateTime(float time, bool isNormalized, CompareMode mode)
-        {
-            this.Time = time;
-            this.IsNormalized = isNormalized;
-            this.Mode = mode;
-        }
-
-        public ConfigConditionByStateTime(ConfigConditionByStateTime other)
-        {
-            this.Time = other.Time;
-            this.IsNormalized = other.IsNormalized;
-            this.Mode = other.Mode;
-        }
 
         public override ConfigCondition Copy()
         {
-            return new ConfigConditionByStateTime(this);
+            return new ConfigConditionByStateTime()
+            {
+                Time = this.Time,
+                IsNormalized = this.IsNormalized,
+                Mode = this.Mode
+            };
         }
 
         public override bool IsMatch(Fsm fsm)

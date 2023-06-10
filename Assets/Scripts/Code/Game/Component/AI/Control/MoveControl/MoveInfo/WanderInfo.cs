@@ -15,9 +15,7 @@ namespace TaoTie
         public Vector3 WanderToPosCandidate;
         public static WanderInfo Create()
         {
-            var res = ObjectPool.Instance.Fetch<WanderInfo>();
-
-            return res;
+            return ObjectPool.Instance.Fetch<WanderInfo>();
         }
         
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent ai, AIManager aiManager)
@@ -95,6 +93,7 @@ namespace TaoTie
             NextAvailableTick = 0;
             Status = default;
             WanderToPosCandidate = default;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)

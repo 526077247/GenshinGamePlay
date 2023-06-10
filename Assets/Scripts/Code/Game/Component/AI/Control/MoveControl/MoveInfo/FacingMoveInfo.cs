@@ -13,8 +13,7 @@ namespace TaoTie
 
         public static FacingMoveInfo Create()
         {
-            FacingMoveInfo res = ObjectPool.Instance.Fetch<FacingMoveInfo>();
-            return res;
+            return ObjectPool.Instance.Fetch<FacingMoveInfo>();
         }
 
         public override void Dispose()
@@ -24,6 +23,7 @@ namespace TaoTie
             nextTickBackRaycast = 0;
             nextTickMoveDirObstacleCheck = 0;
             isBackClear = false;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
@@ -34,6 +34,13 @@ namespace TaoTie
             nextTickBackRaycast = 0;
             nextTickMoveDirObstacleCheck = 0;
             CreateNewTask(taskHandler, aiKnowledge);
+        }
+
+        public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
+        {
+            base.Leave(taskHandler, aiKnowledge, aiManager);
+            if(taskHandler.currentState == LocoTaskState.Running)
+                taskHandler.currentState = LocoTaskState.Interrupted;
         }
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,

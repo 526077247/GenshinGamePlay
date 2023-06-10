@@ -154,6 +154,7 @@ namespace TaoTie
 
                     aiDebug.ViewRange = knowledge.SensingKnowledge.ViewRange;
                     aiDebug.Alertness = knowledge.ThreatLevel.ToString();
+                    aiDebug.SkillStatus = knowledge.ActionControlState.Status.ToString();
                 }
             }
 #endif

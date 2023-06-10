@@ -7,22 +7,12 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
+        [NinoMember(1)]
         public string Key;
-
-        public ConfigConditionByDataTrigger(){}
-        public ConfigConditionByDataTrigger(string key)
-        {
-            this.Key = key;
-        }
-
-        public ConfigConditionByDataTrigger(ConfigConditionByDataTrigger other)
-        {
-            this.Key = other.Key;
-        }
 
         public override ConfigCondition Copy()
         {
-            return new ConfigConditionByDataTrigger(this);
+            return new ConfigConditionByDataTrigger() {Key = this.Key};
         }
 
         public override bool IsMatch(Fsm fsm)

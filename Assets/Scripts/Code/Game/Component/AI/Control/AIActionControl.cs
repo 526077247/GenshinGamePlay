@@ -153,6 +153,10 @@ namespace TaoTie
                 {
                     actionState.Status = SkillStatus.Playing;
                 }
+                else
+                {
+                    knowledge.CombatComponent.UseSkillImmediately(actionState.Skill.SkillId);
+                }
             }
 
             

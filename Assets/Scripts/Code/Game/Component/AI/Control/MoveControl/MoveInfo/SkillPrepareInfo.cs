@@ -51,6 +51,7 @@
         public override void Dispose()
         {
             timeoutTick = 0;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

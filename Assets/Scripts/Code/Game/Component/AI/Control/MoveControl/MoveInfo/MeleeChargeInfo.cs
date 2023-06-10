@@ -16,9 +16,7 @@ namespace TaoTie
         private int retryTimes;
         public static MeleeChargeInfo Create()
         {
-            var res = ObjectPool.Instance.Fetch<MeleeChargeInfo>();
-
-            return res;
+            return ObjectPool.Instance.Fetch<MeleeChargeInfo>();
         }
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
@@ -81,7 +79,9 @@ namespace TaoTie
 
         public override void Dispose()
         {
-
+            Status = ChargeStatus.Inactive;
+            retryTimes = 0;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

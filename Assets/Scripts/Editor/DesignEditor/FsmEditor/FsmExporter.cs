@@ -155,19 +155,23 @@ namespace TaoTie
             {
                 case AnimatorControllerParameterType.Bool:
                 {
-                    return new ConfigParamBool(param.name, param.defaultBool, animUse);
+                    return new ConfigParamBool
+                        {Key = param.name, defaultValue = param.defaultBool, NeedSyncAnimator = animUse};
                 }
                 case AnimatorControllerParameterType.Trigger:
                 {
-                    return new ConfigParamTrigger(param.name, param.defaultBool, animUse);
+                    return new ConfigParamTrigger
+                        {Key = param.name, defaultValue = param.defaultBool, NeedSyncAnimator = animUse};
                 }
                 case AnimatorControllerParameterType.Int:
                 {
-                    return new ConfigParamInt(param.name, param.defaultInt, animUse);
+                    return new ConfigParamInt
+                        {Key = param.name, defaultValue = param.defaultInt, NeedSyncAnimator = animUse};
                 }
                 case AnimatorControllerParameterType.Float:
                 {
-                    return new ConfigParamFloat(param.name, param.defaultFloat, animUse);
+                    return new ConfigParamFloat
+                        {Key = param.name, defaultValue = param.defaultFloat, NeedSyncAnimator = animUse};
                 }
                 default:
                     break;
@@ -260,9 +264,14 @@ namespace TaoTie
                 stateDuration = state.motion.averageDuration;
             }
 
-            ConfigFsmState ret = new ConfigFsmState(state.name, stateDuration, stateLoop);
-            ret.Transitions = transList.ToArray();
-            ret.Timeline = timeline;
+            ConfigFsmState ret = new ConfigFsmState
+            {
+                Name = state.name, 
+                StateDuration = stateDuration,
+                StateLoop = stateLoop,
+                Transitions = transList.ToArray(),
+                Timeline = timeline,
+            };
             if (state.behaviours.Length > 0)
             {
                 for (int i = 0; i < state.behaviours.Length; i++)
@@ -289,7 +298,8 @@ namespace TaoTie
 
             if (tran.hasExitTime)
             {
-                conditionList.Add(new ConfigConditionByStateTime(tran.exitTime, true, CompareMode.GEqual));
+                conditionList.Add(new ConfigConditionByStateTime
+                    {Time = tran.exitTime, IsNormalized = true, Mode = CompareMode.GEqual});
             }
 
             // do export transition without conditions
@@ -319,8 +329,17 @@ namespace TaoTie
                 bool canTransitionToSelf = isAnyStateTransition
                     ? tran.canTransitionToSelf
                     : state?.name == tran.destinationState.name;
-                ret.Add(new ConfigTransition(state?.name, tran.destinationState.name, conditionList.ToArray(), fadeDur,
-                    offset, canTransitionToSelf));
+                ret.Add(new ConfigTransition
+                {
+                    FromState = state?.name,
+                    ToState = tran.destinationState.name,
+                    Conditions = conditionList.ToArray(),
+                    FadeDuration = fadeDur,
+                    ToStateTime = offset,
+                    CanTransitionToSelf = canTransitionToSelf,
+                    InteractionSource = tran.interruptionSource,
+                    OrderedInteraction = tran.orderedInterruption
+                });
             }
             else if (tran.destinationStateMachine != null)
             {
@@ -335,8 +354,17 @@ namespace TaoTie
                         tmp.Clear();
                         tmp.AddRange(from condition in conditionList select condition.Copy());
                         tmp.AddRange(from condition in entryTransition.conditionList select condition.Copy());
-                        ret.Add(new ConfigTransition(state?.name, entryTransition.toState, tmp.ToArray(), fadeDur,
-                            offset, false));
+                        ret.Add(new ConfigTransition
+                        {
+                            FromState = state?.name,
+                            ToState = entryTransition.toState,
+                            Conditions = tmp.ToArray(),
+                            FadeDuration = fadeDur,
+                            ToStateTime = offset,
+                            CanTransitionToSelf = false,
+                            InteractionSource = tran.interruptionSource,
+                            OrderedInteraction = tran.orderedInterruption
+                        });
                     }
                 }
             }
@@ -355,8 +383,17 @@ namespace TaoTie
                         tmp.Clear();
                         tmp.AddRange(from condition in conditionList select condition.Copy());
                         tmp.AddRange(from condition in exitTransition.conditionList select condition.Copy());
-                        ret.Add(new ConfigTransition(state?.name, exitTransition.toState, tmp.ToArray(), fadeDur,
-                            offset, false));
+                        ret.Add(new ConfigTransition
+                        {
+                            FromState = state?.name,
+                            ToState = exitTransition.toState,
+                            Conditions = tmp.ToArray(),
+                            FadeDuration = fadeDur,
+                            ToStateTime = offset,
+                            CanTransitionToSelf = false,
+                            InteractionSource = tran.interruptionSource,
+                            OrderedInteraction = tran.orderedInterruption
+                        });
                     }
                 }
                 else
@@ -372,8 +409,17 @@ namespace TaoTie
                             tmp.Clear();
                             tmp.AddRange(from condition in conditionList select condition.Copy());
                             tmp.AddRange(from condition in entryTransition.conditionList select condition.Copy());
-                            ret.Add(new ConfigTransition(state?.name, entryTransition.toState, tmp.ToArray(), fadeDur,
-                                offset, false));
+                            ret.Add(new ConfigTransition
+                            {
+                                FromState = state?.name,
+                                ToState = entryTransition.toState,
+                                Conditions = tmp.ToArray(),
+                                FadeDuration = fadeDur,
+                                ToStateTime = offset,
+                                CanTransitionToSelf = false,
+                                InteractionSource = tran.interruptionSource,
+                                OrderedInteraction = tran.orderedInterruption
+                            });
                         }
                     }
                 }
@@ -583,11 +629,11 @@ namespace TaoTie
             ConfigCondition cfg = null;
             if (cond.parameter == "NormalizedTime")
             {
-                cfg = new ConfigConditionByStateTime(cond.threshold, true, mode);
+                cfg = new ConfigConditionByStateTime{Time = cond.threshold,IsNormalized = true,Mode = mode};
             }
             else if (cond.parameter == "Time")
             {
-                cfg = new ConfigConditionByStateTime(cond.threshold, false, mode);
+                cfg = new ConfigConditionByStateTime{Time = cond.threshold,IsNormalized = false,Mode = mode};
             }
             else
             {
@@ -595,23 +641,37 @@ namespace TaoTie
                 {
                     case AnimatorControllerParameterType.Trigger:
                     {
-                        cfg = new ConfigConditionByDataTrigger(cond.parameter);
+                        cfg = new ConfigConditionByDataTrigger{Key = cond.parameter};
                         break;
                     }
                     case AnimatorControllerParameterType.Bool:
                     {
-                        cfg = new ConfigConditionByDataBool(cond.parameter, cond.mode == AnimatorConditionMode.If,
-                            CompareMode.Equal);
+                        cfg = new ConfigConditionByDataBool
+                        {
+                            Key = cond.parameter, 
+                            Value = cond.mode == AnimatorConditionMode.If,
+                            Mode = CompareMode.Equal
+                        };
                         break;
                     }
                     case AnimatorControllerParameterType.Int:
                     {
-                        cfg = new ConfigConditionByDataInt(cond.parameter, (int) cond.threshold, mode);
+                        cfg = new ConfigConditionByDataInt
+                        {
+                            Key = cond.parameter,
+                            Value = (int) cond.threshold,
+                            Mode = mode
+                        };
                         break;
                     }
                     case AnimatorControllerParameterType.Float:
                     {
-                        cfg = new ConfigConditionByDataFloat(cond.parameter, cond.threshold, mode);
+                        cfg = new ConfigConditionByDataFloat
+                        {
+                            Key = cond.parameter,
+                            Value = cond.threshold,
+                            Mode = mode
+                        };
                         break;
                     }
                 }

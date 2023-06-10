@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.Animations;
 
 namespace TaoTie
 {
@@ -10,6 +11,7 @@ namespace TaoTie
         public int LayerIndex;
         public float TargetTime;
         public float FadeDuration;
+        public TransitionInterruptionSource InteractionSource;
     }
 
     public class Fsm : IDisposable
@@ -93,15 +95,63 @@ namespace TaoTie
 
             if (currentState != null)
             {
-                if (currentState.Config.CheckTransition(this, out transition))
+                if (preState != null) //过渡中
                 {
-                    ChangeState(transition.ToState, transition);
-                    return;
+                    switch (transitionInfo.InteractionSource)
+                    {
+                        case TransitionInterruptionSource.Source:
+                            if (preState.Config.CheckTransition(this, out transition))
+                            {
+                                ChangeState(transition.ToState, transition);
+                                return;
+                            }
+                            break;
+                        case TransitionInterruptionSource.Destination:
+                            if (currentState.Config.CheckTransition(this, out transition))
+                            {
+                                ChangeState(transition.ToState, transition);
+                                return;
+                            }
+                            break;
+                        case TransitionInterruptionSource.DestinationThenSource:
+                            if (currentState.Config.CheckTransition(this, out transition))
+                            {
+                                ChangeState(transition.ToState, transition);
+                                return;
+                            }
+                            if (preState.Config.CheckTransition(this, out transition))
+                            {
+                                ChangeState(transition.ToState, transition);
+                                return;
+                            }
+                            break;
+                        case TransitionInterruptionSource.SourceThenDestination:
+                            if (preState.Config.CheckTransition(this, out transition))
+                            {
+                                ChangeState(transition.ToState, transition);
+                                return;
+                            }
+                            if (currentState.Config.CheckTransition(this, out transition))
+                            {
+                                ChangeState(transition.ToState, transition);
+                                return;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
-
-                currentState.OnUpdate();
-                preState?.OnUpdate();
+                else //未过渡
+                {
+                    if (currentState.Config.CheckTransition(this, out transition))
+                    {
+                        ChangeState(transition.ToState, transition);
+                        return;
+                    }
+                }
             }
+            currentState?.OnUpdate();
+            preState?.OnUpdate();
         }
 
         public void ChangeState(string name, ConfigTransition transition = null)

@@ -8,24 +8,22 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigFsmState
     {
+        [NinoMember(1)]
         public string Name;
+        [NinoMember(2)]
         public float StateDuration;
+        [NinoMember(3)]
         public bool StateLoop;
+        [NinoMember(4)]
         public ConfigFsmTimeline Timeline;
+        [NinoMember(5)]
         public ConfigTransition[] Transitions;
+        [NinoMember(6)]
         public StateData Data;
         [JsonIgnore]
         [NinoIgnore]
         public bool HasTimeline => this.Timeline?.Clips?.Length > 0;
         
-        
-        public ConfigFsmState(){}
-        public ConfigFsmState(string name, float stateDuration, bool loop)
-        {
-            this.Name = name;
-            this.StateDuration = stateDuration;
-            this.StateLoop = loop;
-        }
 
         public bool CheckTransition(Fsm fsm, out ConfigTransition transtion)
         {

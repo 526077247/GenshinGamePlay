@@ -7,28 +7,21 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigConditionByDataFloat : ConfigCondition
     {
+        [NinoMember(1)]
         public string Key;
+        [NinoMember(2)]
         public float Value;
+        [NinoMember(3)]
         public CompareMode Mode;
-        
-        public ConfigConditionByDataFloat(){}
-        public ConfigConditionByDataFloat(string key, float val, CompareMode mode)
-        {
-            this.Key = key;
-            this.Value = val;
-            this.Mode = mode;
-        }
-
-        public ConfigConditionByDataFloat(ConfigConditionByDataFloat other)
-        {
-            this.Key = other.Key;
-            this.Value = other.Value;
-            this.Mode = other.Mode;
-        }
 
         public override ConfigCondition Copy()
         {
-            return new ConfigConditionByDataFloat(this);
+            return new ConfigConditionByDataFloat()
+            {
+                Key = Key,
+                Value = Value,
+                Mode = Mode
+            };
         }
 
         public override bool IsMatch(Fsm fsm)
