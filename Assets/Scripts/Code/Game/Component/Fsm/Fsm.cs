@@ -31,6 +31,7 @@ namespace TaoTie
         public FsmComponent Component => component;
         public ConfigFsm Config => config;
         public FsmState CurrentState => currentState;
+        public FsmState PreState => preState;
         public string CurrentStateName => currentState?.Name;
         public float StatePassTime => currentState.StatePassTime;
         public float StateTime => currentState.StateTime;
@@ -105,6 +106,7 @@ namespace TaoTie
                                 ChangeState(transition.ToState, transition);
                                 return;
                             }
+
                             break;
                         case TransitionInterruptionSource.Destination:
                             if (currentState.Config.CheckTransition(this, out transition))
@@ -112,6 +114,7 @@ namespace TaoTie
                                 ChangeState(transition.ToState, transition);
                                 return;
                             }
+
                             break;
                         case TransitionInterruptionSource.DestinationThenSource:
                             if (currentState.Config.CheckTransition(this, out transition))
@@ -119,11 +122,13 @@ namespace TaoTie
                                 ChangeState(transition.ToState, transition);
                                 return;
                             }
+
                             if (preState.Config.CheckTransition(this, out transition))
                             {
                                 ChangeState(transition.ToState, transition);
                                 return;
                             }
+
                             break;
                         case TransitionInterruptionSource.SourceThenDestination:
                             if (preState.Config.CheckTransition(this, out transition))
@@ -131,11 +136,13 @@ namespace TaoTie
                                 ChangeState(transition.ToState, transition);
                                 return;
                             }
+
                             if (currentState.Config.CheckTransition(this, out transition))
                             {
                                 ChangeState(transition.ToState, transition);
                                 return;
                             }
+
                             break;
                         default:
                             break;
@@ -156,15 +163,22 @@ namespace TaoTie
 
         public void ChangeState(string name, ConfigTransition transition = null)
         {
-            ConfigFsmState toCfg = null;
-            toCfg = config.GetStateConfig(name);
+            ConfigFsmState toCfg = config.GetStateConfig(name);
             if (toCfg == null)
             {
                 Log.Error("ChangeState Missing State {0}", name);
                 return;
             }
 
-            FsmState toState = FsmState.Create(this, toCfg);
+            FsmState toState;
+            if (preState!=null && preState.Name == transitionInfo.TargetName)
+            {
+                toState = preState;
+            }
+            else
+            {
+                toState = FsmState.Create(this, toCfg);
+            }
 
             var fromState = currentState;
             var fromCfg = fromState?.Config;
@@ -190,7 +204,7 @@ namespace TaoTie
 
             if (transitionInfo.FadeDuration > 0)
             {
-                preState = currentState;
+                preState = fromState;
                 if (preState != null && transitionInfo.FadeDuration > 0)
                 {
                     preState.StateExitTime = preState.StatePassTime + transitionInfo.FadeDuration;

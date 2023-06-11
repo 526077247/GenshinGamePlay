@@ -11,17 +11,23 @@
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             base.Enter(taskHandler, aiKnowledge, aiManager);
-            
+            Check(taskHandler, aiKnowledge);
+        }
+
+        private void Check(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge)
+        {
             var skillConfig = aiKnowledge.ActionControlState.Skill.Config;
             if(!skillConfig.EnableSkillPrepare) return;
             if (aiKnowledge.TargetKnowledge.TargetDistanceXZ > skillConfig.CastCondition.CastRangeMax)
             {
-                AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
+                AILocomotionHandler.ParamFacingMove param = new AILocomotionHandler.ParamFacingMove
                 {
-                    targetPosition = aiKnowledge.TargetKnowledge.TargetPosition,
+                    anchor = aiKnowledge.TargetKnowledge.TargetEntity,
                     speedLevel = skillConfig.SkillPrepareSpeedLevel,
+                    duration = 1000,
+                    movingDirection = MotionDirection.Forward
                 };
-                taskHandler.CreateGoToTask(param);
+                taskHandler.CreateFacingMoveTask(param);
             }
             else if (aiKnowledge.TargetKnowledge.TargetDistanceXZ < skillConfig.CastCondition.CastRangeMin)
             {
@@ -35,16 +41,14 @@
 
                 taskHandler.CreateFacingMoveTask(param);
             }
-
             timeoutTick = skillConfig.SkillPrepareTimeout + GameTimerManager.Instance.GetTimeNow();
-        }
+        } 
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai, AIManager aiManager)
         {
             if (GameTimerManager.Instance.GetTimeNow() > timeoutTick)
             {
-                if (taskHandler.currentState == LocoTaskState.Running)
-                    taskHandler.currentState = LocoTaskState.Interrupted;
+                Check(taskHandler,aiKnowledge);
             }
         }
 

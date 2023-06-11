@@ -20,14 +20,27 @@ namespace TaoTie
         
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent ai, AIManager aiManager)
         {
-            if (taskHandler.currentState == LocoTaskState.Finished)
+            if (Status == WanderStatus.Wandering && taskHandler.currentState == LocoTaskState.Running)
             {
-                TriggerCD(aiKnowledge);
+                if (!InWanderArea(aiKnowledge.CurrentPos,aiKnowledge.BornPos,aiKnowledge.WanderTactic.Data))
+                {
+                    StartNewTask(taskHandler, aiKnowledge);
+                    return;
+                }
+            }
+            
+            var timeNow = GameTimerManager.Instance.GetTimeNow();
+            if (timeNow > NextAvailableTick)
+            {
+                StartNewTask(taskHandler, aiKnowledge);
+            }
+            else if (taskHandler.currentState == LocoTaskState.Finished)
+            {
                 Status = WanderStatus.Inactive;
             }
         }
 
-        public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
+        private void StartNewTask(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge)
         {
             ConfigAIWanderData data = aiKnowledge.WanderTactic.Data;
 
@@ -57,13 +70,17 @@ namespace TaoTie
             {
                 targetPosition = WanderToPosCandidate,
                 cannedTurnSpeedOverride = turnSpeed,
-                speedLevel = (MotionFlag)data.SpeedLevel,
+                speedLevel = data.SpeedLevel,
             };
 
             taskHandler.CreateGoToTask(param);
-
-
             Status = WanderStatus.Wandering;
+            TriggerCD(aiKnowledge);
+        }
+
+        public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
+        {
+            StartNewTask(taskHandler, aiKnowledge);
         }
 
         public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
@@ -94,11 +111,6 @@ namespace TaoTie
             Status = default;
             WanderToPosCandidate = default;
             ObjectPool.Instance.Recycle(this);
-        }
-
-        public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
-        {
-            
         }
     }
 }

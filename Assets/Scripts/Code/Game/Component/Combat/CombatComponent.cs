@@ -191,6 +191,7 @@ namespace TaoTie
                     new[] {EntityType.Monster, EntityType.Avatar}, CheckHitLayerType.OnlyHitBox,
                     out var hitInfos);
                 float angle = 180;
+                attackTarget.RuntimeID = 0;
                 for (int i = 0; i < count; i++)
                 {
                     var hitEntity = unit.Parent.Get(hitInfos[i].EntityId);

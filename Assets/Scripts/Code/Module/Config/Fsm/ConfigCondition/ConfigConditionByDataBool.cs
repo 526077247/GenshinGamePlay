@@ -5,14 +5,17 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize]
-    public partial class ConfigConditionByDataBool : ConfigCondition
+    public partial class ConfigConditionByDataBool : ConfigConditionByData<bool>
     {
-        [NinoMember(1)]
-        public string Key;
-        [NinoMember(2)]
-        public bool Value;
-        [NinoMember(3)]
-        public CompareMode Mode;
+        public override bool Equals(ConfigCondition other)
+        {
+            if (other is ConfigConditionByDataBool data)
+            {
+                return Key == data.Key && Value == data.Value && Mode == data.Mode;
+            }
+
+            return false;
+        }
 
         public override ConfigCondition Copy()
         {

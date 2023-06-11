@@ -10,6 +10,15 @@ namespace TaoTie
         [NinoMember(1)]
         public string Key;
 
+        public override bool Equals(ConfigCondition other)
+        {
+            if (other is ConfigConditionByDataTrigger data)
+            {
+                return Key == data.Key;
+            }
+
+            return false;
+        }
         public override ConfigCondition Copy()
         {
             return new ConfigConditionByDataTrigger() {Key = this.Key};

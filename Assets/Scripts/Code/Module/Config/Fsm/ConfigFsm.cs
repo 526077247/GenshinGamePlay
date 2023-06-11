@@ -7,40 +7,16 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigFsm
     {
-        public ConfigFsm(){}
+        [NinoMember(1)]
         public string Name;
+        [NinoMember(2)]
         public int LayerIndex;
+        [NinoMember(3)]
         public string Entry;
+        [NinoMember(4)]
         public Dictionary<string, ConfigFsmState> StateDict;
+        [NinoMember(5)]
         public ConfigTransition[] AnyStateTransitions;
-
-
-#if UNITY_EDITOR
-        public ConfigFsm(string name, int layerIdx)
-        {
-            this.Name = name;
-            this.LayerIndex = layerIdx;
-        }
-
-        public void SetEntry(string entryName)
-        {
-            this.Entry = entryName;
-        }
-
-        public void SetAnyStateTransitions(ConfigTransition[] transitions)
-        {
-            this.AnyStateTransitions = transitions;
-        }
-
-        public void SetStates(List<ConfigFsmState> states)
-        {
-            this.StateDict = new Dictionary<string, ConfigFsmState>();
-            foreach (var state in states)
-            {
-                this.StateDict.Add(state.Name, state);
-            }
-        }
-#endif
 
         public ConfigFsmState GetStateConfig(string stateName)
         {
@@ -52,20 +28,20 @@ namespace TaoTie
             return null;
         }
 
-        public bool CheckAnyTransition(Fsm fsm, out ConfigTransition transtion)
+        public bool CheckAnyTransition(Fsm fsm, out ConfigTransition transition)
         {
-            if (this.AnyStateTransitions != null)
+            if (AnyStateTransitions != null)
             {
-                for (int i = 0; i < this.AnyStateTransitions.Length; ++i)
+                for (int i = 0; i < AnyStateTransitions.Length; ++i)
                 {
-                    if (this.AnyStateTransitions[i].IsMatch(fsm))
+                    if (AnyStateTransitions[i].IsMatch(fsm))
                     {
-                        transtion = this.AnyStateTransitions[i];
+                        transition = AnyStateTransitions[i];
                         return true;
                     }
                 }
             }
-            transtion = null;
+            transition = null;
             return false;
         }
     }

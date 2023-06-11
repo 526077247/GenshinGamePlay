@@ -29,9 +29,10 @@ namespace TaoTie
 
         public bool IsMatch(Fsm fsm)
         {
-            if (!this.CanTransitionToSelf && fsm.CurrentStateName == this.ToState)
-                return false;
-
+            if (!this.CanTransitionToSelf)
+            {
+                if (fsm.CurrentStateName == this.ToState) return false;
+            }
             if (this.Conditions != null)
             {
                 for (int i = 0; i < this.Conditions.Length; i++)

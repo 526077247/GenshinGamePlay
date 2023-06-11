@@ -14,6 +14,15 @@ namespace TaoTie
         [NinoMember(3)]
         public CompareMode Mode;
 
+        public override bool Equals(ConfigCondition other)
+        {
+            if (other is ConfigConditionByStateTime data)
+            {
+                return Time == data.Time && IsNormalized == data.IsNormalized && Mode == data.Mode;
+            }
+
+            return false;
+        }
         public override ConfigCondition Copy()
         {
             return new ConfigConditionByStateTime()

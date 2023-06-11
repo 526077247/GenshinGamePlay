@@ -25,7 +25,7 @@ namespace TaoTie
         public bool HasTimeline => this.Timeline?.Clips?.Length > 0;
         
 
-        public bool CheckTransition(Fsm fsm, out ConfigTransition transtion)
+        public bool CheckTransition(Fsm fsm, out ConfigTransition transition)
         {
             if (this.Transitions != null)
             {
@@ -33,13 +33,13 @@ namespace TaoTie
                 {
                     if (this.Transitions[i].IsMatch(fsm))
                     {
-                        transtion = this.Transitions[i];
+                        transition = this.Transitions[i];
                         return true;
                     }
                 }
             }
 
-            transtion = null;
+            transition = null;
             return false;
         }
     }

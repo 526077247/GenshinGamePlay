@@ -198,10 +198,14 @@ namespace TaoTie
             defaultStateName = layer.stateMachine.defaultState.name;
             ExportStateMachine(parentStack, layer.stateMachine, ref stateList, ref anyStateTransitionList);
 
-            ConfigFsm cfgFsm = new ConfigFsm(layer.name, layerIndex);
+            ConfigFsm cfgFsm = new ConfigFsm{Name = layer.name, LayerIndex = layerIndex};
             cfgFsm.Entry = defaultStateName;
-            cfgFsm.SetStates(stateList);
-            cfgFsm.SetAnyStateTransitions(anyStateTransitionList.ToArray());
+            cfgFsm.StateDict = new Dictionary<string, ConfigFsmState>();
+            foreach (var state in stateList)
+            {
+                cfgFsm.StateDict.Add(state.Name, state);
+            }
+            cfgFsm.AnyStateTransitions = anyStateTransitionList.ToArray();
 
             return cfgFsm;
         }
@@ -329,17 +333,21 @@ namespace TaoTie
                 bool canTransitionToSelf = isAnyStateTransition
                     ? tran.canTransitionToSelf
                     : state?.name == tran.destinationState.name;
-                ret.Add(new ConfigTransition
+                var conditions = RemoveDuplicates(conditionList);
+                if (!IsMutualExclusion(conditions))
                 {
-                    FromState = state?.name,
-                    ToState = tran.destinationState.name,
-                    Conditions = conditionList.ToArray(),
-                    FadeDuration = fadeDur,
-                    ToStateTime = offset,
-                    CanTransitionToSelf = canTransitionToSelf,
-                    InteractionSource = tran.interruptionSource,
-                    OrderedInteraction = tran.orderedInterruption
-                });
+                    ret.Add(new ConfigTransition
+                    {
+                        FromState = state?.name,
+                        ToState = tran.destinationState.name,
+                        Conditions = conditions,
+                        FadeDuration = fadeDur,
+                        ToStateTime = offset,
+                        CanTransitionToSelf = canTransitionToSelf,
+                        InteractionSource = tran.interruptionSource,
+                        OrderedInteraction = tran.orderedInterruption
+                    });
+                }
             }
             else if (tran.destinationStateMachine != null)
             {
@@ -354,17 +362,21 @@ namespace TaoTie
                         tmp.Clear();
                         tmp.AddRange(from condition in conditionList select condition.Copy());
                         tmp.AddRange(from condition in entryTransition.conditionList select condition.Copy());
-                        ret.Add(new ConfigTransition
+                        var conditions = RemoveDuplicates(tmp);
+                        if (!IsMutualExclusion(conditions))
                         {
-                            FromState = state?.name,
-                            ToState = entryTransition.toState,
-                            Conditions = tmp.ToArray(),
-                            FadeDuration = fadeDur,
-                            ToStateTime = offset,
-                            CanTransitionToSelf = false,
-                            InteractionSource = tran.interruptionSource,
-                            OrderedInteraction = tran.orderedInterruption
-                        });
+                            ret.Add(new ConfigTransition
+                            {
+                                FromState = state?.name,
+                                ToState = entryTransition.toState,
+                                Conditions = conditions,
+                                FadeDuration = fadeDur,
+                                ToStateTime = offset,
+                                CanTransitionToSelf = false,
+                                InteractionSource = tran.interruptionSource,
+                                OrderedInteraction = tran.orderedInterruption
+                            });
+                        }
                     }
                 }
             }
@@ -383,17 +395,21 @@ namespace TaoTie
                         tmp.Clear();
                         tmp.AddRange(from condition in conditionList select condition.Copy());
                         tmp.AddRange(from condition in exitTransition.conditionList select condition.Copy());
-                        ret.Add(new ConfigTransition
+                        var conditions = RemoveDuplicates(tmp);
+                        if (!IsMutualExclusion(conditions))
                         {
-                            FromState = state?.name,
-                            ToState = exitTransition.toState,
-                            Conditions = tmp.ToArray(),
-                            FadeDuration = fadeDur,
-                            ToStateTime = offset,
-                            CanTransitionToSelf = false,
-                            InteractionSource = tran.interruptionSource,
-                            OrderedInteraction = tran.orderedInterruption
-                        });
+                            ret.Add(new ConfigTransition
+                            {
+                                FromState = state?.name,
+                                ToState = exitTransition.toState,
+                                Conditions = conditions,
+                                FadeDuration = fadeDur,
+                                ToStateTime = offset,
+                                CanTransitionToSelf = false,
+                                InteractionSource = tran.interruptionSource,
+                                OrderedInteraction = tran.orderedInterruption
+                            });
+                        }
                     }
                 }
                 else
@@ -409,17 +425,22 @@ namespace TaoTie
                             tmp.Clear();
                             tmp.AddRange(from condition in conditionList select condition.Copy());
                             tmp.AddRange(from condition in entryTransition.conditionList select condition.Copy());
-                            ret.Add(new ConfigTransition
+
+                            var conditions = RemoveDuplicates(tmp);
+                            if (!IsMutualExclusion(conditions))
                             {
-                                FromState = state?.name,
-                                ToState = entryTransition.toState,
-                                Conditions = tmp.ToArray(),
-                                FadeDuration = fadeDur,
-                                ToStateTime = offset,
-                                CanTransitionToSelf = false,
-                                InteractionSource = tran.interruptionSource,
-                                OrderedInteraction = tran.orderedInterruption
-                            });
+                                ret.Add(new ConfigTransition
+                                {
+                                    FromState = state?.name,
+                                    ToState = entryTransition.toState,
+                                    Conditions = conditions,
+                                    FadeDuration = fadeDur,
+                                    ToStateTime = offset,
+                                    CanTransitionToSelf = false,
+                                    InteractionSource = tran.interruptionSource,
+                                    OrderedInteraction = tran.orderedInterruption
+                                });
+                            }
                         }
                     }
                 }
@@ -580,7 +601,7 @@ namespace TaoTie
 
             if (!hasTransitionWithoutConditions)
             {
-                // make a transtion to default state
+                // make a transition to default state
                 Transition transition = new Transition() {toState = defaultStateName};
                 if (exitTransitionInChild != null)
                 {
@@ -679,6 +700,154 @@ namespace TaoTie
 
 
             return cfg;
+        }
+        /// <summary>
+        /// 条件去重
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private ConfigCondition[] RemoveDuplicates(List<ConfigCondition> source)
+        {
+            List<ConfigCondition> set = new List<ConfigCondition>();
+            for (int i = 0; i < source.Count; i++)
+            {
+                bool has = false;
+                for (int j = 0; j < set.Count; j++)
+                {
+                    if (set[j].Equals(source[i]))
+                    {
+                        has = true;
+                        break;
+                    }
+                }
+
+                if (!has)
+                {
+                    set.Add(source[i]);
+                }
+            }
+
+            return set.ToArray();
+        }
+
+        /// <summary>
+        /// 判断是否有互斥条件
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private bool IsMutualExclusion(ConfigCondition[] source)
+        {
+            UnOrderMultiMap<string, ConfigCondition> map = new UnOrderMultiMap<string, ConfigCondition>();
+            for (int i = 0; i < source.Length; i++)
+            {
+                var cond = source[i];
+                if (cond is ConfigConditionByData a)
+                {
+                    if (map.TryGetValue(a.Key, out var oldList))
+                    {
+                        for (int j = 0; j < oldList.Count; j++)
+                        {
+                            var old = oldList[j];
+
+                            if (old is ConfigConditionByDataBool dataBoola &&
+                                cond is ConfigConditionByDataBool dataBoolb)
+                            {
+                                if (dataBoola.Value != dataBoolb.Value)
+                                {
+                                    return true;
+                                }
+                            }
+                            else if (old is ConfigConditionByDataFloat dataFloata &&
+                                     cond is ConfigConditionByDataFloat dataFloatb)
+                            {
+                                if (dataFloata.Value == dataFloatb.Value)
+                                {
+                                    if (dataFloata.Mode == CompareMode.Equal &&
+                                        (dataFloatb.Mode == CompareMode.NotEqual ||
+                                         dataFloatb.Mode == CompareMode.Less ||
+                                         dataFloatb.Mode == CompareMode.NotEqual))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataFloata.Mode == CompareMode.NotEqual && dataFloatb.Mode == CompareMode.Equal)
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataFloata.Mode == CompareMode.Greater &&
+                                        (dataFloatb.Mode == CompareMode.Less || dataFloatb.Mode == CompareMode.LEqual ||
+                                         dataFloatb.Mode == CompareMode.Equal))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataFloata.Mode == CompareMode.GEqual && dataFloatb.Mode == CompareMode.Less)
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataFloata.Mode == CompareMode.Less &&
+                                        (dataFloatb.Mode == CompareMode.Greater ||
+                                         dataFloatb.Mode == CompareMode.GEqual || dataFloatb.Mode == CompareMode.Equal))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataFloata.Mode == CompareMode.LEqual && dataFloatb.Mode == CompareMode.Greater)
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                            else if (old is ConfigConditionByDataInt dataInta &&
+                                     cond is ConfigConditionByDataInt dataIntb)
+                            {
+                                if (dataInta.Value == dataIntb.Value)
+                                {
+                                    if (dataInta.Mode == CompareMode.Equal && (dataIntb.Mode == CompareMode.NotEqual ||
+                                                                               dataIntb.Mode == CompareMode.Less ||
+                                                                               dataIntb.Mode == CompareMode.NotEqual))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataInta.Mode == CompareMode.NotEqual && dataIntb.Mode == CompareMode.Equal)
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataInta.Mode == CompareMode.Greater && (dataIntb.Mode == CompareMode.Less ||
+                                            dataIntb.Mode == CompareMode.LEqual || dataIntb.Mode == CompareMode.Equal))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataInta.Mode == CompareMode.GEqual && dataIntb.Mode == CompareMode.Less)
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataInta.Mode == CompareMode.Less && (dataIntb.Mode == CompareMode.Greater ||
+                                                                              dataIntb.Mode == CompareMode.GEqual ||
+                                                                              dataIntb.Mode == CompareMode.Equal))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (dataInta.Mode == CompareMode.LEqual && dataIntb.Mode == CompareMode.Greater)
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    map.Add(a.Key,a);
+                }
+            }
+
+            return false;
         }
     }
 }

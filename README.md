@@ -1,6 +1,6 @@
 # GenshinGamePlay
 
-通过研究原神逆向工程 https://github.com/fengjixuchui/WorldReverse ，推导出的一套GamePlay框架，包括战斗、解谜、怪物AI，后续将加入剧情
+参考原神的GamePlay框架，包括战斗、解谜、怪物AI，后续将加入剧情
 
 ## 目前完成效果
 动画文件有点问题，但是不影响测试效果。模型来源 [模之屋](https://www.aplaybox.com/details/model/MmroYfxfeCtc)
@@ -22,7 +22,7 @@
 
 
 ## 引用或参考
-1. [WorldReverse](https://github.com/fengjixuchui/WorldReverse) 原神逆向工程
+1. [WorldReverse](https://github.com/fengjixuchui/WorldReverse)
 2. [TaoTie](https://github.com/526077247/TaoTie) 轻量级Unity框架
 3. [YooAsset](https://github.com/tuyoogame/YooAsset) Unity3D的资源管理系统
 4. [Nino](https://github.com/JasonXuDeveloper/Nino) 实用的高性能C#序列化模块
