@@ -16,10 +16,7 @@ namespace TaoTie
         public Vector3 Rotation;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            if (SceneManager.Instance.CurrentScene.GetType().Name == Scene)
-            {
-                
-            }
+            SceneManager.Instance.SwitchMapScene(Scene,Position,Rotation).Coroutine();
         }
     }
 }

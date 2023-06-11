@@ -164,16 +164,30 @@ namespace TaoTie
         }
         
         //切换场景
-        public async ETTask SwitchMapScene(string typeName, bool needClean = false)
+        public async ETTask SwitchMapScene(string typeName,Vector3 pos,Vector3 rot, bool needClean = false)
         {
             if (this.Busing) return;
             if(!SceneConfigCategory.Instance.TryGetByName(typeName,out var config)) return;
+            Unit avatar;
             if (IsInTargetMapScene(config.Name))
+            {
+                avatar = (CurrentScene as MapScene)?.Self;
+                if (avatar != null)
+                {
+                    avatar.Position = pos;
+                    avatar.Rotation = Quaternion.Euler(rot);
+                }
                 return;
+            }
             this.Busing = true;
 
             await this.InnerSwitchScene<MapScene>(needClean, config.Id);
-
+            avatar = (CurrentScene as MapScene)?.Self;
+            if (avatar != null)
+            {
+                avatar.Position = pos;
+                avatar.Rotation = Quaternion.Euler(rot);
+            }
             //释放loading界面引用的资源
             GameObjectPoolManager.Instance.CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
             this.Busing = false;
