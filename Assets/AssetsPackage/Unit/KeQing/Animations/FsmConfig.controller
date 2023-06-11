@@ -1288,6 +1288,9 @@ AnimatorTransition:
   - m_ConditionMode: 6
     m_ConditionEvent: MotionFlag
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: SkillId
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102059769633159636}
   m_Solo: 0
