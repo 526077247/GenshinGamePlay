@@ -9,8 +9,19 @@ namespace TaoTie
             var animator = GetComponent<GameObjectHolderComponent>()?.Animator;
             if (animator != null)
             {
-                animator.ApplyBuiltinRootMotion();
+                CharacterInput.Speed = Quaternion.Inverse(transform.rotation) * animator.velocity;
+                // animator.ApplyBuiltinRootMotion();
             }
+        }
+
+        private void OnJump(Vector3 v)
+        {
+			
+        }
+
+        private void OnLand(Vector3 v)
+        {
+			
         }
     }
 }

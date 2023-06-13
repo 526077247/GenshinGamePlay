@@ -36,6 +36,7 @@ namespace TaoTie
         public CombatComponent CombatComponent => Entity.GetComponent<CombatComponent>();
         public PoseFSMComponent Pose => Entity.GetComponent<PoseFSMComponent>();
         public MoveComponent Mover => Entity.GetComponent<MoveComponent>();
+        public AIInputController Input => Entity.GetComponent<AIInputController>();
         
         public AISkillKnowledge SkillKnowledge;
         public AIMoveKnowledge MoveKnowledge;

@@ -142,7 +142,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Error("FsmController SetData Can Not Find float Param: {0}", key);
+                Log.Warning("FsmController SetData Can Not Find float Param: {0}", key);
             }
         }
 
@@ -158,7 +158,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Error("FsmController SetData Can Not Find int Param: {0}", key);
+                Log.Warning("FsmController SetData Can Not Find int Param: {0}", key);
             }
         }
 
@@ -174,7 +174,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Error("FsmController SetData Can Not Find bool Param: {0}", key);
+                Log.Warning("FsmController SetData Can Not Find bool Param: {0}", key);
             }
         }
 

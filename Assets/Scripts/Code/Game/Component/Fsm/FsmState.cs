@@ -22,7 +22,7 @@ namespace TaoTie
         {
             get
             {
-                if (Config.Data == null) return true;
+                if (Config?.Data == null) return true;
                 return Config.Data.CanMove;
             }
         }
@@ -31,7 +31,7 @@ namespace TaoTie
         {
             get
             {
-                if (Config.Data == null) return true;
+                if (Config?.Data == null) return true;
                 return Config.Data.CanTurn;
             }
         }
@@ -40,7 +40,7 @@ namespace TaoTie
         {
             get
             {
-                if (Config.Data == null) return false;
+                if (Config?.Data == null) return false;
                 return Config.Data.ShowWeapon;
             }
         }
@@ -49,7 +49,7 @@ namespace TaoTie
         {
             get
             {
-                if (Config.Data == null) return false;
+                if (Config?.Data == null) return false;
                 return Config.Data.UseRagDoll;
             }
         }

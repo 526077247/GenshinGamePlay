@@ -89,7 +89,6 @@ namespace TaoTie
             if (currentState == LocoTaskState.Running)
             {
                 currentTask.UpdateLoco(this, currentTransform, ref currentState);
-                knowledge.Mover.TryMove(currentTask.GetDestination() - currentTransform.Position);
             }
 
         }
@@ -158,18 +157,18 @@ namespace TaoTie
                 currentTask.OnCloseTask(this);
                 currentTask = null;
             }
-            knowledge.Mover.TryMove(Vector3.zero);
+            knowledge.Input.TryMove(Vector3.zero);
         }
         
         public void UpdateMotionFlag(MotionFlag newSpeed, MotionDirection direction = MotionDirection.Forward)
         {
             if (newSpeed == MotionFlag.Idle)
             {
-                knowledge.Mover.TryMove(Vector3.zero);
+                knowledge.Input.TryMove(Vector3.zero);
                 return;
             }
             if(currentTask == null) return;
-            knowledge.Mover.TryMove(currentTask.GetDestination() - knowledge.Entity.Position, newSpeed, direction);
+            knowledge.Input.TryMove(currentTask.GetDestination() - knowledge.Entity.Position, newSpeed, direction);
         }
 
         public void UpdateTaskSpeed(MotionFlag newSpeed)
@@ -178,7 +177,7 @@ namespace TaoTie
         }
         public void UpdateTurnSpeed(float speed)
         {
-            knowledge.Mover.RotateSpeed = speed;
+            // knowledge.Mover.RotateSpeed = speed;
         }
 
         public void ForceLookAt()

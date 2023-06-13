@@ -1,11 +1,12 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     /// <summary>
     /// 监听移除前
     /// </summary>
-    [NinoSerialize]
+    [NinoSerialize][LabelText("ability或modify移除前DoAction")]
     public partial class ConfigDoActionBeforeRemoveMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]

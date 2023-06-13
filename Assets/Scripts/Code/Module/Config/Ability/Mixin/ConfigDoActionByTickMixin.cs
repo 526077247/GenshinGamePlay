@@ -1,11 +1,12 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     /// <summary>
     /// 监听间隔
     /// </summary>
-    [NinoSerialize]
+    [NinoSerialize][LabelText("间隔时间DoAction")]
     public partial class ConfigDoActionByTickMixin : ConfigAbilityMixin
     {
         /// <summary>

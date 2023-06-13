@@ -1,16 +1,13 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TaoTie
 {
     /// <summary>
-    /// 玩家的输入
+    /// AI输入
     /// </summary>
-    public class LocalInputController : Component, IComponent, IUpdate
+    public class AIInputController: Component, IComponent
     {
-        private AvatarSkillComponent avatarSkillComponent => parent.GetComponent<AvatarSkillComponent>();
         private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
-        
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         private bool canMove = true;
         private bool canTurn = true;
@@ -31,41 +28,9 @@ namespace TaoTie
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
         }
 
-        public void Update()
-        {
-            if (InputManager.Instance.GetKey(GameKeyCode.NormalAttack))
-            {
-                TryDoSkill(1001);
-            }
-
-            //移动
-            Vector3 direction = Vector3.zero;
-            if (InputManager.Instance.GetKey(GameKeyCode.MoveForward))
-            {
-                direction += Vector3.forward;
-            }
-            if (InputManager.Instance.GetKey(GameKeyCode.MoveBack))
-            {
-                direction += Vector3.back;
-            }
-            if (InputManager.Instance.GetKey(GameKeyCode.MoveLeft))
-            {
-                direction += Vector3.left;
-            }
-            if (InputManager.Instance.GetKey(GameKeyCode.MoveRight))
-            {
-                direction += Vector3.right;
-            }
-            this.TryMove(Vector3.Normalize(direction));
-        }
-
+        
         #endregion
-
-        public void TryDoSkill(int skillID)
-        {
-            avatarSkillComponent.TryDoSkill(skillID);
-        }
-
+        
         public void TryMove(Vector3 direction, MotionFlag mFlag = MotionFlag.Run, MotionDirection mDirection = MotionDirection.Forward)
         {
             if (direction == Vector3.zero)
@@ -78,8 +43,6 @@ namespace TaoTie
                 fsm.SetData(FSMConst.MotionFlag, (int)mFlag);
                 fsm.SetData(FSMConst.MotionDirection, (int)mDirection);
             }
-
-            
             if (canTurn)
                 moveComponent.CharacterInput.Direction = direction;
             else

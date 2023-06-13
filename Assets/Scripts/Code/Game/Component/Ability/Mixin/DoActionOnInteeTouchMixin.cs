@@ -1,8 +1,8 @@
 ﻿namespace TaoTie
 {
-    public class AttachToInteeTouchMixin : AbilityMixin
+    public class DoActionOnInteeTouchMixin : AbilityMixin
     {
-        public ConfigAttachToInteeTouchMixin Config => baseConfig as ConfigAttachToInteeTouchMixin;
+        public ConfigDoActionOnInteeTouchMixin Config => baseConfig as ConfigDoActionOnInteeTouchMixin;
         
         private InteeComponent intee;
         private Entity owner;

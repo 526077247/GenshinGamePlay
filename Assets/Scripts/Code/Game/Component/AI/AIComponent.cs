@@ -48,6 +48,7 @@ namespace TaoTie
 
         public virtual void Init(ConfigAIBeta config)
         {
+            parent.AddComponent<AIInputController>();
             if (SceneManager.Instance.CurrentScene is MapScene scene)
             {
                 aiManager = scene.GetManager<AIManager>();

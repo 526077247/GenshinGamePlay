@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     /// <summary>
     /// 监听状态机状态
     /// </summary>
-    [NinoSerialize]
+    [NinoSerialize][LabelText("状态机状态变化时DoAction")]
     public partial class ConfigDoActionByStateIDMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]

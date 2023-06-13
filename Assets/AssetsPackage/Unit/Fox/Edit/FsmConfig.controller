@@ -213,8 +213,8 @@ MonoBehaviour:
         IsDynamic: 0
         Key: 
         PoseID: 0
-        CanMove: 1
-        CanTurn: 1
+        CanMove: 0
+        CanTurn: 0
         ShowWeapon: 0
         UseRagDoll: 0
 --- !u!1102 &-3573532505272882320

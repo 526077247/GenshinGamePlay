@@ -227,24 +227,27 @@ namespace TaoTie
         {
             if (OnStateChanged != null)
                 OnStateChanged(fromState?.Name, toState.Name);
-            if (fromState == null || fromState.CanMove != toState.CanMove)
+            if (!(this is PoseFsm))
             {
-                Messager.Instance.Broadcast(component.Id, MessageId.SetCanMove, toState.CanMove);
-            }
+                if (fromState == null || fromState.CanMove != toState.CanMove)
+                {
+                    Messager.Instance.Broadcast(component.Id, MessageId.SetCanMove, toState.CanMove);
+                }
 
-            if (fromState == null || fromState.CanTurn != toState.CanTurn)
-            {
-                Messager.Instance.Broadcast(component.Id, MessageId.SetCanTurn, toState.CanTurn);
-            }
+                if (fromState == null || fromState.CanTurn != toState.CanTurn)
+                {
+                    Messager.Instance.Broadcast(component.Id, MessageId.SetCanTurn, toState.CanTurn);
+                }
 
-            if (fromState == null || fromState.ShowWeapon != toState.ShowWeapon)
-            {
-                Messager.Instance.Broadcast(component.Id, MessageId.SetShowWeapon, toState.ShowWeapon);
-            }
-            
-            if (fromState == null || fromState.UseRagDoll != toState.UseRagDoll)
-            {
-                Messager.Instance.Broadcast(component.Id, MessageId.SetUseRagDoll, toState.UseRagDoll);
+                if (fromState == null || fromState.ShowWeapon != toState.ShowWeapon)
+                {
+                    Messager.Instance.Broadcast(component.Id, MessageId.SetShowWeapon, toState.ShowWeapon);
+                }
+
+                if (fromState == null || fromState.UseRagDoll != toState.UseRagDoll)
+                {
+                    Messager.Instance.Broadcast(component.Id, MessageId.SetUseRagDoll, toState.UseRagDoll);
+                }
             }
         }
 

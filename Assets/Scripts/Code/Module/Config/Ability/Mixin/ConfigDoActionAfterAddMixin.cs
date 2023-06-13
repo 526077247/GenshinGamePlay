@@ -1,11 +1,12 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     /// <summary>
     /// 监听添加后
     /// </summary>
-    [NinoSerialize]
+    [NinoSerialize][LabelText("ability或modify添加后DoAction")]
     public partial class ConfigDoActionAfterAddMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]

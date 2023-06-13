@@ -1,11 +1,12 @@
 ﻿using Nino.Serialization;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     /// <summary>
     /// 受到攻击后
     /// </summary>
-    [NinoSerialize]
+    [NinoSerialize][LabelText("当受到攻击后DoAction")]
     public partial class ConfigDoActionAfterBeAttackMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]
