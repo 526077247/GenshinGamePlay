@@ -26,7 +26,13 @@ namespace TaoTie
         {
             Instance = this;
             I18NBridge.Instance.GetValueByKey = I18NGetText;
-            this.curLangType = PlayerPrefs.GetInt(CacheKeys.CurLangType, 0);
+            this.curLangType = PlayerPrefs.GetInt(CacheKeys.CurLangType, -1);
+            if (this.curLangType < 0)
+            {
+                this.curLangType = Application.systemLanguage == SystemLanguage.Chinese
+                    ? LangType.Chinese
+                    : LangType.English;
+            }
             this.i18nTextKeyDic = new Dictionary<string, string>();
 
             for (int i = 0; i < I18NConfigCategory.Instance.GetAllList().Count; i++)

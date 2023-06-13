@@ -9,8 +9,8 @@ namespace TaoTie
 {
     public class TextMeshFontAssetManager
     {
-        public static TextMeshFontAssetManager Instance => new TextMeshFontAssetManager();
-        private Dictionary<string, TMP_FontAsset> AddFontWithPathList = new Dictionary<string, TMP_FontAsset>();
+        public static TextMeshFontAssetManager Instance { get; } = new TextMeshFontAssetManager();
+        private Dictionary<string, TMP_FontAsset> addFontWithPathList = new Dictionary<string, TMP_FontAsset>();
 
 #if UNITY_IPHONE
         [DllImport("__Internal")]
@@ -66,10 +66,10 @@ namespace TaoTie
 
             for (int i = 0; i < tb.Length; i++)
             {
-                string fontname = tb[i];
-                if (fontPaths.ContainsKey(fontname))
+                string fontName = tb[i];
+                if (fontPaths.ContainsKey(fontName))
                 {
-                    AddFontAssetByFontPath(fontPaths[fontname]);
+                    AddFontAssetByFontPath(fontPaths[fontName]);
                 }
             }
         }
@@ -77,27 +77,22 @@ namespace TaoTie
         //可以从网上下载字体或获取到本地自带字体
         private void AddFontAssetByFontPath(string fontPath)
         {
-            if (AddFontWithPathList.ContainsKey(fontPath))
+            if (addFontWithPathList.ContainsKey(fontPath))
                 return;
 
             Font font = new Font(fontPath);
             TMP_FontAsset tp_font = TMP_FontAsset.CreateFontAsset(font, 20, 2, GlyphRenderMode.SDFAA, 512, 512);
             AddFontAsset(tp_font);
-            AddFontWithPathList.Add(fontPath, tp_font);
+            addFontWithPathList.Add(fontPath, tp_font);
         }
 
         public void RemoveFontAssetByFontPath(string fontPath)
         {
-            if (!AddFontWithPathList.ContainsKey(fontPath))
+            if (!addFontWithPathList.ContainsKey(fontPath))
                 return;
 
-            TMP_FontAsset tp_font = AddFontWithPathList[fontPath];
-            RemoveFontAsset(tp_font);
-        }
-
-        public int GetSystemLangeuage()
-        {
-            return (int) Application.systemLanguage;
+            TMP_FontAsset tpFont = addFontWithPathList[fontPath];
+            RemoveFontAsset(tpFont);
         }
     }
 }
