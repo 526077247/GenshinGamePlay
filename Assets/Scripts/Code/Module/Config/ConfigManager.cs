@@ -6,6 +6,7 @@ namespace TaoTie
 {
     public class ConfigManager:IManager
     {
+	    public static ConfigManager Instance { get; private set; }
         public IConfigLoader ConfigLoader { get; set; }
 
         public Dictionary<Type, object> AllConfig = new Dictionary<Type, object>();
@@ -14,12 +15,15 @@ namespace TaoTie
 
         public void Init()
         {
+	        Instance = this;
             ConfigLoader = new ConfigLoader();
             Load();
         }
 
         public void Destroy()
         {
+	        Instance = null;
+	        AllConfig.Clear();
         }
 
         #endregion
@@ -97,6 +101,12 @@ namespace TaoTie
 			{
 				this.AllConfig[configType] = category;
 			}
+		}
+
+		public void ReleaseConfig<T>() where T : ProtoObject, IMerge
+		{
+			Type configType = TypeInfo<T>.Type;
+			AllConfig.Remove(configType);
 		}
     }
 }
