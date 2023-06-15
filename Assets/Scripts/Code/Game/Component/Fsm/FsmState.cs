@@ -44,7 +44,14 @@ namespace TaoTie
                 return Config.Data.CanJump;
             }
         }
-
+        public bool IsJump
+        {
+            get
+            {
+                if (Config?.Data == null) return true;
+                return Config.Data.IsJump;
+            }
+        }
         public bool ShowWeapon
         {
             get

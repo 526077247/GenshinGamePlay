@@ -69,7 +69,7 @@ namespace TaoTie
 			Jumping
 		}
 
-		ControllerState currentControllerState = ControllerState.Falling;
+		public ControllerState CurrentControllerState { get; private set; }= ControllerState.Falling;
 
 		[Tooltip(
 			"Optional camera transform used for calculating movement direction. If assigned, character movement will take camera view into account.")]
@@ -196,7 +196,7 @@ namespace TaoTie
 			mover.CheckForGround();
 
 			//Determine controller state;
-			currentControllerState = DetermineControllerState();
+			CurrentControllerState = DetermineControllerState();
 
 			//Apply friction and gravity to 'momentum';
 			HandleMomentum();
@@ -206,7 +206,7 @@ namespace TaoTie
 
 			//Calculate movement velocity;
 			Vector3 _velocity = Vector3.zero;
-			if (currentControllerState == ControllerState.Grounded)
+			if (CurrentControllerState == ControllerState.Grounded)
 				_velocity = CalculateMovementVelocity();
 
 			//If local momentum is used, transform momentum into world space first;
@@ -275,7 +275,7 @@ namespace TaoTie
 			bool _isSliding = mover.IsGrounded() && IsGroundTooSteep();
 
 			//Grounded;
-			if (currentControllerState == ControllerState.Grounded)
+			if (CurrentControllerState == ControllerState.Grounded)
 			{
 				if (_isRising)
 				{
@@ -299,7 +299,7 @@ namespace TaoTie
 			}
 
 			//Falling;
-			if (currentControllerState == ControllerState.Falling)
+			if (CurrentControllerState == ControllerState.Falling)
 			{
 				if (_isRising)
 				{
@@ -321,7 +321,7 @@ namespace TaoTie
 			}
 
 			//Sliding;
-			if (currentControllerState == ControllerState.Sliding)
+			if (CurrentControllerState == ControllerState.Sliding)
 			{
 				if (_isRising)
 				{
@@ -345,7 +345,7 @@ namespace TaoTie
 			}
 
 			//Rising;
-			if (currentControllerState == ControllerState.Rising)
+			if (CurrentControllerState == ControllerState.Rising)
 			{
 				if (!_isRising)
 				{
@@ -380,7 +380,7 @@ namespace TaoTie
 			}
 
 			//Jumping;
-			if (currentControllerState == ControllerState.Jumping)
+			if (CurrentControllerState == ControllerState.Jumping)
 			{
 				//Check for jump timeout;
 				if ((Time.time - currentJumpStartTime) > jumpDuration)
@@ -409,7 +409,7 @@ namespace TaoTie
 		//Check if player has initiated a jump;
 		void HandleJumping()
 		{
-			if (currentControllerState == ControllerState.Grounded)
+			if (CurrentControllerState == ControllerState.Grounded)
 			{
 				if ((jumpKeyIsPressed == true || jumpKeyWasPressed) && !jumpInputIsLocked)
 				{
@@ -417,7 +417,7 @@ namespace TaoTie
 					OnGroundContactLost();
 					OnJumpStart();
 
-					currentControllerState = ControllerState.Jumping;
+					CurrentControllerState = ControllerState.Jumping;
 				}
 			}
 		}
@@ -445,7 +445,7 @@ namespace TaoTie
 			_verticalMomentum -= transform.up * gravity * Time.deltaTime;
 
 			//Remove any downward force if the controller is grounded;
-			if (currentControllerState == ControllerState.Grounded &&
+			if (CurrentControllerState == ControllerState.Grounded &&
 			    VectorMath.GetDotProduct(_verticalMomentum, transform.up) < 0f)
 				_verticalMomentum = Vector3.zero;
 
@@ -477,7 +477,7 @@ namespace TaoTie
 			}
 
 			//Steer controller on slopes;
-			if (currentControllerState == ControllerState.Sliding)
+			if (CurrentControllerState == ControllerState.Sliding)
 			{
 				//Calculate vector pointing away from slope;
 				Vector3 _pointDownVector = Vector3.ProjectOnPlane(mover.GetGroundNormal(), transform.up).normalized;
@@ -492,7 +492,7 @@ namespace TaoTie
 			}
 
 			//Apply friction to horizontal momentum based on whether the controller is grounded;
-			if (currentControllerState == ControllerState.Grounded)
+			if (CurrentControllerState == ControllerState.Grounded)
 				_horizontalMomentum = VectorMath.IncrementVectorTowardTargetVector(_horizontalMomentum, groundFriction,
 					Time.deltaTime, Vector3.zero);
 			else
@@ -503,7 +503,7 @@ namespace TaoTie
 			momentum = _horizontalMomentum + _verticalMomentum;
 
 			//Additional momentum calculations for sliding;
-			if (currentControllerState == ControllerState.Sliding)
+			if (CurrentControllerState == ControllerState.Sliding)
 			{
 				//Project the current momentum onto the current ground normal if the controller is sliding down a slope;
 				momentum = Vector3.ProjectOnPlane(momentum, mover.GetGroundNormal());
@@ -518,7 +518,7 @@ namespace TaoTie
 			}
 
 			//If controller is jumping, override vertical velocity with jumpSpeed;
-			if (currentControllerState == ControllerState.Jumping)
+			if (CurrentControllerState == ControllerState.Jumping)
 			{
 				momentum = VectorMath.RemoveDotVector(momentum, transform.up);
 				momentum += transform.up * jumpSpeed;
@@ -665,14 +665,14 @@ namespace TaoTie
 		//Returns 'true' if controller is grounded (or sliding down a slope);
 		public bool IsGrounded()
 		{
-			return (currentControllerState == ControllerState.Grounded ||
-			        currentControllerState == ControllerState.Sliding);
+			return (CurrentControllerState == ControllerState.Grounded ||
+			        CurrentControllerState == ControllerState.Sliding);
 		}
 
 		//Returns 'true' if controller is sliding;
 		public bool IsSliding()
 		{
-			return (currentControllerState == ControllerState.Sliding);
+			return (CurrentControllerState == ControllerState.Sliding);
 		}
 
 		//Add momentum to controller;
