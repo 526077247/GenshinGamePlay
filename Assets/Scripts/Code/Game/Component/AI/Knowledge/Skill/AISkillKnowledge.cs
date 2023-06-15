@@ -46,6 +46,7 @@ namespace TaoTie
                 for (int i = 0; i < config.Skills.Length; i++)
                 {
                     var conf = config.Skills[i];
+                    if(!conf.Enable) continue;
                     res.Skills[(int) conf.SkillType].AddSkill(conf);
                 }
                 res.SkillCount = (uint)config.Skills.Length;

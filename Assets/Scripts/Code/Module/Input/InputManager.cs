@@ -9,12 +9,13 @@ namespace TaoTie
         public const int KeyDown = 1;
         public const int KeyUp = 2;
         public const int Key = 4;
-        public static KeyCode[] Default = new KeyCode[(int) GameKeyCode.Max]
+        public readonly KeyCode[] Default = new KeyCode[(int) GameKeyCode.Max]
         {
             KeyCode.W,
             KeyCode.S,
             KeyCode.A,
             KeyCode.D,
+            KeyCode.Space,
             KeyCode.Mouse0,
             KeyCode.F,
         };

@@ -9,6 +9,8 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public int SkillID;
+        [NinoMember(20)]
+        public bool Enable = true;
         [NinoMember(2)]
         public ConfigAISkillType SkillType;
         [NinoMember(3)][LabelText("随机权值")]

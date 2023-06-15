@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 0.65
   AbilityName: KeQing_NormalAttack4_Hide
+  ExecuteOnBreak: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 0.31
   AbilityName: KeQing_NormalAttack1
+  ExecuteOnBreak: 0
 --- !u!114 &1896085639909525354
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -91,6 +93,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 1.41
   AbilityName: KeQing_NormalAttack4_Show
+  ExecuteOnBreak: 1
 --- !u!114 &6159423364177759226
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -105,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 0.14
   AbilityName: KeQing_NormalAttack1
+  ExecuteOnBreak: 0
 --- !u!114 &6692269853049155522
 MonoBehaviour:
   m_ObjectHideFlags: 1

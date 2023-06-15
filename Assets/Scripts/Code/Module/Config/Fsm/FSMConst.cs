@@ -4,7 +4,11 @@
     {
         public const string UseSkill = "UseSkill";
         public const string SkillId = "SkillId";
-
+        public const string Jump = "Jump";
+        public const string Land = "Land";
+        public const string Shake = "Shake";
+        public const string Speed = "Speed";
+        
         public const string MotionFlag = "MotionFlag";
         public const string MotionDirection = "MotionDirection";
         
@@ -15,9 +19,6 @@
         public const string GadgetState = "GadgetState";
         
         public const string Alertness = "Alertness";
-        
-        
-        public const string Shake = "Shake";
 
     }
 }

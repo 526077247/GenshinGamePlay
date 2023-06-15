@@ -27,7 +27,7 @@ namespace TaoTie
 		public float airControlRate = 2f;
 
 		//Jump speed;
-		public float jumpSpeed = 10f;
+		public float jumpSpeed = 5f;
 
 		//Jump duration variables;
 		public float jumpDuration = 0.2f;

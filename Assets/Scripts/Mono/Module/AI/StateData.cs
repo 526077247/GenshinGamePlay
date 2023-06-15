@@ -14,6 +14,8 @@ namespace TaoTie
         public bool CanMove;
         [LabelText("是否能转向")][TabGroup("FSM")]
         public bool CanTurn;
+        [LabelText("是否能跳跃")][TabGroup("FSM")]
+        public bool CanJump;
         [LabelText("是否展示武器")][TabGroup("FSM")]
         public bool ShowWeapon;
         [LabelText("是否使用RagDoll")][TabGroup("FSM")]

@@ -33,6 +33,19 @@ namespace TaoTie
 
         private void StopTimeline()
         {
+            if (timeline!=null && timeline.Clips != null)
+            {
+                for (int i = 0; i < timeline.Clips.Length; i++)
+                {
+                    if (timeline.Clips[i].StartTime > StateTime)
+                    {
+                        FsmClip clip = timeline.Clips[i].CreateClip(this);
+                        clip.Break(StateTime);
+                        clip.Dispose();
+                    }
+                }
+            }
+
             if (clipList == null || clipList.Count <= 0)
                 return;
 

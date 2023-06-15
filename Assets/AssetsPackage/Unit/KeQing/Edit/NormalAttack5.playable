@@ -46,21 +46,6 @@ MonoBehaviour:
   m_Markers:
     m_Objects:
     - {fileID: 6159423364177759226}
-    - {fileID: 5461582552290552815}
---- !u!114 &5461582552290552815
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0462c0eb3c84f4ea20d8be9817ca50d, type: 3}
-  m_Name: Execute Ability Signal
-  m_EditorClassIdentifier: 
-  m_Time: 0.4166666666666667
-  AbilityName: KeQing_NormalAttack4_Show
 --- !u!114 &6159423364177759226
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -75,6 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 0.14
   AbilityName: KeQing_NormalAttack1
+  ExecuteOnExit: 0
 --- !u!114 &6692269853049155522
 MonoBehaviour:
   m_ObjectHideFlags: 1

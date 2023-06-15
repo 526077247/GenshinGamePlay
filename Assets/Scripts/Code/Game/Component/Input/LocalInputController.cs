@@ -56,6 +56,12 @@ namespace TaoTie
             {
                 direction += Vector3.right;
             }
+
+            moveComponent.CharacterInput.Jump = false;
+            if (InputManager.Instance.GetKey(GameKeyCode.Jump))
+            {
+                TryJump();
+            }
             this.TryMove(Vector3.Normalize(direction));
         }
 
@@ -96,6 +102,15 @@ namespace TaoTie
         {
             if(IsDispose) return;
             this.canTurn = canTurn;
+        }
+
+        public void TryJump()
+        {
+            if (fsm.DefaultFsm.CurrentState.CanJump && !moveComponent.CharacterInput.Jump)
+            {
+                fsm.SetData(FSMConst.Jump, true);
+                moveComponent.CharacterInput.Jump = true;
+            }
         }
     }
 }

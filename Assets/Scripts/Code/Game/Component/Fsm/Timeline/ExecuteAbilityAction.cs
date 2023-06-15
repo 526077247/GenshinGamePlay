@@ -21,6 +21,21 @@
             
         }
 
- 
+        protected override void OnBreak(float nowtime)
+        {
+            base.OnBreak(nowtime);
+            OnBreakAsync(nowtime).Coroutine();
+        }
+
+        private async ETTask OnBreakAsync(float nowtime)
+        {
+            if (config.ExecuteOnBreak)
+            {
+                var name = config.AbilityName;
+                var entity = actor;
+                await TimerManager.Instance.WaitAsync((int) ((config.StartTime - nowtime) * 1000));
+                entity.GetComponent<AbilityComponent>().ExecuteAbility(name);
+            }
+        }
     }
 }

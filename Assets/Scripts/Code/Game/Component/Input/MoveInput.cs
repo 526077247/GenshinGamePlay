@@ -20,6 +20,8 @@ namespace TaoTie
 		/// </summary>
 		public float RolateSpeed = 360;
 
+		public bool Jump = false;
+
 	    public float GetHorizontalMovementInput()
 	    {
 		    return 0;
@@ -32,7 +34,7 @@ namespace TaoTie
 
 	    public bool IsJumpKeyPressed()
 	    {
-		    return false;
+		    return Jump;
 	    }
     }
 }
