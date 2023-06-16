@@ -54,7 +54,7 @@ namespace TaoTie
             
             ConfigManager.Instance.ReleaseConfig<I18NConfigCategory>();
             I18NConfigCategory.Instance = null;
-            //AddSystemFonts();
+            AddSystemFonts();
         }
 
         public void Destroy()
