@@ -54,6 +54,7 @@ namespace TaoTie
             
             ConfigManager.Instance.ReleaseConfig<I18NConfigCategory>();
             I18NConfigCategory.Instance = null;
+            //AddSystemFonts();
         }
 
         public void Destroy()
@@ -175,7 +176,7 @@ namespace TaoTie
         public static void AddSystemFonts()
         {
 #if UNITY_EDITOR||UNITY_STANDALONE_WIN
-            string[] fonts = new[] { "STSONG" };
+            string[] fonts = new[] { "msyhl" };//微软雅黑细体
 #elif UNITY_ANDROID
             string[] fonts = new[] {
                 "NotoSansDevanagari-Regular",//天城体梵文

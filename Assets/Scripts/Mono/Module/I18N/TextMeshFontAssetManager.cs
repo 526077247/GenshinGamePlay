@@ -58,7 +58,7 @@ namespace TaoTie
 
             foreach (string path in tempPaths)
             {
-                string key = Path.GetFileNameWithoutExtension(path);
+                string key = Path.GetFileNameWithoutExtension(path).ToLower();
                 //Debug.Log(key);
                 if (!fontPaths.ContainsKey(key))
                     fontPaths.Add(key, path);
@@ -66,7 +66,7 @@ namespace TaoTie
 
             for (int i = 0; i < tb.Length; i++)
             {
-                string fontName = tb[i];
+                string fontName = tb[i].ToLower();
                 if (fontPaths.ContainsKey(fontName))
                 {
                     AddFontAssetByFontPath(fontPaths[fontName]);
@@ -84,6 +84,10 @@ namespace TaoTie
             TMP_FontAsset tp_font = TMP_FontAsset.CreateFontAsset(font, 20, 2, GlyphRenderMode.SDFAA, 512, 512);
             AddFontAsset(tp_font);
             addFontWithPathList.Add(fontPath, tp_font);
+            if (TMP_Settings.defaultFontAsset != null)
+            {
+                TMP_Settings.defaultFontAsset.fallbackFontAssetTable.Add(tp_font);
+            }
         }
 
         public void RemoveFontAssetByFontPath(string fontPath)
@@ -92,6 +96,10 @@ namespace TaoTie
                 return;
 
             TMP_FontAsset tpFont = addFontWithPathList[fontPath];
+            if (TMP_Settings.defaultFontAsset != null)
+            {
+                TMP_Settings.defaultFontAsset.fallbackFontAssetTable.Remove(tpFont);
+            }
             RemoveFontAsset(tpFont);
         }
     }
