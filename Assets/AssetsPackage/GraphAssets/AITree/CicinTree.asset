@@ -2292,6 +2292,546 @@ MonoBehaviour:
   errorNodeNameIsEmpty: 0
   errorDuplicateNameFoundInGraph: 0
   Condition: IsOnAlertValid
+--- !u!114 &-2465173254097135032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfde9fa3fce547d7b6725572b4eff75b, type: 3}
+  m_Name: Condition
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: -2465173254097135032}
+    - {fileID: 0}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: m_InputPorts
+      Entry: 7
+      Data: 0|System.Collections.Generic.List`1[[DaGenGraph.Port, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 1|DaGenGraph.Port, DaGenGraph
+    - Name: m_Node
+      Entry: 10
+      Data: 0
+    - Name: m_Edges
+      Entry: 7
+      Data: 2|System.Collections.Generic.List`1[[DaGenGraph.Edge, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 3|DaGenGraph.Edge, DaGenGraph
+    - Name: m_ID
+      Entry: 1
+      Data: a59a206a-5939-4b7d-a7e1-f0fc6e05a7b2
+    - Name: m_InputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_OutputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_InputNodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_InputPortId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_OutputNodeId
+      Entry: 1
+      Data: f30ce60d-def7-455a-a555-afc5172ed1c4
+    - Name: m_OutputPortId
+      Entry: 1
+      Data: e5d7d1bb-8125-4643-9dee-017f34a39c39
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_EdgePoints
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_Direction
+      Entry: 3
+      Data: 0
+    - Name: m_EdgeMode
+      Entry: 3
+      Data: 0
+    - Name: m_CanBeDeleted
+      Entry: 5
+      Data: false
+    - Name: m_CanBeReordered
+      Entry: 5
+      Data: false
+    - Name: m_CurveModifier
+      Entry: 4
+      Data: 0
+    - Name: m_Height
+      Entry: 4
+      Data: 24
+    - Name: m_Width
+      Entry: 4
+      Data: 216
+    - Name: m_X
+      Entry: 4
+      Data: 0
+    - Name: m_Y
+      Entry: 4
+      Data: 38
+    - Name: m_ID
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_NodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_PortName
+      Entry: 1
+      Data: InputPort_0
+    - Name: m_Value
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_OutputPorts
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[DaGenGraph.Port, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 6|DaGenGraph.Port, DaGenGraph
+    - Name: m_Node
+      Entry: 10
+      Data: 0
+    - Name: m_Edges
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[DaGenGraph.Edge, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 8|DaGenGraph.Edge, DaGenGraph
+    - Name: m_ID
+      Entry: 1
+      Data: 2fb344b8-c02d-4ab0-a8b1-f863946fa872
+    - Name: m_InputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_OutputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_InputNodeId
+      Entry: 1
+      Data: 3723c24e-aa10-47d4-a83f-77fffff8f818
+    - Name: m_InputPortId
+      Entry: 1
+      Data: 3723c24e-aa10-47d4-a83f-77fffff8f818
+    - Name: m_OutputNodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_OutputPortId
+      Entry: 1
+      Data: f1fe82f4-3420-493c-af71-9697a9428abc
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_EdgePoints
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_Direction
+      Entry: 3
+      Data: 1
+    - Name: m_EdgeMode
+      Entry: 3
+      Data: 0
+    - Name: m_CanBeDeleted
+      Entry: 5
+      Data: false
+    - Name: m_CanBeReordered
+      Entry: 5
+      Data: false
+    - Name: m_CurveModifier
+      Entry: 4
+      Data: 0
+    - Name: m_Height
+      Entry: 4
+      Data: 24
+    - Name: m_Width
+      Entry: 4
+      Data: 216
+    - Name: m_X
+      Entry: 4
+      Data: 0
+    - Name: m_Y
+      Entry: 4
+      Data: 62
+    - Name: m_ID
+      Entry: 1
+      Data: f1fe82f4-3420-493c-af71-9697a9428abc
+    - Name: m_NodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_PortName
+      Entry: 1
+      Data: True
+    - Name: m_Value
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 10|DaGenGraph.Port, DaGenGraph
+    - Name: m_Node
+      Entry: 10
+      Data: 0
+    - Name: m_Edges
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[DaGenGraph.Edge, DaGenGraph]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 12|DaGenGraph.Edge, DaGenGraph
+    - Name: m_ID
+      Entry: 1
+      Data: 87e12979-4abe-4aed-b29d-784eeb94dbc4
+    - Name: m_InputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_OutputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_InputNodeId
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: m_InputPortId
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: m_OutputNodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_OutputPortId
+      Entry: 1
+      Data: 097c9231-a94c-415e-8219-de46b6235804
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_EdgePoints
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_Direction
+      Entry: 3
+      Data: 1
+    - Name: m_EdgeMode
+      Entry: 3
+      Data: 0
+    - Name: m_CanBeDeleted
+      Entry: 5
+      Data: false
+    - Name: m_CanBeReordered
+      Entry: 5
+      Data: false
+    - Name: m_CurveModifier
+      Entry: 4
+      Data: 0
+    - Name: m_Height
+      Entry: 4
+      Data: 24
+    - Name: m_Width
+      Entry: 4
+      Data: 216
+    - Name: m_X
+      Entry: 4
+      Data: 0
+    - Name: m_Y
+      Entry: 4
+      Data: 86
+    - Name: m_ID
+      Entry: 1
+      Data: 097c9231-a94c-415e-8219-de46b6235804
+    - Name: m_NodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_PortName
+      Entry: 1
+      Data: False
+    - Name: m_Value
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: deletePort
+      Entry: 7
+      Data: 14|DaGenGraph.Node+DeletePort, DaGenGraph
+    - Name: target
+      Entry: 10
+      Data: 1
+    - Name: declaringType
+      Entry: 7
+      Data: 15|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: DaGenGraph.Editor.GraphWindow, DaGenGraph
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: methodName
+      Entry: 1
+      Data: RemovePort
+    - Name: delegateType
+      Entry: 7
+      Data: 16|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: DaGenGraph.Node+DeletePort, DaGenGraph
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: signature
+      Entry: 7
+      Data: 17|System.Type[], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 18|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: DaGenGraph.Port, DaGenGraph
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  m_AllowDuplicateNodeName: 0
+  m_AllowEmptyNodeName: 0
+  m_CanBeDeleted: 1
+  m_Height: 128
+  m_Width: 216
+  m_X: 1512
+  m_Y: 360
+  m_MinimumInputPortsCount: 1
+  m_MinimumOutputPortsCount: 0
+  m_GraphId: ed5ddaa0-2fc6-4f65-82f8-ec98b05e4181
+  m_Id: 4e373d25-5139-477c-9c6d-f8447fe77768
+  isHovered: 0
+  errorNodeNameIsEmpty: 0
+  errorDuplicateNameFoundInGraph: 0
+  Condition: IsCombatFacingMoveValid
 --- !u!114 &-2253300960050386354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2564,6 +3104,281 @@ MonoBehaviour:
   m_MinimumOutputPortsCount: 0
   m_GraphId: ed5ddaa0-2fc6-4f65-82f8-ec98b05e4181
   m_Id: 80850493-4c29-48a8-9150-52c1700e6ec2
+  isHovered: 0
+  errorNodeNameIsEmpty: 0
+  errorDuplicateNameFoundInGraph: 0
+--- !u!114 &-2106482544469800187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e274845ba06f4be6b8bd5ff8d8789b6c, type: 3}
+  m_Name: Action
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: -2106482544469800187}
+    - {fileID: 0}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: m_InputPorts
+      Entry: 7
+      Data: 0|System.Collections.Generic.List`1[[DaGenGraph.Port, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 1|DaGenGraph.Port, DaGenGraph
+    - Name: m_Node
+      Entry: 10
+      Data: 0
+    - Name: m_Edges
+      Entry: 7
+      Data: 2|System.Collections.Generic.List`1[[DaGenGraph.Edge, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 3|DaGenGraph.Edge, DaGenGraph
+    - Name: m_ID
+      Entry: 1
+      Data: 87e12979-4abe-4aed-b29d-784eeb94dbc4
+    - Name: m_InputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_OutputEdgePoint
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_InputNodeId
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: m_InputPortId
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: m_OutputNodeId
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: m_OutputPortId
+      Entry: 1
+      Data: 097c9231-a94c-415e-8219-de46b6235804
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_EdgePoints
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -2
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 202
+    - Name: 
+      Entry: 4
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_Direction
+      Entry: 3
+      Data: 0
+    - Name: m_EdgeMode
+      Entry: 3
+      Data: 0
+    - Name: m_CanBeDeleted
+      Entry: 5
+      Data: false
+    - Name: m_CanBeReordered
+      Entry: 5
+      Data: false
+    - Name: m_CurveModifier
+      Entry: 4
+      Data: 0
+    - Name: m_Height
+      Entry: 4
+      Data: 24
+    - Name: m_Width
+      Entry: 4
+      Data: 216
+    - Name: m_X
+      Entry: 4
+      Data: 0
+    - Name: m_Y
+      Entry: 4
+      Data: 38
+    - Name: m_ID
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: m_NodeId
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: m_PortName
+      Entry: 1
+      Data: InputPort_0
+    - Name: m_Value
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_OutputPorts
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[DaGenGraph.Port, DaGenGraph]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: deletePort
+      Entry: 7
+      Data: 6|DaGenGraph.Node+DeletePort, DaGenGraph
+    - Name: target
+      Entry: 10
+      Data: 1
+    - Name: declaringType
+      Entry: 7
+      Data: 7|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: DaGenGraph.Editor.GraphWindow, DaGenGraph
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: methodName
+      Entry: 1
+      Data: RemovePort
+    - Name: delegateType
+      Entry: 7
+      Data: 8|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: DaGenGraph.Node+DeletePort, DaGenGraph
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: signature
+      Entry: 7
+      Data: 9|System.Type[], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 10|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: DaGenGraph.Port, DaGenGraph
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Data
+      Entry: 7
+      Data: 11|TaoTie.DecisionActionNode, Unity.Code
+    - Name: Enable
+      Entry: 5
+      Data: true
+    - Name: Remark
+      Entry: 6
+      Data: 
+    - Name: Act
+      Entry: 3
+      Data: 0
+    - Name: Move
+      Entry: 3
+      Data: 0
+    - Name: Tactic
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+  m_AllowDuplicateNodeName: 0
+  m_AllowEmptyNodeName: 0
+  m_CanBeDeleted: 1
+  m_Height: 80
+  m_Width: 216
+  m_X: 1804.8817
+  m_Y: 403.2674
+  m_MinimumInputPortsCount: 1
+  m_MinimumOutputPortsCount: 0
+  m_GraphId: ed5ddaa0-2fc6-4f65-82f8-ec98b05e4181
+  m_Id: 1b1c4789-7364-49f5-b202-de51acdf79de
   isHovered: 0
   errorNodeNameIsEmpty: 0
   errorDuplicateNameFoundInGraph: 0
@@ -3417,6 +4232,8 @@ MonoBehaviour:
     - {fileID: 2151386582341840614}
     - {fileID: -3256609585278069191}
     - {fileID: 7209648693851673198}
+    - {fileID: -2465173254097135032}
+    - {fileID: -2106482544469800187}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -3435,7 +4252,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 19
+      Data: 21
     - Name: 
       Entry: 7
       Data: 
@@ -3665,26 +4482,50 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
+    - Name: $v
+      Entry: 10
+      Data: 19
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: 1b1c4789-7364-49f5-b202-de51acdf79de
+    - Name: $v
+      Entry: 10
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
-  currentPanOffset: {x: 38.55916, y: 57.366302}
+  currentPanOffset: {x: -1.4408417, y: 171.3663}
   currentZoom: 0.5
   graphAreaIncludingTab:
     serializedVersion: 2
     x: 0
     y: 20
-    width: 1015
-    height: 506
+    width: 979
+    height: 546
   scaledGraphArea:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 2030
-    height: 1012
-  windowID: 21
+    width: 1958
+    height: 1092
+  windowID: 23
   scene: Init
   startNode: {fileID: -4694229386027097793}
   leftInRightOut: 1
@@ -3889,7 +4730,7 @@ MonoBehaviour:
       Data: 8|DaGenGraph.Edge, DaGenGraph
     - Name: m_ID
       Entry: 1
-      Data: 33510de4-5ded-41d5-917a-624116905e12
+      Data: e1da9cb0-fd52-4d2e-b123-af6a99849b2f
     - Name: m_InputEdgePoint
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -4032,7 +4873,7 @@ MonoBehaviour:
       Data: 12|DaGenGraph.Edge, DaGenGraph
     - Name: m_ID
       Entry: 1
-      Data: 854038f5-ccae-4f80-b606-e31d50188923
+      Data: a59a206a-5939-4b7d-a7e1-f0fc6e05a7b2
     - Name: m_InputEdgePoint
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -4059,10 +4900,10 @@ MonoBehaviour:
       Data: 
     - Name: m_InputNodeId
       Entry: 1
-      Data: 3723c24e-aa10-47d4-a83f-77fffff8f818
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
     - Name: m_InputPortId
       Entry: 1
-      Data: 3723c24e-aa10-47d4-a83f-77fffff8f818
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
     - Name: m_OutputNodeId
       Entry: 1
       Data: f30ce60d-def7-455a-a555-afc5172ed1c4
@@ -5090,7 +5931,7 @@ MonoBehaviour:
       Data: 3|DaGenGraph.Edge, DaGenGraph
     - Name: m_ID
       Entry: 1
-      Data: 854038f5-ccae-4f80-b606-e31d50188923
+      Data: 2fb344b8-c02d-4ab0-a8b1-f863946fa872
     - Name: m_InputEdgePoint
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -5123,10 +5964,10 @@ MonoBehaviour:
       Data: 3723c24e-aa10-47d4-a83f-77fffff8f818
     - Name: m_OutputNodeId
       Entry: 1
-      Data: f30ce60d-def7-455a-a555-afc5172ed1c4
+      Data: 4e373d25-5139-477c-9c6d-f8447fe77768
     - Name: m_OutputPortId
       Entry: 1
-      Data: e5d7d1bb-8125-4643-9dee-017f34a39c39
+      Data: f1fe82f4-3420-493c-af71-9697a9428abc
     - Name: 
       Entry: 8
       Data: 
@@ -5310,8 +6151,8 @@ MonoBehaviour:
   m_CanBeDeleted: 1
   m_Height: 80
   m_Width: 216
-  m_X: 1512
-  m_Y: 396
+  m_X: 1800
+  m_Y: 228
   m_MinimumInputPortsCount: 1
   m_MinimumOutputPortsCount: 0
   m_GraphId: ed5ddaa0-2fc6-4f65-82f8-ec98b05e4181
@@ -5365,7 +6206,7 @@ MonoBehaviour:
       Data: 3|DaGenGraph.Edge, DaGenGraph
     - Name: m_ID
       Entry: 1
-      Data: 33510de4-5ded-41d5-917a-624116905e12
+      Data: e1da9cb0-fd52-4d2e-b123-af6a99849b2f
     - Name: m_InputEdgePoint
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule

@@ -148,6 +148,8 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 1
         CanTurn: 1
+        CanJump: 0
+        IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
 --- !u!1101 &-4897850199127859911
@@ -200,6 +202,8 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 1
         CanTurn: 1
+        CanJump: 0
+        IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
 --- !u!1102 &-3573532505272882320
@@ -303,6 +307,35 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &-1844460592228506553
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 1851785823072026626
+  references:
+    version: 2
+    RefIds:
+    - rid: 1851785823072026626
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
+        CanJump: 0
+        IsJump: 0
+        ShowWeapon: 0
+        UseRagDoll: 0
 --- !u!114 &-1603563280062419696
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -328,6 +361,37 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 1
         CanTurn: 1
+        CanJump: 0
+        IsJump: 0
+        ShowWeapon: 0
+        UseRagDoll: 0
+--- !u!114 &-1514476544771069628
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 1851785823072026625
+  references:
+    version: 2
+    RefIds:
+    - rid: 1851785823072026625
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
+        CanJump: 0
+        IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
 --- !u!1101 &-1417068260191224458
@@ -736,6 +800,35 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 590, y: 140, z: 0}
   m_ParentStateMachinePosition: {x: -110, y: 270, z: 0}
   m_DefaultState: {fileID: 100929377004329870}
+--- !u!114 &2082652216379446479
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 1851785823072026624
+  references:
+    version: 2
+    RefIds:
+    - rid: 1851785823072026624
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
+        CanJump: 0
+        IsJump: 0
+        ShowWeapon: 0
+        UseRagDoll: 0
 --- !u!1102 &3641277205969579029
 AnimatorState:
   serializedVersion: 6
@@ -838,6 +931,8 @@ MonoBehaviour:
         PoseID: 0
         CanMove: 1
         CanTurn: 1
+        CanJump: 0
+        IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
 --- !u!1109 &4408507750954874016
@@ -1139,3 +1234,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &8997017968786917175
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83da8c8385bab3942b6a396a47568071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Data:
+    rid: 1851785823072026627
+  references:
+    version: 2
+    RefIds:
+    - rid: 1851785823072026627
+      type: {class: StateData, ns: TaoTie, asm: Unity.Mono}
+      data:
+        IsDynamic: 0
+        Key: 
+        PoseID: 0
+        CanMove: 0
+        CanTurn: 0
+        CanJump: 0
+        IsJump: 0
+        ShowWeapon: 0
+        UseRagDoll: 0

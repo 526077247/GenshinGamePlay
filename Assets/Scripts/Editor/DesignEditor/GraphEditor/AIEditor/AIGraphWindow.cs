@@ -120,6 +120,8 @@ namespace TaoTie
 
                 var jstr = JsonHelper.ToJson(Convert(m_Graph));
                 File.WriteAllText(path,jstr);
+                AssetDatabase.Refresh();
+                Log.Error("导出成功");   
             }
             else
             {

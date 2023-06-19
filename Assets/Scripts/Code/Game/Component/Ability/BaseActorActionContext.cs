@@ -85,6 +85,9 @@ namespace TaoTie
             
             Parent = null;
             ApplierID = 0;
+            afterAdd = null;
+            beforeRemove = null;
+            onExecute = null;
         }
 
     }

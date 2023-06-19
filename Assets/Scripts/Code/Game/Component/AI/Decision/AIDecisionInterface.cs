@@ -61,9 +61,10 @@ namespace TaoTie
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
-			if (knowledge.MoveControlState.WanderInfo.Status == WanderInfo.WanderStatus.Wandering) return true;
 			if (knowledge.WanderTactic.Config==null || !knowledge.WanderTactic.Config.Enable)
 				return false;
+			if (knowledge.MoveControlState.WanderInfo.Status == WanderInfo.WanderStatus.Wandering) return true;
+
 			if (knowledge.MoveControlState.WanderInfo.NextAvailableTick > GameTimerManager.Instance.GetTimeNow())
 				return false;
 			return true;
@@ -92,12 +93,13 @@ namespace TaoTie
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
+			if (knowledge.MeleeChargeTactic.Config==null||!knowledge.MeleeChargeTactic.Config.Enable)
+				return false;
+			
 			if (knowledge.MoveControlState.MeleeCharge.Status == MeleeChargeInfo.ChargeStatus.Charging) return true;
 			float meleeChargeStartDistanceMin = knowledge.MeleeChargeTactic.Data.StartDistanceMin;
 			float meleeChargeStartDistanceMax = knowledge.MeleeChargeTactic.Data.StartDistanceMax;
 			
-			if (knowledge.MeleeChargeTactic.Config==null||!knowledge.MeleeChargeTactic.Config.Enable)
-				return false;
 			if (!knowledge.MeleeChargeTactic.NerveCheck(knowledge))
 				return false;
 			if (knowledge.TargetKnowledge.TargetDistance > meleeChargeStartDistanceMax)
