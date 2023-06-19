@@ -54,6 +54,9 @@
 		<Compile Include="..\..\..\Assets\Scripts\Code\Module\Config\ProtobufHelper.cs">
 			<Link>Helper\ProtobufHelper.cs</Link>
 		</Compile>
+		<Compile Include="..\..\..\Assets\Scripts\Code\Module\I18N\I18NConfig.cs">
+			<Link>Config\I18NConfig.cs</Link>
+		</Compile>
 		<Compile Include="..\..\..\Assets\Scripts\ThirdParty\Nino\**\*.cs">
 			<Link>Nino\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>

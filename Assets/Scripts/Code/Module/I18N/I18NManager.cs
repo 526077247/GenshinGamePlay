@@ -4,12 +4,6 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class LangType
-    {
-        public const int Chinese = 0;
-        public const int English = 1;
-    }
-
     public class I18NManager : IManager
     {
         public event Action OnLanguageChangeEvt;
@@ -17,7 +11,7 @@ namespace TaoTie
         public static I18NManager Instance;
         //语言类型枚举
 
-        public int curLangType { get; set; }
+        public LangType curLangType { get; set; }
         public Dictionary<string, string> i18nTextKeyDic;
 
         #region override
@@ -26,34 +20,25 @@ namespace TaoTie
         {
             Instance = this;
             I18NBridge.Instance.GetValueByKey = I18NGetText;
-            this.curLangType = PlayerPrefs.GetInt(CacheKeys.CurLangType, -1);
-            if (this.curLangType < 0)
+            var lang = PlayerPrefs.GetInt(CacheKeys.CurLangType, -1);
+            if (lang < 0)
             {
                 this.curLangType = Application.systemLanguage == SystemLanguage.Chinese
                     ? LangType.Chinese
                     : LangType.English;
             }
-            this.i18nTextKeyDic = new Dictionary<string, string>();
-
-            for (int i = 0; i < I18NConfigCategory.Instance.GetAllList().Count; i++)
+            else
             {
-                var item = I18NConfigCategory.Instance.GetAllList()[i];
-                switch (this.curLangType)
-                {
-                    case LangType.Chinese:
-                        this.i18nTextKeyDic.Add(item.Key, item.Chinese);
-                        break;
-                    case LangType.English:
-                        this.i18nTextKeyDic.Add(item.Key, item.English);
-                        break;
-                    default:
-                        this.i18nTextKeyDic.Add(item.Key, item.Chinese);
-                        break;
-                }
+                this.curLangType = (LangType)lang;
+            }
+            this.i18nTextKeyDic = new Dictionary<string, string>();
+            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.curLangType.ToString());
+            for (int i = 0; i <res.GetAllList().Count; i++)
+            {
+                var item = res.GetAllList()[i];
+                this.i18nTextKeyDic.Add(item.Key, item.Value);
             }
             
-            ConfigManager.Instance.ReleaseConfig<I18NConfigCategory>();
-            I18NConfigCategory.Instance = null;
             AddSystemFonts();
         }
 
@@ -130,31 +115,17 @@ namespace TaoTie
             ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>();
             //修改当前语言
             PlayerPrefs.SetInt(CacheKeys.CurLangType, langType);
-            this.curLangType = langType;
+            this.curLangType = (LangType)langType;
             this.i18nTextKeyDic.Clear();
-            for (int i = 0; i < I18NConfigCategory.Instance.GetAllList().Count; i++)
+            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.curLangType.ToString());
+            for (int i = 0; i <res.GetAllList().Count; i++)
             {
-                var item = I18NConfigCategory.Instance.GetAllList()[i];
-                switch (this.curLangType)
-                {
-                    case LangType.Chinese:
-                        this.i18nTextKeyDic.Add(item.Key, item.Chinese);
-                        break;
-                    case LangType.English:
-                        this.i18nTextKeyDic.Add(item.Key, item.English);
-                        break;
-                    default:
-                        this.i18nTextKeyDic.Add(item.Key, item.Chinese);
-                        break;
-                }
+                var item = res.GetAllList()[i];
+                this.i18nTextKeyDic.Add(item.Key, item.Value);
             }
 
             I18NBridge.Instance.OnLanguageChangeEvt?.Invoke();
             OnLanguageChangeEvt?.Invoke();
-            
-                        
-            ConfigManager.Instance.ReleaseConfig<I18NConfigCategory>();
-            I18NConfigCategory.Instance = null;
         }
 
         public void RegisterI18NEntity(II18N entity)

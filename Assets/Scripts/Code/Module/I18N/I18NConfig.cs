@@ -5,29 +5,14 @@ using Nino.Serialization;
 namespace TaoTie
 {
     [NinoSerialize]
-    [Config]
-    public partial class I18NConfigCategory : ProtoObject, IMerge
+    public partial class I18NConfigCategory : ProtoObject
     {
-        public static I18NConfigCategory Instance;
-		
-        
         [NinoIgnore]
         private Dictionary<int, I18NConfig> dict = new Dictionary<int, I18NConfig>();
         
         [NinoMember(1)]
         private List<I18NConfig> list = new List<I18NConfig>();
-		
-        public I18NConfigCategory()
-        {
-            Instance = this;
-        }
-        
-        public void Merge(object o)
-        {
-            I18NConfigCategory s = o as I18NConfigCategory;
-            this.list.AddRange(s.list);
-        }
-		
+
         public override void EndInit()
         {
             for(int i =0 ;i<list.Count;i++)
@@ -83,12 +68,8 @@ namespace TaoTie
 		/// <summary>索引标识</summary>
 		[NinoMember(2)]
 		public string Key { get; set; }
-		/// <summary>简体中文</summary>
+		/// <summary>内容</summary>
 		[NinoMember(3)]
-		public string Chinese { get; set; }
-		/// <summary>英文</summary>
-		[NinoMember(4)]
-		public string English { get; set; }
-
-	}
+		public string Value { get; set; }
+    }
 }

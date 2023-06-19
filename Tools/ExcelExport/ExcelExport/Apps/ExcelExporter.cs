@@ -54,7 +54,7 @@ namespace TaoTie
         public int Index;
         public Dictionary<string, HeadInfo> HeadInfos = new Dictionary<string, HeadInfo>();
     }
-    internal class ExcelExporter
+    public partial class ExcelExporter
     {
         private static string template;
 

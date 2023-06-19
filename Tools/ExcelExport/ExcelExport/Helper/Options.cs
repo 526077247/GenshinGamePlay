@@ -7,6 +7,7 @@ namespace TaoTie
         ExcelExporter,
         CHExcelExporter,//策划导表校验
         AttrExporter,//导属性
+        I18NExporter,//导多语言
         ExporterAll,
     }
 

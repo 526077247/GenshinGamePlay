@@ -21,7 +21,7 @@ namespace TaoTie
 
         public byte[] GetOneConfigBytes(string configName)
         {
-            var op = YooAssets.LoadAssetAsync(configName,TypeInfo<TextAsset>.Type);
+            var op = YooAssets.LoadAssetSync(configName, TypeInfo<TextAsset>.Type);
             TextAsset v = op.AssetObject as TextAsset;
             var bytes = v.bytes;
             op.Release();

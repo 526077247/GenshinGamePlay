@@ -37,10 +37,16 @@ namespace TaoTie
                             AttrExporter.Export();
                             return 0;
                         }
+                    case AppType.I18NExporter:
+                    {
+                        ExcelExporter.ExportI18N();
+                        return 0;
+                    }
                     case AppType.ExporterAll:
                         {
                             ExcelExporter.Export();
                             AttrExporter.Export();
+                            ExcelExporter.ExportI18N();
                             return 0;
                         }
                 }
