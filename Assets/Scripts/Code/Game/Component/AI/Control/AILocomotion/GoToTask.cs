@@ -73,7 +73,7 @@ namespace TaoTie
                 if (!Stopped)
                 {
                     var currentDistance = Vector3.Distance(transfomPos, target);
-                    if (currentDistance <= getCloseDistance)
+                    if (pathQuery!=null && pathQuery.Corners!=null && currentDistance <= getCloseDistance)
                     {
                         index++;
                         if (index >= pathQuery.Corners.Count)
