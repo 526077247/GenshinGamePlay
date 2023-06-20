@@ -16,7 +16,9 @@ namespace TaoTie
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()",AppendNextDrawer = true)]
+#endif
         public Int32 Value;
 
         public override bool IsMatch(EnterZoneEvent obj, SceneGroup sceneGroup)

@@ -18,7 +18,9 @@ namespace TaoTie
         [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
 #endif
         [SerializeReference] [PropertyOrder(int.MaxValue - 1)]
+#if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(GetType)+"())")]
+#endif
         public ConfigSceneGroupAction[] Actions;
 
 #if UNITY_EDITOR

@@ -37,7 +37,9 @@ namespace TaoTie
         [NinoMember(8)]
         [LabelText("初始组")]
         [ShowIf("@!"+nameof(RandSuite))]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
+#endif
         public int InitSuite;
     }
 }

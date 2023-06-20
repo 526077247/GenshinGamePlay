@@ -9,6 +9,9 @@ namespace TaoTie
     public sealed partial class ConfigSceneGroupActorMonster : ConfigSceneGroupActor
     {
         [NinoMember(10)]
+#if UNITY_EDITOR
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetMonsterConfigIds)+"()")]
+#endif
         public int ConfigID;
 
         public override Entity CreateActor(SceneGroup sceneGroup)

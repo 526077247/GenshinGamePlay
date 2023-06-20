@@ -344,7 +344,7 @@ namespace TaoTie
                         FadeDuration = fadeDur,
                         ToStateTime = offset,
                         CanTransitionToSelf = canTransitionToSelf,
-                        InteractionSource = tran.interruptionSource,
+                        InteractionSource = (TransitionInterruptionSource)(int)tran.interruptionSource,
                         OrderedInteraction = tran.orderedInterruption
                     });
                 }
@@ -373,7 +373,7 @@ namespace TaoTie
                                 FadeDuration = fadeDur,
                                 ToStateTime = offset,
                                 CanTransitionToSelf = false,
-                                InteractionSource = tran.interruptionSource,
+                                InteractionSource = (TransitionInterruptionSource)(int)tran.interruptionSource,
                                 OrderedInteraction = tran.orderedInterruption
                             });
                         }
@@ -406,7 +406,7 @@ namespace TaoTie
                                 FadeDuration = fadeDur,
                                 ToStateTime = offset,
                                 CanTransitionToSelf = false,
-                                InteractionSource = tran.interruptionSource,
+                                InteractionSource = (TransitionInterruptionSource)(int)tran.interruptionSource,
                                 OrderedInteraction = tran.orderedInterruption
                             });
                         }
@@ -437,7 +437,7 @@ namespace TaoTie
                                     FadeDuration = fadeDur,
                                     ToStateTime = offset,
                                     CanTransitionToSelf = false,
-                                    InteractionSource = tran.interruptionSource,
+                                    InteractionSource = (TransitionInterruptionSource)(int)tran.interruptionSource,
                                     OrderedInteraction = tran.orderedInterruption
                                 });
                             }

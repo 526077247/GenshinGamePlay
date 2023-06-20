@@ -22,7 +22,9 @@ namespace TaoTie
         [NinoMember(16)]
         public int GadgetID;
         [NinoMember(17)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
+#endif
         public uint CampID;
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {

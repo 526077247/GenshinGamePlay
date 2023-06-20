@@ -11,7 +11,9 @@ namespace TaoTie
     public class AttachEffect: ConfigAbilityAction
     {
         [NinoMember(10)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetEffects)+"()",AppendNextDrawer = true)]
+#endif
         public string EffectName;
         [NinoMember(11)]
         public ConfigBornType Born;

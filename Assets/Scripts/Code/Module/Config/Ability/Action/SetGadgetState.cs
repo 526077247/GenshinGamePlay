@@ -7,7 +7,9 @@ namespace TaoTie
     public partial class SetGadgetState: ConfigAbilityAction
     {
         [NinoMember(10)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
+#endif
         public GadgetState GadgetState;
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {

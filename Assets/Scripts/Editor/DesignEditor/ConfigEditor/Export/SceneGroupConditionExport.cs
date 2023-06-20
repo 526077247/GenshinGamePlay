@@ -55,12 +55,24 @@ namespace TaoTie
             sb.AppendLine("        [NinoMember(1)]");
             sb.AppendLine("        public CompareMode Mode;");
             sb.AppendLine("        [NinoMember(2)]");
-            if(fieldInfo.GetCustomAttributes(typeof(SceneGroupZoneIdAttribute),false).Length!=0)
+            if (fieldInfo.GetCustomAttributes(typeof(SceneGroupZoneIdAttribute), false).Length != 0)
+            {
+                sb.AppendLine("#if UNITY_EDITOR");
                 sb.AppendLine("        [ValueDropdown(\"@\"+nameof(OdinDropdownHelper)+\".\"+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+\"()\",AppendNextDrawer = true)]");
-            if(fieldInfo.GetCustomAttributes(typeof(SceneGroupSuiteIdAttribute),false).Length!=0)
+                sb.AppendLine("#endif");
+            }
+            if (fieldInfo.GetCustomAttributes(typeof(SceneGroupSuiteIdAttribute), false).Length != 0)
+            {
+                sb.AppendLine("#if UNITY_EDITOR");
                 sb.AppendLine("        [ValueDropdown(\"@\"+nameof(OdinDropdownHelper)+\".\"+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+\"()\",AppendNextDrawer = true)]");
-            if(fieldInfo.GetCustomAttributes(typeof(SceneGroupActorIdAttribute),false).Length!=0)
+                sb.AppendLine("#endif");
+            }
+            if (fieldInfo.GetCustomAttributes(typeof(SceneGroupActorIdAttribute), false).Length != 0)
+            {
+                sb.AppendLine("#if UNITY_EDITOR");
                 sb.AppendLine("        [ValueDropdown(\"@\"+nameof(OdinDropdownHelper)+\".\"+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+\"()\",AppendNextDrawer = true)]");
+                sb.AppendLine("#endif");
+            }
             sb.AppendLine($"        public {fieldInfo.FieldType.Name} Value;");
             sb.AppendLine();
             sb.AppendLine($"        public override bool IsMatch({type.Name} obj, SceneGroup sceneGroup)");

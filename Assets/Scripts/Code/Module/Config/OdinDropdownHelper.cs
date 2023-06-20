@@ -7,6 +7,7 @@ using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEditor;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -142,20 +143,44 @@ namespace TaoTie
             }
             return res;
         }
-        public static List<int> GetSceneGroupSuiteIds0()
+        public static IEnumerable GetMonsterConfigIds()
         {
-            List<int> res = new List<int>();
-            if (sceneGroup!=null)
+            var textAssets = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Config/MonsterConfigCategory.bytes");
+            var textAssets2 = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Config/UnitConfigCategory.bytes");
+            ValueDropdownList<int> list = new ValueDropdownList<int>();
+            if(textAssets!=null&&textAssets2!=null)
             {
-                ConfigSceneGroup config = sceneGroup;
-                for (int i = 0; i < (config.Suites == null ? 0 : config.Suites.Length); i++)
+                MonsterConfigCategory monster = ProtobufHelper.FromBytes<MonsterConfigCategory>(textAssets.bytes);
+                UnitConfigCategory unit = ProtobufHelper.FromBytes<UnitConfigCategory>(textAssets2.bytes);
+                for (int i = 0; i < monster.GetAllList().Count; i++)
                 {
-                    if (config.Suites[i] != null)
-                        res.Add(config.Suites[i].LocalId);
+                    var item = monster.GetAllList()[i];
+                    var u = unit.Get(item.UnitId);
+                    string name = u == null ? ("未找到UnitId" + item.UnitId) : u.Name;
+                    list.Add($"{name}({item.Id})", item.Id);
                 }
             }
-            res.Add(0);
-            return res;
+            return list;
+        }
+        
+        public static IEnumerable GetGadgetConfigIds()
+        {
+            var textAssets = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Config/GadgetConfigCategory.bytes");
+            var textAssets2 = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Config/UnitConfigCategory.bytes");
+            ValueDropdownList<int> list = new ValueDropdownList<int>();
+            if(textAssets!=null&&textAssets2!=null)
+            {
+                GadgetConfigCategory gadget = ProtobufHelper.FromBytes<GadgetConfigCategory>(textAssets.bytes);
+                UnitConfigCategory unit = ProtobufHelper.FromBytes<UnitConfigCategory>(textAssets2.bytes);
+                for (int i = 0; i < gadget.GetAllList().Count; i++)
+                {
+                    var item = gadget.GetAllList()[i];
+                    var u = unit.Get(item.UnitId);
+                    string name = u == null ? ("未找到UnitId" + item.UnitId) : u.Name;
+                    list.Add($"{name}({item.Id})", item.Id);
+                }
+            }
+            return list;
         }
         public static List<int> GetSceneGroupTriggerIds()
         {

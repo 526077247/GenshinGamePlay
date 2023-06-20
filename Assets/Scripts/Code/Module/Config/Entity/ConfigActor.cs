@@ -7,7 +7,9 @@ namespace TaoTie
     public partial class ConfigActor
     {
         [NinoMember(7)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
+#endif
         public string[] Abilities;
         [NinoMember(1)]
         public ConfigActorCommon Common;
