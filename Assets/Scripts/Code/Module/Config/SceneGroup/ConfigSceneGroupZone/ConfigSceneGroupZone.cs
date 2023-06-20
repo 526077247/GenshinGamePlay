@@ -13,7 +13,7 @@ namespace TaoTie
     {
         
         #if UNITY_EDITOR
-        [NinoMember(0)] [SerializeField] [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
+        [NinoMember(0)][LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
         public string Remarks;
         #endif
         [NinoMember(1)][PropertyOrder(int.MinValue)]

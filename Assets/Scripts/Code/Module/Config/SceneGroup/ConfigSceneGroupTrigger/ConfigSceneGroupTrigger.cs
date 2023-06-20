@@ -22,7 +22,7 @@ namespace TaoTie
         public ConfigSceneGroupAction[] Actions;
 
 #if UNITY_EDITOR
-        [NinoMember(0)][PropertyOrder(int.MinValue + 1)] [SerializeField] [LabelText("策划备注")]
+        [NinoMember(0)][PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
         public string Remarks;
         
         private void Refresh()
