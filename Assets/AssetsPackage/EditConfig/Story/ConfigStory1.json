@@ -1,0 +1,1 @@
+{"_t":"TaoTie.ConfigStory","Actors":[{"_t":"TaoTie.ConfigStoryActor","Id":1,"ConfigId":1}],"Clips":{"_t":"TaoTie.ConfigStorySerialClip","Clips":[{"_t":"TaoTie.ConfigStoryWaitTimeClip","Interval":1000,"IsGameTime":true}]}}

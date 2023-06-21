@@ -182,6 +182,22 @@ namespace TaoTie
             }
             return list;
         }
+        
+        public static IEnumerable GetCharacterConfigIds()
+        {
+            var textAssets = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Config/CharacterConfigCategory.bytes");
+            ValueDropdownList<int> list = new ValueDropdownList<int>();
+            if(textAssets!=null)
+            {
+                CharacterConfigCategory character = ProtobufHelper.FromBytes<CharacterConfigCategory>(textAssets.bytes);
+                for (int i = 0; i < character.GetAllList().Count; i++)
+                {
+                    var item = character.GetAllList()[i];
+                    list.Add($"{item.Name}({item.Id})", item.Id);
+                }
+            }
+            return list;
+        }
         public static List<int> GetSceneGroupTriggerIds()
         {
             List<int> res = new List<int>();

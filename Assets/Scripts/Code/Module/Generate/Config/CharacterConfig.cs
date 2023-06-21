@@ -80,9 +80,24 @@ namespace TaoTie
 		/// <summary>Id</summary>
 		[NinoMember(1)]
 		public int Id { get; set; }
-		/// <summary>描述</summary>
+		/// <summary>名称</summary>
 		[NinoMember(2)]
+		public string Name { get; set; }
+		/// <summary>描述</summary>
+		[NinoMember(3)]
 		public string Desc { get; set; }
+		/// <summary>3D模型</summary>
+		[NinoMember(4)]
+		public int UnitId { get; set; }
+		/// <summary>全身立绘</summary>
+		[NinoMember(5)]
+		public string FullBody { get; set; }
+		/// <summary>半身立绘</summary>
+		[NinoMember(6)]
+		public string HalfBody { get; set; }
+		/// <summary>头像</summary>
+		[NinoMember(7)]
+		public string HeadIcon { get; set; }
 
 	}
 }
