@@ -10,16 +10,16 @@ namespace TaoTie
     /// UIManager.Instance.OpenWindow<T>();
     /// 提供UI操作、UI层级、UI消息、UI资源加载、UI调度、UI缓存等管理
     /// </summary>
-    public class UIManager:IManager
+    public partial class UIManager:IManager
     {
 
         public static UIManager Instance { get; private set; }
         
-        public Dictionary<string, UIWindow> windows;//所有存活的窗体  {ui_name:window}
-        public Dictionary<UILayerNames, LinkedList<string>> window_stack;//窗口记录队列
-        public int MaxOderPerWindow = 10;
-        public float ScreenSizeflag { get; set; }
-        public float WidthPadding;
+        private Dictionary<string, UIWindow> windows;//所有存活的窗体  {ui_name:window}
+        private Dictionary<UILayerNames, LinkedList<string>> windowStack;//窗口记录队列
+        public int MaxOderPerWindow { get; private set; }= 10;
+        public float ScreenSizeFlag { get; private set; }
+        public float WidthPadding{ get; private set; }
         
         #region override
 
@@ -27,13 +27,14 @@ namespace TaoTie
         {
             Instance = this;
             this.windows = new Dictionary<string, UIWindow>();
-            this.window_stack = new Dictionary<UILayerNames, LinkedList<string>>();
-            
+            this.windowStack = new Dictionary<UILayerNames, LinkedList<string>>();
+            InitLayer();
         }
 
         public void Destroy()
         {
             Instance = null;
+            DestroyLayer();
             OnDestroyAsync().Coroutine();
         }
 
@@ -42,8 +43,8 @@ namespace TaoTie
             await this.DestroyAllWindow();
             this.windows.Clear();
             this.windows = null;
-            this.window_stack.Clear();
-            this.window_stack = null;
+            this.windowStack.Clear();
+            this.windowStack = null;
             // InputWatcherComponent.Instance?.RemoveInputUIBaseView(this);
             Log.Info("UIManagerComponent Dispose");
         }
@@ -101,7 +102,7 @@ namespace TaoTie
         /// <returns></returns>
         public UIWindow GetTopWindow(UILayerNames layer)
         {
-            var wins = this.window_stack[layer];
+            var wins = this.windowStack[layer];
             if (wins.Count <= 0) return null;
             for (var node = wins.First; node!=null; node=node.Next)
             {
@@ -120,7 +121,7 @@ namespace TaoTie
         /// <returns></returns>
         public T GetWindow<T>( int active = 0) where T : UIBaseView
         {
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             if (this!=null&&this.windows!=null&&this.windows.TryGetValue(ui_name, out var target))
             {
                 if (active == 0 || active == (target.Active ? 1 : -1))
@@ -146,7 +147,7 @@ namespace TaoTie
         /// <typeparam name="T"></typeparam>
         public async ETTask CloseWindow<T>()
         {
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             await this.CloseWindow(ui_name);
         }
         /// <summary>
@@ -200,7 +201,7 @@ namespace TaoTie
         /// <typeparam name="T"></typeparam>
         public async ETTask DestroyWindow<T>() where T:UIBaseView
         {
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             await this.DestroyWindow(ui_name);
         }
         /// <summary>
@@ -247,7 +248,7 @@ namespace TaoTie
         public async ETTask<T> OpenWindow<T>( string path, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate
         {
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -271,7 +272,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1>
         {
 
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -295,7 +296,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1,P2>
         {
 
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -319,7 +320,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1,P2,P3>
         {
 
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -343,7 +344,7 @@ namespace TaoTie
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : UIBaseView,IOnCreate,IOnEnable<P1,P2,P3,P4>
         {
 
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -499,7 +500,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool IsActiveWindow<T>() where T : UIBaseView
         {
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name);
             if (target == null)
             {
@@ -562,7 +563,7 @@ namespace TaoTie
             if (uiTrans!=null)
             {
                 var layer = GetLayer(target.Layer);
-                uiTrans.transform.SetParent(layer.transform, false);
+                uiTrans.transform.SetParent(layer.RectTransform, false);
             }
             if (view is IOnWidthPaddingChange)
                 OnWidthPaddingChange(view);
@@ -703,7 +704,7 @@ namespace TaoTie
                 return;
             }
             var trans = go.transform;
-            trans.SetParent(GetLayer(target.Layer).transform, false);
+            trans.SetParent(GetLayer(target.Layer).RectTransform, false);
             trans.name = target.Name;
 			
             view.SetTransform(trans);
@@ -733,18 +734,18 @@ namespace TaoTie
         /// <typeparam name="T"></typeparam>
         public void MoveWindowToTop<T>() where T:UIBaseView
         {
-            string ui_name = TypeInfo<T>.Type.Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = this.GetWindow(ui_name,1);
             if (target == null)
             {
                return;
             }
             var layer_name = target.Layer;
-            if (this.window_stack[layer_name].Contains(ui_name))
+            if (this.windowStack[layer_name].Contains(ui_name))
             {
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
-            this.window_stack[layer_name].AddFirst(ui_name);
+            this.windowStack[layer_name].AddFirst(ui_name);
             InnerAddWindowToStack(target);
         }
         async ETTask __AddWindowToStack( UIWindow target)
@@ -752,12 +753,12 @@ namespace TaoTie
             var ui_name = target.Name;
             var layer_name = target.Layer;
             bool isFirst = true;
-            if (this.window_stack[layer_name].Contains(ui_name))
+            if (this.windowStack[layer_name].Contains(ui_name))
             {
                 isFirst = false;
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
-            this.window_stack[layer_name].AddFirst(ui_name);
+            this.windowStack[layer_name].AddFirst(ui_name);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true);
@@ -775,12 +776,12 @@ namespace TaoTie
             var ui_name = target.Name;
             var layer_name = target.Layer;
             bool isFirst = true;
-            if (this.window_stack[layer_name].Contains(ui_name))
+            if (this.windowStack[layer_name].Contains(ui_name))
             {
                 isFirst = false;
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
-            this.window_stack[layer_name].AddFirst(ui_name);
+            this.windowStack[layer_name].AddFirst(ui_name);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1);
@@ -798,12 +799,12 @@ namespace TaoTie
             var ui_name = target.Name;
             var layer_name = target.Layer;
             bool isFirst = true;
-            if (this.window_stack[layer_name].Contains(ui_name))
+            if (this.windowStack[layer_name].Contains(ui_name))
             {
                 isFirst = false;
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
-            this.window_stack[layer_name].AddFirst(ui_name);
+            this.windowStack[layer_name].AddFirst(ui_name);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2);
@@ -821,12 +822,12 @@ namespace TaoTie
             var ui_name = target.Name;
             var layer_name = target.Layer;
             bool isFirst = true;
-            if (this.window_stack[layer_name].Contains(ui_name))
+            if (this.windowStack[layer_name].Contains(ui_name))
             {
                 isFirst = false;
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
-            this.window_stack[layer_name].AddFirst(ui_name);
+            this.windowStack[layer_name].AddFirst(ui_name);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2, p3);
@@ -844,12 +845,12 @@ namespace TaoTie
             var ui_name = target.Name;
             var layer_name = target.Layer;
             bool isFirst = true;
-            if (this.window_stack[layer_name].Contains(ui_name))
+            if (this.windowStack[layer_name].Contains(ui_name))
             {
                 isFirst = false;
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
-            this.window_stack[layer_name].AddFirst(ui_name);
+            this.windowStack[layer_name].AddFirst(ui_name);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2, p3, p4);
@@ -881,9 +882,9 @@ namespace TaoTie
         {
             var ui_name = target.Name;
             var layer_name = target.Layer;
-            if (this.window_stack.ContainsKey(layer_name))
+            if (this.windowStack.ContainsKey(layer_name))
             {
-                this.window_stack[layer_name].Remove(ui_name);
+                this.windowStack[layer_name].Remove(ui_name);
             }
             else
             {
@@ -901,7 +902,7 @@ namespace TaoTie
         public void SetWidthPadding(float value)
         {
             this.WidthPadding = value;
-            foreach (var layer in this.window_stack.Values)
+            foreach (var layer in this.windowStack.Values)
             {
                 if (layer != null)
                 {
@@ -931,7 +932,7 @@ namespace TaoTie
 
         public Camera GetUICamera()
         {
-            return UILayersManager.Instance.UICamera;
+            return UICamera;
         }
         
         public UIBaseView GetView(string ui_name)
@@ -946,7 +947,7 @@ namespace TaoTie
 
         public UILayer GetLayer(UILayerNames layer)
         {
-            if(UILayersManager.Instance.layers.TryGetValue(layer,out var res))
+            if(layers.TryGetValue(layer,out var res))
             {
                 return res;
             }

@@ -9,7 +9,7 @@ namespace TaoTie
 {
     public abstract class BaseEditorWindow<T> : OdinEditorWindow where T : class
     {
-        protected virtual string fileName => TypeInfo<T>.Name;
+        protected virtual string fileName => TypeInfo<T>.TypeName;
         protected virtual string folderPath => "Assets/AssetsPackage";
         private bool isJson;
 

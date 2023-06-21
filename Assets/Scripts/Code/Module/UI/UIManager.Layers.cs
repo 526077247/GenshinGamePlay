@@ -9,22 +9,14 @@ namespace TaoTie
         public int PlaneDistance;
         public int OrderInLayer;
     }
-    public class UILayersManager:IManager
+    public partial class UIManager
     {
-
-        public static UILayersManager Instance { get; private set; }
-        public string UIRootPath;//UIRoot路径
-        public string EventSystemPath;// EventSystem路径
-        public string UICameraPath;// UICamera路径
-		
-        public Dictionary<UILayerNames, UILayer> layers;//所有可用的层级
-		
-
-        public bool need_turn;
-        public Camera UICamera;
-        public Vector2 Resolution;
-
-        public GameObject gameObject;
+        
+        public Camera UICamera { get; private set; }
+        public Vector2 Resolution { get; private set; }
+        
+        private Dictionary<UILayerNames, UILayer> layers;//所有可用的层级
+        private GameObject gameObject;
 
         #region override
 
@@ -93,19 +85,19 @@ namespace TaoTie
             };
         }
         
-        public void Init()
+        private void InitLayer()
         {
             Instance = this;
             Log.Info("UILayersComponent Awake");
-            this.UIRootPath = "Global/UI";
-            this.EventSystemPath = "EventSystem";
-            this.UICameraPath = this.UIRootPath + "/UICamera";
-            this.gameObject = GameObject.Find(this.UIRootPath);
-            var event_system = GameObject.Find(this.EventSystemPath);
+            var UIRootPath = "Global/UI";
+            var EventSystemPath = "EventSystem";
+            var UICameraPath = UIRootPath + "/UICamera";
+            this.gameObject = GameObject.Find(UIRootPath);
+            var eventSystem = GameObject.Find(EventSystemPath);
             var transform = this.gameObject.transform;
-            this.UICamera = GameObject.Find(this.UICameraPath).GetComponent<Camera>();
+            this.UICamera = GameObject.Find(UICameraPath).GetComponent<Camera>();
             GameObject.DontDestroyOnLoad(this.gameObject);
-            GameObject.DontDestroyOnLoad(event_system);
+            GameObject.DontDestroyOnLoad(eventSystem);
             this.Resolution = new Vector2(Define.DesignScreen_Width, Define.DesignScreen_Height);//分辨率
             this.layers = new Dictionary<UILayerNames, UILayer>();
 
@@ -119,22 +111,21 @@ namespace TaoTie
                 };
                 var trans = go.transform;
                 trans.SetParent(transform, false);
-                UILayer new_layer = ManagerProvider.RegisterManager<UILayer,UILayerDefine,GameObject>(layer, go,layer.Name.ToString());
-                this.layers[layer.Name] = new_layer;
-                UIManager.Instance.window_stack[layer.Name] = new LinkedList<string>();
+                UILayer newLayer = ManagerProvider.RegisterManager<UILayer,UILayerDefine,GameObject>(layer, go,layer.Name.ToString());
+                this.layers[layer.Name] = newLayer;
+                windowStack[layer.Name] = new LinkedList<string>();
             }
 
             var flagx = (float)Define.DesignScreen_Width / (Screen.width > Screen.height ? Screen.width : Screen.height);
             var flagy = (float)Define.DesignScreen_Height / (Screen.width > Screen.height ? Screen.height : Screen.width);
-            UIManager.Instance.ScreenSizeflag = flagx > flagy ? flagx : flagy;
+            ScreenSizeFlag = flagx > flagy ? flagx : flagy;
         }
 
-        public void Destroy()
+        private void DestroyLayer()
         {
-            Instance = null;
             foreach (var item in this.layers)
             {
-                var obj = item.Value.transform.gameObject;
+                var obj = item.Value.GameObject;
                 GameObject.Destroy(obj);
             }
             this.layers.Clear();

@@ -72,7 +72,7 @@ namespace TaoTie
             {
                 text.text = showDmg.ToString();
                 Vector2 pt = CameraManager.Instance.MainCamera().WorldToScreenPoint(showPos) *
-                             UIManager.Instance.ScreenSizeflag;
+                             UIManager.Instance.ScreenSizeFlag;
                 rect.anchoredPosition = pt;
             }
         }

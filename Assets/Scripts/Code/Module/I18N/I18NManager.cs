@@ -11,8 +11,8 @@ namespace TaoTie
         public static I18NManager Instance;
         //语言类型枚举
 
-        public LangType curLangType { get; set; }
-        public Dictionary<string, string> i18nTextKeyDic;
+        public LangType CurLangType { get; private set; }
+        private Dictionary<string, string> i18nTextKeyDic;
 
         #region override
 
@@ -23,16 +23,16 @@ namespace TaoTie
             var lang = PlayerPrefs.GetInt(CacheKeys.CurLangType, -1);
             if (lang < 0)
             {
-                this.curLangType = Application.systemLanguage == SystemLanguage.Chinese
+                this.CurLangType = Application.systemLanguage == SystemLanguage.Chinese
                     ? LangType.Chinese
                     : LangType.English;
             }
             else
             {
-                this.curLangType = (LangType)lang;
+                this.CurLangType = (LangType)lang;
             }
             this.i18nTextKeyDic = new Dictionary<string, string>();
-            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.curLangType.ToString());
+            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
             for (int i = 0; i <res.GetAllList().Count; i++)
             {
                 var item = res.GetAllList()[i];
@@ -115,9 +115,9 @@ namespace TaoTie
             ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>();
             //修改当前语言
             PlayerPrefs.SetInt(CacheKeys.CurLangType, langType);
-            this.curLangType = (LangType)langType;
+            this.CurLangType = (LangType)langType;
             this.i18nTextKeyDic.Clear();
-            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.curLangType.ToString());
+            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
             for (int i = 0; i <res.GetAllList().Count; i++)
             {
                 var item = res.GetAllList()[i];

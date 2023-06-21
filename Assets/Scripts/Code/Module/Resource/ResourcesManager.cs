@@ -235,7 +235,7 @@ namespace TaoTie
                 {
                 }
             }
-            Log.Error($"反序列化{TypeInfo<T>.Name}失败！{path}");
+            Log.Error($"反序列化{TypeInfo<T>.TypeName}失败！{path}");
             return default;
         }
     }

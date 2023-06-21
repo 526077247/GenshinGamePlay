@@ -8,6 +8,6 @@ namespace TaoTie
 
         public static readonly int HashCode = typeof(T).GetHashCode();
 
-        public static readonly string Name = typeof(T).Name;
+        public static readonly string TypeName = typeof(T).Name;
     }
 }

@@ -9,8 +9,6 @@ namespace TaoTie
         public Action OnLanguageChangeEvt;
         public Func<string, string> GetValueByKey;
 
-        public Func<int, string> GetValueById;
-
         /// <summary>
         /// 通过中文本获取多语言文本(还没实现,先用根据ID获取的重载)
         /// </summary>

@@ -22,7 +22,6 @@ namespace TaoTie
                 
                 ManagerProvider.RegisterManager<I18NManager>();
                 ManagerProvider.RegisterManager<UIManager>();
-                ManagerProvider.RegisterManager<UILayersManager>();
 
                 ManagerProvider.RegisterManager<CameraManager>();
                 ManagerProvider.RegisterManager<SceneManager>();
