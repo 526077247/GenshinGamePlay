@@ -30,7 +30,7 @@ namespace TaoTie
         }
 
         //当手动修改text的时候，需要将mono的i18textcomponent给禁用掉
-        void __DisableI18Component(bool enable = false)
+        void DisableI18Component(bool enable = false)
         {
             this.ActivatingComponent();
             if (this.i18nCompTouched != null)
@@ -49,7 +49,7 @@ namespace TaoTie
 
         public void SetText( string text)
         {
-            this.__DisableI18Component();
+            this.DisableI18Component();
             this.textKey = null;
             this.text.text = text;
         }
@@ -60,7 +60,7 @@ namespace TaoTie
                 this.SetText("");
                 return;
             }
-            this.__DisableI18Component();
+            this.DisableI18Component();
             this.textKey = key;
             this.SetI18NText(null);
         }
@@ -71,7 +71,7 @@ namespace TaoTie
                 this.SetText("");
                 return;
             }
-            this.__DisableI18Component();
+            this.DisableI18Component();
             this.textKey = key;
             this.SetI18NText(paras);
         }
@@ -84,7 +84,7 @@ namespace TaoTie
             }
             else
             {
-                this.__DisableI18Component();
+                this.DisableI18Component();
                 this.keyParams = paras;
                 if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && paras != null)
                     text = string.Format(text, paras);

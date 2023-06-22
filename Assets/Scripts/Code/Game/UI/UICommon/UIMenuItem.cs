@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public MenuPara Para;
         public int Index;
-        public Action<int, int> __onClick;
+        public Action<int, int> onClick;
 
         public UIText Text;
         public UIImage TabFocus;
@@ -22,7 +22,7 @@ namespace TaoTie
             Btn = AddComponent<UIPointerClick>();
             Btn.SetOnClick(() =>
             {
-                __onClick?.Invoke(Para.Id, Index);
+                onClick?.Invoke(Para.Id, Index);
             });
         }
 
@@ -30,7 +30,7 @@ namespace TaoTie
         
         public void SetData(MenuPara para, int index, Action<int, int> onClick, bool isActive = false)
         {
-            __onClick = onClick;
+            this.onClick = onClick;
             Index = index;
             Para = para;
             Text.SetActive(!string.IsNullOrEmpty(para.Name));

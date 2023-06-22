@@ -11,30 +11,30 @@ namespace TaoTie
     {
         const int DEFAULT_CAPACITY = 255;
 
-        int _capacity;
-        ReaderWriterLockSlim _locker;
-        Dictionary<TKey, TValue> _dictionary;
-        LinkedList<TKey> _linkedList;
-        Func<TKey, TValue, bool> check_can_pop_func;
-        Action<TKey, TValue> pop_cb;
+        int capacity;
+        ReaderWriterLockSlim locker;
+        Dictionary<TKey, TValue> dictionary;
+        LinkedList<TKey> linkedList;
+        Func<TKey, TValue, bool> checkCanPopFunc;
+        Action<TKey, TValue> popCb;
         public LruCache() : this(DEFAULT_CAPACITY) { }
 
         public LruCache(int capacity)
         {
-            _locker = new ReaderWriterLockSlim();
-            _capacity = capacity > 0 ? capacity : DEFAULT_CAPACITY;
-            _dictionary = new Dictionary<TKey, TValue>(DEFAULT_CAPACITY);
-            _linkedList = new LinkedList<TKey>();
+            locker = new ReaderWriterLockSlim();
+            this.capacity = capacity > 0 ? capacity : DEFAULT_CAPACITY;
+            dictionary = new Dictionary<TKey, TValue>(DEFAULT_CAPACITY);
+            linkedList = new LinkedList<TKey>();
         }
 
         public void SetCheckCanPopCallback(Func<TKey,TValue, bool> func)
         {
-            check_can_pop_func = func;
+            checkCanPopFunc = func;
         }
 
         public void SetPopCallback(Action<TKey, TValue> func)
         {
-            pop_cb = func;
+            popCb = func;
         }
 
         public TValue this[TKey t]
@@ -53,84 +53,84 @@ namespace TaoTie
 
         public void Set(TKey key, TValue value)
         {
-            _locker.EnterWriteLock();
+            locker.EnterWriteLock();
             try
             {
-                if(check_can_pop_func!=null)
-                    __MakeFreeSpace();
-                _dictionary[key] = value;
-                _linkedList.Remove(key);
-                _linkedList.AddFirst(key);
-                if (check_can_pop_func==null&&_linkedList.Count > _capacity)
+                if(checkCanPopFunc!=null)
+                    MakeFreeSpace();
+                dictionary[key] = value;
+                linkedList.Remove(key);
+                linkedList.AddFirst(key);
+                if (checkCanPopFunc==null&&linkedList.Count > capacity)
                 {
-                    _dictionary.Remove(_linkedList.Last.Value);
-                    _linkedList.RemoveLast();
+                    dictionary.Remove(linkedList.Last.Value);
+                    linkedList.RemoveLast();
                 }
             }
-            finally { _locker.ExitWriteLock(); }
+            finally { locker.ExitWriteLock(); }
         }
         public Dictionary<TKey, TValue> GetAll()
         {
-            return _dictionary as Dictionary<TKey, TValue>;
+            return dictionary as Dictionary<TKey, TValue>;
         }
         public void Remove(TKey key)
         {
-            _locker.EnterWriteLock();
+            locker.EnterWriteLock();
             try
             {
-                _dictionary.Remove(key);
-                _linkedList.Remove(key);
+                dictionary.Remove(key);
+                linkedList.Remove(key);
             }
-            finally { _locker.ExitWriteLock(); }
+            finally { locker.ExitWriteLock(); }
         }
 
         public bool TryOnlyGet(TKey key, out TValue value)
         {
-            bool b = _dictionary.TryGetValue(key, out value);
+            bool b = dictionary.TryGetValue(key, out value);
             return b;
         }
         public bool TryGet(TKey key, out TValue value)
         {
-            _locker.EnterUpgradeableReadLock();
+            locker.EnterUpgradeableReadLock();
             try
             {
-                bool b = _dictionary.TryGetValue(key, out value);
+                bool b = dictionary.TryGetValue(key, out value);
                 if (b)
                 {
-                    _locker.EnterWriteLock();
+                    locker.EnterWriteLock();
                     try
                     {
-                        _linkedList.Remove(key);
-                        _linkedList.AddFirst(key);
+                        linkedList.Remove(key);
+                        linkedList.AddFirst(key);
                     }
-                    finally { _locker.ExitWriteLock(); }
+                    finally { locker.ExitWriteLock(); }
                 }
                 return b;
             }
             catch { throw; }
-            finally { _locker.ExitUpgradeableReadLock(); }
+            finally { locker.ExitUpgradeableReadLock(); }
         }
 
         public bool ContainsKey(TKey key)
         {
-            _locker.EnterReadLock();
+            locker.EnterReadLock();
             try
             {
-                return _dictionary.ContainsKey(key);
+                return dictionary.ContainsKey(key);
             }
-            finally { _locker.ExitReadLock(); }
+            finally { locker.ExitReadLock(); }
         }
 
         public int Count
         {
             get
             {
-                _locker.EnterReadLock();
+                locker.EnterReadLock();
                 try
                 {
-                    return _dictionary.Count;
+                    return dictionary.Count;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally { locker.ExitReadLock(); }
             }
         }
 
@@ -138,33 +138,33 @@ namespace TaoTie
         {
             get
             {
-                _locker.EnterReadLock();
+                locker.EnterReadLock();
                 try
                 {
-                    return _capacity;
+                    return capacity;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally { locker.ExitReadLock(); }
             }
             set
             {
-                _locker.EnterUpgradeableReadLock();
+                locker.EnterUpgradeableReadLock();
                 try
                 {
-                    if (value > 0 && _capacity != value)
+                    if (value > 0 && capacity != value)
                     {
-                        _locker.EnterWriteLock();
+                        locker.EnterWriteLock();
                         try
                         {
-                            _capacity = value;
-                            while (_linkedList.Count > _capacity)
+                            capacity = value;
+                            while (linkedList.Count > capacity)
                             {
-                                _linkedList.RemoveLast();
+                                linkedList.RemoveLast();
                             }
                         }
-                        finally { _locker.ExitWriteLock(); }
+                        finally { locker.ExitWriteLock(); }
                     }
                 }
-                finally { _locker.ExitUpgradeableReadLock(); }
+                finally { locker.ExitUpgradeableReadLock(); }
             }
         }
 
@@ -172,12 +172,12 @@ namespace TaoTie
         {
             get
             {
-                _locker.EnterReadLock();
+                locker.EnterReadLock();
                 try
                 {
-                    return _dictionary.Keys;
+                    return dictionary.Keys;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally { locker.ExitReadLock(); }
             }
         }
 
@@ -185,40 +185,41 @@ namespace TaoTie
         {
             get
             {
-                _locker.EnterReadLock();
+                locker.EnterReadLock();
                 try
                 {
-                    return _dictionary.Values;
+                    return dictionary.Values;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally { locker.ExitReadLock(); }
             }
         }
         //remotes elements to provide enough memory
         //returns last removed element or nil
-        void __MakeFreeSpace() {
-            var key = _linkedList.Last;
+        void MakeFreeSpace() 
+        {
+            var key = linkedList.Last;
 
             var max_check_free_times = 10;// max check free times for avoid no tuple can free cause iterator much times;
-            var cur_check_free_time = 0;
+            var curCheckFreeTime = 0;
 
 
-            while(_linkedList.Count + 1 > DEFAULT_CAPACITY){
+            while(linkedList.Count + 1 > DEFAULT_CAPACITY){
                  if (key==null) break;
 
                 var tuple_prev = key.Previous;
-                if (check_can_pop_func == null || check_can_pop_func(key.Value, _dictionary[key.Value]))
+                if (checkCanPopFunc == null || checkCanPopFunc(key.Value, dictionary[key.Value]))
                 {
                     //can pop
-                    var value = _dictionary[key.Value];
-                    _dictionary.Remove(key.Value);
-                    _linkedList.Remove(key.Value);
-                    pop_cb?.Invoke(key.Value, value);
+                    var value = dictionary[key.Value];
+                    dictionary.Remove(key.Value);
+                    linkedList.Remove(key.Value);
+                    popCb?.Invoke(key.Value, value);
                 }
                 else
                 {
                     //the host say cannot pop
-                    cur_check_free_time ++;
-                    if (cur_check_free_time > max_check_free_times)
+                    curCheckFreeTime ++;
+                    if (curCheckFreeTime > max_check_free_times)
                     {
                         //lru cache detect check_free time is too much, please check code
                         break;
@@ -231,20 +232,20 @@ namespace TaoTie
         
         public void Clear()
         {
-            _dictionary.Clear();
-            _linkedList.Clear();
+            dictionary.Clear();
+            linkedList.Clear();
         }
         
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var item in _dictionary)
+            foreach (var item in dictionary)
             {
                 yield return item;
             }
         }
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            foreach (var item in _dictionary)
+            foreach (var item in dictionary)
             {
                 yield return item;
             }

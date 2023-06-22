@@ -483,7 +483,7 @@ namespace TaoTie
 				{
 					if (count <= 0)
 					{
-						Log.Error("__goInstCountCache[path] must > 0");
+						Log.Error("goInstCountCache[path] must > 0");
 					}
 					else
 					{

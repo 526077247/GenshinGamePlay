@@ -19,7 +19,7 @@ namespace TaoTie
 		public List<MenuPara> Paras;
 		public UIMenuItem[] UIMenuItems;
 		public int ActiveIndex;
-		public Action<MenuPara> __onActiveIndexChanged;
+		private Action<MenuPara> onActiveIndexChanged;
 		#region override
 		public void OnCreate()
 		{
@@ -51,7 +51,7 @@ namespace TaoTie
 
 		public void SetData(List<MenuPara> paras, Action<MenuPara> onActiveIndexChanged, int activeIndex = -1)
 		{
-			__onActiveIndexChanged = onActiveIndexChanged;
+			this.onActiveIndexChanged = onActiveIndexChanged;
 			Paras = paras;
 			UIMenuItems = new UIMenuItem[Paras.Count];
 			Space.SetListItemCount(Paras.Count);
@@ -66,7 +66,7 @@ namespace TaoTie
 				UIMenuItems[ActiveIndex].SetIsActive(false);
 			ActiveIndex = index;
 			UIMenuItems[ActiveIndex].SetIsActive(true);
-			__onActiveIndexChanged(Paras[index]);
+			onActiveIndexChanged(Paras[index]);
 		}
 	}
 }
