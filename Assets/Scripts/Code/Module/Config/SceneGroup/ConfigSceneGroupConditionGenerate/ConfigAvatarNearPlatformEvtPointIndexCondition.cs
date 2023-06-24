@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [TriggerType(typeof(ConfigHeroNearPlatformEvtTrigger))]
+    [TriggerType(typeof(ConfigAvatarNearPlatformEvtTrigger))]
     [NinoSerialize]
-    public partial class ConfigHeroNearPlatformEvtPointIndexCondition : ConfigSceneGroupCondition<HeroNearPlatformEvt>
+    public partial class ConfigAvatarNearPlatformEvtPointIndexCondition : ConfigSceneGroupCondition<AvatarNearPlatformEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
 #if UNITY_EDITOR
@@ -18,7 +18,7 @@ namespace TaoTie
         [NinoMember(2)]
         public Int32 Value;
 
-        public override bool IsMatch(HeroNearPlatformEvt obj, SceneGroup sceneGroup)
+        public override bool IsMatch(AvatarNearPlatformEvt obj, SceneGroup sceneGroup)
         {
             return IsMatch(Value, obj.PointIndex, Mode);
         }

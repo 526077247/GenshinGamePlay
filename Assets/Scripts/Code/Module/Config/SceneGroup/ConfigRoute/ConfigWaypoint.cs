@@ -27,7 +27,7 @@ namespace TaoTie
         [LabelText("有最终抵达事件")]
         [NinoMember(6)] public bool HasReachEvent;
         [LabelText("有角色靠近事件")][DisableIf(nameof(ReachStop))]
-        [NinoMember(7)] public bool HasHeroNearEvent;
+        [NinoMember(7)] public bool HasAvatarNearEvent;
         [LabelText("到达停止(默认有角色靠近事件)")][OnValueChanged(nameof(Reset))]
         [NinoMember(8)] public bool ReachStop;
         
@@ -51,7 +51,7 @@ namespace TaoTie
         {
             if (ReachStop)
             {
-                HasHeroNearEvent = true;
+                HasAvatarNearEvent = true;
             }
         }
     }

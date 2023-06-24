@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using YooAsset;
 
@@ -10,14 +11,14 @@ namespace TaoTie
 
         #region IManager
 
-        private Dictionary<ulong, ConfigSceneGroup> _dict;
-        private List<ConfigSceneGroup> _list;
+        private Dictionary<ulong, ConfigSceneGroup> dict;
+        private List<ConfigSceneGroup> list;
 
         public void Init()
         {
             Instance = this;
-            _list = new List<ConfigSceneGroup>();
-            _dict = new Dictionary<ulong, ConfigSceneGroup>();
+            list = new List<ConfigSceneGroup>();
+            dict = new Dictionary<ulong, ConfigSceneGroup>();
             var sceneGroups = YooAssets.GetAssetInfos("sceneGroup");
             for (int i = 0; i < sceneGroups.Length; i++)
             {
@@ -25,10 +26,10 @@ namespace TaoTie
                 if (op.AssetObject is TextAsset textAsset)
                 {
                     var item = JsonHelper.FromJson<ConfigSceneGroup>(textAsset.text);
-                    if (!_dict.ContainsKey(item.Id))
+                    if (!dict.ContainsKey(item.Id))
                     {
-                        _list.Add(item);
-                        _dict[item.Id] = item;
+                        list.Add(item);
+                        dict[item.Id] = item;
                     }
                     else
                     {
@@ -42,23 +43,30 @@ namespace TaoTie
         public void Destroy()
         {
             Instance = null;
-            _dict = null;
-            _list = null;
+            dict = null;
+            list = null;
         }
 
         #endregion
 
         public ConfigSceneGroup Get(ulong id)
         {
-            return _dict[id];
+            this.dict.TryGetValue(id, out ConfigSceneGroup item);
+
+            if (item == null)
+            {
+                throw new Exception($"配置找不到，配置表名: {nameof (ConfigSceneGroup)}，配置id: {id}");
+            }
+
+            return item;
         }
         public Dictionary<ulong, ConfigSceneGroup> GetAll()
         {
-            return _dict;
+            return dict;
         }
         public List<ConfigSceneGroup> GetAllList()
         {
-            return _list;
+            return list;
         }
     }
 }

@@ -53,6 +53,7 @@ namespace TaoTie
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();
             ManagerProvider.RegisterManager<ConfigAbilityCategory>();
+            ManagerProvider.RegisterManager<ConfigStoryCategory>();
             ManagerProvider.RegisterManager<CampManager>();
         }
     }

@@ -6,15 +6,17 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigStory
     {
-        [NinoMember(1)][LabelText("策划备注")]
+        [NinoMember(1)]
+        public ulong Id;
+        
+        [NinoMember(2)][LabelText("策划备注")]
         public string Remarks;
-
-        [NinoMember(2)] 
+        
+        [NinoMember(3)] 
         public ConfigStoryActor[] Actors;
             
-        [NinoMember(3)][HideReferenceObjectPicker]
+        [NinoMember(4)][HideReferenceObjectPicker]
         public ConfigStorySerialClip Clips = new ();
-        
         
     }
 }

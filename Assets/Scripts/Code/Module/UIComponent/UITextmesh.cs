@@ -131,7 +131,10 @@ namespace TaoTie
             ActivatingComponent();
             text.maxVisibleCharacters = count;
         }
-        
+        /// <summary>
+        /// 获取最后一个字符右下角坐标
+        /// </summary>
+        /// <returns></returns>
         public Vector3 GetLastCharacterLocalPosition()
         {
             ActivatingComponent();
@@ -144,7 +147,10 @@ namespace TaoTie
             var rect = text.rectTransform.rect;
             return new Vector3(-rect.width / 2, -rect.height / 2, 0);
         }
-        
+        /// <summary>
+        /// 获取指定字符右下角坐标
+        /// </summary>
+        /// <returns></returns>
         public Vector3 GetCharacterLocalPosition(int index)
         {
             ActivatingComponent();

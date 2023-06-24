@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using YooAsset;
 
@@ -10,14 +11,14 @@ namespace TaoTie
 
         #region IManager
 
-        private Dictionary<DecisionArchetype, ConfigAIDecisionTree> _dict;
+        private Dictionary<DecisionArchetype, ConfigAIDecisionTree> dict;
         private List<ConfigAIDecisionTree> _list;
 
         public void Init()
         {
             Instance = this;
             _list = new List<ConfigAIDecisionTree>();
-            _dict = new Dictionary<DecisionArchetype, ConfigAIDecisionTree>();
+            dict = new Dictionary<DecisionArchetype, ConfigAIDecisionTree>();
             var sceneGroups = YooAssets.GetAssetInfos("aiTree");
             for (int i = 0; i < sceneGroups.Length; i++)
             {
@@ -25,10 +26,10 @@ namespace TaoTie
                 if (op.AssetObject is TextAsset textAsset)
                 {
                     var item = JsonHelper.FromJson<ConfigAIDecisionTree>(textAsset.text);
-                    if (!_dict.ContainsKey(item.Type))
+                    if (!dict.ContainsKey(item.Type))
                     {
                         _list.Add(item);
-                        _dict[item.Type] = item;
+                        dict[item.Type] = item;
                     }
                 }
                 op.Release();
@@ -38,7 +39,7 @@ namespace TaoTie
         public void Destroy()
         {
             Instance = null;
-            _dict = null;
+            dict = null;
             _list = null;
         }
 
@@ -46,12 +47,18 @@ namespace TaoTie
 
         public ConfigAIDecisionTree Get(DecisionArchetype type)
         {
-            _dict.TryGetValue(type, out var res);
-            return res;
+            this.dict.TryGetValue(type, out ConfigAIDecisionTree item);
+
+            if (item == null)
+            {
+                throw new Exception($"配置找不到，配置表名: {nameof (ConfigAIDecisionTree)}，配置id: {type}");
+            }
+
+            return item;
         }
         public Dictionary<DecisionArchetype, ConfigAIDecisionTree> GetAll()
         {
-            return _dict;
+            return dict;
         }
         public List<ConfigAIDecisionTree> GetAllList()
         {

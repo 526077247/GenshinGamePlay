@@ -73,4 +73,14 @@ namespace YooAsset.Editor
 			       data.AssetPath.Contains("Common");
 		}
 	}
+	
+	[DisplayName("收集Config")]
+	public class CollectConfig : IFilterRule
+	{
+		public bool IsCollectAsset(FilterRuleData data)
+		{
+			var ext = Path.GetExtension(data.AssetPath);
+			return ext == ".bytes" || ext == ".json";
+		}
+	}
 }

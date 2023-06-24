@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -265,5 +266,25 @@ namespace TaoTie
         
         
         #endregion
+
+        public void ChangeCursorState(CursorLockMode mode,bool visible)
+        {
+            Cursor.lockState = mode;
+            Cursor.visible = visible;
+        }
+        
+        public void ResetCursorState()
+        {
+            if (curCameraState is BlenderCameraState blender)
+            {
+                Cursor.lockState = blender.To.Config.Mode;
+                Cursor.visible = blender.To.Config.VisibleCursor;
+            }
+            else if (curCameraState is NormalCameraState normal)
+            {
+                Cursor.lockState = normal.Config.Mode;
+                Cursor.visible = normal.Config.VisibleCursor;
+            }
+        }
     }
 }

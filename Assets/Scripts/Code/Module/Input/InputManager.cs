@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace TaoTie
 {
@@ -60,8 +61,11 @@ namespace TaoTie
 
         public void Update()
         {
-            if (IsPause) return;
             Array.Clear(keyStatus,0,(int)GameKeyCode.Max);
+            MouseScrollWheel = 0;
+            MouseAxisX = 0;
+            MouseAxisY = 0;
+            if (IsPause) return;
             for (int i= 0; i< (int)GameKeyCode.Max; ++i)
             {
                 KeyCode key = keySetMap[i];
@@ -122,5 +126,25 @@ namespace TaoTie
         {
             keySetMap[(int) key] = keyCode;
         }
+        
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+        public bool IsPointerOverGameObject(Vector2 mousePosition)
+        {       
+            //创建一个点击事件
+            PointerEventData eventData = new PointerEventData(EventSystem.current);
+            eventData.position = mousePosition;
+            List<RaycastResult> raycastResults = new List<RaycastResult>();
+            //向点击位置发射一条射线，检测是否点击UI
+            EventSystem.current.RaycastAll(eventData, raycastResults);
+            if (raycastResults.Count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+#endif
     }
 }

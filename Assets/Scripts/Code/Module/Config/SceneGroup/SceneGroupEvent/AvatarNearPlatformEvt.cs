@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public class HeroNearPlatformEvt: IEventBase
+    public class AvatarNearPlatformEvt: IEventBase
     {
         /// <summary>
         /// 靠近单位的actorid

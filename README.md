@@ -1,6 +1,6 @@
 # GenshinGamePlay
 
-参考原神的GamePlay框架，包括战斗、解谜、怪物AI，后续将加入剧情
+参考原神的GamePlay框架，包括战斗、解谜、怪物AI，剧情
 
 ## 目前完成效果
 动画文件有点问题，但是不影响测试效果。模型来源 [模之屋](https://www.aplaybox.com/details/model/MmroYfxfeCtc)
@@ -12,8 +12,7 @@
 ![怪物AI.gif](ReadMeRes%2FPreview3.gif)
 
 ## todo：
-1. 剧情演出
-2. 二进制序列化多态支持
+二进制序列化多态支持
 
 ## 导表工具
 打开 /Tools/ExcelExport/ExcelExport.sln 编译后可用

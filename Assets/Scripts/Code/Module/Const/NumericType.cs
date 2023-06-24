@@ -12,70 +12,70 @@ namespace TaoTie
             Log.Error($"{key}属性不存在");
             return -1;
         }
-        private static Dictionary<string, int> __Map;
+        private static Dictionary<string, int> map;
         public static Dictionary<string, int> Map
         {
             get
             {
-                if (__Map == null)
+                if (map == null)
                 {
-                    __Map = new Dictionary<string, int>();
-                    __Map.Add("AOI",AOI);
-                    __Map.Add("AOIBase",AOIBase);
-                    __Map.Add("Lv",Lv);
-                    __Map.Add("LvBase",LvBase);
-                    __Map.Add("Exp",Exp);
-                    __Map.Add("ExpBase",ExpBase);
-                    __Map.Add("Hp",Hp);
-                    __Map.Add("HpBase",HpBase);
-                    __Map.Add("MaxHp",MaxHp);
-                    __Map.Add("MaxHpBase",MaxHpBase);
-                    __Map.Add("MaxHpAdd",MaxHpAdd);
-                    __Map.Add("MaxHpPct",MaxHpPct);
-                    __Map.Add("MaxHpFinalAdd",MaxHpFinalAdd);
-                    __Map.Add("MaxHpFinalPct",MaxHpFinalPct);
-                    __Map.Add("HpReUp",HpReUp);
-                    __Map.Add("HpReUpBase",HpReUpBase);
-                    __Map.Add("HpReUpAdd",HpReUpAdd);
-                    __Map.Add("HpReUpPct",HpReUpPct);
-                    __Map.Add("HpReUpFinalAdd",HpReUpFinalAdd);
-                    __Map.Add("HpReUpFinalPct",HpReUpFinalPct);
-                    __Map.Add("Mp",Mp);
-                    __Map.Add("MpBase",MpBase);
-                    __Map.Add("MaxMp",MaxMp);
-                    __Map.Add("MaxMpBase",MaxMpBase);
-                    __Map.Add("MaxMpAdd",MaxMpAdd);
-                    __Map.Add("MaxMpPct",MaxMpPct);
-                    __Map.Add("MaxMpFinalAdd",MaxMpFinalAdd);
-                    __Map.Add("MaxMpFinalPct",MaxMpFinalPct);
-                    __Map.Add("MpReUp",MpReUp);
-                    __Map.Add("MpReUpBase",MpReUpBase);
-                    __Map.Add("MpReUpAdd",MpReUpAdd);
-                    __Map.Add("MpReUpPct",MpReUpPct);
-                    __Map.Add("MpReUpFinalAdd",MpReUpFinalAdd);
-                    __Map.Add("MpReUpFinalPct",MpReUpFinalPct);
-                    __Map.Add("Speed",Speed);
-                    __Map.Add("SpeedBase",SpeedBase);
-                    __Map.Add("SpeedAdd",SpeedAdd);
-                    __Map.Add("SpeedPct",SpeedPct);
-                    __Map.Add("SpeedFinalAdd",SpeedFinalAdd);
-                    __Map.Add("SpeedFinalPct",SpeedFinalPct);
-                    __Map.Add("ATK",ATK);
-                    __Map.Add("ATKBase",ATKBase);
-                    __Map.Add("ATKAdd",ATKAdd);
-                    __Map.Add("ATKPct",ATKPct);
-                    __Map.Add("ATKFinalAdd",ATKFinalAdd);
-                    __Map.Add("ATKFinalPct",ATKFinalPct);
-                    __Map.Add("DEF",DEF);
-                    __Map.Add("DEFBase",DEFBase);
-                    __Map.Add("DEFAdd",DEFAdd);
-                    __Map.Add("DEFPct",DEFPct);
-                    __Map.Add("DEFFinalAdd",DEFFinalAdd);
-                    __Map.Add("DEFFinalPct",DEFFinalPct);
-                    __Map.Add("EN",EN);
-                    __Map.Add("ENBase",ENBase);
+                    map = new Dictionary<string, int>();
+                    map.Add("AOI",AOI);
+                    map.Add("AOIBase",AOIBase);
+                    map.Add("Lv",Lv);
+                    map.Add("LvBase",LvBase);
+                    map.Add("Exp",Exp);
+                    map.Add("ExpBase",ExpBase);
+                    map.Add("Hp",Hp);
+                    map.Add("HpBase",HpBase);
+                    map.Add("MaxHp",MaxHp);
+                    map.Add("MaxHpBase",MaxHpBase);
+                    map.Add("MaxHpAdd",MaxHpAdd);
+                    map.Add("MaxHpPct",MaxHpPct);
+                    map.Add("MaxHpFinalAdd",MaxHpFinalAdd);
+                    map.Add("MaxHpFinalPct",MaxHpFinalPct);
+                    map.Add("HpReUp",HpReUp);
+                    map.Add("HpReUpBase",HpReUpBase);
+                    map.Add("HpReUpAdd",HpReUpAdd);
+                    map.Add("HpReUpPct",HpReUpPct);
+                    map.Add("HpReUpFinalAdd",HpReUpFinalAdd);
+                    map.Add("HpReUpFinalPct",HpReUpFinalPct);
+                    map.Add("Mp",Mp);
+                    map.Add("MpBase",MpBase);
+                    map.Add("MaxMp",MaxMp);
+                    map.Add("MaxMpBase",MaxMpBase);
+                    map.Add("MaxMpAdd",MaxMpAdd);
+                    map.Add("MaxMpPct",MaxMpPct);
+                    map.Add("MaxMpFinalAdd",MaxMpFinalAdd);
+                    map.Add("MaxMpFinalPct",MaxMpFinalPct);
+                    map.Add("MpReUp",MpReUp);
+                    map.Add("MpReUpBase",MpReUpBase);
+                    map.Add("MpReUpAdd",MpReUpAdd);
+                    map.Add("MpReUpPct",MpReUpPct);
+                    map.Add("MpReUpFinalAdd",MpReUpFinalAdd);
+                    map.Add("MpReUpFinalPct",MpReUpFinalPct);
+                    map.Add("Speed",Speed);
+                    map.Add("SpeedBase",SpeedBase);
+                    map.Add("SpeedAdd",SpeedAdd);
+                    map.Add("SpeedPct",SpeedPct);
+                    map.Add("SpeedFinalAdd",SpeedFinalAdd);
+                    map.Add("SpeedFinalPct",SpeedFinalPct);
+                    map.Add("ATK",ATK);
+                    map.Add("ATKBase",ATKBase);
+                    map.Add("ATKAdd",ATKAdd);
+                    map.Add("ATKPct",ATKPct);
+                    map.Add("ATKFinalAdd",ATKFinalAdd);
+                    map.Add("ATKFinalPct",ATKFinalPct);
+                    map.Add("DEF",DEF);
+                    map.Add("DEFBase",DEFBase);
+                    map.Add("DEFAdd",DEFAdd);
+                    map.Add("DEFPct",DEFPct);
+                    map.Add("DEFFinalAdd",DEFFinalAdd);
+                    map.Add("DEFFinalPct",DEFFinalPct);
+                    map.Add("EN",EN);
+                    map.Add("ENBase",ENBase);
                 }
-                return __Map;
+                return map;
             }
         }
 		public const int Max = 10000;

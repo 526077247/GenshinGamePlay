@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [TriggerType(typeof(ConfigHeroNearPlatformEvtTrigger))]
+    [TriggerType(typeof(ConfigAvatarNearPlatformEvtTrigger))]
     [NinoSerialize]
-    public partial class ConfigHeroNearPlatformEvtActorIdCondition : ConfigSceneGroupCondition<HeroNearPlatformEvt>
+    public partial class ConfigAvatarNearPlatformEvtIsMovingCondition : ConfigSceneGroupCondition<AvatarNearPlatformEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
 #if UNITY_EDITOR
@@ -16,14 +16,11 @@ namespace TaoTie
         [NinoMember(1)]
         public CompareMode Mode;
         [NinoMember(2)]
-#if UNITY_EDITOR
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
-#endif
-        public Int32 Value;
+        public Boolean Value;
 
-        public override bool IsMatch(HeroNearPlatformEvt obj, SceneGroup sceneGroup)
+        public override bool IsMatch(AvatarNearPlatformEvt obj, SceneGroup sceneGroup)
         {
-            return IsMatch(Value, obj.ActorId, Mode);
+            return IsMatch(Value, obj.IsMoving, Mode);
         }
 #if UNITY_EDITOR
         protected override bool CheckModeType<T>(T t, CompareMode mode)

@@ -28,8 +28,8 @@ namespace TaoTie
         {
             IsDispose = false;
             this.uiDamageView = uiDamageView;
-            string res_path = "UIGame/UIMain/Prefabs/UIFightText.prefab";
-            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(res_path);
+            string resPath = "UIGame/UIMain/Prefabs/UIFightText.prefab";
+            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(resPath);
             if (IsDispose) //加载过来已经被销毁了
             {
                 GameObjectPoolManager.Instance.RecycleGameObject(obj);

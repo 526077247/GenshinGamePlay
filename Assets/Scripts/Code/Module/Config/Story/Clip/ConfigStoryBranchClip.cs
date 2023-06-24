@@ -15,12 +15,18 @@ namespace TaoTie
     [LabelText("选择分支执行")][NinoSerialize]
     public class ConfigStoryBranchClip: ConfigStoryClip
     {
-        [NinoMember(10)]
+        [NinoMember(10)][NotNull]
         public ConfigStoryBranchClipItem[] Branchs;
 
-        public override ETTask Process()
+        public override async ETTask Process()
         {
-            throw new System.NotImplementedException();
+            var win = await UIManager.Instance.OpenWindow<UIBranchStoryDialog, ConfigStoryBranchClip>(
+                UIBranchStoryDialog.PrefabPath, this);
+            var index = await win.WaitChoose();
+            await UIManager.Instance.CloseWindow(win);
+            if (Branchs[index].Clip != null)
+                await Branchs[index].Clip.Process();
+            
         }
     }
 }

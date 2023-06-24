@@ -55,6 +55,7 @@ namespace TaoTie
         public async ETTask OnLeave()
         {
             await ETTask.CompletedTask;
+            RemoveManager<StorySystem>();
             RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
@@ -86,7 +87,7 @@ namespace TaoTie
             RegisterManager<AIManager,MapScene>(this);
 
             RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
-            
+            RegisterManager<StorySystem,SceneManagerProvider>(this);
             await UIManager.Instance.OpenWindow<UIDamageView>(UIDamageView.PrefabPath,UILayerNames.GameLayer);
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
             var selfGhc = Self.GetComponent<GameObjectHolderComponent>();

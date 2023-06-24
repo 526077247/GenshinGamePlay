@@ -14,7 +14,7 @@ namespace TaoTie
 
         public override string GetShowText()
         {
-            if (Others.TryGetValue(I18NManager.Instance.CurLangType, out var txt))
+            if (Others!=null && Others.TryGetValue(I18NManager.Instance.CurLangType, out var txt))
             {
                 return txt;
             }

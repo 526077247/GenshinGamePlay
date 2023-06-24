@@ -205,27 +205,27 @@ namespace TaoTie
 			HandleJumping();
 
 			//Calculate movement velocity;
-			Vector3 _velocity = Vector3.zero;
+			Vector3 velocity = Vector3.zero;
 			if (CurrentControllerState == ControllerState.Grounded)
-				_velocity = CalculateMovementVelocity();
+				velocity = CalculateMovementVelocity();
 
 			//If local momentum is used, transform momentum into world space first;
-			Vector3 _worldMomentum = momentum;
+			Vector3 worldMomentum = momentum;
 			if (useLocalMomentum)
-				_worldMomentum = transform.localToWorldMatrix * momentum;
+				worldMomentum = transform.localToWorldMatrix * momentum;
 
 			//Add current momentum to velocity;
-			_velocity += _worldMomentum;
+			velocity += worldMomentum;
 
 			//If player is grounded or sliding on a slope, extend mover's sensor range;
 			//This enables the player to walk up/down stairs and slopes without losing ground contact;
 			mover.SetExtendSensorRange(IsGrounded());
 
 			//Set mover velocity;		
-			mover.SetVelocity(_velocity);
+			mover.SetVelocity(velocity);
 
 			//Store velocity for next frame;
-			savedVelocity = _velocity;
+			savedVelocity = velocity;
 
 			//Save controller movement velocity;
 			savedMovementVelocity = CalculateMovementVelocity();
