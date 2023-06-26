@@ -105,21 +105,21 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectConfig
+        FilterRuleName: CollectAll
         AssetTags: sceneGroup
       - CollectPath: Assets/AssetsPackage/EditConfig/AITree
         CollectorGUID: 6f5b6adda8708184c8c0a605a13ff976
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectConfig
+        FilterRuleName: CollectAll
         AssetTags: aiTree
       - CollectPath: Assets/AssetsPackage/EditConfig/Abilities
         CollectorGUID: 01faf65e50fdfce43bacf9c213a3ef4a
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectConfig
+        FilterRuleName: CollectAll
         AssetTags: ability
       - CollectPath: Assets/AssetsPackage/EditConfig/ConfigCameras.json
         CollectorGUID: 21d9dc7b19a8e6d41bcf602d382c9fb4
@@ -140,5 +140,5 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectConfig
+        FilterRuleName: CollectAll
         AssetTags: story

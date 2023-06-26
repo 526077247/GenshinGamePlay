@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoSerialize][LabelText("输入状态修改")]
-    public class ConfigStoryChangeInputState: ConfigStoryClip
+    public partial class ConfigStoryChangeInputState: ConfigStoryClip
     {
         [NinoMember(10)][LabelText("开启输入状态")]
         public bool Active;
@@ -19,7 +19,7 @@ namespace TaoTie
         [NinoMember(13)][LabelText("显示光标")][ShowIf(nameof(EffectCursor))]
         public bool VisibleCursor = true;
 
-        public override async ETTask Process()
+        public override async ETTask Process(StorySystem storySystem)
         {
             if (EffectCursor)
             {

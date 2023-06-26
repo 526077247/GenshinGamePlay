@@ -34,3 +34,11 @@
 1. [Odin Inspector](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041) 编辑器扩展
 2. [SuperScrollView](https://assetstore.unity.com/packages/tools/gui/ugui-super-scrollview-86572) UI滑动列表扩展
 3. [Dynamic Bone](https://assetstore.unity.com/packages/tools/animation/dynamic-bone-16743) 动态骨骼
+
+## 使用文档
+0. [前置知识点](https://github.com/526077247/GenshinGamePlay/tree/master/Book/0.前置知识点.md)
+1. [AbilitySystem的战斗框架](https://github.com/526077247/GenshinGamePlay/tree/master/Book/1.AbilitySystem的战斗框架.md)
+2. [Camera控制](https://github.com/526077247/GenshinGamePlay/tree/master/Book/2.Camera控制.md)
+3. [SceneGroup机关、关卡](https://github.com/526077247/GenshinGamePlay/tree/master/Book/3.SceneGroup机关、关卡.md)
+4. [剧情](https://github.com/526077247/GenshinGamePlay/tree/master/Book/4.剧情.md)
+5. [AI框架](https://github.com/526077247/GenshinGamePlay/tree/master/Book/5.AI框架.md)

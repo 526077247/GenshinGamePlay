@@ -3,12 +3,12 @@ using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    public abstract class ConfigStoryClip
+    public abstract partial class ConfigStoryClip
     {
         [NinoMember(1)][LabelText("策划备注")]
         public string Remarks;
 
 
-        public abstract ETTask Process();
+        public abstract ETTask Process(StorySystem storySystem);
     }
 }

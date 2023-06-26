@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [LabelText("并行执行")][NinoSerialize]
-    public class ConfigStoryParallelClip: ConfigStoryClip
+    public partial class ConfigStoryParallelClip: ConfigStoryClip
     {
         [NinoMember(10)]
         public ConfigStoryClip[] Clips;
@@ -12,7 +12,7 @@ namespace TaoTie
         [NinoMember(11)][LabelText("等待所有子项执行完成")]
         public bool WaitAll = true;
 
-        public override async ETTask Process()
+        public override async ETTask Process(StorySystem storySystem)
         {
             if (Clips != null)
             {
@@ -20,7 +20,7 @@ namespace TaoTie
                 {
                     for (int i = 0; i < Clips.Length; i++)
                     {
-                        tasks.Add(Clips[i].Process());
+                        tasks.Add(Clips[i].Process(storySystem));
                     }
                     if (WaitAll)
                     {

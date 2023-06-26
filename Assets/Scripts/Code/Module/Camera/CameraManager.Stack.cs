@@ -20,14 +20,16 @@ namespace TaoTie
 
         private CameraState curCameraState;
 
-        public ConfigCameraBlender defaultBlend;
+        public ConfigCameraBlender DefaultBlend { get; private set; } 
+
+        public bool UserSetCursor { get; private set; }= false;
         
         private partial void AfterInit()
         {
             #region Config
 
             var config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("EditConfig/ConfigCameras");
-            defaultBlend = config.DefaultBlend;
+            DefaultBlend = config.DefaultBlend;
             defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();
             configs.Add(config.DefaultCamera.Id,config.DefaultCamera);
@@ -247,7 +249,7 @@ namespace TaoTie
         }
         
         /// <summary>
-        /// 创建Runner，请不要手动调用
+        /// 创建Runner，请不要手动调用, 使用<see cref="Create"/>创建
         /// </summary>
         /// <param name="config"></param>
         /// <typeparam name="T"></typeparam>
@@ -267,14 +269,16 @@ namespace TaoTie
         
         #endregion
 
-        public void ChangeCursorState(CursorLockMode mode,bool visible)
+        public void ChangeCursorState(CursorLockMode mode, bool visible)
         {
+            UserSetCursor = true;
             Cursor.lockState = mode;
             Cursor.visible = visible;
         }
         
         public void ResetCursorState()
         {
+            UserSetCursor = false;
             if (curCameraState is BlenderCameraState blender)
             {
                 Cursor.lockState = blender.To.Config.Mode;

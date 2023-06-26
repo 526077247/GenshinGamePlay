@@ -107,11 +107,17 @@ namespace TaoTie
         {
             if (data != null && !string.IsNullOrEmpty(filePath))
             {
+                BeforeSaveData();
                 var jStr = JsonHelper.ToJson(data);
                 File.WriteAllText(filePath, jStr);
                 AssetDatabase.Refresh();
                 ShowNotification(new GUIContent("保存Json成功"));
             }
+        }
+
+        protected virtual void BeforeSaveData()
+        {
+            
         }
 
         // [Button("保存(二进制)")]
@@ -120,6 +126,7 @@ namespace TaoTie
         // {
         //     if (data != null && !string.IsNullOrEmpty(filePath))
         //     {
+        //         BeforeSaveData();
         //         var bytes = ProtobufHelper.ToBytes(data);
         //         File.WriteAllBytes(filePath, bytes);
         //         AssetDatabase.Refresh();

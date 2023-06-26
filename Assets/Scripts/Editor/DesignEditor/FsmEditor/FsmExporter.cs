@@ -123,7 +123,7 @@ namespace TaoTie
             FileInfo[] fileInfos = dirInfo.GetFiles("*.playable", SearchOption.TopDirectoryOnly);
             foreach (FileInfo fileInfo in fileInfos)
             {
-                ConfigFsmTimeline timeline = TimelineSerializer.GetFromTimeline(Path.Combine(path, fileInfo.Name));
+                ConfigFsmTimeline timeline = TimelineSerializer.GetFsmFromTimeline(Path.Combine(path, fileInfo.Name));
                 fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
             }
         }

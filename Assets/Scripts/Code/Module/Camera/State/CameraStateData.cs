@@ -61,7 +61,14 @@ namespace TaoTie
             // Up = default;
             // Forward = default;
             Position = Vector3.Lerp(from.Position, to.Position, lerpVal);
-            Orientation = Quaternion.Lerp(from.Orientation, to.Orientation, lerpVal);
+            if (Quaternion.Dot(from.Orientation, to.Orientation) < Quaternion.kEpsilon)
+            {
+                Orientation = from.Orientation;
+            }
+            else
+            {
+                Orientation = Quaternion.Lerp(from.Orientation, to.Orientation, lerpVal);
+            }
             // LookAt = default;
             // TargetForward = default;
         }

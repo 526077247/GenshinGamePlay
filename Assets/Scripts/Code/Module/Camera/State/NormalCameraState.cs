@@ -56,6 +56,7 @@ namespace TaoTie
         public override void OnEnter()
         {
             base.OnEnter();
+            if(CameraManager.Instance.UserSetCursor) return;
             Cursor.visible = Config.VisibleCursor;
             Cursor.lockState = Config.Mode;
         }
@@ -97,9 +98,9 @@ namespace TaoTie
             //this
             target = null;
             follow = null;
-            body.Dispose();
+            body?.Dispose();
             body = null;
-            head.Dispose();
+            head?.Dispose();
             head = null;
             if (others != null)
             {

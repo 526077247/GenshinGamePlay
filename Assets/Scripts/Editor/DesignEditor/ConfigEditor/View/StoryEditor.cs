@@ -32,5 +32,40 @@ namespace TaoTie
             }
             return false;
         }
+
+        protected override void BeforeSaveData()
+        {
+            base.BeforeSaveData();
+            ProcessStoryClip(data.Clips);
+        }
+
+        private void ProcessStoryClip(ConfigStoryClip clip)
+        {
+            if (clip is ConfigStoryTimeLine timeLine)
+            {
+                TimelineSerializer.GetStoryFromTimeline(timeLine);
+            }
+            else if (clip is ConfigStoryParallelClip parallel)
+            {
+                for (int i = 0; i < parallel.Clips.Length; i++)
+                {
+                    ProcessStoryClip(parallel.Clips[i]);
+                }
+            }
+            else if (clip is ConfigStoryBranchClip branch)
+            {
+                for (int i = 0; i < branch.Branchs.Length; i++)
+                {
+                    ProcessStoryClip(branch.Branchs[i].Clip);
+                }
+            }
+            else if (clip is ConfigStorySerialClip serial)
+            {
+                for (int i = 0; i < serial.Clips.Length; i++)
+                {
+                    ProcessStoryClip(serial.Clips[i]);
+                }
+            }
+        }
     }
 }

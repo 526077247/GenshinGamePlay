@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoSerialize][LabelText("一般对话框")]
-    public class ConfigCommonDialogClip: ConfigStoryClip
+    public partial class ConfigCommonDialogClip: ConfigStoryClip
     {
         [NinoMember(10)]
         public ConfigStoryText Text;
@@ -19,7 +19,7 @@ namespace TaoTie
         [NinoMember(14)][LabelText("播完后关闭窗口")] 
         public bool CloseOnOver;
 
-        public override async ETTask Process()
+        public override async ETTask Process(StorySystem storySystem)
         {
             var win = await UIManager.Instance.OpenWindow<UICommonStoryDialog, ConfigCommonDialogClip>(
                 UICommonStoryDialog.PrefabPath, this);

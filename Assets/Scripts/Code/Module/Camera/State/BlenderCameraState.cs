@@ -36,7 +36,7 @@ namespace TaoTie
                 res.config = from.Config.Leave;
             }
             if (res.config == null)
-                res.config = CameraManager.Instance.defaultBlend;
+                res.config = CameraManager.Instance.DefaultBlend;
             
             res.IsOver = false;
             res.lerpFunc = EasingFunction.GetEasingFunction(res.config.Ease);
@@ -46,6 +46,7 @@ namespace TaoTie
         public override void OnEnter()
         {
             base.OnEnter();
+            if(CameraManager.Instance.UserSetCursor) return;
             Cursor.visible = To.Config.VisibleCursor;
             Cursor.lockState = To.Config.Mode;
         }
@@ -94,12 +95,12 @@ namespace TaoTie
             }
 
             if (config == null)
-                config = CameraManager.Instance.defaultBlend;
+                config = CameraManager.Instance.DefaultBlend;
             Priority = to.Priority;
             IsOver = false;
             lerpFunc = EasingFunction.GetEasingFunction(config.Ease);
             startlerpTime = GameTimerManager.Instance.GetTimeNow();
-            
+            if(CameraManager.Instance.UserSetCursor) return;
             Cursor.visible = To.Config.VisibleCursor;
             Cursor.lockState = To.Config.Mode;
         }
