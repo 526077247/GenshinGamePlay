@@ -13,6 +13,6 @@ namespace TaoTie
         [NinoMember(2)]
         public ConfigCamera[] Cameras;
         [NinoMember(3)] [HideReferenceObjectPicker]
-        public ConfigCameraBlender DefaultBlend = new ConfigCameraBlender();
+        public ConfigBlender DefaultBlend = new ConfigBlender();
     }
 }

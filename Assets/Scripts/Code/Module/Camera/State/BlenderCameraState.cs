@@ -5,7 +5,7 @@ namespace TaoTie
     public class BlenderCameraState: CameraState
     {
         public override bool IsBlenderState => true;
-        private ConfigCameraBlender config;
+        private ConfigBlender config;
 
         public NormalCameraState From { get; private set; }
         public NormalCameraState To { get; private set; }

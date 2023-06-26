@@ -20,7 +20,7 @@ namespace TaoTie
 
         private CameraState curCameraState;
 
-        public ConfigCameraBlender DefaultBlend { get; private set; } 
+        public ConfigBlender DefaultBlend { get; private set; } 
 
         public bool UserSetCursor { get; private set; }= false;
         
