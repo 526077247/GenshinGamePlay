@@ -1,19 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public class WeatherSystem: IManager, IUpdate
+    public class EnvironmentManager: IManager, IUpdate
     {
+        public static EnvironmentManager Instance { get; private set; }
         //游戏世界一天时间，换算成GameTime的总时长，下同
-        const int mDayTimeCount = 1200000;
+        const int mDayTimeCount = 1200_000;
         //早上开始时间
         const int mMorningTimeStart = 0;
         //中午开始时间
-        const int mNoonTimeStart = 100000;
+        const int mNoonTimeStart = 100_000;
         //下午开始时间
-        const int mAfterNoonTimeStart = 700000;
+        const int mAfterNoonTimeStart = 700_000;
         //晚上开始时间
-        const int mNightTimeStart = 800000;
+        const int mNightTimeStart = 800_000;
         
         private PriorityStack<EnvironmentRunner> envInfoStack;
         private Dictionary<long, EnvironmentRunner> envInfoMap;
@@ -22,7 +24,7 @@ namespace TaoTie
         private EnvironmentInfo preInfo;
         private EnvironmentInfo curInfo;
 
-        public ConfigBlender DefaultEasing;
+        public ConfigBlender DefaultBlend;
         
         public int DayTimeCount{ get; private set; }
         public int MorningTimeStart { get; private set; }
@@ -30,13 +32,29 @@ namespace TaoTie
         public int AfterNoonTimeStart{ get; private set; }
         public int NightTimeStart{ get; private set; }
         public long NowTime{ get; private set; }
-        
-        public bool InWater { get; set; }
-        
+
+        private Dictionary<int, ConfigEnvironment> configs;
         #region IManager
         
         public void Init()
         {
+            Instance = this;
+            #region Config
+            
+            var config = ResourcesManager.Instance.LoadConfig<ConfigEnvironments>("EditConfig/ConfigEnvironments");
+            DefaultBlend = config.DefaultBlend;
+            var defaultEnvironmentId = config.DefaultEnvironment.Id;
+            configs = new Dictionary<int, ConfigEnvironment>();
+            configs.Add(config.DefaultEnvironment.Id,config.DefaultEnvironment);
+            if (config.Environments != null)
+            {
+                for (int i = 0; i < config.Environments.Length; i++)
+                {
+                    configs.Add(config.Environments[i].Id,config.Environments[i]);
+                }
+            }
+            #endregion
+
             envInfoStack = new PriorityStack<EnvironmentRunner>();
             envInfoMap = new Dictionary<long, EnvironmentRunner>();
 
@@ -46,8 +64,7 @@ namespace TaoTie
             AfterNoonTimeStart = mAfterNoonTimeStart;
             NightTimeStart = mNightTimeStart;
             NowTime = GameTimerManager.Instance.GetTimeNow();
-
-            DefaultEasing = new ConfigBlender();
+            Create(defaultEnvironmentId, EnvironmentPriorityType.Default);
         }
 
         public void Destroy()
@@ -58,7 +75,9 @@ namespace TaoTie
             }
             envInfoStack = null;
             envInfoMap = null;
-            DefaultEasing = null;
+            DefaultBlend = null;
+            configs = null;
+            Instance = null;
         }
         
         public void Update()
@@ -99,7 +118,7 @@ namespace TaoTie
                         envInfoStack.Pop().Dispose();
                     }
                     blender = CreateRunner(curRunner as NormalEnvironmentRunner, envInfoStack.Peek() as NormalEnvironmentRunner,
-                        false);
+                        true);
                     envInfoStack.Push(blender);
                     curRunner = blender;
                 }
@@ -160,7 +179,7 @@ namespace TaoTie
             //todo:
         }
 
-        private NormalEnvironmentRunner CreateRunner(EnvironmentConfig data, EnvironmentPriorityType type)
+        private NormalEnvironmentRunner CreateRunner(ConfigEnvironment data, EnvironmentPriorityType type)
         {
             NormalEnvironmentRunner runner = NormalEnvironmentRunner.Create(data, type, this);
             envInfoMap.Add(runner.Id,runner);
@@ -175,8 +194,8 @@ namespace TaoTie
             return runner;
         }
         
-        private DayEnvironmentRunner CreateRunner(EnvironmentConfig morning,EnvironmentConfig noon,EnvironmentConfig afternoon,
-            EnvironmentConfig night,EnvironmentPriorityType priority)
+        private DayEnvironmentRunner CreateRunner(ConfigEnvironment morning,ConfigEnvironment noon,ConfigEnvironment afternoon,
+            ConfigEnvironment night,EnvironmentPriorityType priority)
         {
             DayEnvironmentRunner runner = DayEnvironmentRunner.Create(morning, noon,afternoon,night,priority,this);
             envInfoMap.Add(runner.Id,runner);
@@ -186,21 +205,27 @@ namespace TaoTie
         /// <summary>
         /// 创建环境
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="id"></param>
         /// <param name="priority"></param>
-        public long Create(EnvironmentConfig data, EnvironmentPriorityType priority)
+        public long Create(int id, EnvironmentPriorityType priority)
         {
+            var data = Get(id);
             var res = CreateRunner(data, priority);
             envInfoStack.Push(res);
             return res.Id;
         }
+
         /// <summary>
         /// 创建日夜循环环境
         /// </summary>
-        public long CreateDayNight(EnvironmentConfig morning,EnvironmentConfig noon,EnvironmentConfig afternoon,
-            EnvironmentConfig night, EnvironmentPriorityType priority = EnvironmentPriorityType.DayNight)
+        public long CreateDayNight(int morningId, int noonId, int afternoonId, int nightId,
+            EnvironmentPriorityType priority = EnvironmentPriorityType.DayNight)
         {
-            var res = CreateRunner(morning, noon,afternoon,night,priority);
+            var morning = Get(morningId);
+            var noon = Get(noonId);
+            var afternoon = Get(afternoonId);
+            var night = Get(nightId);
+            var res = CreateRunner(morning, noon, afternoon, night, priority);
             envInfoStack.Push(res);
             return res.Id;
         }
@@ -212,7 +237,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool Remove(long id)
         {
-            if (envInfoMap.TryGetValue(id, out var info) && info.IsOver)
+            if (envInfoMap.TryGetValue(id, out var info) && !info.IsOver)
             {
                 info.IsOver = true;
                 
@@ -243,6 +268,18 @@ namespace TaoTie
         public void RemoveFromMap(long id)
         {
             envInfoMap.Remove(id);
+        }
+
+        private ConfigEnvironment Get(int id)
+        {
+            this.configs.TryGetValue(id, out ConfigEnvironment item);
+
+            if (item == null)
+            {
+                throw new Exception($"配置找不到，配置表名: {nameof (ConfigEnvironment)}，配置id: {id}");
+            }
+
+            return item;
         }
     }
 }

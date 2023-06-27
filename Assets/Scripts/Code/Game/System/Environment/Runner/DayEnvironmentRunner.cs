@@ -2,40 +2,40 @@
 {
     public class DayEnvironmentRunner:NormalEnvironmentRunner
     {
-        private EnvironmentConfig[] datas;
+        private ConfigEnvironment[] datas;
         private int[] dayTimes;
         private int[] dayHalfInterval;
         private DayTimeType daytimetype = DayTimeType.None;
         private EasingFunction.Function lerpFunc;
-        public static DayEnvironmentRunner Create(EnvironmentConfig morning,EnvironmentConfig noon,EnvironmentConfig afternoon,
-            EnvironmentConfig night,EnvironmentPriorityType priority,WeatherSystem weatherSystem)
+        public static DayEnvironmentRunner Create(ConfigEnvironment morning,ConfigEnvironment noon,ConfigEnvironment afternoon,
+            ConfigEnvironment night,EnvironmentPriorityType priority,EnvironmentManager environmentManager)
         {  
             DayEnvironmentRunner res = ObjectPool.Instance.Fetch<DayEnvironmentRunner>();
-            res.weatherSystem = weatherSystem;
+            res.environmentManager = environmentManager;
             res.Id = IdGenerater.Instance.GenerateId();
             res.datas = new[] {morning, noon, afternoon, night};
             res.Priority = (int)priority;
             res.dayTimes = new[]
             {
-                weatherSystem.MorningTimeStart,
-                weatherSystem.NoonTimeStart, 
-                weatherSystem.AfterNoonTimeStart,
-                weatherSystem.NightTimeStart
+                environmentManager.MorningTimeStart,
+                environmentManager.NoonTimeStart, 
+                environmentManager.AfterNoonTimeStart,
+                environmentManager.NightTimeStart
             };
             res.dayHalfInterval = new[]
             {
-                weatherSystem.DayTimeCount + weatherSystem.NoonTimeStart -
-                weatherSystem.MorningTimeStart,
-                weatherSystem.DayTimeCount + weatherSystem.AfterNoonTimeStart -
-                weatherSystem.NoonTimeStart,
-                weatherSystem.DayTimeCount + weatherSystem.NightTimeStart -
-                weatherSystem.AfterNoonTimeStart,
-                weatherSystem.DayTimeCount + weatherSystem.MorningTimeStart -
-                weatherSystem.NightTimeStart,
+                environmentManager.DayTimeCount + environmentManager.NoonTimeStart -
+                environmentManager.MorningTimeStart,
+                environmentManager.DayTimeCount + environmentManager.AfterNoonTimeStart -
+                environmentManager.NoonTimeStart,
+                environmentManager.DayTimeCount + environmentManager.NightTimeStart -
+                environmentManager.AfterNoonTimeStart,
+                environmentManager.DayTimeCount + environmentManager.MorningTimeStart -
+                environmentManager.NightTimeStart,
             };
             for (int i = 0; i < res.dayHalfInterval.Length; i++)
             {
-                res.dayHalfInterval[i] %= weatherSystem.DayTimeCount;
+                res.dayHalfInterval[i] %= environmentManager.DayTimeCount;
                 res.dayHalfInterval[i] /= 2;
             }
 
@@ -58,7 +58,7 @@
             DayTimeType nextType= DayTimeType.None;
             for (int i = dayTimes.Length-1; i >=0 ; i--)
             {
-                if (weatherSystem.NowTime>=dayTimes[i])
+                if (environmentManager.NowTime>=dayTimes[i])
                 {
                     nextType = (DayTimeType) i;
                     break;
@@ -75,7 +75,7 @@
         private void LerpDatTime()
         {
             int dayTimeIndex = (int) daytimetype;
-            float progress = weatherSystem.NowTime - dayTimes[dayTimeIndex];
+            float progress = environmentManager.NowTime - dayTimes[dayTimeIndex];
             var ifLeftHalf = progress < dayHalfInterval[dayTimeIndex];
             int leftIndex;
             int rightIndex;
@@ -104,7 +104,7 @@
 
         public override void Dispose()
         {
-            weatherSystem.RemoveFromMap(Id);
+            environmentManager.RemoveFromMap(Id);
             //base
             Id = default;
             Priority = default;

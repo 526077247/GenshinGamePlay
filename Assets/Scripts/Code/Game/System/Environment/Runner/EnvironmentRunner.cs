@@ -10,7 +10,7 @@ namespace TaoTie
 
         public EnvironmentInfo Data;
 
-        protected WeatherSystem weatherSystem;
+        protected EnvironmentManager environmentManager;
         
         public virtual void Update(){}
 

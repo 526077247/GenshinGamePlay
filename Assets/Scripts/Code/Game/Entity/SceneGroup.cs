@@ -91,6 +91,13 @@ namespace TaoTie
             this.suite = null;
             this.addOnSuiteConfig = null;
 
+            foreach (var item in this.activeEnv)
+            {
+                EnvironmentManager.Instance?.Remove(item.Value);
+            }
+
+            activeEnv = null;
+
             foreach (var item in this.actorEntities)
             {
                 Parent.Remove(item.Value);
@@ -140,15 +147,17 @@ namespace TaoTie
 
         public ConfigSceneGroup Config => ConfigSceneGroupCategory.Instance.Get(configId);
 
-        private Dictionary<int, ConfigSceneGroupZone> zones { get; set; }
+        private Dictionary<int, ConfigSceneGroupZone> zones;
 
-        private Dictionary<int, ConfigSceneGroupActor> actors { get; set; }
+        private Dictionary<int, ConfigSceneGroupActor> actors;
 
-        private Dictionary<int, ConfigRoute> routes { get; set; }
+        private Dictionary<int, ConfigRoute> routes;
 
-        private Dictionary<int, ConfigSceneGroupTrigger> triggers { get; set; }
+        private Dictionary<int, ConfigSceneGroupTrigger> triggers;
 
-        private Dictionary<int, ConfigSceneGroupSuites> suite { get; set; }
+        private Dictionary<int, ConfigSceneGroupSuites> suite;
+        
+        private Dictionary<string, long> activeEnv;
 
 
         public ConfigSceneGroupSuites CurGroupSuitesConfig
@@ -178,7 +187,7 @@ namespace TaoTie
         private void AfterLoadFromDB()
         {
             this.Variable.onValueChange += this.OnVariableChanged;
-
+            this.activeEnv = new Dictionary<string, long>();
             this.actors = new Dictionary<int, ConfigSceneGroupActor>(this.Config.Actors.Length);
             this.routes = new Dictionary<int, ConfigRoute>(this.Config.Route != null ? this.Config.Route.Length : 0);
             this.triggers = new Dictionary<int, ConfigSceneGroupTrigger>(this.Config.Triggers.Length);
@@ -627,6 +636,28 @@ namespace TaoTie
             }
 
             return res;
+        }
+
+        #endregion
+
+        #region 环境
+        
+        public void PushEnvironment(int configId, EnvironmentPriorityType type, string key)
+        {
+            if (!activeEnv.ContainsKey(key))
+            {
+                var id = EnvironmentManager.Instance.Create(configId, type);
+                if (id != 0) activeEnv.Add(key, id);
+            }
+        }
+        
+        public void RemoveEnvironment(string key)
+        {
+            if (activeEnv.TryGetValue(key, out var id))
+            {
+                EnvironmentManager.Instance.Remove(id);
+                activeEnv.Remove(key);
+            }
         }
 
         #endregion

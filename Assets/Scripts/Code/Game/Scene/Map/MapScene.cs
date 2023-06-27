@@ -59,6 +59,7 @@ namespace TaoTie
             RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
+            RemoveManager<EnvironmentManager>();
             RemoveManager<GameTimerManager>();
         }
 
@@ -81,6 +82,8 @@ namespace TaoTie
         public virtual async ETTask OnSwitchSceneEnd()
         {
             RegisterManager<GameTimerManager>();
+            var envm = RegisterManager<EnvironmentManager>();
+            // envm.CreateDayNight();
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();

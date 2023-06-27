@@ -1,4 +1,6 @@
-﻿namespace TaoTie
+﻿using UnityEngine;
+
+namespace TaoTie
 {
     public class BlenderEnvironmentRunner: EnvironmentRunner
     {
@@ -13,13 +15,15 @@
         private EasingFunction.Function lerpFunc;
         
         public static BlenderEnvironmentRunner Create(NormalEnvironmentRunner from, NormalEnvironmentRunner to, 
-            bool isEnter, WeatherSystem weatherSystem)
+            bool isEnter, EnvironmentManager environmentManager)
         {
             BlenderEnvironmentRunner res = ObjectPool.Instance.Fetch<BlenderEnvironmentRunner>();
-            res.weatherSystem = weatherSystem;
+            res.environmentManager = environmentManager;
             res.Id = IdGenerater.Instance.GenerateId();
             res.From = from;
             res.To = to;
+            res.formData = from.Data;
+            res.toData = to.Data;
             res.Data = EnvironmentInfo.DeepClone(res.From.Data);
             res.Data.IsBlender = true;
             res.Priority = to.Priority;
@@ -32,10 +36,11 @@
                 res.config = from.Config.Leave;
             }
             if (res.config == null)
-                res.config = weatherSystem.DefaultEasing;
+                res.config = environmentManager.DefaultBlend;
             
             res.IsOver = false;
             res.startlerpTime = GameTimerManager.Instance.GetTimeNow();
+            res.lerpFunc = EasingFunction.GetEasingFunction(res.config.Ease);
             return res;
         }
 
@@ -51,7 +56,16 @@
                 IsOver = true;
             }
 
-            var lerpVal = lerpFunc(time, startlerpTime, startlerpTime + config.DeltaTime);
+            float lerpVal;
+            if (config.DeltaTime > 0)
+            {
+                lerpVal = lerpFunc((float) (time - startlerpTime) / config.DeltaTime, 0, 1);
+                lerpVal = Mathf.Clamp01(lerpVal);
+            }
+            else
+            {
+                lerpVal = 1;
+            }
             Data.Lerp(formData, toData, lerpVal);
             Data.Changed = true;
         }
@@ -79,7 +93,7 @@
             }
 
             if (config == null)
-                config = weatherSystem.DefaultEasing;
+                config = environmentManager.DefaultBlend;
             Priority = to.Priority;
             IsOver = false;
             lerpFunc = EasingFunction.GetEasingFunction(config.Ease);
@@ -89,7 +103,7 @@
 
         public override void Dispose()
         {
-            weatherSystem.RemoveFromMap(Id);
+            environmentManager.RemoveFromMap(Id);
             //base
             Id = default;
             Priority = default;
@@ -99,9 +113,7 @@
             //this
             From = null;
             To = null;
-            formData?.Dispose();
             formData = null;
-            toData?.Dispose();
             toData = null;
             lerpFunc = null;
             config = null;

@@ -2,16 +2,16 @@
 {
     public class NormalEnvironmentRunner: EnvironmentRunner
     {
-        public virtual EnvironmentConfig Config { get; protected set; }
+        public virtual ConfigEnvironment Config { get; protected set; }
         
-        public static NormalEnvironmentRunner Create(EnvironmentConfig data, EnvironmentPriorityType type, WeatherSystem weatherSystem)
+        public static NormalEnvironmentRunner Create(ConfigEnvironment data, EnvironmentPriorityType type, EnvironmentManager environmentManager)
         {
             var res = ObjectPool.Instance.Fetch<NormalEnvironmentRunner>();
             res.Priority = (int) type;
             res.Config = data;
             res.Id = IdGenerater.Instance.GenerateId();
             res.Data = EnvironmentInfo.Create(data);
-            res.weatherSystem = weatherSystem;
+            res.environmentManager = environmentManager;
             return res;
         }
 

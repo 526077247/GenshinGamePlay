@@ -1,0 +1,1 @@
+{"_t":"TaoTie.ConfigEnvironments","DefaultEnvironment":{"_t":"TaoTie.ConfigEnvironment","Id":0,"Enter":{"_t":"TaoTie.ConfigBlender","Ease":21,"DeltaTime":0},"Leave":{"_t":"TaoTie.ConfigBlender","Ease":21,"DeltaTime":0}},"Environments":[],"DefaultBlend":{"_t":"TaoTie.ConfigBlender","Ease":21,"DeltaTime":1000}}

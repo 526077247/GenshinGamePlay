@@ -7,7 +7,7 @@ namespace TaoTie
         public bool Changed;
         public bool IsBlender;
         
-        public static EnvironmentInfo Create(EnvironmentConfig config)
+        public static EnvironmentInfo Create(ConfigEnvironment config)
         {
             EnvironmentInfo res = ObjectPool.Instance.Fetch<EnvironmentInfo>();
 
@@ -25,7 +25,7 @@ namespace TaoTie
         {
             
         }
-        public void Lerp(EnvironmentConfig from, EnvironmentConfig to, float val)
+        public void Lerp(ConfigEnvironment from, ConfigEnvironment to, float val)
         {
             
         }

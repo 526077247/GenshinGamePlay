@@ -125,7 +125,7 @@ MonoBehaviour:
         CollectorGUID: 21d9dc7b19a8e6d41bcf602d382c9fb4
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackGroup
+        PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: 
       - CollectPath: Assets/AssetsPackage/Effect
@@ -142,3 +142,10 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: story
+      - CollectPath: Assets/AssetsPackage/EditConfig/ConfigEnvironments.json
+        CollectorGUID: 3c3c405976dca574c82582709dcf1b6e
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 

@@ -212,6 +212,26 @@ namespace TaoTie
             }
             return res;
         }
+        
+        public static List<int> GetEnvironmentConfigIds()
+        {
+            List<int> res = new List<int>();
+            var textAssets = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/EditConfig/ConfigEnvironments.json");
+            if(textAssets!=null)
+            {
+                ConfigEnvironments envs = ProtobufHelper.FromBytes<ConfigEnvironments>(textAssets.bytes);
+                if(envs?.DefaultEnvironment!=null)
+                    res.Add(envs.DefaultEnvironment.Id);
+                if (envs?.Environments != null)
+                {
+                    for (int i = 0; i < envs.Environments.Length; i++)
+                    {
+                        res.Add(envs.Environments[i].Id);
+                    }
+                }
+            }
+            return res;
+        }
         #endregion
 
         #region Ability
