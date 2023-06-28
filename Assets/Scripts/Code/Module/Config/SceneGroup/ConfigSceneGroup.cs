@@ -17,24 +17,28 @@ namespace TaoTie
         public string Remarks;
 #endif
         [NinoMember(2)]
+        public Vector3 Position;
+        [NinoMember(3)]
+        public Vector3 Rotation;
+        [NinoMember(4)]
         [Tooltip("实体")]
         public ConfigSceneGroupActor[] Actors;
-        [NinoMember(3)]
+        [NinoMember(5)]
         [Tooltip("触发区域")]
         public ConfigSceneGroupZone[] Zones;
-        [NinoMember(4)]
+        [NinoMember(6)]
         [Tooltip("事件监听")]
         public ConfigSceneGroupTrigger[] Triggers;
-        [NinoMember(5)]
+        [NinoMember(7)]
         [Tooltip("组")]
         public ConfigSceneGroupSuites[] Suites;
-        [NinoMember(6)]
+        [NinoMember(8)]
         [Tooltip("寻路路径")]
         public ConfigRoute[] Route;
-        [NinoMember(7)]
+        [NinoMember(9)]
         [LabelText("是否初始随机一个组？")]
         public bool RandSuite;
-        [NinoMember(8)]
+        [NinoMember(10)]
         [LabelText("初始组")]
         [ShowIf("@!"+nameof(RandSuite))]
 #if UNITY_EDITOR

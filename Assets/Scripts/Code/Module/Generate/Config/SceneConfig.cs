@@ -89,6 +89,12 @@ namespace TaoTie
 		/// <summary>场景路径</summary>
 		[NinoMember(4)]
 		public string Perfab { get; set; }
+		/// <summary>是否日夜循环环境类型</summary>
+		[NinoMember(5)]
+		public int DayNight { get; set; }
+		/// <summary>环境配置参数</summary>
+		[NinoMember(6)]
+		public int[] EnvIds { get; set; }
 
 	}
 }

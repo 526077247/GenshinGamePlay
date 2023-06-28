@@ -17,7 +17,7 @@
 
         public override void Dispose()
         {
-            // weatherSystem.RemoveFromMap(Id);
+            environmentManager.RemoveFromMap(Id);
             //base
             Id = default;
             Priority = default;

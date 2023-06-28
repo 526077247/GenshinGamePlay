@@ -20,7 +20,8 @@ namespace TaoTie
         public int LocalId;
         [NinoMember(2)]
         public Vector3 Position;
-
+        [NinoMember(3)][LabelText("是否是相对坐标、方向")]
+        public bool IsLocal = true;
         public abstract Zone CreateZone(SceneGroup sceneGroup);
     }
 }

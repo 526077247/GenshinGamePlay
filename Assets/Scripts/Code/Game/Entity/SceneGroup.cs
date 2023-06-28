@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace TaoTie
@@ -26,7 +27,8 @@ namespace TaoTie
         }
 
         public override EntityType Type => EntityType.SceneGroup;
-
+        public Vector3 Position => Config.Position;
+        public Vector3 Rotation => Config.Rotation;
         #region IEntity
 
         public void Init(ConfigSceneGroup p1, SceneGroupManager manager)

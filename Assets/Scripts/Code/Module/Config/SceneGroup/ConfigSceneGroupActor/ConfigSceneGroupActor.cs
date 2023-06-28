@@ -20,7 +20,9 @@ namespace TaoTie
         public Vector3 Position;
         [NinoMember(3)]
         public Vector3 Rotation;
-        [NinoMember(4)]
+        [NinoMember(4)][LabelText("是否是相对坐标、方向")]
+        public bool IsLocal = true;
+        [NinoMember(5)]
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
         public uint CampId;
         

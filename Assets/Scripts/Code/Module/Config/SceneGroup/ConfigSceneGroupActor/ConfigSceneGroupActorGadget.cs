@@ -25,20 +25,35 @@ namespace TaoTie
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
 #endif
         public GadgetState DefaultState;
+
         public override Entity CreateActor(SceneGroup sceneGroup)
         {
-            var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState, uint>(ConfigID,DefaultState,CampId);
+            Vector3 position;
+            Quaternion rotation;
+            if (IsLocal)
+            {
+                position = Quaternion.Euler(sceneGroup.Rotation) * Position + sceneGroup.Position;
+                rotation = Quaternion.Euler(sceneGroup.Rotation + Rotation);
+            }
+            else
+            {
+                position = Position;
+                rotation = Quaternion.Euler(Rotation);
+            }
+
+            var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState, uint>(ConfigID, DefaultState, CampId);
             entity.AddComponent<SceneGroupActorComponent, int, long>(LocalId, sceneGroup.Id);
-            entity.Position = Position;
-            entity.Rotation = Quaternion.Euler(Rotation);
+            entity.Position = position;
+            entity.Rotation = rotation;
             if (sceneGroup.TryGetRoute(RouteId, out var route))
             {
-                var pmc = entity.AddComponent<PlatformMoveComponent, ConfigRoute>(route);
+                var pmc = entity.AddComponent<PlatformMoveComponent, ConfigRoute, SceneGroup>(route,sceneGroup);
                 if (Delay >= 0)
                 {
                     pmc.DelayStart(Delay);
                 }
             }
+
             return entity;
         }
     }

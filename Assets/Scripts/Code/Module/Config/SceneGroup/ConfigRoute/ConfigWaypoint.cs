@@ -10,6 +10,8 @@ namespace TaoTie
     {
         [DisableInEditorMode]
         public int Index;
+        [NinoMember(0)][LabelText("是否是相对坐标、方向")]
+        public bool IsLocal = true;
         [LabelText("坐标")]
         [NinoMember(1)] public Vector3 Pos;
         [LabelText("到达该点后等待时间")]
@@ -53,6 +55,33 @@ namespace TaoTie
             {
                 HasAvatarNearEvent = true;
             }
+        }
+
+        public Vector3 GetPosition(SceneGroup sceneGroup)
+        {
+            if (IsLocal && sceneGroup != null)
+            {
+                return Quaternion.Euler(sceneGroup.Rotation) * Pos + sceneGroup.Position;
+            }
+            return Pos;
+        }
+        
+        public Vector3 GetRotRoundReachDir(SceneGroup sceneGroup)
+        {
+            if (IsLocal && sceneGroup != null)
+            {
+                return Quaternion.Euler(sceneGroup.Rotation) * RotRoundReachDir + sceneGroup.Position;
+            }
+            return RotRoundReachDir;
+        }
+        
+        public Vector3 GetRotRoundLeaveDir(SceneGroup sceneGroup)
+        {
+            if (IsLocal && sceneGroup != null)
+            {
+                return Quaternion.Euler(sceneGroup.Rotation) * RotRoundLeaveDir + sceneGroup.Position;
+            }
+            return RotRoundLeaveDir;
         }
     }
 }

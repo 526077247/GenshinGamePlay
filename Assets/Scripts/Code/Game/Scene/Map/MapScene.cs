@@ -83,7 +83,15 @@ namespace TaoTie
         {
             RegisterManager<GameTimerManager>();
             var envm = RegisterManager<EnvironmentManager>();
-            // envm.CreateDayNight();
+            if (config.DayNight == 1 && config.EnvIds.Length==4)
+            {
+                envm.CreateDayNight(config.EnvIds[0],config.EnvIds[1],config.EnvIds[2],config.EnvIds[3]);
+            }
+            else if (config.DayNight == 0 && config.EnvIds.Length>0)
+            {
+                envm.Create(config.EnvIds[0], EnvironmentPriorityType.Scene);
+            }
+            
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();

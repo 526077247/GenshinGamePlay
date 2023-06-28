@@ -14,8 +14,17 @@ namespace TaoTie
         
         public override Zone CreateZone(SceneGroup sceneGroup)
         {
+            Vector3 position;
+            if (IsLocal)
+            {
+                position = Quaternion.Euler(sceneGroup.Rotation) * Position + sceneGroup.Position;
+            }
+            else
+            {
+                position = Position;
+            }
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
-            entity.Position = Position;
+            entity.Position = position;
             var ghc = entity.GetComponent<GameObjectHolderComponent>();
             ghc.EntityView.gameObject.layer = LayerMask.NameToLayer("Entity");
             var collider = ghc.EntityView.gameObject.AddComponent<SphereCollider>();

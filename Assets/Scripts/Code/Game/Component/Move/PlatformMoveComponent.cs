@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class PlatformMoveComponent:Component,IComponent<ConfigRoute>,IUpdate
+    public class PlatformMoveComponent:Component,IComponent<ConfigRoute,SceneGroup>,IUpdate
     {
+        private SceneGroup sceneGroup;
         public bool IsStart { get; private set; }
         
         public bool IsPause { get; private set; }
@@ -169,13 +170,15 @@ namespace TaoTie
         /// </summary>
         private float delayTillTime;
 
-        public void Init(ConfigRoute config)
+        public void Init(ConfigRoute config,SceneGroup sceneGroup)
         {
+            this.sceneGroup = sceneGroup;
             SetRoute(config);
         }
 
         public void Destroy()
         {
+            this.sceneGroup = null;
             sqlAvatarTriggerEventDistance = 0;
             route = null;
             this.startTime = 0;
@@ -320,7 +323,7 @@ namespace TaoTie
             // 计算位置插值
             if (moveTime >= this.needTime)
             {
-                unit.Position = this.NextTarget.Pos;
+                unit.Position = this.NextTarget.GetPosition(sceneGroup);
                 if (this.waitAngularSpeed == 0)
                 {
                     unit.Rotation = this.rotRoundLeaveDir;
@@ -332,7 +335,7 @@ namespace TaoTie
                 float amount = moveTime * 1f / this.needTime;
                 if (amount > 0)
                 {
-                    Vector3 newPos = Vector3.Lerp(this.startPos, this.NextTarget.Pos, amount);
+                    Vector3 newPos = Vector3.Lerp(this.startPos, this.NextTarget.GetPosition(sceneGroup), amount);
                     unit.Position = newPos;
                 }
 
@@ -346,7 +349,7 @@ namespace TaoTie
             moveTime -= this.needTime;
 
             // 进入了配置的抵达范围
-            if (Vector3.SqrMagnitude(unit.Position - this.NextTarget.Pos) <= sqlArriveRange)
+            if (Vector3.SqrMagnitude(unit.Position - this.NextTarget.GetPosition(sceneGroup)) <= sqlArriveRange)
             {
             }
 
@@ -390,7 +393,7 @@ namespace TaoTie
             // 如果是最后一个点
             if (this.n >= this.targets.Length - 1)
             {
-                var pos = this.NextTarget.Pos;
+                var pos = this.NextTarget.GetPosition(sceneGroup);
                 if (this.targets.Length > 0)
                     unit.Position = pos;
 
@@ -495,9 +498,11 @@ namespace TaoTie
                     return;
                 }
 
-                this.rotRoundReachDir = Quaternion.Euler(NextTarget.RotRoundReachDir);
-                this.rotRoundLeaveDir = Quaternion.Euler(NextTarget.RotRoundLeaveDir);
-                var angle = GetAngle(unit.Rotation.eulerAngles, NextTarget.RotRoundReachDir);
+                var nextRotRoundReachDir = NextTarget.GetRotRoundReachDir(sceneGroup);
+                var nextRotRoundLeaveDir = NextTarget.GetRotRoundLeaveDir(sceneGroup);
+                this.rotRoundReachDir = Quaternion.Euler(nextRotRoundReachDir);
+                this.rotRoundLeaveDir = Quaternion.Euler(nextRotRoundLeaveDir);
+                var angle = GetAngle(unit.Rotation.eulerAngles, nextRotRoundReachDir);
                 this.moveAngularSpeed =
                     n == 0 ? 0 : (angle + NextTarget.RotRoundReachRounds * 360) / turnTime; //第一个点不需要转弯
                 if (NextTarget.WaitTime == 0)
@@ -508,11 +513,11 @@ namespace TaoTie
                 {
                     if (n == 0) //第一个点等到了目标点再转弯
                     {
-                        angle = GetAngle(unit.Rotation.eulerAngles, NextTarget.RotRoundLeaveDir);
+                        angle = GetAngle(unit.Rotation.eulerAngles, nextRotRoundLeaveDir);
                     }
                     else
                     {
-                        angle = GetAngle(NextTarget.RotRoundReachDir, NextTarget.RotRoundLeaveDir);
+                        angle = GetAngle(nextRotRoundReachDir, nextRotRoundLeaveDir);
                     }
 
                     this.waitAngularSpeed = (angle + NextTarget.RotRoundWaitRounds * 360) / waitTime;
@@ -541,7 +546,7 @@ namespace TaoTie
                 else
                 {
                     var next = GetPointAfterNextTarget();
-                    var nextFaceV = next.Pos - NextTarget.Pos;
+                    var nextFaceV = next.GetPosition(sceneGroup) - NextTarget.GetPosition(sceneGroup);
                     var to = Quaternion.LookRotation(nextFaceV, Vector3.up);
                     var angle = GetAngle(unit.Rotation.eulerAngles, to.eulerAngles);
                     this.waitAngularSpeed = angle / waitTime;
@@ -603,7 +608,7 @@ namespace TaoTie
         /// <returns></returns>
         private Vector3 GetFaceV()
         {
-            return this.NextTarget.Pos - GetParent<Unit>().Position;
+            return this.NextTarget.GetPosition(sceneGroup) - GetParent<Unit>().Position;
         }
 
         /// <summary>

@@ -17,10 +17,24 @@ namespace TaoTie
         public Vector3 Position;
         [NinoMember(12)]
         public Vector3 Rotation;
-        
+        [NinoMember(13)][LabelText("是否是相对坐标、方向")]
+        public bool IsLocal;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            aimSceneGroup.Manager.Parent.GetManager<StorySystem>()?.PlayStory(Id, aimSceneGroup, Position, Quaternion.Euler(Rotation)).Coroutine();
+            Vector3 position;
+            Quaternion rotation;
+            if (IsLocal)
+            {
+                position = Quaternion.Euler(aimSceneGroup.Rotation) * Position + aimSceneGroup.Position;
+                rotation = Quaternion.Euler(aimSceneGroup.Rotation + Rotation);
+            }
+            else
+            {
+                position = Position;
+                rotation = Quaternion.Euler(Rotation);
+            }
+            aimSceneGroup.Manager.Parent.GetManager<StorySystem>()?.PlayStory(Id, aimSceneGroup, position, rotation)
+                .Coroutine();
         }
     }
 }
