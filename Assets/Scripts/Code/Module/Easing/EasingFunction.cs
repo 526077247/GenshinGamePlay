@@ -51,6 +51,7 @@ namespace TaoTie
             EaseOutCirc = 19,
             EaseInOutCirc = 20,
             Linear = 21,
+
             // Spring = 22,
             EaseInBounce = 23,
             EaseOutBounce = 24,
@@ -62,8 +63,8 @@ namespace TaoTie
             EaseOutElastic = 30,
             EaseInOutElastic = 31
         }
-        
-        public delegate float Function(float v,float s, float e);
+
+        public delegate float Function(float v, float s, float c, float t = 1);
 
         public static Function GetEasingFunction(Ease easingFunction)
         {
@@ -112,7 +113,7 @@ namespace TaoTie
                 case Ease.EaseInOutCirc:
                     return EaseInOutCirc;
                 case Ease.Linear:
-                    return (v,s,e)=> s+(e-s)*v;
+                    return (v, s, c, t) => s + c * v / t;
                 // case Ease.Spring:
                 //     return Spring;
                 case Ease.EaseInBounce:
@@ -172,51 +173,53 @@ namespace TaoTie
         /// <param name="inOutType">Which type of effect</param>
         /// <param name="time">Current time</param>
         /// <param name="a">Starting Value</param>
-        /// <param name="b">Ending Value</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Lerp total time</param>
         /// <returns>Lerp Value</returns>
-        public static float EasingLerp(EasingLerpsType type, EasingInOutType inOutType, float time, float a, float b)
+        public static float EasingLerp(EasingLerpsType type, EasingInOutType inOutType, float time, float a, float b,
+            float lerpTotal = 1.0f)
         {
             switch (type)
             {
                 case EasingLerpsType.Sine:
                 {
-                    return EaseSine(inOutType, time, a, b);
+                    return EaseSine(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Quad:
                 {
-                    return EaseQuad(inOutType, time, a, b);
+                    return EaseQuad(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Cubic:
                 {
-                    return EaseCubic(inOutType, time, a, b);
+                    return EaseCubic(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Quint:
                 {
-                    return EaseQuint(inOutType, time, a, b);
+                    return EaseQuint(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Expo:
                 {
-                    return EaseExpo(inOutType, time, a, b);
+                    return EaseExpo(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Circ:
                 {
-                    return EaseCirc(inOutType, time, a, b);
+                    return EaseCirc(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Back:
                 {
-                    return EaseBack(inOutType, time, a, b);
+                    return EaseBack(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Elastic:
                 {
-                    return EaseElastic(inOutType, time, a, b);
+                    return EaseElastic(inOutType, time, a, b, lerpTotal);
                 }
                 case EasingLerpsType.Bounce:
                 {
-                    return EaseBounce(inOutType, time, a, b);
+                    return EaseBounce(inOutType, time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseSine(inOutType, time, a, b);
+                    return EaseSine(inOutType, time, a, b, lerpTotal);
                 }
             }
 
@@ -234,27 +237,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseSine(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseSine(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInSine(time, a, b);
+                    return EaseInSine(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutSine(time, a, b);
+                    return EaseOutSine(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutSine(time, a, b);
+                    return EaseInOutSine(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInSine(time, a, b);
+                    return EaseInSine(time, a, b, lerpTotal);
                 }
             }
         }
@@ -264,12 +268,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInSine(float time, float a, float b)
+        static float EaseInSine(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return -b * (float) Math.Cos(time * (Math.PI / 2)) + b + a;
+            return -b * (float) Math.Cos(time / lerpTotal * (Math.PI / 2)) + b + a;
         }
 
 
@@ -278,12 +283,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutSine(float time, float a, float b)
+        static float EaseOutSine(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * (float) Math.Sin(time * (Math.PI / 2)) + a;
+            return b * (float) Math.Sin(time / lerpTotal * (Math.PI / 2)) + a;
         }
 
 
@@ -293,12 +299,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutSine(float time, float a, float b)
+        static float EaseInOutSine(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return -b / 2 * ((float) Math.Cos(Math.PI * time) - 1) + a;
+            return -b / 2 * ((float) Math.Cos(Math.PI * time / lerpTotal) - 1) + a;
         }
 
         #endregion
@@ -316,27 +323,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseQuad(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseQuad(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInQuad(time, a, b);
+                    return EaseInQuad(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutQuad(time, a, b);
+                    return EaseOutQuad(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutQuad(time, a, b);
+                    return EaseInOutQuad(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInQuad(time, a, b);
+                    return EaseInQuad(time, a, b, lerpTotal);
                 }
             }
         }
@@ -346,12 +354,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInQuad(float time, float a, float b)
+        static float EaseInQuad(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * time * time + a;
+            return b * (time /= lerpTotal) * time + a;
         }
 
 
@@ -360,12 +369,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutQuad(float time, float a, float b)
+        static float EaseOutQuad(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return -b * time * (time - 2) + a;
+            return -b * (time /= lerpTotal) * (time - 2) + a;
         }
 
 
@@ -375,12 +385,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutQuad(float time, float a, float b)
+        static float EaseInOutQuad(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if (time / 2 < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return b / 2 * time * time + a;
             }
@@ -403,27 +414,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseCubic(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseCubic(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInCubic(time, a, b);
+                    return EaseInCubic(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutCubic(time, a, b);
+                    return EaseOutCubic(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutCubic(time, a, b);
+                    return EaseInOutCubic(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInCubic(time, a, b);
+                    return EaseInCubic(time, a, b, lerpTotal);
                 }
             }
         }
@@ -433,12 +445,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInCubic(float time, float a, float b)
+        static float EaseInCubic(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * time * time * time + a;
+            return b * (time /= lerpTotal) * time * time + a;
         }
 
 
@@ -447,12 +460,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutCubic(float time, float a, float b)
+        static float EaseOutCubic(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * ((time = time - 1) * time * time + 1) + a;
+            return b * ((time = time / lerpTotal - 1) * time * time + 1) + a;
         }
 
 
@@ -462,12 +476,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutCubic(float time, float a, float b)
+        static float EaseInOutCubic(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if ((time / 2) < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return b / 2 * time * time * time + a;
             }
@@ -489,27 +504,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseQuart(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseQuart(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInQuart(time, a, b);
+                    return EaseInQuart(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutQuart(time, a, b);
+                    return EaseOutQuart(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutQuart(time, a, b);
+                    return EaseInOutQuart(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInQuart(time, a, b);
+                    return EaseInQuart(time, a, b, lerpTotal);
                 }
             }
         }
@@ -519,12 +535,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInQuart(float time, float a, float b)
+        static float EaseInQuart(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * (time) * time * time * time + a;
+            return b * (time /= lerpTotal) * time * time * time + a;
         }
 
 
@@ -533,12 +550,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutQuart(float time, float a, float b)
+        static float EaseOutQuart(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return -b * ((time = time - 1) * time * time * time - 1) + a;
+            return -b * ((time = time / lerpTotal - 1) * time * time * time - 1) + a;
         }
 
 
@@ -548,12 +566,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutQuart(float time, float a, float b)
+        static float EaseInOutQuart(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if ((time / 2) < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return b / 2 * time * time * time * time + a;
             }
@@ -575,27 +594,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseQuint(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseQuint(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInQuint(time, a, b);
+                    return EaseInQuint(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutQuint(time, a, b);
+                    return EaseOutQuint(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutQuint(time, a, b);
+                    return EaseInOutQuint(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInQuint(time, a, b);
+                    return EaseInQuint(time, a, b, lerpTotal);
                 }
             }
         }
@@ -605,12 +625,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInQuint(float time, float a, float b)
+        static float EaseInQuint(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * (time) * time * time * time * time + a;
+            return b * (time /= lerpTotal) * time * time * time * time + a;
         }
 
 
@@ -619,12 +640,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutQuint(float time, float a, float b)
+        static float EaseOutQuint(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * ((time = time - 1) * time * time * time * time + 1) + a;
+            return b * ((time = time / lerpTotal - 1) * time * time * time * time + 1) + a;
         }
 
 
@@ -634,12 +656,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutQuint(float time, float a, float b)
+        static float EaseInOutQuint(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if ((time / 2) < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return b / 2 * time * time * time * time * time + a;
             }
@@ -661,27 +684,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseExpo(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseExpo(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInExpo(time, a, b);
+                    return EaseInExpo(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutExpo(time, a, b);
+                    return EaseOutExpo(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutExpo(time, a, b);
+                    return EaseInOutExpo(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInExpo(time, a, b);
+                    return EaseInExpo(time, a, b, lerpTotal);
                 }
             }
         }
@@ -691,9 +715,10 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInExpo(float time, float a, float b)
+        static float EaseInExpo(float time, float a, float b, float lerpTotal = 1.0f)
         {
             if (time == 0)
             {
@@ -701,7 +726,7 @@ namespace TaoTie
             }
             else
             {
-                return b * (float) Math.Pow(2, 10 * (time - 1)) + a;
+                return b * (float) Math.Pow(2, 10 * (time / lerpTotal - 1)) + a;
             }
         }
 
@@ -711,19 +736,20 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutExpo(float time, float a, float b)
+        static float EaseOutExpo(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
 
-            if (time >= 1)
+            if (time == lerpTotal)
             {
                 return a + b;
             }
             else
             {
-                return b * (-(float) Math.Pow(2, -10 * time) + 1) + a;
+                return b * (-(float) Math.Pow(2, -10 * time / lerpTotal) + 1) + a;
             }
 
         }
@@ -735,21 +761,22 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutExpo(float time, float a, float b)
+        static float EaseInOutExpo(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
             if (time == 0)
             {
                 return a;
             }
-            else if (time >= 1)
+            else if (time == lerpTotal)
             {
                 return a + b;
             }
 
-            if ((time / 2) < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return b / 2 * (float) Math.Pow(2, 10 * (time - 1)) + a;
             }
@@ -772,27 +799,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseCirc(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseCirc(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInCirc(time, a, b);
+                    return EaseInCirc(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutCirc(time, a, b);
+                    return EaseOutCirc(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutCirc(time, a, b);
+                    return EaseInOutCirc(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInCirc(time, a, b);
+                    return EaseInCirc(time, a, b, lerpTotal);
                 }
             }
         }
@@ -802,12 +830,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInCirc(float time, float a, float b)
+        static float EaseInCirc(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return -b * ((float) Math.Sqrt(1 - (time) * time) - 1) + a;
+            return -b * ((float) Math.Sqrt(1 - (time /= lerpTotal) * time) - 1) + a;
         }
 
 
@@ -816,12 +845,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutCirc(float time, float a, float b)
+        static float EaseOutCirc(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b * (float) Math.Sqrt(1 - (time = time - 1) * time) + a;
+            return b * (float) Math.Sqrt(1 - (time = time / lerpTotal - 1) * time) + a;
         }
 
 
@@ -831,12 +861,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutCirc(float time, float a, float b)
+        static float EaseInOutCirc(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if ((time / 2) < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return -b / 2 * ((float) Math.Sqrt(1 - time * time) - 1) + a;
             }
@@ -858,27 +889,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseBack(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseBack(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInBack(time, a, b);
+                    return EaseInBack(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutBack(time, a, b);
+                    return EaseOutBack(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutBack(time, a, b);
+                    return EaseInOutBack(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInBack(time, a, b);
+                    return EaseInBack(time, a, b, lerpTotal);
                 }
             }
         }
@@ -888,12 +920,14 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="s">overshoot value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInBack(float time, float a, float b)
+        static float EaseInBack(float time, float a, float b, float lerpTotal = 1.0f)
         {
             float s = 1.70158f;
-            return b * (time) * time * ((s + 1) * time - s) + a;
+            return b * (time /= lerpTotal) * time * ((s + 1) * time - s) + a;
         }
 
         /// <summary>
@@ -901,12 +935,14 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="s">overshoot value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutBack(float time, float a, float b)
+        static float EaseOutBack(float time, float a, float b, float lerpTotal = 1.0f)
         {
             float s = 1.70158f;
-            return b * ((time = time - 1) * time * ((s + 1) * time + s) + 1) + a;
+            return b * ((time = time / lerpTotal - 1) * time * ((s + 1) * time + s) + 1) + a;
         }
 
 
@@ -916,12 +952,14 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="s">overshoot value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutBack(float time, float a, float b)
+        static float EaseInOutBack(float time, float a, float b, float lerpTotal = 1.0f)
         {
             float s = 1.70158f;
-            if ((time / 2) < 1)
+            if ((time /= lerpTotal / 2) < 1)
             {
                 return b / 2 * (time * time * (((s *= (1.525f)) + 1) * time - s)) + a;
             }
@@ -944,27 +982,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseElastic(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseElastic(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInElastic(time, a, b);
+                    return EaseInElastic(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutElastic(time, a, b);
+                    return EaseOutElastic(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutElastic(time, a, b);
+                    return EaseInOutElastic(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInElastic(time, a, b);
+                    return EaseInElastic(time, a, b, lerpTotal);
                 }
             }
         }
@@ -974,9 +1013,10 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInElastic(float time, float a, float b)
+        static float EaseInElastic(float time, float a, float b, float lerpTotal = 1.0f)
         {
             //if (t == 0) return b; if ((t /= d) == 1) return b + c;
             //float p = d * .3f;
@@ -990,17 +1030,17 @@ namespace TaoTie
                 return a;
             }
 
-            if ((time) == 1)
+            if ((time /= lerpTotal) == 1)
             {
                 return a + b;
             }
 
-            float p = .3f;
+            float p = lerpTotal * .3f;
             float i = b;
             float s = p / 4;
             float postFix = i * (float) Math.Pow(2, 10 * (time -= 1));
 
-            return -(postFix * (float) Math.Sin((time - s) * (2 * Math.PI) / p)) + a;
+            return -(postFix * (float) Math.Sin((time * lerpTotal - s) * (2 * Math.PI) / p)) + a;
         }
 
 
@@ -1009,9 +1049,10 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutElastic(float time, float a, float b)
+        static float EaseOutElastic(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
             if (time == 0)
@@ -1019,16 +1060,16 @@ namespace TaoTie
                 return a;
             }
 
-            if ((time) == 1)
+            if ((time /= lerpTotal) == 1)
             {
                 return a + b;
             }
 
-            float p = .3f;
+            float p = lerpTotal * .3f;
             float i = b;
             float s = p / 4;
             return (i * (float) Math.Pow(2, -10 * time) *
-                (float) Math.Sin((time - s) * (2 * (float) Math.PI) / p) + b + a);
+                (float) Math.Sin((time * lerpTotal - s) * (2 * (float) Math.PI) / p) + b + a);
         }
 
 
@@ -1038,33 +1079,34 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutElastic(float time, float a, float b)
+        static float EaseInOutElastic(float time, float a, float b, float lerpTotal = 1.0f)
         {
             if (time == 0)
             {
                 return a;
             }
 
-            if ((time / 2) == 2)
+            if ((time /= lerpTotal / 2) == 2)
             {
                 return a + b;
 
             }
 
-            float p = (.3f * 1.5f);
+            float p = lerpTotal * (.3f * 1.5f);
             float i = b;
             float s = p / 4;
 
             if (time < 1)
             {
                 return -.5f * (i * (float) Math.Pow(2, 10 * (time -= 1)) *
-                               (float) Math.Sin((time - s) * (2 * (float) Math.PI) / p)) + a;
+                               (float) Math.Sin((time * lerpTotal - s) * (2 * (float) Math.PI) / p)) + a;
             }
 
             return i * (float) Math.Pow(2, -10 * (time -= 1)) *
-                (float) Math.Sin((time - s) * (2 * (float) Math.PI) / p) * .5f + b + a;
+                (float) Math.Sin((time * lerpTotal - s) * (2 * (float) Math.PI) / p) * .5f + b + a;
         }
 
         #endregion
@@ -1081,27 +1123,28 @@ namespace TaoTie
         /// <param name="inOutType">How should use sine lerp </param>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseBounce(EasingInOutType inOutType, float time, float a, float b)
+        static float EaseBounce(EasingInOutType inOutType, float time, float a, float b, float lerpTotal = 1.0f)
         {
             switch (inOutType)
             {
                 case EasingInOutType.EaseIn:
                 {
-                    return EaseInBounce(time, a, b);
+                    return EaseInBounce(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseOut:
                 {
-                    return EaseOutBounce(time, a, b);
+                    return EaseOutBounce(time, a, b, lerpTotal);
                 }
                 case EasingInOutType.EaseInOut:
                 {
-                    return EaseInOutBounce(time, a, b);
+                    return EaseInOutBounce(time, a, b, lerpTotal);
                 }
                 default:
                 {
-                    return EaseInBounce(time, a, b);
+                    return EaseInBounce(time, a, b, lerpTotal);
                 }
             }
         }
@@ -1111,12 +1154,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInBounce(float time, float a, float b)
+        static float EaseInBounce(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            return b - EaseOutBounce(1 - time, 0, b) + a;
+            return b - EaseOutBounce(lerpTotal - time, 0, b, lerpTotal) + a;
         }
 
 
@@ -1125,12 +1169,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseOutBounce(float time, float a, float b)
+        static float EaseOutBounce(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if ((time) < (1 / 2.75f))
+            if ((time /= lerpTotal) < (1 / 2.75f))
             {
                 return b * (7.5625f * time * time) + a;
             }
@@ -1155,22 +1200,24 @@ namespace TaoTie
         /// </summary>
         /// <param name="time">Current Time of lerp</param>
         /// <param name="a">Beginning value of lerp</param>
-        /// <param name="b">Final value of lerp</param>
+        /// <param name="b">Change In value</param>
+        /// <param name="lerpTotal">Total time between lerps</param>
         /// <returns>Lerp Value</returns>
-        static float EaseInOutBounce(float time, float a, float b)
+        static float EaseInOutBounce(float time, float a, float b, float lerpTotal = 1.0f)
         {
 
-            if (time < .5f)
+            if (time < lerpTotal / 2)
             {
-                return EaseInBounce(time * 2, 0, b) * .5f + a;
+                return EaseInBounce(time * 2, 0, b, lerpTotal) * .5f + a;
             }
             else
             {
-                return EaseOutBounce(time * 2 - 1, 0, b) * .5f + b * .5f + a;
+                return EaseOutBounce(time * 2 - lerpTotal, 0, b, lerpTotal) * .5f + b * .5f + a;
             }
         }
 
         #endregion
+
 
     }
 

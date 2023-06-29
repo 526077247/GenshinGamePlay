@@ -15,7 +15,6 @@ namespace TaoTie
         }
 
         
-        [MenuItem("Tools/工具/创建子目录")]
         [MenuItem("Assets/工具/创建子目录")]
         public static void CreateArtSubFolder()
         {

@@ -28,6 +28,65 @@ namespace TaoTie
     {
         const string EditDirName = "Edit";
         const string PublishDirName = "Animations";
+        
+        const string ControllerConfigName = "FsmConfig.json";
+        const string AIControllerConfigName = "PoseConfig.json";
+        const string FsmConfig = EditDirName + "/" + "FsmConfig.controller";
+        const string PoseConfig = EditDirName + "/" + "PoseConfig.controller";
+        
+        [MenuItem("Assets/工具/状态机导出", false)]
+        static void ExportFsm()
+        {
+            var path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (Selection.activeObject is AnimatorController controller)
+            {
+                if (path.EndsWith(FsmConfig))
+                {
+                    ExportController(controller, ControllerConfigName);
+                }
+                else if (path.EndsWith(PoseConfig))
+                {
+                    ExportController(controller, AIControllerConfigName, false);
+                }
+            }
+        }
+        [MenuItem("Assets/工具/状态机导出", true)]
+        static bool ExportFsmCheck()
+        {
+            var path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (Selection.activeObject is AnimatorController controller)
+            {
+                if (path.EndsWith(FsmConfig))
+                {
+                    return true;
+                }
+                else if (path.EndsWith(PoseConfig))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private static void ExportController(AnimatorController controller, string name, bool publish = true)
+        {
+            if (controller == null)
+            {
+                Debug.LogError("AnimatorController 不能为空");
+                return;
+            }
+
+            string controllerPath = AssetDatabase.GetAssetPath(controller);
+            string editDir = Path.GetDirectoryName(controllerPath);
+            if (Path.GetFileName(editDir) != EditDirName)
+            {
+                Debug.LogError("AnimatorController 不在编辑目录");
+                return;
+            }
+            
+            FsmExporter exporter = new FsmExporter(controller, editDir, publish);
+            exporter.Generate(name);
+        }
+
 
         private AnimatorController controller = null;
         private string fsmActionsPath = null;

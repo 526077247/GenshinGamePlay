@@ -13,9 +13,9 @@ namespace TaoTie
         /// </summary>
         [NinoMember(2)]
         public int Duration;
-        [NinoMember(3)][ShowIf("@Duration!=0")]
+        [NinoMember(3)][ShowIf("@"+nameof(Duration)+"!=0")]
         public StackingType StackingType;
-        [NinoMember(4)]
+        [NinoMember(4)][ShowIf(nameof(StackingType),StackingType.Multiple)]
         public int StackLimitCount;
         [NinoMember(5)]
         public ConfigAbilityMixin[] Mixins;

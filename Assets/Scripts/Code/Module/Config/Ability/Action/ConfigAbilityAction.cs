@@ -5,13 +5,13 @@ namespace TaoTie
 {
     public abstract class ConfigAbilityAction
     {
-        [NinoMember(1)][LabelText("Action目标")][BoxGroup("Common")]
-        public AbilityTargetting Targetting;
-        [NinoMember(2)][ShowIf(nameof(Targetting), AbilityTargetting.Other)][BoxGroup("Common")]
-        public ConfigSelectTargets OtherTargets;
-        [NinoMember(3)][BoxGroup("Common")]
+        [NinoMember(1)][BoxGroup("Common")][LabelText("Targetting目标重新选定生效前过滤")]
         public ConfigAbilityPredicate Predicate;
-        [NinoMember(4)][BoxGroup("Common")]
+        [NinoMember(2)][LabelText("Action目标")][BoxGroup("Common")]
+        public AbilityTargetting Targetting;
+        [NinoMember(3)][ShowIf(nameof(Targetting), AbilityTargetting.Other)][BoxGroup("Common")]
+        public ConfigSelectTargets OtherTargets;
+        [NinoMember(4)][BoxGroup("Common")][LabelText("Targetting目标重新选定生效后对每一个目标进行过滤")]
         public ConfigAbilityPredicate PredicateForeach; 
         protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target);
 
