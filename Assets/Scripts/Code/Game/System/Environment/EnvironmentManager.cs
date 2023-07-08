@@ -128,11 +128,6 @@ namespace TaoTie
                 if (top is BlenderEnvironmentRunner blender) //正在变换
                 {
                     envInfoStack.Pop();
-                    while (envInfoStack.Peek().IsOver) //移除已经over的
-                    {
-                        envInfoStack.Pop().Dispose();
-                    }
-
                     var newTop = envInfoStack.Peek();
                     if (blender.To.Id == newTop.Id) //是变换完成了
                     {
@@ -183,6 +178,7 @@ namespace TaoTie
         {
             NormalEnvironmentRunner runner = NormalEnvironmentRunner.Create(data, type, this);
             envInfoMap.Add(runner.Id,runner);
+            if (curRunner == null) curRunner = runner;
             return runner;
         }
         
@@ -199,6 +195,7 @@ namespace TaoTie
         {
             DayEnvironmentRunner runner = DayEnvironmentRunner.Create(morning, noon,afternoon,night,priority,this);
             envInfoMap.Add(runner.Id,runner);
+            if (curRunner == null) curRunner = runner;
             return runner;
         }
         
@@ -255,7 +252,12 @@ namespace TaoTie
                     envInfoStack.Remove(info);
                     info.Dispose();
                 }
-                
+                else if(envInfoStack.Count == 1)
+                {
+                    envInfoStack.Remove(info);
+                    info.Dispose();
+                    curRunner = null;
+                }
                 return true;
             }
             return false;

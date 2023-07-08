@@ -43,6 +43,7 @@
             res.UpdateDayTime();
             res.Data = EnvironmentInfo.Create(res.Config);
             res.LerpDatTime();
+            res.IsOver = false;
             return res;
         }
 

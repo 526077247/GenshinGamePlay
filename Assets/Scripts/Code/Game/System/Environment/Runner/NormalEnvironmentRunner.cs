@@ -12,6 +12,7 @@
             res.Id = IdGenerater.Instance.GenerateId();
             res.Data = EnvironmentInfo.Create(data);
             res.environmentManager = environmentManager;
+            res.IsOver = false;
             return res;
         }
 
