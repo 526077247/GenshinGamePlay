@@ -89,6 +89,21 @@ namespace TaoTie
                 item.Update();
             }
             if (envInfoStack.Count == 0) return;
+
+            Process();
+            if (curRunner != null)
+            {
+                ApplyEnvironmentInfo(curRunner.Data);
+            }
+            else
+            {
+                ApplyEnvironmentInfo(null);
+            }
+        }
+        #endregion
+
+        private void Process()
+        {
             var top = envInfoStack.Peek();
             if (curRunner != top)//栈顶环境变更，需要变换
             {
@@ -97,7 +112,7 @@ namespace TaoTie
                     curRunner = top;
                     return;
                 }
-                if (top is BlenderEnvironmentRunner blender) //正在变换
+                if (curRunner is BlenderEnvironmentRunner blender) //正在变换
                 {
                     return;
                     // 中途改变这种，天空盒插值不了，得等正在变换的变换完
@@ -113,14 +128,24 @@ namespace TaoTie
                 }
                 else//变换到下一个环境
                 {
-                    while (envInfoStack.Peek().IsOver)//移除已经over的
+                    while (envInfoStack.Count>0 && envInfoStack.Peek().IsOver)//移除已经over的
                     {
                         envInfoStack.Pop().Dispose();
                     }
-                    blender = CreateRunner(curRunner as NormalEnvironmentRunner, envInfoStack.Peek() as NormalEnvironmentRunner,
-                        true);
-                    envInfoStack.Push(blender);
-                    curRunner = blender;
+                    top = envInfoStack.Peek();
+                    if (top is BlenderEnvironmentRunner) //正在变换
+                    {
+                        return;
+                    }
+
+                    if (curRunner != null && top != null && top != curRunner)
+                    {
+                        blender = CreateRunner(curRunner as NormalEnvironmentRunner,
+                            envInfoStack.Peek() as NormalEnvironmentRunner,
+                            true);
+                        envInfoStack.Push(blender);
+                        curRunner = blender;
+                    }
                 }
             }
             else if (top.IsOver) //播放完毕，需要变换环境
@@ -154,17 +179,7 @@ namespace TaoTie
                     curRunner = blender;
                 }
             }
-            
-            if (curRunner != null)
-            {
-                ApplyEnvironmentInfo(curRunner.Data);
-            }
-            else
-            {
-                ApplyEnvironmentInfo(null);
-            }
         }
-        #endregion
         private void ApplyEnvironmentInfo(EnvironmentInfo info)
         {
             preInfo = curInfo;

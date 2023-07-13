@@ -41,7 +41,7 @@
 
             res.lerpFunc = EasingFunction.GetEasingFunction(EasingFunction.Ease.Linear);
             res.UpdateDayTime();
-            res.Data = EnvironmentInfo.Create(res.Config);
+            res.Data = EnvironmentInfo.Create(morning);
             res.LerpDatTime();
             res.IsOver = false;
             return res;
@@ -54,7 +54,7 @@
             LerpDatTime();
         }
 
-        private void UpdateDayTime()
+        private bool UpdateDayTime()
         {
             DayTimeType nextType= DayTimeType.None;
             for (int i = dayTimes.Length-1; i >=0 ; i--)
@@ -70,11 +70,15 @@
             {
                 daytimetype = nextType;
                 Config = datas[(int) daytimetype];
+                return true;
             }
+
+            return false;
         }
 
         private void LerpDatTime()
         {
+            var change = UpdateDayTime();
             int dayTimeIndex = (int) daytimetype;
             float progress = environmentManager.NowTime - dayTimes[dayTimeIndex];
             var ifLeftHalf = progress < dayHalfInterval[dayTimeIndex];
@@ -96,9 +100,10 @@
                 start = dayTimes[leftIndex] + dayHalfInterval[leftIndex];
                 end = dayTimes[rightIndex];
             }
-            if(datas[leftIndex].Id == datas[rightIndex].Id) return;
+            if(!change && datas[leftIndex].Id == datas[rightIndex].Id) return;
+            if (end < start) end += environmentManager.DayTimeCount;
             progress %= dayHalfInterval[dayTimeIndex];
-            var val = lerpFunc((progress-start)/(end-start),0,1);
+            var val = lerpFunc(progress / (end - start) / 2 + (ifLeftHalf ? 0.5f : 0), 0, 1);
             Data.Lerp(datas[leftIndex], datas[rightIndex], val);
             Data.Changed = true;
         }
