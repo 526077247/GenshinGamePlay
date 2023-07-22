@@ -61,6 +61,27 @@ namespace TaoTie
             //todo:
             return campId1 != campId2;
         }
+
+        /// <summary>
+        /// 计算碰撞权值
+        /// </summary>
+        /// <param name="attacker"></param>
+        /// <param name="info"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static float CalcWeightBaseAngle(Entity attacker, HitInfo info,float a,float b)
+        {
+            var u = attacker as Actor;
+            if (b >= 1)
+            {
+                b = 1 - float.Epsilon;
+            }
+            float temp1 = (1 - Mathf.Cos(Mathf.Deg2Rad * Vector3.Angle(info.HitDir, info.HitPos - u.Position))) / 2;
+            temp1 = temp1 * (1 - a) + a;
+            float temp2 = Mathf.Abs(b / (1 - b) * (info.HitPos.y - u.Position.y + u.configActor.Common.Height / 2)) + 1;
+            return Mathf.Abs(info.Distance * temp1 * temp2);
+        }
         
         /// <summary>
         /// 结算伤害流程
