@@ -42,6 +42,10 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.thridparty.fernnpr": "file:../Modules/com.thridparty.fernnpr",
+    "com.lifang.dagen": "file:../Modules/com.lifang.dagen",
+    "com.thridparty.odin": "file:../Modules/com.thridparty.odin",
+    "com.tuyoogame.yooasset": "file:../Modules/com.tuyoogame.yooasset"
   }
 }

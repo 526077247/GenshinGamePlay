@@ -82,6 +82,11 @@ namespace TaoTie
             if (ti == null)
                 return;
 
+            if (ti.textureShape == TextureImporterShape.TextureCube)
+            {
+                return;
+            }
+            
             //Assets/AssetsPackage 除了UI资源外，其余的纹理都要求是2的幂次方 UI资源是因为会打图集，散图的话主要是背景 先忽略吧
             if (!assetPath.Contains("Assets/AssetsPackage/UI") && assetPath.Contains("Assets/AssetsPackage"))
             {

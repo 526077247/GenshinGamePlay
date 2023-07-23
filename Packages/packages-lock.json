@@ -1,29 +1,29 @@
 {
   "dependencies": {
     "com.lifang.dagen": {
-      "version": "file:com.lifang.dagen",
+      "version": "file:../Modules/com.lifang.dagen",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.thridparty.fernnpr": {
-      "version": "file:com.thridparty.fernnpr",
+      "version": "file:../Modules/com.thridparty.fernnpr",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {
         "com.unity.render-pipelines.universal": "12.1.8"
       }
     },
     "com.thridparty.odin": {
-      "version": "file:com.thridparty.odin",
+      "version": "file:../Modules/com.thridparty.odin",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.tuyoogame.yooasset": {
-      "version": "file:com.tuyoogame.yooasset@1.4.2",
+      "version": "file:../Modules/com.tuyoogame.yooasset",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {
         "com.unity.scriptablebuildpipeline": "1.20.2",
         "com.unity.modules.assetbundle": "1.0.0",
@@ -207,7 +207,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.textmeshpro": {
-      "version": "file:com.unity.textmeshpro@3.0.6",
+      "version": "file:com.unity.textmeshpro",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -215,15 +215,16 @@
       }
     },
     "com.unity.timeline": {
-      "version": "file:com.unity.timeline@1.6.4",
+      "version": "1.6.4",
       "depth": 0,
-      "source": "embedded",
+      "source": "registry",
       "dependencies": {
         "com.unity.modules.director": "1.0.0",
         "com.unity.modules.animation": "1.0.0",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.particlesystem": "1.0.0"
-      }
+      },
+      "url": "https://packages.unity.cn"
     },
     "com.unity.ugui": {
       "version": "1.0.0",

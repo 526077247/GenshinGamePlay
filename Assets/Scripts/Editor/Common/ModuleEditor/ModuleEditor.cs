@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,14 +10,13 @@ namespace TaoTie
 
     public class ModuleEditor : EditorWindow
     {
-        private const string settingAsset = "Assets/Scripts/Editor/Common/ModuleEditor/ModuleInfo.asset";
+        private const string packages = "Packages/manifest.json";
         private string Source = "Modules";
-        private string ModulePath = "Packages";
-        private ModuleInfo info;
 
         Vector2 scrollPos;
         private Dictionary<string, bool> temp = new Dictionary<string, bool>();
 
+        private Packages info;
         [MenuItem("Tools/模组管理工具")]
         public static void ShowWindow()
         {
@@ -25,27 +25,16 @@ namespace TaoTie
 
         private void OnEnable()
         {
-            if (!File.Exists(settingAsset))
-            {
-                info = new ModuleInfo();
-                AssetDatabase.CreateAsset(info, settingAsset);
-            }
-            else
-            {
-                info = AssetDatabase.LoadAssetAtPath<ModuleInfo>(settingAsset);
-                Source = info.Source;
-                ModulePath = info.ModulePath;
-            }
-
+            info = Newtonsoft.Json.JsonConvert.DeserializeObject<Packages>(File.ReadAllText(packages));
             temp.Clear();
             DirectoryInfo[] content = Array.Empty<DirectoryInfo>();
-            if (Directory.Exists(ModulePath))
+            if (Directory.Exists(Source))
             {
-                var dir = new DirectoryInfo(ModulePath);
+                var dir = new DirectoryInfo(Source);
                 content = dir.GetDirectories();
                 foreach (var item in content)
                 {
-                    temp[item.Name] = true;
+                    temp[item.Name] = info.dependencies.ContainsKey(item.Name);
                 }
             }
         }
@@ -53,7 +42,6 @@ namespace TaoTie
         private void OnGUI()
         {
             Source = EditorGUILayout.TextField("仓库路径", Source);
-            ModulePath = EditorGUILayout.TextField("导入路径", ModulePath);
             GUILayout.Label("");
             if (!Directory.Exists(Source))
             {
@@ -77,27 +65,6 @@ namespace TaoTie
                 bool old = false;
                 temp.TryGetValue(sources[i].Name, out old);
                 temp[sources[i].Name] = GUILayout.Toggle(old, sources[i].Name);
-                if (GUILayout.Button("强制更新"))
-                {
-                    if (Directory.Exists(ModulePath + "/" + sources[i].Name))
-                    {
-                        Directory.Delete(ModulePath + "/" + sources[i].Name, true);
-                    }
-
-                    SafeCopyDir(Source + "/" + sources[i].Name, ModulePath + "/" + sources[i].Name);
-                    Debug.Log("强制更新 " + ModulePath + "/" + sources[i].Name);
-                }
-
-                if (GUILayout.Button("反向覆盖"))
-                {
-                    if (Directory.Exists(Source + "/" + sources[i].Name))
-                    {
-                        Directory.Delete(Source + "/" + sources[i].Name, true);
-                    }
-
-                    SafeCopyDir(ModulePath + "/" + sources[i].Name, Source + "/" + sources[i].Name);
-                    Debug.Log("反向覆盖 " + Source + "/" + sources[i].Name);
-                }
 
                 EditorGUILayout.EndHorizontal();
             }
@@ -109,17 +76,17 @@ namespace TaoTie
             {
                 foreach (var item in temp)
                 {
-                    bool has = Directory.Exists(ModulePath + "/" + item.Key);
+                    bool has = info.dependencies.ContainsKey(item.Key);
                     if (item.Value && !has)
                     {
-                        SafeCopyDir(Source + "/" + item.Key, ModulePath + "/" + item.Key);
+                        info.dependencies.Add(item.Key, "file:../" + Source + "/" + item.Key);
                         Debug.Log("添加 " + item.Key);
                         AssetDatabase.Refresh();
                     }
-
+                    
                     if (!item.Value && has)
                     {
-                        AssetDatabase.DeleteAsset(ModulePath + "/" + item.Key);
+                        info.dependencies.Remove(item.Key);
                         Debug.Log("移除 " + item.Key);
                     }
                 }
@@ -136,82 +103,24 @@ namespace TaoTie
 
         private void SaveSettings()
         {
-            info.Source = Source;
-            info.ModulePath = ModulePath;
-            EditorUtility.SetDirty(info);
-            AssetDatabase.SaveAssets();
+            File.WriteAllText(packages,Newtonsoft.Json.JsonConvert.SerializeObject(info,new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+            }));
+            AssetDatabase.Refresh();
         }
 
-        public static bool SafeCopyDir(string sourcePath, string savePath)
-        {
-            if (!Directory.Exists(savePath))
-            {
-                Directory.CreateDirectory(savePath);
-            }
-
-            #region //拷贝labs文件夹到savePath下
-
-            try
-            {
-                string[] labDirs = Directory.GetDirectories(sourcePath); //目录
-                string[] labFiles = Directory.GetFiles(sourcePath); //文件
-                if (labFiles.Length > 0)
-                {
-                    for (int i = 0; i < labFiles.Length; i++)
-                    {
-                        //if (Path.GetExtension(labFiles[i]) == ".dll")//过滤出.dll文件
-                        //{
-                        File.Copy(Path.Combine(sourcePath, Path.GetFileName(labFiles[i])),
-                            Path.Combine(savePath, Path.GetFileName(labFiles[i])), true);
-                        //}
-                    }
-                }
-
-                if (labDirs.Length > 0)
-                {
-                    for (int j = 0; j < labDirs.Length; j++)
-                    {
-                        Directory.GetDirectories(Path.Combine(sourcePath, Path.GetFileName(labDirs[j])));
-
-                        //递归调用
-                        SafeCopyDir(Path.Combine(sourcePath, Path.GetFileName(labDirs[j])),
-                            Path.Combine(savePath, Path.GetFileName(labDirs[j])));
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            #endregion
-
-            return true;
-        }
-        
         public static void Clear(string name)
         {
-            ModuleInfo info;
-            string Source;
-            string ModulePath;
-            if (!File.Exists(settingAsset))
+            Packages info =  Newtonsoft.Json.JsonConvert.DeserializeObject<Packages>(File.ReadAllText(packages));
+            if (info.dependencies.ContainsKey(name))
             {
-                info = new ModuleInfo();
-                AssetDatabase.CreateAsset(info, settingAsset);
-                Source = info.Source;
-                ModulePath = info.ModulePath;
-            }
-            else
-            {
-                info = AssetDatabase.LoadAssetAtPath<ModuleInfo>(settingAsset);
-                Source = info.Source;
-                ModulePath = info.ModulePath;
-            }
-
-            if (Directory.Exists(ModulePath + "/" + name))
-            {
-                AssetDatabase.DeleteAsset(ModulePath + "/" + name);
-                Debug.Log("移除 "+name);
+                info.dependencies.Remove(name);
+                File.WriteAllText(packages,Newtonsoft.Json.JsonConvert.SerializeObject(info,new JsonSerializerSettings()
+                {
+                    Formatting = Formatting.Indented,
+                }));
+                AssetDatabase.Refresh();
             }
         }
     }
