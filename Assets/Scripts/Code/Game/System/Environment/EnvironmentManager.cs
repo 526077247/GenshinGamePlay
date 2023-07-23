@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -7,15 +8,15 @@ namespace TaoTie
     {
         public static EnvironmentManager Instance { get; private set; }
         //游戏世界一天时间，换算成GameTime的总时长，下同
-        const int mDayTimeCount = 1200_000;
+        const int mDayTimeCount = 120_000;
         //早上开始时间
         const int mMorningTimeStart = 0;
         //中午开始时间
-        const int mNoonTimeStart = 100_000;
+        const int mNoonTimeStart = 10_000;
         //下午开始时间
-        const int mAfterNoonTimeStart = 700_000;
+        const int mAfterNoonTimeStart = 70_000;
         //晚上开始时间
-        const int mNightTimeStart = 800_000;
+        const int mNightTimeStart = 80_000;
         
         private PriorityStack<EnvironmentRunner> envInfoStack;
         private Dictionary<long, EnvironmentRunner> envInfoMap;
@@ -34,10 +35,22 @@ namespace TaoTie
         public long NowTime{ get; private set; }
 
         private Dictionary<int, ConfigEnvironment> configs;
+
+        #region SkyBox
+
+        private Material skybox;
+
+        #endregion
+        
         #region IManager
         
         public void Init()
         {
+            MaterialManager.Instance.LoadMaterialAsync("SkyBox/Skybox_SkyboxBlender.mat", (mat) =>
+            {
+                skybox = mat;
+                RenderSettings.skybox = skybox;
+            }).Coroutine();
             Instance = this;
             #region Config
             
@@ -187,6 +200,22 @@ namespace TaoTie
             if (preInfo == curInfo && (info == null || !info.Changed)) return;
             
             //todo:
+            RenderSettings.skybox = skybox;
+            if (skybox != null)
+            {
+                if (curInfo.IsBlender)
+                {
+                    skybox.SetTexture("_Tex2",curInfo.SkyCube2);
+                    skybox.SetColor("_Tint2",curInfo.TintColor2);
+                    skybox.SetFloat("_BlendCubemaps",curInfo.Progress);
+                }
+                else
+                {
+                    skybox.SetFloat("_BlendCubemaps",0);
+                }
+                skybox.SetColor("_Tint",curInfo.TintColor);
+                skybox.SetTexture("_Tex",curInfo.SkyCube);
+            }
         }
 
         private NormalEnvironmentRunner CreateRunner(ConfigEnvironment data, EnvironmentPriorityType type)

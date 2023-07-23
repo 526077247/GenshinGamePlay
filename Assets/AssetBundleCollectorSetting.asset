@@ -149,3 +149,10 @@ MonoBehaviour:
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: 
+      - CollectPath: Assets/AssetsPackage/SkyBox
+        CollectorGUID: 7501245b7970cd94fa4e43b6a94871fc
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 

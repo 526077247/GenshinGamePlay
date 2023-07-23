@@ -1,9 +1,6 @@
 ﻿using LitJson.Extensions;
 using Nino.Serialization;
 using Sirenix.OdinInspector;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using UnityEngine;
 
 namespace TaoTie
@@ -31,7 +28,7 @@ namespace TaoTie
                 return;
             }
 
-            var path = AssetDatabase.GetAssetPath(Icon);
+            var path = UnityEditor.AssetDatabase.GetAssetPath(Icon);
             if (path.StartsWith("Assets/AssetsPackage/"))
             {
                 IconPath = path.Replace("Assets/AssetsPackage/","");
@@ -46,7 +43,7 @@ namespace TaoTie
         {
             if (!string.IsNullOrEmpty(IconPath))
             {
-                Icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/AssetsPackage/" + IconPath);
+                Icon = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/AssetsPackage/" + IconPath);
                 return;
             }
             Icon = null;

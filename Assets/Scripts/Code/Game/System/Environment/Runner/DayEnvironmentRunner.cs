@@ -100,12 +100,14 @@
                 start = dayTimes[leftIndex] + dayHalfInterval[leftIndex];
                 end = dayTimes[rightIndex];
             }
+            Data.IsBlender = false;
             if(!change && datas[leftIndex].Id == datas[rightIndex].Id) return;
             if (end < start) end += environmentManager.DayTimeCount;
             progress %= dayHalfInterval[dayTimeIndex];
             var val = lerpFunc(progress / (end - start) / 2 + (ifLeftHalf ? 0.5f : 0), 0, 1);
             Data.Lerp(datas[leftIndex], datas[rightIndex], val);
             Data.Changed = true;
+            Data.IsBlender = true;
         }
 
         public override void Dispose()
