@@ -253,5 +253,36 @@ namespace TaoTie
 		{
 			return "Assets" + Path.GetFullPath(path).Replace(Path.GetFullPath(Application.dataPath), "").Replace('\\', '/');
 		}
+		
+		public static void CreateArtSubFolder(string selectPath)
+		{
+			string[] ArtFolderNames = { "Animations", "Materials", "Models", "Textures", "Prefabs" };
+			string[] UnitFolderNames = { "Animations", "Edit", "Materials", "Models", "Textures", "Prefabs" };
+			string[] UIFolderNames = { "Animations", "Atlas", "DiscreteImages","DynamicAtlas", "Prefabs" };
+			Debug.Log(selectPath);
+			if (Directory.Exists(selectPath))
+			{
+				var names = ArtFolderNames;
+				selectPath.Replace("\\", "/");
+				if (selectPath.Contains("UI/") || selectPath.Contains("UIHall/") || selectPath.Contains("UIGame/"))
+				{
+					names = UIFolderNames;
+				}
+				if (selectPath.Contains("Unit/"))
+				{
+					names = UnitFolderNames;
+				}
+				for (int j = 0; j < names.Length; j++)
+				{
+					string folderPath = Path.Combine(selectPath, names[j]);
+					Debug.Log(folderPath);
+					Directory.CreateDirectory(folderPath);
+				}
+			}
+			else
+			{
+				Debug.Log(selectPath + " is not a directory");
+			}
+		}
 	}
 }
