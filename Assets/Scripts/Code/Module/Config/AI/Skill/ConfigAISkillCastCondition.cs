@@ -7,7 +7,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigAISkillCastCondition
     {
-        [NinoMember(1)]
+        [NinoMember(1)][Tooltip("处于这些Pose中时有效, 为null表示全有效")]
         public int[] PoseIds;
         [NinoMember(2)][Min(0)][LabelText("与视线水平角度min")][BoxGroup("目标选取")]
         public float MinTargetAngleXZ;
