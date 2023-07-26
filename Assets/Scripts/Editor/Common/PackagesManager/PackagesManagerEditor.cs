@@ -8,7 +8,7 @@ using UnityEngine;
 namespace TaoTie
 {
 
-    public class ModuleEditor : EditorWindow
+    public class PackagesManagerEditor : EditorWindow
     {
         private const string packages = "Packages/manifest.json";
         private string Source = "Modules";
@@ -17,10 +17,10 @@ namespace TaoTie
         private Dictionary<string, bool> temp = new Dictionary<string, bool>();
 
         private Packages info;
-        [MenuItem("Tools/模组管理工具")]
+        [MenuItem("Tools/Packages管理工具")]
         public static void ShowWindow()
         {
-            GetWindow(typeof(ModuleEditor));
+            GetWindow(typeof(PackagesManagerEditor));
         }
 
         private void OnEnable()
@@ -34,7 +34,10 @@ namespace TaoTie
                 content = dir.GetDirectories();
                 foreach (var item in content)
                 {
-                    temp[item.Name] = info.dependencies.ContainsKey(item.Name);
+                    string packagePath = item.FullName + "/package.json";
+                    if(!File.Exists(packagePath)) return;
+                    Package package = Newtonsoft.Json.JsonConvert.DeserializeObject<Package>(File.ReadAllText(packagePath));
+                    temp[package.name] = info.dependencies.ContainsKey(package.name);
                 }
             }
         }
@@ -61,10 +64,15 @@ namespace TaoTie
                 GUILayout.Height(position.height - 115));
             for (int i = 0; i < sources.Length; i++)
             {
+                string packagePath = sources[i].FullName + "/package.json";
+                if(!File.Exists(packagePath)) return;
+                Package package = Newtonsoft.Json.JsonConvert.DeserializeObject<Package>(File.ReadAllText(packagePath));
+                    
                 EditorGUILayout.BeginHorizontal();
                 bool old = false;
-                temp.TryGetValue(sources[i].Name, out old);
-                temp[sources[i].Name] = GUILayout.Toggle(old, sources[i].Name);
+                temp.TryGetValue(package.name, out old);
+            
+                temp[package.name] = GUILayout.Toggle(old, package.name);
 
                 EditorGUILayout.EndHorizontal();
             }

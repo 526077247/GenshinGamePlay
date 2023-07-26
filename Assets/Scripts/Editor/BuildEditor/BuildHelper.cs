@@ -144,7 +144,7 @@ namespace TaoTie
                     break;
             }
             
-            ModuleEditor.Clear("com.thridparty-moudule.hotreload");//HotReload存在时打包会报错
+            PackagesManagerEditor.Clear("com.thridparty-moudule.hotreload");//HotReload存在时打包会报错
             //打程序集
             FileHelper.CleanDirectory(Define.HotfixDir);
             BuildAssemblieEditor.BuildCodeRelease();
