@@ -185,7 +185,12 @@ namespace TaoTie
                     {
                         envInfoStack.Pop().Dispose();
                     }
-
+                    if (envInfoStack.Count <= 0)
+                    {
+                        top.Dispose();
+                        curRunner = null;
+                        return;
+                    }
                     blender = CreateRunner(top as NormalEnvironmentRunner, envInfoStack.Peek() as
                         NormalEnvironmentRunner, false);
                     envInfoStack.Push(blender);
