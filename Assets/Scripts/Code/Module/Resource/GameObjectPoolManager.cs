@@ -346,26 +346,22 @@ namespace TaoTie
 				{
 					dictPath[releasePathArray[i]] = true;
 				}
-			}
-			foreach (var item in this.instCache)
-			{
-				if (dictPath.ContainsKey(item.Key))
+				foreach (var item in this.instCache)
 				{
-					for (int i = 0; i < item.Value.Count; i++)
+					if (dictPath.ContainsKey(item.Key))
 					{
-						var inst = item.Value[i];
-						if (inst != null)
+						for (int i = 0; i < item.Value.Count; i++)
 						{
-							GameObject.Destroy(inst);
-							this.goInstCountCache[item.Key]-- ;
+							var inst = item.Value[i];
+							if (inst != null)
+							{
+								GameObject.Destroy(inst);
+								this.goInstCountCache[item.Key]-- ;
+							}
+							this.instPathCache.Remove(inst);
 						}
-						this.instPathCache.Remove(inst);
 					}
 				}
-			}
-
-			if (releasePathArray != null)
-			{
 				for (int i = 0; i < releasePathArray.Count; i++)
 				{
 					this.instCache.Remove(releasePathArray[i]);
