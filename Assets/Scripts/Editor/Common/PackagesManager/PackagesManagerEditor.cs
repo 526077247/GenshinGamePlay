@@ -15,7 +15,7 @@ namespace TaoTie
 
         Vector2 scrollPos;
         private Dictionary<string, bool> temp = new Dictionary<string, bool>();
-
+        private Dictionary<string, string> tempPath = new Dictionary<string, string>();
         private Packages info;
         [MenuItem("Tools/Packages管理工具")]
         public static void ShowWindow()
@@ -59,7 +59,7 @@ namespace TaoTie
                 GUILayout.Label("暂无模组");
                 return;
             }
-
+            tempPath.Clear();
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(position.width),
                 GUILayout.Height(position.height - 115));
             for (int i = 0; i < sources.Length; i++)
@@ -67,13 +67,13 @@ namespace TaoTie
                 string packagePath = sources[i].FullName + "/package.json";
                 if(!File.Exists(packagePath)) return;
                 Package package = Newtonsoft.Json.JsonConvert.DeserializeObject<Package>(File.ReadAllText(packagePath));
-                    
+                        
                 EditorGUILayout.BeginHorizontal();
                 bool old = false;
                 temp.TryGetValue(package.name, out old);
-            
+                
                 temp[package.name] = GUILayout.Toggle(old, package.name);
-
+                tempPath[package.name] = sources[i].Name;
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -87,18 +87,17 @@ namespace TaoTie
                     bool has = info.dependencies.ContainsKey(item.Key);
                     if (item.Value && !has)
                     {
-                        info.dependencies.Add(item.Key, "file:../" + Source + "/" + item.Key);
+                        info.dependencies.Add(item.Key, "file:../" + Source + "/" + tempPath[item.Key]);
                         Debug.Log("添加 " + item.Key);
                         AssetDatabase.Refresh();
                     }
-                    
+
                     if (!item.Value && has)
                     {
                         info.dependencies.Remove(item.Key);
                         Debug.Log("移除 " + item.Key);
                     }
                 }
-
                 AssetDatabase.Refresh();
                 Close();
             }
@@ -111,7 +110,7 @@ namespace TaoTie
 
         private void SaveSettings()
         {
-            File.WriteAllText(packages,Newtonsoft.Json.JsonConvert.SerializeObject(info,new JsonSerializerSettings()
+            File.WriteAllText(packages, Newtonsoft.Json.JsonConvert.SerializeObject(info, new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
             }));
@@ -120,11 +119,11 @@ namespace TaoTie
 
         public static void Clear(string name)
         {
-            Packages info =  Newtonsoft.Json.JsonConvert.DeserializeObject<Packages>(File.ReadAllText(packages));
+            Packages info = Newtonsoft.Json.JsonConvert.DeserializeObject<Packages>(File.ReadAllText(packages));
             if (info.dependencies.ContainsKey(name))
             {
                 info.dependencies.Remove(name);
-                File.WriteAllText(packages,Newtonsoft.Json.JsonConvert.SerializeObject(info,new JsonSerializerSettings()
+                File.WriteAllText(packages, Newtonsoft.Json.JsonConvert.SerializeObject(info, new JsonSerializerSettings()
                 {
                     Formatting = Formatting.Indented,
                 }));
