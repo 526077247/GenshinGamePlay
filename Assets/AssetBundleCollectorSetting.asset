@@ -156,3 +156,10 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
+      - CollectPath: Assets/AssetsPackage/Navmesh
+        CollectorGUID: 71faefd3723e6b344981063cf616aa04
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 

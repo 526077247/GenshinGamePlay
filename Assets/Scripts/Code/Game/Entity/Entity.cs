@@ -160,6 +160,11 @@ namespace TaoTie
             return AddComponent<T>();
         }
 
+        public void RemoveComponent<T>(T t) where T : Component, IComponentDestroy
+        {
+            Type type = TypeInfo<T>.Type;
+            RemoveComponent(type);
+        }
         public void RemoveComponent<T>() where T : Component, IComponentDestroy
         {
             Type type = TypeInfo<T>.Type;

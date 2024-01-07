@@ -18,6 +18,7 @@ namespace TaoTie
                 if (task.Type == NavMeshUseType.NotUse ||
                     (task.Type == NavMeshUseType.Auto && knowledge.PathFindingKnowledge.Type == PathFindingType.Link))
                 {
+                    task.Corners.Clear();
                     //直接冲过去
                     task.Corners.Add(task.Start);
                     task.Corners.Add(task.Destination);
@@ -27,9 +28,30 @@ namespace TaoTie
                          (task.Type == NavMeshUseType.Auto &&
                           knowledge.PathFindingKnowledge.Type == PathFindingType.NavMesh))
                 {
-                    //todo:接入navmesh
-                    task.Status = QueryStatus.Fail;
-                    Log.Error("未接入navmesh");
+                    task.Corners.Clear();
+                    var pc = this.knowledge.Entity.GetComponent<PathfindingComponent>();
+                    if (pc != null)
+                    {
+                        if (pc.Name != this.knowledge.PathFindingKnowledge.NavMeshAgentName)
+                        {
+                            this.knowledge.Entity.RemoveComponent(pc);
+                            pc = null;
+                        }
+                    }
+                    if (pc == null)
+                    {
+                        if(string.IsNullOrEmpty(this.knowledge.PathFindingKnowledge.NavMeshAgentName))
+                        {
+                            task.Status = QueryStatus.Fail;
+                            Log.Error($"寻路失败，{this.knowledge.Entity.Id}没找到PathfindingComponent组件");
+                            return;
+                        }
+
+                        pc = this.knowledge.Entity.AddComponent<PathfindingComponent, string>(this.knowledge
+                            .PathFindingKnowledge.NavMeshAgentName);
+                    }
+                    pc.Find(task.Start, task.Destination, task.Corners);
+                    task.Status = QueryStatus.Success;
                 }
             }
         }

@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 10d69a069bc9a014bb78a33f83173889, type: 2}
 --- !u!1 &308414768
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,10 +370,10 @@ GameObject:
   - component: {fileID: 584763995}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: NavMesh
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!64 &584763995
 MeshCollider:
@@ -468,10 +468,10 @@ GameObject:
   - component: {fileID: 947168244}
   m_Layer: 0
   m_Name: Plane (1)
-  m_TagString: Untagged
+  m_TagString: NavMesh
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!64 &947168244
 MeshCollider:

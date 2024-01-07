@@ -1,0 +1,9 @@
+完整工作流
+先在Unity中使用NavMesh烘焙，把要导出的物体tag标为navmesh，然后使用Tools/NavMesh/导出寻路网格工具导出obj文件。
+然后在外层Tools\RecastNavMesh文件夹下的RecastDemo.exe中进行读取并烘焙
+
+1. Sample-Solo Mesh
+2. Input Mesh-我们导出的obj文件，需要放到Meshes目录下
+3. 调制参数，Build，不同大小地图可能需要几分钟到几十分钟不等
+4. Save保存为nav文件，会导出为solo_navmesh.bin
+5.改名为xxx.bytes

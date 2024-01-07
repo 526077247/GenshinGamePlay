@@ -27,7 +27,7 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<SceneManager>();
                 
                 ManagerProvider.RegisterManager<ServerConfigManager>();
-                
+                ManagerProvider.RegisterManager<NavmeshSystem>();
                 
                 ManagerProvider.RegisterManager<InputManager>();
                 ManagerProvider.RegisterManager<BillboardSystem>();
