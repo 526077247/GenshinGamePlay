@@ -163,7 +163,7 @@ namespace TaoTie
         }
 
         /// 计算结果,传入的Dictionary中必须包含所有信息//
-        public float GetData(NumericComponent comp,ActorAbility ability)
+        public float GetData(NumericComponent comp,INumericReplace replace = null)
         {
             ListComponent<int> priorityList = ListComponent<int>.Create();
 
@@ -184,9 +184,9 @@ namespace TaoTie
                     {
                         tempList[i].Value = comp.GetAsFloat(type).ToString();
                     }
-                    else if(ability != null)
+                    else if(replace != null)
                     {
-                        tempList[i].Value = ability.GetSpecials(tempList[i].Value).ToString();
+                        tempList[i].Value = replace.GetReplaceValue(tempList[i].Value).ToString();
                     }
                 }
 

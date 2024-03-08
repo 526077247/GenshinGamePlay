@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TaoTie
 {
-    public sealed class ActorAbility :BaseActorActionContext
+    public sealed class ActorAbility :BaseActorActionContext,INumericReplace
     {
         public ConfigAbility Config { get; private set; }
         
@@ -18,7 +18,7 @@ namespace TaoTie
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();
             res.isDispose = false;
 
-            if (config.AbilitySpecials != null)
+            if (config.AbilitySpecials != null)             
             {
                 foreach (var item in config.AbilitySpecials)
                 {
@@ -81,7 +81,7 @@ namespace TaoTie
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public float GetSpecials(string key)
+        public float GetReplaceValue(string key)
         {
             return dynDictionary.Get(key);
         }
