@@ -16,11 +16,12 @@ namespace TaoTie
         bool grayState;
         Image image;
         string spritePath;
-
+        private long id;
         #region override
 
         public void OnCreate()
         {
+            id = IdGenerater.Instance.GenerateId();
             grayState = false;
         }
         
@@ -96,15 +97,24 @@ namespace TaoTie
             if (this.grayState == isGray) return;
             this.ActivatingImageComponent();
             this.grayState = isGray;
-            var mat = await MaterialManager.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
+            Material mt = null;
+            if (isGray)
+            {
+                mt = await MaterialManager.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
+                if (!this.grayState)
+                {
+                    mt = null;
+                }
+            }
+            this.image.material = mt;
             if (affectInteractable)
             {
-                this.image.raycastTarget = !isGray;
+                this.image.raycastTarget = !this.grayState;
             }
-            this.SetBtnGray(mat, isGray, includeText);
+            this.SetBtnGray(mt, this.grayState, includeText);
         }
 
-        public void SetBtnGray(Material grayMaterial, bool isGray, bool includeText)
+        private void SetBtnGray(Material grayMaterial, bool isGray, bool includeText)
         {
             this.ActivatingImageComponent();
             GameObject go = this.GetGameObject();
@@ -112,11 +122,7 @@ namespace TaoTie
             {
                 return;
             }
-            Material mt = null;
-            if (isGray)
-            {
-                mt = grayMaterial;
-            }
+            Material mt = grayMaterial;
             var coms = go.GetComponentsInChildren<Image>(true);
             for (int i = 0; i < coms.Length; i++)
             {
@@ -140,25 +146,42 @@ namespace TaoTie
                 }
             }
         }
-        public async ETTask SetSpritePath(string sprite_path)
+        public async ETTask SetSpritePath(string sprite_path,bool setNativeSize = false)
         {
-            if (string.IsNullOrEmpty(sprite_path)) return;
-            if (sprite_path == this.spritePath) return;
-            this.ActivatingImageComponent();
-            var base_sprite_path = this.spritePath;
-            this.spritePath = sprite_path;
-            var sprite = await ImageLoaderManager.Instance.LoadImageAsync(sprite_path);
-            if (sprite == null)
+            CoroutineLock coroutine = null;
+            try
             {
-                ImageLoaderManager.Instance.ReleaseImage(sprite_path);
-                return;
+                coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.id);
+                if (sprite_path == this.spritePath) return;
+                this.ActivatingImageComponent();
+                this.image.enabled = false;
+                var base_sprite_path = this.spritePath;
+                this.spritePath = sprite_path;
+                if (string.IsNullOrEmpty(sprite_path))
+                {
+                    this.image.sprite = null;
+                    this.image.enabled = true;
+                }
+                else
+                {
+                    var sprite = await ImageLoaderManager.Instance.LoadImageAsync(sprite_path);
+                    this.image.enabled = true;
+                    if (sprite == null)
+                    {
+                        ImageLoaderManager.Instance.ReleaseImage(sprite_path);
+                        return;
+                    }
+                    this.image.sprite = sprite;
+                    if(setNativeSize)
+                        this.SetNativeSize();
+                }
+                if(!string.IsNullOrEmpty(base_sprite_path))
+                    ImageLoaderManager.Instance.ReleaseImage(base_sprite_path);
             }
-
-            if (!string.IsNullOrEmpty(base_sprite_path))
-                ImageLoaderManager.Instance.ReleaseImage(base_sprite_path);
-
-            this.image.sprite = sprite;
-
+            finally
+            {
+                coroutine?.Dispose();
+            }
         }
 
         public string GetSpritePath()
@@ -170,6 +193,12 @@ namespace TaoTie
         {
             this.ActivatingImageComponent();
             this.image.color = color;
+        }
+        
+        public void SetNativeSize()
+        {
+            this.ActivatingImageComponent();
+            this.image.SetNativeSize();
         }
     }
 }

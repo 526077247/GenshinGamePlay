@@ -14,6 +14,7 @@ namespace TaoTie
         Image image;
         BgAutoFit bgAutoFit;
         private long id;
+        bool grayState;
         #region override
 
         public void OnCreate(string path)
@@ -148,11 +149,17 @@ namespace TaoTie
         }
         public async ETTask SetImageGray(bool isGray)
         {
+            if (this.grayState == isGray) return;
             this.ActivatingComponent();
+            this.grayState = isGray;
             Material mt = null;
             if (isGray)
             {
                 mt = await MaterialManager.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
+                if (!this.grayState)
+                {
+                    mt = null;
+                }
             }
             this.image.material = mt;
         }
