@@ -27,7 +27,7 @@ namespace TaoTie
             Instance = this;
             // todo:从服务器或存档中取当前时间
             timeNow = 0;
-            lastUpdateTime = (long) (Time.time * 1000);
+            lastUpdateTime = TimerManager.Instance.GetTimeNow();
             InitAction();
         }
 
@@ -43,13 +43,11 @@ namespace TaoTie
         
         public override void Update()
         {
-            if(timeScale<=0) return;
-
-            var serverNow = (long) (Time.time * 1000);
+            var serverNow = TimerManager.Instance.GetTimeNow();
             deltaTime = (int)((serverNow - lastUpdateTime)*timeScale);
+            lastUpdateTime = serverNow;
+            if(timeScale<=0) return;
             timeNow += deltaTime;
-            lastUpdateTime += (int) (deltaTime / timeScale);
-            
             #region 每帧执行的timer，不用foreach TimeId，减少GC
 
             int count = this.everyFrameTimer.Count;

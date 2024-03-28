@@ -84,10 +84,11 @@ namespace TaoTie
             buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
             buildParameters.BuildMode = isBuildExe?EBuildMode.ForceRebuild:EBuildMode.IncrementalBuild;
             buildParameters.PackageVersion = buildVersion.ToString();
-            buildParameters.CopyBuildinFileTags = isBuildAll?"all":"buildin";
+            buildParameters.CopyBuildinFileTags = "buildin";
             buildParameters.VerifyBuildingResult = true;
             // buildParameters.EnableAddressable = true;
-            buildParameters.CopyBuildinFileOption = ECopyBuildinFileOption.ClearAndCopyByTags;
+            buildParameters.CopyBuildinFileOption = isBuildAll?ECopyBuildinFileOption.ClearAndCopyAll:
+                ECopyBuildinFileOption.ClearAndCopyByTags;
             // buildParameters.EncryptionServices = new GameEncryption();
             buildParameters.CompressOption = ECompressOption.LZ4;
             buildParameters.DisableWriteTypeTree = true;//禁止写入类型树结构（可以降低包体和内存并提高加载效率）
