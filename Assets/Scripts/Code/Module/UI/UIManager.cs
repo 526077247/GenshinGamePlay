@@ -571,10 +571,10 @@ namespace TaoTie
                 var obj = view.GetGameObject();
                 if (obj)
                 {
-                    if (GameObjectPoolManager.Instance == null)
+                    if (GameObjectPoolManager.GetInstance() == null)
                         GameObject.Destroy(obj);
                     else
-                        GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                 }
 
                 if (view is II18N i18n)
@@ -767,7 +767,7 @@ namespace TaoTie
 
             // await UIWatcherComponent.Instance.OnViewInitializationSystem(view);
 
-            var go = await GameObjectPoolManager.Instance.GetGameObjectAsync(path);
+            var go = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(path);
             if (go == null)
             {
                 Log.Error(string.Format("UIManager InnerOpenWindow {0} faild", target.PrefabPath));

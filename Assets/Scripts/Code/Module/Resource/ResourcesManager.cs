@@ -51,9 +51,10 @@ namespace TaoTie
         /// 同步加载Asset
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T Load<T>(string path) where T: UnityEngine.Object
+        public T Load<T>(string path,string package = null) where T: UnityEngine.Object
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -61,7 +62,7 @@ namespace TaoTie
                 return null;
             }
             this.loaderCount++;
-            var op = YooAssets.LoadAssetSync<T>(path);
+            var op = YooAssetsMgr.Instance.LoadAssetSync<T>(path, package);
             this.loaderCount--;
             T obj = op.AssetObject as T;
             if (!this.Temp.ContainsKey(op.AssetObject))
@@ -80,9 +81,10 @@ namespace TaoTie
         /// </summary>
         /// <param name="path"></param>
         /// <param name="callback"></param>
+        /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null) where T: UnityEngine.Object
+        public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null,string package = null) where T: UnityEngine.Object
         {
             ETTask<T> res = ETTask<T>.Create(true);
             if (string.IsNullOrEmpty(path))
@@ -93,7 +95,7 @@ namespace TaoTie
                 return res;
             }
             this.loaderCount++;
-            var op = YooAssets.LoadAssetAsync<T>(path);
+            var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path,package);
             op.Completed += (op) =>
             {
                 this.loaderCount--;
@@ -117,16 +119,17 @@ namespace TaoTie
         /// </summary>
         /// <param name="path"></param>
         /// <param name="callback"></param>
+        /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ETTask LoadTask<T>(string path,Action<T> callback)where T:UnityEngine.Object
+        public ETTask LoadTask<T>(string path,Action<T> callback,string package = null)where T:UnityEngine.Object
         {
             ETTask task = ETTask.Create(true);
             this.LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
                 task.SetResult();
-            }).Coroutine();
+            },package).Coroutine();
             return task;
         }
 
@@ -135,8 +138,9 @@ namespace TaoTie
         /// </summary>
         /// <param name="path"></param>
         /// <param name="isAdditive"></param>
+        /// <param name="package"></param>
         /// <returns></returns>
-        public ETTask LoadSceneAsync(string path, bool isAdditive)
+        public ETTask LoadSceneAsync(string path, bool isAdditive ,string package = null)
         {
             ETTask res = ETTask.Create(true);
             if (string.IsNullOrEmpty(path))
@@ -145,7 +149,7 @@ namespace TaoTie
                 return res;
             }
             this.loaderCount++;
-            var op = YooAssets.LoadSceneAsync(path,isAdditive?LoadSceneMode.Additive:LoadSceneMode.Single);
+            var op = YooAssetsMgr.Instance.LoadSceneAsync(path,isAdditive?LoadSceneMode.Additive:LoadSceneMode.Single,package);
             op.Completed += (op) =>
             {
                 this.loaderCount--;

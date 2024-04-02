@@ -65,45 +65,118 @@ namespace TaoTie
                
             }
         }
-        private static void BuildInternal(BuildTarget buildTarget,bool isBuildExe,bool isBuildAll)
+         public static void BuildPackage(PlatformType type, string packageName)
         {
-            string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
-            int buildVersion = obj.Resver;
-            Debug.Log($"开始构建 : {buildTarget}");
+            BuildTarget buildTarget = BuildTarget.StandaloneWindows;
+            switch (type)
+            {
+                case PlatformType.Windows:
+                    buildTarget = BuildTarget.StandaloneWindows64;
+                    break;
+                case PlatformType.Android:
+                    KeystoreSetting();
+                    buildTarget = BuildTarget.Android;
+                    break;
+                case PlatformType.IOS:
+                    buildTarget = BuildTarget.iOS;
+                    break;
+                case PlatformType.MacOS:
+                    buildTarget = BuildTarget.StandaloneOSX;
+                    break;
+                case PlatformType.Linux:
+                    buildTarget = BuildTarget.StandaloneLinux64;
+                    break;
+            }
+            string jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
+            var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
+            if (!packageConfig.packageVer.TryGetValue(packageName, out var version))
+            {
+                Debug.LogError("指定分包版本号不存在");
+                return;
+            }
+            if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
+            {
+                //pack
+                BuildPackage(buildTarget, true, false, version, packageName);
+            }
+            else
+            {
+                EditorUserBuildSettings.activeBuildTargetChanged = delegate()
+                {
+                    if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
+                    {
+                        //pack
+                        BuildPackage(buildTarget, true, false, version, packageName);
+                    }
+                };
+                if (buildGroupmap.TryGetValue(type, out var group))
+                {
+                    EditorUserBuildSettings.SwitchActiveBuildTarget(group, buildmap[type]);
+                }
+                else
+                {
+                    EditorUserBuildSettings.SwitchActiveBuildTarget(buildmap[type]);
+                }
 
-            // 命令行参数
+            }
+        }
+         private static void BuildInternal(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll)
+         {
+             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+             var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
+             int buildVersion = obj.Resver;
+             Debug.Log($"开始构建 : {buildTarget}");
+             BuildPackage(buildTarget, isBuildExe, isBuildAll, buildVersion, YooAssetsMgr.DefaultName);
+             if (isBuildAll)
+             {
+                 jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
+                 var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
+                 if (packageConfig.packageVer != null)
+                 {
+                     foreach (var item in packageConfig.packageVer)
+                     {
+                         BuildPackage(buildTarget, isBuildExe, true, item.Value, item.Key, false);
+                     }
+                 }
+             }
+         }
 
+        public static void BuildPackage(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll, int buildVersion, string packageName,bool clearS = true)
+        {
             // 构建参数
             string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultOutputRoot();
             BuildParameters buildParameters = new BuildParameters();
             buildParameters.OutputRoot = defaultOutputRoot;
             buildParameters.BuildTarget = buildTarget;
-            buildParameters.PackageName = "DefaultPackage";
-            buildParameters.BuildPipeline = isBuildExe? EBuildPipeline.BuiltinBuildPipeline: EBuildPipeline.ScriptableBuildPipeline;
+            buildParameters.PackageName = packageName;
+            buildParameters.BuildPipeline =
+                isBuildExe ? EBuildPipeline.BuiltinBuildPipeline : EBuildPipeline.ScriptableBuildPipeline;
             buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
-            buildParameters.BuildMode = isBuildExe?EBuildMode.ForceRebuild:EBuildMode.IncrementalBuild;
+            buildParameters.BuildMode = isBuildExe ? EBuildMode.ForceRebuild : EBuildMode.IncrementalBuild;
             buildParameters.PackageVersion = buildVersion.ToString();
             buildParameters.CopyBuildinFileTags = "buildin";
             buildParameters.VerifyBuildingResult = true;
-            // buildParameters.EnableAddressable = true;
-            buildParameters.CopyBuildinFileOption = isBuildAll?ECopyBuildinFileOption.ClearAndCopyAll:
-                ECopyBuildinFileOption.ClearAndCopyByTags;
-            // buildParameters.EncryptionServices = new GameEncryption();
+            buildParameters.CopyBuildinFileOption = isBuildAll
+                ? (clearS?ECopyBuildinFileOption.ClearAndCopyAll:ECopyBuildinFileOption.OnlyCopyAll)
+                : (clearS?ECopyBuildinFileOption.ClearAndCopyByTags: ECopyBuildinFileOption.OnlyCopyByTags);
+            buildParameters.EncryptionServices = new FileOffsetEncryption();
             buildParameters.CompressOption = ECompressOption.LZ4;
-            buildParameters.DisableWriteTypeTree = true;//禁止写入类型树结构（可以降低包体和内存并提高加载效率）
+            buildParameters.DisableWriteTypeTree = true; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
             buildParameters.IgnoreTypeTreeChanges = false;
+            buildParameters.SharedPackRule = new ZeroRedundancySharedPackRule();
             if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
             {
                 buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
                 buildParameters.SBPParameters.WriteLinkXML = true;
             }
+
             // 执行构建
             AssetBundleBuilder builder = new AssetBundleBuilder();
             var buildResult = builder.Run(buildParameters);
             if (buildResult.Success)
                 Debug.Log($"构建成功!");
         }
+
         public static void HandleAtlas()
         {
             //清除图集
@@ -182,13 +255,18 @@ namespace TaoTie
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
             
-            string fold = $"{AssetBundleBuilderHelper.GetDefaultOutputRoot()}/{buildTarget}/{obj.Resver}";
-            
-            string targetPath = Path.Combine(relativeDirPrefix, $"{obj.Channel}_{platform}");
+            string fold = $"{AssetBundleBuilderHelper.GetDefaultOutputRoot()}/{buildTarget}";
+            var config = Resources.Load<CDNConfig>("CDNConfig");
+            string targetPath = Path.Combine(relativeDirPrefix, $"{config.Channel}_{platform}");
             if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
             FileHelper.CleanDirectory(targetPath);
-            FileHelper.CopyFiles(fold, targetPath);
-            
+            var dirs = new DirectoryInfo(fold).GetDirectories();
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                string dir = $"{fold}/{dirs[i].Name}/{obj.Resver}";
+                FileHelper.CopyFiles(dir, targetPath);
+            }
+
             UnityEngine.Debug.Log("完成cdn资源打包");
 #if UNITY_EDITOR
             Application.OpenURL($"file:///{targetPath}");

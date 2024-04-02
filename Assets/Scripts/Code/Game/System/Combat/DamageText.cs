@@ -29,10 +29,10 @@ namespace TaoTie
             IsDispose = false;
             this.uiDamageView = uiDamageView;
             string resPath = "UIGame/UIMain/Prefabs/UIFightText.prefab";
-            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(resPath);
+            var obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(resPath);
             if (IsDispose) //加载过来已经被销毁了
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace TaoTie
             IsDispose = true;
             if (rect != null)
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(rect.gameObject);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(rect.gameObject);
             }
 
             ObjectPool.Instance.Recycle(this);

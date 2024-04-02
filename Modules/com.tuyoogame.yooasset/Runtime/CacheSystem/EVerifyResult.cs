@@ -7,14 +7,24 @@ namespace YooAsset
 	internal enum EVerifyResult
 	{
 		/// <summary>
-		/// 文件不存在
+		/// 验证异常
 		/// </summary>
-		FileNotExisted = -5,
+		Exception = -7,
 
 		/// <summary>
-		/// 文件移动失败（重命名失败）
+		/// 未找到缓存信息
 		/// </summary>
-		FileMoveFailed = -4,
+		CacheNotFound = -6,
+
+		/// <summary>
+		/// 信息文件不存在
+		/// </summary>
+		InfoFileNotExisted = -5,
+
+		/// <summary>
+		/// 数据文件不存在
+		/// </summary>
+		DataFileNotExisted = -4,
 
 		/// <summary>
 		/// 文件内容不足（小于正常大小）
@@ -32,9 +42,9 @@ namespace YooAsset
 		FileCrcError = -1,
 
 		/// <summary>
-		/// 验证异常
+		/// 默认状态（校验未完成）
 		/// </summary>
-		Exception = 0,
+		None = 0,
 
 		/// <summary>
 		/// 验证成功

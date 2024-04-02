@@ -27,7 +27,6 @@ namespace YooAsset.Editor
 		private TemplateContainer _root;
 
 		private ListView _listView;
-		private BuildReport _buildReport;
 		private readonly List<ItemWrapper> _items = new List<ItemWrapper>();
 
 
@@ -37,7 +36,7 @@ namespace YooAsset.Editor
 		public void InitViewer()
 		{
 			// 加载布局文件
-			_visualAsset = EditorHelper.LoadWindowUXML<ReporterSummaryViewer>();
+			_visualAsset = UxmlLoader.LoadWindowUXML<ReporterSummaryViewer>();
 			if (_visualAsset == null)
 				return;
 
@@ -55,23 +54,25 @@ namespace YooAsset.Editor
 		/// </summary>
 		public void FillViewData(BuildReport buildReport)
 		{
-			_buildReport = buildReport;
-
 			_items.Clear();
 
 			_items.Add(new ItemWrapper("YooAsset版本", buildReport.Summary.YooVersion));
 			_items.Add(new ItemWrapper("引擎版本", buildReport.Summary.UnityVersion));
 			_items.Add(new ItemWrapper("构建时间", buildReport.Summary.BuildDate));
-			_items.Add(new ItemWrapper("构建耗时", $"{buildReport.Summary.BuildSeconds}秒"));
+			_items.Add(new ItemWrapper("构建耗时", ConvertTime(buildReport.Summary.BuildSeconds)));
 			_items.Add(new ItemWrapper("构建平台", $"{buildReport.Summary.BuildTarget}"));
 			_items.Add(new ItemWrapper("构建管线", $"{buildReport.Summary.BuildPipeline}"));
 			_items.Add(new ItemWrapper("构建模式", $"{buildReport.Summary.BuildMode}"));
 			_items.Add(new ItemWrapper("包裹名称", buildReport.Summary.BuildPackageName));
 			_items.Add(new ItemWrapper("包裹版本", buildReport.Summary.BuildPackageVersion));
 
+			_items.Add(new ItemWrapper(string.Empty, string.Empty));
 			_items.Add(new ItemWrapper("启用可寻址资源定位", $"{buildReport.Summary.EnableAddressable}"));
+			_items.Add(new ItemWrapper("资源定位地址大小写不敏感", $"{buildReport.Summary.LocationToLower}"));
+			_items.Add(new ItemWrapper("包含资源GUID数据", $"{buildReport.Summary.IncludeAssetGUID}"));
 			_items.Add(new ItemWrapper("资源包名唯一化", $"{buildReport.Summary.UniqueBundleName}"));
-			_items.Add(new ItemWrapper("加密服务类名称", $"{buildReport.Summary.EncryptionServicesClassName}"));
+			_items.Add(new ItemWrapper("共享资源打包规则", buildReport.Summary.SharedPackRuleClassName));
+			_items.Add(new ItemWrapper("资源加密服务类", buildReport.Summary.EncryptionServicesClassName));
 
 			_items.Add(new ItemWrapper(string.Empty, string.Empty));
 			_items.Add(new ItemWrapper("构建参数", string.Empty));
@@ -154,16 +155,23 @@ namespace YooAsset.Editor
 			label2.text = itemWrapper.Value;
 		}
 
+		private string ConvertTime(int time)
+		{
+			if (time <= 60)
+			{
+				return $"{time}秒钟";
+			}
+			else
+			{
+				int minute = time / 60;
+				return $"{minute}分钟";
+			}
+		}
 		private string ConvertSize(long size)
 		{
 			if (size == 0)
 				return "0";
-			if (size < 1024)
-				return $"{size} Bytes";
-			else if (size < 1024 * 1024)
-				return $"{(int)(size / 1024)} KB";
-			else
-				return $"{(int)(size / (1024 * 1024))} MB";
+			return EditorUtility.FormatBytes(size);
 		}
 	}
 }

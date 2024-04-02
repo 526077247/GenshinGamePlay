@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using YooAsset;
+
 namespace TaoTie
 {
     /// <summary>
@@ -22,9 +24,11 @@ namespace TaoTie
     /// </summary>
     public class GameObjectPoolManager:IManager
     {
+	    public string PackageName { get;private set; }
+	    private static Dictionary<string, GameObjectPoolManager> instances;
 
-        public static GameObjectPoolManager Instance { get; private set; }
         private Transform cacheTransRoot;
+
 
         private LruCache<string, GameObject> goPool;
         private Dictionary<string, int> goInstCountCache;//go: inst_count 用于记录go产生了多少个实例
@@ -35,13 +39,28 @@ namespace TaoTie
         private Dictionary<GameObject, string> instPathCache;// inst : prefab_path 用于销毁和回收时反向找到inst对应的prefab TODO:这里有优化空间path太占内存
         private Dictionary<string, bool> persistentPathCache;//需要持久化的资源
         private Dictionary<string, Dictionary<string, int>> detailGoChildsCount;//记录go子控件具体数量信息
-        
+
+        public static GameObjectPoolManager GetInstance(string package = null)
+        {
+	        if (package == null) package = YooAssetsMgr.DefaultName;
+	        if (instances == null)
+	        {
+		        instances = new Dictionary<string, GameObjectPoolManager>();
+	        }
+	        if (!instances.TryGetValue(package, out var mgr))
+	        {
+		        mgr = ManagerProvider.RegisterManager<GameObjectPoolManager>(package);
+		        mgr.PackageName = package;
+		        instances.Add(package, mgr);
+	        }
+	        return mgr;
+        }
+
         #region override
         
         public void Init()
         {
-	        Instance = this;
-            this.goPool = new LruCache<string, GameObject>();
+	        this.goPool = new LruCache<string, GameObject>();
             this.goInstCountCache = new Dictionary<string, int>();
             this.goChildsCountPool = new Dictionary<string, int>();
             this.instCache = new Dictionary<string, List<GameObject>>();
@@ -73,8 +92,14 @@ namespace TaoTie
 
         public void Destroy()
         {
-	        Instance = null;
-            this.Cleanup();
+	        this.Cleanup();
+	        if (instances.ContainsKey(PackageName))
+	        {
+		        instances.Remove(PackageName);
+		        if (instances.Count <= 0) instances = null;
+	        }
+
+	        PackageName = null;
         }
         
         #endregion
@@ -153,7 +178,7 @@ namespace TaoTie
 				}
 				else
 				{
-					var go = await ResourcesManager.Instance.LoadAsync<GameObject>(path);
+					var go = await ResourcesManager.Instance.LoadAsync<GameObject>(path,package: PackageName);
 					if (go != null)
 					{
 						this.CacheAndInstGameObject(path, go as GameObject, instCount);
@@ -608,10 +633,7 @@ namespace TaoTie
 		/// <returns></returns>
 		bool IsOpenCheck()
 		{
-#if UNITY_EDITOR
-			return true;
-#endif
-			return false;
+			return Define.Debug;
 		}
 
 		/// <summary>

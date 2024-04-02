@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: f442df5f476242e781b3a1d0bbca57c9, type: 3}
   m_Name: CDN Config
   m_EditorClassIdentifier: Unity.Mono:TaoTie:CDNConfig
+  Channel: googleplay
   DefaultHostServer: http://127.0.0.1:8081/cdn
   FallbackHostServer: http://127.0.0.1:8081/cdn

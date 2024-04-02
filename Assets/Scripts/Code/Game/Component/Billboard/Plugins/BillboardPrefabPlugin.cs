@@ -17,7 +17,7 @@ namespace TaoTie
         {
             if (obj != null)
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                 obj = null;
             }
         }
@@ -39,10 +39,10 @@ namespace TaoTie
         private async ETTask LoadObj()
         {
             if(string.IsNullOrWhiteSpace(config.PrefabPath)) return;
-            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(config.PrefabPath);
+            var obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(config.PrefabPath);
             if (billboardComponent.IsDispose)
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                 return;
             }
 

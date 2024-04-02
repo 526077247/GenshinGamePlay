@@ -3,21 +3,11 @@ using System.IO;
 using System.Text;
 using YooAsset;
 
-public class EncryptionNone : IEncryptionServices
-{
-	public EncryptResult Encrypt(EncryptFileInfo fileInfo)
-	{
-		EncryptResult result = new EncryptResult();
-		result.LoadMethod = EBundleLoadMethod.Normal;
-		return result;
-	}
-}
-
 public class FileOffsetEncryption : IEncryptionServices
 {
 	public EncryptResult Encrypt(EncryptFileInfo fileInfo)
 	{
-		if(fileInfo.BundleName.Contains("gameres_music"))
+		if (fileInfo.BundleName.Contains("_gameres_audio"))
 		{
 			int offset = 32;
 			byte[] fileData = File.ReadAllBytes(fileInfo.FilePath);
@@ -42,7 +32,8 @@ public class FileStreamEncryption : IEncryptionServices
 {
 	public EncryptResult Encrypt(EncryptFileInfo fileInfo)
 	{
-		if (fileInfo.BundleName.Contains("gameres_music"))
+		// LoadFromStream
+		if (fileInfo.BundleName.Contains("_gameres_audio"))
 		{
 			var fileData = File.ReadAllBytes(fileInfo.FilePath);
 			for (int i = 0; i < fileData.Length; i++)
@@ -55,7 +46,8 @@ public class FileStreamEncryption : IEncryptionServices
 			result.EncryptedData = fileData;
 			return result;
 		}
-		else
+
+		// Normal
 		{
 			EncryptResult result = new EncryptResult();
 			result.LoadMethod = EBundleLoadMethod.Normal;

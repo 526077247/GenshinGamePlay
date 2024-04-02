@@ -22,7 +22,7 @@ namespace YooAsset.Editor
 		/// 构建时间
 		/// </summary>
 		public string BuildDate;
-		
+
 		/// <summary>
 		/// 构建耗时（单位：秒）
 		/// </summary>
@@ -59,9 +59,24 @@ namespace YooAsset.Editor
 		public bool EnableAddressable;
 
 		/// <summary>
+		/// 资源定位地址大小写不敏感
+		/// </summary>
+		public bool LocationToLower;
+
+		/// <summary>
+		/// 包含资源GUID数据
+		/// </summary>
+		public bool IncludeAssetGUID;
+
+		/// <summary>
 		/// 资源包名唯一化
 		/// </summary>
 		public bool UniqueBundleName;
+
+		/// <summary>
+		/// 共享资源的打包规则类名
+		/// </summary>
+		public string SharedPackRuleClassName;
 
 		/// <summary>
 		/// 加密服务类名称

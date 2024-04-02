@@ -1,40 +1,51 @@
 ﻿using System;
+using System.IO;
 
 namespace YooAsset
 {
+    public class BundleStream : FileStream
+    {
+        public const byte KEY = 64;
+    
+        public BundleStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, bool useAsync) : base(path, mode, access, share, bufferSize, useAsync)
+        {
+        }
+        public BundleStream(string path, FileMode mode) : base(path, mode)
+        {
+        }
+
+        public override int Read(byte[] array, int offset, int count)
+        {
+            var index = base.Read(array, offset, count);
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] ^= KEY;
+            }
+            return index;
+        }
+    }
     public class BundleDecryption : IDecryptionServices
     {
 
-        /// <summary>
-        /// 文件偏移解密方法
-        /// </summary>
         public ulong LoadFromFileOffset(DecryptFileInfo fileInfo)
         {
-            return 0;
+            return 32;
         }
 
-        /// <summary>
-        /// 文件内存解密方法
-        /// </summary>
         public byte[] LoadFromMemory(DecryptFileInfo fileInfo)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// 文件流解密方法
-        /// </summary>
-        public System.IO.FileStream LoadFromStream(DecryptFileInfo fileInfo)
+        public System.IO.Stream LoadFromStream(DecryptFileInfo fileInfo)
         {
-            return null;
+            BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
+            return bundleStream;
         }
 
-        /// <summary>
-        /// 文件流解密的托管缓存大小
-        /// </summary>
         public uint GetManagedReadBufferSize()
         {
-            return 0;
+            return 1024;
         }
     }
 }

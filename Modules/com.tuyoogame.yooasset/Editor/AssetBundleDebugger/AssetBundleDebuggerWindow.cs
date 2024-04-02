@@ -13,9 +13,9 @@ namespace YooAsset.Editor
 	public class AssetBundleDebuggerWindow : EditorWindow
 	{
 		[MenuItem("YooAsset/AssetBundle Debugger", false, 104)]
-		public static void ShowExample()
+		public static void OpenWindow()
 		{
-			AssetBundleDebuggerWindow wnd = GetWindow<AssetBundleDebuggerWindow>("资源包调试工具", true, EditorDefine.DockedWindowTypes);
+			AssetBundleDebuggerWindow wnd = GetWindow<AssetBundleDebuggerWindow>("资源包调试工具", true, WindowsDefine.DockedWindowTypes);
 			wnd.minSize = new Vector2(800, 600);
 		}
 
@@ -63,7 +63,7 @@ namespace YooAsset.Editor
 				VisualElement root = rootVisualElement;
 
 				// 加载布局文件
-				var visualAsset = EditorHelper.LoadWindowUXML<AssetBundleDebuggerWindow>();
+				var visualAsset = UxmlLoader.LoadWindowUXML<AssetBundleDebuggerWindow>();
 				if (visualAsset == null)
 					return;
 
@@ -278,7 +278,7 @@ namespace YooAsset.Editor
 
 				string filePath = $"{resultPath}/{nameof(DebugReport)}_{_currentReport.FrameCount}.json";
 				string fileContent = JsonUtility.ToJson(_currentReport, true);
-				FileUtility.CreateFile(filePath, fileContent);
+				FileUtility.WriteAllText(filePath, fileContent);
 			}
 		}
 		private void OnSearchKeyWordChange(ChangeEvent<string> e)

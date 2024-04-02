@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniFramework.Machine;
-using UniFramework.Module;
+using UniFramework.Singleton;
 using YooAsset;
 
 /// <summary>
@@ -21,7 +21,7 @@ internal class FsmInitialize : IStateNode
 	void IStateNode.OnEnter()
 	{
 		PatchEventDefine.PatchStatesChange.SendEventMessage("初始化资源包！");
-		UniModule.StartCoroutine(InitPackage());
+		UniSingleton.StartCoroutine(InitPackage());
 	}
 	void IStateNode.OnUpdate()
 	{
@@ -38,11 +38,11 @@ internal class FsmInitialize : IStateNode
 
 		// 创建默认的资源包
 		string packageName = "DefaultPackage";
-		var package = YooAssets.TryGetAssetsPackage(packageName);
+		var package = YooAssets.TryGetPackage(packageName);
 		if (package == null)
 		{
-			package = YooAssets.CreateAssetsPackage(packageName);
-			YooAssets.SetDefaultAssetsPackage(package);
+			package = YooAssets.CreatePackage(packageName);
+			YooAssets.SetDefaultPackage(package);
 		}
 
 		// 编辑器下的模拟模式
@@ -50,7 +50,7 @@ internal class FsmInitialize : IStateNode
 		if (playMode == EPlayMode.EditorSimulateMode)
 		{
 			var createParameters = new EditorSimulateModeParameters();
-			createParameters.SimulatePatchManifestPath = EditorSimulateModeHelper.SimulateBuild(packageName);
+			createParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
 			initializationOperation = package.InitializeAsync(createParameters);
 		}
 
@@ -74,7 +74,7 @@ internal class FsmInitialize : IStateNode
 		}
 
 		yield return initializationOperation;
-		if (package.InitializeStatus == EOperationStatus.Succeed)
+		if (initializationOperation.Status == EOperationStatus.Succeed)
 		{
 			_machine.ChangeState<FsmUpdateVersion>();
 		}
@@ -92,40 +92,27 @@ internal class FsmInitialize : IStateNode
 	{
 		//string hostServerIP = "http://10.0.2.2"; //安卓模拟器地址
 		string hostServerIP = "http://127.0.0.1";
-		string gameVersion = "v1.0";
+		string appVersion = "v1.0";
 
 #if UNITY_EDITOR
 		if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.Android)
-			return $"{hostServerIP}/CDN/Android/{gameVersion}";
+			return $"{hostServerIP}/CDN/Android/{appVersion}";
 		else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.iOS)
-			return $"{hostServerIP}/CDN/IPhone/{gameVersion}";
+			return $"{hostServerIP}/CDN/IPhone/{appVersion}";
 		else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.WebGL)
-			return $"{hostServerIP}/CDN/WebGL/{gameVersion}";
+			return $"{hostServerIP}/CDN/WebGL/{appVersion}";
 		else
-			return $"{hostServerIP}/CDN/PC/{gameVersion}";
+			return $"{hostServerIP}/CDN/PC/{appVersion}";
 #else
 		if (Application.platform == RuntimePlatform.Android)
-			return $"{hostServerIP}/CDN/Android/{gameVersion}";
+			return $"{hostServerIP}/CDN/Android/{appVersion}";
 		else if (Application.platform == RuntimePlatform.IPhonePlayer)
-			return $"{hostServerIP}/CDN/IPhone/{gameVersion}";
+			return $"{hostServerIP}/CDN/IPhone/{appVersion}";
 		else if (Application.platform == RuntimePlatform.WebGLPlayer)
-			return $"{hostServerIP}/CDN/WebGL/{gameVersion}";
+			return $"{hostServerIP}/CDN/WebGL/{appVersion}";
 		else
-			return $"{hostServerIP}/CDN/PC/{gameVersion}";
+			return $"{hostServerIP}/CDN/PC/{appVersion}";
 #endif
-	}
-
-	/// <summary>
-	/// 内置文件查询服务类
-	/// </summary>
-	private class GameQueryServices : IQueryServices
-	{
-		public bool QueryStreamingAssets(string fileName)
-		{
-			// 注意：使用了BetterStreamingAssets插件，使用前需要初始化该插件！
-			string buildinFolderName = YooAssets.GetStreamingAssetBuildinFolderName();
-			return BetterStreamingAssets.FileExists($"{buildinFolderName}/{fileName}");
-		}
 	}
 
 	/// <summary>
@@ -143,9 +130,9 @@ internal class FsmInitialize : IStateNode
 			throw new NotImplementedException();
 		}
 
-		public FileStream LoadFromStream(DecryptFileInfo fileInfo)
+		public Stream LoadFromStream(DecryptFileInfo fileInfo)
 		{
-			BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
+			BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 			return bundleStream;
 		}
 

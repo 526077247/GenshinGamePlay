@@ -55,7 +55,7 @@ namespace TaoTie
             }
             else
             {
-                GameObjectPoolManager.Instance.PreLoadGameObjectAsync(path,1).Coroutine();
+                GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(path,1).Coroutine();
                 InitViewAsync(path, delay).Coroutine();
             }
         }

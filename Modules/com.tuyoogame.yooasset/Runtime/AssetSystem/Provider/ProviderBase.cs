@@ -90,6 +90,8 @@ namespace YooAsset
 		}
 
 
+		protected BundleLoaderBase OwnerBundle { private set; get; }
+		protected DependAssetBundles DependBundles { private set; get; }
 		protected bool IsWaitForAsyncComplete { private set; get; } = false;
 		private readonly List<OperationHandleBase> _handles = new List<OperationHandleBase>();
 
@@ -99,6 +101,18 @@ namespace YooAsset
 			Impl = impl;
 			ProviderGUID = providerGUID;
 			MainAssetInfo = assetInfo;
+
+			// 创建资源包加载器
+			if (impl != null)
+			{
+				OwnerBundle = impl.CreateOwnerAssetBundleLoader(assetInfo);
+				OwnerBundle.Reference();
+				OwnerBundle.AddProvider(this);
+
+				var dependList = impl.CreateDependAssetBundleLoaders(assetInfo);
+				DependBundles = new DependAssetBundles(dependList);
+				DependBundles.Reference();
+			}
 		}
 
 		/// <summary>
@@ -112,14 +126,18 @@ namespace YooAsset
 		public virtual void Destroy()
 		{
 			IsDestroyed = true;
-		}
 
-		/// <summary>
-		/// 获取下载进度
-		/// </summary>
-		public virtual DownloadReport GetDownloadReport()
-		{
-			return DownloadReport.CreateDefaultReport();
+			// 释放资源包加载器
+			if (OwnerBundle != null)
+			{
+				OwnerBundle.Release();
+				OwnerBundle = null;
+			}
+			if (DependBundles != null)
+			{
+				DependBundles.Release();
+				DependBundles = null;
+			}
 		}
 
 		/// <summary>
@@ -159,6 +177,8 @@ namespace YooAsset
 				handle = new SceneOperationHandle(this);
 			else if (typeof(T) == typeof(SubAssetsOperationHandle))
 				handle = new SubAssetsOperationHandle(this);
+			else if (typeof(T) == typeof(AllAssetsOperationHandle))
+				handle = new AllAssetsOperationHandle(this);
 			else if (typeof(T) == typeof(RawFileOperationHandle))
 				handle = new RawFileOperationHandle(this);
 			else
@@ -221,14 +241,17 @@ namespace YooAsset
 		private TaskCompletionSource<object> _taskCompletionSource;
 		protected void InvokeCompletion()
 		{
+			DebugEndRecording();
+
 			// 进度百分百完成
 			Progress = 1f;
 
 			// 注意：创建临时列表是为了防止外部逻辑在回调函数内创建或者释放资源句柄。
+			// 注意：回调方法如果发生异常，会阻断列表里的后续回调方法！
 			List<OperationHandleBase> tempers = new List<OperationHandleBase>(_handles);
 			foreach (var hande in tempers)
 			{
-				if (hande.IsValidWithWarning)
+				if (hande.IsValid)
 				{
 					hande.InvokeCallback();
 				}
@@ -256,8 +279,7 @@ namespace YooAsset
 		public long LoadingTime { protected set; get; }
 
 		// 加载耗时统计
-		private bool _isRecording = false;
-		private Stopwatch _watch;
+		private Stopwatch _watch = null;
 
 		[Conditional("DEBUG")]
 		public void InitSpawnDebugInfo()
@@ -274,22 +296,53 @@ namespace YooAsset
 		}
 
 		[Conditional("DEBUG")]
-		protected void DebugRecording()
+		protected void DebugBeginRecording()
 		{
-			if (_isRecording == false)
+			if (_watch == null)
 			{
-				_isRecording = true;
 				_watch = Stopwatch.StartNew();
 			}
+		}
 
+		[Conditional("DEBUG")]
+		private void DebugEndRecording()
+		{
 			if (_watch != null)
 			{
-				if (IsDone)
-				{
-					LoadingTime = _watch.ElapsedMilliseconds;
-					_watch = null;
-				}
+				LoadingTime = _watch.ElapsedMilliseconds;
+				_watch = null;
 			}
+		}
+
+		/// <summary>
+		/// 获取下载报告
+		/// </summary>
+		internal DownloadReport GetDownloadReport()
+		{
+			DownloadReport result = new DownloadReport();
+			result.TotalSize = (ulong)OwnerBundle.MainBundleInfo.Bundle.FileSize;
+			result.DownloadedBytes = OwnerBundle.DownloadedBytes;
+			foreach (var dependBundle in DependBundles.DependList)
+			{
+				result.TotalSize += (ulong)dependBundle.MainBundleInfo.Bundle.FileSize;
+				result.DownloadedBytes += dependBundle.DownloadedBytes;
+			}
+			result.Progress = (float)result.DownloadedBytes / result.TotalSize;
+			return result;
+		}
+
+		/// <summary>
+		/// 获取资源包的调试信息列表
+		/// </summary>
+		internal void GetBundleDebugInfos(List<DebugBundleInfo> output)
+		{
+			var bundleInfo = new DebugBundleInfo();
+			bundleInfo.BundleName = OwnerBundle.MainBundleInfo.Bundle.BundleName;
+			bundleInfo.RefCount = OwnerBundle.RefCount;
+			bundleInfo.Status = OwnerBundle.Status.ToString();
+			output.Add(bundleInfo);
+
+			DependBundles.GetBundleDebugInfos(output);
 		}
 		#endregion
 	}

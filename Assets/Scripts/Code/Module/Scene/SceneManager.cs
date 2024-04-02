@@ -83,7 +83,7 @@ namespace TaoTie
             Log.Info("InnerSwitchScene GameObjectPool Cleanup");
             if (needClean && CurrentScene != null)
             {
-                GameObjectPoolManager.Instance.Cleanup(true, CurrentScene.GetScenesChangeIgnoreClean());
+                GameObjectPoolManager.GetInstance().Cleanup(true, CurrentScene.GetScenesChangeIgnoreClean());
                 slidValue += 0.01f;
                 await scene.SetProgress(slidValue);
                 //清除除loading外的资源缓存 
@@ -91,7 +91,7 @@ namespace TaoTie
                 for (int i = 0; i < CurrentScene.GetScenesChangeIgnoreClean().Count; i++)
                 {
                     var path = CurrentScene.GetScenesChangeIgnoreClean()[i];
-                    var go = GameObjectPoolManager.Instance.GetCachedGoWithPath(path);
+                    var go = GameObjectPoolManager.GetInstance().GetCachedGoWithPath(path);
                     if (go != null)
                     {
                         gos.Add(go);
@@ -159,7 +159,7 @@ namespace TaoTie
             await this.InnerSwitchScene<T>(needClean);
 
             //释放loading界面引用的资源
-            GameObjectPoolManager.Instance.CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
+            GameObjectPoolManager.GetInstance().CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
             this.Busing = false;
         }
         
@@ -189,7 +189,7 @@ namespace TaoTie
                 avatar.Rotation = Quaternion.Euler(rot);
             }
             //释放loading界面引用的资源
-            GameObjectPoolManager.Instance.CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
+            GameObjectPoolManager.GetInstance().CleanupWithPathArray(true, CurrentScene.GetScenesChangeIgnoreClean());
             this.Busing = false;
         }
 

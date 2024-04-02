@@ -6,7 +6,11 @@ namespace TaoTie
         public const string BuildOutputDir = "./Temp/Bin/Debug";
         
         public const string HotfixDir = "Assets/AssetsPackage/Code/Hotfix/";
-
+#if UNITY_EDITOR
+        public static readonly bool Debug = true;
+#else
+        public static readonly bool Debug = false;
+#endif
         public static readonly int DesignScreen_Width = 1920;
         public static readonly int DesignScreen_Height = 1080;
         public const int LogLevel = 1;

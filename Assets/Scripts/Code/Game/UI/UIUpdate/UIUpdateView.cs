@@ -19,7 +19,7 @@ namespace TaoTie
         public Action OnOver;
         public bool ForceUpdate;
 
-        public YooAsset.PatchDownloaderOperation Downloader;
+        public ResourceDownloaderOperation Downloader;
         public int StaticVersion;
 
         #region override
@@ -83,10 +83,10 @@ namespace TaoTie
         /// <summary>
         /// 开始检测
         /// </summary>
-        public async ETTask StartCheckUpdate()
+        async ETTask StartCheckUpdate()
         {
             //如果这个界面依赖了其他没加载过的ab包，等会提示下载前会自动下载依赖包，所以这里需要提前预加载
-            await GameObjectPoolManager.Instance.PreLoadGameObjectAsync(UIMsgBoxWin.PrefabPath,1);
+            await GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(UIMsgBoxWin.PrefabPath,1);
             await this.CheckIsInWhiteList();
 
             await this.CheckUpdateList();
@@ -251,8 +251,8 @@ namespace TaoTie
 
 
             var cancelBtnText = this.ForceUpdate ? "Btn_Exit" : "Btn_Enter_Game";
-            var contentUpdata = this.ForceUpdate ? "Update_ReDownload" : "Update_SuDownload";
-            var btnState = await this.ShowMsgBoxView(contentUpdata, "Global_Btn_Confirm", cancelBtnText);
+            var contentUpdate = this.ForceUpdate ? "Update_ReDownload" : "Update_SuDownload";
+            var btnState = await this.ShowMsgBoxView(contentUpdate, "Global_Btn_Confirm", cancelBtnText);
 
             if (btnState == this.BTN_CONFIRM)
             {
@@ -276,7 +276,7 @@ namespace TaoTie
         public async ETTask<bool> CheckResUpdate()
         {
             var appChannel = PlatformUtil.GetAppChannel();
-            var channel = YooAssetsMgr.Instance.Config.Channel;
+            var channel = YooAssetsMgr.Instance.CdnConfig.Channel;
             this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateResVer(appChannel, channel, out var verInfo);
             if (this.StaticVersion<0)
             {
@@ -302,10 +302,10 @@ namespace TaoTie
                 Log.Info("非网络运行模式");
                 return false;
             }
-            ETTask task = ETTask.Create(true);
             // 更新补丁清单
             Log.Info("更新补丁清单");
-            var operation = YooAssetsMgr.Instance.UpdateManifestAsync(this.StaticVersion.ToString(), 30);
+            var operation =
+                YooAssetsMgr.Instance.UpdatePackageManifestAsync(this.StaticVersion.ToString(), true, 30, null);
             await operation.Task;
             int btnState;
             if(operation.Status != EOperationStatus.Succeed)
@@ -325,7 +325,7 @@ namespace TaoTie
             Log.Info("创建补丁下载器.");
             int downloadingMaxNum = 10;
             int failedTryAgain = 3;
-            this.Downloader = YooAssets.CreatePatchDownloader(downloadingMaxNum, failedTryAgain);
+            this.Downloader = YooAssetsMgr.Instance.CreateResourceDownloader(downloadingMaxNum, failedTryAgain, 30, null);
             if (this.Downloader.TotalDownloadCount == 0)
             {
                 Log.Info("没有发现需要下载的资源");
@@ -349,6 +349,10 @@ namespace TaoTie
                     Application.Quit();
                     return false;
                 }
+                //版本号设回去
+                operation = YooAssetsMgr.Instance.UpdatePackageManifestAsync(
+                    YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null);
+                await operation.Task;
                 return true;
             }
 
@@ -376,8 +380,6 @@ namespace TaoTie
         /// </summary>
         private async ETTask UpdateFinishAndStartGame()
         {
-            PlayerPrefs.SetInt("STATIC_VERSION",this.StaticVersion);
-            PlayerPrefs.Save();
             while (ResourcesManager.Instance.IsProcessRunning())
             {
                 await TimerManager.Instance.WaitAsync(1);

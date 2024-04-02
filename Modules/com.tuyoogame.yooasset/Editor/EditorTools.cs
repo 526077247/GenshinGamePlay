@@ -35,10 +35,20 @@ namespace YooAsset.Editor
 			TypeCache.TypeCollection collection = TypeCache.GetTypesDerivedFrom(parentType);
 			return collection.ToList();
 		}
+
+		/// <summary>
+		/// 获取带有指定属性的所有类的类型
+		/// </summary>
+		public static List<Type> GetTypesWithAttribute(System.Type attrType)
+		{
+			TypeCache.TypeCollection collection = TypeCache.GetTypesWithAttribute(attrType);
+			return collection.ToList();
+		}
 #else
 		private static readonly List<Type> _cacheTypes = new List<Type>(10000);
 		private static void InitAssembly()
 		{
+			_cacheTypes.Clear();
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			foreach (Assembly assembly in assemblies)
 			{
@@ -60,6 +70,23 @@ namespace YooAsset.Editor
 				{
 					if (type.Name == parentType.Name)
 						continue;
+					result.Add(type);
+				}
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 获取带有指定属性的所有类的类型
+		/// </summary>
+		public static List<Type> GetTypesWithAttribute(System.Type attrType)
+		{
+			List<Type> result = new List<Type>();
+			for (int i = 0; i < _cacheTypes.Count; i++)
+			{
+				Type type = _cacheTypes[i];
+				if (type.GetCustomAttribute(attrType) != null)
+				{
 					result.Add(type);
 				}
 			}
@@ -213,11 +240,11 @@ namespace YooAsset.Editor
 		public static void FocusUnitySceneWindow()
 		{
 			EditorWindow.FocusWindowIfItsOpen<SceneView>();
-		} 
-		public static void CloseUnityGameWindow() 
-		{ 
-			System.Type T = Assembly.Load("UnityEditor").GetType("UnityEditor.GameView"); 
-			EditorWindow.GetWindow(T, false, "GameView", true).Close(); 
+		}
+		public static void CloseUnityGameWindow()
+		{
+			System.Type T = Assembly.Load("UnityEditor").GetType("UnityEditor.GameView");
+			EditorWindow.GetWindow(T, false, "GameView", true).Close();
 		}
 		public static void FocusUnityGameWindow()
 		{
@@ -286,6 +313,18 @@ namespace YooAsset.Editor
 		#endregion
 
 		#region StringUtility
+		public static string RemoveFirstChar(string str)
+		{
+			if (string.IsNullOrEmpty(str))
+				return str;
+			return str.Substring(1);
+		}
+		public static string RemoveLastChar(string str)
+		{
+			if (string.IsNullOrEmpty(str))
+				return str;
+			return str.Substring(0, str.Length - 1);
+		}
 		public static List<string> StringToStringList(string str, char separator)
 		{
 			List<string> result = new List<string>();
@@ -303,7 +342,6 @@ namespace YooAsset.Editor
 			}
 			return result;
 		}
-
 		public static T NameToEnum<T>(string name)
 		{
 			if (Enum.IsDefined(typeof(T), name) == false)
@@ -388,7 +426,7 @@ namespace YooAsset.Editor
 			FileInfo fileInfo = new FileInfo(filePath);
 			fileInfo.MoveTo(destPath);
 		}
-		
+
 		/// <summary>
 		/// 拷贝文件夹
 		/// 注意：包括所有子目录的文件
@@ -582,7 +620,7 @@ namespace YooAsset.Editor
 		/// <param name="key">关键字</param>
 		/// <param name="includeKey">分割的结果里是否包含关键字</param>
 		/// <param name="searchBegin">是否使用初始匹配的位置，否则使用末尾匹配的位置</param>
-		private static string Substring(string content, string key, bool includeKey, bool firstMatch = true)
+		public static string Substring(string content, string key, bool includeKey, bool firstMatch = true)
 		{
 			if (string.IsNullOrEmpty(key))
 				return content;

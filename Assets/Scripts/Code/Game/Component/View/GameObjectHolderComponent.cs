@@ -43,10 +43,10 @@ namespace TaoTie
             }
             else
             {
-                obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(unit.Config.Perfab);
+                obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(unit.Config.Perfab);
                 if (this.IsDispose)
                 {
-                    GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                    GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                     return;
                 }
             }
@@ -124,10 +124,10 @@ namespace TaoTie
 
         private async ETTask LoadGameObjectAsync(string path)
         {
-            var obj = await GameObjectPoolManager.Instance.GetGameObjectAsync(path);
+            var obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(path);
             if (this.IsDispose)
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                 return;
             }
             Animator = obj.GetComponentInChildren<Animator>();
@@ -193,7 +193,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    GameObjectPoolManager.Instance.RecycleGameObject(EntityView.gameObject);
+                    GameObjectPoolManager.GetInstance().RecycleGameObject(EntityView.gameObject);
                 }
 
                 EntityView = null;

@@ -38,8 +38,8 @@ namespace TaoTie
         public void Destroy()
         {
             Instance = null;
-            resUpdateList.Clear();
-            appUpdateList.Clear();
+            resUpdateList = null;
+            appUpdateList = null;
         }
 
         #endregion

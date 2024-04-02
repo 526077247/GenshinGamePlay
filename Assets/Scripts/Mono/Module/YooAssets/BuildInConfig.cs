@@ -4,15 +4,8 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [Serializable][CreateAssetMenu(menuName = "CDNConfig")]
-    public class CDNConfig:ScriptableObject
-    {
-        public string DefaultHostServer;
-        public string FallbackHostServer;
-    }
     public class BuildInConfig
     {
-        public string Channel;
         public int Resver;
         public int Dllver;
     }
@@ -39,5 +32,10 @@ namespace TaoTie
     {
         public Dictionary<string,Dictionary<int, Resver>> res_list;
         public Dictionary<string, AppConfig> app_list;
+    }
+    
+    public class PackageConfig
+    {
+        public Dictionary<string,int> packageVer;
     }
 }

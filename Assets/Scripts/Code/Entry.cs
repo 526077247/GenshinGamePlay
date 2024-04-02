@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using YooAsset;
 
 namespace TaoTie
 {
@@ -31,8 +32,7 @@ namespace TaoTie
                 
                 ManagerProvider.RegisterManager<InputManager>();
                 ManagerProvider.RegisterManager<BillboardSystem>();
-                // StartGameAsync().Coroutine();
-                StartGame();
+                StartGameAsync().Coroutine();
             }
             catch (Exception e)
             {
@@ -41,7 +41,7 @@ namespace TaoTie
         }
         static async ETTask StartGameAsync()
         {
-            if(Define.Networked||Define.ForceUpdate)
+            if(YooAssetsMgr.Instance.PlayMode == EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))
                 await UIManager.Instance.OpenWindow<UIUpdateView,Action>(UIUpdateView.PrefabPath,StartGame);//下载热更资源
             else
                 StartGame();
@@ -49,12 +49,12 @@ namespace TaoTie
 
         static void StartGame()
         {
-            SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();
             ManagerProvider.RegisterManager<ConfigAbilityCategory>();
             ManagerProvider.RegisterManager<ConfigStoryCategory>();
             ManagerProvider.RegisterManager<CampManager>();
+            SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
         }
     }
     

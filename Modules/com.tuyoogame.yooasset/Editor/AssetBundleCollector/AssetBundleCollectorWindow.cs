@@ -12,9 +12,9 @@ namespace YooAsset.Editor
 	public class AssetBundleCollectorWindow : EditorWindow
 	{
 		[MenuItem("YooAsset/AssetBundle Collector", false, 101)]
-		public static void ShowExample()
+		public static void OpenWindow()
 		{
-			AssetBundleCollectorWindow window = GetWindow<AssetBundleCollectorWindow>("资源包收集工具", true, EditorDefine.DockedWindowTypes);
+			AssetBundleCollectorWindow window = GetWindow<AssetBundleCollectorWindow>("资源包收集工具", true, WindowsDefine.DockedWindowTypes);
 			window.minSize = new Vector2(800, 600);
 		}
 
@@ -25,8 +25,13 @@ namespace YooAsset.Editor
 		private List<RuleDisplayName> _packRuleList;
 		private List<RuleDisplayName> _filterRuleList;
 
+		private Button _settingsButton;
+		private VisualElement _setting1Container;
+		private VisualElement _setting2Container;
 		private Toggle _showPackageToogle;
 		private Toggle _enableAddressableToogle;
+		private Toggle _locationToLowerToogle;
+		private Toggle _includeAssetGUIDToogle;
 		private Toggle _uniqueBundleNameToogle;
 		private Toggle _showEditorAliasToggle;
 
@@ -47,6 +52,7 @@ namespace YooAsset.Editor
 
 		private int _lastModifyPackageIndex = 0;
 		private int _lastModifyGroupIndex = 0;
+		private bool _showSettings = false;
 
 
 		public void CreateGUI()
@@ -70,13 +76,17 @@ namespace YooAsset.Editor
 				VisualElement root = this.rootVisualElement;
 
 				// 加载布局文件
-				var visualAsset = EditorHelper.LoadWindowUXML<AssetBundleCollectorWindow>();
+				var visualAsset = UxmlLoader.LoadWindowUXML<AssetBundleCollectorWindow>();
 				if (visualAsset == null)
 					return;
 
 				visualAsset.CloneTree(root);
 
 				// 公共设置相关
+				_settingsButton = root.Q<Button>("SettingsButton");
+				_settingsButton.clicked += SettingsBtn_clicked;
+				_setting1Container = root.Q("PublicContainer1");
+				_setting2Container = root.Q("PublicContainer2");
 				_showPackageToogle = root.Q<Toggle>("ShowPackages");
 				_showPackageToogle.RegisterValueChangedCallback(evt =>
 				{
@@ -89,13 +99,24 @@ namespace YooAsset.Editor
 					AssetBundleCollectorSettingData.ModifyAddressable(evt.newValue);
 					RefreshWindow();
 				});
+				_locationToLowerToogle = root.Q<Toggle>("LocationToLower");
+				_locationToLowerToogle.RegisterValueChangedCallback(evt =>
+				{
+					AssetBundleCollectorSettingData.ModifyLocationToLower(evt.newValue);
+					RefreshWindow();
+				});
+				_includeAssetGUIDToogle = root.Q<Toggle>("IncludeAssetGUID");
+				_includeAssetGUIDToogle.RegisterValueChangedCallback(evt =>
+				{
+					AssetBundleCollectorSettingData.ModifyIncludeAssetGUID(evt.newValue);
+					RefreshWindow();
+				});
 				_uniqueBundleNameToogle = root.Q<Toggle>("UniqueBundleName");
 				_uniqueBundleNameToogle.RegisterValueChangedCallback(evt =>
 				{
 					AssetBundleCollectorSettingData.ModifyUniqueBundleName(evt.newValue);
 					RefreshWindow();
 				});
-
 				_showEditorAliasToggle = root.Q<Toggle>("ShowEditorAlias");
 				_showEditorAliasToggle.RegisterValueChangedCallback(evt =>
 				{
@@ -148,6 +169,7 @@ namespace YooAsset.Editor
 					{
 						selectPackage.PackageName = evt.newValue;
 						AssetBundleCollectorSettingData.ModifyPackage(selectPackage);
+						FillPackageViewData();
 					}
 				});
 
@@ -160,6 +182,7 @@ namespace YooAsset.Editor
 					{
 						selectPackage.PackageDesc = evt.newValue;
 						AssetBundleCollectorSettingData.ModifyPackage(selectPackage);
+						FillPackageViewData();
 					}
 				});
 
@@ -300,8 +323,21 @@ namespace YooAsset.Editor
 		{
 			_showPackageToogle.SetValueWithoutNotify(AssetBundleCollectorSettingData.Setting.ShowPackageView);
 			_enableAddressableToogle.SetValueWithoutNotify(AssetBundleCollectorSettingData.Setting.EnableAddressable);
+			_locationToLowerToogle.SetValueWithoutNotify(AssetBundleCollectorSettingData.Setting.LocationToLower);
+			_includeAssetGUIDToogle.SetValueWithoutNotify(AssetBundleCollectorSettingData.Setting.IncludeAssetGUID);
 			_uniqueBundleNameToogle.SetValueWithoutNotify(AssetBundleCollectorSettingData.Setting.UniqueBundleName);
 			_showEditorAliasToggle.SetValueWithoutNotify(AssetBundleCollectorSettingData.Setting.ShowEditorAlias);
+
+			if (_showSettings)
+			{
+				_setting1Container.style.display = DisplayStyle.Flex;
+				_setting2Container.style.display = DisplayStyle.Flex;
+			}
+			else
+			{
+				_setting1Container.style.display = DisplayStyle.None;
+				_setting2Container.style.display = DisplayStyle.None;
+			}
 
 			_groupContainer.visible = false;
 			_collectorContainer.visible = false;
@@ -333,6 +369,11 @@ namespace YooAsset.Editor
 		private void SaveBtn_clicked()
 		{
 			AssetBundleCollectorSettingData.SaveFile();
+		}
+		private void SettingsBtn_clicked()
+		{
+			_showSettings = !_showSettings;
+			RefreshWindow();
 		}
 		private string FormatListItemCallback(RuleDisplayName ruleDisplayName)
 		{
@@ -594,14 +635,14 @@ namespace YooAsset.Editor
 				var popupField = new PopupField<RuleDisplayName>(_addressRuleList, 0);
 				popupField.name = "PopupField1";
 				popupField.style.unityTextAlign = TextAnchor.MiddleLeft;
-				popupField.style.width = 200;
+				popupField.style.width = 220;
 				elementBottom.Add(popupField);
 			}
 			{
 				var popupField = new PopupField<RuleDisplayName>(_packRuleList, 0);
 				popupField.name = "PopupField2";
 				popupField.style.unityTextAlign = TextAnchor.MiddleLeft;
-				popupField.style.width = 230;
+				popupField.style.width = 220;
 				elementBottom.Add(popupField);
 			}
 			{
@@ -610,6 +651,15 @@ namespace YooAsset.Editor
 				popupField.style.unityTextAlign = TextAnchor.MiddleLeft;
 				popupField.style.width = 150;
 				elementBottom.Add(popupField);
+			}
+			{
+				var textField = new TextField();
+				textField.name = "TextField0";
+				textField.label = "UserData";
+				textField.style.width = 200;
+				elementBottom.Add(textField);
+				var label = textField.Q<Label>();
+				label.style.minWidth = 63;
 			}
 			{
 				var textField = new TextField();
@@ -750,6 +800,15 @@ namespace YooAsset.Editor
 				}
 			});
 
+			// UserData
+			var textFiled0 = element.Q<TextField>("TextField0");
+			textFiled0.SetValueWithoutNotify(collector.UserData);
+			textFiled0.RegisterValueChangedCallback(evt =>
+			{
+				collector.UserData = evt.newValue;
+				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
+			});
+
 			// Tags
 			var textFiled1 = element.Q<TextField>("TextField1");
 			textFiled1.SetValueWithoutNotify(collector.AssetTags);
@@ -776,7 +835,8 @@ namespace YooAsset.Editor
 
 				try
 				{
-					CollectCommand command = new CollectCommand(EBuildMode.DryRunBuild, _enableAddressableToogle.value);
+					CollectCommand command = new CollectCommand(EBuildMode.SimulateBuild, _packageNameTxt.value,
+						_enableAddressableToogle.value, _locationToLowerToogle.value, _includeAssetGUIDToogle.value, _uniqueBundleNameToogle.value);
 					collectAssetInfos = collector.GetAllCollectAssets(command, group);
 				}
 				catch (System.Exception e)
@@ -794,12 +854,7 @@ namespace YooAsset.Editor
 
 						string showInfo = collectAssetInfo.AssetPath;
 						if (_enableAddressableToogle.value)
-						{
-							IAddressRule instance = AssetBundleCollectorSettingData.GetAddressRuleInstance(collector.AddressRuleName);
-							AddressRuleData ruleData = new AddressRuleData(collectAssetInfo.AssetPath, collector.CollectPath, group.GroupName);
-							string addressValue = instance.GetAssetAddress(ruleData);
-							showInfo = $"[{addressValue}] {showInfo}";
-						}
+							showInfo = $"[{collectAssetInfo.Address}] {collectAssetInfo.AssetPath}";
 
 						var label = new Label();
 						label.text = showInfo;

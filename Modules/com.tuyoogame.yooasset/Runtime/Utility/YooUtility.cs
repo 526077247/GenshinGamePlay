@@ -8,12 +8,66 @@ using System.Security.Cryptography;
 namespace YooAsset
 {
 	/// <summary>
+	/// 路径工具类
+	/// </summary>
+	internal static class PathUtility
+	{
+		/// <summary>
+		/// 路径归一化
+		/// 注意：替换为Linux路径格式
+		/// </summary>
+		public static string RegularPath(string path)
+		{
+			return path.Replace('\\', '/').Replace("\\", "/");
+		}
+		
+		/// <summary>
+		/// 移除路径里的后缀名
+		/// </summary>
+		public static string RemoveExtension(string str)
+		{
+			if (string.IsNullOrEmpty(str))
+				return str;
+
+			int index = str.LastIndexOf(".");
+			if (index == -1)
+				return str;
+			else
+				return str.Remove(index); //"assets/config/test.unity3d" --> "assets/config/test"
+		}
+
+		/// <summary>
+		/// 合并路径
+		/// </summary>
+		public static string Combine(string path1, string path2)
+		{		
+			return StringUtility.Format("{0}/{1}", path1, path2);
+		}
+
+		/// <summary>
+		/// 合并路径
+		/// </summary>
+		public static string Combine(string path1, string path2, string path3)
+		{
+			return StringUtility.Format("{0}/{1}/{2}", path1, path2, path3);
+		}
+
+		/// <summary>
+		/// 合并路径
+		/// </summary>
+		public static string Combine(string path1, string path2, string path3, string path4)
+		{
+			return StringUtility.Format("{0}/{1}/{2}/{3}", path1, path2, path3, path4);
+		}
+	}
+
+	/// <summary>
 	/// 字符串工具类
 	/// </summary>
 	internal static class StringUtility
 	{
 		[ThreadStatic]
-		private static StringBuilder _cacheBuilder = new StringBuilder(1024);
+		private static StringBuilder _cacheBuilder = new StringBuilder(2048);
 
 		public static string Format(string format, object arg0)
 		{
@@ -54,30 +108,6 @@ namespace YooAsset
 			_cacheBuilder.AppendFormat(format, args);
 			return _cacheBuilder.ToString();
 		}
-
-		public static string RemoveFirstChar(string str)
-		{
-			if (string.IsNullOrEmpty(str))
-				return str;
-			return str.Substring(1);
-		}
-		public static string RemoveLastChar(string str)
-		{
-			if (string.IsNullOrEmpty(str))
-				return str;
-			return str.Substring(0, str.Length - 1);
-		}
-		public static string RemoveExtension(string str)
-		{
-			if (string.IsNullOrEmpty(str))
-				return str;
-
-			int index = str.LastIndexOf(".");
-			if (index == -1)
-				return str;
-			else
-				return str.Remove(index); //"assets/config/test.unity3d" --> "assets/config/test"
-		}
 	}
 
 	/// <summary>
@@ -106,46 +136,26 @@ namespace YooAsset
 		}
 
 		/// <summary>
-		/// 创建文件（如果已经存在则删除旧文件）
+		/// 写入文本数据（会覆盖指定路径的文件）
 		/// </summary>
-		public static void CreateFile(string filePath, string content)
+		public static void WriteAllText(string filePath, string content)
 		{
-			// 删除旧文件
-			if (File.Exists(filePath))
-				File.Delete(filePath);
-
 			// 创建文件夹路径
 			CreateFileDirectory(filePath);
 
-			// 创建新文件
 			byte[] bytes = Encoding.UTF8.GetBytes(content);
-			using (FileStream fs = File.Create(filePath))
-			{
-				fs.Write(bytes, 0, bytes.Length);
-				fs.Flush();
-				fs.Close();
-			}
+			File.WriteAllBytes(filePath, bytes); //避免写入BOM标记
 		}
 
 		/// <summary>
-		/// 创建文件（如果已经存在则删除旧文件）
+		/// 写入字节数据（会覆盖指定路径的文件）
 		/// </summary>
-		public static void CreateFile(string filePath, byte[] data)
+		public static void WriteAllBytes(string filePath, byte[] data)
 		{
-			// 删除旧文件
-			if (File.Exists(filePath))
-				File.Delete(filePath);
-
 			// 创建文件夹路径
 			CreateFileDirectory(filePath);
 
-			// 创建新文件
-			using (FileStream fs = File.Create(filePath))
-			{
-				fs.Write(data, 0, data.Length);
-				fs.Flush();
-				fs.Close();
-			}
+			File.WriteAllBytes(filePath, data);
 		}
 
 		/// <summary>

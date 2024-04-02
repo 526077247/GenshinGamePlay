@@ -9,7 +9,7 @@ namespace YooAsset
 	/// 下载器
 	/// 说明：UnityWebRequest(UWR) supports reading streaming assets since 2017.1
 	/// </summary>
-	public class UnityWebDataRequester
+	internal class UnityWebDataRequester
 	{
 		private UnityWebRequest _webRequest;
 		private UnityWebRequestAsyncOperation _operationHandle;
@@ -29,7 +29,7 @@ namespace YooAsset
 			if (_webRequest == null)
 			{
 				URL = url;
-				_webRequest = new UnityWebRequest(URL, UnityWebRequest.kHttpVerbGET);
+				_webRequest = DownloadSystem.NewRequest(URL);
 				DownloadHandlerBuffer handler = new DownloadHandlerBuffer();
 				_webRequest.downloadHandler = handler;
 				_webRequest.disposeDownloadHandlerOnDispose = true;

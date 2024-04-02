@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowPackageView: 1
   EnableAddressable: 1
+  LocationToLower: 0
+  IncludeAssetGUID: 0
   UniqueBundleName: 0
   ShowEditorAlias: 0
   Packages:
@@ -32,6 +34,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectScene
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/UI
         CollectorGUID: 6d58a2b2737e9614588c3f71d87cbcb0
         CollectorType: 0
@@ -39,6 +42,7 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Config
         CollectorGUID: a28ec429fe5b5904ba1038c13f6c9913
         CollectorType: 0
@@ -46,6 +50,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: config
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Code
         CollectorGUID: b0873cb317ad3614481ac3ccfd9e4386
         CollectorType: 0
@@ -53,6 +58,7 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/config.bytes
         CollectorGUID: 57e2d00361bc93141a262692544a6c96
         CollectorType: 0
@@ -60,6 +66,7 @@ MonoBehaviour:
         PackRuleName: PackRawFile
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/UIGame
         CollectorGUID: cbeb2d4ec157c3748ab4993434182b5a
         CollectorType: 0
@@ -67,6 +74,7 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
     - GroupName: Game
       GroupDesc: 
       AssetTags: 
@@ -79,6 +87,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectScene
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Scenes/LoginScene
         CollectorGUID: 47b197683c99ef3459d84b8f006e28da
         CollectorType: 0
@@ -86,6 +95,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectScene
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Scenes/MapScene
         CollectorGUID: cdfe4912815000c428086bf26198d53d
         CollectorType: 0
@@ -93,6 +103,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectScene
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Unit
         CollectorGUID: 64876c441ccdfa24da89797b709392fd
         CollectorType: 0
@@ -100,6 +111,7 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectUnit
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/SceneGroup
         CollectorGUID: db5cba0329d6bb140a8262b63c61e648
         CollectorType: 0
@@ -107,6 +119,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: sceneGroup
+        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/AITree
         CollectorGUID: 6f5b6adda8708184c8c0a605a13ff976
         CollectorType: 0
@@ -114,6 +127,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: aiTree
+        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/Abilities
         CollectorGUID: 01faf65e50fdfce43bacf9c213a3ef4a
         CollectorType: 0
@@ -121,6 +135,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: ability
+        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/ConfigCameras.json
         CollectorGUID: 21d9dc7b19a8e6d41bcf602d382c9fb4
         CollectorType: 0
@@ -128,6 +143,7 @@ MonoBehaviour:
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Effect
         CollectorGUID: 37d4fb95948cc8a429c6be93fbaefafd
         CollectorType: 0
@@ -135,6 +151,7 @@ MonoBehaviour:
         PackRuleName: PackTopDirectory
         FilterRuleName: CollectPrefab
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/Story
         CollectorGUID: c1d78d6e275f354429087c5e2081c61c
         CollectorType: 0
@@ -142,6 +159,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: story
+        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/ConfigEnvironments.json
         CollectorGUID: 3c3c405976dca574c82582709dcf1b6e
         CollectorType: 0
@@ -149,6 +167,7 @@ MonoBehaviour:
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/SkyBox
         CollectorGUID: 7501245b7970cd94fa4e43b6a94871fc
         CollectorType: 0
@@ -156,6 +175,7 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/Navmesh
         CollectorGUID: 71faefd3723e6b344981063cf616aa04
         CollectorType: 0
@@ -163,3 +183,12 @@ MonoBehaviour:
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/packageConfig.bytes
+        CollectorGUID: 433f60c16037e3d4eb43c781e7fdb018
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackRawFile
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 

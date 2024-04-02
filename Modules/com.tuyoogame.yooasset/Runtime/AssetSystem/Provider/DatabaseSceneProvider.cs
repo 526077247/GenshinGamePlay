@@ -6,14 +6,14 @@ namespace YooAsset
 	internal sealed class DatabaseSceneProvider : ProviderBase
 	{
 		public readonly LoadSceneMode SceneMode;
-		private readonly bool _activateOnLoad;
+		private readonly bool _suspendLoad;
 		private readonly int _priority;
-		private AsyncOperation _asyncOp;
+		private AsyncOperation _asyncOperation;
 
-		public DatabaseSceneProvider(AssetSystemImpl impl, string providerGUID, AssetInfo assetInfo, LoadSceneMode sceneMode, bool activateOnLoad, int priority) : base(impl, providerGUID, assetInfo)
+		public DatabaseSceneProvider(AssetSystemImpl impl, string providerGUID, AssetInfo assetInfo, LoadSceneMode sceneMode, bool suspendLoad, int priority) : base(impl, providerGUID, assetInfo)
 		{
 			SceneMode = sceneMode;
-			_activateOnLoad = activateOnLoad;
+			_suspendLoad = suspendLoad;
 			_priority = priority;
 		}
 		public override void Update()
@@ -24,19 +24,41 @@ namespace YooAsset
 
 			if (Status == EStatus.None)
 			{
+				Status = EStatus.CheckBundle;
+			}
+
+			// 1. 检测资源包
+			if (Status == EStatus.CheckBundle)
+			{
+				if (IsWaitForAsyncComplete)
+				{
+					OwnerBundle.WaitForAsyncComplete();
+				}
+
+				if (OwnerBundle.IsDone() == false)
+					return;
+
+				if (OwnerBundle.Status != BundleLoaderBase.EStatus.Succeed)
+				{
+					Status = EStatus.Failed;
+					LastError = OwnerBundle.LastError;
+					InvokeCompletion();
+					return;
+				}
+
 				Status = EStatus.Loading;
 			}
 
-			// 1. 加载资源对象
+			// 2. 加载资源对象
 			if (Status == EStatus.Loading)
 			{
 				LoadSceneParameters loadSceneParameters = new LoadSceneParameters();
 				loadSceneParameters.loadSceneMode = SceneMode;
-				_asyncOp = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(MainAssetInfo.AssetPath, loadSceneParameters);
-				if (_asyncOp != null)
+				_asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(MainAssetInfo.AssetPath, loadSceneParameters);
+				if (_asyncOperation != null)
 				{
-					_asyncOp.allowSceneActivation = true;
-					_asyncOp.priority = _priority;
+					_asyncOperation.allowSceneActivation = !_suspendLoad;
+					_asyncOperation.priority = _priority;
 					SceneObject = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
 					Status = EStatus.Checking;
 				}
@@ -49,15 +71,12 @@ namespace YooAsset
 				}
 			}
 
-			// 2. 检测加载结果
+			// 3. 检测加载结果
 			if (Status == EStatus.Checking)
 			{
-				Progress = _asyncOp.progress;
-				if (_asyncOp.isDone)
-				{				
-					if (SceneObject.IsValid() && _activateOnLoad)
-						SceneManager.SetActiveScene(SceneObject);
-
+				Progress = _asyncOperation.progress;
+				if (_asyncOperation.isDone)
+				{
 					Status = SceneObject.IsValid() ? EStatus.Succeed : EStatus.Failed;
 					if (Status == EStatus.Failed)
 					{
@@ -68,6 +87,18 @@ namespace YooAsset
 				}
 			}
 #endif
+		}
+
+		/// <summary>
+		/// 解除场景加载挂起操作
+		/// </summary>
+		public bool UnSuspendLoad()
+		{
+			if (_asyncOperation == null)
+				return false;
+
+			_asyncOperation.allowSceneActivation = true;
+			return true;
 		}
 	}
 }

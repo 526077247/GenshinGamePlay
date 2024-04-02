@@ -20,11 +20,11 @@ namespace TaoTie
             var uc = UnitConfigCategory.Instance.Get(cc.UnitId);
             if (Preload3d)
             {
-                await GameObjectPoolManager.Instance.PreLoadGameObjectAsync(uc.Perfab,1);
+                await GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(uc.Perfab,1);
             }
             else
             {
-                GameObjectPoolManager.Instance.PreLoadGameObjectAsync(uc.Perfab,1).Coroutine();
+                GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(uc.Perfab,1).Coroutine();
             }
         }
 
@@ -32,14 +32,14 @@ namespace TaoTie
         {
             var cc = CharacterConfigCategory.Instance.Get(ConfigId);
             var uc = UnitConfigCategory.Instance.Get(cc.UnitId);
-            return await GameObjectPoolManager.Instance.GetGameObjectAsync(uc.Perfab);
+            return await GameObjectPoolManager.GetInstance().GetGameObjectAsync(uc.Perfab);
         }
 
         public override void Recycle3dObj(GameObject obj)
         {
             if (obj != null)
             {
-                GameObjectPoolManager.Instance.RecycleGameObject(obj);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
             }
         }
     }
