@@ -1,3 +1,4 @@
+using YooAsset;
 namespace TaoTie
 {
     public class PackageInfo
@@ -22,5 +23,7 @@ namespace TaoTie
         /// 需要下载大小
         /// </summary>
         public long NeedDownloadSize;
+        
+        public ResourceDownloaderOperation DownloaderOperation;
     }
 }

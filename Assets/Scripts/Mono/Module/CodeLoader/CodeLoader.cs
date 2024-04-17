@@ -23,8 +23,7 @@ namespace TaoTie
 		
 		private MemoryStream assStream ;
 		private MemoryStream pdbStream ;
-
-		public bool IsInit = false;
+		
 
 		public void Start()
 		{
@@ -60,8 +59,15 @@ namespace TaoTie
 					if (assembly == null)
 					{
 						GetBytes(out assBytes, out pdbBytes);
-						assembly = Assembly.Load(assBytes, pdbBytes);
-						Log.Info("Get Dll Success");
+						if (assBytes != null)
+						{
+							assembly = Assembly.Load(assBytes, pdbBytes);
+							Log.Info("Get Dll Success");
+						}
+						else
+						{
+							Log.Error("Get Dll Fail");
+						}
 					}
 					break;
 				}
@@ -79,7 +85,7 @@ namespace TaoTie
 			{
 				Log.Error("assembly == null");
 			}
-			IsInit = true;
+
 		}
 		private void GetBytes(out byte[] assBytes,out byte[] pdbBytes)
 		{
@@ -89,11 +95,11 @@ namespace TaoTie
 			{
 				var op = YooAssets.LoadAssetSync<TextAsset>(
 					$"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.dll.bytes");
-				assBytes = (op.AssetObject as TextAsset).bytes;
+				assBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
 				op = YooAssets.LoadAssetSync<TextAsset>(
 					$"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.pdb.bytes");
-				pdbBytes = (op.AssetObject as TextAsset).bytes;
+				pdbBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
 			}
 #if UNITY_EDITOR
@@ -112,8 +118,6 @@ namespace TaoTie
 		public bool isReStart = false;
 		public void ReStart()
 		{
-			YooAssetsMgr.Instance.DefaultPackage.ForceUnloadAllAssets();
-			Log.Debug("ReStart");
 			isReStart = true;
 		}
 	}

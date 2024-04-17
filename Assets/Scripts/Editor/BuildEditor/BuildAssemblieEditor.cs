@@ -174,8 +174,10 @@ namespace TaoTie
 
         public static void ShowNotification(string tips)
         {
-            var game = EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView"));
-            game?.ShowNotification(new GUIContent($"{tips}"));
+            Log.Info(tips);
+            // 命令行模式启动可能会报错
+            // var game = EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView"));
+            // game?.ShowNotification(new GUIContent($"{tips}"));
         }
     }
     

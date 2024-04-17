@@ -23,6 +23,7 @@ namespace TaoTie
         public void Destroy()
         {
 	        Instance = null;
+	        ConfigLoader = null;
 	        AllConfig.Clear();
         }
 

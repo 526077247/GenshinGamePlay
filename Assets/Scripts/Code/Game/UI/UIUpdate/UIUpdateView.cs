@@ -304,11 +304,10 @@ namespace TaoTie
             }
             // 更新补丁清单
             Log.Info("更新补丁清单");
-            var operation =
-                YooAssetsMgr.Instance.UpdatePackageManifestAsync(this.StaticVersion.ToString(), true, 30, null);
-            await operation.Task;
+
+            var res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(this.StaticVersion.ToString(), true, 30, null);
             int btnState;
-            if(operation.Status != EOperationStatus.Succeed)
+            if(!res)
             {
                 btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.ForceUpdate?"Btn_Exit":"Update_Skip");
                 if (btnState == this.BTN_CONFIRM)
@@ -320,6 +319,10 @@ namespace TaoTie
                     Application.Quit();
                     return false;
                 }
+                //版本号设回去
+                await YooAssetsMgr.Instance.UpdatePackageManifestAsync(
+                    YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null);
+                return false;
             }
 
             Log.Info("创建补丁下载器.");
@@ -350,10 +353,9 @@ namespace TaoTie
                     return false;
                 }
                 //版本号设回去
-                operation = YooAssetsMgr.Instance.UpdatePackageManifestAsync(
+                await YooAssetsMgr.Instance.UpdatePackageManifestAsync(
                     YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null);
-                await operation.Task;
-                return true;
+                return false;
             }
 
             //开始进行更新
@@ -384,8 +386,10 @@ namespace TaoTie
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
+            await UIManager.Instance.DestroyWindow<UIMsgBoxWin>();
+            await UIManager.Instance.DestroyWindow<UIUpdateView>();
+            GameObjectPoolManager.GetInstance().Cleanup();
             ResourcesManager.Instance.ClearAssetsCache();
-            ManagerProvider.Clear();
             ObjectPool.Instance.Dispose();
             CodeLoader.Instance.ReStart();
         }

@@ -15,3 +15,5 @@ MonoBehaviour:
   Channel: googleplay
   DefaultHostServer: http://127.0.0.1:8081/cdn
   FallbackHostServer: http://127.0.0.1:8081/cdn
+  UpdateListUrl: http://127.0.0.1:8081/cdn
+  TestUpdateListUrl: http://127.0.0.1:8081/cdn

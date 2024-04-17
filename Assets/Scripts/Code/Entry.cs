@@ -10,6 +10,7 @@ namespace TaoTie
         {
             try
             {
+                ManagerProvider.RegisterManager<Messager>();
                 ManagerProvider.RegisterManager<AttributeManager>();
                 
                 ManagerProvider.RegisterManager<CoroutineLockManager>();

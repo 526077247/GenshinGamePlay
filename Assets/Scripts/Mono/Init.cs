@@ -39,11 +39,13 @@ namespace TaoTie
 
 			Log.ILog = new UnityLogger();
 			
-#if !UNITY_EDITOR && !FORCE_UPDATE //编辑器模式下跳过更新
+#if !UNITY_EDITOR //编辑器模式下跳过更新
 			Define.Networked = Application.internetReachability != NetworkReachability.NotReachable;
 #endif
 
 			await YooAssetsMgr.Instance.Init(PlayMode);
+			
+			RegisterManager();
 			
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			IsInit = true;
@@ -70,12 +72,22 @@ namespace TaoTie
 		public async ETTask ReStart()
 		{
 			CodeLoader.Instance.isReStart = false;
+			YooAssetsMgr.Instance.ForceUnloadAllAssets();
+			ManagerProvider.Clear();
 			await YooAssetsMgr.Instance.UpdateConfig();
 			Log.Debug("ReStart");
+			
+			RegisterManager();
+			
 			CodeLoader.Instance.OnApplicationQuit?.Invoke();
 			CodeLoader.Instance.Start();
 		}
 
+		private void RegisterManager()
+		{
+			ManagerProvider.RegisterManager<AssemblyManager>();
+		}
+		
 		private void LateUpdate()
 		{
 			CodeLoader.Instance.LateUpdate?.Invoke();

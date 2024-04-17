@@ -37,16 +37,25 @@ namespace TaoTie
 		Development,
 		Release,
 	}
+	
+	public enum Mode:byte
+	{
+		本机开发,
+		内网测试,
+		外网测试
+	}
 
 	public class BuildEditor : EditorWindow
 	{
 		private const string settingAsset = "Assets/Scripts/Editor/BuildEditor/BuildSettings.asset";
 
+		private string channel;
+		private Mode buildMode;
 		private PlatformType activePlatform;
 		private PlatformType platformType;
 		private bool clearFolder;
 		private bool isBuildExe;
-		private bool isContainAB;
+		private bool isContainsAb;
 		private bool isBuildAll;
 		private bool isPackAtlas;
 		private BuildType buildType;
@@ -91,11 +100,13 @@ namespace TaoTie
 
 				clearFolder = buildSettings.clearFolder;
 				isBuildExe = buildSettings.isBuildExe;
-				isContainAB = buildSettings.isContainAB;
+				isContainsAb = buildSettings.isContainsAb;
 				isBuildAll = buildSettings.isBuildAll;
 				isPackAtlas = buildSettings.isPackAtlas;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
+				channel = buildSettings.channel;
+				buildMode = buildSettings.buildMode;
 			}
         }
 
@@ -106,6 +117,8 @@ namespace TaoTie
 
         private void OnGUI() 
 		{
+			channel = EditorGUILayout.TextField("渠道：", channel);
+			
 			if (this.config == null)
 			{
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
@@ -177,6 +190,12 @@ namespace TaoTie
             if (this.isBuildExe)
             {
 	            this.isBuildAll = EditorGUILayout.Toggle("是否打包全量资源", this.isBuildAll);
+	            if (!this.isBuildAll)
+	            {
+		            this.isContainsAb = EditorGUILayout.Toggle("    是否同时打分包资源: ", this.isContainsAb);
+	            }
+	            EditorGUILayout.LabelField("服务器:");
+	            this.buildMode = (Mode)EditorGUILayout.EnumPopup(buildMode);
             }
             this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
 			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
@@ -196,6 +215,7 @@ namespace TaoTie
 
 			if (GUILayout.Button("开始打包"))
 			{
+				BuildHelper.SetCdnConfig(channel,(int)buildMode);
 				if (this.platformType == PlatformType.None)
 				{
 					ShowNotification(new GUIContent("请选择打包平台!"));
@@ -216,7 +236,7 @@ namespace TaoTie
                     }
                 }
 				
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.isBuildAll,this.isPackAtlas);
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.isBuildAll,this.isPackAtlas,this.isBuildAll||isContainsAb);
 			}
 			if (packageNames != null)
 			{
@@ -258,12 +278,13 @@ namespace TaoTie
 		{
 			buildSettings.clearFolder = clearFolder;
 			buildSettings.isBuildExe = isBuildExe;
-			buildSettings.isContainAB = isContainAB;
+			buildSettings.isContainsAb = isContainsAb;
 			buildSettings.buildType = buildType;
 			buildSettings.isBuildAll = isBuildAll;
 			buildSettings.isPackAtlas = isPackAtlas;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
-
+			buildSettings.channel = channel;
+			buildSettings.buildMode = buildMode;
 			EditorUtility.SetDirty(buildSettings);
 			AssetDatabase.SaveAssets();
 		}

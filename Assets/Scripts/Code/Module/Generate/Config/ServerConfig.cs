@@ -86,23 +86,14 @@ namespace TaoTie
 		/// <summary>realm服地址</summary>
 		[NinoMember(3)]
 		public string RealmIp { get; set; }
-		/// <summary>更新列表cdn地址</summary>
-		[NinoMember(4)]
-		public string UpdateListUrl { get; set; }
 		/// <summary>路由cdn地址</summary>
-		[NinoMember(5)]
+		[NinoMember(4)]
 		public string RouterListUrl { get; set; }
-		/// <summary>热更资源cdn地址</summary>
-		[NinoMember(6)]
-		public string ResUrl { get; set; }
-		/// <summary>测试更新列表cdn地址</summary>
-		[NinoMember(7)]
-		public string TestUpdateListUrl { get; set; }
 		/// <summary>服务器类型</summary>
-		[NinoMember(8)]
+		[NinoMember(5)]
 		public int EnvId { get; set; }
 		/// <summary>是否默认值</summary>
-		[NinoMember(9)]
+		[NinoMember(6)]
 		public int IsPriority { get; set; }
 
 	}

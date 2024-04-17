@@ -35,14 +35,36 @@ namespace TaoTie
             PlayerSettings.keyaliasPass = "123456";
             PlayerSettings.keystorePass = "123456";
         }
+        
+        private static string[] cdnList =
+        {
+            "http://127.0.0.1:8081/cdn",
+            "http://127.0.0.1:8081/cdn",
+            "http://127.0.0.1:8081/cdn"
+        };
+        /// <summary>
+        /// 设置打包模式
+        /// </summary>
+        public static void SetCdnConfig(string channel, int mode = 1)
+        {
+            var cdn = Resources.Load<CDNConfig>("CDNConfig");
+            cdn.Channel = channel;
+
+            cdn.DefaultHostServer = cdnList[mode];
+            cdn.FallbackHostServer = cdnList[mode];
+            cdn.UpdateListUrl = cdnList[mode];
+            cdn.TestUpdateListUrl = cdnList[mode];
+            EditorUtility.SetDirty(cdn);
+            AssetDatabase.SaveAssetIfDirty(cdn);
+        }
 
         public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,
-            bool isBuildAll,bool packAtlas)
+            bool isBuildAll,bool packAtlas,bool isContainsAb)
         {
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe,clearFolder,isBuildAll,packAtlas);
+                BuildHandle(type, buildOptions, isBuildExe,clearFolder,isBuildAll,packAtlas,isContainsAb);
             }
             else
             {
@@ -51,7 +73,7 @@ namespace TaoTie
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, isBuildAll,packAtlas);
+                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, isBuildAll,packAtlas,isContainsAb);
                     }
                 };
                 if(buildGroupmap.TryGetValue(type,out var group))
@@ -120,14 +142,14 @@ namespace TaoTie
 
             }
         }
-         private static void BuildInternal(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll)
+         private static void BuildInternal(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll, bool isContainsAb)
          {
              string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
              var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
              int buildVersion = obj.Resver;
              Debug.Log($"开始构建 : {buildTarget}");
              BuildPackage(buildTarget, isBuildExe, isBuildAll, buildVersion, YooAssetsMgr.DefaultName);
-             if (isBuildAll)
+             if (isContainsAb)
              {
                  jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
                  var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
@@ -135,49 +157,59 @@ namespace TaoTie
                  {
                      foreach (var item in packageConfig.packageVer)
                      {
-                         BuildPackage(buildTarget, isBuildExe, true, item.Value, item.Key, false);
+                         BuildPackage(buildTarget, isBuildExe, isBuildAll, item.Value, item.Key);
                      }
                  }
              }
          }
 
-        public static void BuildPackage(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll, int buildVersion, string packageName,bool clearS = true)
-        {
-            // 构建参数
-            string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultOutputRoot();
-            BuildParameters buildParameters = new BuildParameters();
-            buildParameters.OutputRoot = defaultOutputRoot;
-            buildParameters.BuildTarget = buildTarget;
-            buildParameters.PackageName = packageName;
-            buildParameters.BuildPipeline =
-                isBuildExe ? EBuildPipeline.BuiltinBuildPipeline : EBuildPipeline.ScriptableBuildPipeline;
-            buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
-            buildParameters.BuildMode = isBuildExe ? EBuildMode.ForceRebuild : EBuildMode.IncrementalBuild;
-            buildParameters.PackageVersion = buildVersion.ToString();
-            buildParameters.CopyBuildinFileTags = "buildin";
-            buildParameters.VerifyBuildingResult = true;
-            buildParameters.CopyBuildinFileOption = isBuildAll
-                ? (clearS?ECopyBuildinFileOption.ClearAndCopyAll:ECopyBuildinFileOption.OnlyCopyAll)
-                : (clearS?ECopyBuildinFileOption.ClearAndCopyByTags: ECopyBuildinFileOption.OnlyCopyByTags);
-            buildParameters.EncryptionServices = new FileOffsetEncryption();
-            buildParameters.CompressOption = ECompressOption.LZ4;
-            buildParameters.DisableWriteTypeTree = true; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
-            buildParameters.IgnoreTypeTreeChanges = false;
-            buildParameters.SharedPackRule = new ZeroRedundancySharedPackRule();
-            if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
-            {
-                buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
-                buildParameters.SBPParameters.WriteLinkXML = true;
-            }
+         public static void BuildPackage(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll, int buildVersion,
+             string packageName)
+         {
+             // 构建参数
+             string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultOutputRoot();
+             BuildParameters buildParameters = new BuildParameters();
+             buildParameters.OutputRoot = defaultOutputRoot;
+             buildParameters.BuildTarget = buildTarget;
+             buildParameters.PackageName = packageName;
+             buildParameters.BuildPipeline =
+                 isBuildExe ? EBuildPipeline.BuiltinBuildPipeline : EBuildPipeline.ScriptableBuildPipeline;
+             buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
+             buildParameters.BuildMode = isBuildExe ? EBuildMode.ForceRebuild : EBuildMode.IncrementalBuild;
+             buildParameters.PackageVersion = buildVersion.ToString();
+             buildParameters.CopyBuildinFileTags = "buildin";
+             buildParameters.VerifyBuildingResult = true;
+             if (packageName == YooAssetsMgr.DefaultName)
+             {
+                 buildParameters.CopyBuildinFileOption = isBuildAll
+                     ? ECopyBuildinFileOption.ClearAndCopyAll
+                     : ECopyBuildinFileOption.ClearAndCopyByTags;
+             }
+             else
+             {
+                 buildParameters.CopyBuildinFileOption =
+                     isBuildAll ? ECopyBuildinFileOption.OnlyCopyAll : ECopyBuildinFileOption.None;
+             }
 
-            // 执行构建
-            AssetBundleBuilder builder = new AssetBundleBuilder();
-            var buildResult = builder.Run(buildParameters);
-            if (buildResult.Success)
-                Debug.Log($"构建成功!");
-        }
+             buildParameters.EncryptionServices = new FileOffsetEncryption();
+             buildParameters.CompressOption = ECompressOption.LZ4;
+             buildParameters.DisableWriteTypeTree = true; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
+             buildParameters.IgnoreTypeTreeChanges = false;
+             buildParameters.SharedPackRule = new ZeroRedundancySharedPackRule();
+             if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
+             {
+                 buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
+                 buildParameters.SBPParameters.WriteLinkXML = true;
+             }
 
-        public static void HandleAtlas()
+             // 执行构建
+             AssetBundleBuilder builder = new AssetBundleBuilder();
+             var buildResult = builder.Run(buildParameters);
+             if (buildResult.Success)
+                 Debug.Log($"构建成功!");
+         }
+
+         public static void HandleAtlas()
         {
             //清除图集
             AtlasHelper.ClearAllAtlas();
@@ -185,7 +217,7 @@ namespace TaoTie
             AtlasHelper.GeneratingAtlas();
         }
         static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,
-            bool isBuildAll,bool packAtlas)
+            bool isBuildAll,bool packAtlas,bool isContainsAb)
         {
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
             string programName = "TaoTie";
@@ -227,7 +259,7 @@ namespace TaoTie
             if(packAtlas) HandleAtlas();
             
             //打ab
-            BuildInternal(buildTarget, isBuildExe, isBuildAll);
+            BuildInternal(buildTarget, isBuildExe, isBuildAll, isContainsAb);
 
             if (clearFolder && Directory.Exists(relativeDirPrefix))
             {

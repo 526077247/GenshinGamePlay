@@ -7,16 +7,17 @@ namespace TaoTie
 
     public class Messager : IManager
     {
-        public static Messager Instance => ManagerProvider.RegisterManager<Messager>();
+        public static Messager Instance;
 
         public void Init()
         {
-
+            Instance = this;
         }
 
         public void Destroy()
         {
             evtGroup.Clear();
+            Instance = null;
         }
 
         readonly Dictionary<long, MultiMapSet<int, MulticastDelegate>> evtGroup = new();

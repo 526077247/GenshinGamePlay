@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using YooAsset;
 
@@ -44,6 +45,48 @@ namespace TaoTie
             return null;
         }
 
+        public async ETTask<bool> UpdatePackageInfo(string name, Action<float> onProgress = null)
+        {
+            var packageInfo = GetPackageInfo(name);
+            if (packageInfo.State == PackageState.NeedUpdate || packageInfo.State == PackageState.UnDownload)
+            {
+                packageInfo.State = PackageState.Downloading;
+                var res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(packageInfo.MaxVer.ToString(), true, 30, name);
+                Log.Info("UpdatePackageInfo UpdatePackageManifestAsync begin");
+                if (!res)
+                {
+                    packageInfo.State = PackageState.NeedUpdate;
+                    return false;
+                }
+
+                Log.Info("UpdatePackageInfo UpdatePackageManifestAsync Success");
+                ETTask<bool> downloadTask = ETTask<bool>.Create(true);
+                packageInfo.DownloaderOperation.OnDownloadOverCallback += (a) => { downloadTask?.SetResult(a); };
+                if (onProgress != null)
+                {
+                    packageInfo.DownloaderOperation.OnDownloadProgressCallback = (a, b, c, d) =>
+                    {
+                        onProgress((float) d / c);
+                    };
+                }
+                Log.Info("UpdatePackageInfo DownloadContent begin");
+                packageInfo.DownloaderOperation.BeginDownload();
+                
+                bool result = await downloadTask;
+                if (!result)
+                {
+                    packageInfo.State = PackageState.NeedUpdate;
+                    return false;
+                }
+
+                Log.Info("UpdatePackageInfo DownloadContent Success");
+                packageInfo.State = PackageState.Initialized;
+                return true;
+            }
+
+            return true;
+        }
+
         private async ETTask InitAsync()
         {
             var op = YooAssetsMgr.Instance.DefaultPackage.LoadRawFileSync("packageConfig.bytes");
@@ -53,6 +96,15 @@ namespace TaoTie
             op.Release();
             if (config?.packageVer != null)
             {
+                // using (ListComponent<ETTask> task = ListComponent<ETTask>.Create())
+                // {
+                //     foreach (var item in config.packageVer)
+                //     {
+                //         task.Add(InitPackage(item.Key));
+                //     }
+                //     await ETTaskHelper.WaitAll(task);
+                //     Log.Info(JsonHelper.ToJson(list));
+                // }
                 foreach (var item in config.packageVer)
                 {
                     InitPackage(item.Key).Coroutine();
@@ -60,50 +112,62 @@ namespace TaoTie
             }
         }
 
-        private async ETTask<PackageInfo> InitPackage(string name)
+        private async ETTask InitPackage(string name)
         {
             if (dict.TryGetValue(name, out var packageInfo))
             {
-                return packageInfo;
+                return;
             }
+
             packageInfo = new PackageInfo();
+            dict.Add(name, packageInfo);
+            list.Add(packageInfo);
             packageInfo.Name = name;
             var package = await YooAssetsMgr.Instance.GetPackage(name);
             int max = GetPackageMaxVer(name);
             var ver = GetPackageVersion(package);
+            Log.Info(name+" ver:"+ver);
             packageInfo.MaxVer = max;
             packageInfo.Ver = ver;
             if (max < 0)
             {
                 packageInfo.State = PackageState.Error;
                 Log.Error("不存在包" + name);
-                return packageInfo;
+                return;
             }
 
-            if (ver < 0)
+            if (YooAssetsMgr.Instance.PlayMode == EPlayMode.HostPlayMode)
             {
-                packageInfo.State = PackageState.UnDownload;
-                return packageInfo;
-            }
+                if (ver < 0 || max > ver)
+                {
+                    packageInfo.State = ver < 0 ? PackageState.UnDownload : PackageState.NeedUpdate;
+ 
+                    var res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(max.ToString(), true, 30, name);
+                    if (!res)
+                    {
+                        packageInfo.State = PackageState.Error;
+                        return;
+                    }
 
-            if (max > ver)
-            {
-                packageInfo.State = PackageState.NeedUpdate;
-                var operation =
-                    YooAssetsMgr.Instance.UpdatePackageManifestAsync(max.ToString(), true, 30, name);
-                await operation.Task;
-                var dl = 
-                    YooAssetsMgr.Instance.CreateResourceDownloader(downloadingMaxNum, failedTryAgain, 30, name);
-                packageInfo.NeedDownloadSize = dl.TotalDownloadBytes;
-                operation =
-                    YooAssetsMgr.Instance.UpdatePackageManifestAsync(ver.ToString(), true, 30, name);
-                await operation.Task;
-            }
-            else
+                    packageInfo.DownloaderOperation =
+                        YooAssetsMgr.Instance.CreateResourceDownloader(downloadingMaxNum, failedTryAgain, 30, name);
+                    packageInfo.NeedDownloadSize = packageInfo.DownloaderOperation.TotalDownloadBytes;
+                    if (ver > 0)
+                    {
+                        res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(ver.ToString(), true, 30, name);
+                        if (!res)
+                        {
+                            packageInfo.State = PackageState.Error;
+                        }
+                    }
+                }
                 packageInfo.State = PackageState.Initialized;
-            dict.Add(name,packageInfo);
-            list.Add(packageInfo);
-            return packageInfo;
+            }
+            else if (YooAssetsMgr.Instance.PlayMode == EPlayMode.EditorSimulateMode
+                     ||YooAssetsMgr.Instance.PlayMode == EPlayMode.OfflinePlayMode)
+            {
+                packageInfo.State = PackageState.Initialized;
+            }
         }
 
         private int GetPackageVersion(ResourcePackage package)

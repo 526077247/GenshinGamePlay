@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using YooAsset;
 
 namespace TaoTie
 {
@@ -9,9 +10,9 @@ namespace TaoTie
         private readonly int defaultServer = 1;
         private ServerConfig curConfig;
         public static ServerConfigManager Instance;
-		
-        private string updateListCdnUrl;
+        
         private bool inWhiteList;
+        private bool whiteMode = false;
         private Dictionary<string, Dictionary<int, Resver>> resUpdateList;
         private Dictionary<string, AppConfig> appUpdateList;
         #region override
@@ -19,9 +20,8 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
-#if UNITY_EDITOR
+            if(Define.Debug)
                 this.curConfig = ServerConfigCategory.Instance.Get(PlayerPrefs.GetInt(this.serverKey, this.defaultServer));
-#endif
             if (this.curConfig == null)
             {
                 foreach (var item in ServerConfigCategory.Instance.GetAll())
@@ -31,8 +31,6 @@ namespace TaoTie
                         break;
                 }
             }
-
-            this.updateListCdnUrl = this.curConfig.UpdateListUrl;
         }
 
         public void Destroy()
@@ -47,7 +45,6 @@ namespace TaoTie
         public ServerConfig GetCurConfig()
         {
             return this.curConfig;
-
         }
 
         public ServerConfig ChangeEnv(int id)
@@ -56,18 +53,17 @@ namespace TaoTie
             if(conf!=null)
             {
                 this.curConfig = conf;
-#if UNITY_EDITOR
-                PlayerPrefs.SetInt(this.serverKey, id);
-#endif
+                if (Define.Debug)
+                    PlayerPrefs.SetInt(this.serverKey, id);
             }
             return this.curConfig;
 
         }
         
-        //获取测试环境更新列表cdn地址
-        public string GetTestUpdateListCdnUrl()
+        //获取环境更新列表cdn地址
+        public string GetUpdateListUrl()
         {
-            return this.curConfig.TestUpdateListUrl;
+            return this.whiteMode? YooAssetsMgr.Instance.CdnConfig.TestUpdateListUrl:YooAssetsMgr.Instance.CdnConfig.UpdateListUrl;
         }
 
         public int GetEnvId()
@@ -79,17 +75,15 @@ namespace TaoTie
         //获取白名单下载地址
         public string GetWhiteListCdnUrl()
         {
-            if (string.IsNullOrEmpty(this.updateListCdnUrl)) return this.updateListCdnUrl;
-            return string.Format("{0}/white.list", this.updateListCdnUrl);
+            var url = GetUpdateListUrl();
+            if (string.IsNullOrEmpty(url)) return url;
+            return string.Format("{0}/white.list", url);
         }
 
         //设置白名单模式
         public void SetWhiteMode(bool whiteMode)
         {
-            if (whiteMode)
-            {
-                this.updateListCdnUrl = this.GetTestUpdateListCdnUrl();
-            }
+            this.whiteMode = whiteMode;
         }
 
         //设置白名单列表
@@ -124,7 +118,8 @@ namespace TaoTie
         //获取更新列表地址, 平台独立
         public string GetUpdateListCdnUrl()
         {
-            var url = string.Format("{0}/update_{1}.list", this.updateListCdnUrl, PlatformUtil.GetStrPlatformIgnoreEditor());
+            var url = string.Format("{0}/update_{1}.list?timestamp={2}", this.GetUpdateListUrl(), 
+                PlatformUtil.GetStrPlatformIgnoreEditor(),TimerManager.Instance.GetTimeNow());
             Log.Info("GetUpdateListUrl url = "+url);
             return url;
         }

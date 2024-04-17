@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbd40e4366dd95439decc1f046ebd41, type: 3}
   m_Name: BuildSettings
   m_EditorClassIdentifier: 
+  channel: googleplay
+  buildMode: 1
   clearFolder: 0
   isBuildExe: 1
-  isContainAB: 0
   isBuildAll: 1
   isPackAtlas: 0
   buildType: 1

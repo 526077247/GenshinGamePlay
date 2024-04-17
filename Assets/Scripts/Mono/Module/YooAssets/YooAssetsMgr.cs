@@ -97,6 +97,10 @@ namespace YooAsset
             await op.Task;
             var conf = op.GetRawFileText();
             Config = JsonHelper.FromJson<BuildInConfig>(conf);
+            if (Config == null)
+            {
+                Log.Error("UpdateConfig Config == null");
+            }
             op.Release();
         }
 
@@ -133,10 +137,20 @@ namespace YooAsset
             var packageInfo = GetPackageSync(package);
             return packageInfo.CreateResourceDownloader(downloadingMaxNumber,failedTryAgain,timeout);
         }
-        public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion , int timeout ,string package)
+        public ETTask<bool> UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion , int timeout ,string package)
         {
+            ETTask<bool> task = ETTask<bool>.Create(true);
             var packageInfo = GetPackageSync(package);
-            return packageInfo.UpdatePackageManifestAsync(packageVersion,autoSaveVersion,timeout);
+            var op =  packageInfo.UpdatePackageManifestAsync(packageVersion,autoSaveVersion,timeout);
+            op.Completed += (a) =>
+            {
+                if (a.Status == EOperationStatus.Failed)
+                {
+                    Log.Error(a.Error);
+                }
+                task.SetResult(a.Status == EOperationStatus.Succeed);
+            };
+            return task;
         }
         
         

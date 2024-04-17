@@ -7,24 +7,29 @@ namespace TaoTie
 {
     public class AssemblyManager:IManager
     {
-        public static AssemblyManager Instance => ManagerProvider.RegisterManager<AssemblyManager>();
-        private HashSet<Assembly> Temp;
-        private HashSet<Assembly> HotfixTemp;
+        public static AssemblyManager Instance;
+        private HashSet<Assembly> temp;
+        private HashSet<Assembly> hotfixTemp;
         private Dictionary<string, Type> allTypes;
         private UnOrderMultiMap<Assembly, Type> mapTypes;
         #region override
 
         public void Init()
         {
-            Temp = new HashSet<Assembly>();
-            HotfixTemp = new HashSet<Assembly>();
+            Instance = this;
+            temp = new HashSet<Assembly>();
+            hotfixTemp = new HashSet<Assembly>();
             allTypes = new Dictionary<string, Type>();
             mapTypes = new UnOrderMultiMap<Assembly, Type>();
         }
 
         public void Destroy()
         {
-            Temp.Clear();
+            Instance = null;
+            temp.Clear();
+            hotfixTemp.Clear();
+            allTypes.Clear();
+            mapTypes.Clear();
         }
 
         #endregion
@@ -36,7 +41,7 @@ namespace TaoTie
 
         public void AddAssembly(Assembly assembly)
         {
-            if (!Temp.Contains(assembly))
+            if (!temp.Contains(assembly))
             {
                 foreach (Type type in assembly.GetTypes())
                 {
@@ -48,13 +53,13 @@ namespace TaoTie
         
         public void AddHotfixAssembly(Assembly assembly)
         {
-            HotfixTemp.Add(assembly);
+            hotfixTemp.Add(assembly);
             AddAssembly(assembly);
         }
 
         public void RemoveHotfixAssembly()
         {
-            foreach (var assembly in HotfixTemp)
+            foreach (var assembly in hotfixTemp)
             {
                 if (mapTypes.TryGetValue(assembly, out var types))
                 {
@@ -65,9 +70,9 @@ namespace TaoTie
                 }
 
                 mapTypes.Remove(assembly);
-                Temp.Remove(assembly);
+                temp.Remove(assembly);
             }
-            HotfixTemp.Clear();
+            hotfixTemp.Clear();
         }
     }
 }
