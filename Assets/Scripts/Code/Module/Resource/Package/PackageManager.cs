@@ -51,17 +51,6 @@ namespace TaoTie
             if (packageInfo.State == PackageState.NeedUpdate || packageInfo.State == PackageState.UnDownload)
             {
                 packageInfo.State = PackageState.Downloading;
-                var res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(packageInfo.MaxVer.ToString(), true, 30, name);
-                Log.Info("UpdatePackageInfo UpdatePackageManifestAsync begin");
-                if (!res)
-                {
-                    packageInfo.State = PackageState.NeedUpdate;
-                    return false;
-                }
-
-                Log.Info("UpdatePackageInfo UpdatePackageManifestAsync Success");
-                ETTask<bool> downloadTask = ETTask<bool>.Create(true);
-                packageInfo.DownloaderOperation.OnDownloadOverCallback += (a) => { downloadTask?.SetResult(a); };
                 if (onProgress != null)
                 {
                     packageInfo.DownloaderOperation.OnDownloadProgressCallback = (a, b, c, d) =>
@@ -71,14 +60,14 @@ namespace TaoTie
                 }
                 Log.Info("UpdatePackageInfo DownloadContent begin");
                 packageInfo.DownloaderOperation.BeginDownload();
-                
-                bool result = await downloadTask;
-                if (!result)
+                await packageInfo.DownloaderOperation.Task;
+
+                if (packageInfo.DownloaderOperation.Status != EOperationStatus.Succeed)
                 {
                     packageInfo.State = PackageState.NeedUpdate;
                     return false;
                 }
-
+                packageInfo.UpdatePackageManifestOperation.SavePackageVersion();
                 Log.Info("UpdatePackageInfo DownloadContent Success");
                 packageInfo.State = PackageState.Initialized;
                 return true;
@@ -142,8 +131,9 @@ namespace TaoTie
                 {
                     packageInfo.State = ver < 0 ? PackageState.UnDownload : PackageState.NeedUpdate;
  
-                    var res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(max.ToString(), true, 30, name);
-                    if (!res)
+                    packageInfo.UpdatePackageManifestOperation = YooAssetsMgr.Instance.UpdatePackageManifestAsync(max.ToString(), false, 30, name);
+                    await packageInfo.UpdatePackageManifestOperation.Task;
+                    if (packageInfo.UpdatePackageManifestOperation.Status!= EOperationStatus.Succeed)
                     {
                         packageInfo.State = PackageState.Error;
                         return;
@@ -152,16 +142,11 @@ namespace TaoTie
                     packageInfo.DownloaderOperation =
                         YooAssetsMgr.Instance.CreateResourceDownloader(downloadingMaxNum, failedTryAgain, 30, name);
                     packageInfo.NeedDownloadSize = packageInfo.DownloaderOperation.TotalDownloadBytes;
-                    if (ver > 0)
-                    {
-                        res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(ver.ToString(), true, 30, name);
-                        if (!res)
-                        {
-                            packageInfo.State = PackageState.Error;
-                        }
-                    }
                 }
-                packageInfo.State = PackageState.Initialized;
+                else
+                {
+                    packageInfo.State = PackageState.Initialized;
+                }
             }
             else if (YooAssetsMgr.Instance.PlayMode == EPlayMode.EditorSimulateMode
                      ||YooAssetsMgr.Instance.PlayMode == EPlayMode.OfflinePlayMode)

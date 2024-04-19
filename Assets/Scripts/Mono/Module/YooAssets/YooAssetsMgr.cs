@@ -137,20 +137,10 @@ namespace YooAsset
             var packageInfo = GetPackageSync(package);
             return packageInfo.CreateResourceDownloader(downloadingMaxNumber,failedTryAgain,timeout);
         }
-        public ETTask<bool> UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion , int timeout ,string package)
+        public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion , int timeout ,string package)
         {
-            ETTask<bool> task = ETTask<bool>.Create(true);
             var packageInfo = GetPackageSync(package);
-            var op =  packageInfo.UpdatePackageManifestAsync(packageVersion,autoSaveVersion,timeout);
-            op.Completed += (a) =>
-            {
-                if (a.Status == EOperationStatus.Failed)
-                {
-                    Log.Error(a.Error);
-                }
-                task.SetResult(a.Status == EOperationStatus.Succeed);
-            };
-            return task;
+            return packageInfo.UpdatePackageManifestAsync(packageVersion,autoSaveVersion,timeout);
         }
         
         

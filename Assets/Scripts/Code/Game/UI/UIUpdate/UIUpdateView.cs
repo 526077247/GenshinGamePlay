@@ -4,7 +4,7 @@ using System;
 using YooAsset;
 namespace TaoTie
 {
-    public class UIUpdateView:UIBaseView,IOnCreate,IOnEnable<Action>
+    public class UIUpdateView:UIBaseView,IOnCreate,IOnEnable<Action>,IOnWidthPaddingChange
     {
         public readonly int BTN_CANCEL = 1;
         public readonly int BTN_CONFIRM = 2;
@@ -305,24 +305,12 @@ namespace TaoTie
             // 更新补丁清单
             Log.Info("更新补丁清单");
 
-            var res = await YooAssetsMgr.Instance.UpdatePackageManifestAsync(this.StaticVersion.ToString(), true, 30, null);
+            var op = YooAssetsMgr.Instance.UpdatePackageManifestAsync(this.StaticVersion.ToString(), false, 30, null);
+            await op.Task;
             int btnState;
-            if(!res)
+            if(op.Status!= EOperationStatus.Succeed)
             {
-                btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.ForceUpdate?"Btn_Exit":"Update_Skip");
-                if (btnState == this.BTN_CONFIRM)
-                {
-                    return await this.CheckResUpdate();
-                }
-                else if(this.ForceUpdate)
-                {
-                    Application.Quit();
-                    return false;
-                }
-                //版本号设回去
-                await YooAssetsMgr.Instance.UpdatePackageManifestAsync(
-                    YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null);
-                return false;
+                return await UpdateFail();
             }
 
             Log.Info("创建补丁下载器.");
@@ -353,8 +341,8 @@ namespace TaoTie
                     return false;
                 }
                 //版本号设回去
-                await YooAssetsMgr.Instance.UpdatePackageManifestAsync(
-                    YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null);
+                await YooAssetsMgr.Instance
+                    .UpdatePackageManifestAsync(YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null).Task;
                 return false;
             }
 
@@ -363,18 +351,38 @@ namespace TaoTie
             this.lastProgress = 0;
             this.SetProgress(0);
             //2、更新资源
-            ETTask<bool> downloadTask = ETTask<bool>.Create(true);
-            this.Downloader.OnDownloadOverCallback += (a)=>{downloadTask.SetResult(a);};
             this.Downloader.OnDownloadProgressCallback =(a,b,c,d)=>
             {
                 this.SetProgress((float)d/c);
             };
             this.Downloader.BeginDownload();
             Log.Info("CheckResUpdate DownloadContent begin");
-            bool result = await downloadTask;
-            if (!result) return false;
+            await this.Downloader.Task;
+            if (this.Downloader.Status != EOperationStatus.Succeed)
+            {
+                return await UpdateFail();
+            }
+            op.SavePackageVersion();
             Log.Info("CheckResUpdate DownloadContent Success");
             return true;
+        }
+
+        private async ETTask<bool> UpdateFail()
+        {
+            var  btnState = await this.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.ForceUpdate?"Btn_Exit":"Update_Skip");
+            if (btnState == this.BTN_CONFIRM)
+            {
+                return await this.CheckResUpdate();
+            }
+            else if(this.ForceUpdate)
+            {
+                Application.Quit();
+                return false;
+            }
+            //版本号设回去
+            await YooAssetsMgr.Instance
+                .UpdatePackageManifestAsync(YooAssetsMgr.Instance.Config.Resver.ToString(), true, 30, null).Task;
+            return false;
         }
         
         /// <summary>

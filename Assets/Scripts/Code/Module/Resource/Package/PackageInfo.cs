@@ -24,6 +24,8 @@ namespace TaoTie
         /// </summary>
         public long NeedDownloadSize;
         
+        public UpdatePackageManifestOperation UpdatePackageManifestOperation;
+        
         public ResourceDownloaderOperation DownloaderOperation;
     }
 }
