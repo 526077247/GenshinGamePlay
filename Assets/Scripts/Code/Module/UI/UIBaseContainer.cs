@@ -124,7 +124,7 @@ namespace TaoTie
             length--;
             if (this.length <= 0)
             {
-                if (!string.IsNullOrEmpty(path))
+                if (this.Parent != null && path != null)
                     this.Parent.InnerRemoveComponent(this, path);
                 else
                     Log.Info("Close window here, type name: " + this.GetType().Name);
