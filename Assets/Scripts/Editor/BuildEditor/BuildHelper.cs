@@ -89,26 +89,34 @@ namespace TaoTie
         }
          public static void BuildPackage(PlatformType type, string packageName)
         {
+            string platform = "";
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
             switch (type)
             {
                 case PlatformType.Windows:
                     buildTarget = BuildTarget.StandaloneWindows64;
+ 
+                    platform = "pc";
                     break;
                 case PlatformType.Android:
                     KeystoreSetting();
                     buildTarget = BuildTarget.Android;
+                    platform = "android";
                     break;
                 case PlatformType.IOS:
                     buildTarget = BuildTarget.iOS;
+                    platform = "ios";
                     break;
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
+                    platform = "pc";
                     break;
                 case PlatformType.Linux:
                     buildTarget = BuildTarget.StandaloneLinux64;
+                    platform = "pc";
                     break;
             }
+
             string jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
             var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
             if (!packageConfig.packageVer.TryGetValue(packageName, out var version))
@@ -141,6 +149,26 @@ namespace TaoTie
                 }
 
             }
+            
+            jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
+
+            string fold = $"{AssetBundleBuilderHelper.GetDefaultOutputRoot()}/{buildTarget}";
+            var config = Resources.Load<CDNConfig>("CDNConfig");
+            string targetPath = Path.Combine(relativeDirPrefix, $"{config.Channel}_{platform}");
+            if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
+            FileHelper.CleanDirectory(targetPath);
+            var dirs = new DirectoryInfo(fold).GetDirectories();
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                string dir = $"{fold}/{dirs[i].Name}/{obj.Resver}";
+                FileHelper.CopyFiles(dir, targetPath);
+            }
+
+            UnityEngine.Debug.Log("完成cdn资源打包");
+#if UNITY_EDITOR
+            Application.OpenURL($"file:///{targetPath}");
+#endif
         }
          private static void BuildInternal(BuildTarget buildTarget, bool isBuildExe, bool isBuildAll, bool isContainsAb)
          {
