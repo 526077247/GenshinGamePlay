@@ -168,7 +168,7 @@ namespace TaoTie
 
             if (assetType == SpriteType.SpriteAtlas)
             {
-                if (this.cacheSpriteAtlas.TryOnlyGet(imagePath, out SpriteAtlasValue value))
+                if (this.cacheSpriteAtlas.TryOnlyGet(assetAddress, out SpriteAtlasValue value))
                 {
                     if (value.RefCount > 0)
                     {
