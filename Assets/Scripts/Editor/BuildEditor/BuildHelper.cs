@@ -158,13 +158,8 @@ namespace TaoTie
             string targetPath = Path.Combine(relativeDirPrefix, $"{config.Channel}_{platform}");
             if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
             FileHelper.CleanDirectory(targetPath);
-            var dirs = new DirectoryInfo(fold).GetDirectories();
-            for (int i = 0; i < dirs.Length; i++)
-            {
-                string dir = $"{fold}/{dirs[i].Name}/{obj.Resver}";
-                FileHelper.CopyFiles(dir, targetPath);
-            }
-
+            var dir = $"{fold}/{packageName}/{version}";
+            FileHelper.CopyFiles(dir, targetPath);
             UnityEngine.Debug.Log("完成cdn资源打包");
 #if UNITY_EDITOR
             Application.OpenURL($"file:///{targetPath}");
@@ -321,10 +316,32 @@ namespace TaoTie
             if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
             FileHelper.CleanDirectory(targetPath);
             var dirs = new DirectoryInfo(fold).GetDirectories();
+            jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
+            var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
             for (int i = 0; i < dirs.Length; i++)
             {
-                string dir = $"{fold}/{dirs[i].Name}/{obj.Resver}";
-                FileHelper.CopyFiles(dir, targetPath);
+                string dir = null;
+                if (dirs[i].Name == YooAssetsMgr.DefaultName)
+                {
+                    dir = $"{fold}/{dirs[i].Name}/{obj.Resver}";
+                }
+                else
+                {
+                    if (packageConfig.packageVer != null)
+                    {
+                        foreach (var item in packageConfig.packageVer)
+                        {
+                            if (item.Key == dirs[i].Name)
+                            {
+                                dir = $"{fold}/{dirs[i].Name}/{item.Value}";
+                            }
+                        }
+                    }
+                }
+                if (dir != null)
+                {
+                    FileHelper.CopyFiles(dir, targetPath);
+                }
             }
 
             UnityEngine.Debug.Log("完成cdn资源打包");
