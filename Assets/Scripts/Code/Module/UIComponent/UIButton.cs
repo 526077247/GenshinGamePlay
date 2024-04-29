@@ -30,7 +30,11 @@ namespace TaoTie
             if (this.onclick != null)
                 this.button.onClick.RemoveListener(this.onclick);
             if (!string.IsNullOrEmpty(this.spritePath))
+            {
+                this.image.sprite = null;
                 ImageLoaderManager.Instance?.ReleaseImage(this.spritePath);
+                spritePath = null;
+            }
             this.onclick = null;
         }
         #endregion

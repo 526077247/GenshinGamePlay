@@ -25,8 +25,9 @@ namespace TaoTie
 
         public void OnDestroy()
         {
-            if (string.IsNullOrEmpty(spritePath))
+            if (!string.IsNullOrEmpty(spritePath))
             {
+                this.image.texture = null;
                 ImageLoaderManager.Instance?.ReleaseImage(spritePath);
                 spritePath = null;
             }
