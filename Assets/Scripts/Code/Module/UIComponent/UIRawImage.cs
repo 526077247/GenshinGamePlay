@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UIRawImage : UIBaseContainer,IOnCreate<string>,IOnDestroy
+    public class UIRawImage : UIBaseContainer,IOnCreate,IOnCreate<string>,IOnDestroy
     {
         string spritePath;
         RawImage image;
@@ -17,6 +17,10 @@ namespace TaoTie
         bool grayState;
         #region override
 
+        public void OnCreate()
+        {
+            id = IdGenerater.Instance.GenerateId();
+        }
         public void OnCreate(string path)
         {
             id = IdGenerater.Instance.GenerateId();

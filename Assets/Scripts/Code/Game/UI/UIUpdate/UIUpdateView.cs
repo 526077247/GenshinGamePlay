@@ -283,17 +283,18 @@ namespace TaoTie
                 Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + appChannel);
                 return false;
             }
+            
+            if (this.StaticVersion > YooAssetsMgr.Instance.Config.Resver)
+            {
+                Log.Info("CheckResUpdate ResVer is Most Max Version, so return;");
+                return false;
+            }
             this.ForceUpdate = Define.ForceUpdate; 
             if (!Define.ForceUpdate)//默认强更
             {
                 if (verInfo != null && verInfo.force_update != 0)
                     this.ForceUpdate = true;
             }
-            // if (this.StaticVersion>= maxVer)
-            // {
-            //     Log.Info("CheckResUpdate ResVer is Most Max Version, so return;");
-            //     return false;
-            // }
 
             // 编辑器下跳过。
             // if (Define.IsEditor) return false;
