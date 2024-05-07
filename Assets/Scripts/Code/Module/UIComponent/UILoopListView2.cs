@@ -13,7 +13,7 @@ namespace TaoTie
 
         public void OnDestroy()
         {
-            if (this.loopListView == null)
+            if (this.loopListView != null)
             {
                 loopListView.ClearListView();
                 loopListView = null;

@@ -59,6 +59,7 @@ namespace TaoTie
             if (this.callBack != null)
             {
                 this.toggle.onValueChanged.RemoveListener(this.callBack);
+                this.callBack = null;
             }
             
         }

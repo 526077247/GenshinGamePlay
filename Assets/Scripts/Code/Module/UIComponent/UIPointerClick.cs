@@ -11,9 +11,7 @@ namespace TaoTie
 
         public void OnDestroy()
         {
-            if (onClick != null)
-                pointerClick.onClick.RemoveListener(onClick);
-            onClick = null;
+            this.RemoveOnClick();
         }
 
         #endregion

@@ -4,13 +4,19 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UIInput:UIBaseContainer
+    public class UIInput:UIBaseContainer,IOnDestroy
     {
         private InputField input;
 
         private UnityAction<string> onValueChange;
 
         private UnityAction<string> onEndEdit;
+
+        public void OnDestroy()
+        {
+            this.RemoveOnValueChanged();
+            this.RemoveOnEndEdit();
+        }
 
         void ActivatingComponent()
         {
@@ -49,6 +55,7 @@ namespace TaoTie
         {
             if(this.onValueChange!=null)
                 this.input.onValueChanged.RemoveListener(this.onValueChange);
+            this.onValueChange = null;
         }
         
         
@@ -67,6 +74,7 @@ namespace TaoTie
         {
             if(this.onEndEdit!=null)
                 this.input.onEndEdit.RemoveListener(this.onEndEdit);
+            this.onEndEdit = null;
         }
     }
 }

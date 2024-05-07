@@ -3,14 +3,18 @@ using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public class UIInputTextmesh:UIBaseContainer
+    public class UIInputTextmesh:UIBaseContainer,IOnDestroy
     {
         private TMPro.TMP_InputField input;
         
         private UnityAction<string> onValueChange;
 
         private UnityAction<string> onEndEdit;
-        
+        public void OnDestroy()
+        {
+            this.RemoveOnValueChanged();
+            this.RemoveOnEndEdit();
+        }
         void ActivatingComponent()
         {
             if (this.input == null)
@@ -49,6 +53,7 @@ namespace TaoTie
         {
             if(this.onValueChange!=null)
                 this.input.onValueChanged.RemoveListener(this.onValueChange);
+            this.onValueChange = null;
         }
         
         
@@ -67,6 +72,7 @@ namespace TaoTie
         {
             if(this.onEndEdit!=null)
                 this.input.onEndEdit.RemoveListener(this.onEndEdit);
+            this.onEndEdit = null;
         }
     }
 }
