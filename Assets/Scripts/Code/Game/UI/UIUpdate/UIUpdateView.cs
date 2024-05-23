@@ -209,7 +209,7 @@ namespace TaoTie
         /// <returns></returns>
         async ETTask<bool> CheckAppUpdate()
         {
-            var appChannel = PlatformUtil.GetAppChannel();
+            var appChannel = YooAssetsMgr.Instance.CdnConfig.Channel;
             var channelAppUpdateList = ServerConfigManager.Instance.GetAppUpdateListByChannel(appChannel);
             if (channelAppUpdateList == null || channelAppUpdateList.app_ver == null)
             {
@@ -275,8 +275,8 @@ namespace TaoTie
         /// <returns></returns>
         public async ETTask<bool> CheckResUpdate()
         {
-            var appChannel = PlatformUtil.GetAppChannel();
-            var channel = YooAssetsMgr.Instance.CdnConfig.Channel;
+            var appChannel = YooAssetsMgr.Instance.CdnConfig.Channel;
+            var channel = "todo";
             this.StaticVersion = ServerConfigManager.Instance.FindMaxUpdateResVer(appChannel, channel, out var verInfo);
             if (this.StaticVersion<0)
             {

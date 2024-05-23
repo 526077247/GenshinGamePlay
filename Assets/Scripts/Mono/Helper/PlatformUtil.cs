@@ -55,19 +55,5 @@ namespace TaoTie
         {
             return IsAndroid() || IsIphone();
         }
-
-        public static string GetAppChannel()
-        {
-            if (IsAndroid()) return "googleplay";
-            else if (IsIphone()) return "applestore";
-            else if (IsWindows()) return "pc";
-#if UNITY_ANDROID
-            return "googleplay";
-#elif UNITY_IOS
-            return "applestore";
-#else 
-            return "pc";
-#endif
-        }
     }
 }
