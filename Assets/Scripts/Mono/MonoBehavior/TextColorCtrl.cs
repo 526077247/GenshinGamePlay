@@ -4,59 +4,34 @@ using UnityEngine.UI;
 public class TextColorCtrl : MonoBehaviour 
 {
 
-    private Text m_text;
-    private Color m_originTextColor;
+    public Text m_text;
+    public TMPro.TMP_Text m_text2;
+    public Color m_originTextColor;
 
-    private Outline m_outline;
-    private Color m_originOutlineColor;
+    public Outline m_outline;
+    public Color m_originOutlineColor;
 
-    private Shadow m_shadow;
-    private Color m_originShadowColor;
+    public Shadow m_shadow;
+    public Color m_originShadowColor;
 
-    protected Text text
+    public void Awake()
     {
-        get
+        m_text2 = GetComponent<TMPro.TMP_Text>();
+        if (m_text2 != null)
         {
-            if (m_text == null)
-            {
-                m_text = GetComponent<Text>();
-                m_originTextColor = m_text.color;
-            }
-
-            return m_text;
+            m_originTextColor = m_text2.color;
         }
-    }
-
-    protected Outline outline
-    {
-        get
+        else
         {
-            if (m_outline == null)
-            {
-                m_outline = GetComponent<Outline>();
-
-                if(m_outline != null)
-                    m_originOutlineColor = m_outline.effectColor;
-            }
-
-            return m_outline;
+            m_text = GetComponent<Text>();
+            if(m_text!=null) m_originTextColor = m_text.color;
         }
-    }
-
-    protected Shadow shadow
-    {
-        get
-        {
-            if (m_shadow == null)
-            {
-                m_shadow = GetComponent<Shadow>();
-
-                if (m_shadow != null)
-                    m_originShadowColor = m_shadow.effectColor;
-            }
-
-            return m_shadow;
-        }
+        
+        m_outline = GetComponent<Outline>();
+        if(m_outline != null) m_originOutlineColor = m_outline.effectColor;
+        
+        m_shadow = GetComponent<Shadow>();
+        if (m_shadow != null) m_originShadowColor = m_shadow.effectColor;
     }
 
     public static TextColorCtrl Get(GameObject go)
@@ -72,39 +47,37 @@ public class TextColorCtrl : MonoBehaviour
 
     public void SetTextColor(Color color)
     {
-        text.color = color;
+        if(m_text!=null) m_text.color = color;
+        if(m_text2!=null) m_text2.color = color;
     }
 
     public void ClearTextColor()
     {
-        text.color = m_originTextColor;
+        if(m_text!=null) m_text.color = m_originTextColor;
+        if(m_text2!=null) m_text2.color = m_originTextColor;
     }
 
     public void SetOutlineColor(Color color)
     {
-        var _outline = outline;
-        if(_outline != null)
-            _outline.effectColor = color;
+        if(m_outline != null)
+            m_outline.effectColor = color;
     }
 
     public void ClearOutlineColor()
     {
-        var _outline = outline;
-        if (_outline != null)
-            _outline.effectColor = m_originOutlineColor;
+        if (m_outline != null)
+            m_outline.effectColor = m_originOutlineColor;
     }
 
     public void SetShadowColor(Color color)
     {
-        var _shadow = shadow;
-        if (_shadow != null)
-            _shadow.effectColor = color;
+        if (m_shadow != null)
+            m_shadow.effectColor = color;
     }
 
     public void ClearShadowColor()
     {
-        var _shadow = shadow;
-        if (_shadow != null)
-            _shadow.effectColor = m_originShadowColor;
+        if (m_shadow != null)
+            m_shadow.effectColor = m_originShadowColor;
     }
 }

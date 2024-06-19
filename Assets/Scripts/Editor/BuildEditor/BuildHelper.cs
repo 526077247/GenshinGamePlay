@@ -279,8 +279,22 @@ namespace TaoTie
             BuildAssemblieEditor.BuildCodeRelease();
             
             //处理图集资源
-            if(packAtlas) HandleAtlas();
+            if (packAtlas) HandleAtlas();
             
+            if (isBuildExe)
+            {
+                if (Directory.Exists("Assets/StreamingAssets"))
+                {
+                    Directory.Delete("Assets/StreamingAssets", true);
+                    Directory.CreateDirectory("Assets/StreamingAssets");
+                }
+                else
+                {
+                    Directory.CreateDirectory("Assets/StreamingAssets");
+                }
+                AssetDatabase.Refresh();
+            }
+                              
             //打ab
             BuildInternal(buildTarget, isBuildExe, isBuildAll, isContainsAb);
 

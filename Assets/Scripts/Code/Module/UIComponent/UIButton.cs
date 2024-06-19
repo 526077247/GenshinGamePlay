@@ -98,9 +98,9 @@ namespace TaoTie
         /// <param name="affectInteractable">是否影响交互, 不填的话默认为true</param>
         public async ETTask SetBtnGray(bool isGray, bool includeText = true, bool affectInteractable = true)
         {
-            if (this.grayState == isGray) return;
-            this.ActivatingImageComponent();
             this.grayState = isGray;
+            this.ActivatingImageComponent();
+           
             Material mt = null;
             if (isGray)
             {
@@ -135,10 +135,23 @@ namespace TaoTie
 
             if (includeText)
             {
-                var textComs = go.GetComponentsInChildren<Text>();
+                var textComs = go.GetComponentsInChildren<Text>(true);
                 for (int i = 0; i < textComs.Length; i++)
                 {
                     var uITextColorCtrl = TextColorCtrl.Get(textComs[i].gameObject);
+                    if (isGray)
+                    {
+                        uITextColorCtrl.SetTextColor(new Color(89 / 255f, 93 / 255f, 93 / 255f));
+                    }
+                    else
+                    {
+                        uITextColorCtrl.ClearTextColor();
+                    }
+                }
+                var textComs2 = go.GetComponentsInChildren<TMPro.TMP_Text>(true);
+                for (int i = 0; i < textComs2.Length; i++)
+                {
+                    var uITextColorCtrl = TextColorCtrl.Get(textComs2[i].gameObject);
                     if (isGray)
                     {
                         uITextColorCtrl.SetTextColor(new Color(89 / 255f, 93 / 255f, 93 / 255f));
