@@ -99,10 +99,10 @@ namespace TaoTie
             var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path,package);
             op.Completed += (op) =>
             {
-                var obj = op.AssetObject;
+                T obj = op.AssetObject as T;
                 this.loaderCount--;
-                callback?.Invoke(obj as T);
-                res.SetResult(obj as T);
+                callback?.Invoke(obj);
+                res.SetResult(obj);
                 if (obj!=null && !this.Temp.ContainsKey(obj))
                 {
                     this.Temp.Add(op.AssetObject, op);
