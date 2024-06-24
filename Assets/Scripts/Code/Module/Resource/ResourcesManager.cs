@@ -65,7 +65,8 @@ namespace TaoTie
             var op = YooAssetsMgr.Instance.LoadAssetSync<T>(path, package);
             this.loaderCount--;
             T obj = op.AssetObject as T;
-            if (!this.Temp.ContainsKey(op.AssetObject))
+
+            if (obj!=null && !this.Temp.ContainsKey(op.AssetObject))
             {
                 this.Temp.Add(op.AssetObject, op);
             }
@@ -98,10 +99,11 @@ namespace TaoTie
             var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path,package);
             op.Completed += (op) =>
             {
+                var obj = op.AssetObject;
                 this.loaderCount--;
-                callback?.Invoke(op.AssetObject as T);
-                res.SetResult(op.AssetObject as T);
-                if (!this.Temp.ContainsKey(op.AssetObject))
+                callback?.Invoke(obj as T);
+                res.SetResult(obj as T);
+                if (obj!=null && !this.Temp.ContainsKey(obj))
                 {
                     this.Temp.Add(op.AssetObject, op);
                 }

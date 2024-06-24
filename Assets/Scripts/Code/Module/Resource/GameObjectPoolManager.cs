@@ -345,7 +345,8 @@ namespace TaoTie
 				for (int i = keys.Count - 1; i >= 0; i--)
 				{
 					var path = keys[i];
-					if (dictExcludePath != null && !dictExcludePath.ContainsKey(path) && this.goPool.TryOnlyGet(path, out var pooledGo))
+					if ((dictExcludePath == null || !dictExcludePath.ContainsKey(path))
+					 && this.goPool.TryOnlyGet(path, out var pooledGo))
 					{
 						if (pooledGo != null && this.CheckNeedUnload(path))
 						{
@@ -518,6 +519,7 @@ namespace TaoTie
 							GameObject.Destroy(inst);
 							this.goInstCountCache[path] --;
 						});
+						instPathCache.Remove(inst);
 					}
 				}
 			}
