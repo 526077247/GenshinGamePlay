@@ -9,22 +9,17 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UIButton : UIBaseContainer,IOnCreate,IOnDestroy
+    public class UIButton : UIBaseContainer,IOnDestroy
     {
         UnityAction onclick;
         Button button;
         bool grayState;
         Image image;
         string spritePath;
-        private long id;
+        private int version = 0;
+        
         #region override
 
-        public void OnCreate()
-        {
-            id = IdGenerater.Instance.GenerateId();
-            grayState = false;
-        }
-        
         public void OnDestroy()
         {
             if (this.onclick != null)
@@ -100,7 +95,7 @@ namespace TaoTie
         {
             this.grayState = isGray;
             this.ActivatingImageComponent();
-           
+            
             Material mt = null;
             if (isGray)
             {
@@ -110,11 +105,16 @@ namespace TaoTie
                     mt = null;
                 }
             }
-            this.image.material = mt;
-            if (affectInteractable)
+
+            if (this.image != null)
             {
-                this.image.raycastTarget = !this.grayState;
+                this.image.material = mt;
+                if (affectInteractable)
+                {
+                    this.image.raycastTarget = !this.grayState;
+                }
             }
+
             this.SetBtnGray(mt, this.grayState, includeText);
         }
 
@@ -163,59 +163,102 @@ namespace TaoTie
                 }
             }
         }
-        public async ETTask SetSpritePath(string sprite_path,bool setNativeSize = false)
+        public async ETTask SetSpritePath(string spritePath,bool setNativeSize = false,Action callback = null)
         {
-            CoroutineLock coroutine = null;
-            try
+            version++;
+            int thisVersion = version;
+            if (spritePath == this.spritePath)
             {
-                coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.id);
-                if (sprite_path == this.spritePath) return;
-                this.ActivatingImageComponent();
-                this.image.enabled = false;
-                var base_sprite_path = this.spritePath;
-                this.spritePath = sprite_path;
-                if (string.IsNullOrEmpty(sprite_path))
-                {
-                    this.image.sprite = null;
-                    this.image.enabled = true;
-                }
-                else
-                {
-                    var sprite = await ImageLoaderManager.Instance.LoadImageAsync(sprite_path);
-                    this.image.enabled = true;
-                    if (sprite == null)
-                    {
-                        ImageLoaderManager.Instance.ReleaseImage(sprite_path);
-                        return;
-                    }
-                    this.image.sprite = sprite;
-                    if(setNativeSize)
-                        this.SetNativeSize();
-                }
-                if(!string.IsNullOrEmpty(base_sprite_path))
-                    ImageLoaderManager.Instance.ReleaseImage(base_sprite_path);
+                this.image.enabled = true;
+                callback?.Invoke();
+                return;
             }
-            finally
-            {
-                coroutine?.Dispose();
-            }
-        }
 
+            this.ActivatingImageComponent();
+            this.image.enabled = false;
+            var baseSpritePath = this.spritePath;
+
+            if (string.IsNullOrEmpty(spritePath))
+            {
+                this.image.sprite = null;
+                this.image.enabled = true;
+                this.spritePath = spritePath;
+            }
+            else
+            {
+                var sprite = await ImageLoaderManager.Instance.LoadImageAsync(spritePath);
+                if (thisVersion != version)
+                {
+                    ImageLoaderManager.Instance.ReleaseImage(spritePath);
+                    callback?.Invoke();
+                    return;
+                }
+                this.spritePath = spritePath;
+                this.image.enabled = true;
+                this.image.sprite = sprite;
+
+                if(setNativeSize)
+                    this.SetNativeSize();
+            }
+            if(!string.IsNullOrEmpty(baseSpritePath))
+                ImageLoaderManager.Instance.ReleaseImage(baseSpritePath);
+           
+            callback?.Invoke();
+        }
         public string GetSpritePath()
         {
             return this.spritePath;
         }
 
+        public void SetImageColor(string colorStr)
+        {
+            if(string.IsNullOrEmpty(colorStr)) return;
+            if (!colorStr.StartsWith("#")) colorStr = "#" + colorStr;
+            if (ColorUtility.TryParseHtmlString(colorStr, out var color))
+            {
+                this.ActivatingImageComponent();
+                this.image.color = color;
+            }
+            else
+            {
+                Log.Error("Set image color error, color is "+colorStr);
+            }
+        }
         public void SetImageColor(Color color)
         {
             this.ActivatingImageComponent();
-            this.image.color = color;
+            
         }
-        
         public void SetNativeSize()
         {
             this.ActivatingImageComponent();
             this.image.SetNativeSize();
+        }
+        
+        public void SetFillAmount(float value)
+        {
+            this.ActivatingImageComponent();
+            this.image.fillAmount = value;
+        }
+
+        public void SetImageAlpha(float a,bool changeChild=false)
+        {
+            this.ActivatingImageComponent();
+            this.image.color = new Color(this.image.color.r,this.image.color.g,
+                this.image.color.b,a);
+            if (changeChild)
+            {
+                var images = this.image.GetComponentsInChildren<Image>(false);
+                for (int i = 0; i < images.Length; i++)
+                {
+                    images[i].color = new Color(images[i].color.r,images[i].color.g, images[i].color.b,a);
+                }
+                // var texts = this.unity_uiimage.GetComponentsInChildren<TMPro.TMP_Text>(false);
+                // for (int i = 0; i < texts.Length; i++)
+                // {
+                //     texts[i].color = new Color(texts[i].color.r,texts[i].color.g, texts[i].color.b,a);
+                // }
+            }
         }
     }
 }

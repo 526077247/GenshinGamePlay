@@ -2,6 +2,9 @@
 using UnityEngine.U2D;
 using System.Collections.Generic;
 using System;
+using System.IO;
+using System.Threading;
+
 namespace TaoTie
 {
     public class ImageLoaderManager:IManager
@@ -25,6 +28,19 @@ namespace TaoTie
             public int RefCount;
         }
         
+        private class OnlineImage
+        {
+            public OnlineImage(Texture2D texture2D,Sprite sprite,int refCount)
+            {
+                Texture2D = texture2D;
+                Sprite = sprite;
+                RefCount = refCount;
+            }
+            public Texture2D Texture2D;
+            public Sprite Sprite;
+            public int RefCount;
+        }
+        
         private const string ATLAS_KEY = "/Atlas/";
         private const string DYN_ATLAS_KEY="/DynamicAtlas/";
         public static ImageLoaderManager Instance { get; private set; }
@@ -34,6 +50,8 @@ namespace TaoTie
         private LruCache<string, SpriteAtlasValue> cacheSpriteAtlas;
 
         private Dictionary<string, DynamicAtlas> cacheDynamicAtlas;
+        
+        private Dictionary<string, OnlineImage> cacheOnlineImage;
 
 
         #region overrride
@@ -44,6 +62,7 @@ namespace TaoTie
             this.cacheSingleSprite = new LruCache<string, SpriteValue>();
             this.cacheSpriteAtlas = new LruCache<string, SpriteAtlasValue>();
             this.cacheDynamicAtlas = new Dictionary<string, DynamicAtlas>();
+            cacheOnlineImage = new Dictionary<string, OnlineImage>();
             this.InitSingleSpriteCache(this.cacheSingleSprite);
             this.InitSpriteAtlasCache(this.cacheSpriteAtlas);
             PreLoad().Coroutine();
@@ -52,6 +71,7 @@ namespace TaoTie
         public void Destroy()
         {
             this.Clear();
+            this.cacheOnlineImage = null;
             this.cacheDynamicAtlas = null;
             this.cacheSingleSprite = null;
             this.cacheSpriteAtlas = null;
@@ -565,6 +585,13 @@ namespace TaoTie
         }
         #endregion
 
+        public void Cleanup()
+        {
+            Log.Info("ImageLoaderManager Cleanup");
+            this.cacheSingleSprite.CleanUp();
+            this.cacheSpriteAtlas.CleanUp();
+        }
+
         public void Clear()
         {
             foreach ((string key,var value) in this.cacheSpriteAtlas)
@@ -594,7 +621,170 @@ namespace TaoTie
                 item.Value.Dispose();
             }
             this.cacheDynamicAtlas.Clear();
+
+            foreach (var item in this.cacheOnlineImage)
+            {
+                GameObject.Destroy(item.Value.Texture2D);
+            }
+            this.cacheOnlineImage.Clear();
             Log.Info("ImageLoaderManager Clear");
         }
+
+
+        #region Online
+
+        public void ReleaseOnlineImage(string url,bool clear = true)
+        {
+            if (this.cacheOnlineImage.TryGetValue(url,out var data))
+            {
+                data.RefCount--;
+                if (clear && data.RefCount <= 0)
+                {
+                    if (data.Sprite != null)
+                    {
+                        GameObject.Destroy(data.Sprite);
+                    }
+                    GameObject.Destroy(data.Texture2D);
+                    cacheOnlineImage.Remove(url);
+                }
+                if (this.cacheOnlineImage.Count > 10)
+                {
+                    using (ListComponent<string> temp = ListComponent<string>.Create())
+                    {
+                        foreach (var item in cacheOnlineImage)
+                        {
+                            if (item.Value.RefCount == 0)
+                            {
+                                temp.Add(item.Key);
+                            }
+                        }
+
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            var img = cacheOnlineImage[temp[i]];
+                            if (img.Sprite != null)
+                            {
+                                GameObject.Destroy(img.Sprite);
+                            }
+                            GameObject.Destroy(img.Texture2D);
+                            cacheOnlineImage.Remove(temp[i]);
+                        }
+                    } 
+                    
+                }
+            }
+        }
+
+        public async ETTask<Sprite> GetOnlineSprite(string url,int tryCount = 3)
+        {
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, url.GetHashCode());
+                if (this.cacheOnlineImage.TryGetValue(url, out var data))
+                {
+                    data.RefCount++;
+                    if (data.Sprite == null)
+                    {
+                        data.Sprite = Sprite.Create(data.Texture2D, new Rect(0, 0, data.Texture2D.width, data.Texture2D.height),
+                            new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
+                    }
+                    return data.Sprite;
+                }
+
+                var texture = await HttpManager.Instance.HttpGetImageOnline(url, true);
+                if (texture != null) //本地已经存在
+                {
+                    var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                        new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
+                    this.cacheOnlineImage.Add(url, new OnlineImage(texture, sprite, 1));
+                    return sprite;
+                }
+                else
+                {
+                    for (int i = 0; i < tryCount; i++)
+                    {
+                        texture = await HttpManager.Instance.HttpGetImageOnline(url, false);
+                        if (texture != null) break;
+                    }
+
+                    if (texture != null)
+                    {
+                        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
+                        var bytes = texture.EncodeToPNG();
+                        ThreadPool.QueueUserWorkItem(_ =>
+                        {
+                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                        });
+                        this.cacheOnlineImage.Add(url, new OnlineImage(texture, sprite, 1));
+                        return sprite;
+                    }
+                    else
+                    {
+                        Log.Error("网络无资源 " + url);
+                    }
+                }
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+            return null;
+        }
+        
+         public async ETTask<Texture2D> GetOnlineTexture(string url,int tryCount = 3)
+        {
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, url.GetHashCode());
+                if (this.cacheOnlineImage.TryGetValue(url, out var data))
+                {
+                    data.RefCount++;
+                    return data.Texture2D;
+                }
+
+                var texture = await HttpManager.Instance.HttpGetImageOnline(url, true);
+                if (texture != null) //本地已经存在
+                {
+                    this.cacheOnlineImage.Add(url, new OnlineImage(texture, null, 1));
+                    return texture;
+                }
+                else
+                {
+                    for (int i = 0; i < tryCount; i++)
+                    {
+                        texture = await HttpManager.Instance.HttpGetImageOnline(url, false);
+                        if (texture != null) break;
+                    }
+
+                    if (texture != null)
+                    {
+                        var bytes = texture.EncodeToPNG();
+                        ThreadPool.QueueUserWorkItem(_ =>
+                        {
+                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                        });
+                        // GameObject.Destroy(texture);
+                        this.cacheOnlineImage.Add(url, new OnlineImage(texture, null, 1));
+                        return texture;
+                    }
+                    else
+                    {
+                        Log.Error("网络无资源 " + url);
+                    }
+                }
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+            return null;
+        }
+
+        #endregion
     }
 }

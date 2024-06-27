@@ -229,7 +229,25 @@ namespace TaoTie
             }
 
         }
-        
+        public void CleanUp() 
+        {
+            var key = linkedList.Last;
+            int count = linkedList.Count;
+            while(count > 0)
+            {
+                count--;
+                var tuple_prev = key.Previous;
+                if (checkCanPopFunc == null || checkCanPopFunc(key.Value, dictionary[key.Value]))
+                {
+                    //can pop
+                    var value = dictionary[key.Value];
+                    dictionary.Remove(key.Value);
+                    linkedList.Remove(key.Value);
+                    popCb?.Invoke(key.Value, value);
+                }
+                key = tuple_prev;
+            }
+        }
         public void Clear()
         {
             dictionary.Clear();

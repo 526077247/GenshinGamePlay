@@ -8,22 +8,19 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UIImage:UIBaseContainer,IOnCreate, IOnCreate<string>,IOnDestroy
+    public class UIImage:UIBaseContainer,IOnCreate<string>,IOnDestroy
     {
         string spritePath;
         Image image;
         BgAutoFit bgAutoFit;
-        private long id;
         bool grayState;
+        private bool isSetSprite;
+        private int version = 0;
+        private string cacheUrl;
         #region override
-        public void OnCreate()
-        {
-            id = IdGenerater.Instance.GenerateId();
-        }
-        
+
         public void OnCreate(string path)
         {
-            id = IdGenerater.Instance.GenerateId();
             SetSpritePath(path).Coroutine();
         }
 
@@ -34,6 +31,17 @@ namespace TaoTie
                 this.image.sprite = null;
                 ImageLoaderManager.Instance?.ReleaseImage(spritePath);
                 spritePath = null;
+            }
+
+            if (isSetSprite)
+            {
+                this.image.sprite = null;
+                isSetSprite = false;
+            }
+            
+            if (!string.IsNullOrEmpty(cacheUrl))
+            {
+                ImageLoaderManager.Instance?.ReleaseOnlineImage(cacheUrl);
             }
         }
 
@@ -51,47 +59,85 @@ namespace TaoTie
                 this.bgAutoFit =  this.GetGameObject().GetComponent<BgAutoFit>();
             }
         }
-        public async ETTask SetSpritePath(string path,bool setNativeSize = false)
+        /// <summary>
+        /// 设置图片地址（注意尽量不要和SetOnlineSpritePath混用
+        /// </summary>
+        /// <param name="spritePath"></param>
+        /// <param name="setNativeSize"></param>
+        /// <param name="callback"></param>
+        public async ETTask SetSpritePath(string spritePath,bool setNativeSize = false,Action callback = null)
         {
-            CoroutineLock coroutine = null;
-            try
+            version++;
+            int thisVersion = version;
+            if (spritePath == this.spritePath && !isSetSprite)
             {
-                coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.id);
-                if (path == this.spritePath) return;
-                this.ActivatingComponent();
-                if (this.bgAutoFit != null) this.bgAutoFit.enabled = false;
-                this.image.enabled = false;
-                var baseSpritePath = this.spritePath;
-                this.spritePath = path;
-                if (string.IsNullOrEmpty(path))
-                {
-                    this.image.sprite = null;
-                    this.image.enabled = true;
-                }
-                else
-                {
-                    var sprite = await ImageLoaderManager.Instance.LoadImageAsync(path);
-                    this.image.enabled = true;
-                    if (sprite == null)
-                    {
-                        ImageLoaderManager.Instance.ReleaseImage(path);
-                        return;
-                    }
-                    this.image.sprite = sprite;
-                    if(setNativeSize)
-                        this.SetNativeSize();
-                    if (this.bgAutoFit != null)
-                    {
-                        this.bgAutoFit.bgSprite = sprite;
-                        this.bgAutoFit.enabled = true;
-                    }
-                }
-                if(!string.IsNullOrEmpty(baseSpritePath))
-                    ImageLoaderManager.Instance.ReleaseImage(baseSpritePath);
+                this.image.enabled = true;
+                callback?.Invoke();
+                return;
             }
-            finally
+            this.ActivatingComponent();
+            if (this.bgAutoFit != null) this.bgAutoFit.enabled = false;
+            this.image.enabled = false;
+            var baseSpritePath = this.spritePath;
+
+            if (string.IsNullOrEmpty(spritePath))
             {
-                coroutine?.Dispose();
+                this.image.sprite = null;
+                this.image.enabled = true;
+                isSetSprite = false;
+                this.spritePath = spritePath;
+            }
+            else
+            {
+                var sprite = await ImageLoaderManager.Instance.LoadImageAsync(spritePath);
+                if (thisVersion != version)
+                {
+                    ImageLoaderManager.Instance.ReleaseImage(spritePath);
+                    callback?.Invoke();
+                    return;
+                }
+                this.spritePath = spritePath;
+                this.image.enabled = true;
+                this.image.sprite = sprite;
+                isSetSprite = false;
+                if(setNativeSize)
+                    this.SetNativeSize();
+                if (this.bgAutoFit != null)
+                {
+                    this.bgAutoFit.bgSprite = sprite;
+                    this.bgAutoFit.enabled = true;
+                }
+            }
+            if(!string.IsNullOrEmpty(baseSpritePath))
+                ImageLoaderManager.Instance.ReleaseImage(baseSpritePath);
+           
+            callback?.Invoke();
+        }
+
+        /// <summary>
+        /// 设置网络图片地址（注意尽量不要和SetSpritePath混用
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="setNativeSize"></param>
+        /// <param name="defaultSpritePath"></param>
+        public async ETTask SetOnlineSpritePath(string url, bool setNativeSize = false, string defaultSpritePath = null)
+        {
+            this.ActivatingComponent();
+            if (!string.IsNullOrEmpty(defaultSpritePath))
+            {
+                await SetSpritePath(defaultSpritePath,setNativeSize);
+            }
+
+            var sprite = await ImageLoaderManager.Instance.GetOnlineSprite(url);
+            if (sprite != null)
+            {
+                SetSprite(sprite);
+                if (!string.IsNullOrEmpty(cacheUrl))
+                {
+                    ImageLoaderManager.Instance.ReleaseOnlineImage(cacheUrl);
+                    cacheUrl = null;
+                }
+                cacheUrl = url;
             }
         }
 
@@ -106,6 +152,7 @@ namespace TaoTie
         }
         public void SetColor(string colorStr)
         {
+            if(string.IsNullOrEmpty(colorStr)) return;
             if (!colorStr.StartsWith("#")) colorStr = "#" + colorStr;
             if (ColorUtility.TryParseHtmlString(colorStr, out var color))
             {
@@ -114,7 +161,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Info(colorStr);
+                Log.Error("Set image color error, color is "+colorStr);
             }
         }
         public void SetImageColor(Color color)
@@ -183,6 +230,13 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             return this.image.material;
+        }
+
+        public void SetSprite(Sprite sprite)
+        {
+            this.ActivatingComponent();
+            this.image.sprite = sprite;
+            isSetSprite = true;
         }
     }
 }

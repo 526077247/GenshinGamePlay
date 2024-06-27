@@ -8,22 +8,20 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UIRawImage : UIBaseContainer,IOnCreate,IOnCreate<string>,IOnDestroy
+    public class UIRawImage : UIBaseContainer,IOnCreate<string>,IOnDestroy
     {
         string spritePath;
         RawImage image;
         BgRawAutoFit bgRawAutoFit;
-        long id;
+
         bool grayState;
+        private int version;
+        private string cacheUrl;
+        private bool isSetSprite;
         #region override
 
-        public void OnCreate()
-        {
-            id = IdGenerater.Instance.GenerateId();
-        }
         public void OnCreate(string path)
         {
-            id = IdGenerater.Instance.GenerateId();
             SetSpritePath(path).Coroutine();
         }
 
@@ -31,9 +29,19 @@ namespace TaoTie
         {
             if (!string.IsNullOrEmpty(spritePath))
             {
-                this.image.texture = null;
                 ImageLoaderManager.Instance?.ReleaseImage(spritePath);
                 spritePath = null;
+            }
+            if (!string.IsNullOrEmpty(cacheUrl))
+            {
+                ImageLoaderManager.Instance?.ReleaseOnlineImage(cacheUrl);
+                cacheUrl = null;
+            }
+
+            if (isSetSprite)
+            {
+                this.image.texture = null;
+                isSetSprite = false;
             }
         }
         #endregion
@@ -50,44 +58,76 @@ namespace TaoTie
                 this.bgRawAutoFit =this.GetGameObject().GetComponent<BgRawAutoFit>();
             }
         }
-        public async ETTask SetSpritePath(string sprite_path)
+        public async ETTask SetSpritePath(string spritePath, bool setNativeSize = false)
         {
-            CoroutineLock coroutine = null;
-            try
+            version++;
+            int thisVersion = version;
+            if (spritePath == this.spritePath && !isSetSprite)
             {
-                coroutine = await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIImage, this.id);
-                if (sprite_path == this.spritePath) return;
-                this.ActivatingComponent();
-                if (this.bgRawAutoFit != null) this.bgRawAutoFit.enabled = false;
-                this.image.enabled = false;
-                var base_sprite_path = this.spritePath;
-                this.spritePath = sprite_path;
-                if (string.IsNullOrEmpty(sprite_path))
-                {
-                    this.image.texture = null;
-                }
-                else
-                {
-                    var sprite = await ImageLoaderManager.Instance.LoadImageAsync(sprite_path);
-                    this.image.enabled = true;
-                    if (sprite == null)
-                    {
-                        ImageLoaderManager.Instance.ReleaseImage(sprite_path);
-                        return;
-                    }
-                    this.image.texture = sprite.texture;
-                    if (this.bgRawAutoFit != null)
-                    {
-                        this.bgRawAutoFit.bgSprite = sprite.texture;
-                        this.bgRawAutoFit.enabled = true;
-                    }
-                }
-                if(!string.IsNullOrEmpty(base_sprite_path))
-                    ImageLoaderManager.Instance.ReleaseImage(base_sprite_path);
+                this.image.enabled = true;
+                return;
             }
-            finally
+
+            this.ActivatingComponent();
+            if (this.bgRawAutoFit != null) this.bgRawAutoFit.enabled = false;
+            this.image.enabled = false;
+            var baseSpritePath = this.spritePath;
+           
+            if (string.IsNullOrEmpty(spritePath))
             {
-                coroutine?.Dispose();
+                this.image.texture = null;
+                this.spritePath = spritePath;
+                this.image.enabled = true;
+                isSetSprite = false;
+            }
+            else
+            {
+                var sprite = await ImageLoaderManager.Instance.LoadImageAsync(spritePath);
+                if (thisVersion != version)
+                {
+                    ImageLoaderManager.Instance.ReleaseImage(spritePath);
+                    return;
+                }
+                this.spritePath = spritePath;
+                this.image.enabled = true;
+                this.image.texture = sprite.texture;
+                isSetSprite = false;
+                if(setNativeSize)
+                    this.SetNativeSize();
+                if (this.bgRawAutoFit != null)
+                {
+                    this.bgRawAutoFit.bgSprite = sprite.texture;
+                    this.bgRawAutoFit.enabled = true;
+                }
+            }
+            if(!string.IsNullOrEmpty(baseSpritePath))
+                ImageLoaderManager.Instance.ReleaseImage(baseSpritePath);
+           
+        }
+        
+        /// <summary>
+        /// 设置网络图片地址（注意尽量不要和SetSpritePath混用
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="defaultSpritePath"></param>
+        public async ETTask SetOnlineTexturePath(string url, string defaultSpritePath = null)
+        {
+            this.ActivatingComponent();
+            if (!string.IsNullOrEmpty(defaultSpritePath))
+            {
+                await SetSpritePath(defaultSpritePath);
+            }
+
+            var texture = await ImageLoaderManager.Instance.GetOnlineTexture(url);
+            if (texture != null)
+            {
+                SetSprite(texture);
+                if (!string.IsNullOrEmpty(cacheUrl))
+                {
+                    ImageLoaderManager.Instance.ReleaseOnlineImage(cacheUrl);
+                    cacheUrl = null;
+                }
+                cacheUrl = url;
             }
         }
 
@@ -129,6 +169,16 @@ namespace TaoTie
             }
             this.image.material = mt;
         }
-
+        public void SetSprite(Texture2D texture)
+        {
+            this.ActivatingComponent();
+            this.image.texture = texture;
+            isSetSprite = true;
+        }
+        
+        public void SetNativeSize()
+        {
+            this.image.SetNativeSize();
+        }
     }
 }
