@@ -167,9 +167,25 @@ namespace TaoTie
             }
             return last_ver;
         }
-
+        //找到可以更新的最大app版本号
+        public bool FindMaxUpdateResVerThisAppVer(string channel,int appVer,out int version)
+        {
+            version = -1;
+            if (this.appUpdateList == null) return false;
+            if (this.appUpdateList.TryGetValue(channel, out var data))
+            {
+                if (!string.IsNullOrEmpty(data.jump_channel))
+                    data = appUpdateList[data.jump_channel];
+                if (data.app_ver.TryGetValue(appVer, out var res))
+                {
+                    version = res.max_res_ver;
+                    return true;
+                }
+            }
+            return false;
+        }
         //找到可以更新的最大资源版本号
-        public int FindMaxUpdateResVer(string appchannel, string channel,out Resver resver)
+        public int FindMaxUpdateResVer(string appchannel, string channel,int appResVer, out Resver resver)
         {
             resver = null;
             if (string.IsNullOrEmpty(appchannel) || this.resUpdateList == null || 
@@ -181,18 +197,23 @@ namespace TaoTie
                 verList.Add(item.Key);
             }
             verList.Sort((a, b) => { return b-a; });
-            int last_ver = -1;
+            int lastVer = -1;
             for (int i = 0; i < verList.Count; i++)
             {
                 var info = resVerList[verList[i]];
                 if(this.IsStrInList(channel,info.channel)&& this.IsInTailNumber(info.update_tailnumber))
                 {
-                    last_ver = verList[i];
+                    lastVer = verList[i];
                     break;
                 }
             }
-            resver = resVerList[last_ver];
-            return last_ver;
+
+            if (appResVer>0 && lastVer > appResVer&&resVerList.TryGetValue(appResVer,out resver))
+            {
+                return appResVer;
+            }
+            resver = resVerList[lastVer];
+            return lastVer;
         }
         //检测灰度更新，检测是否在更新尾号列表
         public bool IsInTailNumber(List<string> list)

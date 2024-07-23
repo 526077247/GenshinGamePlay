@@ -21,6 +21,7 @@ namespace TaoTie
         public List<string> channel;
         public List<string> update_tailnumber;
         public int force_update;
+        public int max_res_ver;
     }
     public class AppConfig
     {

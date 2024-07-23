@@ -4,6 +4,8 @@ namespace TaoTie
     public static class Define
     {
         public const string BuildOutputDir = "./Temp/Bin/Debug";
+
+        public static bool IsSH;
         
         public const string HotfixDir = "Assets/AssetsPackage/Code/Hotfix/";
 #if UNITY_EDITOR
