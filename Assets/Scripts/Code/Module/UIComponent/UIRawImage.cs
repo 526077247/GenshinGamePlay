@@ -96,7 +96,7 @@ namespace TaoTie
                     this.SetNativeSize();
                 if (this.bgRawAutoFit != null)
                 {
-                    this.bgRawAutoFit.bgSprite = sprite.texture;
+                    this.bgRawAutoFit.SetSprite(sprite.texture);
                     this.bgRawAutoFit.enabled = true;
                 }
             }

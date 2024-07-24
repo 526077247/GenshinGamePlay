@@ -215,23 +215,23 @@ namespace TaoTie
         /// 销毁窗体
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public async ETTask DestroyWindow<T>() where T : UIBaseView
+        public async ETTask DestroyWindow<T>(bool clear = false) where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
-            await this.DestroyWindow(uiName);
+            await this.DestroyWindow(uiName,clear);
         }
 
         /// <summary>
         /// 销毁窗体
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public async ETTask DestroyWindow(string uiName)
+        public async ETTask DestroyWindow(string uiName,bool clear = false)
         {
             var target = this.GetWindow(uiName);
             if (target != null)
             {
                 await this.CloseWindow(uiName);
-                InnerDestroyWindow(target);
+                InnerDestroyWindow(target,clear);
                 this.windows.Remove(target.Name);
                 target.Dispose();
             }
@@ -563,7 +563,7 @@ namespace TaoTie
 
         #region 私有方法
 
-        void InnerDestroyWindow(UIWindow target)
+        void InnerDestroyWindow(UIWindow target,bool clear = false)
         {
             var view = target.View;
             if (view != null)
@@ -574,7 +574,7 @@ namespace TaoTie
                     if (GameObjectPoolManager.GetInstance() == null)
                         GameObject.Destroy(obj);
                     else
-                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
+                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj,clear);
                 }
 
                 if (view is II18N i18n)
