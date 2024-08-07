@@ -26,18 +26,16 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
-            packageFinder = new DefaultPackageFinder();
+            if(packageFinder==null)packageFinder = new DefaultPackageFinder();
             this.temp = new Dictionary<object, AssetOperationHandle>(1024);
             this.cachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
+            loadingOp = new HashSet<AssetOperationHandle>();
         }
 
         public void Init(IPackageFinder finder)
         {
-            Instance = this;
             packageFinder = finder;
-            this.temp = new Dictionary<object, AssetOperationHandle>(1024);
-            this.cachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
-            loadingOp = new HashSet<AssetOperationHandle>();
+            Init();
         }
 
         public void Destroy()
