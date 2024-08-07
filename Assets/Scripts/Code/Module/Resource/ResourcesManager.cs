@@ -13,22 +13,22 @@ namespace TaoTie
     /// <para>2、对于串行执行一连串的异步操作，建议使用协程（用同步形式的代码写异步逻辑），回调方式会使代码难读</para>
     /// <para>3、理论上做到逻辑层脚本对AB名字是完全透明的，所有资源只有packagePath的概念，这里对路径进行处理</para>
     /// </summary>
-    public class ResourcesManager:IManager
+    public class ResourcesManager : IManager
     {
 
-        public static ResourcesManager Instance { get;private set; }
+        public static ResourcesManager Instance { get; private set; }
         private int loaderCount = 0;
-        private Dictionary<object, AssetOperationHandle> Temp;
-        private List<AssetOperationHandle> CachedAssetOperationHandles;
+        private Dictionary<object, AssetOperationHandle> temp;
+        private List<AssetOperationHandle> cachedAssetOperationHandles;
 
         #region override
-        
+
         public void Init()
         {
             Instance = this;
             this.loaderCount = 0;
-            this.Temp = new Dictionary<object, AssetOperationHandle>(1024);
-            this.CachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
+            this.temp = new Dictionary<object, AssetOperationHandle>(1024);
+            this.cachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
         }
 
         public void Destroy()
@@ -36,9 +36,9 @@ namespace TaoTie
             Instance = null;
             ClearAssetsCache();
         }
-        
+
         #endregion
-        
+
         /// <summary>
         /// 是否有加载任务正在进行
         /// </summary>
@@ -47,6 +47,7 @@ namespace TaoTie
         {
             return this.loaderCount > 0;
         }
+
         /// <summary>
         /// 同步加载Asset
         /// </summary>
@@ -54,29 +55,32 @@ namespace TaoTie
         /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T Load<T>(string path,string package = null) where T: UnityEngine.Object
+        public T Load<T>(string path, string package = null) where T : UnityEngine.Object
         {
             if (string.IsNullOrEmpty(path))
             {
                 Log.Error("path is empty");
                 return null;
             }
+
             this.loaderCount++;
             var op = YooAssetsMgr.Instance.LoadAssetSync<T>(path, package);
             this.loaderCount--;
             T obj = op.AssetObject as T;
-
-            if (obj!=null && !this.Temp.ContainsKey(op.AssetObject))
+            if (obj != null && !this.temp.ContainsKey(op.AssetObject))
             {
-                this.Temp.Add(op.AssetObject, op);
+                this.temp.Add(op.AssetObject, op);
+                cachedAssetOperationHandles.Add(op);
             }
             else
             {
                 op.Release();
             }
+
             return obj;
 
         }
+
         /// <summary>
         /// 异步加载Asset
         /// </summary>
@@ -85,7 +89,8 @@ namespace TaoTie
         /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null,string package = null) where T: UnityEngine.Object
+        public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null, string package = null)
+            where T : UnityEngine.Object
         {
             ETTask<T> res = ETTask<T>.Create(true);
             if (string.IsNullOrEmpty(path))
@@ -95,17 +100,26 @@ namespace TaoTie
                 res.SetResult(null);
                 return res;
             }
+
             this.loaderCount++;
-            var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path,package);
+            var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path, package);
+            if (op == null)
+            {
+                Log.Error(package+"加载资源前未初始化！"+path);
+                this.loaderCount--;
+                return default;
+            }
+
             op.Completed += (op) =>
             {
-                T obj = op.AssetObject as T;
+                var obj = op.AssetObject as T;
                 this.loaderCount--;
                 callback?.Invoke(obj);
                 res.SetResult(obj);
-                if (obj!=null && !this.Temp.ContainsKey(obj))
+                if (obj != null && !this.temp.ContainsKey(obj))
                 {
-                    this.Temp.Add(op.AssetObject, op);
+                    this.temp.Add(op.AssetObject, op);
+                    cachedAssetOperationHandles.Add(op);
                 }
                 else
                 {
@@ -124,14 +138,15 @@ namespace TaoTie
         /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ETTask LoadTask<T>(string path,Action<T> callback,string package = null)where T:UnityEngine.Object
+        public ETTask LoadTask<T>(string path, Action<T> callback = null, string package = null)
+            where T : UnityEngine.Object
         {
             ETTask task = ETTask.Create(true);
             this.LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
                 task.SetResult();
-            },package).Coroutine();
+            }, package).Coroutine();
             return task;
         }
 
@@ -142,7 +157,7 @@ namespace TaoTie
         /// <param name="isAdditive"></param>
         /// <param name="package"></param>
         /// <returns></returns>
-        public ETTask LoadSceneAsync(string path, bool isAdditive ,string package = null)
+        public ETTask LoadSceneAsync(string path, bool isAdditive, string package = null)
         {
             ETTask res = ETTask.Create(true);
             if (string.IsNullOrEmpty(path))
@@ -150,8 +165,17 @@ namespace TaoTie
                 Log.Error("path err : " + path);
                 return res;
             }
+
             this.loaderCount++;
-            var op = YooAssetsMgr.Instance.LoadSceneAsync(path,isAdditive?LoadSceneMode.Additive:LoadSceneMode.Single,package);
+            var op = YooAssetsMgr.Instance.LoadSceneAsync(path,
+                isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package);
+            if (op == null)
+            {
+                this.loaderCount--;
+                Log.Error(package+"加载资源前未初始化！"+path);
+                return default;
+            }
+
             op.Completed += (op) =>
             {
                 this.loaderCount--;
@@ -173,34 +197,37 @@ namespace TaoTie
                 temp = HashSetComponent<AssetOperationHandle>.Create();
                 for (int i = 0; i < excludeClearAssets.Length; i++)
                 {
-                    temp.Add(this.Temp[excludeClearAssets[i]]);
+                    temp.Add(this.temp[excludeClearAssets[i]]);
                 }
             }
 
-            for (int i = this.CachedAssetOperationHandles.Count-1; i >=0; i--)
+            for (int i = this.cachedAssetOperationHandles.Count - 1; i >= 0; i--)
             {
-                if (temp == null || !temp.Contains(this.CachedAssetOperationHandles[i]))
+                if (temp == null || !temp.Contains(this.cachedAssetOperationHandles[i]))
                 {
-                    this.Temp.Remove(this.CachedAssetOperationHandles[i].AssetObject);
-                    this.CachedAssetOperationHandles[i].Release();
-                    this.CachedAssetOperationHandles.RemoveAt(i);
+                    this.temp.Remove(this.cachedAssetOperationHandles[i].AssetObject);
+                    this.cachedAssetOperationHandles[i].Release();
+                    this.cachedAssetOperationHandles.RemoveAt(i);
                 }
             }
             YooAssetsMgr.Instance.UnloadUnusedAssets();
         }
+
         /// <summary>
         /// 释放资源
         /// </summary>
         /// <param name="pooledGo"></param>
         public void ReleaseAsset(UnityEngine.Object pooledGo)
         {
-            if (this.Temp.TryGetValue(pooledGo, out var op))
+            if (this.temp.TryGetValue(pooledGo, out var op))
             {
                 op.Release();
-                this.Temp.Remove(pooledGo);
-                this.CachedAssetOperationHandles.Remove(op);
+                this.temp.Remove(pooledGo);
+                this.cachedAssetOperationHandles.Remove(op);
             }
         }
+
+
 
         /// <summary>
         /// 同步加载json或者二进制配置
@@ -209,7 +236,7 @@ namespace TaoTie
         /// <param name="type">0:json,1:bytes</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T LoadConfig<T>(string path,int type = 0) where T : class
+        public T LoadConfig<T>(string path, int type = 0) where T : class
         {
             if (string.IsNullOrEmpty(path)) return default;
             if (type == 0)

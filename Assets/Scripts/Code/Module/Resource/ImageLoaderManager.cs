@@ -25,7 +25,20 @@ namespace TaoTie
         {
             public Dictionary<string, SpriteValue> SubAsset;
             public SpriteAtlas Asset;
-            public int RefCount;
+
+            public int RefCount
+            {
+                get
+                {
+                    var res = 0;
+                    foreach (var item in SubAsset)
+                    {
+                        res += item.Value.RefCount;
+                    }
+
+                    return res;
+                }
+            }
         }
         
         private class OnlineImage
@@ -65,7 +78,7 @@ namespace TaoTie
             cacheOnlineImage = new Dictionary<string, OnlineImage>();
             this.InitSingleSpriteCache(this.cacheSingleSprite);
             this.InitSpriteAtlasCache(this.cacheSpriteAtlas);
-            PreLoad().Coroutine();
+            // PreLoad().Coroutine();
         }
 
         public void Destroy()
@@ -96,7 +109,7 @@ namespace TaoTie
             });
 
             cache.SetPopCallback((key, value) => {
-                var subasset = value.SubAsset;
+                var subasset = value.SubAsset; 
                 foreach (var item in subasset)
                 {
                     UnityEngine.Object.Destroy(item.Value.Asset);
@@ -105,7 +118,6 @@ namespace TaoTie
                 }
                 ResourcesManager.Instance.ReleaseAsset(value.Asset);
                 value.Asset = null;
-                value.RefCount = 0;
             });
         }
         
@@ -201,7 +213,6 @@ namespace TaoTie
                                 GameObject.Destroy(subasset[subAssetName].Asset);
                                 subasset.Remove(subAssetName);
                             }
-                            value.RefCount --;
                         }
                     }
                 }
@@ -212,7 +223,7 @@ namespace TaoTie
                 var path = assetAddress.Substring(0, index);
                 if (this.cacheDynamicAtlas.TryGetValue(path, out var value))
                 {
-                    value.RemoveTexture(imagePath, true);
+                    value.RemoveTexture(imagePath);
                 }
             }
             else
@@ -288,7 +299,6 @@ namespace TaoTie
                 }
                 else
                 {
-                    valueC.RefCount ++;
                     if (valueC.SubAsset.TryGetValue(subAssetName, out var result))
                     {
                         valueC.SubAsset[subAssetName].RefCount ++;
@@ -315,13 +325,9 @@ namespace TaoTie
             var asset = await ResourcesManager.Instance.LoadAsync<SpriteAtlas>(assetAddress);
             if (asset != null)
             {
-                if (cacheCls.TryGet(assetAddress, out var value))
+                if (!cacheCls.TryGet(assetAddress, out var value))
                 {
-                    value.RefCount ++;
-                }
-                else
-                {
-                    value = new SpriteAtlasValue() { Asset = asset , RefCount = 1 };
+                    value = new SpriteAtlasValue() { Asset = asset };
                     cacheCls.Set(assetAddress, value);
                 }
                 if (value.SubAsset.TryGetValue(subAssetName, out var result))
@@ -453,7 +459,6 @@ namespace TaoTie
                     {
                         result = subassetList[subAssetName].Asset;
                         subassetList[subAssetName].RefCount ++;
-                        valueC.RefCount++;
                     }
                     else
                     {
@@ -467,7 +472,6 @@ namespace TaoTie
                         if (valueC.SubAsset == null)
                             valueC.SubAsset = new Dictionary<string, SpriteValue>();
                         valueC.SubAsset[subAssetName] = new SpriteValue { Asset = result, RefCount = 1 };
-                        valueC.RefCount++;
                     }
                     callback?.Invoke(result);
                     return result;
@@ -502,7 +506,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    valueC = new SpriteAtlasValue { Asset = sa, SubAsset = new Dictionary<string, SpriteValue>(), RefCount = 1 };
+                    valueC = new SpriteAtlasValue { Asset = sa, SubAsset = new Dictionary<string, SpriteValue>() };
                     result = valueC.Asset.GetSprite(subAssetName);
                     if (result == null)
                     {
@@ -604,7 +608,6 @@ namespace TaoTie
                 ResourcesManager.Instance?.ReleaseAsset(value.Asset);
                 value.Asset = null;
                 value.SubAsset = null;
-                value.RefCount = 0;
             }
             this.cacheSpriteAtlas.Clear();
 

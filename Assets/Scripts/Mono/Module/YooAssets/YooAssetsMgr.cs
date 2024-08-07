@@ -106,41 +106,68 @@ namespace YooAsset
 
         public void UnloadUnusedAssets()
         {
-            DefaultPackage.UnloadUnusedAssets();
+            UnloadUnusedAssets(DefaultName);
+        }
+        public void UnloadUnusedAssets(string package)
+        {
+            var packageInfo = GetPackageSync(package);
+            packageInfo?.UnloadUnusedAssets();
         }
         
         public void ForceUnloadAllAssets()
         {
-            DefaultPackage.ForceUnloadAllAssets();
+            ForceUnloadAllAssets(DefaultName);
+        }
+        public void ForceUnloadAllAssets(string package)
+        {
+            var packageInfo = GetPackageSync(package);
+            packageInfo?.ForceUnloadAllAssets();
         }
 
         public AssetOperationHandle LoadAssetSync<T>(string path,string package) where T : UnityEngine.Object
         {
             var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
             return packageInfo.LoadAssetSync<T>(path);
         }
-        
+        public AssetOperationHandle LoadAssetSync(AssetInfo assetInfo,string package)
+        {
+            var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
+            return packageInfo.LoadAssetSync(assetInfo);
+        }
         public AssetOperationHandle LoadAssetAsync<T>(string path,string package) where T : UnityEngine.Object
         {
             var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
             return packageInfo.LoadAssetAsync<T>(path);
         }
         
         public SceneOperationHandle LoadSceneAsync(string path,LoadSceneMode mode,string package)
         {
             var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
             return packageInfo.LoadSceneAsync(path,mode);
         }
 
         public ResourceDownloaderOperation CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain, int timeout,string package)
         {
             var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
             return packageInfo.CreateResourceDownloader(downloadingMaxNumber,failedTryAgain,timeout);
         }
         public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion , int timeout ,string package)
         {
             var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
             return packageInfo.UpdatePackageManifestAsync(packageVersion,autoSaveVersion,timeout);
+        }
+
+        public AssetInfo[] GetAssetInfos(string tag, string package)
+        {
+            var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return Array.Empty<AssetInfo>();
+            return packageInfo.GetAssetInfos(tag);
         }
         
         
