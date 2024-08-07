@@ -11,6 +11,10 @@ namespace TaoTie
         /// </summary>
         UnInitialized = 0,
         /// <summary>
+        /// 重下Manifest
+        /// </summary>
+        UpdateManifest,
+        /// <summary>
         /// 未下载
         /// </summary>
         UnDownload,

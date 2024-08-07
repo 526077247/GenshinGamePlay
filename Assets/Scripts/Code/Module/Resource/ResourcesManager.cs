@@ -13,22 +13,31 @@ namespace TaoTie
     /// <para>2、对于串行执行一连串的异步操作，建议使用协程（用同步形式的代码写异步逻辑），回调方式会使代码难读</para>
     /// <para>3、理论上做到逻辑层脚本对AB名字是完全透明的，所有资源只有packagePath的概念，这里对路径进行处理</para>
     /// </summary>
-    public class ResourcesManager : IManager
+    public class ResourcesManager : IManager, IManager<IPackageFinder>
     {
-
         public static ResourcesManager Instance { get; private set; }
-        private int loaderCount = 0;
         private Dictionary<object, AssetOperationHandle> temp;
         private List<AssetOperationHandle> cachedAssetOperationHandles;
+        public IPackageFinder packageFinder { get; private set; }
+        private HashSet<AssetOperationHandle> loadingOp;
 
         #region override
 
         public void Init()
         {
             Instance = this;
-            this.loaderCount = 0;
+            packageFinder = new DefaultPackageFinder();
             this.temp = new Dictionary<object, AssetOperationHandle>(1024);
             this.cachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
+        }
+
+        public void Init(IPackageFinder finder)
+        {
+            Instance = this;
+            packageFinder = finder;
+            this.temp = new Dictionary<object, AssetOperationHandle>(1024);
+            this.cachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
+            loadingOp = new HashSet<AssetOperationHandle>();
         }
 
         public void Destroy()
@@ -45,7 +54,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool IsProcessRunning()
         {
-            return this.loaderCount > 0;
+            return this.loadingOp.Count > 0;
         }
 
         /// <summary>
@@ -63,9 +72,12 @@ namespace TaoTie
                 return null;
             }
 
-            this.loaderCount++;
+            if (package == null)
+            {
+                package = packageFinder.GetPackageName(path);
+            }
+
             var op = YooAssetsMgr.Instance.LoadAssetSync<T>(path, package);
-            this.loaderCount--;
             T obj = op.AssetObject as T;
             if (obj != null && !this.temp.ContainsKey(op.AssetObject))
             {
@@ -101,19 +113,23 @@ namespace TaoTie
                 return res;
             }
 
-            this.loaderCount++;
+            if (package == null)
+            {
+                package = packageFinder.GetPackageName(path);
+            }
+
             var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path, package);
             if (op == null)
             {
-                Log.Error(package+"加载资源前未初始化！"+path);
-                this.loaderCount--;
+                Log.Error(package + "加载资源前未初始化！" + path);
                 return default;
             }
 
+            this.loadingOp.Add(op);
             op.Completed += (op) =>
             {
                 var obj = op.AssetObject as T;
-                this.loaderCount--;
+                this.loadingOp.Remove(op);
                 callback?.Invoke(obj);
                 res.SetResult(obj);
                 if (obj != null && !this.temp.ContainsKey(obj))
@@ -142,6 +158,11 @@ namespace TaoTie
             where T : UnityEngine.Object
         {
             ETTask task = ETTask.Create(true);
+            if (package == null)
+            {
+                package = packageFinder.GetPackageName(path);
+            }
+
             this.LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
@@ -166,21 +187,20 @@ namespace TaoTie
                 return res;
             }
 
-            this.loaderCount++;
+            if (package == null)
+            {
+                package = packageFinder.GetPackageName(path);
+            }
+
             var op = YooAssetsMgr.Instance.LoadSceneAsync(path,
                 isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package);
             if (op == null)
             {
-                this.loaderCount--;
-                Log.Error(package+"加载资源前未初始化！"+path);
+                Log.Error(package + "加载资源前未初始化！" + path);
                 return default;
             }
 
-            op.Completed += (op) =>
-            {
-                this.loaderCount--;
-                res.SetResult();
-            };
+            op.Completed += (op) => { res.SetResult(); };
             return res;
         }
 
@@ -227,8 +247,7 @@ namespace TaoTie
             }
         }
 
-
-
+        
         /// <summary>
         /// 同步加载json或者二进制配置
         /// </summary>

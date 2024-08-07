@@ -49,6 +49,8 @@
         /// <summary> FSM设置使用RagDoll </summary>
         public const int SetUseRagDoll = 22;
         /// <summary> 战斗状态改变 </summary>
-        public const int CombatStateChange = 6;
+        public const int CombatStateChange = 23;
+        public const int Package_DownLoading = 10007;
+        public const int Package_DownLoad = 10008;
     }
 }
