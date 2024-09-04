@@ -18,6 +18,9 @@ namespace TaoTie
         private int version;
         private string cacheUrl;
         private bool isSetSprite;
+        
+        private Texture2D base64texture;
+
         #region override
 
         public void OnCreate(string path)
@@ -42,6 +45,7 @@ namespace TaoTie
             {
                 this.image.texture = null;
                 isSetSprite = false;
+                ClearBase64();
             }
         }
         #endregion
@@ -117,10 +121,16 @@ namespace TaoTie
             {
                 await SetSpritePath(defaultSpritePath);
             }
-
+            version++;
+            int thisVersion = version;
             var texture = await ImageLoaderManager.Instance.GetOnlineTexture(url);
             if (texture != null)
             {
+                if (thisVersion != version)
+                {
+                    ImageLoaderManager.Instance.ReleaseOnlineImage(url);
+                    return;
+                }
                 SetSprite(texture);
                 if (!string.IsNullOrEmpty(cacheUrl))
                 {
@@ -179,6 +189,35 @@ namespace TaoTie
         public void SetNativeSize()
         {
             this.image.SetNativeSize();
+        }
+        
+        public void SetBase64(string data)
+        {
+            // 将Base64字符串转换为字节数组
+            string base64Str = data;
+            base64Str = base64Str.Replace("data:image/png;base64,", "").Replace("data:image/jgp;base64,", "")
+                .Replace("data:image/jpg;base64,", "").Replace("data:image/jpeg;base64,", "");
+            byte[] imageBytes = Convert.FromBase64String(base64Str);
+
+            // 创建一个新的Texture2D对象
+            base64texture = new Texture2D(2, 2); // 初始大小无所谓，因为后面会重新加载
+            // 加载图像数据
+            base64texture.LoadImage(imageBytes);
+            SetSprite(base64texture);
+        }
+        
+        public Texture GetTexture()
+        {
+            return this.image.texture;
+        }
+
+        private void ClearBase64()
+        {
+            if (base64texture != null)
+            {
+                GameObject.Destroy(base64texture);
+                base64texture = null;
+            }
         }
     }
 }

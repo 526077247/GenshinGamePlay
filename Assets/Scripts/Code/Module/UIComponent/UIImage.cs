@@ -127,10 +127,16 @@ namespace TaoTie
             {
                 await SetSpritePath(defaultSpritePath,setNativeSize);
             }
-
+            version++;
+            int thisVersion = version;
             var sprite = await ImageLoaderManager.Instance.GetOnlineSprite(url);
             if (sprite != null)
             {
+                if (thisVersion != version)
+                {
+                    ImageLoaderManager.Instance.ReleaseOnlineImage(url);
+                    return;
+                }
                 SetSprite(sprite);
                 if (!string.IsNullOrEmpty(cacheUrl))
                 {

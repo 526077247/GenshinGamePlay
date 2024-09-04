@@ -18,7 +18,8 @@ namespace TaoTie
         Transform transform;
         string path;
         public bool activeSelf { get; private set; }
-
+        private long timerId;
+        
         public void SetGameObject(GameObject gameObject)
         {
             this.gameObject = gameObject;
@@ -44,7 +45,11 @@ namespace TaoTie
             ActivatingComponent();
             return transform;
         }
-
+        public RectTransform GetRectTransform()
+        {
+            ActivatingComponent();
+            return transform as RectTransform;
+        }
         Transform ParentTransform;
 
         Transform ActivatingComponent()
@@ -88,10 +93,19 @@ namespace TaoTie
                 if (component is IOnEnable a) a.OnEnable();
                 component.AfterOnEnable();
             });
+            if (this is IUpdate)
+            {
+                TimerManager.Instance.Remove(ref timerId);
+                timerId = TimerManager.Instance.NewFrameTimer(TimerType.ComponentUpdate, this);
+            }
         }
 
         void BeforeOnDisable()
         {
+            if (this is IUpdate)
+            {
+                TimerManager.Instance.Remove(ref timerId);
+            }
             Walk((component) =>
             {
                 component.BeforeOnDisable();
@@ -101,6 +115,10 @@ namespace TaoTie
 
         public void BeforeOnDestroy()
         {
+            if (this is IUpdate)
+            {
+                TimerManager.Instance.Remove(ref timerId);
+            }
             if (components != null)
             {
                 var keys1 = components.Keys.ToList();
