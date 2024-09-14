@@ -13,7 +13,10 @@ namespace TaoTie
         public GameObject item;//要复制的物体
         private void Awake()
         {
-            this.startSiblingIndex = item.transform.GetSiblingIndex();
+            if (item.transform.parent == transform)
+            {
+                this.startSiblingIndex = item.transform.GetSiblingIndex();
+            }
         }
 
         private void OnEnable()
@@ -26,7 +29,7 @@ namespace TaoTie
             //for (int i = 0; i < m_itemviewlist.Count; i++)
             //    Destroy(m_itemviewlist[i]);
             //m_itemviewlist.Clear();
-            if (this.startSiblingIndex != null)
+            if (startSiblingIndex != null)
             {
                 this.startSiblingIndex = startSiblingIndex;
                 if (this.startSiblingIndex > transform.childCount)
@@ -42,7 +45,7 @@ namespace TaoTie
         {
             if (totalCount > 10) Debug.Log("total_count 不建议超过10个");
             if (item == null) Debug.LogError("item is Null!!!");
-            if (this.startSiblingIndex != null)
+            if (startSiblingIndex != null)
             {
                 this.startSiblingIndex = startSiblingIndex;
                 if (this.startSiblingIndex > transform.childCount)
@@ -87,7 +90,7 @@ namespace TaoTie
 
         public void RefreshAllShownItem(int? startSiblingIndex = null)
         {
-            if (this.startSiblingIndex != null)
+            if (startSiblingIndex != null)
             {
                 this.startSiblingIndex = startSiblingIndex;
                 if (this.startSiblingIndex > transform.childCount)

@@ -155,7 +155,10 @@ namespace TaoTie
 				if (pooledGo != null)
 				{
 					var inst = GameObject.Instantiate(pooledGo);
-					this.goInstCountCache[path]++;
+					if(this.goInstCountCache.ContainsKey(path))
+                        this.goInstCountCache[path]++;
+                    else 
+                        this.goInstCountCache[path] = 1;
 					this.instPathCache[inst] = path;
 					go = inst;
 					return true;

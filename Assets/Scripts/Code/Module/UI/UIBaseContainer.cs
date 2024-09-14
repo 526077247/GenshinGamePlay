@@ -91,6 +91,7 @@ namespace TaoTie
             Walk((component) =>
             {
                 if (component is IOnEnable a) a.OnEnable();
+                component.activeSelf = true;
                 component.AfterOnEnable();
             });
             if (this is IUpdate)

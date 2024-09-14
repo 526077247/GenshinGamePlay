@@ -240,8 +240,6 @@ namespace TaoTie
                 packageInfo.Ver = ver;
                 if (ver < 0 || max >= ver)//确保版本和主包代码版本对应
                 {
-                    packageInfo.State = ver < 0 ? PackageState.UnDownload : PackageState.NeedUpdate;
-
                     packageInfo.UpdatePackageManifestOperation =
                         YooAssetsMgr.Instance.UpdatePackageManifestAsync(max.ToString(), false, timeOut, name);
                     await packageInfo.UpdatePackageManifestOperation.Task;
@@ -260,6 +258,7 @@ namespace TaoTie
                     }
                     else
                     {
+                        packageInfo.State = ver < 0 ? PackageState.UnDownload : PackageState.NeedUpdate;
                         packageInfo.NeedDownloadSize = packageInfo.DownloaderOperation.TotalDownloadBytes;
                     }
                 }
