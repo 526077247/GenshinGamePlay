@@ -32,7 +32,6 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<NavmeshSystem>();
                 
                 ManagerProvider.RegisterManager<InputManager>();
-                ManagerProvider.RegisterManager<BillboardSystem>();
                 StartGameAsync().Coroutine();
             }
             catch (Exception e)
@@ -50,6 +49,7 @@ namespace TaoTie
 
         static void StartGame()
         {
+            ManagerProvider.RegisterManager<BillboardSystem>();
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();
             ManagerProvider.RegisterManager<ConfigAbilityCategory>();

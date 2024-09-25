@@ -22,9 +22,9 @@ namespace YooAsset.Editor
 		public const string ShadersBundleName = "unityshaders";
 
 
-		public static PackRuleResult CreateShadersPackRuleResult(string packageName)
+		public static PackRuleResult CreateShadersPackRuleResult()
 		{
-			PackRuleResult result = new PackRuleResult($"{ShadersBundleName}_{packageName}", AssetBundleFileExtension);
+			PackRuleResult result = new PackRuleResult(ShadersBundleName, AssetBundleFileExtension);
 			return result;
 		}
 	}
@@ -185,7 +185,7 @@ namespace YooAsset.Editor
 	{
 		public PackRuleResult GetPackRuleResult(PackRuleData data)
 		{
-			return DefaultPackRule.CreateShadersPackRuleResult(data.PackageName);
+			return DefaultPackRule.CreateShadersPackRuleResult();
 		}
 
 		bool IPackRule.IsRawFilePackRule()

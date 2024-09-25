@@ -5,6 +5,8 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using YooAsset;
+// using HybridCLR;
+using UnityEngine.Networking;
 
 namespace TaoTie
 {
@@ -23,12 +25,107 @@ namespace TaoTie
 		
 		private MemoryStream assStream ;
 		private MemoryStream pdbStream ;
+		private byte[] optionBytes;//todo：dhe
 		
-
-		public void Start()
+		public static List<string> AllAotDllList
 		{
+			get
+			{
+				var res = new List<string>();
+				res.AddRange(SystemAotDllList);
+				res.AddRange(UserAotDllList);
+				return res;
+			}
+		}
+		public static string[] SystemAotDllList = {
+			"mscorlib.dll", 
+			"System.dll", 
+			"System.Core.dll"
+		};
+		public static string[] UserAotDllList = {
+			"Unity.ThirdParty.dll",
+			"Unity.Mono.dll"
+		};
+		/// <summary>
+		/// 为aot assembly加载原始metadata， 这个代码放aot或者热更新都行。
+		/// 一旦加载后，如果AOT泛型函数对应native实现不存在，则自动替换为解释模式执行
+		/// </summary>
+// 		public void LoadMetadataForAOTAssembly(YooAsset.EPlayMode mode)
+// 		{
+// 			if(this.CodeMode != CodeMode.Wolong) return;
+// 			// 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。
+// 			// 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
+// // 			optionBytes = null;
+// // 			if (mode != YooAsset.EPlayMode.EditorSimulateMode)
+// // 			{
+// // 				var op = YooAssets.LoadAssetSync($"{Define.AOTDir}Unity.Codes.dhao.bytes", TypeInfo<TextAsset>.Type);
+// // 				TextAsset v = op.AssetObject as TextAsset;
+// // 				optionBytes = v.bytes;
+// // 				op.Release();
+// // 			}
+// // #if UNITY_EDITOR
+// // 			else
+// // 				optionBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}Unity.Codes.dhao.bytes", TypeInfo<TextAsset>.Type) as TextAsset)?.bytes;
+// // #endif
+// 			foreach (var aotDllName in AllAotDllList)
+// 			{
+// 				byte[] dllBytes = null;
+// #if UNITY_EDITOR
+// 				if (mode != YooAsset.EPlayMode.EditorSimulateMode)
+// #endif
+// 				{
+// 					var op = YooAssetsMgr.Instance.LoadAssetSync<TextAsset>($"{Define.AOTLoadDir}{aotDllName}.bytes",YooAssetsMgr.DefaultName);
+// 					TextAsset v = op.AssetObject as TextAsset;
+// 					dllBytes = v.bytes;
+// 					op.Release();
+// 				}
+// #if UNITY_EDITOR
+// 				else
+// 					dllBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}{aotDllName}.bytes", TypeInfo<TextAsset>.Type) as TextAsset).bytes;
+// #endif
+//
+// 				var err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes,HomologousImageMode.SuperSet);
+// 				Log.Info($"LoadMetadataForAOTAssembly:{aotDllName}. ret:{err}");
+// 			}
+//
+// 		}
+		public async ETTask Start()
+		{
+			if ((Define.Debug || Debug.isDebugBuild) && PlayerPrefs.GetInt("DEBUG_LoadFromUrl", 0) == 1)
+			{
+				CodeMode = CodeMode.LoadFromUrl;
+			}
 			switch (this.CodeMode)
 			{
+				// case CodeMode.Wolong:
+				case CodeMode.LoadDll:
+				{
+					byte[] assBytes = null;
+					byte[] pdbBytes= null;
+					
+					if (this.assemblyVer != YooAssetsMgr.Instance.Config.Resver)//dll版本不同
+					{
+						this.assembly = null;
+					}
+					
+					//没有内置AOTdll，或者热更完dll版本不同
+					if(this.assembly == null)
+					{
+						GetBytes(out assBytes, out pdbBytes);
+						if (assBytes != null)
+						{
+							assembly = Assembly.Load(assBytes, pdbBytes);
+							Log.Info("Get Dll Success ! version=" + YooAssetsMgr.Instance.Config.Resver);
+						}
+						else
+						{
+							Log.Error("Get Dll Fail");
+						}
+					}
+
+					this.assemblyVer = YooAssetsMgr.Instance.Config.Resver;//记录当前dll版本
+					break;
+				}
 				case CodeMode.BuildIn:
 				{
 					foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
@@ -46,36 +143,36 @@ namespace TaoTie
 					}
 					break;
 				}
-				case CodeMode.LoadDll:
+				case CodeMode.LoadFromUrl:
 				{
-					byte[] assBytes = null;
-					byte[] pdbBytes= null;
-					
-					if (this.assemblyVer != YooAssetsMgr.Instance.Config.Dllver)//dll版本不同
+					int version = YooAssetsMgr.Instance.Config.Resver;
+					var path = PlayerPrefs.GetString("DEBUG_LoadFromUrlPath", "https://qqbkd.oss-cn-hangzhou.aliyuncs.com/cdn_test/");
+					path += $"Code{version}.dll.bytes";
+
+					UnityWebRequest www = UnityWebRequest.Get(path);
+					ETTask task = ETTask.Create();
+					var op = www.SendWebRequest();
+					op.completed += (a) =>
 					{
-						this.assembly = null;
-					}
-					//没有内置AOTdll，或者热更完dll版本不同
-					if (assembly == null)
+						task.SetResult();
+					};
+					await task;
+					if (www.result == UnityWebRequest.Result.Success)
 					{
-						GetBytes(out assBytes, out pdbBytes);
-						if (assBytes != null)
-						{
-							assembly = Assembly.Load(assBytes, pdbBytes);
-							Log.Info("Get Dll Success");
-						}
-						else
-						{
-							Log.Error("Get Dll Fail");
-						}
+						assembly = Assembly.Load(www.downloadHandler.data);
 					}
+					else
+					{
+						Log.Error("下载dll失败： url: "+path);
+					}
+
 					break;
 				}
 			}
 
 			if (assembly != null)
 			{
-				this.assemblyVer = YooAssetsMgr.Instance.Config.Dllver;//记录当前dll版本
+				this.assemblyVer = YooAssetsMgr.Instance.Config.Resver;//记录当前dll版本
 				AssemblyManager.Instance.AddAssembly(GetType().Assembly);
 				AssemblyManager.Instance.AddHotfixAssembly(assembly);
 				IStaticAction start = new MonoStaticAction(assembly, "TaoTie.Entry", "Start");
@@ -85,7 +182,6 @@ namespace TaoTie
 			{
 				Log.Error("assembly == null");
 			}
-
 		}
 		private void GetBytes(out byte[] assBytes,out byte[] pdbBytes)
 		{
@@ -93,21 +189,20 @@ namespace TaoTie
 			pdbBytes= null;
 			if (YooAssetsMgr.Instance.PlayMode != YooAsset.EPlayMode.EditorSimulateMode)
 			{
-				var op = YooAssets.LoadAssetSync<TextAsset>(
-					$"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.dll.bytes");
+				var op = YooAssetsMgr.Instance.LoadAssetSync<TextAsset>(
+					$"{Define.HotfixLoadDir}Code{YooAssetsMgr.Instance.Config.Resver}.dll.bytes",YooAssetsMgr.DefaultName);
 				assBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
-				op = YooAssets.LoadAssetSync<TextAsset>(
-					$"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.pdb.bytes");
+				op = YooAssetsMgr.Instance.LoadAssetSync<TextAsset>(
+					$"{Define.HotfixLoadDir}Code{YooAssetsMgr.Instance.Config.Resver}.pdb.bytes",YooAssetsMgr.DefaultName);
 				pdbBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
 			}
 #if UNITY_EDITOR
 			else
 			{
-				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-				var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
-				int version = obj.Dllver;
+				var obj = YooAssetsMgr.Instance.Config;
+				int version = obj.Resver;
 				assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", TypeInfo<TextAsset>.Type) as TextAsset)
 					.bytes;
 				pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", TypeInfo<TextAsset>.Type) as TextAsset)

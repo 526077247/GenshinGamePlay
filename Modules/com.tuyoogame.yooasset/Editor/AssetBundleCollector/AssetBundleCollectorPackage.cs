@@ -25,7 +25,6 @@ namespace YooAsset.Editor
 		/// </summary>
 		public List<AssetBundleCollectorGroup> Groups = new List<AssetBundleCollectorGroup>();
 
-
 		/// <summary>
 		/// 检测配置错误
 		/// </summary>
@@ -83,6 +82,9 @@ namespace YooAsset.Editor
 					{
 						string address = collectInfoPair.Value.Address;
 						string assetPath = collectInfoPair.Value.AssetPath;
+						if (string.IsNullOrEmpty(address))
+							continue;
+
 						if (addressTemper.TryGetValue(address, out var existed) == false)
 							addressTemper.Add(address, assetPath);
 						else

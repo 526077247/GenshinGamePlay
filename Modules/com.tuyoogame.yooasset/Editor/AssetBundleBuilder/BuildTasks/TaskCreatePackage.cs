@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace YooAsset.Editor
 {
-	[TaskAttribute(ETaskPipeline.AllPipeline, 1000, "制作包裹")]
+	[TaskAttribute("制作包裹")]
 	public class TaskCreatePackage : IBuildTask
 	{
 		void IBuildTask.Run(BuildContext context)
@@ -70,7 +70,7 @@ namespace YooAsset.Editor
 			int fileTotalCount = buildMapContext.Collection.Count;
 			foreach (var bundleInfo in buildMapContext.Collection)
 			{
-				EditorTools.CopyFile(bundleInfo.BundleInfo.BuildOutputFilePath, bundleInfo.BundleInfo.PackageOutputFilePath, true);
+				EditorTools.CopyFile(bundleInfo.PackageSourceFilePath, bundleInfo.PackageDestFilePath, true);
 				EditorTools.DisplayProgressBar("拷贝补丁文件", ++progressValue, fileTotalCount);
 			}
 			EditorTools.ClearProgressBar();

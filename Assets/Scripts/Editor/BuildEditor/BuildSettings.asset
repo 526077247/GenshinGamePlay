@@ -16,7 +16,10 @@ MonoBehaviour:
   buildMode: 1
   clearFolder: 0
   isBuildExe: 1
+  buildHotfixAssembliesAOT: 1
+  isContainsAb: 0
   isBuildAll: 1
   isPackAtlas: 0
+  cdn: 
   buildType: 1
   buildAssetBundleOptions: 0

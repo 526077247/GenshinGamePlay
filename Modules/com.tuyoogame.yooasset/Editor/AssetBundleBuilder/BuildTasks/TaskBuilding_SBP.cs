@@ -9,7 +9,7 @@ using UnityEditor.Build.Pipeline.Tasks;
 
 namespace YooAsset.Editor
 {
-	[TaskAttribute(ETaskPipeline.ScriptableBuildPipeline, 300, "资源构建内容打包")]
+	[TaskAttribute("资源构建内容打包")]
 	public class TaskBuilding_SBP : IBuildTask
 	{
 		public class BuildResultContext : IContextObject
@@ -33,7 +33,7 @@ namespace YooAsset.Editor
 			// 开始构建
 			IBundleBuildResults buildResults;
 			var buildParameters = buildParametersContext.GetSBPBuildParameters();
-			var taskList = SBPBuildTasks.Create(buildMapContext.Command.ShadersBundleName);
+			var taskList = SBPBuildTasks.Create(buildParametersContext.Parameters.SBPParameters.FixSpriteAtlasRedundancy, buildMapContext.Command.ShadersBundleName);
 			ReturnCode exitCode = ContentPipeline.BuildAssetBundles(buildParameters, buildContent, out buildResults, taskList);
 			if (exitCode < 0)
 			{

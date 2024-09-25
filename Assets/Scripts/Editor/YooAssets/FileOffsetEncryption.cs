@@ -23,4 +23,22 @@ namespace YooAsset
             // }
         }
     }
+    
+    public class StreamEncryption : IEncryptionServices
+    {
+
+        public EncryptResult Encrypt(EncryptFileInfo fileInfo)
+        {
+            byte[] fileData = File.ReadAllBytes(fileInfo.FilePath);
+            for (int i = 0; i < fileData.Length; i++)
+            {
+                fileData[i] ^= BundleStream.KEY;
+            }
+
+            EncryptResult result = new EncryptResult();
+            result.LoadMethod = EBundleLoadMethod.LoadFromStream;
+            result.EncryptedData = fileData;
+            return result;
+        }
+    }
 }

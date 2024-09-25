@@ -67,7 +67,7 @@ namespace YooAsset
 
 			if (_steps == ESteps.VerifyFileHash)
 			{
-				_manifestFilePath = PersistentTools.GetCacheManifestFilePath(_packageName, _packageVersion);
+				_manifestFilePath = PersistentTools.GetPersistent(_packageName).GetSandboxPackageManifestFilePath(_packageVersion);
 				if (File.Exists(_manifestFilePath) == false)
 				{
 					_steps = ESteps.Done;
@@ -82,7 +82,7 @@ namespace YooAsset
 				{
 					_steps = ESteps.Done;
 					Status = EOperationStatus.Failed;
-					Error = "Failed to verify cache manifest file hash !";
+					Error = $"Failed to verify cache manifest file hash ! fileHash:{fileHash} packageHash:{_queryCachePackageHashOp.PackageHash}";
 					ClearCacheFile();
 				}
 				else
@@ -131,7 +131,7 @@ namespace YooAsset
 				File.Delete(_manifestFilePath);
 			}
 
-			string hashFilePath = PersistentTools.GetCachePackageHashFilePath(_packageName, _packageVersion);
+			string hashFilePath = PersistentTools.GetPersistent(_packageName).GetSandboxPackageHashFilePath(_packageVersion);
 			if (File.Exists(hashFilePath))
 			{
 				File.Delete(hashFilePath);

@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace YooAsset.Editor
 {
-	[TaskAttribute(ETaskPipeline.AllPipeline, 200, "获取资源构建内容")]
+	[TaskAttribute("获取资源构建内容")]
 	public class TaskGetBuildMap : IBuildTask
 	{
 		void IBuildTask.Run(BuildContext context)
@@ -33,7 +33,7 @@ namespace YooAsset.Editor
 			Dictionary<string, BuildAssetInfo> allBuildAssetInfoDic = new Dictionary<string, BuildAssetInfo>(1000);
 
 			// 1. 检测配置合法性
-			AssetBundleCollectorSettingData.Setting.CheckConfigError();
+			AssetBundleCollectorSettingData.Setting.CheckPackageConfigError(packageName);
 
 			// 2. 获取所有收集器收集的资源
 			var collectResult = AssetBundleCollectorSettingData.Setting.GetPackageAssets(buildMode, packageName);
@@ -147,17 +147,17 @@ namespace YooAsset.Editor
 		private void RemoveZeroReferenceAssets(List<CollectAssetInfo> allCollectAssetInfos)
 		{
 			// 1. 检测是否任何存在依赖资源
-			bool hasAnyDependAsset = false;
+			bool hasAnyDependCollector = false;
 			foreach (var collectAssetInfo in allCollectAssetInfos)
 			{
 				var collectorType = collectAssetInfo.CollectorType;
 				if (collectorType == ECollectorType.DependAssetCollector)
 				{
-					hasAnyDependAsset = true;
+					hasAnyDependCollector = true;
 					break;
 				}
 			}
-			if (hasAnyDependAsset == false)
+			if (hasAnyDependCollector == false)
 				return;
 
 			// 2. 获取所有主资源的依赖资源集合

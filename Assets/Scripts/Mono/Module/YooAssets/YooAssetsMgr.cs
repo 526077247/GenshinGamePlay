@@ -19,7 +19,8 @@ namespace YooAsset
         public const string DefaultName = "DefaultPackage";
 
         private readonly Dictionary<string, ResourcePackage> packages = new Dictionary<string, ResourcePackage>();
-
+        private HostPlayModeParameters hostPlayModeParameters;
+        private OfflinePlayModeParameters offlinePlayModeParameters;
         public async ETTask Init(EPlayMode mode)
         {
             PlayMode = mode;
@@ -39,18 +40,38 @@ namespace YooAsset
             // 编辑器下的模拟模式
             if (mode == EPlayMode.EditorSimulateMode)
             {
+                if (CdnConfig == null)
+                {
+                    CdnConfig = Resources.Load<CDNConfig>("CDNConfig");
+                }
                 var initParameters = new EditorSimulateModeParameters();
                 initParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
-                await package.InitializeAsync(initParameters).Task;
+                var op = package.InitializeAsync(initParameters);
+                await op.Task;
+                if (op.Status == EOperationStatus.Failed)
+                {
+                    Log.Error(op.Error);
+                }
             }
             else
 #endif 
                 // 单机运行模式
             if (mode == EPlayMode.OfflinePlayMode)
             {
-                var initParameters = new OfflinePlayModeParameters();
-                initParameters.DecryptionServices = new BundleDecryption();
-                await package.InitializeAsync(initParameters).Task;
+                if (offlinePlayModeParameters == null)
+                {
+                    var initParameters = new OfflinePlayModeParameters();
+                    initParameters.DecryptionServices = new BundleDecryption();
+                    initParameters.BuildinRootDirectory = StreamingAssetsDefine.StreamAssetsDir;
+                    offlinePlayModeParameters = initParameters;
+                }
+
+                var op = package.InitializeAsync(offlinePlayModeParameters);
+                await op.Task;
+                if (op.Status == EOperationStatus.Failed)
+                {
+                    Log.Error(op.Error);
+                }
             }
             // 联机运行模式
             else
@@ -59,12 +80,23 @@ namespace YooAsset
                 {
                     CdnConfig = Resources.Load<CDNConfig>("CDNConfig");
                 }
-                var initParameters = new HostPlayModeParameters();
-                initParameters.DefaultHostServer = $"{CdnConfig.DefaultHostServer}/{CdnConfig.Channel}_{PlatformUtil.GetStrPlatformIgnoreEditor()}";
-                initParameters.FallbackHostServer = $"{CdnConfig.FallbackHostServer}/{CdnConfig.Channel}_{PlatformUtil.GetStrPlatformIgnoreEditor()}";
-                initParameters.DecryptionServices = new BundleDecryption();
-                initParameters.QueryServices = new GameQueryServices();
-                await package.InitializeAsync(initParameters).Task;
+
+                if (hostPlayModeParameters == null)
+                {
+                    var initParameters = new HostPlayModeParameters();
+                    initParameters.RemoteServices = new RemoteServices(CdnConfig);
+                    initParameters.DecryptionServices = new BundleDecryption();
+                    initParameters.BuildinQueryServices = new GameQueryServices();
+                    initParameters.DeliveryQueryServices = new DefaultDeliveryQueryServices();
+                    initParameters.BuildinRootDirectory = StreamingAssetsDefine.StreamAssetsDir;
+                    hostPlayModeParameters = initParameters;
+                }
+                var op = package.InitializeAsync(hostPlayModeParameters);
+                await op.Task;
+                if (op.Status == EOperationStatus.Failed)
+                {
+                    Log.Error(op.Error);
+                }
             }
         }
 
@@ -76,24 +108,32 @@ namespace YooAsset
                 return res;
             }
             res = YooAssets.CreatePackage(package);
-            await InitPackage(PlayMode, res, package);
             packages.Add(package,res);
+            await InitPackage(PlayMode, res, package);
             return res;
         }
         
-        private ResourcePackage GetPackageSync(string package)
+        /// <summary>
+        /// 注意只能是已经load过的
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public ResourcePackage GetPackageSync(string package)
         {
             if (package == null) package = DefaultName;
             if (packages.TryGetValue(package, out var res))
             {
                 return res;
             }
+            Log.Error("GetPackageSync fail package =" + package);
+            GetPackage(package).Coroutine();
             return null;
         }
 
         public async ETTask UpdateConfig()
         {
             var op = DefaultPackage.LoadRawFileSync("config.bytes");
+            if (op == null)return;
             await op.Task;
             var conf = op.GetRawFileText();
             Config = JsonHelper.FromJson<BuildInConfig>(conf);
@@ -103,7 +143,6 @@ namespace YooAsset
             }
             op.Release();
         }
-
         public void UnloadUnusedAssets()
         {
             UnloadUnusedAssets(DefaultName);
@@ -112,6 +151,7 @@ namespace YooAsset
         {
             var packageInfo = GetPackageSync(package);
             packageInfo?.UnloadUnusedAssets();
+            Log.Info("UnloadUnusedAssets "+package);
         }
         
         public void ForceUnloadAllAssets()
@@ -150,11 +190,13 @@ namespace YooAsset
             return packageInfo.LoadSceneAsync(path,mode);
         }
 
-        public ResourceDownloaderOperation CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain, int timeout,string package)
+        public ResourceDownloaderOperation CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain, int timeout,string package,string[] tags = null)
         {
             var packageInfo = GetPackageSync(package);
             if (packageInfo == null) return null;
-            return packageInfo.CreateResourceDownloader(downloadingMaxNumber,failedTryAgain,timeout);
+            if (tags == null)
+                return packageInfo.CreateResourceDownloader(downloadingMaxNumber, failedTryAgain, timeout);
+            return packageInfo.CreateResourceDownloader(tags, downloadingMaxNumber, failedTryAgain, timeout);
         }
         public UpdatePackageManifestOperation UpdatePackageManifestAsync(string packageVersion, bool autoSaveVersion , int timeout ,string package)
         {
@@ -169,7 +211,12 @@ namespace YooAsset
             if (packageInfo == null) return Array.Empty<AssetInfo>();
             return packageInfo.GetAssetInfos(tag);
         }
-        
-        
+
+        public bool IsNeedDownloadFromRemote(string path, string package)
+        {
+            var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return false;
+            return packageInfo.IsNeedDownloadFromRemote(path);
+        }
     }
 }

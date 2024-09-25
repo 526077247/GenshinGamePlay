@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace YooAsset.Editor
 {
-	[TaskAttribute(ETaskPipeline.AllPipeline, 1100, "拷贝内置文件到流目录")]
+	[TaskAttribute("拷贝内置文件到流目录")]
 	public class TaskCopyBuildinFiles : IBuildTask
 	{
 		void IBuildTask.Run(BuildContext context)
@@ -30,7 +30,7 @@ namespace YooAsset.Editor
 		{
 			ECopyBuildinFileOption option = buildParametersContext.Parameters.CopyBuildinFileOption;
 			string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
-			string streamingAssetsDirectory = AssetBundleBuilderHelper.GetStreamingAssetsFolderPath();
+			string streamingAssetsDirectory = buildParametersContext.GetStreamingAssetsDirectory();
 			string buildPackageName = buildParametersContext.Parameters.PackageName;
 			string buildPackageVersion = buildParametersContext.Parameters.PackageVersion;
 
@@ -40,36 +40,14 @@ namespace YooAsset.Editor
 			// 清空流目录
 			if (option == ECopyBuildinFileOption.ClearAndCopyAll || option == ECopyBuildinFileOption.ClearAndCopyByTags)
 			{
-				AssetBundleBuilderHelper.ClearStreamingAssetsFolder();
+				EditorTools.ClearFolder(streamingAssetsDirectory);
 			}
-
-			// 拷贝补丁清单文件
-			{
-				string fileName = YooAssetSettingsData.GetManifestBinaryFileName(buildPackageName, buildPackageVersion);
-				string sourcePath = $"{packageOutputDirectory}/{fileName}";
-				string destPath = $"{streamingAssetsDirectory}/{fileName}";
-				EditorTools.CopyFile(sourcePath, destPath, true);
-			}
-
-			// 拷贝补丁清单哈希文件
-			{
-				string fileName = YooAssetSettingsData.GetPackageHashFileName(buildPackageName, buildPackageVersion);
-				string sourcePath = $"{packageOutputDirectory}/{fileName}";
-				string destPath = $"{streamingAssetsDirectory}/{fileName}";
-				EditorTools.CopyFile(sourcePath, destPath, true);
-			}
-
-			// 拷贝补丁清单版本文件
-			{
-				string fileName = YooAssetSettingsData.GetPackageVersionFileName(buildPackageName);
-				string sourcePath = $"{packageOutputDirectory}/{fileName}";
-				string destPath = $"{streamingAssetsDirectory}/{fileName}";
-				EditorTools.CopyFile(sourcePath, destPath, true);
-			}
-
+			
+			bool copy = false;
 			// 拷贝文件列表（所有文件）
 			if (option == ECopyBuildinFileOption.ClearAndCopyAll || option == ECopyBuildinFileOption.OnlyCopyAll)
 			{
+				copy = true;
 				foreach (var packageBundle in manifest.BundleList)
 				{
 					string sourcePath = $"{packageOutputDirectory}/{packageBundle.FileName}";
@@ -86,8 +64,36 @@ namespace YooAsset.Editor
 				{
 					if (packageBundle.HasTag(tags) == false)
 						continue;
+					copy = true;
 					string sourcePath = $"{packageOutputDirectory}/{packageBundle.FileName}";
 					string destPath = $"{streamingAssetsDirectory}/{packageBundle.FileName}";
+					EditorTools.CopyFile(sourcePath, destPath, true);
+				}
+			}
+
+			if (copy)
+			{
+				// 拷贝补丁清单文件
+				{
+					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(buildPackageName, buildPackageVersion);
+					string sourcePath = $"{packageOutputDirectory}/{fileName}";
+					string destPath = $"{streamingAssetsDirectory}/{fileName}";
+					EditorTools.CopyFile(sourcePath, destPath, true);
+				}
+
+				// 拷贝补丁清单哈希文件
+				{
+					string fileName = YooAssetSettingsData.GetPackageHashFileName(buildPackageName, buildPackageVersion);
+					string sourcePath = $"{packageOutputDirectory}/{fileName}";
+					string destPath = $"{streamingAssetsDirectory}/{fileName}";
+					EditorTools.CopyFile(sourcePath, destPath, true);
+				}
+
+				// 拷贝补丁清单版本文件
+				{
+					string fileName = YooAssetSettingsData.GetPackageVersionFileName(buildPackageName);
+					string sourcePath = $"{packageOutputDirectory}/{fileName}";
+					string destPath = $"{streamingAssetsDirectory}/{fileName}";
 					EditorTools.CopyFile(sourcePath, destPath, true);
 				}
 			}

@@ -7,11 +7,15 @@ namespace TaoTie
 
         public static bool IsSH;
         
-        public const string HotfixDir = "Assets/AssetsPackage/Code/Hotfix/";
+        public const string HotfixLoadDir = "Code/Hotfix/";
+        public const string AOTLoadDir = "Code/AOT/";
+
+        public const string HotfixDir = "Assets/AssetsPackage/" + HotfixLoadDir;
+        public const string AOTDir = "Assets/AssetsPackage/" + AOTLoadDir;
 #if UNITY_EDITOR
         public static readonly bool Debug = true;
 #else
-        public static readonly bool Debug = false;
+        public static readonly bool Debug = UnityEngine.Debug.isDebugBuild;
 #endif
         public static readonly int DesignScreen_Width = 1920;
         public static readonly int DesignScreen_Height = 1080;
@@ -23,8 +27,15 @@ namespace TaoTie
 #else
         public static bool ForceUpdate = false; //默认不强更，无网络或更新失败可以选跳过更新或重试
 #endif
-        public static bool Networked = false;
+            public static bool Networked =
+#if UNITY_EDITOR
+                    false;
+#else
+        Application.internetReachability != NetworkReachability.NotReachable;
+#endif
 
         public static int Process = 1;
+        
+        public static string[] RenameList = {"iOS"};
     }
 }

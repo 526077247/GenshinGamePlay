@@ -28,6 +28,11 @@ namespace YooAsset.Editor
 			/// 缓存服务器端口
 			/// </summary>
 			public int CacheServerPort;
+
+			/// <summary>
+			/// 修复图集资源冗余问题
+			/// </summary>
+			public bool FixSpriteAtlasRedundancy = false;
 		}
 
 		/// <summary>
@@ -37,9 +42,14 @@ namespace YooAsset.Editor
 
 
 		/// <summary>
-		/// 输出的根目录
+		/// 内置资源的根目录
 		/// </summary>
-		public string OutputRoot;
+		public string StreamingAssetsRoot;
+
+		/// <summary>
+		/// 构建输出的根目录
+		/// </summary>
+		public string BuildOutputRoot;
 
 		/// <summary>
 		/// 构建的平台

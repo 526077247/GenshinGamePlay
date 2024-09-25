@@ -217,13 +217,13 @@ namespace YooAsset
 			if (_steps == ESteps.CheckAppFootPrint)
 			{
 				var appFootPrint = new AppFootPrint();
-				appFootPrint.Load();
+				appFootPrint.Load(_packageName);
 
 				// 如果水印发生变化，则说明覆盖安装后首次打开游戏
 				if (appFootPrint.IsDirty())
 				{
-					PersistentTools.DeleteManifestFolder();
-					appFootPrint.Coverage();
+					PersistentTools.GetPersistent(_packageName).DeleteSandboxManifestFilesFolder();
+					appFootPrint.Coverage(_packageName);
 					YooLogger.Log("Delete manifest files when application foot print dirty !");
 				}
 				_steps = ESteps.QueryCachePackageVersion;
@@ -365,6 +365,93 @@ namespace YooAsset
 	}
 
 	/// <summary>
+	/// WebGL运行模式的初始化操作
+	/// </summary>
+	internal sealed class WebPlayModeInitializationOperation : InitializationOperation
+	{
+		private enum ESteps
+		{
+			None,
+			QueryWebPackageVersion,
+			LoadWebManifest,
+			Done,
+		}
+
+		private readonly WebPlayModeImpl _impl;
+		private readonly string _packageName;
+		private QueryBuildinPackageVersionOperation _queryWebPackageVersionOp;
+		private LoadBuildinManifestOperation _loadWebManifestOp;
+		private ESteps _steps = ESteps.None;
+
+		internal WebPlayModeInitializationOperation(WebPlayModeImpl impl, string packageName)
+		{
+			_impl = impl;
+			_packageName = packageName;
+		}
+		internal override void Start()
+		{
+			_steps = ESteps.QueryWebPackageVersion;
+		}
+		internal override void Update()
+		{
+			if (_steps == ESteps.None || _steps == ESteps.Done)
+				return;
+
+			if (_steps == ESteps.QueryWebPackageVersion)
+			{
+				if (_queryWebPackageVersionOp == null)
+				{
+					_queryWebPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName);
+					OperationSystem.StartOperation(_queryWebPackageVersionOp);
+				}
+
+				if (_queryWebPackageVersionOp.IsDone == false)
+					return;
+
+				if (_queryWebPackageVersionOp.Status == EOperationStatus.Succeed)
+				{
+					_steps = ESteps.LoadWebManifest;
+				}
+				else
+				{
+					// 注意：WebGL平台可能因为网络的原因会导致请求失败。如果内置清单不存在或者超时也不需要报错！
+					_steps = ESteps.Done;
+					Status = EOperationStatus.Succeed;
+					string error = _queryWebPackageVersionOp.Error;
+					YooLogger.Log($"Failed to load web package version file : {error}");
+				}
+			}
+
+			if (_steps == ESteps.LoadWebManifest)
+			{
+				if (_loadWebManifestOp == null)
+				{
+					_loadWebManifestOp = new LoadBuildinManifestOperation(_packageName, _queryWebPackageVersionOp.PackageVersion);
+					OperationSystem.StartOperation(_loadWebManifestOp);
+				}
+
+				Progress = _loadWebManifestOp.Progress;
+				if (_loadWebManifestOp.IsDone == false)
+					return;
+
+				if (_loadWebManifestOp.Status == EOperationStatus.Succeed)
+				{
+					PackageVersion = _loadWebManifestOp.Manifest.PackageVersion;
+					_impl.ActiveManifest = _loadWebManifestOp.Manifest;
+					_steps = ESteps.Done;
+					Status = EOperationStatus.Succeed;
+				}
+				else
+				{
+					_steps = ESteps.Done;
+					Status = EOperationStatus.Failed;
+					Error = _loadWebManifestOp.Error;
+				}
+			}
+		}
+	}
+
+	/// <summary>
 	/// 应用程序水印
 	/// </summary>
 	internal class AppFootPrint
@@ -374,16 +461,16 @@ namespace YooAsset
 		/// <summary>
 		/// 读取应用程序水印
 		/// </summary>
-		public void Load()
+		public void Load(string packageName)
 		{
-			string footPrintFilePath = PersistentTools.GetAppFootPrintFilePath();
+			string footPrintFilePath = PersistentTools.GetPersistent(packageName).SandboxAppFootPrintFilePath;
 			if (File.Exists(footPrintFilePath))
 			{
 				_footPrint = FileUtility.ReadAllText(footPrintFilePath);
 			}
 			else
 			{
-				Coverage();
+				Coverage(packageName);
 			}
 		}
 
@@ -402,14 +489,14 @@ namespace YooAsset
 		/// <summary>
 		/// 覆盖掉水印
 		/// </summary>
-		public void Coverage()
+		public void Coverage(string packageName)
 		{
 #if UNITY_EDITOR
 			_footPrint = Application.version;
 #else
 			_footPrint = Application.buildGUID;
 #endif
-			string footPrintFilePath = PersistentTools.GetAppFootPrintFilePath();
+			string footPrintFilePath = PersistentTools.GetPersistent(packageName).SandboxAppFootPrintFilePath;
 			FileUtility.WriteAllText(footPrintFilePath, _footPrint);
 			YooLogger.Log($"Save application foot print : {_footPrint}");
 		}

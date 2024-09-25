@@ -218,6 +218,21 @@ namespace YooAsset
 		}
 
 		/// <summary>
+		/// 设置下载系统参数，网络重定向次数（Unity引擎默认值32）
+		/// 注意：不支持设置为负值
+		/// </summary>
+		public static void SetDownloadSystemRedirectLimit(int redirectLimit)
+		{
+			if (redirectLimit < 0)
+			{
+				YooLogger.Warning($"Invalid param value : {redirectLimit}");
+				return;
+			}
+
+			DownloadSystem.RedirectLimit = redirectLimit;
+		}
+
+		/// <summary>
 		/// 设置异步系统参数，每帧执行消耗的最大时间切片（单位：毫秒）
 		/// </summary>
 		public static void SetOperationSystemMaxTimeSlice(long milliseconds)
@@ -239,51 +254,11 @@ namespace YooAsset
 		}
 
 		/// <summary>
-		/// 设置缓存系统参数，沙盒目录的存储路径
+		/// 设置缓存系统参数，禁用缓存在WebGL平台
 		/// </summary>
-		public static void SetCacheSystemSandboxPath(string sandboxPath)
+		public static void SetCacheSystemDisableCacheOnWebGL()
 		{
-			if (string.IsNullOrEmpty(sandboxPath))
-			{
-				YooLogger.Error($"Sandbox path is null or empty !");
-				return;
-			}
-
-			// 注意：需要确保没有任何资源系统起效之前才可以设置沙盒目录！
-			if (_packages.Count > 0)
-			{
-				YooLogger.Error($"Please call this method {nameof(SetCacheSystemSandboxPath)} before the package is created !");
-				return;
-			}
-
-			PersistentTools.OverwriteSandboxPath(sandboxPath);
-		}
-		#endregion
-
-		#region 沙盒相关
-		/// <summary>
-		/// 获取内置文件夹名称
-		/// </summary>
-		public static string GetStreamingAssetBuildinFolderName()
-		{
-			return YooAssetSettings.StreamingAssetsBuildinFolder;
-		}
-
-		/// <summary>
-		/// 获取沙盒的根路径
-		/// </summary>
-		public static string GetSandboxRoot()
-		{
-			return PersistentTools.GetPersistentRootPath();
-		}
-
-		/// <summary>
-		/// 清空沙盒目录（需要重启APP）
-		/// </summary>
-		public static void ClearSandbox()
-		{
-			YooLogger.Warning("Clear sandbox folder files, Finally, restart the application !");
-			PersistentTools.DeleteSandbox();
+			CacheSystem.DisableUnityCacheOnWebGL = true;
 		}
 		#endregion
 

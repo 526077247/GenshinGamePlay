@@ -69,7 +69,7 @@ namespace TaoTie
 				CopyDirectory(dirs[j].FullName, Path.Combine(target.FullName, dirs[j].Name));
 			}
 		}
-		public static void CopyFiles(string srcDir, string tgtDir)
+		public static void CopyFiles(string srcDir, string tgtDir, string[] ignore = null)
 		{
 			DirectoryInfo source = new DirectoryInfo(srcDir);
 			DirectoryInfo target = new DirectoryInfo(tgtDir);
@@ -92,13 +92,29 @@ namespace TaoTie
 			
 			foreach (DirectoryInfo info in dirs)
 			{
-				CopyFiles(info.FullName, tgtDir);
+				CopyFiles(info.FullName, tgtDir, ignore);
 			}
 
 			FileInfo[] files = source.GetFiles();
 	
 			for (int i = 0; i < files.Length; i++)
 			{
+				if (ignore != null)
+				{
+					bool has = false;
+					for (int j = 0; j < ignore.Length; j++)
+					{
+						if (files[i].FullName.Contains(ignore[j]))
+						{
+							has = true;
+							break;
+						}
+					}
+					if (has)
+					{
+						continue;
+					}
+				}
 				CopyFile(files[i].FullName, Path.Combine(target.FullName, files[i].Name), true);
 			}
 		}

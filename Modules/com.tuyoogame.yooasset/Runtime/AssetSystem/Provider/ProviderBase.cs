@@ -123,7 +123,7 @@ namespace YooAsset
 		/// <summary>
 		/// 销毁资源对象
 		/// </summary>
-		public virtual void Destroy()
+		public void Destroy()
 		{
 			IsDestroyed = true;
 
@@ -217,6 +217,30 @@ namespace YooAsset
 			if (IsDone == false)
 			{
 				YooLogger.Warning($"WaitForAsyncComplete failed to loading : {MainAssetInfo.AssetPath}");
+			}
+		}
+
+		/// <summary>
+		/// 处理特殊异常
+		/// </summary>
+		protected void ProcessCacheBundleException()
+		{
+			if (OwnerBundle.IsDestroyed)
+				throw new System.Exception("Should never get here !");
+
+			if (OwnerBundle.MainBundleInfo.Bundle.IsRawFile)
+			{
+				Status = EStatus.Failed;
+				LastError = $"Cannot load asset bundle file using {nameof(ResourcePackage.LoadRawFileAsync)} method !";
+				YooLogger.Error(LastError);
+				InvokeCompletion();
+			}
+			else
+			{
+				Status = EStatus.Failed;
+				LastError = $"The bundle {OwnerBundle.MainBundleInfo.Bundle.BundleName} has been destroyed by unity bugs !";
+				YooLogger.Error(LastError);
+				InvokeCompletion();
 			}
 		}
 

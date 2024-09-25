@@ -169,7 +169,7 @@ namespace YooAsset
 			{
 				if (_downloadManifestOp == null)
 				{
-					_downloadManifestOp = new DownloadManifestOperation(_impl, _packageName, _packageVersion, _timeout);
+					_downloadManifestOp = new DownloadManifestOperation(_impl.RemoteServices, _packageName, _packageVersion, _timeout);
 					OperationSystem.StartOperation(_downloadManifestOp);
 				}
 
@@ -284,6 +284,16 @@ namespace YooAsset
 			List<BundleInfo> downloadList = _impl.GetDownloadListByPaths(_manifest, assetInfos.ToArray());
 			var operation = new ResourceDownloaderOperation(downloadList, downloadingMaxNumber, failedTryAgain, timeout);
 			return operation;
+		}
+	}
+	internal class WebPlayModePreDownloadContentOperation : PreDownloadContentOperation
+	{
+		internal override void Start()
+		{
+			Status = EOperationStatus.Succeed;
+		}
+		internal override void Update()
+		{
 		}
 	}
 }

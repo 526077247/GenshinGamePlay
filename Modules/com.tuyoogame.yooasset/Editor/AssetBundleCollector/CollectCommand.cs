@@ -49,7 +49,7 @@ namespace YooAsset.Editor
 			UniqueBundleName = uniqueBundleName;
 
 			// 着色器统一全名称
-			var packRuleResult = DefaultPackRule.CreateShadersPackRuleResult(packageName);
+			var packRuleResult = DefaultPackRule.CreateShadersPackRuleResult();
 			ShadersBundleName = packRuleResult.GetMainBundleName(packageName, uniqueBundleName);
 		}
 	}

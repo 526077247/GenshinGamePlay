@@ -11,6 +11,11 @@ namespace YooAsset
 		private readonly static Dictionary<string, PackageCache> _cachedDic = new Dictionary<string, PackageCache>(1000);
 
 		/// <summary>
+		/// 禁用Unity缓存系统在WebGL平台
+		/// </summary>
+		public static bool DisableUnityCacheOnWebGL = false;
+
+		/// <summary>
 		/// 初始化时的验证级别
 		/// </summary>
 		public static EVerifyLevel InitVerifyLevel { set; get; } = EVerifyLevel.Middle;
@@ -88,7 +93,7 @@ namespace YooAsset
 		/// <summary>
 		/// 验证缓存文件（子线程内操作）
 		/// </summary>
-		public static EVerifyResult VerifyingCacheFile(VerifyCacheElement element)
+		public static EVerifyResult VerifyingCacheFile(VerifyCacheFileElement element)
 		{
 			try
 			{
@@ -120,7 +125,7 @@ namespace YooAsset
 		/// <summary>
 		/// 验证下载文件（子线程内操作）
 		/// </summary>
-		public static EVerifyResult VerifyingTempFile(VerifyTempElement element)
+		public static EVerifyResult VerifyingTempFile(VerifyTempFileElement element)
 		{
 			return VerifyingInternal(element.TempDataFilePath, element.FileSize, element.FileCRC, EVerifyLevel.High);
 		}

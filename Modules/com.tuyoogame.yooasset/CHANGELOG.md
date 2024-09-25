@@ -2,6 +2,276 @@
 
 All notable changes to this package will be documented in this file.
 
+## [1.5.7] - 2023-10-07
+
+### Changed
+
+- WebGL平台支持创建下载器。
+
+## [1.5.6-preview] - 2023-09-26
+
+### Fixed
+
+- (#172) 修复包裹初始化后，package的状态不正确的问题。
+
+## [1.5.5-preview] - 2023-09-25
+
+### Fixed
+
+- (#96) 修复了异步操作任务的完成回调在业务层触发异常时无法正常完成的问题。
+- (#156) 修复了多个Package存在时，服务器请求地址请求顺序不对的问题。
+- (#163) 修复了Unity2019版本编译报错的问题。
+- (#167) 修复了初始化时每次都会提示文件验证失败日志。
+- (#171) 修复了IsNeedDownloadFromRemote里缺少判断依赖的资源是否下载 。
+
+### Added
+
+- 资源收集器里增加了AddressDisable规则。
+
+- 资源收集器里FilterRuleData结构体增加了多个备选字段。
+
+  ```c#
+  public struct FilterRuleData
+  {
+      public string AssetPath;
+      public string CollectPath;
+      public string GroupName;
+      public string UserData;
+  }
+  ```
+
+### Changed
+
+- 可以设置自定义参数DefaultYooFolderName。
+
+- 资源配置界面的分组不激活时，不再进行配置检测。
+
+- SBP构建管线增加新构建参数用于修复图集资源冗余问题。
+
+  ```c#
+  public class SBPBuildParameters
+  {
+      /// <summary>
+      /// 修复图集资源冗余问题
+      /// </summary>
+      public bool FixSpriteAtlasRedundancy = false;
+  }
+  ```
+
+## [1.5.4-preview] - 2023-08-25
+
+优化了资源清单文件构建速度（极大提升构建体验）（感谢yingnierxiao同学）。
+
+### Fixed
+
+- (#130) 修复了打包路径无效问题bug
+- (#138) 修复了Unity不支持的格式的原生文件会报warning
+
+### Added
+
+- 新增了IBuildinQueryServices 接口。
+
+### Changed
+
+- 在开启可寻址模式下，默认支持通过资源路径加载资源对象。
+
+- 优化了资源收集界面，增加了配置相关的警示提示。
+
+- 优化了资源报告界面，增加了BundleView界面里的builtin资源的列表显示。
+
+- IQueryServices接口变更为IBuildinQueryServices接口
+
+- EOperationStatus增加了正在处理的状态。
+
+  ```c#
+  public enum EOperationStatus
+  {
+      None,
+      Processing,
+      Succeed,
+      Failed
+  }
+  ```
+
+## [1.5.3-preview] - 2023-07-28
+
+### Fixed
+
+- 修复了Unity2020以下版本的编辑器提示找不到"autoLoadAssetBundle"的编译错误。
+
+### Added
+
+- 新增了支持开发者分发资源的功能。
+
+  ```c#
+  public interface IQueryServices
+  {
+      /// <summary>
+      /// 查询应用程序里的内置资源是否存在
+      /// </summary>
+      bool QueryStreamingAssets(string packageName, string fileName);
+  
+      /// <summary>
+      /// 查询是否为开发者分发的资源
+      /// </summary>
+      bool QueryDeliveryFiles(string packageName, string fileName);
+  
+      /// <summary>
+      /// 获取开发者分发的资源信息
+      /// </summary>
+      DeliveryFileInfo GetDeliveryFileInfo(string packageName, string fileName);
+  }
+  ```
+
+### Changed
+
+- 针对资源清单更新方法传入参数的合法性检测。
+- 编辑器下针对激活的资源清单有效性的检测。
+
+## [1.5.2-preview] - 2023-07-18
+
+重新设计了对WebGL平台的支持，新增加了专属模式：WebPlayMode
+
+## [1.5.1] - 2023-07-12
+
+### Fixed
+
+- 修复了太空战机DEMO在生成内置文件清单的时候，目录不存在引发的异常。
+- 修复了在销毁Package时，如果存在正在加载的bundle，会导致后续加载该bundle报错的问题。
+
+### Changed
+
+- 真机上使用错误方法加载原生文件的时候给予正确的错误提示。
+
+### Added
+
+- 新增了HostPlayModeParameters.RemoteServices字段
+
+  ```c#
+  /// <summary>
+  /// 远端资源地址查询服务类
+  /// </summary>
+  public IRemoteServices RemoteServices = null;
+  ```
+
+### Removed
+
+- 移除了HostPlayModeParameters.DefaultHostServer字段
+- 移除了HostPlayModeParameters.FallbackHostServer字段
+
+## [1.5.0] - 2023-07-05
+
+该版本重构了Persistent类，导致沙盒目录和内置目录的存储结构发生了变化。
+
+该版本支持按照Package自定义沙盒存储目录和内置存储目录。
+
+**注意：低版本升级用户，请使用Space Shooter目录下的StreamingAssetsHelper插件覆盖到本地工程！**
+
+### Changed
+
+- BuildParameters.OutputRoot重命名为BuildOutputRoot
+- 变更了IQueryServices.QueryStreamingAssets(string packageName, string fileName)方法
+
+### Added
+
+- 新增了YooAssets.SetCacheSystemDisableCacheOnWebGL()方法
+
+  ```c#
+  /// <summary>
+  /// 设置缓存系统参数，禁用缓存在WebGL平台
+  /// </summary>
+  public static void SetCacheSystemDisableCacheOnWebGL()
+  ```
+
+- 新增了YooAssets.SetDownloadSystemRedirectLimit()方法
+
+  ```c#
+  /// <summary>
+  /// 设置下载系统参数，网络重定向次数（Unity引擎默认值32）
+  /// 注意：不支持设置为负值
+  /// </summary>
+  public static void SetDownloadSystemRedirectLimit(int redirectLimit)
+  ```
+
+- 新增了构建流程可扩展的方法。
+
+  ```c#
+  public class AssetBundleBuilder
+  {
+      /// <summary>
+      /// 构建资源包
+      /// </summary>
+      public BuildResult Run(BuildParameters buildParameters, List<IBuildTask> buildPipeline)
+  }
+  ```
+
+- 新增了BuildParameters.StreamingAssetsRoot字段
+
+  ```c#
+  public class BuildParameters
+  {
+      /// <summary>
+      /// 内置资源的根目录
+      /// </summary>
+      public string StreamingAssetsRoot;
+  }
+  ```
+
+- 新增了InitializeParameters.BuildinRootDirectory字段
+
+  ```c#
+  /// <summary>
+  /// 内置文件的根路径
+  /// 注意：当参数为空的时候会使用默认的根目录。
+  /// </summary>
+  public string BuildinRootDirectory = string.Empty;
+  ```
+
+- 新增了InitializeParameters.SandboxRootDirectory字段
+
+  ```c#
+  /// <summary>
+  /// 沙盒文件的根路径
+  /// 注意：当参数为空的时候会使用默认的根目录。
+  /// </summary>
+  public string SandboxRootDirectory = string.Empty;
+  ```
+
+- 新增了ResourcePackage.GetPackageBuildinRootDirectory()方法
+
+  ```c#
+  /// <summary>
+  /// 获取包裹的内置文件根路径
+  /// </summary>
+  public string GetPackageBuildinRootDirectory()
+  ```
+
+- 新增了ResourcePackage.GetPackageSandboxRootDirectory()方法
+
+  ```c#
+  /// <summary>
+  /// 获取包裹的沙盒文件根路径
+  /// </summary>
+  public string GetPackageSandboxRootDirectory()
+  ```
+
+- 新增了ResourcePackage.ClearPackageSandbox()方法
+
+  ```c#
+  /// <summary>
+  /// 清空包裹的沙盒目录
+  /// </summary>
+  public void ClearPackageSandbox()
+  ```
+
+### Removed
+
+- 移除了资源包构建流程任务节点可扩展功能。
+- 移除了YooAssets.SetCacheSystemSandboxPath()方法
+- 移除了YooAssets.GetStreamingAssetBuildinFolderName()方法
+- 移除了YooAssets.GetSandboxRoot()方法
+- 移除了YooAssets.ClearSandbox()方法
+
 ## [1.4.17] - 2023-06-27
 
 ### Changed
@@ -24,8 +294,6 @@ All notable changes to this package will be documented in this file.
 - 资源收集界面增加了IncludeAssetGUID选项
 
 - IShareAssetPackRule 重命名为 ISharedPackRule
-
-- 
 
 ### Added
 

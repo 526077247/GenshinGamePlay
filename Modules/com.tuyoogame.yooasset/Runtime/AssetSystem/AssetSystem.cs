@@ -80,30 +80,6 @@ namespace YooAsset
 		}
 
 		/// <summary>
-		/// 销毁
-		/// </summary>
-		public void DestroyAll()
-		{
-			foreach (var provider in _providerList)
-			{
-				provider.Destroy();
-			}
-			_providerList.Clear();
-			_providerDic.Clear();
-
-			foreach (var loader in _loaderList)
-			{
-				loader.Destroy(true);
-			}
-			_loaderList.Clear();
-			_loaderDic.Clear();
-
-			ClearSceneHandle();
-			DecryptionServices = null;
-			BundleServices = null;
-		}
-
-		/// <summary>
 		/// 资源回收（卸载引用计数为零的资源）
 		/// </summary>
 		public void UnloadUnusedAssets()
@@ -135,7 +111,7 @@ namespace YooAsset
 				if (loader.CanDestroy())
 				{
 					string bundleName = loader.MainBundleInfo.Bundle.BundleName;
-					loader.Destroy(false);
+					loader.Destroy();
 					_loaderList.RemoveAt(i);
 					_loaderDic.Remove(bundleName);
 				}
@@ -147,13 +123,18 @@ namespace YooAsset
 		/// </summary>
 		public void ForceUnloadAllAssets()
 		{
+#if UNITY_WEBGL
+			throw new Exception($"WebGL not support invoke {nameof(ForceUnloadAllAssets)}");
+#else
 			foreach (var provider in _providerList)
 			{
+				provider.WaitForAsyncComplete();
 				provider.Destroy();
 			}
 			foreach (var loader in _loaderList)
 			{
-				loader.Destroy(true);
+				loader.WaitForAsyncComplete();
+				loader.Destroy();
 			}
 
 			_providerList.Clear();
@@ -164,6 +145,7 @@ namespace YooAsset
 
 			// 注意：调用底层接口释放所有资源
 			Resources.UnloadUnusedAssets();
+#endif
 		}
 
 		/// <summary>

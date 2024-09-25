@@ -42,7 +42,8 @@ namespace TaoTie
 	{
 		本机开发,
 		内网测试,
-		外网测试
+		外网测试,
+		自定义服务器
 	}
 
 	public class BuildEditor : EditorWindow
@@ -50,11 +51,13 @@ namespace TaoTie
 		private const string settingAsset = "Assets/Scripts/Editor/BuildEditor/BuildSettings.asset";
 
 		private string channel;
+		private string cdn;
 		private Mode buildMode;
 		private PlatformType activePlatform;
 		private PlatformType platformType;
 		private bool clearFolder;
 		private bool isBuildExe;
+		private bool buildHotfixAssembliesAOT;
 		private bool isContainsAb;
 		private bool isBuildAll;
 		private bool isPackAtlas;
@@ -91,15 +94,18 @@ namespace TaoTie
 
 			if (!File.Exists(settingAsset))
             {
-				buildSettings = new BuildSettings();
+				buildSettings = CreateInstance<BuildSettings>();
 				AssetDatabase.CreateAsset(buildSettings, settingAsset);
             }
 			else
 			{
 				buildSettings = AssetDatabase.LoadAssetAtPath<BuildSettings>(settingAsset);
 
+				if(buildSettings == null) return;
+				
 				clearFolder = buildSettings.clearFolder;
 				isBuildExe = buildSettings.isBuildExe;
+				buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
 				isContainsAb = buildSettings.isContainsAb;
 				isBuildAll = buildSettings.isBuildAll;
 				isPackAtlas = buildSettings.isPackAtlas;
@@ -107,6 +113,7 @@ namespace TaoTie
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
 				channel = buildSettings.channel;
 				buildMode = buildSettings.buildMode;
+				cdn = buildSettings.cdn;
 			}
         }
 
@@ -125,7 +132,6 @@ namespace TaoTie
 				config = JsonHelper.FromJson<BuildInConfig>(jstr);
 			}
 			EditorGUILayout.LabelField("资源版本：" + this.config.Resver);
-			EditorGUILayout.LabelField("代码版本：" + this.config.Dllver);
 			if (GUILayout.Button("修改配置"))
 			{
 				System.Diagnostics.Process.Start("notepad.exe", "Assets/AssetsPackage/config.bytes");
@@ -144,42 +150,6 @@ namespace TaoTie
 				packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
 			}
 
-			if (packageConfig.packageVer != null)
-			{
-				packageIndex = new int[packageConfig.packageVer.Count];
-				packageNames = new string[packageConfig.packageVer.Count];
-				int i = 0;
-				foreach (var item in packageConfig.packageVer)
-				{
-					EditorGUILayout.LabelField(item.Key + "：" + item.Value);
-					packageIndex[i] = i;
-					packageNames[i] = item.Key;
-					i++;
-				}
-			}
-			if (GUILayout.Button("修改分包版本"))
-			{
-				Process.Start("notepad.exe", "Assets/AssetsPackage/packageConfig.bytes");
-			}
-
-			if (GUILayout.Button("刷新分包版本"))
-			{
-				string jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
-				packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
-				if (packageConfig.packageVer != null)
-				{
-					packageIndex = new int[packageConfig.packageVer.Count];
-					packageNames = new string[packageConfig.packageVer.Count];
-					int i = 0;
-					foreach (var item in packageConfig.packageVer)
-					{
-						packageIndex[i] = i;
-						packageNames[i] = item.Key;
-						i++;
-					}
-				}
-			}
-			
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             
@@ -189,14 +159,21 @@ namespace TaoTie
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
-	            this.isBuildAll = EditorGUILayout.Toggle("是否打包全量资源", this.isBuildAll);
-	            if (!this.isBuildAll)
-	            {
-		            this.isContainsAb = EditorGUILayout.Toggle("    是否同时打分包资源: ", this.isContainsAb);
-	            }
+	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle("  打AOT?(代码混淆会失效): ", this.buildHotfixAssembliesAOT);
+	            this.isBuildAll = EditorGUILayout.Toggle("    全量资源是否打进包:", this.isBuildAll);
 	            EditorGUILayout.LabelField("服务器:");
 	            this.buildMode = (Mode)EditorGUILayout.EnumPopup(buildMode);
             }
+            if (!this.isBuildExe || !this.isBuildAll)
+            {
+	            this.isContainsAb = EditorGUILayout.Toggle("是否同时打分包资源: ", this.isContainsAb);
+            }
+            if (this.buildMode== Mode.自定义服务器)
+            {
+	            EditorGUILayout.LabelField("cdn地址:");
+	            cdn = EditorGUILayout.TextArea(cdn);
+            }
+            
             this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
 			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
 			//this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
@@ -204,7 +181,11 @@ namespace TaoTie
 			switch (buildType)
 			{
 				case BuildType.Development:
-					this.buildOptions = BuildOptions.Development | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging;
+					this.buildOptions = BuildOptions.Development | BuildOptions.AllowDebugging
+#if !UNITY_IOS
+					                                             | BuildOptions.ConnectWithProfiler
+#endif
+						;
 					break;
 				case BuildType.Release:
 					this.buildOptions = BuildOptions.None;
@@ -215,7 +196,7 @@ namespace TaoTie
 
 			if (GUILayout.Button("开始打包"))
 			{
-				BuildHelper.SetCdnConfig(channel,(int)buildMode);
+				BuildHelper.SetCdnConfig(channel, (int)buildMode, cdn);
 				if (this.platformType == PlatformType.None)
 				{
 					ShowNotification(new GUIContent("请选择打包平台!"));
@@ -236,54 +217,24 @@ namespace TaoTie
                     }
                 }
 				
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.isBuildAll,this.isPackAtlas,this.isBuildAll||isContainsAb);
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT,this.isBuildAll,this.isPackAtlas,this.isBuildAll || this.isContainsAb,this.channel);
 			}
-			if (packageNames != null)
-			{
-				EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-
-				package = EditorGUILayout.IntPopup("分包名： ", package, packageNames, packageIndex);
-				if (GUILayout.Button("开始打分包"))
-				{
-					if (this.platformType == PlatformType.None)
-					{
-						ShowNotification(new GUIContent("请选择打包平台!"));
-						return;
-					}
-
-					if (platformType != activePlatform)
-					{
-						switch (EditorUtility.DisplayDialogComplex("警告!",
-							        $"当前目标平台为{activePlatform}, 如果切换到{platformType}, 可能需要较长加载时间", "切换", "取消", "不切换"))
-						{
-							case 0:
-								activePlatform = platformType;
-								break;
-							case 1:
-								return;
-							case 2:
-								platformType = activePlatform;
-								break;
-						}
-					}
-
-					BuildHelper.BuildPackage(platformType, packageNames[package]);
-				}
-			}
-
-			GUILayout.Space(5);
 		}
 
 		private void SaveSettings()
 		{
+			if (buildSettings == null) return;
+			
 			buildSettings.clearFolder = clearFolder;
 			buildSettings.isBuildExe = isBuildExe;
+			buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
 			buildSettings.isContainsAb = isContainsAb;
 			buildSettings.buildType = buildType;
 			buildSettings.isBuildAll = isBuildAll;
 			buildSettings.isPackAtlas = isPackAtlas;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
 			buildSettings.channel = channel;
+			buildSettings.cdn = cdn;
 			buildSettings.buildMode = buildMode;
 			EditorUtility.SetDirty(buildSettings);
 			AssetDatabase.SaveAssets();

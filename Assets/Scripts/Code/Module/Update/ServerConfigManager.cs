@@ -185,11 +185,22 @@ namespace TaoTie
             return false;
         }
         //找到可以更新的最大资源版本号
-        public int FindMaxUpdateResVer(string appchannel, string channel,int appResVer, out Resver resver)
+        public int FindMaxUpdateResVer(string configChannel, string resverChannel,int appResVer, out Resver resver)
         {
+            var rename = "common";
+            for (int i = 0; i < Define.RenameList.Length; i++)
+            {
+                if (Define.RenameList[i] == configChannel)
+                {
+                    rename = configChannel;
+                    break;
+                }
+            }
+
+            configChannel = rename;
             resver = null;
-            if (string.IsNullOrEmpty(appchannel) || this.resUpdateList == null || 
-                !this.resUpdateList.TryGetValue(appchannel, out var resVerList)) return -1;
+            if (string.IsNullOrEmpty(configChannel) || this.resUpdateList == null || 
+                !this.resUpdateList.TryGetValue(configChannel, out var resVerList)) return -1;
             if (resVerList == null) return -1;
             var verList = new List<int>();
             foreach (var item in resVerList)
@@ -201,7 +212,7 @@ namespace TaoTie
             for (int i = 0; i < verList.Count; i++)
             {
                 var info = resVerList[verList[i]];
-                if(this.IsStrInList(channel,info.channel)&& this.IsInTailNumber(info.update_tailnumber))
+                if(this.IsStrInList(resverChannel,info.channel)&& this.IsInTailNumber(info.update_tailnumber))
                 {
                     lastVer = verList[i];
                     break;

@@ -4,14 +4,14 @@ using UnityEngine;
 using YooAsset;
 
 /// <summary>
-/// 内置文件查询服务类
+/// 资源文件查询服务类
 /// </summary>
-public class GameQueryServices : IQueryServices
+public class GameQueryServices : IBuildinQueryServices
 {
-	public bool QueryStreamingAssets(string fileName)
+	public bool QueryStreamingAssets(string packageName, string fileName)
 	{
 		// 注意：fileName包含文件格式
-		return StreamingAssetsHelper.FileExists(fileName);
+		return StreamingAssetsHelper.FileExists(packageName, fileName);
 	}
 }
 
@@ -22,9 +22,10 @@ public class GameQueryServices : IQueryServices
 public sealed class StreamingAssetsHelper
 {
 	public static void Init() { }
-	public static bool FileExists(string fileName)
+	public static bool FileExists(string packageName, string fileName)
 	{
-		return File.Exists(Path.Combine(Application.streamingAssetsPath, "BuildinFiles", fileName));
+		string filePath = Path.Combine(Application.streamingAssetsPath, StreamingAssetsDefine.RootFolderName, packageName, fileName);
+		return File.Exists(filePath);
 	}
 }
 #else
@@ -45,9 +46,12 @@ public sealed class StreamingAssetsHelper
 		{
 			_isInit = true;
 			var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
-			foreach (string fileName in manifest.BuildinFiles)
+			if (manifest != null)
 			{
-				_cacheData.Add(fileName);
+				foreach (string fileName in manifest.BuildinFiles)
+				{
+					_cacheData.Add(fileName);
+				}
 			}
 		}
 	}
@@ -55,7 +59,7 @@ public sealed class StreamingAssetsHelper
 	/// <summary>
 	/// 内置文件查询方法
 	/// </summary>
-	public static bool FileExists(string fileName)
+	public static bool FileExists(string packageName, string fileName)
 	{
 		if (_isInit == false)
 			Init();
@@ -75,11 +79,20 @@ internal class PreprocessBuild : UnityEditor.Build.IPreprocessBuildWithReport
 	/// </summary>
 	public void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report)
 	{
-		var manifest = ScriptableObject.CreateInstance<BuildinFileManifest>();
+		string saveFilePath = "Assets/Resources/BuildinFileManifest.asset";
+		if (File.Exists(saveFilePath))
+			File.Delete(saveFilePath);
 
-		string folderPath = $"{Application.dataPath}/StreamingAssets/BuildinFiles";
+		string folderPath = $"{Application.dataPath}/StreamingAssets/{StreamingAssetsDefine.RootFolderName}";
 		DirectoryInfo root = new DirectoryInfo(folderPath);
-		FileInfo[] files = root.GetFiles();
+		if (root.Exists == false)
+		{
+			Debug.Log($"没有发现YooAsset内置目录 : {folderPath}");
+			return;
+		}
+
+		var manifest = ScriptableObject.CreateInstance<BuildinFileManifest>();
+		FileInfo[] files = root.GetFiles("*", SearchOption.AllDirectories);
 		foreach (var fileInfo in files)
 		{
 			if (fileInfo.Extension == ".meta")
@@ -89,15 +102,12 @@ internal class PreprocessBuild : UnityEditor.Build.IPreprocessBuildWithReport
 			manifest.BuildinFiles.Add(fileInfo.Name);
 		}
 
-		string saveFilePath = "Assets/Resources/BuildinFileManifest.asset";
-		if (File.Exists(saveFilePath))
-			File.Delete(saveFilePath);
 		if (Directory.Exists("Assets/Resources") == false)
 			Directory.CreateDirectory("Assets/Resources");
 		UnityEditor.AssetDatabase.CreateAsset(manifest, saveFilePath);
 		UnityEditor.AssetDatabase.SaveAssets();
 		UnityEditor.AssetDatabase.Refresh();
-		Debug.Log($"内置资源清单保存成功 : {saveFilePath}");
+		Debug.Log($"一共{manifest.BuildinFiles.Count}个内置文件，内置资源清单保存成功 : {saveFilePath}");
 	}
 }
 #endif

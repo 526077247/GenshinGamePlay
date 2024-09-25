@@ -12,6 +12,8 @@ namespace TaoTie
 	{
 		LoadDll = 1,//加载dll
 		BuildIn = 2,//直接打进整包
+		// Wolong = 3,
+		LoadFromUrl = 4,
 	}
 	
 	public class Init: MonoBehaviour
@@ -27,7 +29,12 @@ namespace TaoTie
 		{
 			InitUnitySetting();
 			
-
+			//设置时区
+			TimeInfo.Instance.TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
+// #if ENABLE_IL2CPP
+// 			if(this.CodeMode== CodeMode.LoadDll)
+// 				this.CodeMode = CodeMode.Wolong;
+// #endif
 			System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 			{
 				Log.Error(e.ExceptionObject.ToString());
@@ -39,21 +46,23 @@ namespace TaoTie
 
 			Log.ILog = new UnityLogger();
 			
-#if !UNITY_EDITOR //编辑器模式下跳过更新
-			Define.Networked = Application.internetReachability != NetworkReachability.NotReachable;
-#endif
-
 			await YooAssetsMgr.Instance.Init(PlayMode);
 			
 			RegisterManager();
 			
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			IsInit = true;
-			CodeLoader.Instance.Start();
+			
+			// CodeLoader.Instance.LoadMetadataForAOTAssembly(PlayMode);
+			await CodeLoader.Instance.Start();
 		}
 
 		private void Start()
 		{
+#if UNITY_EDITOR
+			CodeMode = CodeMode.BuildIn;
+			PlayMode = EPlayMode.EditorSimulateMode;
+#endif
 			AwakeAsync().Coroutine();
 		}
 
@@ -72,15 +81,18 @@ namespace TaoTie
 		public async ETTask ReStart()
 		{
 			CodeLoader.Instance.isReStart = false;
-			YooAssetsMgr.Instance.ForceUnloadAllAssets();
+			YooAssetsMgr.Instance.ForceUnloadAllAssets(YooAssetsMgr.DefaultName);
 			ManagerProvider.Clear();
 			await YooAssetsMgr.Instance.UpdateConfig();
+			//清两次，清干净
+			GC.Collect();
+			GC.Collect();
 			Log.Debug("ReStart");
-			
+
 			RegisterManager();
 			
 			CodeLoader.Instance.OnApplicationQuit?.Invoke();
-			CodeLoader.Instance.Start();
+			await CodeLoader.Instance.Start();
 		}
 
 		private void RegisterManager()

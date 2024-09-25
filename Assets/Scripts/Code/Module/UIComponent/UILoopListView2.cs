@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace TaoTie
 {
@@ -83,19 +84,19 @@ namespace TaoTie
             this.loopListView.RefreshAllShownItem();
         }
 
-        public void SetOnBeginDragAction(Action callback)
+        public void SetOnBeginDragAction(Action<PointerEventData> callback)
         {
             this.ActivatingComponent();
             this.loopListView.mOnBeginDragAction = callback;
         }
 
-        public void SetOnDragingAction(Action callback)
+        public void SetOnDragingAction(Action<PointerEventData> callback)
         {
             this.ActivatingComponent();
             this.loopListView.mOnDragingAction = callback;
         }
 
-        public void SetOnEndDragAction(Action callback)
+        public void SetOnEndDragAction(Action<PointerEventData> callback)
         {
             this.ActivatingComponent();
             this.loopListView.mOnEndDragAction = callback;
@@ -106,11 +107,40 @@ namespace TaoTie
             this.ActivatingComponent();
             this.loopListView.MovePanelToItemIndex(index, offset);
         }
+        
+        public void SetSnapTargetItemIndex(int index, float moveMaxAbsVec = -1)
+        {
+            ActivatingComponent();
+            loopListView.SetSnapTargetItemIndex(index, moveMaxAbsVec);
+        }
+        public int GetSnapTargetItemIndex()
+        {
+            ActivatingComponent();
+            return loopListView.CurSnapNearestItemIndex;
+        }
+        public void SetSnapMaxAbsVec(float maxAbsVec)
+        {
+            ActivatingComponent();
+            loopListView.SnapMoveDefaultMaxAbsVec = maxAbsVec;
+        }
+
 
         public void SetOnSnapChange(Action<LoopListView2, LoopListViewItem2> callback)
         {
             this.ActivatingComponent();
             this.loopListView.mOnSnapNearestChanged = callback;
+        }
+        
+        public LoopListView2 GetLoopListView()
+        {
+            ActivatingComponent();
+            return this.loopListView;
+        }
+
+        public ScrollRect GetScrollRect()
+        {
+            ActivatingComponent();
+            return loopListView.ScrollRect;
         }
     }
 }

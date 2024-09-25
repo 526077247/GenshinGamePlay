@@ -20,6 +20,11 @@ namespace YooAsset
 		/// 联机运行模式
 		/// </summary>
 		HostPlayMode,
+
+		/// <summary>
+		/// WebGL运行模式
+		/// </summary>
+		WebPlayMode,
 	}
 
 	/// <summary>
@@ -32,6 +37,18 @@ namespace YooAsset
 		/// </summary>
 		public IDecryptionServices DecryptionServices = null;
 
+		/// <summary>
+		/// 内置文件的根路径
+		/// 注意：当参数为空的时候会使用默认的根目录。
+		/// </summary>
+		public string BuildinRootDirectory = string.Empty;
+
+		/// <summary>
+		/// 沙盒文件的根路径
+		/// 注意：当参数为空的时候会使用默认的根目录。
+		/// </summary>
+		public string SandboxRootDirectory = string.Empty;
+		
 		/// <summary>
 		/// 资源加载每帧处理的最大时间片段
 		/// 注意：默认值为MaxValue
@@ -69,18 +86,34 @@ namespace YooAsset
 	public class HostPlayModeParameters : InitializeParameters
 	{
 		/// <summary>
-		/// 默认的资源服务器下载地址
+		/// 内置资源查询服务接口
 		/// </summary>
-		public string DefaultHostServer = string.Empty;
+		public IBuildinQueryServices BuildinQueryServices = null;
 
 		/// <summary>
-		/// 备用的资源服务器下载地址
+		/// 分发资源查询服务接口
 		/// </summary>
-		public string FallbackHostServer = string.Empty;
+		public IDeliveryQueryServices DeliveryQueryServices = null;
 
+		/// <summary>
+		/// 远端资源地址查询服务类
+		/// </summary>
+		public IRemoteServices RemoteServices = null;
+	}
+
+	/// <summary>
+	/// WebGL运行模式的初始化参数
+	/// </summary>
+	public class WebPlayModeParameters : InitializeParameters
+	{
 		/// <summary>
 		/// 内置资源查询服务接口
 		/// </summary>
-		public IQueryServices QueryServices = null;
+		public IBuildinQueryServices BuildinQueryServices = null;
+
+		/// <summary>
+		/// 远端资源地址查询服务类
+		/// </summary>
+		public IRemoteServices RemoteServices = null;
 	}
 }

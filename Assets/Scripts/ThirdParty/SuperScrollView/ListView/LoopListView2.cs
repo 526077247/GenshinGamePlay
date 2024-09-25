@@ -91,9 +91,9 @@ namespace SuperScrollView
         bool mSupportScrollBar = true;
         bool mIsDraging = false;
         PointerEventData mPointerEventData = null;
-        public System.Action mOnBeginDragAction = null;
-        public System.Action mOnDragingAction = null;
-        public System.Action mOnEndDragAction = null;
+        public System.Action<PointerEventData> mOnBeginDragAction = null;
+        public System.Action<PointerEventData> mOnDragingAction = null;
+        public System.Action<PointerEventData> mOnEndDragAction = null;
         int mLastItemIndex = 0;
         float mLastItemPadding = 0;
         float mSmoothDumpVel = 0;
@@ -1083,7 +1083,7 @@ namespace SuperScrollView
             mCurSnapData.Clear();
             if(mOnBeginDragAction != null)
             {
-                mOnBeginDragAction();
+                mOnBeginDragAction(eventData);
             }
         }
 
@@ -1097,7 +1097,7 @@ namespace SuperScrollView
             mPointerEventData = null;
             if (mOnEndDragAction != null)
             {
-                mOnEndDragAction();
+                mOnEndDragAction(eventData);
             }
             ForceSnapUpdateCheck();
         }
@@ -1111,7 +1111,7 @@ namespace SuperScrollView
             CacheDragPointerEventData(eventData);
             if (mOnDragingAction != null)
             {
-                mOnDragingAction();
+                mOnDragingAction(eventData);
             }
         }
 
@@ -1931,11 +1931,18 @@ namespace SuperScrollView
             float old = mCurSnapData.mCurSnapVal;
             if (mCurSnapData.mIsTempTarget == false)
             {
-                if (mSmoothDumpVel * mCurSnapData.mTargetSnapVal < 0)
+                // if (mSmoothDumpVel * mCurSnapData.mTargetSnapVal < 0)
+                // {
+                //     mSmoothDumpVel = 0;
+                // }
+                // mCurSnapData.mCurSnapVal = Mathf.SmoothDamp(mCurSnapData.mCurSnapVal, mCurSnapData.mTargetSnapVal, ref mSmoothDumpVel, mSmoothDumpRate);
+                float maxAbsVec = mCurSnapData.mMoveMaxAbsVec;
+                if (maxAbsVec <= 0)
                 {
-                    mSmoothDumpVel = 0;
+                    maxAbsVec = mSnapMoveDefaultMaxAbsVec;
                 }
-                mCurSnapData.mCurSnapVal = Mathf.SmoothDamp(mCurSnapData.mCurSnapVal, mCurSnapData.mTargetSnapVal, ref mSmoothDumpVel, mSmoothDumpRate);
+                mSmoothDumpVel = maxAbsVec * Mathf.Sign(mCurSnapData.mTargetSnapVal);
+                mCurSnapData.mCurSnapVal = Mathf.MoveTowards(mCurSnapData.mCurSnapVal, mCurSnapData.mTargetSnapVal, maxAbsVec * Time.deltaTime);
             }
             else
             {
