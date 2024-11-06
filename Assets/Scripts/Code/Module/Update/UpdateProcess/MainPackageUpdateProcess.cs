@@ -47,11 +47,8 @@ namespace TaoTie
             }
 
             forceUpdate = Define.ForceUpdate; 
-            if (!Define.ForceUpdate)//默认强更
-            {
-                if (verInfo != null && verInfo.force_update != 0)
-                    forceUpdate = true;
-            }
+            if (verInfo != null && verInfo.force_update != 0)
+                forceUpdate = true;
 
             // 编辑器下跳过。
             // if (Define.IsEditor) return false;
@@ -154,11 +151,8 @@ namespace TaoTie
             }
 
             forceUpdate = Define.ForceUpdate;
-            if (!Define.ForceUpdate) //默认强更
-            {
-                if (verInfo != null && verInfo.force_update != 0)
-                    forceUpdate = true;
-            }
+            if (verInfo != null && verInfo.force_update != 0)
+                forceUpdate = true;
 
             // 编辑器下跳过。
             // if (Define.IsEditor) return false;

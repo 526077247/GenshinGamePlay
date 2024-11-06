@@ -393,6 +393,8 @@ namespace TaoTie
             var component = this.GetComponent<T>(path);
             if (component != null)
             {
+                component.BeforeOnDisable();
+                (component as IOnDisable)?.OnDisable();
                 component.BeforeOnDestroy();
                 if (component is II18N i18n)
                     I18NManager.Instance.RemoveI18NEntity(i18n);

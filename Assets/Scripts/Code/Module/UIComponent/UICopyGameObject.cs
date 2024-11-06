@@ -46,6 +46,8 @@ namespace TaoTie
                 a.OnCreate();
             if (activeSelf && t is IOnEnable b)
                 b.OnEnable();
+            if (t is II18N i18n)
+                I18NManager.Instance.RegisterI18NEntity(i18n);
             return t;
         }
 

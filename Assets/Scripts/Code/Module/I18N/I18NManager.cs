@@ -112,7 +112,6 @@ namespace TaoTie
         /// <param name="langType"></param>
         public void SwitchLanguage(int langType)
         {
-            ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>();
             //修改当前语言
             PlayerPrefs.SetInt(CacheKeys.CurLangType, langType);
             this.CurLangType = (LangType)langType;

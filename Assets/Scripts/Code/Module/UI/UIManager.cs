@@ -64,6 +64,10 @@ namespace TaoTie
             {
                 if (active == 0 || active == (target.Active ? 1 : -1))
                 {
+                    if (active == 1)
+                    {
+                        return target.LoadingState == UIWindowLoadingState.LoadOver ? target : null;
+                    }
                     return target;
                 }
 
@@ -134,6 +138,10 @@ namespace TaoTie
             {
                 if (active == 0 || active == (target.Active ? 1 : -1))
                 {
+                    if (active == 1)
+                    {
+                        return target.LoadingState == UIWindowLoadingState.LoadOver ? target as T : null;
+                    }
                     return target.View as T;
                 }
 

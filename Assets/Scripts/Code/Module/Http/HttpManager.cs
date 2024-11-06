@@ -153,9 +153,9 @@ namespace TaoTie
             }
             else
             {
-                op.Dispose();
                 if(!local)
                     Log.Error(string.Format("url {0} get fail. msg : {1}",url, op.error));
+                op.Dispose();
                 return null;
             }
         }

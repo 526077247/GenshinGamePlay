@@ -36,16 +36,8 @@ namespace TaoTie
             Log.Info("CheckAppUpdate app_url = " + appURL);
 
             var forceUpdate = Define.ForceUpdate; 
-            if (Define.ForceUpdate)//默认强更
-            {
-                if (verInfo != null && verInfo.force_update == 0)
-                    forceUpdate = false;
-            }
-            else
-            {
-                if (verInfo != null && verInfo.force_update != 0)
-                    forceUpdate = true;
-            }
+            if (verInfo != null && verInfo.force_update != 0)
+                forceUpdate = true;
 
 
             var cancelBtnText = forceUpdate ? "Btn_Exit" : "Btn_Enter_Game";
