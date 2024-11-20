@@ -56,15 +56,15 @@ namespace TaoTie
         /// 获取UI窗口
         /// </summary>
         /// <param name="uiName"></param>
-        /// <param name="active">1打开，-1关闭,0不做限制</param>
+        /// <param name="active">2打开且loading,1打开，-1关闭,0不做限制</param>
         /// <returns></returns>
         public UIWindow GetWindow(string uiName, int active = 0)
         {
             if (this.windows.TryGetValue(uiName, out var target))
             {
-                if (active == 0 || active == (target.Active ? 1 : -1))
+                if (active == 0 || active * (target.Active ? 1 : -1) > 0)
                 {
-                    if (active == 1)
+                    if (active == 2)
                     {
                         return target.LoadingState == UIWindowLoadingState.LoadOver ? target : null;
                     }
@@ -129,16 +129,16 @@ namespace TaoTie
         /// <summary>
         /// 获取UI窗口
         /// </summary>
-        /// <param name="active">1打开，-1关闭,0不做限制</param>
+        /// <param name="active">2打开且loading，1打开，-1关闭,0不做限制</param>
         /// <returns></returns>
         public T GetWindow<T>(int active = 0) where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
             if (this != null && this.windows != null && this.windows.TryGetValue(uiName, out var target))
             {
-                if (active == 0 || active == (target.Active ? 1 : -1))
+                if (active == 0 || active * (target.Active ? 1 : -1)>0)
                 {
-                    if (active == 1)
+                    if (active == 2)
                     {
                         return target.LoadingState == UIWindowLoadingState.LoadOver ? target as T : null;
                     }
