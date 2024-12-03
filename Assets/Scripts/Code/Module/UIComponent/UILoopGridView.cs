@@ -52,8 +52,8 @@ namespace TaoTie
             t.SetTransform(item.transform);
             if (t is IOnCreate a)
                 a.OnCreate();
-            if (activeSelf && t is IOnEnable b)
-                b.OnEnable();
+            if (activeSelf)
+                t.SetActive(true);
             if (t is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
             return t;
