@@ -31,27 +31,27 @@ namespace TaoTie
         private async ETTask<UpdateRes> ProcessOnlyMain(UpdateTask task)
         {
             var channel = YooAssetsMgr.Instance.CdnConfig.Channel;
-            Define.IsSH = !ServerConfigManager.Instance.FindMaxUpdateResVerThisAppVer(channel, task.AppVer,out var maxAppResVer);
-            Log.Info("提审模式："+ Define.IsSH);
+            
+            bool isAppMaxVer = !ServerConfigManager.Instance.FindMaxUpdateResVerThisAppVer(channel, task.AppVer, out var maxAppResVer);
 
-            var maxVer = ServerConfigManager.Instance.FindMaxUpdateResVer(channel, "", maxAppResVer, out var verInfo);
+            forceUpdate = Define.ForceUpdate;
+            var verInfo = ServerConfigManager.Instance.GetResVerInfo(channel, YooAssetsMgr.Instance.Config.Resver);
+            if (verInfo != null && verInfo.force_update == 1)
+                forceUpdate = true;
+            
+            var maxVer = ServerConfigManager.Instance.FindMaxUpdateResVer(channel, "", maxAppResVer);
             if (maxVer < 0)
             {
                 Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " ");
                 return UpdateRes.Over;
             }
 
-            if (Define.IsSH)
+            if (isAppMaxVer)
             {
                 maxVer = YooAssetsMgr.Instance.Config.Resver;
             }
 
-            forceUpdate = Define.ForceUpdate; 
-            if (verInfo != null && verInfo.force_update != 0)
-                forceUpdate = true;
-
             // 编辑器下跳过。
-            // if (Define.IsEditor) return false;
             if (YooAssetsMgr.Instance.PlayMode != EPlayMode.HostPlayMode)
             {
                 Log.Info("非网络运行模式");
@@ -65,7 +65,7 @@ namespace TaoTie
             if(op.Status!= EOperationStatus.Succeed)
             {
                 Log.Error(op.Error);
-                return await UpdateFail(task);
+                return await UpdateFail(task, maxVer != YooAssetsMgr.Instance.Config.Resver);
             }
 
             Log.Info("创建补丁下载器.");
@@ -86,73 +86,71 @@ namespace TaoTie
             if (sizeMb > 0 && sizeMb < 0.01) sizeMb = 0.01;
            
 
-                var ct = I18NManager.Instance.I18NGetParamText("Update_Info", sizeMb.ToString("0.00"));
-                var btnState = await task.ShowMsgBoxView(ct, "Global_Btn_Confirm",
-                    forceUpdate ? "Btn_Exit" : "Update_Skip");
-                if (!btnState)
+            var ct = I18NManager.Instance.I18NGetParamText("Update_Info", sizeMb.ToString("0.00"));
+            var btnState = await task.ShowMsgBoxView(ct, "Global_Btn_Confirm",
+                forceUpdate ? "Btn_Exit" : "Update_Skip");
+            if (!btnState)
+            {
+                if (forceUpdate)
                 {
-                    if (forceUpdate)
-                    {
-                        Application.Quit();
-                        return UpdateRes.Quit;
-                    }
-
-                    //版本号设回去
-                    await YooAssetsMgr.Instance
-                        .UpdatePackageManifestAsync(YooAssetsMgr.Instance.Config.Resver.ToString(), true, 10, null)
-                        .Task;
-                    return UpdateRes.Over;
+                    Application.Quit();
+                    return UpdateRes.Quit;
                 }
 
-                
-              
-                
-                //开始进行更新
-                task.SetDownloadSize(size,0);
-
-                //2、更新资源
-                downloader.OnDownloadProgressCallback = (a, b, c, d) =>
+                //版本号设回去
+                if (YooAssetsMgr.Instance.Config.Resver != maxVer)
                 {
-                    task.SetDownloadSize(c,d);
-                };
-                downloader.BeginDownload();
-                Log.Info("CheckResUpdate DownloadContent begin");
-                await downloader.Task;
-
-                if (downloader.Status != EOperationStatus.Succeed)
-                {
-                    Log.Error(downloader.Error);
-                    return await UpdateFail(task);
+                    return await ResetVersion(task);
                 }
-               
-                op.SavePackageVersion();
-                Log.Info("CheckResUpdate DownloadContent Success");
-                return UpdateRes.Restart;
+                return UpdateRes.Over;
+            }
+
             
+            //开始进行更新
+            task.SetDownloadSize(size,0);
+
+            //2、更新资源
+            downloader.OnDownloadProgressCallback = (a, b, c, d) =>
+            {
+                task.SetDownloadSize(c,d);
+            };
+            downloader.BeginDownload();
+            Log.Info("CheckResUpdate DownloadContent begin");
+            await downloader.Task;
+
+            if (downloader.Status != EOperationStatus.Succeed)
+            {
+                Log.Error(downloader.Error);
+                return await UpdateFail(task, maxVer != YooAssetsMgr.Instance.Config.Resver);
+            }
+           
+            op.SavePackageVersion();
+            Log.Info("CheckResUpdate DownloadContent Success");
+            return UpdateRes.Restart;
         }
 
         private async ETTask<UpdateRes> ProcessWithPackage(UpdateTask task)
         {
             var channel = YooAssetsMgr.Instance.CdnConfig.Channel;
-            Define.IsSH =
-                !ServerConfigManager.Instance.FindMaxUpdateResVerThisAppVer(channel, task.AppVer, out var maxAppResVer);
-            Log.Info("提审模式：" + Define.IsSH);
+            bool isAppMaxVer = !ServerConfigManager.Instance.FindMaxUpdateResVerThisAppVer(channel, task.AppVer, out var maxAppResVer);
 
-            var maxVer = ServerConfigManager.Instance.FindMaxUpdateResVer(channel, "", maxAppResVer, out var verInfo);
+            forceUpdate = Define.ForceUpdate;
+            var verInfo = ServerConfigManager.Instance.GetResVerInfo(channel, YooAssetsMgr.Instance.Config.Resver);
+            if (verInfo != null && verInfo.force_update == 1)
+                forceUpdate = true;
+
+            var maxVer = ServerConfigManager.Instance.FindMaxUpdateResVer(channel, "", maxAppResVer);
             if (maxVer < 0)
             {
                 Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " ");
                 maxVer = YooAssetsMgr.Instance.Config.Resver;
             }
 
-            if (Define.IsSH)
+            if (isAppMaxVer)
             {
                 maxVer = YooAssetsMgr.Instance.Config.Resver;
             }
 
-            forceUpdate = Define.ForceUpdate;
-            if (verInfo != null && verInfo.force_update != 0)
-                forceUpdate = true;
 
             // 编辑器下跳过。
             // if (Define.IsEditor) return false;
@@ -170,7 +168,7 @@ namespace TaoTie
             if (op.Status != EOperationStatus.Succeed)
             {
                 Log.Error(op.Error);
-                return await UpdateFail(task);
+                return await UpdateFail(task, maxVer != YooAssetsMgr.Instance.Config.Resver);
             }
 
             var opList = new UpdatePackageManifestOperation[packageName.Length];
@@ -183,7 +181,7 @@ namespace TaoTie
                 if (opList[i].Status != EOperationStatus.Succeed)
                 {
                     Log.Error(opList[i].Error);
-                    return await UpdateFail(task);
+                    return await UpdateFail(task, maxVer != YooAssetsMgr.Instance.Config.Resver);
                 }
             }
 
@@ -227,59 +225,61 @@ namespace TaoTie
                 double sizeMb = size / (1024f * 1024f);
                 Log.Info("CheckResUpdate res size_mb is " + sizeMb); //不屏蔽
                 if (sizeMb > 0 && sizeMb < 0.01) sizeMb = 0.01;
-                
-                   
 
-                    var ct = I18NManager.Instance.I18NGetParamText("Update_Info", sizeMb.ToString("0.00"));
-                    var btnState = await task.ShowMsgBoxView(ct, "Global_Btn_Confirm",
-                        forceUpdate ? "Btn_Exit" : "Update_Skip");
-                    if (!btnState)
+                var ct = I18NManager.Instance.I18NGetParamText("Update_Info", sizeMb.ToString("0.00"));
+                var btnState = await task.ShowMsgBoxView(ct, "Global_Btn_Confirm",
+                    forceUpdate ? "Btn_Exit" : "Update_Skip");
+                if (!btnState)
+                {
+                    if (forceUpdate)
                     {
-                        if (forceUpdate)
-                        {
-                            Application.Quit();
-                            return UpdateRes.Quit;
-                        }
+                        Application.Quit();
+                        return UpdateRes.Quit;
+                    }
 
+                    if (YooAssetsMgr.Instance.Config.Resver != maxVer)
+                    {
                         return await ResetVersion(task);
                     }
-                    
-                   
 
-                    //开始进行更新
-                    task.SetDownloadSize(size, 0);
+                    return UpdateRes.Over;
+                }
 
-                    //2、更新资源
-                    long downloadSize = 0;
-                    Log.Info("CheckResUpdate DownloadContent begin");
-                    for (int i = 0; i < downloaderOperations.Count; i++)
+                //开始进行更新
+                task.SetDownloadSize(size, 0);
+
+                //2、更新资源
+                long downloadSize = 0;
+                Log.Info("CheckResUpdate DownloadContent begin");
+                for (int i = 0; i < downloaderOperations.Count; i++)
+                {
+                    downloaderOperations[i].OnDownloadProgressCallback = (a, b, c, d) =>
                     {
-                        downloaderOperations[i].OnDownloadProgressCallback = (a, b, c, d) =>
-                        {
-                            task.SetDownloadSize(size, downloadSize + d);
-                        };
-                        downloaderOperations[i].BeginDownload();
+                        task.SetDownloadSize(size, downloadSize + d);
+                    };
+                    downloaderOperations[i].BeginDownload();
 
-                        await downloaderOperations[i].Task;
+                    await downloaderOperations[i].Task;
 
-                        if (downloaderOperations[i].Status != EOperationStatus.Succeed)
-                        {
-                            Log.Error(downloaderOperations[i].Error);
-                            return await UpdateFail(task);
-                        }
-
-                        downloadSize += downloaderOperations[i].TotalDownloadBytes;
+                    if (downloaderOperations[i].Status != EOperationStatus.Succeed)
+                    {
+                        Log.Error(downloaderOperations[i].Error);
+                        return await UpdateFail(task, maxVer != YooAssetsMgr.Instance.Config.Resver);
                     }
 
-                   
-                    op.SavePackageVersion();
-                    for (int i = 0; i < opList.Length; i++)
-                    {
-                        opList[i].SavePackageVersion();
-                    }
-                    Log.Info("CheckResUpdate DownloadContent Success");
-                    return UpdateRes.Restart;
-                
+                    downloadSize += downloaderOperations[i].TotalDownloadBytes;
+                }
+
+
+                op.SavePackageVersion();
+                for (int i = 0; i < opList.Length; i++)
+                {
+                    opList[i].SavePackageVersion();
+                }
+
+                Log.Info("CheckResUpdate DownloadContent Success");
+                return UpdateRes.Restart;
+
             }
 
         }
@@ -332,7 +332,7 @@ namespace TaoTie
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        private async ETTask<UpdateRes> UpdateFail(UpdateTask task)
+        private async ETTask<UpdateRes> UpdateFail(UpdateTask task, bool reset)
         {
             var btnState = await task.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.forceUpdate?"Btn_Exit":"Update_Skip");
             if (btnState)
@@ -345,7 +345,8 @@ namespace TaoTie
                 return UpdateRes.Quit;
             }
 
-            return await ResetVersion(task);
+            if(reset) return await ResetVersion(task);
+            return UpdateRes.Over;
         }
     }
 }

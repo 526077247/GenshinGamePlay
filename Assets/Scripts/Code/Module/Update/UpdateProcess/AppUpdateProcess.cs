@@ -21,7 +21,7 @@ namespace TaoTie
                 Log.Info("CheckAppUpdate maxVer is nil");
                 return UpdateRes.Over;
             }
-            //x.x.xxx这种的话，这里就自己改一下
+    
             var appVer = task.AppVer;
             var flag = appVer - version;
             Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", appVer, version));
@@ -34,11 +34,20 @@ namespace TaoTie
             var appURL = channelAppUpdateList.app_url;
             channelAppUpdateList.app_ver.TryGetValue(appVer, out var verInfo);//按当前版本来
             Log.Info("CheckAppUpdate app_url = " + appURL);
-
+            if (!Define.ForceUpdate)
+            {
+                if (verInfo != null && verInfo.force_update == -1)//直接不提示
+                    return UpdateRes.Over;
+            }
             var forceUpdate = Define.ForceUpdate; 
             if (verInfo != null && verInfo.force_update != 0)
                 forceUpdate = true;
 
+            var check = CacheManager.Instance.GetInt(CacheKeys.CheckAppUpdate + version, 0);
+            if (check != 0 && !forceUpdate)
+            {
+                return UpdateRes.Over;
+            }
 
             var cancelBtnText = forceUpdate ? "Btn_Exit" : "Btn_Enter_Game";
             var contentUpdate = forceUpdate ? "Update_ReDownload" : "Update_SuDownload";
@@ -56,6 +65,12 @@ namespace TaoTie
                 Application.Quit();
                 return UpdateRes.Quit;
             }
+            else
+            {
+                CacheManager.Instance.SetInt(CacheKeys.CheckAppUpdate + version, 1);
+                CacheManager.Instance.Save();
+            }
+            // OfflineModeManager.Instance.SetOfflineMode(true);
             return UpdateRes.Over;
         }
     }

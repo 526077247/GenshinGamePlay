@@ -720,7 +720,7 @@ namespace TaoTie
                         var bytes = texture.EncodeToPNG();
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
-                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                            File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
                         this.cacheOnlineImage.Add(url, new OnlineImage(texture, sprite, 1));
                         return sprite;
@@ -771,7 +771,7 @@ namespace TaoTie
                         var bytes = texture.EncodeToPNG();
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
-                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                            File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
                         // GameObject.Destroy(texture);
                         this.cacheOnlineImage.Add(url, new OnlineImage(texture, null, 1));

@@ -19,7 +19,7 @@ namespace TaoTie
 #endif
         public static readonly int DesignScreen_Width = 1920;
         public static readonly int DesignScreen_Height = 1080;
-        public const int LogLevel = 1;
+        public static int LogLevel = 1;
 
         
 #if FORCE_UPDATE // 是否默认强更 该配置项会影响到有无网络对游戏更新流程的改变

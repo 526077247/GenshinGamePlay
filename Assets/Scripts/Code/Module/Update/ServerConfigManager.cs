@@ -12,7 +12,6 @@ namespace TaoTie
         public static ServerConfigManager Instance;
         
         private bool inWhiteList;
-        private bool whiteMode = false;
         private Dictionary<string, Dictionary<int, Resver>> resUpdateList;
         private Dictionary<string, AppConfig> appUpdateList;
         #region override
@@ -21,7 +20,7 @@ namespace TaoTie
         {
             Instance = this;
             if(Define.Debug)
-                this.curConfig = ServerConfigCategory.Instance.Get(PlayerPrefs.GetInt(this.serverKey, this.defaultServer));
+                this.curConfig = ServerConfigCategory.Instance.Get(CacheManager.Instance.GetInt(this.serverKey, this.defaultServer));
             if (this.curConfig == null)
             {
                 foreach (var item in ServerConfigCategory.Instance.GetAll())
@@ -54,7 +53,7 @@ namespace TaoTie
             {
                 this.curConfig = conf;
                 if (Define.Debug)
-                    PlayerPrefs.SetInt(this.serverKey, id);
+                    CacheManager.Instance.SetInt(this.serverKey, id);
             }
             return this.curConfig;
 
@@ -63,7 +62,7 @@ namespace TaoTie
         //获取环境更新列表cdn地址
         public string GetUpdateListUrl()
         {
-            return this.whiteMode? YooAssetsMgr.Instance.CdnConfig.TestUpdateListUrl:YooAssetsMgr.Instance.CdnConfig.UpdateListUrl;
+            return RemoteServices.Instance.whiteMode? YooAssetsMgr.Instance.CdnConfig.TestUpdateListUrl:YooAssetsMgr.Instance.CdnConfig.UpdateListUrl;
         }
 
         public int GetEnvId()
@@ -77,13 +76,13 @@ namespace TaoTie
         {
             var url = GetUpdateListUrl();
             if (string.IsNullOrEmpty(url)) return url;
-            return string.Format("{0}/white.list", url);
+            return string.Format("{0}/white.list?timestamp={1}", url, TimerManager.Instance.GetTimeNow());
         }
 
         //设置白名单模式
         public void SetWhiteMode(bool whiteMode)
         {
-            this.whiteMode = whiteMode;
+            RemoteServices.Instance.whiteMode = whiteMode;
         }
 
         //设置白名单列表
@@ -96,11 +95,11 @@ namespace TaoTie
         public void SetWhiteList(List<WhiteConfig> info)
         {
             this.inWhiteList = false;
-            var env_id = this.GetEnvId();
-            var account = PlayerPrefs.GetString(CacheKeys.Account);
+            var envID = this.GetEnvId();
+            var account = CacheManager.Instance.GetString(CacheKeys.Account);
             foreach (var item in info)
             {
-                if (item.env_id == env_id && item.account == account)
+                if (item.env_id == envID && item.account == account)
                 {
                     this.inWhiteList = true;
                     Log.Info(" user is in white list "+account);
@@ -132,40 +131,62 @@ namespace TaoTie
         }
 
         //根据渠道获取app更新列表
-        public  AppConfig GetAppUpdateListByChannel(string channel)
+        public AppConfig GetAppUpdateListByChannel(string channel)
         {
             if (this.appUpdateList == null) return null;
-            if(this.appUpdateList.TryGetValue(channel,out var data))
+            if (this.appUpdateList.TryGetValue(channel, out var data))
             {
-                if (!string.IsNullOrEmpty(data.jump_channel))
-                    data = this.appUpdateList[data.jump_channel];
+                if (GetJumpChannel(data.jump_channel,out var jumpData))
+                {
+                    var newData = new AppConfig();
+                    newData.app_ver = jumpData.app_ver;
+                    newData.app_url = data.app_url;
+                    return newData;
+                }
+
                 return data;
             }
+
             return null;
         }
+
+        private bool GetJumpChannel(string jumpChannel,out AppConfig jumpData)
+        {
+            if (!string.IsNullOrEmpty(jumpChannel) && this.appUpdateList.TryGetValue(jumpChannel, out jumpData))
+            {
+                if(GetJumpChannel(jumpData.jump_channel,out var newdata))
+                {
+                    jumpData = newdata;
+                }
+                return true;
+            }
+            jumpData = null;
+            return false;
+        }
+
         //找到可以更新的最大app版本号
         public int FindMaxUpdateAppVer(string channel)
         {
             if (this.appUpdateList == null) return -1;
-            int last_ver = -1;
+            int lastVer = -1;
             if (this.appUpdateList.TryGetValue(channel, out var data))
             {
                 if (!string.IsNullOrEmpty(data.jump_channel))
                     data = appUpdateList[data.jump_channel];
                 foreach (var item in data.app_ver)
                 {
-                    if (last_ver == -1) last_ver = item.Key;
+                    if (lastVer == -1) lastVer = item.Key;
                     else
                     {
-                        if(item.Key > last_ver
+                        if(item.Key > lastVer
                            && IsStrInList(channel,item.Value.channel) && IsInTailNumber(item.Value.update_tailnumber))
                         {
-                            last_ver = item.Key;
+                            lastVer = item.Key;
                         }
                     }
                 }
             }
-            return last_ver;
+            return lastVer;
         }
         //找到可以更新的最大app版本号
         public bool FindMaxUpdateResVerThisAppVer(string channel,int appVer,out int version)
@@ -185,7 +206,7 @@ namespace TaoTie
             return false;
         }
         //找到可以更新的最大资源版本号
-        public int FindMaxUpdateResVer(string configChannel, string resverChannel,int appResVer, out Resver resver)
+        public int FindMaxUpdateResVer(string configChannel, string resverChannel,int appResVer)
         {
             var rename = "common";
             for (int i = 0; i < Define.RenameList.Length; i++)
@@ -198,7 +219,7 @@ namespace TaoTie
             }
 
             configChannel = rename;
-            resver = null;
+            
             if (string.IsNullOrEmpty(configChannel) || this.resUpdateList == null || 
                 !this.resUpdateList.TryGetValue(configChannel, out var resVerList)) return -1;
             if (resVerList == null) return -1;
@@ -219,23 +240,34 @@ namespace TaoTie
                 }
             }
 
-            if (appResVer>0 && lastVer > appResVer&&resVerList.TryGetValue(appResVer,out resver))
+            if (appResVer>0 && lastVer > appResVer&&resVerList.ContainsKey(appResVer))
             {
                 return appResVer;
             }
-            resver = resVerList[lastVer];
             return lastVer;
+        }
+
+        public Resver GetResVerInfo(string configChannel, int version)
+        {
+            if (string.IsNullOrEmpty(configChannel) || this.resUpdateList == null || 
+                !this.resUpdateList.TryGetValue(configChannel, out var resVerList)) return null;
+            if (resVerList.TryGetValue(version, out var res))
+            {
+                return res;
+            }
+
+            return null;
         }
         //检测灰度更新，检测是否在更新尾号列表
         public bool IsInTailNumber(List<string> list)
         {
             if (list == null) return false;
-            var account = PlayerPrefs.GetString(CacheKeys.Account, "");
-            var tail_number = "";
+            var account = CacheManager.Instance.GetString(CacheKeys.Account, "");
+            var tailNumber = "";
             if (!string.IsNullOrEmpty(account))
-                tail_number = account[account.Length - 1].ToString();
+                tailNumber = account[account.Length - 1].ToString();
             for (int i = 0; i < list.Count; i++)
-                if (list[i] == "all" || tail_number == list[i])
+                if (list[i] == "all" || tailNumber == list[i])
                     return true;
             return false;
         }

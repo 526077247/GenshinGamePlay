@@ -48,6 +48,7 @@ namespace TaoTie
             await task.Init(OnDownloadCallBack, 
                 new SetWhiteListProcess(), 
                 new SetUpdateListProcess(), 
+                new UpdateIsSHProcess(),
                 new AppUpdateProcess(),
                 new MainPackageUpdateProcess());
            

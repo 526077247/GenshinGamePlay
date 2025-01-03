@@ -11,10 +11,14 @@ namespace TaoTie
             try
             {
                 ManagerProvider.RegisterManager<Messager>();
+                ManagerProvider.RegisterManager<LogManager>();
+                
                 ManagerProvider.RegisterManager<AttributeManager>();
                 
                 ManagerProvider.RegisterManager<CoroutineLockManager>();
                 ManagerProvider.RegisterManager<TimerManager>();
+                
+                ManagerProvider.RegisterManager<CacheManager>();
                 
                 ManagerProvider.RegisterManager<ConfigManager>();
                 ManagerProvider.RegisterManager<ResourcesManager>();
@@ -49,6 +53,7 @@ namespace TaoTie
 
         static void StartGame()
         {
+            ManagerProvider.RegisterManager<SoundManager>();
             ManagerProvider.RegisterManager<BillboardSystem>();
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();

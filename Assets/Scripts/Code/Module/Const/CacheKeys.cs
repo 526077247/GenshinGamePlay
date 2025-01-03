@@ -2,16 +2,15 @@
 {
     public class CacheKeys
     {
-        public static string Account { get => "Account"; }
-        public static string Password { get => "Password"; }
-        public static string CurLangType { get => "CurLangType"; }
-        public static string KeyCodeSetting {get => "KeyCodeSetting"; }
-        public static string MusicVolume  => "MusicVolume"; 
-        public static string SoundVolume => "SoundVolume"; 
-        public static string ColliderDebug {get => "ColliderDebug"; }
-        public static string TriggerDebug {get => "TriggerDebug"; }
-        
-        
-        public static string Guidance { get => "Guidance"; }
+        public const string Account = "Account";
+        public const string Password = "Password";
+        public const string CurLangType = "CurLangType";
+        public const string KeyCodeSetting = "KeyCodeSetting";
+        public const string MusicVolume = "MusicVolume";
+        public const string SoundVolume = "SoundVolume";
+        public const string ColliderDebug = "ColliderDebug";
+        public const string TriggerDebug = "TriggerDebug";
+        public const string Guidance = "Guidance";
+        public const string CheckAppUpdate = "CheckAppUpdate";
     }
 }

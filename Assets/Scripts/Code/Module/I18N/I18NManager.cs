@@ -20,7 +20,7 @@ namespace TaoTie
         {
             Instance = this;
             I18NBridge.Instance.GetValueByKey = I18NGetText;
-            var lang = PlayerPrefs.GetInt(CacheKeys.CurLangType, -1);
+            var lang = CacheManager.Instance.GetInt(CacheKeys.CurLangType, -1);
             if (lang < 0)
             {
                 this.CurLangType = Application.systemLanguage == SystemLanguage.Chinese
@@ -113,7 +113,7 @@ namespace TaoTie
         public void SwitchLanguage(int langType)
         {
             //修改当前语言
-            PlayerPrefs.SetInt(CacheKeys.CurLangType, langType);
+            CacheManager.Instance.SetInt(CacheKeys.CurLangType, langType);
             this.CurLangType = (LangType)langType;
             this.i18nTextKeyDic.Clear();
             var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
