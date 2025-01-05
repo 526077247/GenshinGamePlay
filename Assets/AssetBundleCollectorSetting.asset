@@ -75,6 +75,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
+      - CollectPath: Assets/AssetsPackage/Audio
+        CollectorGUID: 7ee00307f24f22f489bf8ffe9cddc400
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackTopDirectory
+        FilterRuleName: CollectPrefab
+        AssetTags: 
+        UserData: 
     - GroupName: Game
       GroupDesc: 
       AssetTags: 
