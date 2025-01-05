@@ -46,9 +46,8 @@ namespace TaoTie
         public override void OnEnter()
         {
             base.OnEnter();
-            if(CameraManager.Instance.UserSetCursor) return;
-            Cursor.visible = To.Config.VisibleCursor;
-            Cursor.lockState = To.Config.Mode;
+            CameraManager.Instance.ChangeCursorVisible(To.Config.VisibleCursor, CursorStateType.Camera);
+            CameraManager.Instance.ChangeCursorLock(To.Config.UnLockCursor, CursorStateType.Camera);
         }
         
         public override void Update()
@@ -100,9 +99,8 @@ namespace TaoTie
             IsOver = false;
             lerpFunc = EasingFunction.GetEasingFunction(config.Ease);
             startlerpTime = GameTimerManager.Instance.GetTimeNow();
-            if(CameraManager.Instance.UserSetCursor) return;
-            Cursor.visible = To.Config.VisibleCursor;
-            Cursor.lockState = To.Config.Mode;
+            CameraManager.Instance.ChangeCursorVisible(To.Config.VisibleCursor, CursorStateType.Camera);
+            CameraManager.Instance.ChangeCursorLock(To.Config.UnLockCursor, CursorStateType.Camera);
         }
 
         public override void Dispose()

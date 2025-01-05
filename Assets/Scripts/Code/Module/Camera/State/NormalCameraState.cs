@@ -56,9 +56,8 @@ namespace TaoTie
         public override void OnEnter()
         {
             base.OnEnter();
-            if(CameraManager.Instance.UserSetCursor) return;
-            Cursor.visible = Config.VisibleCursor;
-            Cursor.lockState = Config.Mode;
+            CameraManager.Instance.ChangeCursorVisible(Config.VisibleCursor, CursorStateType.Camera);
+            CameraManager.Instance.ChangeCursorLock(Config.UnLockCursor, CursorStateType.Camera);
         }
         
         public override void Update()

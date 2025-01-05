@@ -7,7 +7,7 @@ namespace TaoTie
         private float angleOffsetX;
         private float angleOffsetY;
         private float distance;
-        private ConfigActorCommon _actorCommon;
+        private ConfigActorCommon actorCommon;
         private float wheel;
         private float mx;
         private float my;
@@ -28,7 +28,7 @@ namespace TaoTie
 
         protected override void DisposeInternal()
         {
-            _actorCommon = null;
+            actorCommon = null;
             angleOffsetX = default;
             angleOffsetY = default;
         }
@@ -43,7 +43,7 @@ namespace TaoTie
         
         private void LoadCommonConfig()
         {
-            _actorCommon = null;
+            actorCommon = null;
             if (state.follow != null)
             {
                 var ec = state.follow.GetComponent<EntityComponent>();
@@ -53,7 +53,7 @@ namespace TaoTie
                     if (SceneManager.Instance.CurrentScene is MapScene map)
                     {
                         var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
-                        _actorCommon = unit.configActor.Common;
+                        actorCommon = unit.configActor.Common;
                     }
                 }
             }
@@ -61,14 +61,14 @@ namespace TaoTie
         
         private void Calculating()
         {
-            if (state.follow != null && _actorCommon != null)
+            if (state.follow != null && actorCommon != null)
             { 
                 data.SphereQuaternion = Quaternion.Euler(new Vector3(angleOffsetY, angleOffsetX, 0));
                 data.Forward = state.follow.forward;
                 data.Up = state.follow.up;
 
                 data.Position = state.follow.position - data.SphereQuaternion * Vector3.forward * distance +
-                                data.Up * _actorCommon.Height / 2;
+                                data.Up * actorCommon.Height / 2;
             }
         }
 
@@ -84,7 +84,7 @@ namespace TaoTie
             #endregion
 
             #region 镜头旋转
-
+            if(Cursor.lockState != CursorLockMode.Locked) return;
             var newx = InputManager.Instance.MouseAxisX;
             mx = Mathf.Lerp(mx, newx, 0.6f);
             angleOffsetX += mx * GameTimerManager.Instance.GetDeltaTime()/200f * config.SpeedX;

@@ -19,6 +19,7 @@ namespace TaoTie
             KeyCode.Space,
             KeyCode.Mouse0,
             KeyCode.F,
+            KeyCode.LeftAlt,
         };
         
         public static InputManager Instance { get; private set; }
@@ -95,33 +96,137 @@ namespace TaoTie
         /// <summary>
         ///  获取按键
         /// </summary>
-        /// <param name="keyCode"></param>
+        /// <param name="keyCodes"></param>
         /// <returns></returns>
-        public bool GetKey(GameKeyCode keyCode)
+        public bool GetKey(params GameKeyCode[] keyCodes)
         {
-            return (keyStatus[(int)keyCode]& Key) != 0;
+            for (int i = 0; i < keyCodes.Length; i++)
+            {
+                if ((keyStatus[(int) keyCodes[i]] & Key) != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
         ///  获取按键是否按下
         /// </summary>
-        /// <param name="keyCode"></param>
+        /// <param name="keyCodes"></param>
         /// <returns></returns>
-        public bool GetKeyDown(GameKeyCode keyCode)
+        public bool GetKeyDown(params GameKeyCode[] keyCodes)
         {
-            return (keyStatus[(int)keyCode]& KeyDown) != 0;
+            for (int i = 0; i < keyCodes.Length; i++)
+            {
+                if ((keyStatus[(int) keyCodes[i]] & KeyDown) != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         
         /// <summary>
         ///  获取按键是否抬起
         /// </summary>
-        /// <param name="keyCode"></param>
+        /// <param name="keyCodes"></param>
         /// <returns></returns>
-        public bool GetKeyUp(GameKeyCode keyCode)
+        public bool GetKeyUp(params GameKeyCode[] keyCodes)
         {
-            return (keyStatus[(int)keyCode]& KeyUp) != 0;
+            for (int i = 0; i < keyCodes.Length; i++)
+            {
+                if ((keyStatus[(int) keyCodes[i]] & KeyUp) != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        ///  获取其他按键
+        /// </summary>
+        /// <param name="exceptKeyCodes">不传为任意</param>
+        /// <returns></returns>
+        public bool GetAnyKeyExcept(params GameKeyCode[] exceptKeyCodes)
+        {
+            for (int i = 0; i < keyStatus.Length; i++)
+            {
+                if ((keyStatus[i] & Key) != 0)
+                {
+                    if (exceptKeyCodes == null || exceptKeyCodes.Length == 0) return true;
+                    bool has = false;
+                    for (int j = 0; j < exceptKeyCodes.Length; j++)
+                    {
+                        if ((int) exceptKeyCodes[j] == i)
+                        {
+                            has = true;
+                            break;
+                        }
+                    }
+
+                    if (!has) return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///  获取其他按键是否按下
+        /// </summary>
+        /// <param name="exceptKeyCodes">不传为任意</param>
+        /// <returns></returns>
+        public bool GetAnyKeyDownExcept(params GameKeyCode[] exceptKeyCodes)
+        {
+            for (int i = 0; i < keyStatus.Length; i++)
+            {
+                if ((keyStatus[i] & KeyDown) != 0)
+                {
+                    if (exceptKeyCodes == null || exceptKeyCodes.Length == 0) return true;
+                    bool has = false;
+                    for (int j = 0; j < exceptKeyCodes.Length; j++)
+                    {
+                        if ((int) exceptKeyCodes[j] == i)
+                        {
+                            has = true;
+                            break;
+                        }
+                    }
+
+                    if (!has) return true;
+                }
+            }
+            return false;
         }
         
+        /// <summary>
+        ///  获取其他按键是否抬起
+        /// </summary>
+        /// <param name="exceptKeyCodes">不传为任意</param>
+        /// <returns></returns>
+        public bool GetAnyKeyUpExcept(params GameKeyCode[] exceptKeyCodes)
+        {
+            for (int i = 0; i < keyStatus.Length; i++)
+            {
+                if ((keyStatus[i] & KeyUp) != 0)
+                {
+                    if (exceptKeyCodes == null || exceptKeyCodes.Length == 0) return true;
+                    bool has = false;
+                    for (int j = 0; j < exceptKeyCodes.Length; j++)
+                    {
+                        if ((int) exceptKeyCodes[j] == i)
+                        {
+                            has = true;
+                            break;
+                        }
+                    }
+
+                    if (!has) return true;
+                }
+            }
+            return false;
+        }
+
         public void SetInputKeyMap(GameKeyCode key, KeyCode keyCode)
         {
             keySetMap[(int) key] = keyCode;

@@ -36,8 +36,8 @@ namespace TaoTie
         
         [NinoMember(10)] [MinValue(0.01)] public float FarClipPlane = 5000f;
 
-        [NinoMember(11)] [LabelText("光标锁定模式")] [BoxGroup("光标")]
-        public CursorLockMode Mode = CursorLockMode.None;
+        [NinoMember(11)] [LabelText("光标是否不锁定")] [BoxGroup("光标")]
+        public bool UnLockCursor = true;
 
         [NinoMember(12)] [LabelText("显示光标")] [BoxGroup("光标")]
         public bool VisibleCursor = true;

@@ -13,8 +13,8 @@ namespace TaoTie
         [NinoMember(11)][LabelText("修改光标状态")]
         public bool EffectCursor;
         
-        [NinoMember(12)][LabelText("光标锁定模式")][ShowIf(nameof(EffectCursor))]
-        public CursorLockMode Mode = CursorLockMode.None;
+        [NinoMember(12)][LabelText("光标是否不锁定")][ShowIf(nameof(EffectCursor))]
+        public bool UnLockCursor = true;
 
         [NinoMember(13)][LabelText("显示光标")][ShowIf(nameof(EffectCursor))]
         public bool VisibleCursor = true;
@@ -23,12 +23,13 @@ namespace TaoTie
         {
             if (EffectCursor)
             {
-                CameraManager.Instance.ChangeCursorState(Mode,VisibleCursor);
-                
+                CameraManager.Instance.ChangeCursorVisible(VisibleCursor, CursorStateType.Story);
+                CameraManager.Instance.ChangeCursorLock(UnLockCursor, CursorStateType.Story);
             }
             else
             {
-                CameraManager.Instance.ResetCursorState();
+                CameraManager.Instance.ChangeCursorVisible(false, CursorStateType.Story);
+                CameraManager.Instance.ChangeCursorLock(false, CursorStateType.Story);
             }
 
             if (Active)

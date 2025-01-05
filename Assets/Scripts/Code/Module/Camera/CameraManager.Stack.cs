@@ -22,8 +22,9 @@ namespace TaoTie
 
         public ConfigBlender DefaultBlend { get; private set; } 
 
-        public bool UserSetCursor { get; private set; }= false;
-        
+        public int CursorVisibleState { get; private set; }= 0;
+        public int CursorLockState { get; private set; }= 0;
+
         private partial void AfterInit()
         {
             #region Config
@@ -139,6 +140,17 @@ namespace TaoTie
             if (curCameraState != null)
             {
                 ApplyData(curCameraState.Data);
+            }
+
+            if (InputManager.Instance.GetKeyDown(GameKeyCode.CursorUnlock))
+            {
+                ChangeCursorLock(true, CursorStateType.UserInput);
+                ChangeCursorVisible(true, CursorStateType.UserInput);
+            }
+            else if (InputManager.Instance.GetAnyKeyDownExcept(GameKeyCode.CursorUnlock))
+            {
+                ChangeCursorLock(false, CursorStateType.UserInput);
+                ChangeCursorVisible(false, CursorStateType.UserInput);
             }
         }
 
@@ -269,25 +281,47 @@ namespace TaoTie
         
         #endregion
 
-        public void ChangeCursorState(CursorLockMode mode, bool visible)
+        public void ChangeCursorVisible(bool visible, CursorStateType type)
         {
-            UserSetCursor = true;
-            Cursor.lockState = mode;
-            Cursor.visible = visible;
+            int flag = (int) type;
+            if (visible)
+            {
+                CursorVisibleState |= flag;
+            }
+            else if((CursorVisibleState&flag) != 0)
+            {
+                CursorVisibleState -= flag;
+            }
+
+            Cursor.visible = CursorVisibleState > 0;
         }
-        
+        public void ChangeCursorLock(bool isUnLock, CursorStateType type)
+        {
+            int flag = (int) type;
+            if (isUnLock)
+            {
+                CursorLockState |= flag;
+            }
+            else if((CursorLockState&flag) != 0)
+            {
+                CursorLockState -= flag;
+            }
+            
+            Cursor.lockState = CursorLockState > 0? CursorLockMode.None: CursorLockMode.Locked;
+        }
         public void ResetCursorState()
         {
-            UserSetCursor = false;
+            CursorVisibleState = 0;
+            CursorLockState = 0;
             if (curCameraState is BlenderCameraState blender)
             {
-                Cursor.lockState = blender.To.Config.Mode;
-                Cursor.visible = blender.To.Config.VisibleCursor;
+                ChangeCursorLock(blender.To.Config.UnLockCursor, CursorStateType.Camera);
+                ChangeCursorVisible(blender.To.Config.VisibleCursor, CursorStateType.Camera);
             }
             else if (curCameraState is NormalCameraState normal)
             {
-                Cursor.lockState = normal.Config.Mode;
-                Cursor.visible = normal.Config.VisibleCursor;
+                ChangeCursorLock(normal.Config.UnLockCursor, CursorStateType.Camera);
+                ChangeCursorVisible(normal.Config.VisibleCursor, CursorStateType.Camera);
             }
         }
     }
