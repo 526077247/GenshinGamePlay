@@ -39,11 +39,16 @@ namespace TaoTie
         /// </summary>
         private readonly int[] keyStatus = new int[(int)GameKeyCode.Max];
 
+        private int touchCount = 0;
         #region IManager
 
         public void Init()
         {
+            Input.gyro.enabled = true;
             Instance = this;
+            PointerInputBind.Key.Clear();
+            PointerInputBind.KeyDown.Clear();
+            PointerInputBind.KeyUp.Clear();
             //todo:
             for (int i = 0; i < (int)GameKeyCode.Max; i++)
             {
@@ -67,18 +72,44 @@ namespace TaoTie
             MouseAxisX = 0;
             MouseAxisY = 0;
             if (IsPause) return;
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            int clickValue = 0;
+            if (Input.touchCount > 0|| PointerInputBind.Key[KeyCode.Mouse0].Count > 0)
+            {
+                clickValue |= Key;
+            }
+            if ((Input.touchCount > 0 && touchCount == 0)|| PointerInputBind.KeyDown[KeyCode.Mouse0].Count > 0)
+            {
+                clickValue |= KeyDown;
+            }
+            if ((Input.touchCount == 0 && touchCount > 0)|| PointerInputBind.KeyUp[KeyCode.Mouse0].Count > 0)
+            {
+                clickValue |= KeyUp;
+            }
+            touchCount = Input.touchCount;
+#endif
+            
             for (int i= 0; i< (int)GameKeyCode.Max; ++i)
             {
                 KeyCode key = keySetMap[i];
                 int val = 0;
                 if (key >= 0)
                 {
-                    if (Input.GetKeyDown(key))
-                        val += KeyDown;
-                    if (Input.GetKeyUp(key))
-                        val += KeyUp;
-                    if (Input.GetKey(key))
-                        val += Key;
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+                    if (key == KeyCode.Mouse0)
+                    {
+                        val |= clickValue;
+                    } else {
+#endif
+                    if (Input.GetKeyDown(key) || PointerInputBind.KeyDown[key].Count > 0)
+                        val |= KeyDown;
+                    if (Input.GetKeyUp(key) || PointerInputBind.KeyUp[key].Count > 0)
+                        val |= KeyUp;
+                    if (Input.GetKey(key) || PointerInputBind.Key[key].Count > 0)
+                        val |= Key;
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+                    }
+#endif
                 }
 
                 if (keyStatus[i] != val)
@@ -226,13 +257,39 @@ namespace TaoTie
             }
             return false;
         }
+        
+        public bool TryGetTouchPos(out Vector2 pos)
+        {
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            if(Input.touchCount > 0)
+            {
+                pos = Input.GetTouch(0).position;
+                return true;
+            }
+           
+#else
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                var data = Input.mousePosition;
+                pos = new Vector2(data.x, data.y);
+                return true;
+            }
+#endif
+            pos = Vector2.zero;
+            return false;
+        }
 
+        /// <summary>
+        /// 按键映射
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="keyCode"></param>
         public void SetInputKeyMap(GameKeyCode key, KeyCode keyCode)
         {
             keySetMap[(int) key] = keyCode;
         }
         
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+
         public bool IsPointerOverGameObject(Vector2 mousePosition)
         {       
             //创建一个点击事件
@@ -250,6 +307,29 @@ namespace TaoTie
                 return false;
             }
         }
-#endif
+
+        public bool IsPointerOverUI(Vector2 mousePosition)
+        {       
+            //创建一个点击事件
+            PointerEventData eventData = new PointerEventData(EventSystem.current);
+            eventData.position = mousePosition;
+            List<RaycastResult> raycastResults = new List<RaycastResult>();
+            //向点击位置发射一条射线，检测是否点击UI
+            EventSystem.current.RaycastAll(eventData, raycastResults);
+            return raycastResults.Count > 0;
+        }
+        
+        #region Gyroscope
+
+        /// <summary>
+        /// 获取陀螺仪参数
+        /// </summary>
+        /// <returns></returns>
+        public Quaternion GetGyroAttitude()
+        {
+            return Input.gyro.attitude;
+        }
+        
+        #endregion
     }
 }
