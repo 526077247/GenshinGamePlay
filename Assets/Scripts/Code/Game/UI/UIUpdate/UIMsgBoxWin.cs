@@ -6,8 +6,8 @@ namespace TaoTie
         public string Content;
         public string CancelText;
         public string ConfirmText;
-        public Action CancelCallback;
-        public Action ConfirmCallback;
+        public Action<UIBaseView> CancelCallback;
+        public Action<UIBaseView> ConfirmCallback;
     }
     public class UIMsgBoxWin:UIBaseView,IOnCreate,IOnEnable<MsgBoxPara>,IOnDisable
     {
@@ -18,6 +18,7 @@ namespace TaoTie
         public UIButton btn_confirm;
         public UIText ConfirmText;
 
+        private MsgBoxPara para;
         #region overrride
 
         public void OnCreate()
@@ -31,9 +32,10 @@ namespace TaoTie
 
         public void OnEnable(MsgBoxPara a)
         {
+            para = a;
             this.Text.SetText(a.Content);
-            this.btn_cancel.SetOnClick(a.CancelCallback);
-            this.btn_confirm.SetOnClick(a.ConfirmCallback);
+            this.btn_cancel.SetOnClick(OnClickCancel);
+            this.btn_confirm.SetOnClick(OnClickConfirm);
             this.ConfirmText.SetText(a.ConfirmText);
             this.CancelText.SetText(a.CancelText);
         }
@@ -44,5 +46,30 @@ namespace TaoTie
             this.btn_confirm.RemoveOnClick();
         }
         #endregion
+        
+        private void OnClickConfirm()
+        {
+            if (para?.ConfirmCallback != null)
+            {
+                para.ConfirmCallback.Invoke(this);
+            }
+        }
+        private void OnClickCancel()
+        {
+            if (para?.CancelCallback != null)
+            {
+                para.CancelCallback.Invoke(this);
+            }
+            else
+            {
+                Close();
+            }
+        }
+        
+        void Close()
+        {
+            UIMsgBoxManager.Instance.CloseMsgBox(this).Coroutine();
+        }
+
     }
 }

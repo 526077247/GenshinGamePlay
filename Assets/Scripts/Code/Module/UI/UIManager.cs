@@ -263,7 +263,55 @@ namespace TaoTie
                 await ETTaskHelper.WaitAll(taskScheduler);
             }
         }
+        /// <summary>
+        /// 打开窗口 对应 <see cref="IOnCreate"/>
+        /// </summary>
+        /// <param name="fullname">类名</param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layerName">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <returns></returns>
+        public async ETTask<UIBaseView> OpenWindow(string fullname,string path,
+            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+        {
+            string uiName = fullname;
+            var target = this.GetWindow(uiName);
+            if (target == null)
+            {
+                target = this.InitWindow(fullname,path, layerName);
+                this.windows[uiName] = target;
+            }
 
+            target.Layer = layerName;
+            target.BanKey = banKey;
+            return await this.InnerOpenWindow(target);
+
+        }
+        
+        /// <summary>
+        /// 打开窗口 对应 <see cref="IOnCreate"/>
+        /// </summary>
+        /// <param name="fullname">类名</param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layerName">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <returns></returns>
+        public async ETTask<UIBaseView> OpenWindow<P1>(string fullname,string path,P1 p1,
+            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+        {
+            string uiName = fullname;
+            var target = this.GetWindow(uiName);
+            if (target == null)
+            {
+                target = this.InitWindow(fullname,path, layerName);
+                this.windows[uiName] = target;
+            }
+
+            target.Layer = layerName;
+            target.BanKey = banKey;
+            return await this.InnerOpenWindow(target,p1);
+
+        }
         /// <summary>
         /// 打开窗口 对应 <see cref="IOnCreate"/>
         /// </summary>
@@ -591,7 +639,20 @@ namespace TaoTie
                 (view as IOnDestroy)?.OnDestroy();
             }
         }
-
+        /// <summary>
+        /// 初始化window
+        /// </summary>
+        UIWindow InitWindow(string name, string path, UILayerNames layerName)
+        {
+            UIWindow window = UIWindow.Create();
+            window.Name = name;
+            window.Active = false;
+            window.Layer = layerName;
+            window.LoadingState = UIWindowLoadingState.NotStart;
+            window.PrefabPath = path;
+            window.View = Activator.CreateInstance(GetType().Assembly.GetType(name)) as UIBaseView;
+            return window;
+        }
         /// <summary>
         /// 初始化window
         /// </summary>
@@ -631,7 +692,60 @@ namespace TaoTie
             if (view is IOnWidthPaddingChange)
                 OnWidthPaddingChange(view);
         }
+        async ETTask<UIBaseView> InnerOpenWindow(UIWindow target)
+        {
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIManager, target.GetHashCode());
+                target.Active = true;
+                UIBaseView res = target.View;
+                var needLoad = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
+                if (needLoad)
+                {
+                    await InnerOpenWindowGetGameObject(target.PrefabPath, target);
+                }
 
+                InnerResetWindowLayer(target);
+                await this.AddWindowToStack(target);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
+                return res;
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+
+        }
+        async ETTask<UIBaseView> InnerOpenWindow<P1>(UIWindow target,P1 p1)
+        {
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.UIManager, target.GetHashCode());
+                target.Active = true;
+                UIBaseView res = target.View;
+                var needLoad = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
+                if (needLoad)
+                {
+                    await InnerOpenWindowGetGameObject(target.PrefabPath, target);
+                }
+
+                InnerResetWindowLayer(target);
+                await this.AddWindowToStack(target, p1);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
+                return res;
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+
+        }
         async ETTask<T> InnerOpenWindow<T>(UIWindow target) where T : UIBaseView
         {
             CoroutineLock coroutineLock = null;

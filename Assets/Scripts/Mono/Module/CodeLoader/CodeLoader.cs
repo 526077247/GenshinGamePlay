@@ -17,6 +17,7 @@ namespace TaoTie
 		public Action Update;
 		public Action LateUpdate;
 		public Action OnApplicationQuit;
+		public Action<bool> OnApplicationFocus;
 		
 		private int assemblyVer;
 		private Assembly assembly;

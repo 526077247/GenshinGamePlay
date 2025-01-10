@@ -28,6 +28,8 @@ namespace TaoTie
                 
                 ManagerProvider.RegisterManager<I18NManager>();
                 ManagerProvider.RegisterManager<UIManager>();
+                ManagerProvider.RegisterManager<UIMsgBoxManager>();
+                ManagerProvider.RegisterManager<UIToastManager>();
 
                 ManagerProvider.RegisterManager<CameraManager>();
                 ManagerProvider.RegisterManager<SceneManager>();

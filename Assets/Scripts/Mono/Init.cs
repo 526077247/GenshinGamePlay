@@ -81,7 +81,9 @@ namespace TaoTie
 		public async ETTask ReStart()
 		{
 			CodeLoader.Instance.isReStart = false;
+			Resources.UnloadUnusedAssets();
 			YooAssetsMgr.Instance.ForceUnloadAllAssets(YooAssetsMgr.DefaultName);
+			Resources.UnloadUnusedAssets();
 			ManagerProvider.Clear();
 			await YooAssetsMgr.Instance.UpdateConfig();
 			//清两次，清干净
@@ -109,7 +111,14 @@ namespace TaoTie
 		{
 			CodeLoader.Instance.OnApplicationQuit?.Invoke();
 		}
-		
+		void OnApplicationFocus(bool hasFocus)
+		{
+			CodeLoader.Instance.OnApplicationFocus?.Invoke(hasFocus);
+		}
+		void OnApplicationPause(bool pauseStatus)
+		{
+			CodeLoader.Instance.OnApplicationFocus?.Invoke(!pauseStatus);
+		}
 		// 一些unity的设置项目
 		void InitUnitySetting()
 		{

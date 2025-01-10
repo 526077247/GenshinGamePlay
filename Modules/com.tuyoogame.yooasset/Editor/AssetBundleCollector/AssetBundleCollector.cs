@@ -84,16 +84,20 @@ namespace YooAsset.Editor
 				throw new Exception($"Invalid collect path : {CollectPath}");
 
 			if (CollectorType == ECollectorType.None)
-				throw new Exception($"{nameof(ECollectorType)}.{ECollectorType.None} is invalid in collector : {CollectPath}");
+				throw new Exception(
+					$"{nameof(ECollectorType)}.{ECollectorType.None} is invalid in collector : {CollectPath}");
 
 			if (AssetBundleCollectorSettingData.HasPackRuleName(PackRuleName) == false)
-				throw new Exception($"Invalid {nameof(IPackRule)} class type : {PackRuleName} in collector : {CollectPath}");
+				throw new Exception(
+					$"Invalid {nameof(IPackRule)} class type : {PackRuleName} in collector : {CollectPath}");
 
 			if (AssetBundleCollectorSettingData.HasFilterRuleName(FilterRuleName) == false)
-				throw new Exception($"Invalid {nameof(IFilterRule)} class type : {FilterRuleName} in collector : {CollectPath}");
+				throw new Exception(
+					$"Invalid {nameof(IFilterRule)} class type : {FilterRuleName} in collector : {CollectPath}");
 
 			if (AssetBundleCollectorSettingData.HasAddressRuleName(AddressRuleName) == false)
-				throw new Exception($"Invalid {nameof(IAddressRule)} class type : {AddressRuleName} in collector : {CollectPath}");
+				throw new Exception(
+					$"Invalid {nameof(IAddressRule)} class type : {AddressRuleName} in collector : {CollectPath}");
 		}
 
 		/// <summary>
@@ -154,7 +158,8 @@ namespace YooAsset.Editor
 
 			// 检测原生资源包的收集器类型
 			if (isRawFilePackRule && CollectorType != ECollectorType.MainAssetCollector)
-				throw new Exception($"The raw file pack rule must be set to {nameof(ECollectorType)}.{ECollectorType.MainAssetCollector} : {CollectPath}");
+				throw new Exception(
+					$"The raw file pack rule must be set to {nameof(ECollectorType)}.{ECollectorType.MainAssetCollector} : {CollectPath}");
 
 			if (string.IsNullOrEmpty(CollectPath))
 				throw new Exception($"The collect path is null or empty in group : {group.GroupName}");
@@ -175,7 +180,8 @@ namespace YooAsset.Editor
 						}
 						else
 						{
-							throw new Exception($"The collecting asset file is existed : {assetPath} in collector : {CollectPath}");
+							throw new Exception(
+								$"The collecting asset file is existed : {assetPath} in collector : {CollectPath}");
 						}
 					}
 				}
@@ -190,7 +196,8 @@ namespace YooAsset.Editor
 				}
 				else
 				{
-					throw new Exception($"The collecting single asset file is invalid : {assetPath} in collector : {CollectPath}");
+					throw new Exception(
+						$"The collecting single asset file is invalid : {assetPath} in collector : {CollectPath}");
 				}
 			}
 
@@ -208,12 +215,14 @@ namespace YooAsset.Editor
 							continue;
 
 						if (address.StartsWith("Assets/") || address.StartsWith("assets/"))
-							throw new Exception($"The address can not set asset path in collector : {CollectPath} \nAssetPath: {assetPath}");
+							throw new Exception(
+								$"The address can not set asset path in collector : {CollectPath} \nAssetPath: {assetPath}");
 
 						if (addressTemper.TryGetValue(address, out var existed) == false)
 							addressTemper.Add(address, assetPath);
 						else
-							throw new Exception($"The address is existed : {address} in collector : {CollectPath} \nAssetPath:\n     {existed}\n     {assetPath}");
+							throw new Exception(
+								$"The address is existed : {address} in collector : {CollectPath} \nAssetPath:\n     {existed}\n     {assetPath}");
 					}
 				}
 			}
@@ -222,12 +231,14 @@ namespace YooAsset.Editor
 			return result.Values.ToList();
 		}
 
-		private CollectAssetInfo CreateCollectAssetInfo(CollectCommand command, AssetBundleCollectorGroup group, string assetPath, bool isRawFilePackRule)
+		private CollectAssetInfo CreateCollectAssetInfo(CollectCommand command, AssetBundleCollectorGroup group,
+			string assetPath, bool isRawFilePackRule)
 		{
 			string address = GetAddress(command, group, assetPath);
 			string bundleName = GetBundleName(command, group, assetPath);
 			List<string> assetTags = GetAssetTags(group);
-			CollectAssetInfo collectAssetInfo = new CollectAssetInfo(CollectorType, bundleName, address, assetPath, isRawFilePackRule, assetTags);
+			CollectAssetInfo collectAssetInfo = new CollectAssetInfo(CollectorType, bundleName, address, assetPath,
+				isRawFilePackRule, assetTags);
 
 			// 注意：模拟构建模式下不需要收集依赖资源
 			if (command.BuildMode == EBuildMode.SimulateBuild)
@@ -237,6 +248,7 @@ namespace YooAsset.Editor
 
 			return collectAssetInfo;
 		}
+
 		private bool IsValidateAsset(string assetPath, bool isRawFilePackRule)
 		{
 			if (assetPath.StartsWith("Assets/") == false && assetPath.StartsWith("Packages/") == false)
@@ -258,10 +270,14 @@ namespace YooAsset.Editor
 			if (isRawFilePackRule)
 			{
 				string extension = EditorTools.RemoveFirstChar(System.IO.Path.GetExtension(assetPath));
-				if (extension == EAssetFileExtension.unity.ToString() || extension == EAssetFileExtension.prefab.ToString() ||
-					extension == EAssetFileExtension.fbx.ToString() || extension == EAssetFileExtension.mat.ToString() ||
-					extension == EAssetFileExtension.controller.ToString() || extension == EAssetFileExtension.anim.ToString() ||
-					extension == EAssetFileExtension.ttf.ToString() || extension == EAssetFileExtension.shader.ToString())
+				if (extension == EAssetFileExtension.unity.ToString() ||
+				    extension == EAssetFileExtension.prefab.ToString() ||
+				    extension == EAssetFileExtension.fbx.ToString() ||
+				    extension == EAssetFileExtension.mat.ToString() ||
+				    extension == EAssetFileExtension.controller.ToString() ||
+				    extension == EAssetFileExtension.anim.ToString() ||
+				    extension == EAssetFileExtension.ttf.ToString() ||
+				    extension == EAssetFileExtension.shader.ToString())
 				{
 					UnityEngine.Debug.LogWarning($"Raw file pack rule can not support file estension : {extension}");
 					return false;
@@ -294,12 +310,15 @@ namespace YooAsset.Editor
 
 			return true;
 		}
+
 		private bool IsCollectAsset(AssetBundleCollectorGroup group, string assetPath)
 		{
 			// 根据规则设置过滤资源文件
 			IFilterRule filterRuleInstance = AssetBundleCollectorSettingData.GetFilterRuleInstance(FilterRuleName);
-			return filterRuleInstance.IsCollectAsset(new FilterRuleData(assetPath, CollectPath, group.GroupName, UserData));
+			return filterRuleInstance.IsCollectAsset(new FilterRuleData(assetPath, CollectPath, group.GroupName,
+				UserData));
 		}
+
 		private string GetAddress(CollectCommand command, AssetBundleCollectorGroup group, string assetPath)
 		{
 			if (command.EnableAddressable == false)
@@ -309,9 +328,12 @@ namespace YooAsset.Editor
 				return string.Empty;
 
 			IAddressRule addressRuleInstance = AssetBundleCollectorSettingData.GetAddressRuleInstance(AddressRuleName);
-			string adressValue = addressRuleInstance.GetAssetAddress(new AddressRuleData(assetPath, CollectPath, group.GroupName, UserData));
+			string adressValue =
+				addressRuleInstance.GetAssetAddress(new AddressRuleData(assetPath, CollectPath, group.GroupName,
+					UserData));
 			return adressValue;
 		}
+
 		private string GetBundleName(CollectCommand command, AssetBundleCollectorGroup group, string assetPath)
 		{
 			System.Type assetType = AssetDatabase.GetMainAssetTypeAtPath(assetPath);
@@ -325,10 +347,13 @@ namespace YooAsset.Editor
 			{
 				// 获取其它资源打包规则结果
 				IPackRule packRuleInstance = AssetBundleCollectorSettingData.GetPackRuleInstance(PackRuleName);
-				PackRuleResult packRuleResult = packRuleInstance.GetPackRuleResult(new PackRuleData(assetPath, CollectPath, group.GroupName, UserData));
+				PackRuleResult packRuleResult =
+					packRuleInstance.GetPackRuleResult(new PackRuleData(assetPath, CollectPath, group.GroupName,
+						UserData));
 				return packRuleResult.GetMainBundleName(command.PackageName, command.UniqueBundleName);
 			}
 		}
+
 		private List<string> GetAssetTags(AssetBundleCollectorGroup group)
 		{
 			List<string> tags = EditorTools.StringToStringList(group.AssetTags, ';');
@@ -336,54 +361,65 @@ namespace YooAsset.Editor
 			tags.AddRange(temper);
 			return tags;
 		}
+
 		private List<string> GetAllDependencies(string mainAssetPath)
-        		{
-        			if (mainAssetPath.EndsWith(".spriteatlas")) return new List<string>();
-        			string[] depends = AssetDatabase.GetDependencies(mainAssetPath, true);
-        			List<string> result = new List<string>(depends.Length);
-        			foreach (string assetPath in depends)
-        			{
-        				// 注意：排除主资源对象
-        				if (assetPath == mainAssetPath)
-        					continue;
-        				// 排除TMP编辑器资源
-        				if( assetPath.Contains("Editor Resources"))
-        					continue;
-        				if (IsValidateAsset(assetPath, false))
-        				{
-        					//图集资源
-        					var index = assetPath.IndexOf(ATLAS_KEY);
-        					if (index > 0)
-        					{
-        						var substr = assetPath.Substring(index + ATLAS_KEY.Length);
-        						var subIndex = substr.IndexOf('/');
-        						string atlasPath;
-        						if (subIndex >= 0)
-        						{
-        							//有子目录
-        							var prefix = assetPath.Substring(0, index + 1);
-        							var name = substr.Substring(0, subIndex);
-        							atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
-        						}
-        						else
-        						{
-        							var prefix = assetPath.Substring(0, index + 1);
-        							atlasPath = prefix + "Atlas.spriteatlas";
-        						}
-        						if (!result.Contains(atlasPath))
-        						{
-        							if (atlasPath == mainAssetPath)
-        								continue;
-        							result.Add(atlasPath);
-        						}
-        						continue;
-        					}
-        					
-        					result.Add(assetPath);
-        				}
-        			}
-        			return result;
-        		}
-        		private const string ATLAS_KEY = "/Atlas/";
+		{
+			if (mainAssetPath.EndsWith(".spriteatlas")) return new List<string>();
+			string[] depends = AssetDatabase.GetDependencies(mainAssetPath, true);
+			List<string> result = new List<string>(depends.Length);
+			foreach (string assetPath in depends)
+			{
+				// 注意：排除主资源对象
+				if (assetPath == mainAssetPath)
+					continue;
+				// 排除TMP编辑器资源
+				if (assetPath.Contains("Editor Resources"))
+					continue;
+				if (assetPath.Contains("Editor"))
+				{
+					var obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath);
+					if (obj != null && (obj.hideFlags &= HideFlags.DontSaveInBuild) != 0)
+						continue;
+				}
+				if (IsValidateAsset(assetPath, false))
+				{
+					//图集资源
+					var index = assetPath.IndexOf(ATLAS_KEY);
+					if (index > 0)
+					{
+						var substr = assetPath.Substring(index + ATLAS_KEY.Length);
+						var subIndex = substr.IndexOf('/');
+						string atlasPath;
+						if (subIndex >= 0)
+						{
+							//有子目录
+							var prefix = assetPath.Substring(0, index + 1);
+							var name = substr.Substring(0, subIndex);
+							atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
+						}
+						else
+						{
+							var prefix = assetPath.Substring(0, index + 1);
+							atlasPath = prefix + "Atlas.spriteatlas";
+						}
+
+						if (!result.Contains(atlasPath))
+						{
+							if (atlasPath == mainAssetPath)
+								continue;
+							result.Add(atlasPath);
+						}
+
+						continue;
+					}
+
+					result.Add(assetPath);
+				}
+			}
+
+			return result;
+		}
+
+		private const string ATLAS_KEY = "/Atlas/";
 	}
 }

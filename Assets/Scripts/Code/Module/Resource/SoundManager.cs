@@ -85,6 +85,11 @@ namespace TaoTie
             soundsPool = null;
             ResourcesManager.Instance.ReleaseAsset(soundsClipClone);
             soundsClipClone = null;
+            if (soundsRoot != null)
+            {
+                GameObject.Destroy(soundsRoot.gameObject);
+                soundsRoot = null;
+            }
         }
 
         #endregion
