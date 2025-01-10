@@ -199,7 +199,7 @@ namespace TaoTie
                     {
                         var dir = other.Position - unit.Position;
                         var a = Mathf.Abs(Vector3.Angle(dir, unit.Forward));
-                        if (a < angle)
+                        if (a < angle && a< config.CombatLock.AimAngle)
                         {
                             attackTarget.LockedPoint = null;
                             attackTarget.RuntimeID = hitInfos[i].EntityId;

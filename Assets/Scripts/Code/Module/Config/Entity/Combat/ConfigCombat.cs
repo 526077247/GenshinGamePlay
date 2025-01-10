@@ -7,7 +7,7 @@ namespace TaoTie
     [NinoSerialize]
     public partial class ConfigCombat
     {
-        [NinoMember(1)][LabelText("基础属性")] [BoxGroup("属性")]
+        [NinoMember(1)][LabelText("基础属性")] [BoxGroup("属性")][TableList]
         public ConfigCombatProperty[] DefaultProperty;
         
         #if UNITY_EDITOR
