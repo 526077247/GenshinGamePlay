@@ -22,14 +22,46 @@ namespace TaoTie
             var sceneGroups = YooAssets.GetAssetInfos("aiTree");
             for (int i = 0; i < sceneGroups.Length; i++)
             {
+                if (sceneGroups[i].AssetPath.EndsWith("json") && Define.ConfigType != 0)
+                {
+                    continue;
+                }
+                if (sceneGroups[i].AssetPath.EndsWith("bytes") && Define.ConfigType != 1)
+                {
+                    continue;
+                }
                 var op = YooAssets.LoadAssetSync(sceneGroups[i]);
                 if (op.AssetObject is TextAsset textAsset)
                 {
-                    var item = JsonHelper.FromJson<ConfigAIDecisionTree>(textAsset.text);
-                    if (!dict.ContainsKey(item.Type))
+                    if (Define.ConfigType == 0)
                     {
-                        _list.Add(item);
-                        dict[item.Type] = item;
+                        var item = JsonHelper.FromJson<ConfigAIDecisionTree>(textAsset.text);
+                        if (!dict.ContainsKey(item.Type))
+                        {
+                            _list.Add(item);
+                            dict[item.Type] = item;
+                        }
+                        else
+                        {
+                            Log.Error("ConfigAIDecisionTree id重复 "+item.Type);
+                        }
+                    }
+                    else if (Define.ConfigType == 1)
+                    {
+                        try
+                        {
+                            var item = ProtobufHelper.FromBytes<ConfigAIDecisionTree>(textAsset.bytes);
+                            if (!dict.ContainsKey(item.Type))
+                            {
+                                _list.Add(item);
+                                dict[item.Type] = item;
+                            }
+                            else
+                            {
+                                Log.Error("ConfigAIDecisionTree id重复 "+item.Type);
+                            }
+                        }
+                        catch{}
                     }
                 }
                 op.Release();

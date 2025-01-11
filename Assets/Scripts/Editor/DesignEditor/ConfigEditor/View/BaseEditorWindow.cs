@@ -145,7 +145,7 @@ namespace TaoTie
             if (!string.IsNullOrEmpty(searchPath))
             {
                 var jStr = JsonHelper.ToJson(data);
-                File.WriteAllText(filePath, jStr);
+                File.WriteAllText(searchPath, jStr);
                 AssetDatabase.Refresh();
                 isJson = true;
                 filePath = searchPath;
@@ -163,7 +163,7 @@ namespace TaoTie
         //     if (!string.IsNullOrEmpty(searchPath))
         //     {
         //         var bytes = ProtobufHelper.ToBytes(data);
-        //         File.WriteAllBytes(filePath, bytes);
+        //         File.WriteAllBytes(searchPath, bytes);
         //         AssetDatabase.Refresh();
         //         isJson = false;
         //         filePath = searchPath;

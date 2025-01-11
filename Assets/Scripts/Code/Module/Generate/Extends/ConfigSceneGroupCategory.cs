@@ -22,19 +22,48 @@ namespace TaoTie
             var sceneGroups = YooAssets.GetAssetInfos("sceneGroup");
             for (int i = 0; i < sceneGroups.Length; i++)
             {
+                if (sceneGroups[i].AssetPath.EndsWith("json") && Define.ConfigType != 0)
+                {
+                    continue;
+                }
+                if (sceneGroups[i].AssetPath.EndsWith("bytes") && Define.ConfigType != 1)
+                {
+                    continue;
+                }
                 var op = YooAssets.LoadAssetSync(sceneGroups[i]);
                 if (op.AssetObject is TextAsset textAsset)
                 {
-                    var item = JsonHelper.FromJson<ConfigSceneGroup>(textAsset.text);
-                    if (!dict.ContainsKey(item.Id))
+                    if (Define.ConfigType == 0)
                     {
-                        list.Add(item);
-                        dict[item.Id] = item;
+                        var item = JsonHelper.FromJson<ConfigSceneGroup>(textAsset.text);
+                        if (!dict.ContainsKey(item.Id))
+                        {
+                            list.Add(item);
+                            dict[item.Id] = item;
+                        }
+                        else
+                        {
+                            Log.Error("ConfigSceneGroup id重复 "+item.Id);
+                        }
                     }
-                    else
+                    else if (Define.ConfigType == 1)
                     {
-                        Log.Error("ConfigSceneGroup id重复 "+item.Id);
+                        try
+                        {
+                            var item = ProtobufHelper.FromBytes<ConfigSceneGroup>(textAsset.bytes);
+                            if (!dict.ContainsKey(item.Id))
+                            {
+                                list.Add(item);
+                                dict[item.Id] = item;
+                            }
+                            else
+                            {
+                                Log.Error("ConfigSceneGroup id重复 "+item.Id);
+                            }
+                        }
+                        catch{}
                     }
+                    
                 }
                 op.Release();
             }

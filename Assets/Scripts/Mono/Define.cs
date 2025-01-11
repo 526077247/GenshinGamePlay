@@ -35,6 +35,11 @@ namespace TaoTie
 #endif
 
         public static int Process = 1;
+
+        /// <summary>
+        /// 0:Json 1:Bytes
+        /// </summary>
+        public static int ConfigType = 0;
         
         public static string[] RenameList = {"iOS"};
     }

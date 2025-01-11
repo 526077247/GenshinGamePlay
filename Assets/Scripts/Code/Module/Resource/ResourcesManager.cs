@@ -245,7 +245,16 @@ namespace TaoTie
             }
         }
 
-        
+        /// <summary>
+        /// 同步加载json或者二进制配置
+        /// </summary>
+        /// <param name="path"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T LoadConfig<T>(string path) where T : class
+        {
+            return LoadConfig<T>(path, Define.ConfigType);
+        }
         /// <summary>
         /// 同步加载json或者二进制配置
         /// </summary>
@@ -253,7 +262,7 @@ namespace TaoTie
         /// <param name="type">0:json,1:bytes</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T LoadConfig<T>(string path, int type = 0) where T : class
+        public T LoadConfig<T>(string path, int type) where T : class
         {
             if (string.IsNullOrEmpty(path)) return default;
             if (type == 0)
@@ -281,8 +290,9 @@ namespace TaoTie
                     ReleaseAsset(file);
                     return res;
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Log.Error(ex);
                 }
             }
             Log.Error($"反序列化{TypeInfo<T>.TypeName}失败！{path}");
