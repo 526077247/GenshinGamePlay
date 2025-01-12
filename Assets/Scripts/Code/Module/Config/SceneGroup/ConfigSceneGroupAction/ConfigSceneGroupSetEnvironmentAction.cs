@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -7,7 +7,7 @@ namespace TaoTie
     /// 设置环境
     /// </summary>
     [LabelText("设置环境")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupSetEnvironmentAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]

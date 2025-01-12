@@ -1,15 +1,15 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigCameraThirdPersonFollowPlugin : ConfigCameraBodyPlugin
     {
-        [NinoMember(0)] [MinValue(1)] public int SpeedX = 100;
+        [NinoMember(1)] [MinValue(1)] public int SpeedX = 100;
 
-        [NinoMember(1)] [MinValue(1)] public int SpeedY = 20;
+        [NinoMember(2)] [MinValue(1)] public int SpeedY = 20;
 
         [NinoMember(3)] [Range(-1, 20)] public float ZoomDefault = 2.5f;
 

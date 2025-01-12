@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
@@ -6,6 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 出生点
     /// </summary>
+    [NinoType(false)]
     public abstract partial class ConfigBornType
     {
         [NinoMember(1)][NotNull]

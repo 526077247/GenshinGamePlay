@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
 {
     
     [LabelText("附加group")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupAddExtraGroupAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]

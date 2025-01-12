@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigStoryBranchClipItem
     {
         [NinoMember(1)]
@@ -12,7 +12,7 @@ namespace TaoTie
         public ConfigStoryClip Clip;
     }
     
-    [LabelText("选择分支执行")][NinoSerialize]
+    [LabelText("选择分支执行")][NinoType(false)]
     public partial class ConfigStoryBranchClip: ConfigStoryClip
     {
         [NinoMember(10)][NotNull]

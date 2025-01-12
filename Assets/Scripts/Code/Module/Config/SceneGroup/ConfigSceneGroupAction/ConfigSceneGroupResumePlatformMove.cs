@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("唤醒寻路")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupResumePlatformMove : ConfigSceneGroupAction
     {
         [NinoMember(10)]

@@ -1,9 +1,10 @@
-﻿using Nino.Serialization;
+﻿using System.Collections.Generic;
+using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize][LabelText("监听状态机状态NormalizedTime变化时AttachModify")]
+    [NinoType(false)][LabelText("监听状态机状态NormalizedTime变化时AttachModify")]
     public partial class ConfigAttachToNormalizedTimeMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]

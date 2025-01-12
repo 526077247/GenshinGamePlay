@@ -1,13 +1,17 @@
-﻿using UnityEditor;
+﻿using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class EntityEditor: BaseEditorWindow<ConfigActor>
     {
         protected override string folderPath => base.folderPath + "/Unit";
-        
+        protected override byte[] Serialize(ConfigActor data)
+        {
+            return Serializer.Serialize(data);
+        }
         
         [MenuItem("Tools/配置编辑器/Entity")]
         static void OpenEntity()

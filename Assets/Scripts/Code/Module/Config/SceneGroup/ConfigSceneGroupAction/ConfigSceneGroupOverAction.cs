@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace TaoTie
     /// SceneGroup结束
     /// </summary>
     [LabelText("结束并销毁该SceneGroup")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupOverAction : ConfigSceneGroupAction
     {
 

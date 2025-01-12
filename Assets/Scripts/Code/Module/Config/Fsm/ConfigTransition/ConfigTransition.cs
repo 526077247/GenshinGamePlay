@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigTransition
     {
         [NinoMember(1)]

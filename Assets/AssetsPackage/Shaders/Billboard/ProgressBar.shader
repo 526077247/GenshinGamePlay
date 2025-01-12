@@ -6,7 +6,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline" = "UniversalPipeline"}
+        Tags { "RenderType"="Transparent" "RenderPipeline" = "UniversalPipeline"}
         LOD 100
         Cull Front
         Pass

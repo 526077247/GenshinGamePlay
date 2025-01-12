@@ -30,7 +30,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlendCubemaps: 0.57946664
+    - _BlendCubemaps: 0.3739
     - _Exposure: 1
     - _Rotation: 0
     m_Colors:

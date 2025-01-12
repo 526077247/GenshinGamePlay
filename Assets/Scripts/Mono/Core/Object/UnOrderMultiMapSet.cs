@@ -4,9 +4,11 @@
  */
 
 using System.Collections.Generic;
+using Nino.Core;
 
 namespace TaoTie
 {
+    [NinoIgnore]
     public class UnOrderMultiMapSet<T, K>: Dictionary<T, HashSet<K>>
     {
         // 重用HashSet

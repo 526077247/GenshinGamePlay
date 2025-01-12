@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigEquipController
     {
         [NinoMember(1)]
-        public Dictionary<EquipType, string> AttachPoints;
+        public Dictionary<EquipType, string> AttachPoints = new();
         [NinoMember(2)]
         public string SheathPoint;
     }

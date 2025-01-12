@@ -1,13 +1,16 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class StoryEditor:BaseEditorWindow<ConfigStory>
     {
         protected override string folderPath => base.folderPath + "/EditConfig/Story";
-
+        protected override byte[] Serialize(ConfigStory data)
+        {
+            return Serializer.Serialize(data);
+        }
         [MenuItem("Tools/配置编辑器/Story")]
         static void OpenSceneGroup()
         {

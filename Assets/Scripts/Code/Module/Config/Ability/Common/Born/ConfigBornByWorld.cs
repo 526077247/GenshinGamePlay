@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 世界坐标为原点
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigBornByWorld: ConfigBornType
     {
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)

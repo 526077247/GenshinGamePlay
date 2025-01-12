@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("传送")]
-    [NinoSerialize()]
+    [NinoType(false)]
     public partial class ConfigSceneGroupTransferAction: ConfigSceneGroupAction
     {
         [NinoMember(10)] 

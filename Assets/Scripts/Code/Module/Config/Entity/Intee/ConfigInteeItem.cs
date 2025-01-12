@@ -1,11 +1,11 @@
 ﻿using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigInteeItem
     {
         [NinoMember(1)]
@@ -17,7 +17,7 @@ namespace TaoTie
         [NinoMember(4)] [LabelText("默认启用")]
         public bool DefaultEnable = true;
 #if UNITY_EDITOR
-        [OnValueChanged(nameof(UpdateIconPath))][JsonIgnore][BoxGroup("Icon")]
+        [OnValueChanged(nameof(UpdateIconPath))][JsonIgnore][BoxGroup("Icon")][NinoIgnore]
         public Sprite Icon;
 
         private void UpdateIconPath()

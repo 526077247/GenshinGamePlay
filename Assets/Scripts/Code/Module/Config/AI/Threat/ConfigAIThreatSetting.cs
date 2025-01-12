@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAIThreatSetting
     {
         [LabelText("启用")]
@@ -38,9 +38,11 @@ namespace TaoTie
         [NinoMember(13)][LabelText("附加威胁值广播范围")]
         public float ThreatBroadcastRange;
 
-        [NinoMember(14)][LabelText("视觉感知距离衰减曲线")][HideReferenceObjectPicker]
+        //[NinoMember(14)]//todo:
+        [LabelText("视觉感知距离衰减曲线")][HideReferenceObjectPicker]
         public AnimationCurve ViewAttenuationCurve;
-        [NinoMember(15)][LabelText("听觉感知距离衰减曲线")][HideReferenceObjectPicker]
+        //[NinoMember(15)]//todo:
+        [LabelText("听觉感知距离衰减曲线")][HideReferenceObjectPicker]
         public AnimationCurve HearAttenuationCurve;
     }
 }

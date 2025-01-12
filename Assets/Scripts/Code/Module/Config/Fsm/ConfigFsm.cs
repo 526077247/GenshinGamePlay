@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigFsm
     {
         [NinoMember(1)]
@@ -14,7 +14,7 @@ namespace TaoTie
         [NinoMember(3)]
         public string Entry;
         [NinoMember(4)]
-        public Dictionary<string, ConfigFsmState> StateDict;
+        public Dictionary<string, ConfigFsmState> StateDict = new();
         [NinoMember(5)]
         public ConfigTransition[] AnyStateTransitions;
 

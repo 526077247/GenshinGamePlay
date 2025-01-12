@@ -25,6 +25,7 @@ namespace TaoTie
             return Activator.CreateInstance<T>();
         }
 
+        protected abstract byte[] Serialize(T data);
 
         [ShowIf("@data!=null")] [ReadOnly] public string filePath;
         [ShowIf("@data!=null")] [HideReferenceObjectPicker] public T data;
@@ -67,7 +68,7 @@ namespace TaoTie
             }
         }
 
-        [Button("新建(Json)")]
+        [Button("新建")]
         public void CreateJson()
         {
             string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
@@ -101,7 +102,7 @@ namespace TaoTie
 
         #region Save
 
-        [Button("保存(Json)")]
+        [Button("保存")]
         [ShowIf("@data!=null&&isJson")]
         public void SaveJson()
         {
@@ -110,6 +111,8 @@ namespace TaoTie
                 BeforeSaveData();
                 var jStr = JsonHelper.ToJson(data);
                 File.WriteAllText(filePath, jStr);
+                var bytes = Serialize(data);
+                File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
                 AssetDatabase.Refresh();
                 ShowNotification(new GUIContent("保存Json成功"));
             }
@@ -162,7 +165,7 @@ namespace TaoTie
         //     string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", paths[0], name, "bytes");
         //     if (!string.IsNullOrEmpty(searchPath))
         //     {
-        //         var bytes = ProtobufHelper.ToBytes(data);
+        //         var bytes = Serialize(data);
         //         File.WriteAllBytes(searchPath, bytes);
         //         AssetDatabase.Refresh();
         //         isJson = false;

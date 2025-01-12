@@ -1,13 +1,15 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
-    
+    [NinoType(false)]
     public abstract partial class ConfigStoryActor
     {
-        [NinoMember(1)][Sirenix.OdinInspector.LabelText("策划备注")]
+#if UNITY_EDITOR
+        [Sirenix.OdinInspector.LabelText("策划备注")]
         public string Remarks;
+#endif
         [NinoMember(2)]
         public int Id;
 

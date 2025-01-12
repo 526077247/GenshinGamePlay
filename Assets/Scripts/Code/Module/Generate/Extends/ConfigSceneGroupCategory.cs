@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Code.NinoGen;
 using UnityEngine;
 using YooAsset;
 
@@ -50,7 +51,7 @@ namespace TaoTie
                     {
                         try
                         {
-                            var item = ProtobufHelper.FromBytes<ConfigSceneGroup>(textAsset.bytes);
+                            Deserializer.Deserialize(textAsset.bytes,out ConfigSceneGroup item);
                             if (!dict.ContainsKey(item.Id))
                             {
                                 list.Add(item);
@@ -61,7 +62,10 @@ namespace TaoTie
                                 Log.Error("ConfigSceneGroup id重复 "+item.Id);
                             }
                         }
-                        catch{}
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex);
+                        }
                     }
                     
                 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace TaoTie
 {
@@ -23,6 +24,9 @@ namespace TaoTie
             font.alignment = TextAlignment.Center;
             font.anchor = TextAnchor.MiddleCenter;
             font.color = config.BaseColor;//todo:受其他影响
+            var mesh = obj.GetComponent<MeshRenderer>();
+            mesh.shadowCastingMode = ShadowCastingMode.Off;
+            mesh.lightProbeUsage = LightProbeUsage.Off;
             SetName();
         }
 

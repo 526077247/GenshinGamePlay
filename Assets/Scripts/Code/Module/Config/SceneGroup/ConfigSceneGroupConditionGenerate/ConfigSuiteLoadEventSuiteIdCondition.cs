@@ -1,12 +1,12 @@
 using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigSuiteLoadEventTrigger))]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSuiteLoadEventSuiteIdCondition : ConfigSceneGroupCondition<SuiteLoadEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]

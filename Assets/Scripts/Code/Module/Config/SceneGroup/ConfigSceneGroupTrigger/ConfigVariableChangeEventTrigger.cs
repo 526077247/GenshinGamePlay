@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("当关卡的变量改变之后")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigVariableChangeEventTrigger : ConfigSceneGroupTrigger<VariableChangeEvent>
     {
         [NinoMember(5)][LabelText("变量")]

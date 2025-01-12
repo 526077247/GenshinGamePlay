@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Code.NinoGen;
 using UnityEngine;
 
 namespace TaoTie
@@ -53,6 +54,48 @@ namespace TaoTie
         }
 
         #endregion
-
+        protected ConfigFsmController GetFsmConfig(string path)
+        {
+            if (Define.ConfigType == 0)
+            {
+                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                return JsonHelper.FromJson<ConfigFsmController>(jStr);
+            }
+            else
+            {
+                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                Deserializer.Deserialize(bytes,out ConfigFsmController res);
+                return res;
+            }
+        }
+        protected ConfigAIBeta GetAIConfig(string path)
+        {
+            if (Define.ConfigType == 0)
+            {
+                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                return JsonHelper.FromJson<ConfigAIBeta>(jStr);
+            }
+            else
+            {
+                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                Deserializer.Deserialize(bytes,out ConfigAIBeta res);
+                return res;
+            }
+        }
+        
+        protected ConfigActor GetActorConfig(string path)
+        {
+            if (Define.ConfigType == 0)
+            {
+                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                return JsonHelper.FromJson<ConfigActor>(jStr);
+            }
+            else
+            {
+                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                Deserializer.Deserialize(bytes,out ConfigActor res);
+                return res;
+            }
+        }
     }
 }

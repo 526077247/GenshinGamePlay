@@ -1,7 +1,8 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract partial class ConfigBaseAttackPattern
     {
         [NinoMember(1)]

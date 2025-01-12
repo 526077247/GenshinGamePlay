@@ -144,14 +144,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: ability
         UserData: 
-      - CollectPath: Assets/AssetsPackage/EditConfig/ConfigCameras.json
-        CollectorGUID: 21d9dc7b19a8e6d41bcf602d382c9fb4
-        CollectorType: 0
-        AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
       - CollectPath: Assets/AssetsPackage/Effect
         CollectorGUID: 37d4fb95948cc8a429c6be93fbaefafd
         CollectorType: 0
@@ -168,11 +160,11 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: story
         UserData: 
-      - CollectPath: Assets/AssetsPackage/EditConfig/ConfigEnvironments.json
-        CollectorGUID: 3c3c405976dca574c82582709dcf1b6e
+      - CollectPath: Assets/AssetsPackage/EditConfig/Others
+        CollectorGUID: 4e28258f8388a2a419c2f2d82981a549
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackSeparately
+        PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 

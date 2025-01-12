@@ -1,8 +1,8 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigParamBool : ConfigParam<bool>
     {
         public override void SetDefaultValue(DynDictionary dynDictionary)

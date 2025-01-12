@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigActorCommon
     {
         [NinoMember(1)][Tooltip("会影响相机机位")]

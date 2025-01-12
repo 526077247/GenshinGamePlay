@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize][LabelText("输入状态修改")]
+    [NinoType(false)][LabelText("输入状态修改")]
     public partial class ConfigStoryChangeInputState: ConfigStoryClip
     {
         [NinoMember(10)][LabelText("开启输入状态")]

@@ -1,8 +1,8 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class SetFsmTrigger : SetFsmParam<bool>
     {
         protected override void SetData(FsmComponent fsmComponent)

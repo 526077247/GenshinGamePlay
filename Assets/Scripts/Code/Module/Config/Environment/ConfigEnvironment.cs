@@ -1,16 +1,16 @@
 ﻿using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigEnvironment
     {
 #if UNITY_EDITOR
-        [NinoMember(0)][LabelText("策划备注")]
-        public int Remarks;
+        [LabelText("策划备注")]
+        public string Remarks;
 #endif
         [NinoMember(1)]
         public int Id;

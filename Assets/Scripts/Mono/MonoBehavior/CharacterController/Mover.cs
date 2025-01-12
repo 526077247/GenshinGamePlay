@@ -319,8 +319,9 @@ namespace CMF
 		//Set mover velocity;
 		public void SetVelocity(Vector3 velocity)
 		{
-			rig.velocity = velocity + currentGroundAdjustmentVelocity;
-			rig.isKinematic = Vector3.SqrMagnitude(rig.velocity) < 0.001f;
+			var vo = velocity + currentGroundAdjustmentVelocity;
+			rig.velocity = vo;
+			rig.isKinematic = Vector3.SqrMagnitude(vo) < 0.001f;
 		}	
 
 		//Returns 'true' if mover is touching ground and the angle between hte 'up' vector and ground normal is not too steep (e.g., angle < slopelimit);

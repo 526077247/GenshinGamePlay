@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigCameraHardLockToTargetPlugin: ConfigCameraBodyPlugin
     {
-        [NinoMember(0)]
+        [NinoMember(1)]
         public float Damping;
     }
 }

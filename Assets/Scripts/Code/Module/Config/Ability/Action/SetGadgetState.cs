@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class SetGadgetState: ConfigAbilityAction
     {
         [NinoMember(10)]

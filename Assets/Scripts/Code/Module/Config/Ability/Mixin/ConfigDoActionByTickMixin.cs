@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 监听间隔
     /// </summary>
-    [NinoSerialize][LabelText("间隔时间DoAction")]
+    [NinoType(false)][LabelText("间隔时间DoAction")]
     public partial class ConfigDoActionByTickMixin : ConfigAbilityMixin
     {
         /// <summary>

@@ -1,13 +1,13 @@
 ﻿using System;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("增加变量的值")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupAddVariableAction : ConfigSceneGroupAction
     {
         [JsonIgnore]

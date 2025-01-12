@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("球")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupZoneSphere : ConfigSceneGroupZone
     {
         [NinoMember(5)]

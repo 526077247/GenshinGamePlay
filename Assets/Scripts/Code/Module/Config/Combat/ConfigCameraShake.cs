@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigCameraShake
     {
         [NinoMember(1)][LabelText("击中才广播")][ShowIf("@"+nameof(ShakeType)+"!="+nameof(CameraShakeType)+"."+nameof(CameraShakeType.CustomVector))]

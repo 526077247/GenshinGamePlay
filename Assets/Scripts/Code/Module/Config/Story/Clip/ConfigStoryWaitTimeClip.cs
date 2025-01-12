@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize][LabelText("等待时间")]
+    [NinoType(false)][LabelText("等待时间")]
     public partial class ConfigStoryWaitTimeClip: ConfigStoryClip
     {
         [NinoMember(10)][LabelText("时间间隔ms")]

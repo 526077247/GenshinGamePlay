@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAttackInfo
     {
         [NinoMember(1)][LabelText("攻击标识")][Tooltip("攻击标识，其他地方可通过这个标记筛选过滤")]
@@ -19,7 +19,7 @@ namespace TaoTie
         [NinoMember(5)][LabelText("默认打击数据")][NotNull]
         public ConfigHitPattern HitPattern;
         [NinoMember(6)][LabelText("打击数据")]
-        public Dictionary<HitBoxType, ConfigHitPattern> HitPatternOverwrite;
+        public Dictionary<HitBoxType, ConfigHitPattern> HitPatternOverwrite = new();
         [NinoMember(7)][LabelText("强制抖动摄像机")]
         public bool ForceCameraShake;
         [NinoMember(8)][LabelText("抖动摄像机参数")][ShowIf(nameof(ForceCameraShake))][NotNull]

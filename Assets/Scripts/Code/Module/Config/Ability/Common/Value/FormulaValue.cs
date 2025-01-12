@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 公式运算值
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class FormulaValue: BaseValue
     {
         [NinoMember(1)]

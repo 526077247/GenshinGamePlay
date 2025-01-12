@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -14,6 +14,6 @@ namespace TaoTie
         [NinoMember(3)][Tooltip("能使用的技能")]
         public int[] SkillId;
         [NinoMember(4)][Tooltip("重写每个Pose能使用的技能")]
-        public Dictionary<int, int[]> OverwriteByPose;
+        public Dictionary<int, int[]> OverwriteByPose = new();
     }
 }

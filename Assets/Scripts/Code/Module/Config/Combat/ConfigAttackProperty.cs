@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAttackProperty
     {
         [NinoMember(1)][LabelText("伤害值")] [NotNull]
@@ -15,7 +15,7 @@ namespace TaoTie
         [NinoMember(3)][LabelText("击打类型")]
         public StrikeType StrikeType;
         [NinoMember(4)][LabelText("破霸体值")] 
-        public Dictionary<HitBoxType, BaseValue> EnBreak;
+        public Dictionary<HitBoxType, BaseValue> EnBreak = new();
         [NinoMember(5)][LabelText("攻击类型")]
         public AttackType AttackType;
         [NinoMember(6)][LabelText("额外伤害值")][NotNull]

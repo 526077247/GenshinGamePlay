@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace TaoTie
     /// 打印log
     /// </summary>
     [LabelText("打印log")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupPrintContextLogAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]

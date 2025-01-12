@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using DaGenGraph;
 using DaGenGraph.Editor;
+using Unity.Code.NinoGen;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -118,8 +119,9 @@ namespace TaoTie
                     return;
                 }
 
-                var jstr = JsonHelper.ToJson(Convert(m_Graph));
-                File.WriteAllText(path,jstr);
+                var obj = Convert(m_Graph);
+                File.WriteAllText(path,JsonHelper.ToJson(obj));
+                File.WriteAllBytes(path.Replace("json","bytes"),Serializer.Serialize(obj));
                 AssetDatabase.Refresh();
                 Log.Error("导出成功");   
             }

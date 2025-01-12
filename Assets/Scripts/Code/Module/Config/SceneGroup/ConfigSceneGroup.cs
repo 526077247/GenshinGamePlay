@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroup
     {
         [NinoMember(1)]
         [PropertyOrder(int.MinValue)]
         public ulong Id;
 #if UNITY_EDITOR
-        [NinoMember(0)][LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
+        [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
         public string Remarks;
 #endif
         [NinoMember(2)]

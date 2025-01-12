@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 监听点击面板按钮
     /// </summary>
-    [NinoSerialize][LabelText("点击面板按钮DoAction")]
+    [NinoType(false)][LabelText("点击面板按钮DoAction")]
     public partial class ConfigDoActionOnInteeTouchMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]

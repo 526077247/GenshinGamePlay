@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [TriggerType]
     [LabelText("变量值")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigVariableCondition : ConfigSceneGroupCondition
     {
         [NinoMember(1)]

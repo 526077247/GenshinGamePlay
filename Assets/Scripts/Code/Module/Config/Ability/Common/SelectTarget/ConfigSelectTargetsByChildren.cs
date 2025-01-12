@@ -1,11 +1,11 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 namespace TaoTie
 {
 	/// <summary>
 	/// 筛选子Entity
 	/// </summary>
-	[NinoSerialize]
+	[NinoType(false)]
     public class ConfigSelectTargetsByChildren: ConfigSelectTargets
     {
 	    [NinoMember(1)]

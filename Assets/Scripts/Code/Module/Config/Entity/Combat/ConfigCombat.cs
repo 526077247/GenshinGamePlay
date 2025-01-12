@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigCombat
     {
         [NinoMember(1)][LabelText("基础属性")] [BoxGroup("属性")][TableList]

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine.Timeline;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public partial class ConfigStoryTimeLine: ConfigStoryClip
     {
         
@@ -39,7 +40,7 @@ namespace TaoTie
         [NinoMember(11)][Sirenix.OdinInspector.ReadOnly]
         public ConfigStoryTimeLineClip[] Clips;
         [NinoMember(12)]
-        public Dictionary<string, int> Binding = new Dictionary<string, int>();
+        public Dictionary<string, int> Binding = new ();
         public override async ETTask Process(StorySystem storySystem)
         {
             await storySystem.PlayTimeLine(this);

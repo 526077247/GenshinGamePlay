@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -7,7 +7,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [LabelText("与 逻辑节点")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupOrAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]

@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-	[NinoSerialize]
+	[NinoType(false)]
 	public partial class ConfigDie
 	{
 		[NinoMember(1), LabelText("是否有死亡动画")] 

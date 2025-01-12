@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public class ConfigStoryContentText: ConfigStoryText
     {
         [NinoMember(1)][LabelText("默认内容")]
         public string Default;
         [NinoMember(2)][LabelText("多语言")]
-        public Dictionary<LangType, string> Others;
+        public Dictionary<LangType, string> Others = new();
 
         public override string GetShowText()
         {

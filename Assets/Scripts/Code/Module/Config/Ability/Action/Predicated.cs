@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 按条件过滤
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class Predicated: ConfigAbilityAction
     {
         [NinoMember(10)]

@@ -18,11 +18,11 @@ namespace TaoTie
             CampId = CampConst.Player;
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
-            configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
+            configActor = GetActorConfig(Config.ActorConfig);
             AddComponent<AttachComponent>();
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
-            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             AddComponent<AvatarSkillComponent>();
             AddComponent<LocalInputController>();

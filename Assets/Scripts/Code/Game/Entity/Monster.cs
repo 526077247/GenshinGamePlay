@@ -18,22 +18,22 @@ namespace TaoTie
             CampId = campId;
             var monster = AddComponent<MonsterComponent,int>(configId);
             ConfigId = monster.Config.UnitId;
-            configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
+            configActor = GetActorConfig(Config.ActorConfig);
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
-            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(monster.Config.AIPath))
             {
-                var config = ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(monster.Config.AIPath);
+                var config = GetAIConfig(monster.Config.AIPath);
                 if(config!=null && config.Enable)
                     AddComponent<AIComponent,ConfigAIBeta>(config);
             }
             if (!string.IsNullOrEmpty(monster.Config.PoseFSM))
             {
-                AddComponent<PoseFSMComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(monster.Config.PoseFSM));
+                AddComponent<PoseFSMComponent,ConfigFsmController>(GetFsmConfig(monster.Config.PoseFSM));
             }
             AddComponent<BillboardComponent, ConfigBillboard>(configActor.Billboard);
             AddComponent<MoveComponent>();

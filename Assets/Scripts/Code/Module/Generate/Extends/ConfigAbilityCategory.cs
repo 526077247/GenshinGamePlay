@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Unity.Code.NinoGen;
 using UnityEngine;
 using YooAsset;
 
@@ -55,7 +57,7 @@ namespace TaoTie
                     {
                         try
                         {
-                            var list = ProtobufHelper.FromBytes<ConfigAbility[]>(textAsset.bytes);
+                            Deserializer.Deserialize(textAsset.bytes, out ConfigAbility[] list);
                             for (int j = 0; j < list.Length; j++)
                             {
                                 var item = list[j];
@@ -66,11 +68,14 @@ namespace TaoTie
                                 }
                                 else
                                 {
-                                    Log.Error("ConfigAbilityList AbilityName重复 "+item.AbilityName);
+                                    Log.Error("ConfigAbilityList AbilityName重复 " + item.AbilityName);
                                 }
                             }
                         }
-                        catch{}
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex);
+                        }
                     }
                 }
                 op.Release();

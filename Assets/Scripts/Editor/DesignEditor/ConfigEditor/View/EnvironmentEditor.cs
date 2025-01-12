@@ -1,12 +1,16 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class EnvironmentEditor: BaseEditorWindow<ConfigEnvironments>
     {
         protected override string folderPath => base.folderPath + "/EditConfig";
+        protected override byte[] Serialize(ConfigEnvironments data)
+        {
+            return Serializer.Serialize(data);
+        }
         [MenuItem("Tools/配置编辑器/Environment")]
         static void OpenAI()
         {

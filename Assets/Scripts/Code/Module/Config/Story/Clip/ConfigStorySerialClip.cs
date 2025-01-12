@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [LabelText("串行执行")][NinoSerialize]
+    [LabelText("串行执行")][NinoType(false)]
     public partial class ConfigStorySerialClip: ConfigStoryClip
     {
         [NinoMember(10)]

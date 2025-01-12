@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public sealed partial class ConfigFsmController
     {
-        public Dictionary<string, ConfigParam> ParamDict;
+        [NinoMember(1)]
+        public Dictionary<string, ConfigParam> ParamDict = new();
+        [NinoMember(2)]
         public ConfigFsm[] FsmConfigs;
 
         public int FsmCount => this.FsmConfigs.Length;

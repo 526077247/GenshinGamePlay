@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAISensing
     {
         [LabelText("启用")]
@@ -13,7 +13,7 @@ namespace TaoTie
         [NinoMember(2)]
         public ConfigAISensingSetting Setting;
         [NinoMember(3)]
-        public Dictionary<string, ConfigAISensingSetting> Settings;
+        public Dictionary<string, ConfigAISensingSetting> Settings = new();
 
     }
 }

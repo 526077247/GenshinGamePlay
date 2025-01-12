@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public class ConfigBillboardNamePlugin: ConfigBillboardPlugin
     {
         [NinoMember(10)][LabelText("是否展示Unit表对应名称")]

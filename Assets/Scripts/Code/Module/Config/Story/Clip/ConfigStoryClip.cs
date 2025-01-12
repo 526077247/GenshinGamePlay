@@ -1,13 +1,15 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract partial class ConfigStoryClip
     {
-        [NinoMember(1)][LabelText("策划备注")]
+#if UNITY_EDITOR
+        [LabelText("策划备注")]
         public string Remarks;
-
+#endif
 
         public abstract ETTask Process(StorySystem storySystem);
     }

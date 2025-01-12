@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public class ConfigStoryI18NText: ConfigStoryText
     {
         [NinoMember(1)][LabelText("多语言表Key")]

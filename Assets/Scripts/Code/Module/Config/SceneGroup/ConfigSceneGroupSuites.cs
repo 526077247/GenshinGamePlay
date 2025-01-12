@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,11 +11,11 @@ namespace TaoTie
     /// <summary>
     /// 小组配置
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupSuites
     {
 #if UNITY_EDITOR
-        [NinoMember(0)][LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
+        [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
         public string Remarks;
         [JsonIgnore]
         public bool RandSuite => OdinDropdownHelper.sceneGroup.RandSuite;

@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("通过ActorId释放实体")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupReleaseEntityByActorIdAction:ConfigSceneGroupAction
     {
         [NinoMember(10)]

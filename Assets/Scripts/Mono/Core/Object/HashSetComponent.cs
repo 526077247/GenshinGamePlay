@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Nino.Core;
 
 namespace TaoTie
 {
+    [NinoIgnore]
     public class HashSetComponent<T>: HashSet<T>, IDisposable
     {
         public static HashSetComponent<T> Create()

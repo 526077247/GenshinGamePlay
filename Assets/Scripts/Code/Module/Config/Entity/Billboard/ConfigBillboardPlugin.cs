@@ -1,11 +1,12 @@
 ﻿using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract partial class ConfigBillboardPlugin
     {
         [NinoMember(1)]

@@ -1,8 +1,8 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public class ConfigCameraShakePlugin: ConfigCameraOtherPlugin
     {
         

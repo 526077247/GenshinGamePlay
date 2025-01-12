@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAISkillCastCondition
     {
         [NinoMember(1)][Tooltip("处于这些Pose中时有效, 为null表示全有效")]

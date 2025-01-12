@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("重设寻路路径")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupRestartPlatformMove : ConfigSceneGroupAction
     {
         [NinoMember(10)]

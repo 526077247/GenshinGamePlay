@@ -1,12 +1,12 @@
 using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigAnyMonsterDieEventTrigger))]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAnyMonsterDieEventActorIdCondition : ConfigSceneGroupCondition<AnyMonsterDieEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]

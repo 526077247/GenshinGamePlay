@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
     /// <summary>
     /// 附加特效
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public class AttachEffect: ConfigAbilityAction
     {
         [NinoMember(10)]

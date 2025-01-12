@@ -142,7 +142,7 @@ FragmentOutput SurfaceDataToGbuffer(SurfaceData surfaceData, InputData inputData
     output.GBUFFER_SHADOWMASK = inputData.shadowMask; // will have unity_ProbesOcclusion value if subtractive lighting is used (baked)
     #endif
     #ifdef _LIGHT_LAYERS
-    uint renderingLayers = GetMeshRenderingLightLayer();
+    uint renderingLayers = GetMeshRenderingLayer();
     // Note: we need to mask out only 8bits of the layer mask before encoding it as otherwise any value > 255 will map to all layers active
     output.GBUFFER_LIGHT_LAYERS = float4((renderingLayers & 0x000000FF) / 255.0, 0.0, 0.0, 0.0);
     #endif
@@ -216,7 +216,7 @@ FragmentOutput BRDFDataToGbuffer(BRDFData brdfData, half3 diffuse, InputData inp
     output.GBUFFER_SHADOWMASK = inputData.shadowMask; // will have unity_ProbesOcclusion value if subtractive lighting is used (baked)
     #endif
     #ifdef _LIGHT_LAYERS
-    uint renderingLayers = GetMeshRenderingLightLayer();
+    uint renderingLayers = GetMeshRenderingLayer();
     // Note: we need to mask out only 8bits of the layer mask before encoding it as otherwise any value > 255 will map to all layers active
     output.GBUFFER_LIGHT_LAYERS = float4((renderingLayers & 0x000000FF) / 255.0, 0.0, 0.0, 0.0);
     #endif

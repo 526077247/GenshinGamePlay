@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 namespace TaoTie
 {
     [LabelText("立方")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupZoneObb : ConfigSceneGroupZone
     {
         [NinoMember(5)]

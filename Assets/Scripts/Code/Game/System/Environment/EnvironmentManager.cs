@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Code.NinoGen;
 using UnityEngine;
 
 namespace TaoTie
@@ -44,6 +45,20 @@ namespace TaoTie
         
         #region IManager
         
+        private ConfigEnvironments GetConfig(string path = "EditConfig/Others/ConfigEnvironments")
+        {
+            if (Define.ConfigType == 0)
+            {
+                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                return JsonHelper.FromJson<ConfigEnvironments>(jStr);
+            }
+            else
+            {
+                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                Deserializer.Deserialize(bytes,out ConfigEnvironments res);
+                return res;
+            }
+        }
         public void Init()
         {
             MaterialManager.Instance.LoadMaterialAsync("SkyBox/Skybox_SkyboxBlender.mat", (mat) =>
@@ -54,7 +69,7 @@ namespace TaoTie
             Instance = this;
             #region Config
             
-            var config = ResourcesManager.Instance.LoadConfig<ConfigEnvironments>("EditConfig/ConfigEnvironments");
+            var config = GetConfig();
             DefaultBlend = config.DefaultBlend;
             var defaultEnvironmentId = config.DefaultEnvironment.Id;
             configs = new Dictionary<int, ConfigEnvironment>();

@@ -1,11 +1,15 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class FsmEditor: BaseEditorWindow<ConfigFsmController>
     {
+        protected override byte[] Serialize(ConfigFsmController data)
+        {
+            return Serializer.Serialize(data);
+        }
         [MenuItem("Tools/配置编辑器/Fsm")]
         static void OpenFsm()
         {

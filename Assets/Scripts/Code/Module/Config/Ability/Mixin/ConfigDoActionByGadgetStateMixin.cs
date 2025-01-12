@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -7,7 +7,7 @@ namespace TaoTie
     /// <summary>
     /// GadgetState状态改变
     /// </summary>
-    [NinoSerialize][LabelText("GadgetState状态改变时DoAction")]
+    [NinoType(false)][LabelText("GadgetState状态改变时DoAction")]
     public partial class ConfigDoActionByGadgetStateMixin: ConfigAbilityMixin
     {
         [NinoMember(1)]

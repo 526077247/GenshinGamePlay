@@ -471,7 +471,7 @@ half4 LitPassFragment(Varyings input) : SV_Target
 
     half4 shadowMask = CalculateShadowMask(inputData);
     AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData.normalizedScreenSpaceUV, surfaceData.occlusion);
-    uint meshRenderingLayers = GetMeshRenderingLightLayer();
+    uint meshRenderingLayers = GetMeshRenderingLayer();
     Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
     NPRMainLightCorrect(_LightDirectionObliqueWeight, mainLight);
     MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);

@@ -5,7 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     class Transition
@@ -29,8 +29,8 @@ namespace TaoTie
         const string EditDirName = "Edit";
         const string PublishDirName = "Animations";
         
-        const string ControllerConfigName = "FsmConfig.json";
-        const string AIControllerConfigName = "PoseConfig.json";
+        const string ControllerConfigName = "FsmConfig.";
+        const string AIControllerConfigName = "PoseConfig.";
         const string FsmConfig = EditDirName + "/" + "FsmConfig.controller";
         const string PoseConfig = EditDirName + "/" + "PoseConfig.controller";
         
@@ -132,7 +132,8 @@ namespace TaoTie
 
             if (!hasError)
             {
-                File.WriteAllText(configSavePath, JsonHelper.ToJson(newController));
+                File.WriteAllText(configSavePath+"json", JsonHelper.ToJson(newController));
+                File.WriteAllBytes(configSavePath+"bytes", Serializer.Serialize(newController));
                 AssetDatabase.Refresh();
                 Debug.LogFormat("导出成功! {0}", configSavePath);
             }

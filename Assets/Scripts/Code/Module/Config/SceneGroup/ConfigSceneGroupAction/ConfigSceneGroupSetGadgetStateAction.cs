@@ -1,12 +1,12 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("修改GadgetState状态")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupSetGadgetStateAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]

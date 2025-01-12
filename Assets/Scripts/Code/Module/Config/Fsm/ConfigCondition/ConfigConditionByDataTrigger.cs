@@ -1,10 +1,10 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
         [NinoMember(1)]

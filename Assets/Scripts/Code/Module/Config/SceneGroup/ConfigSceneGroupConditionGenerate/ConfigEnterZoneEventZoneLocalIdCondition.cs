@@ -1,12 +1,12 @@
 using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigEnterZoneEventZoneLocalIdCondition : ConfigSceneGroupCondition<EnterZoneEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]

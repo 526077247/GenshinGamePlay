@@ -1,11 +1,11 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("当添加或附加组之后")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSuiteLoadEventTrigger : ConfigSceneGroupTrigger<SuiteLoadEvent>
     {
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace TaoTie
     /// <summary>
     /// 交互面板配置
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigIntee
     {
         [NinoMember(1)]

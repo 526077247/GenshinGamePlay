@@ -1,8 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract class ConfigAbilityAction
     {
         [NinoMember(1)][BoxGroup("Common")][LabelText("Targetting目标重新选定生效前过滤")]

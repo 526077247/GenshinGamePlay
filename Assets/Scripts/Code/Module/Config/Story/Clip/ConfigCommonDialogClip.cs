@@ -1,9 +1,9 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize][LabelText("一般对话框")]
+    [NinoType(false)][LabelText("一般对话框")]
     public partial class ConfigCommonDialogClip: ConfigStoryClip
     {
         [NinoMember(10)]

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Code.NinoGen;
 
 namespace TaoTie
 {
@@ -20,21 +21,21 @@ namespace TaoTie
             CampId = campId;
             var gadget = AddComponent<GadgetComponent,int,GadgetState>(id,state);
             ConfigId = gadget.Config.UnitId;
-            configActor = ResourcesManager.Instance.LoadConfig<ConfigActor>(Config.ActorConfig);
+            configActor = GetActorConfig(Config.ActorConfig);
             if (configActor.Intee != null)
             {
                 AddComponent<InteeComponent, ConfigIntee>(configActor.Intee);
             }
             AddComponent<GameObjectHolderComponent>();
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
-            var fsm = AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            var fsm = AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             fsm.SetData(FSMConst.GadgetState,(int)state);
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(gadget.Config.AIPath))
             {
-                var config = ResourcesManager.Instance.LoadConfig<ConfigAIBeta>(gadget.Config.AIPath);
+                var config = GetAIConfig(gadget.Config.AIPath);
                 if(config!=null && config.Enable)
                     AddComponent<AIComponent,ConfigAIBeta>(config);
             }
@@ -47,6 +48,7 @@ namespace TaoTie
             ConfigId = default;
             CampId = 0;
         }
+
 
         #endregion
     }

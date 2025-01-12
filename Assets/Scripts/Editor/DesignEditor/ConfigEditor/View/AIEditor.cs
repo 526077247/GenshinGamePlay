@@ -1,12 +1,17 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+using Unity.Code.NinoGen;
 
 namespace TaoTie
 {
     public class AIEditor: BaseEditorWindow<ConfigAIBeta>
     {
         protected override string folderPath => base.folderPath + "/Unit";
+        protected override byte[] Serialize(ConfigAIBeta data)
+        {
+            return Serializer.Serialize(data);
+        }
         [MenuItem("Tools/配置编辑器/AI")]
         static void OpenAI()
         {

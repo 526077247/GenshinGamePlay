@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Code.NinoGen;
 using UnityEngine;
 
 namespace TaoTie
@@ -25,11 +26,24 @@ namespace TaoTie
         public int CursorVisibleState { get; private set; }= 0;
         public int CursorLockState { get; private set; }= 0;
 
+        private ConfigCameras GetConfig(string path = "EditConfig/Others/ConfigCameras")
+        {
+            if (Define.ConfigType == 0)
+            {
+                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                return JsonHelper.FromJson<ConfigCameras>(jStr);
+            }
+            else
+            {
+                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                Deserializer.Deserialize(bytes,out ConfigCameras res);
+                return res;
+            }
+        }
         private partial void AfterInit()
         {
             #region Config
-
-            var config = ResourcesManager.Instance.LoadConfig<ConfigCameras>("EditConfig/ConfigCameras");
+            var config = GetConfig("EditConfig/Others/ConfigCameras");
             DefaultBlend = config.DefaultBlend;
             defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();
@@ -68,7 +82,7 @@ namespace TaoTie
         
         public void Update()
         {
-
+            if (cameraStack == null) return;
             foreach (var item in cameraStack)
             {
                 item.Update();

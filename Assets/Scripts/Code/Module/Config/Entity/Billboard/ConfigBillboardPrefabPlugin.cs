@@ -1,5 +1,5 @@
 ﻿using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using UnityEditor;

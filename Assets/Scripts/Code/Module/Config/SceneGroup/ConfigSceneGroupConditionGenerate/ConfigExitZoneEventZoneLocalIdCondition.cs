@@ -1,12 +1,12 @@
 using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigExitZoneEventTrigger))]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigExitZoneEventZoneLocalIdCondition : ConfigSceneGroupCondition<ExitZoneEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]

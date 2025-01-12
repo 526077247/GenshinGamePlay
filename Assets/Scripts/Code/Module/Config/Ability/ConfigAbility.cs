@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigAbility
     {
         [NinoMember(1)]
         public string AbilityName;
         [NinoMember(2)]
-        public Dictionary<string, float> AbilitySpecials;
+        public Dictionary<string, float> AbilitySpecials = new ();
         [NinoMember(3)]
         public ConfigAbilityMixin[] AbilityMixins;
         [NinoMember(4)]

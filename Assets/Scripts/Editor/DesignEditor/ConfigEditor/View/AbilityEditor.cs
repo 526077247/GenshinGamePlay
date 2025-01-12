@@ -2,6 +2,7 @@
 using UnityEditor.Callbacks;
 using UnityEditor;
 using UnityEngine;
+using Unity.Code.NinoGen;
 
 namespace TaoTie
 {
@@ -10,6 +11,11 @@ namespace TaoTie
         protected override string fileName => "Abilities";
 
         protected override string folderPath => base.folderPath + "/EditConfig/Abilities";
+
+        protected override byte[] Serialize(List<ConfigAbility> data)
+        {
+            return Serializer.Serialize(data);
+        }
         [MenuItem("Tools/配置编辑器/Ability")]
         static void OpenAbility()
         {

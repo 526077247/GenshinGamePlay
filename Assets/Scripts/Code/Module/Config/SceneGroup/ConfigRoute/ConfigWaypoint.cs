@@ -1,16 +1,17 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigWaypoint
     {
-        [DisableInEditorMode]
+        [NinoMember(17)][DisableInEditorMode]
         public int Index;
-        [NinoMember(0)][LabelText("是否是相对坐标、方向")]
+        
+        [NinoMember(16)][LabelText("是否是相对坐标、方向")]
         public bool IsLocal = true;
         [LabelText("坐标")]
         [NinoMember(1)] public Vector3 Pos;

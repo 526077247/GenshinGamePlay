@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public class CreateGadget: ConfigAbilityAction
     {
         [NinoMember(10)][LabelText("是否存在所有者？")]

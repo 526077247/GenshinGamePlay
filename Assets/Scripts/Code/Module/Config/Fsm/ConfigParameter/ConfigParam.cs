@@ -1,13 +1,15 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public abstract partial class ConfigParam
     {
+        [NinoMember(1)]
         public string Key;
+        [NinoMember(2)]
         public bool NeedSyncAnimator;
 
         public void SetValue(DynDictionary dynDictionary, float val)
@@ -44,9 +46,10 @@ namespace TaoTie
 
         public abstract void SetDefaultValue(DynDictionary dynDictionary);
     }
-    [NinoSerialize]
+    [NinoType(false)]
     public abstract class ConfigParam<T> : ConfigParam
     {
+        [NinoMember(3)]
         public T defaultValue;
     }
 }

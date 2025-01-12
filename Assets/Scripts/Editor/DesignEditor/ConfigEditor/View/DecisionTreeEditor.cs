@@ -1,13 +1,17 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class DecisionTreeEditor: BaseEditorWindow<ConfigAIDecisionTree>
     {
         protected override string fileName => "DecisionTree";
         protected override string folderPath => base.folderPath + "/EditConfig/AITree";
+        protected override byte[] Serialize(ConfigAIDecisionTree data)
+        {
+            return Serializer.Serialize(data);
+        }
         protected override ConfigAIDecisionTree CreateInstance()
         {
             return new ConfigAIDecisionTree();

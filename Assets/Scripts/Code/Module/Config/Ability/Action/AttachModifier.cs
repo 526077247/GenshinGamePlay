@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 附加Modifier，会随被附加的移除而移除
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class AttachModifier: ConfigAbilityAction
     {
         [NinoMember(10)]

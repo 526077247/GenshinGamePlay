@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
@@ -7,6 +7,7 @@ namespace TaoTie
     /// <summary>
     /// 范围
     /// </summary>
+    [NinoType(false)]
     public abstract partial class ConfigRange
     {
         [NinoMember(1)]

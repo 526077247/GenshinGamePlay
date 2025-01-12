@@ -1,15 +1,16 @@
 ﻿using System;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract class ConfigSceneGroupActor
     {
 #if UNITY_EDITOR
-        [PropertyOrder(int.MinValue+1)][NinoMember(0)]
+        [PropertyOrder(int.MinValue+1)]
         [LabelText("策划备注")]
         public string Remarks;
 #endif

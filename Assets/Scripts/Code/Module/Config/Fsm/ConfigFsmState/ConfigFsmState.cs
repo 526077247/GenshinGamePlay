@@ -1,11 +1,11 @@
 ﻿using System;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigFsmState
     {
         [NinoMember(1)]

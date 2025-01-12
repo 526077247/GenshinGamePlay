@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
     /// <summary>
     /// 子弹衰减
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigBulletWane
     {
         [NinoMember(1)][LabelText("衰减开始生效时间")][Tooltip("表示从Bullet创生之后这么久，开始套用衰减规则")]

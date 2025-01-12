@@ -38,14 +38,14 @@ namespace TaoTie
             className = $"Config{type.Name}{ObjectNames.NicifyVariableName(fieldInfo.Name).Replace(" ","")}Condition";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("using System;");
-            sb.AppendLine("using Nino.Serialization;");
+            sb.AppendLine("using Nino.Core;");
             sb.AppendLine("using Sirenix.OdinInspector;");
             sb.AppendLine("using UnityEngine;");
             sb.AppendLine();
             sb.AppendLine("namespace TaoTie");
             sb.AppendLine("{");
             sb.AppendLine($"    [TriggerType(typeof(Config{type.Name}Trigger))]");
-            sb.AppendLine("    [NinoSerialize]");
+            sb.AppendLine("    [NinoType(false)]");
             sb.AppendLine($"    public partial class {className} : ConfigSceneGroupCondition<{type.Name}>");
             sb.AppendLine("    {");
             sb.AppendLine("        [Tooltip(SceneGroupTooltips.CompareMode)]");

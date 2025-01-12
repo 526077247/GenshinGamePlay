@@ -1,7 +1,8 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract class SetFsmParam<T> : ConfigAbilityAction where T: unmanaged
     {
         [NinoMember(10)]

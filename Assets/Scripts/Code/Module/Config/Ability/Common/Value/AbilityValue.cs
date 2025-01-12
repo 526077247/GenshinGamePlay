@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 取Ability值
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class AbilityValue: BaseValue
     {
         [NinoMember(1)]

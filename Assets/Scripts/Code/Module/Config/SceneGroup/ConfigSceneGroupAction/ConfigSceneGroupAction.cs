@@ -1,24 +1,25 @@
 ﻿using System;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract partial class ConfigSceneGroupAction
     {
         [NinoMember(1)]
         [LabelText("禁用")] public bool Disable;
 
 #if UNITY_EDITOR
-        [HideInInspector][JsonIgnore]
+        [HideInInspector][JsonIgnore][NinoIgnore]
         public Type HandleType;
 #endif
         [NinoMember(2)]
         [LabelText("排序序号")] public int LocalId;
-        [JsonIgnore]
+        [JsonIgnore][NinoIgnore]
         public virtual bool CanSetOtherSceneGroup { get; } = false;
         [ShowIf(nameof(CanSetOtherSceneGroup))] [LabelText("是否是设置其他SceneGroup的内容")] 
         [NinoMember(3)]

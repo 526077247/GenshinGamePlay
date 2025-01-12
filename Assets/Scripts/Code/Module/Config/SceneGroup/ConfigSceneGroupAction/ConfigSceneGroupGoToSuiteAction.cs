@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace TaoTie
     /// SceneGroup调整suite进度,只对非randSuite有效
     /// </summary>
     [LabelText("跳转到其他Suite")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupGoToSuiteAction:ConfigSceneGroupAction
     {
         [LabelText("要跳转的组Id")]

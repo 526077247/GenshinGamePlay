@@ -1,5 +1,5 @@
 using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [LabelText("进入触发区域的指定类型实体的数量")]
     [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigEnterZoneEvtGetRegionEntityCountCondition : ConfigSceneGroupCondition<EnterZoneEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]

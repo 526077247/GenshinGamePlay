@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 或
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ByOr : ConfigAbilityPredicate
     {
         [NinoMember(10)]

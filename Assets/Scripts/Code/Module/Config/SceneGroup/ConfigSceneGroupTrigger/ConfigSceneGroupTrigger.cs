@@ -1,6 +1,6 @@
 ﻿using System;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -8,6 +8,7 @@ using UnityEngine;
 namespace TaoTie
 {
     // Trigger
+    [NinoType(false)]
     public abstract partial class ConfigSceneGroupTrigger
     {
         [PropertyOrder(int.MinValue)] 
@@ -24,7 +25,7 @@ namespace TaoTie
         public ConfigSceneGroupAction[] Actions;
 
 #if UNITY_EDITOR
-        [NinoMember(0)][PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
+        [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
         public string Remarks;
         
         private void Refresh()
@@ -42,7 +43,7 @@ namespace TaoTie
 
         public abstract void OnTrigger(SceneGroup sceneGroup, IEventBase evt);
     }
-    
+    [NinoType(false)]
     public abstract class ConfigSceneGroupTrigger<T> : ConfigSceneGroupTrigger where T : IEventBase
     {
         [JsonIgnore]

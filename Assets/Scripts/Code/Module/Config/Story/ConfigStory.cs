@@ -1,17 +1,17 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigStory
     {
         [NinoMember(1)]
         public ulong Id;
-        
-        [NinoMember(2)][LabelText("策划备注")]
+#if UNITY_EDITOR
+        [LabelText("策划备注")]
         public string Remarks;
-        
+#endif
         [NinoMember(3)] 
         public ConfigStoryActor[] Actors;
             

@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
     /// <summary>
     /// 操作值
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class OperatorValue: BaseValue
     {
         [NinoMember(1)][NotNull]

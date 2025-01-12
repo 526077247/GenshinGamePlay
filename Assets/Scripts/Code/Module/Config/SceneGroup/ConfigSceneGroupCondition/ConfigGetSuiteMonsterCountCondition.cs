@@ -1,5 +1,5 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace TaoTie
     
     [TriggerType]
     [LabelText("SceneGroup当前剩余怪物数量")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigGetSuiteMonsterCountCondition : ConfigSceneGroupCondition
     {
         [NinoMember(1)]

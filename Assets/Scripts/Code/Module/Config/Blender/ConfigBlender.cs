@@ -1,12 +1,12 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigBlender
     {
-        [NinoMember(0)]
+        [NinoMember(2)]
         public EasingFunction.Ease Ease = EasingFunction.Ease.Linear;
 
         [NinoMember(1)][LabelText("过渡时间(ms)")]

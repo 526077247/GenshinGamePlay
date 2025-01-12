@@ -1,6 +1,6 @@
 using System;
 using LitJson.Extensions;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -10,6 +10,7 @@ using UnityEditor;
 namespace TaoTie
 {
     // Condition
+    [NinoType(false)]
     public abstract partial class ConfigSceneGroupCondition
     {
         public abstract bool IsMatch(IEventBase obj, SceneGroup sceneGroup);
@@ -149,7 +150,7 @@ namespace TaoTie
         }
 
 #if UNITY_EDITOR
-        [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)][NinoMember(0)]
+        [LabelText("策划备注")] [PropertyOrder(int.MinValue + 1)]
         public string Remarks;
 
         public static void ShowNotification(string tips)
@@ -184,6 +185,7 @@ namespace TaoTie
 #endif
     }
     
+    [NinoType(false)]
     public abstract class ConfigSceneGroupCondition<T>:ConfigSceneGroupCondition where T:IEventBase
     {
         [JsonIgnore]

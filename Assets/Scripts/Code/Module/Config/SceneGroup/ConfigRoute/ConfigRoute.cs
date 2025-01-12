@@ -1,14 +1,14 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigRoute
     {
 #if UNITY_EDITOR
-        [NinoMember(0)][PropertyOrder(int.MinValue + 1)][LabelText("策划备注")]
+        [PropertyOrder(int.MinValue + 1)][LabelText("策划备注")]
         public string Remarks;
 #endif
         [NinoMember(1)] public int LocalId;

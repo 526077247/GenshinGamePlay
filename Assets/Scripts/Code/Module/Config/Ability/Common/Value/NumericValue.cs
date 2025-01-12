@@ -1,11 +1,11 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 属性值
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class NumericValue: BaseValue
     {
         [NinoMember(1)]

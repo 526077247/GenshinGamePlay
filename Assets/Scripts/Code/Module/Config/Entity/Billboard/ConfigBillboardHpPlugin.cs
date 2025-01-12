@@ -1,10 +1,10 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
     
-    [NinoSerialize]
+    [NinoType(false)]
     public class ConfigBillboardHpPlugin: ConfigBillboardPlugin
     {
         [NinoMember(10)]

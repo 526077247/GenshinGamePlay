@@ -9,7 +9,7 @@ namespace TaoTie
 	    public static ConfigManager Instance { get; private set; }
         public IConfigLoader ConfigLoader { get; set; }
 
-        public Dictionary<Type, object> AllConfig = new Dictionary<Type, object>();
+        public Dictionary<Type, object> AllConfig = new ();
 
         #region override
 

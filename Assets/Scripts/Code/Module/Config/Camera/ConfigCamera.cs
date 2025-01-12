@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigCamera
     {
 
         [NinoMember(1)] [PropertyOrder(int.MinValue)] [Min(0)]
         public int Id;
 #if UNITY_EDITOR
-        [NinoMember(2)] [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
+        [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
         public string Remarks;
 #endif
         [NinoMember(3)] [Tooltip("更新朝向")] [BoxGroup("Plugin")]

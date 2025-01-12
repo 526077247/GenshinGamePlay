@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,11 +9,12 @@ namespace TaoTie
     /// <summary>
     /// 区域
     /// </summary>
+    [NinoType(false)]
     public abstract partial class ConfigSceneGroupZone
     {
         
         #if UNITY_EDITOR
-        [NinoMember(0)][LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
+        [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
         public string Remarks;
         #endif
         [NinoMember(1)][PropertyOrder(int.MinValue)]

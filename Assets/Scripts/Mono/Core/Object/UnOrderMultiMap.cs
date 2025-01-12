@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nino.Core;
 
 namespace TaoTie
 {
+	[NinoIgnore]
 	public class UnOrderMultiMap<T, K>: Dictionary<T, List<K>>
 	{
 		public void Add(T t, K k)

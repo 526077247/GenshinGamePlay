@@ -1,11 +1,11 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class OperatorSceneGroupValue : BaseSceneGroupValue
     {
         [NinoMember(1)][LabelText("左值")]

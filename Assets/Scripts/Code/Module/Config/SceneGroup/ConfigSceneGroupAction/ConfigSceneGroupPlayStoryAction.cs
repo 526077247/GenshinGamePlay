@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace TaoTie
     /// 播放剧情
     /// </summary>
     [LabelText("播放剧情")]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSceneGroupPlayStoryAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]

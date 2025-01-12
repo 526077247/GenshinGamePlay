@@ -1,10 +1,10 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigConditionByDataBool : ConfigConditionByData<bool>
     {
         public override bool Equals(ConfigCondition other)

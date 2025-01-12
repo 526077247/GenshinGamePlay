@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 显示或隐藏交互面板
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ShowIntee: ConfigAbilityAction
     {
         [NinoMember(10)]

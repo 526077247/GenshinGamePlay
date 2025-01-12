@@ -1,8 +1,9 @@
 ﻿using System;
-using Nino.Serialization;
+using Nino.Core;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract partial class ConfigCondition
     {
         public abstract ConfigCondition Copy();
@@ -11,7 +12,7 @@ namespace TaoTie
 
         public abstract bool Equals(ConfigCondition other);
     }
-
+    [NinoType(false)]
     public abstract partial class ConfigConditionByData:ConfigCondition
     {
         [NinoMember(1)]
@@ -19,6 +20,7 @@ namespace TaoTie
         [NinoMember(3)]
         public CompareMode Mode;
     }
+    [NinoType(false)]
     public abstract partial class ConfigConditionByData<T> :ConfigConditionByData  where T : unmanaged
     {
         [NinoMember(2)]

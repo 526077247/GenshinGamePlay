@@ -1,12 +1,16 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class CameraEditor: BaseEditorWindow<ConfigCameras>
     {
         protected override string folderPath => base.folderPath + "/EditConfig";
+        protected override byte[] Serialize(ConfigCameras data)
+        {
+            return Serializer.Serialize(data);
+        }
         [MenuItem("Tools/配置编辑器/Camera")]
         static void OpenAI()
         {

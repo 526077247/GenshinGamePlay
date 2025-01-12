@@ -1,4 +1,6 @@
-﻿namespace TaoTie
+﻿using Unity.Code.NinoGen;
+
+namespace TaoTie
 {
     public class Equip : Unit,IEntity<int>
     {
@@ -13,7 +15,7 @@
             ConfigId = weapon.Config.UnitId;
             AddComponent<AttachComponent>();
             AddComponent<GameObjectHolderComponent>();
-            AddComponent<FsmComponent,ConfigFsmController>(ResourcesManager.Instance.LoadConfig<ConfigFsmController>(Config.FSM));
+            AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
         }
 
         public void Destroy()

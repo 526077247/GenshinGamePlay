@@ -1,4 +1,4 @@
-﻿using Nino.Serialization;
+﻿using Nino.Core;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 监听添加后
     /// </summary>
-    [NinoSerialize][LabelText("ability或modify添加后DoAction")]
+    [NinoType(false)][LabelText("ability或modify添加后DoAction")]
     public partial class ConfigDoActionAfterAddMixin : ConfigAbilityMixin
     {
         [NinoMember(1)]

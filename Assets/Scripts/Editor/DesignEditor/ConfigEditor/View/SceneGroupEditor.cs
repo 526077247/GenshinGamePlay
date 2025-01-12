@@ -1,12 +1,16 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-
+using Unity.Code.NinoGen;
 namespace TaoTie
 {
     public class SceneGroupEditor: BaseEditorWindow<ConfigSceneGroup>
     {
         protected override string folderPath => base.folderPath + "/EditConfig/SceneGroup";
+        protected override byte[] Serialize(ConfigSceneGroup data)
+        {
+            return Serializer.Serialize(data);
+        }
         public void Update()
         {
             OdinDropdownHelper.sceneGroup = data;

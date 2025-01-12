@@ -1,12 +1,12 @@
 using System;
-using Nino.Serialization;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigPlatformReachPointEvtTrigger))]
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigPlatformReachPointEvtPointIndexCondition : ConfigSceneGroupCondition<PlatformReachPointEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]

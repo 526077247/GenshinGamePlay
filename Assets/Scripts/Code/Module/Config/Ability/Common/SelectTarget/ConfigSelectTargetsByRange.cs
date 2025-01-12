@@ -1,13 +1,13 @@
 ﻿
 using System;
-using Nino.Serialization;
+using Nino.Core;
 
 namespace TaoTie
 {
     /// <summary>
     /// 通过范围筛选
     /// </summary>
-    [NinoSerialize]
+    [NinoType(false)]
     public partial class ConfigSelectTargetsByRange: ConfigSelectTargets
     {
         [NinoMember(1)][NotNull]
