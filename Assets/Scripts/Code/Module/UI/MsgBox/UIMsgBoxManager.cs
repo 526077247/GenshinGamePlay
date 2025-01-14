@@ -53,6 +53,7 @@ namespace TaoTie
             if (currentMsgBox == null || msgBox != currentMsgBox)
             {
                 Log.Error("currentMsgBox == null || msgBox != currentMsgBox");
+                await msgBox.CloseSelf();
                 return;
             }
             await currentMsgBox.CloseSelf();
@@ -61,6 +62,7 @@ namespace TaoTie
                 var node = stack.First.Value;
                 stack.RemoveFirst();
                 currentMsgBox = await UIManager.Instance.OpenWindow(node.Type.FullName, node.Path, node.Para,node.Layer);
+                node.Dispose();
             }
             else
             {

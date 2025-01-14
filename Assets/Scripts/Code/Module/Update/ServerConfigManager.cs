@@ -249,6 +249,17 @@ namespace TaoTie
 
         public Resver GetResVerInfo(string configChannel, int version)
         {
+            var rename = "common";
+            for (int i = 0; i < Define.RenameList.Length; i++)
+            {
+                if (Define.RenameList[i] == configChannel)
+                {
+                    rename = configChannel;
+                    break;
+                }
+            }
+
+            configChannel = rename;
             if (string.IsNullOrEmpty(configChannel) || this.resUpdateList == null || 
                 !this.resUpdateList.TryGetValue(configChannel, out var resVerList)) return null;
             if (resVerList.TryGetValue(version, out var res))
