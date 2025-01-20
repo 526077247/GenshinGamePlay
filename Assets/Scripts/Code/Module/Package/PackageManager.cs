@@ -41,6 +41,10 @@ namespace TaoTie
                 {
                     YooAssetsMgr.Instance.ForceUnloadAllAssets(list[i].Name);
                 }
+                else if (list[i].State == PackageState.Downloading)
+                {
+                    list[i].DownloaderOperation?.CancelDownload();
+                }
             }
             list = null;
             dict = null;

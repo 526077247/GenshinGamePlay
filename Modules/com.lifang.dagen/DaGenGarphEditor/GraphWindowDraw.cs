@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
 namespace DaGenGraph.Editor
 {
-    public partial class GraphWindow
+    public abstract partial class GraphWindow
     {
         #region GUIStyles
 
@@ -91,7 +92,7 @@ namespace DaGenGraph.Editor
 
         private void DrawEdges()
         {
-            if (m_Graph.currentZoom <= 0.2f) return;
+            if (currentZoom <= 0.2f) return;
             if (m_NodeViews == null) return;
             m_AniTime += m_Timer;
             if (m_AniTime >= 3)
@@ -140,7 +141,7 @@ namespace DaGenGraph.Editor
             //A node is selected and the Alt Key is not pressed -> show the edge color depending on socket type of this node (if it is an output or an input one)
             if (m_SelectedNodes.Count == 1 && !altKeyPressed)
             {
-                Node selectedNode = m_SelectedNodes[0];
+                NodeBase selectedNode = m_SelectedNodes[0];
                 if (selectedNode == null) return;
                 if (selectedNode.ContainsEdge(edge.edgeId))
                 {
@@ -163,32 +164,32 @@ namespace DaGenGraph.Editor
             float currentCurveWidth = 3;
             if (EditorApplication.isPlaying)
             {
-                if (edge.outputNode.GetEdge(edge.edgeId).ping)
+                if (m_Graph.GetEdge(edge.edgeId).ping)
                 {
                     m_EdgeColor = m_OutputColor;
                     m_AnimateOutput = true;
-                    if (edge.outputNode.GetEdge(edge.edgeId).reSetTime)
+                    if (m_Graph.GetEdge(edge.edgeId).reSetTime)
                     {
                         m_AniTime = 0;
-                        edge.outputNode.GetEdge(edge.edgeId).reSetTime = false;
+                        m_Graph.GetEdge(edge.edgeId).reSetTime = false;
                     }
                 }
-                else if (edge.inputNode.GetEdge(edge.edgeId).ping)
+                else if (m_Graph.GetEdge(edge.edgeId).ping)
                 {
                     m_EdgeColor = m_InputColor;
                     m_AnimateInput = true;
-                    if (edge.inputNode.GetEdge(edge.edgeId).reSetTime)
+                    if (m_Graph.GetEdge(edge.edgeId).reSetTime)
                     {
                         m_AniTime = 0;
-                        edge.inputNode.GetEdge(edge.edgeId).reSetTime = false;
+                        m_Graph.GetEdge(edge.edgeId).reSetTime = false;
                     }
                 }
             }
-            else if (edge.outputNode.GetEdge(edge.edgeId).ping ||
-                     edge.inputNode.GetEdge(edge.edgeId).ping)
+            else if (m_Graph.GetEdge(edge.edgeId).ping ||
+                     m_Graph.GetEdge(edge.edgeId).ping)
             {
-                edge.outputNode.GetEdge(edge.edgeId).ping = false;
-                edge.inputNode.GetEdge(edge.edgeId).ping = false;
+                m_Graph.GetEdge(edge.edgeId).ping = false;
+                m_Graph.GetEdge(edge.edgeId).ping = false;
             }
 
             m_DotColor = m_EdgeColor;
@@ -260,9 +261,9 @@ namespace DaGenGraph.Editor
 
             m_DotPointIndex = Mathf.Clamp(m_DotPointIndex, 0, m_NumberOfPoints);
             //reset edge's ping
-            if (edge.outputNode.GetEdge(edge.edgeId).ping && m_DotPointIndex >= m_NumberOfPoints)
+            if (m_Graph.GetEdge(edge.edgeId).ping && m_DotPointIndex >= m_NumberOfPoints)
             {
-                edge.outputNode.GetEdge(edge.edgeId).ping = false;
+                m_Graph.GetEdge(edge.edgeId).ping = false;
             }
 
             m_DotPoint = m_BezierPoints[m_DotPointIndex];
@@ -285,8 +286,8 @@ namespace DaGenGraph.Editor
             BeginWindows();
             foreach (var nodeView in m_NodeViews.Values)
             {
-                nodeView.zoomedBeyondPortDrawThreshold = m_Graph.currentZoom <= 0.4f;
-                nodeView.DrawNodeGUI(graphArea, m_Graph.currentPanOffset, m_Graph.currentZoom);
+                nodeView.zoomedBeyondPortDrawThreshold = currentZoom <= 0.4f;
+                nodeView.DrawNodeGUI(graphArea, m_Graph.currentPanOffset, currentZoom);
             }
 
             EndWindows();
@@ -302,7 +303,7 @@ namespace DaGenGraph.Editor
 
         private void DrawPortsEdgePoints()
         {
-            if (m_Graph.currentZoom <= 0.4f) return;
+            if (currentZoom <= 0.4f) return;
             foreach (var port in ports.Values)
             {
                 DrawPortEdgePoints(port); //draw the edge points
@@ -365,9 +366,9 @@ namespace DaGenGraph.Editor
         private void DrawLineFromPortToPosition(Port activePort, Vector2 worldPosition)
         {
             if (m_Mode != GraphMode.Connect) return;
-            if (m_Graph.currentZoom <= 0.4f) return;
+            if (currentZoom <= 0.4f) return;
             var from = GetClosestEdgePointWorldPositionFromPortToMousePosition(activePort,
-                worldPosition / m_Graph.currentZoom);
+                worldPosition / currentZoom);
             var to = worldPosition;
             float edgeLineWidth = 3;
             var edgeBackgroundColor = new Color(m_CreateEdgeLineColor.r * 0.2f,
@@ -401,7 +402,7 @@ namespace DaGenGraph.Editor
             return worldPosition;
         }
 
-        private IEnumerable<Vector2> GetPortEdgePointsInWorldSpace(Port port, Node parentNode)
+        private IEnumerable<Vector2> GetPortEdgePointsInWorldSpace(Port port, NodeBase parentNode)
         {
             var pointsInWorldSpace = new List<Vector2>();
             if (port == null) return pointsInWorldSpace;
@@ -414,7 +415,7 @@ namespace DaGenGraph.Editor
                     port.GetHeight());
 
                 socketWorldRect.position +=
-                    m_Graph.currentPanOffset / m_Graph.currentZoom; //this is the calculated socketGridRect
+                    m_Graph.currentPanOffset / currentZoom; //this is the calculated socketGridRect
                 pointsInWorldSpace.Add(new Vector2(socketWorldRect.x + edgePoint.x + 8,
                     socketWorldRect.y + edgePoint.y + 8));
             }
@@ -462,6 +463,30 @@ namespace DaGenGraph.Editor
 
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+        }
+
+        #endregion
+
+        #region DrawInspector
+
+        private Vector2 scrollPos;
+        private void DrawInspector(float width)
+        {
+            var inspectorArea = new Rect(position.width - width, 20, width, position.height-20);
+            GUILayout.BeginArea(inspectorArea);
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(inspectorArea.height));
+            var selectedNode = m_SelectedNodes.FirstOrDefault();
+            if (selectedNode != null)
+            {
+                m_SelectedNodeId = selectedNode.id;
+            }
+            if (!string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out var view))
+            {
+                EditorGUILayout.LabelField(view.GetType().Name);
+                view.DrawInspector(true);
+            }
+            EditorGUILayout.EndScrollView();
+            GUILayout.EndArea();
         }
 
         #endregion

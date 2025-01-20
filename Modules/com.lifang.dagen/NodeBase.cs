@@ -1,167 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using DaGenGraph.Editor;
-using Sirenix.OdinInspector;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace DaGenGraph
 {
-    public class Node : SerializedScriptableObject
+    [Serializable]
+    public abstract class NodeBase: ScriptableObject
     {
-        #region Private Variables
-
-        [SerializeField, HideInInspector] private List<Port> m_InputPorts;
-        [SerializeField, HideInInspector] private List<Port> m_OutputPorts;
-        [SerializeField, HideInInspector] private bool m_AllowDuplicateNodeName;
-        [SerializeField, HideInInspector] private bool m_AllowEmptyNodeName;
-        [SerializeField, HideInInspector] private bool m_CanBeDeleted;
-        [SerializeField, HideInInspector] private float m_Height;
-        [SerializeField, HideInInspector] private float m_Width;
-        [SerializeField, HideInInspector] private float m_X;
-        [SerializeField, HideInInspector] private float m_Y;
-        [SerializeField, HideInInspector] private int m_MinimumInputPortsCount;
-        [SerializeField, HideInInspector] private int m_MinimumOutputPortsCount;
-        [SerializeField, HideInInspector] private string m_GraphId;
-        [SerializeField, HideInInspector] private string m_Id;
-        [NonSerialized] private Graph m_ActiveGraph;
-
-        #endregion
-
         #region public Variables
 
-        [HideInInspector] public bool isHovered;
-        [HideInInspector] public bool errorNodeNameIsEmpty;
-        [HideInInspector] public bool errorDuplicateNameFoundInGraph;
-        [HideInInspector] public DeletePort deletePort;
-
-        [HideInInspector]
-        public delegate void DeletePort(Port port);
-
-        #endregion
-
-        #region Properties
-
-        public virtual bool hasErrors => errorNodeNameIsEmpty || errorDuplicateNameFoundInGraph;
-
-        /// <summary> Returns TRUE if this node can have an empty node name </summary>
-        private bool allowEmptyNodeName => m_AllowEmptyNodeName;
-
-        /// <summary> Returns TRUE if this node can have the same name as another node </summary>
-        public bool allowDuplicateNodeName => m_AllowDuplicateNodeName;
-
-        /// <summary> Returns TRUE if this can be deleted </summary>
-        public bool canBeDeleted
-        {
-            get => m_CanBeDeleted;
-            set => m_CanBeDeleted = value;
-        }
+        [DrawIgnore] public List<Port> inputPorts;
+        [DrawIgnore] public List<Port> outputPorts;
+        [DrawIgnore] public bool allowDuplicateNodeName;
+        [DrawIgnore] public bool allowEmptyNodeName;
+        [DrawIgnore] public bool canBeDeleted;
+        [DrawIgnore] public float height;
+        [DrawIgnore] public float width;
+        [DrawIgnore] public float x;
+        [DrawIgnore] public float y;
+        [DrawIgnore] public int minimumInputPortsCount;
+        [DrawIgnore] public int minimumOutputPortsCount;
+        [DrawIgnore] public string id;
+        [DrawIgnore] public bool isHovered;
+        [DrawIgnore] public bool errorNodeNameIsEmpty;
+        [DrawIgnore] public bool errorDuplicateNameFoundInGraph;
 
         /// <summary> Trigger a visual cue for this node, in the Editor, at runtime. Mostly used when this node has been activated </summary>
-        public bool ping { get; set; }
-        
+        [DrawIgnore] public bool ping;
 
-        /// <summary> Returns a reference to the currently active graph </summary>
-        public Graph activeGraph
-        {
-            get => m_ActiveGraph;
-            set => m_ActiveGraph = value;
-        }
+        public event DeletePortDelegate onDeletePort;
 
-        /// <summary> The minimum number of input ports for this node. This value is checked when deleting input ports </summary>
-        public int minimumInputPortsCount
-        {
-            get => m_MinimumInputPortsCount;
-            set => m_MinimumInputPortsCount = value;
-        }
-
-        /// <summary> The minimum number of output ports for this node. This value is checked when deleting output ports </summary>
-        public int minimumOutputPortsCount
-        {
-            get => m_MinimumOutputPortsCount;
-            set => m_MinimumOutputPortsCount = value;
-        }
-
-        /// <summary> List of all the input ports this node has </summary>
-        public List<Port> inputPorts
-        {
-            get => m_InputPorts ?? (m_InputPorts = new List<Port>());
-            set => m_InputPorts = value;
-        }
-
-        /// <summary> List of all the output ports this node has </summary>
-        public List<Port> outputPorts
-        {
-            get => m_OutputPorts ?? (m_OutputPorts = new List<Port>());
-            set => m_OutputPorts = value;
-        }
-
-        /// <summary> Returns the first input port. If there isn't one, it returns null </summary>
-        public Port firstInputPort => inputPorts.Count > 0 ? inputPorts[0] : null;
-
-        /// <summary> Returns the first output port. If there isn't one, it returns null </summary>
-        public Port firstOutputPort => outputPorts.Count > 0 ? outputPorts[0] : null;
-
-        /// <summary> Returns this node's parent graph id </summary>
-        public string graphId
-        {
-            get => m_GraphId;
-            set => m_GraphId = value;
-        }
-
-        /// <summary> Returns this node's id </summary>
-        public string id
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(m_Id))
-                {
-                    m_Id = Guid.NewGuid().ToString();
-                }
-
-                return m_Id;
-            }
-        }
-        
-
-        /// <summary> Returns this node's outputNodeIds </summary>
-        public List<string> outputNodeIds
-        {
-            get
-            {
-                var nodes = new List<string>();
-                foreach (var port in m_OutputPorts)
-                {
-                    foreach (var edge in port.edges)
-                    {
-                        nodes.Add(edge.outputNodeId);
-                    }
-                }
-
-                return nodes;
-            }
-        }
-
-        /// <summary> Returns this node's intputNodeIds </summary>
-        public List<string> intputNodeIds
-        {
-            get
-            {
-                var nodes = new List<string>();
-                foreach (var port in m_InputPorts)
-                {
-                    foreach (var edge in port.edges)
-                    {
-                        nodes.Add(edge.inputNodeId);
-                    }
-                }
-
-                return nodes;
-            }
-        }
+        public delegate void DeletePortDelegate(Port port);
 
         #endregion
 
         #region Editor
+
+        public virtual bool GetHasErrors() => errorNodeNameIsEmpty || errorDuplicateNameFoundInGraph;
+
+
+        /// <summary> Returns the first input port. If there isn't one, it returns null </summary>
+        public Port GetFirstInputPort() => inputPorts.Count > 0 ? inputPorts[0] : null;
+
+        /// <summary> Returns the first output port. If there isn't one, it returns null </summary>
+        public Port GetFirstOutputPort() => outputPorts.Count > 0 ? outputPorts[0] : null;
+        
 
         private void CheckThatNodeNameIsNotEmpty()
         {
@@ -187,107 +72,65 @@ namespace DaGenGraph
 
         #region Protected  Methods
 
-        public virtual NodeView GetNodeView()
-        {
-            return new NodeView();
-        }
-
-        public virtual bool CanConnect(Node target)
-        {
-            return true;
-        }
-        
-        protected virtual void OnEnable()
-        {
-        }
 
         /// <summary> Set to allow this node to have an empty node name </summary>
         /// <param name="value"> Disable error for empty node name </param>
         protected void SetAllowEmptyNodeName(bool value)
         {
-            m_AllowEmptyNodeName = value;
+            allowEmptyNodeName = value;
         }
 
         /// <summary> Set to allow this node to have a duplicate node name </summary>
         /// <param name="value"> Disable error for duplicate node name </param>
         protected void SetAllowDuplicateNodeName(bool value)
         {
-            m_AllowDuplicateNodeName = value;
-        }
-
-
-        /// <summary> OnEnterNode is called on the frame when this node becomes active just before any of the node's Update methods are called for the first time </summary>
-        /// <param name="previousActiveNode"> The node that was active before this one </param>
-        /// <param name="edge"> The edge that activated this node </param>
-        public virtual void OnEnter(Node previousActiveNode, Edge edge)
-        {
-            ping = true;
-        }
-
-        /// <summary> OnExitNode is called just before this node becomes inactive </summary>
-        /// <param name="nextActiveNode"> The node that will become active next</param>
-        /// <param name="edge"> The edge that activates the next node </param>
-        public virtual void OnExit(Node nextActiveNode, Edge edge)
-        {
-            ping = false;
-            if (edge != null)
-            {
-                edge.ping = true;
-                edge.reSetTime = true;
-            }
+            allowDuplicateNodeName = value;
         }
 
         #endregion
 
         #region Public Methods
 
-        /// <summary> Set the active Graph for this node </summary>
-        /// <param name="graph"> Target Graph </param>
-        public void SetActiveGraph(Graph graph)
-        {
-            activeGraph = graph;
-        }
-        
         /// <summary> Returns the x coordinate of this node </summary>
         public float GetX()
         {
-            return m_X;
+            return x;
         }
 
         /// <summary> Returns the y coordinate of this node </summary>
         public float GetY()
         {
-            return m_Y;
+            return y;
         }
 
         /// <summary> Returns the width of this node </summary>
         public float GetWidth()
         {
-            return m_Width;
+            return width;
         }
 
         /// <summary> Returns the height of this node </summary>
         public float GetHeight()
         {
-            return m_Height;
+            return height;
         }
 
         /// <summary> Returns the position of this node </summary>
         public Vector2 GetPosition()
         {
-            return new Vector2(m_X, m_Y);
+            return new Vector2(x, y);
         }
 
         /// <summary> Returns the size of this node (x is width, y is height) </summary>
         public Vector2 GetSize()
         {
-            return new Vector2(GetWidth(), m_Height);
+            return new Vector2(GetWidth(), height);
         }
 
         /// <summary> Returns the Rect of this node </summary>
         public Rect GetRect()
         {
-            return new Rect(m_X, m_Y, GetWidth(), m_Height);
+            return new Rect(x, y, GetWidth(), height);
         }
 
         public Rect GetFooterRect()
@@ -312,8 +155,8 @@ namespace DaGenGraph
         /// <param name="position"> The new position value </param>
         public void SetPosition(Vector2 position)
         {
-            m_X = position.x;
-            m_Y = position.y;
+            x = position.x;
+            y = position.y;
         }
 
         /// <summary> Set the position of this node's Rect </summary>
@@ -321,18 +164,18 @@ namespace DaGenGraph
         /// <param name="y"> The new y coordinate value </param>
         public void SetPosition(float x, float y)
         {
-            m_X = x;
-            m_Y = y;
+            this.x = x;
+            this.y = y;
         }
 
         /// <summary> Set the Rect values for this node </summary>
         /// <param name="rect"> The new rect values </param>
         public void SetRect(Rect rect)
         {
-            m_X = rect.x;
-            m_Y = rect.y;
-            m_Width = rect.width;
-            m_Height = rect.height;
+            x = rect.x;
+            y = rect.y;
+            width = rect.width;
+            height = rect.height;
         }
 
         /// <summary> Set the Rect values for this node </summary>
@@ -340,10 +183,10 @@ namespace DaGenGraph
         /// <param name="size"> The new size value </param>
         public void SetRect(Vector2 position, Vector2 size)
         {
-            m_X = position.x;
-            m_Y = position.y;
-            m_Width = size.x;
-            m_Height = size.y;
+            x = position.x;
+            y = position.y;
+            width = size.x;
+            height = size.y;
         }
 
         /// <summary> Set the Rect values for this node </summary>
@@ -353,18 +196,18 @@ namespace DaGenGraph
         /// <param name="height"> The new height value </param>
         public void SetRect(float x, float y, float width, float height)
         {
-            m_X = x;
-            m_X = y;
-            m_Width = width;
-            m_Height = height;
+            this.x = x;
+            this.x = y;
+            this.width = width;
+            this.height = height;
         }
 
         /// <summary> Set the size of this node's Rect </summary>
         /// <param name="size"> The new node size (x is width, y is height) </param>
         public void SetSize(Vector2 size)
         {
-            m_Width = size.x;
-            m_Height = size.y;
+            width = size.x;
+            height = size.y;
         }
 
         /// <summary> Set the size of this node's Rect </summary>
@@ -372,36 +215,36 @@ namespace DaGenGraph
         /// <param name="height"> The new height value </param>
         public void SetSize(float width, float height)
         {
-            m_Width = width;
-            m_Height = height;
+            this.width = width;
+            this.height = height;
         }
 
         /// <summary> Set the width of this node's Rect </summary>
         /// <param name="value"> The new width value </param>
         public void SetWidth(float value)
         {
-            m_Width = value;
+            width = value;
         }
 
         /// <summary> Set the height of this node's Rect </summary>
         /// <param name="value"> The new height value </param>
         public void SetHeight(float value)
         {
-            m_Height = value;
+            height = value;
         }
 
         /// <summary> Set the x coordinate of this node's Rect </summary>
         /// <param name="value"> The new x value </param>
         public void SetX(float value)
         {
-            m_X = value;
+            x = value;
         }
 
         /// <summary> Set the y coordinate of this node's Rect </summary>
         /// <param name="value"> The new y value </param>
         public void SetY(float value)
         {
-            m_Y = value;
+            y = value;
         }
 
         /// <summary> Convenience method to add a new input port to this node </summary>
@@ -465,9 +308,9 @@ namespace DaGenGraph
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        public Port AddOutputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered,string name = "")
+        public Port AddOutputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort(name, PortDirection.Output, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
+            return AddPort("", PortDirection.Output, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
                 canBeReordered);
         }
 
@@ -478,9 +321,9 @@ namespace DaGenGraph
             //if port is market as cannot be deleted -> return false -> do not allow the dev to delete this port
             if (!port.canBeDeleted) return false;
             //if port is input -> make sure the node has a minimum input ports count before allowing deletion
-            if (port.isInput) return inputPorts.Count > m_MinimumInputPortsCount;
+            if (port.isInput) return inputPorts.Count > minimumInputPortsCount;
             //if port is output -> make sure the node has a minimum output ports count before allowing deletion
-            if (port.isOutput) return outputPorts.Count > m_MinimumOutputPortsCount;
+            if (port.isOutput) return outputPorts.Count > minimumOutputPortsCount;
             //event though the port can be deleted -> the node needs to hold a minimum number of ports and will not allow to delete this port
             return false;
         }
@@ -489,29 +332,25 @@ namespace DaGenGraph
         /// <param name="edgeId"> Target edge id </param>
         public bool ContainsEdge(string edgeId)
         {
-            return GetEdge(edgeId) != null;
-        }
-
-        /// <summary> Returns a edge, from this node, with the matching edge id. Returns null if no edge with the given id is found </summary>
-        /// <param name="edgeId"> Target edge id </param>
-        public Edge GetEdge(string edgeId)
-        {
-            Edge edge;
             foreach (var port in inputPorts)
             {
-                edge = port.GetEdge(edgeId);
-                if (edge != null) return edge;
+                if (port.edges.Contains(edgeId)) return true;
             }
 
             foreach (var port in outputPorts)
             {
-                edge = port.GetEdge(edgeId);
-                if (edge != null) return edge;
+                if (port.edges.Contains(edgeId)) return true;
             }
-
-            return null;
+            return false;
         }
 
+        public void DeletePort(Port port)
+        {
+            if (port.isInput) inputPorts.Remove(port);
+            if (port.isOutput) outputPorts.Remove(port);
+            onDeletePort?.Invoke(port);
+            DeletePortBase(port);
+        }
         #endregion
 
         #region Private Methods
@@ -541,7 +380,7 @@ namespace DaGenGraph
             switch (direction)
             {
                 case PortDirection.Input:
-                    foreach (Port port in m_InputPorts)
+                    foreach (Port port in inputPorts)
                         portNames.Add(port.portName);
                     counter = 0;
                     if (string.IsNullOrEmpty(portName))
@@ -554,12 +393,12 @@ namespace DaGenGraph
                         portName = "InputPort_" + counter++;
                     }
 
-                    var inputPort = new Port(this, id, portName, direction, edgeMode, edgePoints, canBeDeleted,
-                        canBeReordered);
-                    m_InputPorts.Add(inputPort);
+                    var inputPort = CreatePortBase();
+                    inputPort.Init(this, portName, direction, edgeMode, edgePoints, canBeDeleted, canBeReordered);
+                    inputPorts.Add(inputPort);
                     return inputPort;
                 case PortDirection.Output:
-                    foreach (Port port in m_OutputPorts)
+                    foreach (Port port in outputPorts)
                         portNames.Add(port.portName);
                     counter = 0;
                     if (string.IsNullOrEmpty(portName))
@@ -571,10 +410,9 @@ namespace DaGenGraph
                     {
                         portName = "OutputPort_" + counter++;
                     }
-
-                    var outputPort = new Port(this, "", portName, direction, edgeMode, edgePoints, canBeDeleted,
-                        canBeReordered);
-                    m_OutputPorts.Add(outputPort);
+                    var outputPort = CreatePortBase();
+                    outputPort.Init(this, portName, direction, edgeMode, edgePoints, canBeDeleted, canBeReordered);
+                    outputPorts.Add(outputPort);
                     return outputPort;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
@@ -584,7 +422,7 @@ namespace DaGenGraph
         /// <summary> Returns a list of two Edge points positions to the left of and the right of the Port </summary>
         private List<Vector2> GetLeftAndRightEdgePoints()
         {
-            return new List<Vector2> {GetLeftEdgePointPosition(), GetRightEdgePointPosition()};
+            return new List<Vector2> { GetLeftEdgePointPosition(), GetRightEdgePointPosition() };
         }
 
         /// <summary> Returns the default left edge point position for a Port </summary>
@@ -602,35 +440,63 @@ namespace DaGenGraph
         /// <summary> Generates a new unique node id for this node and returns the newly generated id value </summary>
         private void GenerateNewId()
         {
-            m_Id = Guid.NewGuid().ToString();
+            id = Guid.NewGuid().ToString();
         }
 
         #endregion
 
         #region Public virtual Methods
-
-        public virtual void InitNode(Graph graph, Vector2 pos, string _name, int minimumInputPortsCount = 1,
-            int minimumOutputPortsCount = 0)
+        
+        protected virtual Port CreatePortBase() 
         {
-            name = _name;
+            var node = CreateInstance<Port>();
+            node.name = "Port";
+            AssetDatabase.AddObjectToAsset(node,this);
+            return node;
+        }
+        
+        protected virtual void DeletePortBase(Port port)
+        {
+            DestroyImmediate(port,true);
+        }
+
+        /// <summary> OnEnterNode is called on the frame when this node becomes active just before any of the node's Update methods are called for the first time </summary>
+        /// <param name="previousActiveNode"> The node that was active before this one </param>
+        /// <param name="edge"> The edge that activated this node </param>
+        public virtual void OnEnter(NodeBase previousActiveNode, Edge edge)
+        {
+            ping = true;
+        }
+
+        /// <summary> OnExitNode is called just before this node becomes inactive </summary>
+        /// <param name="nextActiveNode"> The node that will become active next</param>
+        /// <param name="edge"> The edge that activates the next node </param>
+        public virtual void OnExit(NodeBase nextActiveNode, Edge edge)
+        {
+            ping = false;
+            if (edge != null)
+            {
+                edge.ping = true;
+                edge.reSetTime = true;
+            }
+        }
+        
+        public virtual void InitNode(Vector2 pos, string nodeName, int minInputPortsCount = 0, int minOutputPortsCount = 0)
+        {
+            name = nodeName;
             GenerateNewId();
-            m_GraphId = graph.guid;
-            m_InputPorts = new List<Port>();
-            m_OutputPorts = new List<Port>();
-            m_CanBeDeleted = true;
-            m_MinimumInputPortsCount = minimumInputPortsCount;
-            m_MinimumOutputPortsCount = minimumOutputPortsCount;
-            m_X = pos.x;
-            m_Y = pos.y;
-            m_Width = 216f;
-            m_Height = 216f;
+            inputPorts = new List<Port>();
+            outputPorts = new List<Port>();
+            canBeDeleted = true;
+            this.minimumInputPortsCount = minInputPortsCount;
+            this.minimumOutputPortsCount = minOutputPortsCount;
+            x = pos.x;
+            y = pos.y;
+            width = 260f;
+            height = 200f;
         }
 
-        public virtual void AddDefaultPorts()
-        {
-            AddInputPort(EdgeMode.Multiple, false, false);
-            //AddOutputPort(EdgeMode.Override, true, true);
-        }
+        public abstract void AddDefaultPorts();
 
         #endregion
     }

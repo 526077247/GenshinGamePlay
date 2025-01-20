@@ -1,0 +1,19 @@
+{
+    "name": "DaGenGraph.Example",
+    "rootNamespace": "",
+    "references": [
+        "GUID:82c60e129e644f1a875828179b3e9c80",
+        "GUID:b637e77054d21444096d4d4e5637ed30"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -8,134 +8,186 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class AIGraphWindow : GraphWindow
+    public class AIGraphWindow : GraphWindow<AIGraph>
     {
         public string path;
-        public static AIGraphWindow initance;
         
+        internal static AIGraphWindow instance
+        {
+            get
+            {
+                if (s_Instance != null) return s_Instance;
+                var windows = Resources.FindObjectsOfTypeAll<AIGraphWindow>();
+                s_Instance = windows.Length > 0 ? windows[0] : null;
+                if (s_Instance != null) return s_Instance;
+                s_Instance = CreateWindow<AIGraphWindow>();
+                return s_Instance;
+            }
+        }
+
+        private static AIGraphWindow s_Instance;
+
         [MenuItem("Tools/Graph编辑器/AiGraph")]
-        public static void ShowAIGraph()
+        public static void GetWindow()
         {
-            if (initance==null)
-            {
-                initance = CreateWindow<AIGraphWindow>();
-                initance.titleContent = new GUIContent("AI");
-            }
-            initance.Show();
-        }
-        [OnOpenAsset(0)]
-        public static bool OnBaseDataOpened(int instanceID, int line)
-        {
-            var data = EditorUtility.InstanceIDToObject(instanceID) as Graph;
-            if (data != null)
-            {
-                ShowAIGraph();
-                initance.Init(data);
-                initance.path = AssetDatabase.GetAssetPath(data);
-                return true;
-            }
-
-            return false;
+            instance.titleContent = new GUIContent("AIGraphWindow");
+            instance.Show();
+            instance.InitGraph();
         }
 
-        protected override void ShowGraphContextMenu()
-        {
-            var current = Event.current;
-            var menu = new GenericMenu();
-            if (m_Graph.startNode == null)
-            {
-                menu.AddItem(new GUIContent("New/AiRootNode"), false,
-                    () => { AddNode(CreateRootNode(current.mousePosition)); });
-            }
-            else
-            {
-                menu.AddItem(new GUIContent("New/AiActionNode"), false, () => { AddNode(CreateActionNode(current.mousePosition)); });
-                menu.AddItem(new GUIContent("New/AiConditionNode"), false, () => { AddNode(CreateConditionNode(current.mousePosition)); });
-            }
-            menu.ShowAsContext();
-        }
-        private Node CreateRootNode(Vector2 pos, string name = "Root")
-        {
-            var node = CreateInstance<AIRootNode>();
-            node.InitNode(m_Graph, WorldToGridPosition(pos), name);
-            node.AddDefaultPorts();
-            EditorUtility.SetDirty(node);
-            m_Graph.startNode = node;
-            return node;
-        }
-        private Node CreateActionNode(Vector2 pos, string name = "Action")
-        {
-            var node = CreateInstance<AIActionNode>();
-            node.InitNode(m_Graph, WorldToGridPosition(pos), name);
-            node.AddDefaultPorts();
-            EditorUtility.SetDirty(node);
-            return node;
-        }
-
-        private Node CreateConditionNode(Vector2 pos, string name = "Condition")
-        {
-            var node = CreateInstance<AIConditionNode>();
-            node.InitNode(m_Graph, WorldToGridPosition(pos), name);
-            node.AddDefaultPorts();
-            EditorUtility.SetDirty(node);
-            return node;
-        }
-        
         protected override void OnEnable()
         {
             base.OnEnable();
-            AddButton(new GUIContent("保存"),Save);
             AddButton(new GUIContent("导出"),Export);
         }
+        
+        protected override void InitGraph()
+        {
+            path = null;
+            base.InitGraph();
+        }
 
-        private void Save()
+        protected override AIGraph CreateGraph()
+        {
+            var res = new AIGraph();
+            res.CreateNode<AIRootNode>(new Vector2(position.width / 2, position.height / 2), "Root", true);
+            return res;
+        }
+
+        protected override AIGraph LoadGraph()
+        {
+            string searchPath = EditorUtility.OpenFilePanel($"新建{typeof(AIGraph).Name}配置文件",
+                "Assets/AssetsPackage/GraphAssets/AITree", "json");
+            if (!string.IsNullOrEmpty(searchPath))
+            { 
+                var jStr = File.ReadAllText(searchPath);
+                var obj = JsonHelper.FromJson<AIGraph>(jStr);
+                path = searchPath;
+                return obj;
+            }
+            return null;
+        }
+
+        protected override void SaveGraph()
         {
             if (string.IsNullOrEmpty(path))
             {
-                path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/GraphAssets/AITree/", "AIGraph", "asset");
-                if (string.IsNullOrEmpty(path))
+                string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(AIGraph).Name}配置文件",
+                    "Assets/AssetsPackage/GraphAssets/AITree", typeof(AIGraph).Name, "json");
+                if (!string.IsNullOrEmpty(searchPath))
                 {
-                    return;
+                    path = searchPath;
                 }
+            }
 
-                var index = path.IndexOf("Assets/");
-                path = path.Substring(index, path.Length - index);
-                AssetDatabase.CreateAsset(m_Graph, path);
+            File.WriteAllText(path, JsonHelper.ToJson(m_Graph));
+            AssetDatabase.Refresh();
+        }
+
+        #region Menu
+        
+        protected override void AddGraphMenuItems(GenericMenu menu)
+        {
+            var current = Event.current;
+            if (m_Graph == null) InitGraph();
+            if (m_Graph.startNodeId == null)
+            {
+                menu.AddItem(new GUIContent("Create/AiRootNode"), false,
+                    () => { CreateNodeView(m_Graph.CreateNode<AIRootNode>(current.mousePosition,"Root",true)); });
             }
             else
             {
-                EditorUtility.SetDirty(m_Graph);
-                AssetDatabase.SaveAssetIfDirty(m_Graph);
+                menu.AddItem(new GUIContent("Create/AiActionNode"), false,
+                    () => { CreateNodeView(m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action")); });
+                menu.AddItem(new GUIContent("Create/AiConditionNode"), false,
+                    () => { CreateNodeView(m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition")); });
             }
         }
+
+        protected override void AddPortMenuItems(GenericMenu menu, Port port, bool isLine = false)
+        {
+            var current = Event.current;
+            base.AddPortMenuItems(menu, port);
+            if (m_Graph == null) return;
+            if (port.isOutput)
+            {
+                var nodeOutput = m_Graph.FindNode(port.nodeId);
+                if (nodeOutput == null) return;
+                if (nodeOutput is AIRootNode)
+                {
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/AiActionNode"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/AiConditionNode"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                }
+                else if (nodeOutput is AIConditionNode)
+                {
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/AiActionNode"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/AiConditionNode"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                }
+            }
+        }
+
+        protected override void AddNodeMenuItems(GenericMenu menu, NodeBase nodeBase)
+        {
+            if (nodeBase.canBeDeleted)
+            {
+                menu.AddItem(new GUIContent("Delete"), false, () =>
+                {
+                    DeleteNode(nodeBase);
+                });
+            }
+        }
+
+        #endregion
+
+        #region Export
+
         private void Export()
         {
             if (!string.IsNullOrEmpty(path))
             {
                 var name = Path.GetFileNameWithoutExtension(this.path);
-                var path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "json");
+                var path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "bytes");
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
                 }
-
                 var obj = Convert(m_Graph);
-                File.WriteAllText(path,JsonHelper.ToJson(obj));
-                File.WriteAllBytes(path.Replace("json","bytes"),Serializer.Serialize(obj));
+                File.WriteAllText(path.Replace("bytes","json"),JsonHelper.ToJson(obj));
+                File.WriteAllBytes(path,Serializer.Serialize(obj));
                 AssetDatabase.Refresh();
-                Log.Error("导出成功");   
+                Debug.Log("导出成功");   
             }
             else
             {
-                Log.Error("请先保存");   
+                Debug.LogError("请先保存");   
             }
-
+        
         }
-
-        private ConfigAIDecisionTree Convert(Graph graph)
+        
+        private ConfigAIDecisionTree Convert(GraphBase graph)
         {
             ConfigAIDecisionTree res = null;
-            if (graph.startNode is AIRootNode node)
+            if (graph.GetStartNode() is AIRootNode node)
             {
                 res = new ConfigAIDecisionTree();
                 res.Type = node.Type;
@@ -145,25 +197,26 @@ namespace TaoTie
                     {
                         if (node.outputPorts[i].edges != null && node.outputPorts[i].edges.Count > 0)
                         {
-                            res.Node = Convert(m_Graph.FindNode(node.outputPorts[i].edges[0].inputNodeId));
+                            var edge = m_Graph.GetEdge(node.outputPorts[i].edges[0]);
+                            res.Node = Convert(m_Graph.FindNode(edge.inputNodeId));
                         }
                     }
                     else if (node.outputPorts[i].portName == "CombatRoot")
                     {
                         if (node.outputPorts[i].edges != null && node.outputPorts[i].edges.Count > 0)
                         {
-                            res.CombatNode = Convert(m_Graph.FindNode(node.outputPorts[i].edges[0].inputNodeId));
+                            var edge = m_Graph.GetEdge(node.outputPorts[i].edges[0]);
+                            res.CombatNode = Convert(m_Graph.FindNode(edge.inputNodeId));
                         }
                     }
                 }
               
             }
-
+        
             return res;
         }
         
-        
-        private DecisionNode Convert(Node aiNode)
+        private DecisionNode Convert(NodeBase aiNode)
         {
             if (aiNode is AIConditionNode cnode)
             {
@@ -175,7 +228,8 @@ namespace TaoTie
                     {
                         if(cnode.outputPorts[i].edges!=null && cnode.outputPorts[i].edges.Count>0)
                         {
-                            res.True = Convert(m_Graph.FindNode(cnode.outputPorts[i].edges[0].inputNodeId));
+                            var edge = m_Graph.GetEdge(cnode.outputPorts[i].edges[0]);
+                            res.True = Convert(m_Graph.FindNode(edge.inputNodeId));
                         }
                         
                     }
@@ -183,7 +237,8 @@ namespace TaoTie
                     {
                         if (cnode.outputPorts[i].edges != null && cnode.outputPorts[i].edges.Count > 0)
                         {
-                            res.False = Convert(m_Graph.FindNode(cnode.outputPorts[i].edges[0].inputNodeId));
+                            var edge = m_Graph.GetEdge(cnode.outputPorts[i].edges[0]);
+                            res.False = Convert(m_Graph.FindNode(edge.inputNodeId));
                         }
                     }
                 }
@@ -199,5 +254,8 @@ namespace TaoTie
             }
             return null;
         }
+
+        #endregion
+
     }
 }

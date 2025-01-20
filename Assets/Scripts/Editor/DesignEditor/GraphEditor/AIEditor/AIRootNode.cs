@@ -5,25 +5,22 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class AIRootNode:Node
+   
+    public class AIRootNode:JsonNodeBase
     {
         public DecisionArchetype Type; 
-        public override NodeView GetNodeView()
+        
+        public override void InitNode(Vector2 pos, string nodeName, int minInputPortsCount = 0, int minOutputPortsCount = 0)
         {
-            return new AINodeView();
-        }
-
-        public override void InitNode(Graph graph, Vector2 pos, string _name, int minimumInputPortsCount = 1, int minimumOutputPortsCount = 0)
-        {
-            base.InitNode(graph, pos, _name, minimumInputPortsCount, minimumOutputPortsCount);
+            base.InitNode(pos, nodeName, minInputPortsCount, minOutputPortsCount);
+            canBeDeleted = false;
             SetName("Root");
-            
         }
 
         public override void AddDefaultPorts()
         {
-            AddOutputPort(EdgeMode.Override, false, false, "Root");
-            AddOutputPort(EdgeMode.Override, false, false, "CombatRoot");
+            AddOutputPort("Root", EdgeMode.Override, false, false);
+            AddOutputPort("CombatRoot", EdgeMode.Override, false, false);
         }
     }
 }

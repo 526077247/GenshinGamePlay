@@ -1,52 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DaGenGraph.Editor
 {
     public class NodeView
     {
-       
         #region Private Variables
 
-        private Node m_Node;
+        private NodeBase m_Node;
+        private GraphWindow m_graphWindow;
         private int m_WindowId;
-        private Graph m_Graph;
-        [NonSerialized] private GUIStyle m_CurrentStyle;
-        [NonSerialized] private GUIStyle m_NormalStyle;
-        [NonSerialized] private GUIStyle m_SelectedStyle;
-        [NonSerialized] private GUIStyle m_CurrentHeaderStyle;
-        [NonSerialized] private GUIStyle m_HeaderNormalStyle;
-        [NonSerialized] private GUIStyle m_HeaderSelectedStyle;
-        [NonSerialized] private GUIStyle m_IconStyle;
-        [NonSerialized] private Vector2 m_DeleteButtonSize;
-        [NonSerialized] private Vector2 m_Offset;
-        [NonSerialized] private Rect m_DrawRect;
-        [NonSerialized] public bool isVisible = true;
-        [NonSerialized] public bool zoomedBeyondPortDrawThreshold = false;
-        [NonSerialized] public bool isSelected;
-        [NonSerialized] private Rect m_GlowRect;
-        [NonSerialized] private Rect m_HeaderRect;
-        [NonSerialized] private Rect m_HeaderHoverRect;
-        [NonSerialized] private Rect m_HeaderIconRect;
-        [NonSerialized] private Rect m_HeaderTitleRect;
-        [NonSerialized] private Rect m_BodyRect;
-        [NonSerialized] private Rect m_FooterRect;
-        [NonSerialized] private Rect m_NodeOutlineRect;
-        [NonSerialized] private Color m_NodeGlowColor;
-        [NonSerialized] private Color m_NodeHeaderAndFooterBackgroundColor;
-        [NonSerialized] private Color m_NodeBodyColor;
-        [NonSerialized] private Color m_NodeOutlineColor;
-        [NonSerialized] private Color m_HeaderTextAndIconColor;
+        private GraphBase m_Graph;
+        private Vector2 m_DeleteButtonSize;
+        private Vector2 m_Offset;
+        private Rect m_DrawRect;
+        public bool isVisible = true;
+        public bool zoomedBeyondPortDrawThreshold = false;
+        public bool isSelected;
+        private Rect m_GlowRect;
+        private Rect m_HeaderRect;
+        private Rect m_HeaderHoverRect;
+        private Rect m_HeaderIconRect;
+        private Rect m_HeaderTitleRect;
+        private Rect m_BodyRect;
+        private Rect m_FooterRect;
+        private Rect m_NodeOutlineRect;
+        private Color m_NodeGlowColor;
+        private Color m_NodeHeaderAndFooterBackgroundColor;
+        private Color m_NodeBodyColor;
+        private Color m_NodeOutlineColor;
+        private Color m_HeaderTextAndIconColor;
+
+        private HashSet<FieldInfo> foldoutState = new HashSet<FieldInfo>();
 
         #endregion
 
         #region Properties
 
         public int windowId => m_WindowId;
-        public Node node => m_Node;
-        public Graph graph => m_Graph;
+        public NodeBase node => m_Node;
+        public GraphBase graph => m_Graph;
         public float x => m_Node.GetX();
         public float y => m_Node.GetY();
         public float width => m_Node.GetWidth();
@@ -55,7 +53,7 @@ namespace DaGenGraph.Editor
         public Vector2 size => m_Node.GetSize();
         public Rect rect => m_Node.GetRect();
         public Rect drawRect => m_DrawRect;
-        private float dynamicHeight { get; set; }
+        protected float dynamicHeight { get; set; }
 
         #endregion
 
@@ -79,7 +77,7 @@ namespace DaGenGraph.Editor
 
         private static GUIStyle nodeHorizontalDivider =>
             s_NodeHorizontalDivider ??= Styles.GetStyle("NodeHorizontalDivider");
-
+        
         #endregion
 
         #region Static Variables
@@ -91,33 +89,33 @@ namespace DaGenGraph.Editor
         #endregion
 
         #region Virtual Methods
-        
-        protected virtual GraphWindow GetWindow()
-        {
-            return GraphWindow.instance;
-        }
 
-        public virtual void Init(int windowId, Node node, Graph graph)
+        public virtual void Init(int windowId, NodeBase node, GraphBase graph, GraphWindow graphWindow)
         {
-            node.deletePort = GetWindow().RemovePort;
             m_WindowId = windowId;
             m_Node = node;
             m_Graph = graph;
+            m_graphWindow = graphWindow;
         }
 
         public virtual void OnDoubleClick(EditorWindow window)
         {
         }
 
+        public virtual void OnUnFocus(EditorWindow window)
+        {
+            GUI.FocusControl(null);
+        }
+
         protected virtual void OnNodeGUI()
         {
             DrawNodeBody();
-            DrawNodeProts();
+            DrawNodePorts();
         }
 
         protected virtual GUIStyle GetIconStyle()
         {
-            return m_IconStyle ?? (m_IconStyle = nodeDot);
+            return nodeDot;
         }
 
         protected virtual Rect DrawPort(Port port)
@@ -148,7 +146,7 @@ namespace DaGenGraph.Editor
             dividerColor.a = opacity * 0.8f;
 
             //check if we are in delete mode -> if true -> set the socket color to red (ONLY if the socket can be deleted)
-            if (GetWindow().altKeyPressed)
+            if (m_graphWindow.altKeyPressed)
             {
                 //since we're in delete mode and this socket can be deConnect -> set its color to red
                 if (port.isConnected)
@@ -286,9 +284,14 @@ namespace DaGenGraph.Editor
             GUI.color = initialColor; //reset colors
         }
 
-        protected void DrawNodeProts()
+        protected void DrawNodePorts()
         {
             DrawPortsList(node.inputPorts);
+            var inspectorArea = new Rect(20, dynamicHeight + 5, width - 40, height);
+            GUILayout.BeginArea(inspectorArea);
+            dynamicHeight += DrawInspector();
+            GUILayout.EndArea();
+            dynamicHeight += 5;
             DrawPortsList(node.outputPorts);
         }
 
@@ -329,6 +332,187 @@ namespace DaGenGraph.Editor
             GUI.Window(m_WindowId, clientRect, DrawNode, string.Empty, nodeArea);
         }
 
+        public virtual float DrawInspector(bool isDetails = false)
+        {
+            return DrawObjectInspector(node, isDetails);
+        }
+
+        protected virtual float DrawObjectInspector(object obj, bool isDetails = false)
+        {
+            float height = 0;
+            if (obj == null) return height;
+            var fields = obj.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var field in fields)
+            {
+                var attribute = field.GetCustomAttribute(typeof(DrawIgnoreAttribute));
+                if (attribute is DrawIgnoreAttribute ignoreAttribute)
+                {
+                    if (ignoreAttribute.Ignore == Ignore.All) continue;
+                    if (ignoreAttribute.Ignore == Ignore.Details == isDetails) continue;
+                }
+                if (field.GetCustomAttribute(typeof(HideInInspector)) is HideInInspector)
+                {
+                    continue;
+                }
+                
+                if (field.GetCustomAttribute(typeof(TooltipAttribute)) is TooltipAttribute tooltip)
+                {
+                    EditorGUILayout.HelpBox(tooltip.tooltip,MessageType.Info);
+                    height += 40;
+                }
+                if (field.GetCustomAttribute(typeof(HeaderAttribute)) is HeaderAttribute header)
+                {
+                    EditorGUILayout.LabelField(header.header);
+                    height += 20;
+                }
+                if (field.GetCustomAttribute(typeof(SpaceAttribute)) is SpaceAttribute space)
+                {
+                    EditorGUILayout.Space(space.height);
+                    height += space.height;
+                }
+                height += DrawFieldInspector(field, obj, isDetails);
+            }
+
+            return height;
+        }
+
+        protected virtual float DrawFieldInspector(FieldInfo field, object obj, bool isDetails = false)
+        {
+            float height = 0;
+            object value = field.GetValue(obj);
+            // 显示字段名称和对应的值
+            if (field.FieldType == typeof(string))
+            {
+                field.SetValue(obj, EditorGUILayout.TextField(field.Name, (string) value,GUILayout.ExpandWidth(true)));
+            }
+            else if (field.FieldType == typeof(int))
+            {
+                int val = 0;
+                if (isDetails && field.GetCustomAttribute(typeof(RangeAttribute)) is RangeAttribute rangeAttr)
+                {
+                    val = EditorGUILayout.IntSlider(field.Name, (int) value, Mathf.CeilToInt(rangeAttr.min),
+                        Mathf.FloorToInt(rangeAttr.max));
+                }
+                else
+                {
+                    val = EditorGUILayout.IntField(field.Name, (int) value);
+                }
+                var min = field.GetCustomAttribute(typeof(MinAttribute));
+                if (min is MinAttribute minAttr && val<minAttr.min)
+                {
+                    val = Mathf.CeilToInt(minAttr.min);
+                }
+                field.SetValue(obj, val);
+            }
+            else if (field.FieldType == typeof(float))
+            {
+                float val = 0;
+                if (isDetails && field.GetCustomAttribute(typeof(RangeAttribute)) is RangeAttribute rangeAttr)
+                {
+                    val = EditorGUILayout.Slider(field.Name, (float) value, rangeAttr.min, rangeAttr.max);
+                }
+                else
+                {
+                    val = EditorGUILayout.FloatField(field.Name, (float) value);
+                }
+                var min = field.GetCustomAttribute(typeof(MinAttribute));
+                if (min is MinAttribute minAttr && val<minAttr.min)
+                {
+                    val = minAttr.min;
+                }
+                field.SetValue(obj, val);
+            }
+            else if (field.FieldType == typeof(bool))
+            {
+                field.SetValue(obj, EditorGUILayout.Toggle(field.Name, (bool) value));
+            }
+            else if (field.FieldType.IsEnum)
+            {
+                field.SetValue(obj, EditorGUILayout.EnumPopup(field.Name, (Enum) value));
+            }
+            else if (field.FieldType == typeof(Vector2))
+            {
+                field.SetValue(obj, EditorGUILayout.Vector2Field(field.Name, (Vector2) value));
+                height += 20;
+            }
+            else if (field.FieldType == typeof(Vector3))
+            {
+                field.SetValue(obj, EditorGUILayout.Vector3Field(field.Name, (Vector3) value));
+                height += 20;
+            }
+            else if (field.FieldType == typeof(Vector4))
+            {
+                field.SetValue(obj, EditorGUILayout.Vector4Field(field.Name, (Vector4) value));
+                height += 20;
+            }
+            else if (field.FieldType == typeof(Rect))
+            {
+                field.SetValue(obj, EditorGUILayout.RectField(field.Name, (Rect) value));
+                height += 40;
+            }
+            else if (field.FieldType == typeof(Color))
+            {
+                field.SetValue(obj, EditorGUILayout.ColorField(field.Name, (Color) value));
+            }
+            else if (typeof(Object).IsAssignableFrom(field.FieldType)
+                     && !(field.GetCustomAttribute(typeof(NotAssetsAttribute)) is NotAssetsAttribute))
+            {
+                if (typeof(Sprite).IsAssignableFrom(field.FieldType) ||
+                    typeof(Texture).IsAssignableFrom(field.FieldType))
+                    height += 40;
+                var newObj = EditorGUILayout.ObjectField(field.Name, (Object) value, field.FieldType, false);
+                field.SetValue(obj, newObj);
+            }
+            else if (field.FieldType == typeof(AnimationCurve))
+            {
+                var res = EditorGUILayout.CurveField(field.Name, (AnimationCurve) value);
+                if (res == null) res = new AnimationCurve();
+                field.SetValue(obj, res);
+            }
+            else if (field.FieldType.IsClass)
+            {
+                if (value == null)
+                {
+                    var types = TypeHelper.GetSubClassList(field.FieldType,out var namse);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(field.Name, GUILayout.Width(150));
+                    var index = EditorGUILayout.Popup(-1, namse);
+                    EditorGUILayout.EndHorizontal();
+                    if (index >= 0)
+                    {
+                        value = Activator.CreateInstance(types[index]);
+                        field.SetValue(obj, value);
+                    }
+                    else
+                    {
+                        height += 20;
+                        return height;
+                    }
+                }
+                bool foldout = foldoutState.Contains(field);
+                EditorGUILayout.BeginHorizontal();
+                foldout = EditorGUILayout.Foldout(foldout, field.Name);
+                if (GUILayout.Button("置空"))
+                {
+                    field.SetValue(obj, null);
+                }
+                EditorGUILayout.EndHorizontal();
+                if (foldout)
+                {
+                    EditorGUI.indentLevel++;
+                    height += DrawObjectInspector(value, isDetails);
+                    EditorGUI.indentLevel--;
+                    foldoutState.Add(field);
+                }
+                else
+                {
+                    foldoutState.Remove(field);
+                }
+            }
+            height += 20;
+            return height + 1;
+        }
         #endregion
 
         #region Private Methods
@@ -339,7 +523,7 @@ namespace DaGenGraph.Editor
             m_NodeBodyColor = UColor.GetColor().nodeBodyColor;
 
             m_HeaderTextAndIconColor = UColor.GetColor().nodeHeaderIconColor;
-            if (node.hasErrors)
+            if (node.GetHasErrors())
             {
                 m_HeaderTextAndIconColor = Color.red;
             }
@@ -372,5 +556,11 @@ namespace DaGenGraph.Editor
         }
 
         #endregion
+
+    }
+
+    public abstract class NodeView<T> : NodeView where T : NodeBase
+    {
+        public T node => base.node as T;
     }
 }

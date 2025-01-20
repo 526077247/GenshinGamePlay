@@ -3,11 +3,10 @@ using UnityEngine;
 
 namespace DaGenGraph
 {
-    [Serializable]
     public class VirtualPoint
     {
         /// <summary> The Node this connection point belongs to </summary>
-        public Node node;
+        public NodeBase node;
 
         /// <summary> The Port this connection point belongs top </summary>
         public Port port;
@@ -19,20 +18,20 @@ namespace DaGenGraph
         public Vector2 localPointPosition;
 
         /// <summary>
-        ///     The Rect of this connection point in World Space.
-        ///     <para />
-        ///     Note that CalculateRect() needs to be called before using this rect.
-        ///     <para />
-        ///     CalculateRect() is done automatically when building the Database or when the Database is updated.
-        ///     <para />
-        ///     The Database update is executed automatically when (Event.current.type == EventType.MouseDrag) is performed on the parent Node.
+        ///The Rect of this connection point in World Space.
+        ///<para />
+        ///Note that CalculateRect() needs to be called before using this rect.
+        ///<para />
+        ///CalculateRect() is done automatically when building the Database or when the Database is updated.
+        ///<para />
+        ///The Database update is executed automatically when (Event.current.type == EventType.MouseDrag) is performed on the parent Node.
         /// </summary>
         public Rect rect;
 
         /// <summary>
-        ///     Remembers if this point is occupied or not.
-        ///     <para />
-        ///     A point is deemed occupied when in the ConnectionsDatabase there is at least one VirtualConnection that uses this PointPosition (for the parent Port, for the parent Node)
+        /// Remembers if this point is occupied or not.
+        /// <para />
+        /// A point is deemed occupied when in the ConnectionsDatabase there is at least one VirtualConnection that uses this PointPosition (for the parent Port, for the parent Node)
         /// </summary>
         public bool isConnected;
 
@@ -42,7 +41,7 @@ namespace DaGenGraph
         /// <param name="port"></param>
         /// <param name="pointPosition"> The position - in node space - this point is located at </param>
         /// <param name="localPointPosition"> The position - in socket space - this point is located at </param>
-        public VirtualPoint(Node node, Port port, Vector2 pointPosition, Vector2 localPointPosition)
+        public VirtualPoint(NodeBase node, Port port, Vector2 pointPosition, Vector2 localPointPosition)
         {
             this.node = node;
             this.port = port;
@@ -53,9 +52,9 @@ namespace DaGenGraph
         }
 
         /// <summary>
-        ///     Calculate this virtual point's rect by converting it's point position node space position into a world position.
-        ///     <para />
-        ///     It uses the default connector width and height (found in Settings.GUI) in order to create the rect.
+        /// Calculate this virtual point's rect by converting it's point position node space position into a world position.
+        /// <para />
+        /// It uses the default connector width and height (found in Settings.GUI) in order to create the rect.
         /// </summary>
         public void CalculateRect()
         {

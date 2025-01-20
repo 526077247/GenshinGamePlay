@@ -5,27 +5,24 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class AIConditionNode:Node
+    [NodeViewType(typeof(AIConditionNodeView))]
+    public class AIConditionNode:JsonNodeBase
     {
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAIDecisionInterface)+"()")]
         public string Condition;
-        public override NodeView GetNodeView()
-        {
-            return new AINodeView();
-        }
 
-        public override void InitNode(Graph graph, Vector2 pos, string _name, int minimumInputPortsCount = 1, int minimumOutputPortsCount = 0)
+
+        public override void InitNode(Vector2 pos, string nodeName, int minInputPortsCount = 0, int minOutputPortsCount = 0)
         {
-            base.InitNode(graph, pos, _name, minimumInputPortsCount, minimumOutputPortsCount);
+            base.InitNode(pos, nodeName, minInputPortsCount, minOutputPortsCount);
             SetName("Condition");
-            
         }
 
         public override void AddDefaultPorts()
         {
             AddInputPort(EdgeMode.Override, false, false);
-            AddOutputPort(EdgeMode.Override, false, false,"True");
-            AddOutputPort(EdgeMode.Override, false, false,"False");
+            AddOutputPort("True" , EdgeMode.Override, false, false);
+            AddOutputPort("False" ,EdgeMode.Override, false, false);
         }
     }
 }
