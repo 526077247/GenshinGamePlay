@@ -67,7 +67,7 @@ namespace TaoTie
                             list = temp.ToArray();
                             valueDropdown.Add(field,list);
                         }
-                        object value = field.GetValue(obj);
+                        string value = field.GetValue(obj).ToString();
                         int index = -1;
                         for (int i = 0; i < list.Length; i++)
                         {
