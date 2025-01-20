@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class OdinNodeView<T>: NodeView<T> where T: NodeBase
+    public abstract class OdinNodeView<T>: NodeView<T> where T: NodeBase
     {
         private static Dictionary<FieldInfo,string[]> valueDropdown = new Dictionary<FieldInfo, string[]>();
         private static List<string> temp = new List<string>();
@@ -67,7 +67,7 @@ namespace TaoTie
                             list = temp.ToArray();
                             valueDropdown.Add(field,list);
                         }
-                        string value = field.GetValue(obj).ToString();
+                        string value = field.GetValue(obj) as string;
                         int index = -1;
                         for (int i = 0; i < list.Length; i++)
                         {
@@ -95,8 +95,9 @@ namespace TaoTie
             return base.DrawFieldInspector(field, obj, isDetails);
         }
         
-        protected Type FinType(string name)
+        protected virtual Type FinType(string name)
         {
+            if (name == nameof(OdinDropdownHelper)) return typeof(OdinDropdownHelper);
             if (tempType.TryGetValue(name, out var type))
             {
                 return type;

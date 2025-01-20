@@ -34,7 +34,26 @@ namespace TaoTie
             instance.Show();
             instance.InitGraph();
         }
-
+        [OnOpenAsset(0)]
+        public static bool OnBaseDataOpened(int instanceID, int line)
+        {
+            var data = EditorUtility.InstanceIDToObject(instanceID) as TextAsset;
+            var path = AssetDatabase.GetAssetPath(data);
+            return InitializeData(data,path);
+        }
+        private static bool InitializeData(TextAsset asset,string path)
+        {
+            if (asset == null) return false;
+            if (path.EndsWith(".json") && JsonHelper.TryFromJson<AIGraph>(asset.text,out var aiJson))
+            {
+                var win = instance;
+                win.Show();
+                win.SetGraph(aiJson);
+                win.path = path;
+                return true;
+            }
+            return false;
+        }
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -62,6 +81,7 @@ namespace TaoTie
             { 
                 var jStr = File.ReadAllText(searchPath);
                 var obj = JsonHelper.FromJson<AIGraph>(jStr);
+                if (obj == null) return null;
                 path = searchPath;
                 return obj;
             }

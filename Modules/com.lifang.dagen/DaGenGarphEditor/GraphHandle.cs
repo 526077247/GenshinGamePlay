@@ -1111,19 +1111,20 @@ namespace DaGenGraph.Editor
         protected void LoadGraph()
         {
             var graphBase = LoadGraphBase();
-            if (graphBase == null) return;
-            nodeViews.Clear();
-            m_Graph = graphBase;
-            foreach (var item in m_Graph.values)
-            {
-                CreateNodeView(item);
-            }
+            SetGraph(graphBase);
         }
         protected abstract GraphBase LoadGraphBase();
         
         protected virtual void InitGraph()
         {
             var graphBase = CreateGraphBase();
+            SetGraph(graphBase);
+        }
+
+        protected abstract GraphBase CreateGraphBase();
+
+        protected virtual void SetGraph(GraphBase graphBase)
+        {
             if (graphBase == null) return;
             nodeViews.Clear();
             m_Graph = graphBase;
@@ -1132,10 +1133,6 @@ namespace DaGenGraph.Editor
                 CreateNodeView(item);
             }
         }
-
-        protected abstract GraphBase CreateGraphBase();
-        
-
         #endregion
 
         #region HandleKeys
