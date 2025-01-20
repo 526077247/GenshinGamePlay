@@ -127,7 +127,7 @@ namespace TaoTie
         protected override void AddPortMenuItems(GenericMenu menu, Port port, bool isLine = false)
         {
             var current = Event.current;
-            base.AddPortMenuItems(menu, port);
+            base.AddPortMenuItems(menu, port, isLine);
             if (m_Graph == null) return;
             if (port.isOutput)
             {

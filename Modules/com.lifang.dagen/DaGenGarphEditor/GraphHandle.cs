@@ -353,6 +353,12 @@ namespace DaGenGraph.Editor
         
         protected virtual void ShowPortContextMenu(Port port, bool isLine = false)
         {
+            if (isLine && port.edges.Count == 1 && port.isConnected)
+            {
+                var res = EditorUtility.DisplayDialog("提示", "确认断开连线？", "是", "否");
+                if(res) DisconnectPort(port);
+                return;
+            }
             var menu = new GenericMenu();
             AddPortMenuItems(menu,port,isLine);
             menu.ShowAsContext();
@@ -360,7 +366,16 @@ namespace DaGenGraph.Editor
 
         protected virtual void AddPortMenuItems(GenericMenu menu, Port port, bool isLine = false)
         {
-            
+            if (!isLine && port.isConnected)
+            {
+                for (int i = 0; i < port.edges.Count; i++)
+                {
+                    menu.AddItem(new GUIContent("DisConnectAll"), false, () =>
+                    {
+                        DisconnectPort(port);
+                    });
+                }
+            }
         }
         #endregion
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using DaGenGraph.Editor;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 namespace DaGenGraph.Example
@@ -31,7 +32,17 @@ namespace DaGenGraph.Example
             instance.Show();
             instance.InitGraph();
         }
-
+        [OnOpenAsset(0)]
+        public static bool OnBaseDataOpened(int instanceID, int line)
+        {
+            var data = EditorUtility.InstanceIDToObject(instanceID) as ExampleGraph;
+            if (data != null)
+            {
+                instance.Show();
+                instance.SetGraph(data);
+            }
+            return data != null;
+        }
         protected override void InitGraph()
         {
             path = null;

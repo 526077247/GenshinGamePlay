@@ -482,7 +482,7 @@ namespace DaGenGraph.Editor
             }
             if (!string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out var view))
             {
-                EditorGUILayout.LabelField(view.GetType().Name);
+                EditorGUILayout.LabelField(ObjectNames.NicifyVariableName(view.GetType().Name));
                 view.DrawInspector(true);
             }
             EditorGUILayout.EndScrollView();

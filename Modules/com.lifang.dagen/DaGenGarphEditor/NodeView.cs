@@ -519,7 +519,7 @@ namespace DaGenGraph.Editor
         protected virtual string GetShowName(FieldInfo field,out bool rename)
         {
             rename = false;
-            return field.Name;
+            return ObjectNames.NicifyVariableName(field.Name);
         }
         #endregion
 
