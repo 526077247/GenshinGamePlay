@@ -11,13 +11,14 @@ namespace TaoTie
     {
         protected virtual string fileName => TypeInfo<T>.TypeName;
         protected virtual string folderPath => "Assets/AssetsPackage";
-        private bool isJson;
 
-        public void Init(T data, string searchPath, bool isJson)
+        private string oldJson;
+
+        public void Init(T data, string searchPath)
         {
             this.data = data;
+            oldJson = JsonHelper.ToJson(data);
             filePath = searchPath;
-            this.isJson = isJson;
         }
 
         protected virtual T CreateInstance()
@@ -43,25 +44,11 @@ namespace TaoTie
                 {
                     data = JsonHelper.FromJson<T>(text);
                     filePath = searchPath;
-                    isJson = true;
                     return;
                 }
                 catch (Exception ex)
                 {
                 }
-
-                var bytes = File.ReadAllBytes(searchPath);
-                try
-                {
-                    data = ProtobufHelper.FromBytes<T>(bytes);
-                    filePath = searchPath;
-                    isJson = false;
-                    return;
-                }
-                catch (Exception ex)
-                {
-                }
-
                 data = null;
                 filePath = null;
                 ShowNotification(new GUIContent($"非{typeof(T).Name}文件或内容损坏"));
@@ -74,42 +61,28 @@ namespace TaoTie
             string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(T).Name}配置文件", folderPath, fileName, "json");
             if (!string.IsNullOrEmpty(searchPath))
             {
-                isJson = true;
                 data = CreateInstance();
                 filePath = searchPath;
                 var jStr = JsonHelper.ToJson(data);
+                oldJson = jStr;
                 File.WriteAllText(filePath, jStr);
                 AssetDatabase.Refresh();
             }
         }
-
-        // [Button("新建(二进制)")]
-        // public void CreateBytes()
-        // {
-        //     string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", folderPath, fileName, "bytes");
-        //     if (!string.IsNullOrEmpty(searchPath))
-        //     {
-        //         isJson = false;
-        //         data = CreateInstance();
-        //         filePath = searchPath;
-        //         var bytes = ProtobufHelper.ToBytes(data);
-        //         File.WriteAllBytes(filePath, bytes);
-        //         AssetDatabase.Refresh();
-        //     }
-        // }
 
         #endregion
 
         #region Save
 
         [Button("保存")]
-        [ShowIf("@data!=null&&isJson")]
+        [ShowIf("@data!=null")]
         public void SaveJson()
         {
             if (data != null && !string.IsNullOrEmpty(filePath))
             {
                 BeforeSaveData();
                 var jStr = JsonHelper.ToJson(data);
+                oldJson = jStr;
                 File.WriteAllText(filePath, jStr);
                 var bytes = Serialize(data);
                 File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
@@ -122,23 +95,9 @@ namespace TaoTie
         {
             
         }
-
-        // [Button("保存(二进制)")]
-        // [ShowIf("@data!=null&&!isJson")]
-        // public void SaveBytes()
-        // {
-        //     if (data != null && !string.IsNullOrEmpty(filePath))
-        //     {
-        //         BeforeSaveData();
-        //         var bytes = ProtobufHelper.ToBytes(data);
-        //         File.WriteAllBytes(filePath, bytes);
-        //         AssetDatabase.Refresh();
-        //         ShowNotification(new GUIContent("保存二进制成功"));
-        //     }
-        // }
-
-        [Button("另存为(Json)")]
-        [ShowIf("@data!=null&&!isJson")]
+        
+        [Button("另存为")]
+        [ShowIf("@data!=null")]
         public void SaveNewJson()
         {
             var names = filePath.Split('/', '.');
@@ -148,46 +107,27 @@ namespace TaoTie
             if (!string.IsNullOrEmpty(searchPath))
             {
                 var jStr = JsonHelper.ToJson(data);
+                oldJson = jStr;
                 File.WriteAllText(searchPath, jStr);
+                var bytes = Serialize(data);
+                File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
                 AssetDatabase.Refresh();
-                isJson = true;
                 filePath = searchPath;
             }
         }
-
-        // [Button("另存为(二进制)")]
-        // [ShowIf("@data!=null&&isJson")]
-        // public void SaveNewBytes()
-        // {
-        //     var names = filePath.Split('/', '.');
-        //     string name = names[names.Length - 2];
-        //     var paths = filePath.Split(name);
-        //     string searchPath = EditorUtility.SaveFilePanel($"选择{typeof(T).Name}配置文件", paths[0], name, "bytes");
-        //     if (!string.IsNullOrEmpty(searchPath))
-        //     {
-        //         var bytes = Serialize(data);
-        //         File.WriteAllBytes(searchPath, bytes);
-        //         AssetDatabase.Refresh();
-        //         isJson = false;
-        //         filePath = searchPath;
-        //     }
-        // }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             if (data != null)
             {
-                var res = EditorUtility.DisplayDialog("提示", "是否需要保存？", "是", "否");
-                if (res)
+                var jStr = JsonHelper.ToJson(data);
+                if (oldJson != jStr)
                 {
-                    if (isJson)
+                    var res = EditorUtility.DisplayDialog("提示", "是否需要保存？", "是", "否");
+                    if (res)
                     {
                         SaveJson();
-                    }
-                    else
-                    {
-                        // SaveBytes();
                     }
                 }
             }

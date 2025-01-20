@@ -28,8 +28,8 @@ namespace TaoTie
             if (asset == null) return false;
             if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigFsmController>(asset.text,out var json))
             {
-                var win = EditorWindow.GetWindow<FsmEditor>();
-                win.Init(json,path,true);
+                var win = GetWindow<FsmEditor>();
+                win.Init(json,path);
                 return true;
             }
             return false;

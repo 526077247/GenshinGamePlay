@@ -34,8 +34,8 @@ namespace TaoTie
             if (asset == null) return false;
             if (path.EndsWith(".json") && path.Contains("Abilities") && JsonHelper.TryFromJson<List<ConfigAbility>>(asset.text,out var ability))
             {
-                var win = EditorWindow.GetWindow<AbilityEditor>();
-                win.Init(ability,path,true);
+                var win = GetWindow<AbilityEditor>();
+                win.Init(ability,path);
                 return true;
             }
             return false;

@@ -36,8 +36,8 @@ namespace TaoTie
             if (asset == null) return false;
             if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigAIDecisionTree>(asset.text,out var decisionTreeJson))
             {
-                var win = EditorWindow.GetWindow<DecisionTreeEditor>();
-                win.Init(decisionTreeJson,path,true);
+                var win = GetWindow<DecisionTreeEditor>();
+                win.Init(decisionTreeJson,path);
                 return true;
             }
             return false;

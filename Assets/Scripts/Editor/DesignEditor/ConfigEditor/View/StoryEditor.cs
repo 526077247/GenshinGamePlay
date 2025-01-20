@@ -29,8 +29,8 @@ namespace TaoTie
             if (asset == null) return false;
             if (path.EndsWith(".json") && JsonHelper.TryFromJson<ConfigStory>(asset.text,out var json))
             {
-                var win = EditorWindow.GetWindow<StoryEditor>();
-                win.Init(json,path,true);
+                var win = GetWindow<StoryEditor>();
+                win.Init(json,path);
                 return true;
             }
             return false;
