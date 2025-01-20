@@ -384,19 +384,19 @@ namespace DaGenGraph.Editor
             // 显示字段名称和对应的值
             if (field.FieldType == typeof(string))
             {
-                field.SetValue(obj, EditorGUILayout.TextField(field.Name, (string) value,GUILayout.ExpandWidth(true)));
+                field.SetValue(obj, EditorGUILayout.TextField(GetShowName(field,out _), (string) value));
             }
             else if (field.FieldType == typeof(int))
             {
                 int val = 0;
                 if (isDetails && field.GetCustomAttribute(typeof(RangeAttribute)) is RangeAttribute rangeAttr)
                 {
-                    val = EditorGUILayout.IntSlider(field.Name, (int) value, Mathf.CeilToInt(rangeAttr.min),
+                    val = EditorGUILayout.IntSlider(GetShowName(field,out _), (int) value, Mathf.CeilToInt(rangeAttr.min),
                         Mathf.FloorToInt(rangeAttr.max));
                 }
                 else
                 {
-                    val = EditorGUILayout.IntField(field.Name, (int) value);
+                    val = EditorGUILayout.IntField(GetShowName(field,out _), (int) value);
                 }
                 var min = field.GetCustomAttribute(typeof(MinAttribute));
                 if (min is MinAttribute minAttr && val<minAttr.min)
@@ -410,11 +410,11 @@ namespace DaGenGraph.Editor
                 float val = 0;
                 if (isDetails && field.GetCustomAttribute(typeof(RangeAttribute)) is RangeAttribute rangeAttr)
                 {
-                    val = EditorGUILayout.Slider(field.Name, (float) value, rangeAttr.min, rangeAttr.max);
+                    val = EditorGUILayout.Slider(GetShowName(field,out _), (float) value, rangeAttr.min, rangeAttr.max);
                 }
                 else
                 {
-                    val = EditorGUILayout.FloatField(field.Name, (float) value);
+                    val = EditorGUILayout.FloatField(GetShowName(field,out _), (float) value);
                 }
                 var min = field.GetCustomAttribute(typeof(MinAttribute));
                 if (min is MinAttribute minAttr && val<minAttr.min)
@@ -425,35 +425,35 @@ namespace DaGenGraph.Editor
             }
             else if (field.FieldType == typeof(bool))
             {
-                field.SetValue(obj, EditorGUILayout.Toggle(field.Name, (bool) value));
+                field.SetValue(obj, EditorGUILayout.Toggle(GetShowName(field,out _), (bool) value));
             }
             else if (field.FieldType.IsEnum)
             {
-                field.SetValue(obj, EditorGUILayout.EnumPopup(field.Name, (Enum) value));
+                field.SetValue(obj, EditorGUILayout.EnumPopup(GetShowName(field,out _), (Enum) value));
             }
             else if (field.FieldType == typeof(Vector2))
             {
-                field.SetValue(obj, EditorGUILayout.Vector2Field(field.Name, (Vector2) value));
+                field.SetValue(obj, EditorGUILayout.Vector2Field(GetShowName(field,out _), (Vector2) value));
                 height += 20;
             }
             else if (field.FieldType == typeof(Vector3))
             {
-                field.SetValue(obj, EditorGUILayout.Vector3Field(field.Name, (Vector3) value));
+                field.SetValue(obj, EditorGUILayout.Vector3Field(GetShowName(field,out _), (Vector3) value));
                 height += 20;
             }
             else if (field.FieldType == typeof(Vector4))
             {
-                field.SetValue(obj, EditorGUILayout.Vector4Field(field.Name, (Vector4) value));
+                field.SetValue(obj, EditorGUILayout.Vector4Field(GetShowName(field,out _), (Vector4) value));
                 height += 20;
             }
             else if (field.FieldType == typeof(Rect))
             {
-                field.SetValue(obj, EditorGUILayout.RectField(field.Name, (Rect) value));
+                field.SetValue(obj, EditorGUILayout.RectField(GetShowName(field,out _), (Rect) value));
                 height += 40;
             }
             else if (field.FieldType == typeof(Color))
             {
-                field.SetValue(obj, EditorGUILayout.ColorField(field.Name, (Color) value));
+                field.SetValue(obj, EditorGUILayout.ColorField(GetShowName(field,out _), (Color) value));
             }
             else if (typeof(Object).IsAssignableFrom(field.FieldType)
                      && !(field.GetCustomAttribute(typeof(NotAssetsAttribute)) is NotAssetsAttribute))
@@ -461,12 +461,12 @@ namespace DaGenGraph.Editor
                 if (typeof(Sprite).IsAssignableFrom(field.FieldType) ||
                     typeof(Texture).IsAssignableFrom(field.FieldType))
                     height += 40;
-                var newObj = EditorGUILayout.ObjectField(field.Name, (Object) value, field.FieldType, false);
+                var newObj = EditorGUILayout.ObjectField(GetShowName(field,out _), (Object) value, field.FieldType, false);
                 field.SetValue(obj, newObj);
             }
             else if (field.FieldType == typeof(AnimationCurve))
             {
-                var res = EditorGUILayout.CurveField(field.Name, (AnimationCurve) value);
+                var res = EditorGUILayout.CurveField(GetShowName(field,out _), (AnimationCurve) value);
                 if (res == null) res = new AnimationCurve();
                 field.SetValue(obj, res);
             }
@@ -476,7 +476,7 @@ namespace DaGenGraph.Editor
                 {
                     var types = TypeHelper.GetSubClassList(field.FieldType,out var namse);
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(field.Name, GUILayout.Width(150));
+                    EditorGUILayout.LabelField(GetShowName(field,out _), GUILayout.Width(100));
                     var index = EditorGUILayout.Popup(-1, namse);
                     EditorGUILayout.EndHorizontal();
                     if (index >= 0)
@@ -492,12 +492,14 @@ namespace DaGenGraph.Editor
                 }
                 bool foldout = foldoutState.Contains(field);
                 EditorGUILayout.BeginHorizontal();
-                foldout = EditorGUILayout.Foldout(foldout, field.Name);
+                foldout = EditorGUILayout.Foldout(foldout, GetShowName(field,out _));
                 if (GUILayout.Button("置空"))
                 {
                     field.SetValue(obj, null);
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space(1);
+                height += 1;
                 if (foldout)
                 {
                     EditorGUI.indentLevel++;
@@ -512,6 +514,12 @@ namespace DaGenGraph.Editor
             }
             height += 20;
             return height + 1;
+        }
+
+        protected virtual string GetShowName(FieldInfo field,out bool rename)
+        {
+            rename = false;
+            return field.Name;
         }
         #endregion
 
