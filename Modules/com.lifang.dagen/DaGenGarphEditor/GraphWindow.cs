@@ -152,7 +152,7 @@ namespace DaGenGraph.Editor
                         {
                             if(port==null) continue;
                             m_Points.Add(port.id, new List<VirtualPoint>());
-                            foreach (var point in port.edgePoints)
+                            foreach (var point in port.GetEdgePoints())
                             {
                                 m_Points[port.id].Add(new VirtualPoint(nodeViews[port.nodeId].node, port,
                                     point + m_Graph.currentPanOffset / currentZoom, point));
@@ -166,7 +166,7 @@ namespace DaGenGraph.Editor
                         {
                             if(port==null) continue;
                             m_Points.Add(port.id, new List<VirtualPoint>());
-                            foreach (var point in port.edgePoints)
+                            foreach (var point in port.GetEdgePoints())
                             {
                                 m_Points[port.id].Add(new VirtualPoint(nodeViews[port.nodeId].node, port,
                                     point + m_Graph.currentPanOffset / currentZoom, point));

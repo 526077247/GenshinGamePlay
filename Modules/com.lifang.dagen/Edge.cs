@@ -9,18 +9,16 @@ namespace DaGenGraph
         #region Properties
 
         /// <summary> [Editor Only] Pings this Edge </summary>
-        public bool ping { get; set; }
-
+        [NonSerialized] public bool ping;
         /// <summary> [Editor Only] ReSet Animation Time </summary>
-        public bool reSetTime { get; set;}
-        
+        [NonSerialized] public bool reSetTime;
+        [NonSerialized]public Vector2 inputEdgePoint;
+        [NonSerialized]public Vector2 outputEdgePoint;
         #endregion
 
         #region public Variables
 
         public string id;
-        public Vector2 inputEdgePoint;
-        public Vector2 outputEdgePoint;
         public string inputNodeId;
         public string inputPortId;
         public string outputNodeId;
@@ -37,7 +35,7 @@ namespace DaGenGraph
         public void Init(Port port1, Port port2)
         {
             GenerateNewId();
-            if (port1.isOutput && port2.isInput)
+            if (port1.IsOutput() && port2.IsInput())
             {
                 inputNodeId = port2.nodeId;
                 inputPortId = port2.id;
@@ -48,7 +46,7 @@ namespace DaGenGraph
                 outputEdgePoint = port1.GetClosestEdgePointToPort(port1);
             }
 
-            if (port2.isOutput && port1.isInput)
+            if (port2.IsOutput() && port1.IsInput())
             {
                 inputNodeId = port1.nodeId;
                 inputPortId = port1.id;

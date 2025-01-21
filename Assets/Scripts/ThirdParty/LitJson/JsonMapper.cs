@@ -301,6 +301,8 @@ namespace LitJson
                     continue;
                 var attr = p_info.GetCustomAttributes(JsonIgnore.Type,false);
                 if(attr.Length>0)continue;
+                attr = p_info.GetCustomAttributes(typeof(NonSerializedAttribute),false);
+                if(attr.Length>0)continue;
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = p_info;
                 p_data.IsField = false;
@@ -315,6 +317,8 @@ namespace LitJson
             foreach (FieldInfo f_info in type.GetFields())
             {
                 var attr = f_info.GetCustomAttributes(JsonIgnore.Type,false);
+                if(attr.Length>0)continue;
+                attr = f_info.GetCustomAttributes(typeof(NonSerializedAttribute),false);
                 if(attr.Length>0)continue;
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = f_info;

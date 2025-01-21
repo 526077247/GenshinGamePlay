@@ -134,9 +134,9 @@ namespace DaGenGraph.Editor
             var dividerColor = Color.gray;
 
             //check if the Port is connected in order to color the divider to the input or output color
-            if (port.isConnected)
+            if (port.IsConnected())
             {
-                portColor = port.isInput ? UColor.GetColor().portInputColor : UColor.GetColor().portOutputColor;
+                portColor = port.IsInput() ? UColor.GetColor().portInputColor : UColor.GetColor().portOutputColor;
                 dividerColor = UColor.GetColor().nodeDividerColor;
             }
 
@@ -149,7 +149,7 @@ namespace DaGenGraph.Editor
             if (m_graphWindow.altKeyPressed)
             {
                 //since we're in delete mode and this socket can be deConnect -> set its color to red
-                if (port.isConnected)
+                if (port.IsConnected())
                 {
                     portColor = Color.red;
                     dividerColor = Color.red;
@@ -180,7 +180,7 @@ namespace DaGenGraph.Editor
             GUI.Box(bottomDividerRect, GUIContent.none, nodeHorizontalDivider);
             //reset the gui color            
             GUI.color = Color.white;
-            var label = port.isInput ? "Input" : port.portName;
+            var label = port.IsInput() ? "Input" : port.portName;
             var areaRect = new Rect(port.GetX() + 24, port.GetY(), port.GetWidth() - 48, port.GetHeight());
             GUILayout.BeginArea(areaRect);
             {
@@ -208,7 +208,7 @@ namespace DaGenGraph.Editor
                     port.hoverRect.width,
                     port.hoverRect.height * port.showHover.faded);
 
-                if (port.isConnected)
+                if (port.IsConnected())
                 {
                     switch (port.GetDirection())
                     {

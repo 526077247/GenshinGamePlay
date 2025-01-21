@@ -353,7 +353,7 @@ namespace DaGenGraph.Editor
         
         protected virtual void ShowPortContextMenu(Port port, bool isLine = false)
         {
-            if (isLine && port.edges.Count == 1 && port.isConnected)
+            if (isLine && port.edges.Count == 1 && port.IsConnected())
             {
                 var res = EditorUtility.DisplayDialog("提示", "确认断开连线？", "是", "否");
                 if(res) DisconnectPort(port);
@@ -366,7 +366,7 @@ namespace DaGenGraph.Editor
 
         protected virtual void AddPortMenuItems(GenericMenu menu, Port port, bool isLine = false)
         {
-            if (!isLine && port.isConnected)
+            if (!isLine && port.IsConnected())
             {
                 for (int i = 0; i < port.edges.Count; i++)
                 {
@@ -538,7 +538,7 @@ namespace DaGenGraph.Editor
                     //mouse is not over anything connectable -> show the connection point color to look for 
                     else
                     {
-                        m_CreateEdgeLineColor = m_ActivePort.isInput
+                        m_CreateEdgeLineColor = m_ActivePort.IsInput()
                             ? UColor.GetColor().edgeInputColor
                             : UColor.GetColor().edgeOutputColor;
                     }
@@ -691,7 +691,7 @@ namespace DaGenGraph.Editor
 
         private void DisconnectVirtualPoint(VirtualPoint virtualPoint)
         {
-            if (!virtualPoint.port.isConnected) return;
+            if (!virtualPoint.port.IsConnected()) return;
             if (!virtualPoint.isConnected) return;
 
             var edgeViewList = new List<EdgeView>();
@@ -844,19 +844,19 @@ namespace DaGenGraph.Editor
 
         protected void ConnectPorts(Port outputPort, Port inputPort)
         {
-            if (outputPort.overrideConnection) DisconnectPort(outputPort);
-            if (inputPort.overrideConnection) DisconnectPort(inputPort);
+            if (outputPort.OverrideConnection()) DisconnectPort(outputPort);
+            if (inputPort.OverrideConnection()) DisconnectPort(inputPort);
             ConnectPorts(m_Graph, outputPort, inputPort);
         }
 
         private static void ConnectPorts(GraphBase graph, Port outputPort, Port inputPort)
         {
-            if (outputPort.overrideConnection)
+            if (outputPort.OverrideConnection())
             {
                 outputPort.Disconnect();
             }
 
-            if (inputPort.overrideConnection)
+            if (inputPort.OverrideConnection())
             {
                 inputPort.Disconnect();
             }
@@ -866,7 +866,7 @@ namespace DaGenGraph.Editor
 
         private void DisconnectPort(Port port)
         {
-            if (!port.isConnected) return;
+            if (!port.IsConnected()) return;
 
             var portEdgeIds = port.GetEdgeIds();
             foreach (var edgeId in portEdgeIds)

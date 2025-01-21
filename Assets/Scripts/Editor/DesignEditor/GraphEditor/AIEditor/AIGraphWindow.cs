@@ -129,7 +129,7 @@ namespace TaoTie
             var current = Event.current;
             base.AddPortMenuItems(menu, port, isLine);
             if (m_Graph == null) return;
-            if (port.isOutput)
+            if (port.IsOutput())
             {
                 var nodeOutput = m_Graph.FindNode(port.nodeId);
                 if (nodeOutput == null) return;

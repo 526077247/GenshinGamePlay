@@ -250,13 +250,13 @@ namespace DaGenGraph
         /// <summary> Convenience method to add a new input port to this node </summary>
         /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
-        /// <param name="edgePoints"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
+        /// <param name="edgeType"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        public Port AddInputPort(string portName, EdgeMode edgeMode, List<Vector2> edgePoints, bool canBeDeleted,
+        public Port AddInputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, EdgeType edgeType,
             bool canBeReordered = true)
         {
-            return AddPort(portName, PortDirection.Input, edgeMode, edgePoints, canBeDeleted, canBeReordered);
+            return AddPort(portName, PortDirection.Input, edgeMode, canBeDeleted, canBeReordered, edgeType);
         }
 
         /// <summary> Convenience method to add a new input port to this node. This port will have two edge points automatically added to it and they will be to the left of and the right the port </summary>
@@ -266,7 +266,7 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddInputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort(portName, PortDirection.Input, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
+            return AddPort(portName, PortDirection.Input, edgeMode,  canBeDeleted,
                 canBeReordered);
         }
 
@@ -276,20 +276,20 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddInputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort("", PortDirection.Input, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
+            return AddPort("", PortDirection.Input, edgeMode, canBeDeleted,
                 canBeReordered);
         }
 
         /// <summary> Convenience method to add a new output port to this node </summary>
         /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
-        /// <param name="edgePoints"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
+        /// <param name="edgeType"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        public Port AddOutputPort(string portName, EdgeMode edgeMode, List<Vector2> edgePoints, bool canBeDeleted,
+        public Port AddOutputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, EdgeType edgeType ,
             bool canBeReordered)
         {
-            return AddPort(portName, PortDirection.Output, edgeMode, edgePoints, canBeDeleted, canBeReordered);
+            return AddPort(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered,edgeType);
         }
 
         /// <summary> Convenience method to add a new output port to this node. This port will have two edge points automatically added to it and they will be to the left of and the right the port </summary>
@@ -297,11 +297,9 @@ namespace DaGenGraph
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        public Port AddOutputPort(string portName, EdgeMode edgeMode, bool canBeDeleted,
-            bool canBeReordered)
+        public Port AddOutputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort(portName, PortDirection.Output, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
-                canBeReordered);
+            return AddPort(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered);
         }
 
         /// <summary> Convenience method to add a new output port to this node. This port will have two edge points automatically added to it and they will be to the left of and the right the port </summary>
@@ -310,8 +308,7 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddOutputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort("", PortDirection.Output, edgeMode, GetLeftAndRightEdgePoints(), canBeDeleted,
-                canBeReordered);
+            return AddPort("", PortDirection.Output, edgeMode,  canBeDeleted, canBeReordered);
         }
 
         /// <summary> Returns TRUE if the target port can be deleted, after checking is it is marked as 'deletable' and that by deleting it the node minimum ports count does not go below the set threshold </summary>
@@ -321,9 +318,9 @@ namespace DaGenGraph
             //if port is market as cannot be deleted -> return false -> do not allow the dev to delete this port
             if (!port.canBeDeleted) return false;
             //if port is input -> make sure the node has a minimum input ports count before allowing deletion
-            if (port.isInput) return inputPorts.Count > minimumInputPortsCount;
+            if (port.IsInput()) return inputPorts.Count > minimumInputPortsCount;
             //if port is output -> make sure the node has a minimum output ports count before allowing deletion
-            if (port.isOutput) return outputPorts.Count > minimumOutputPortsCount;
+            if (port.IsOutput()) return outputPorts.Count > minimumOutputPortsCount;
             //event though the port can be deleted -> the node needs to hold a minimum number of ports and will not allow to delete this port
             return false;
         }
@@ -346,8 +343,8 @@ namespace DaGenGraph
 
         public void DeletePort(Port port)
         {
-            if (port.isInput) inputPorts.Remove(port);
-            if (port.isOutput) outputPorts.Remove(port);
+            if (port.IsInput()) inputPorts.Remove(port);
+            if (port.IsOutput()) outputPorts.Remove(port);
             onDeletePort?.Invoke(port);
             DeletePortBase(port);
         }
@@ -359,22 +356,12 @@ namespace DaGenGraph
         /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
         /// <param name="direction"> The port direction (Input/Output) </param>
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
-        /// <param name="edgePoints"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
+        /// <param name="edgeType"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        private Port AddPort(string portName, PortDirection direction, EdgeMode edgeMode, List<Vector2> edgePoints,
-            bool canBeDeleted, bool canBeReordered)
+        private Port AddPort(string portName, PortDirection direction, EdgeMode edgeMode, 
+            bool canBeDeleted, bool canBeReordered , EdgeType edgeType = EdgeType.Both)
         {
-            if (edgePoints == null)
-            {
-                edgePoints = new List<Vector2>(GetLeftAndRightEdgePoints());
-            }
-
-            if (edgePoints.Count == 0)
-            {
-                edgePoints.AddRange(GetLeftAndRightEdgePoints());
-            }
-
             var portNames = new List<string>();
             int counter;
             switch (direction)
@@ -394,7 +381,7 @@ namespace DaGenGraph
                     }
 
                     var inputPort = CreatePortBase();
-                    inputPort.Init(this, portName, direction, edgeMode, edgePoints, canBeDeleted, canBeReordered);
+                    inputPort.Init(this, portName, direction, edgeMode, edgeType, canBeDeleted, canBeReordered);
                     inputPorts.Add(inputPort);
                     return inputPort;
                 case PortDirection.Output:
@@ -411,30 +398,12 @@ namespace DaGenGraph
                         portName = "OutputPort_" + counter++;
                     }
                     var outputPort = CreatePortBase();
-                    outputPort.Init(this, portName, direction, edgeMode, edgePoints, canBeDeleted, canBeReordered);
+                    outputPort.Init(this, portName, direction, edgeMode, edgeType, canBeDeleted, canBeReordered);
                     outputPorts.Add(outputPort);
                     return outputPort;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
-        }
-
-        /// <summary> Returns a list of two Edge points positions to the left of and the right of the Port </summary>
-        private List<Vector2> GetLeftAndRightEdgePoints()
-        {
-            return new List<Vector2> { GetLeftEdgePointPosition(), GetRightEdgePointPosition() };
-        }
-
-        /// <summary> Returns the default left edge point position for a Port </summary>
-        private Vector2 GetLeftEdgePointPosition()
-        {
-            return new Vector2(-2f, 24f / 2 - 16f / 2);
-        }
-
-        /// <summary> Returns the default right edge point position for a Port </summary>
-        private Vector2 GetRightEdgePointPosition()
-        {
-            return new Vector2(GetWidth() + 2f - 16f, 24f / 2 - 16f / 2);
         }
 
         /// <summary> Generates a new unique node id for this node and returns the newly generated id value </summary>

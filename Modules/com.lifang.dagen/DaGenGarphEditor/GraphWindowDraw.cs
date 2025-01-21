@@ -324,7 +324,7 @@ namespace DaGenGraph.Editor
                     continue;
                 }
 
-                var pointColor = port.isInput ? UColor.GetColor().portInputColor : UColor.GetColor().portOutputColor;
+                var pointColor = port.IsInput() ? UColor.GetColor().portInputColor : UColor.GetColor().portOutputColor;
                 GUIStyle pointStyle;
                 switch (port.GetConnectionMode())
                 {
@@ -407,7 +407,7 @@ namespace DaGenGraph.Editor
             var pointsInWorldSpace = new List<Vector2>();
             if (port == null) return pointsInWorldSpace;
             if (parentNode == null) return pointsInWorldSpace;
-            foreach (Vector2 edgePoint in port.edgePoints)
+            foreach (Vector2 edgePoint in port.GetEdgePoints())
             {
                 var socketWorldRect = new Rect(parentNode.GetX(),
                     parentNode.GetY() + port.GetY(),

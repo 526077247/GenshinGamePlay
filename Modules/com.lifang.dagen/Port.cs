@@ -9,42 +9,16 @@ namespace DaGenGraph
     [PortGroup(0)]
     public class Port: ScriptableObject
     {
-        #region Editor
-
-#if UNITY_EDITOR
-        [NonSerialized] private AnimBool m_ShowHover;
-        public AnimBool showHover => m_ShowHover ?? new AnimBool(false);
-#endif
-
-        #endregion
         
-        #region Properties
-
-        /// <summary> Returns TRUE if this port can establish multiple edges </summary>
-        public bool acceptsMultipleConnections => edgeMode == EdgeMode.Multiple;
-        
-
-        /// <summary> [Editor Only] Overlay image Rect that is drawn on mouse hover. Also used to calculate if to show the port context menu </summary>
-        public Rect hoverRect { get; set; }
-
-        /// <summary> Returns TRUE if this port has at least one edge (it checks the Connections count) </summary>
-        public bool isConnected => edges.Count > 0;
-
-        /// <summary> Returns TRUE if this is an Input port </summary>
-        public bool isInput => direction == PortDirection.Input;
-
-        /// <summary> Returns TRUE if this is an Output port </summary>
-        public bool isOutput => direction == PortDirection.Output;
-
-        /// <summary> Returns TRUE if this port can establish only ONE edge </summary>
-        public bool overrideConnection => edgeMode == EdgeMode.Override;
-        
-        #endregion
-
         #region public Variables
         
+        
+        [NonSerialized] public AnimBool showHover = new AnimBool(false);
+        [NonSerialized] public Rect hoverRect;
+        [NonSerialized] private List<Vector2> edgePoints;
+        
+        public EdgeType edgeType;
         public List<string> edges;
-        public List<Vector2> edgePoints;
         public PortDirection direction;
         public EdgeMode edgeMode;
         public bool canBeDeleted;
@@ -62,20 +36,55 @@ namespace DaGenGraph
 
         #region public Methods
         
-        public void Init(NodeBase node, string portName, PortDirection direction, EdgeMode edgeMode,List<Vector2> edgePoints, bool canBeDeleted, bool canBeReordered)
+        public void Init(NodeBase node, string portName, PortDirection direction, EdgeMode edgeMode, EdgeType edgeType, bool canBeDeleted, bool canBeReordered)
         {
             GenerateNewId();
             nodeId = node.id;
             this.portName = portName;
             this.direction = direction;
             this.edgeMode = edgeMode;
-            this.edgePoints = edgePoints;
+            this.edgeType = edgeType;
             this.canBeDeleted = canBeDeleted;
             this.canBeReordered = canBeReordered;
             edges = new List<string>();
             curveModifier = 0;
         }
 
+        public List<Vector2> GetEdgePoints()
+        {
+            if (edgePoints == null)
+            {
+                if (edgeType == EdgeType.Both)
+                {
+                    edgePoints = GetLeftAndRightEdgePoints();
+                }
+                else if (edgeType == EdgeType.Left)
+                {
+                    edgePoints = new List<Vector2>();
+                    edgePoints.Add(GetLeftEdgePointPosition());
+                }
+                else if (edgeType == EdgeType.Right)
+                {
+                    edgePoints = new List<Vector2>();
+                    edgePoints.Add(GetRightEdgePointPosition());
+                }
+            }
+
+            return edgePoints;
+        }
+        /// <summary> Returns TRUE if this port has at least one edge (it checks the Connections count) </summary>
+        public bool IsConnected() => edges.Count > 0;
+
+        /// <summary> Returns TRUE if this is an Input port </summary>
+        public bool IsInput() => direction == PortDirection.Input;
+
+        /// <summary> Returns TRUE if this is an Output port </summary>
+        public bool IsOutput() => direction == PortDirection.Output;
+
+        /// <summary> Returns TRUE if this port can establish only ONE edge </summary>
+        public bool OverrideConnection() => edgeMode == EdgeMode.Override;
+        /// <summary> Returns TRUE if this port can establish multiple edges </summary>
+        public bool GetAcceptsMultipleConnections() => edgeMode == EdgeMode.Multiple;
         /// <summary> [Editor Only] Returns the height of this port </summary>
         public float GetHeight()
         {
@@ -167,6 +176,7 @@ namespace DaGenGraph
             y = rect.y;
             width = rect.width;
             height = rect.height;
+            RefreshPoints();
         }
         /// <summary> [Editor Only] Sets the Rect values for this port </summary>
         /// <param name="position"> The new position value </param>
@@ -177,6 +187,7 @@ namespace DaGenGraph
             y = position.y;
             width = size.x;
             height = size.y;
+            RefreshPoints();
         }
         /// <summary> [Editor Only] Sets the Rect values for this port </summary>
         /// <param name="x"> The new x coordinate value </param>
@@ -189,6 +200,7 @@ namespace DaGenGraph
             this.x = y;
             this.width = width;
             this.height = height;
+            RefreshPoints();
         }
         /// <summary> [Editor Only] Sets the size of this port's Rect </summary>
         /// <param name="size"> The new port size (x is width, y is height) </param>
@@ -196,6 +208,7 @@ namespace DaGenGraph
         {
             width = size.x;
             height = size.y;
+            RefreshPoints();
         }
         /// <summary> [Editor Only] Sets the size of this port's Rect </summary>
         /// <param name="width"> The new width value </param>
@@ -204,12 +217,14 @@ namespace DaGenGraph
         {
             this.width = width;
             this.height = height;
+            RefreshPoints();
         }
         /// <summary> [Editor Only] Sets the width of this port's Rect </summary>
         /// <param name="value"> The new width value </param>
         public void SetWidth(float value)
         {
             width = value;
+            RefreshPoints();
         }
         /// <summary> [Editor Only] Sets the x coordinate of this port's Rect </summary>
         /// <param name="value"> The new x value </param>
@@ -240,8 +255,8 @@ namespace DaGenGraph
             if (IsConnectedToPort(other.id,graphBase))return false; //check that this port is not already connected to the other port
             if (id == other.id) return false; //make sure we're not trying to connect the same port
             if (nodeId == other.nodeId) return false; //check that we are not connecting sockets on the same baseNode
-            if (isInput && other.isInput) return false; //check that the sockets are not both input sockets
-            if (isOutput && other.isOutput) return false; //check that the sockets are not both output sockets
+            if (IsInput() && other.IsInput()) return false; //check that the sockets are not both input sockets
+            if (IsOutput() && other.IsOutput()) return false; //check that the sockets are not both output sockets
             if (!ignoreValueType)
             {
                 var attributes1 = GetType().GetCustomAttributes(typeof(PortGroupAttribute), true);
@@ -293,6 +308,16 @@ namespace DaGenGraph
         /// <summary> [Editor Only] Returns the closest own Edge point to the closest Edge point on the other Port </summary>
         public Vector2 GetClosestEdgePointToPort(Port other)
         {
+            if (edgeType == EdgeType.Left)
+            {
+                return GetLeftEdgePointPosition();
+            }
+            if (edgeType == EdgeType.Right)
+            {
+                return GetRightEdgePointPosition();
+            }
+
+            var edgePoints = GetLeftAndRightEdgePoints();
             //arbitrary value that will surely be greater than any other possible distance
             float minDistance = 100000; 
             //set the closest point as the first connection point
@@ -300,7 +325,7 @@ namespace DaGenGraph
             //iterate through this port's own connection points list
             foreach (var ownPoint in edgePoints)
             {
-                foreach (var distance in other.edgePoints.Select(otherPoint => Vector2.Distance(ownPoint, otherPoint)).Where(distance => !(distance > minDistance)))
+                foreach (var distance in other.GetEdgePoints().Select(otherPoint => Vector2.Distance(ownPoint, otherPoint)).Where(distance => !(distance > minDistance)))
                 {
                     //the distance is smaller than the current minimum distance -> update the selected connection point
                     closestPoint =ownPoint; 
@@ -321,12 +346,12 @@ namespace DaGenGraph
         /// <param name="nodeId"> The node id we want this port to disconnect from </param>
         public void DisconnectFromNode(string nodeId, GraphBase graphBase)
         {
-            if (!isConnected) return;
+            if (!IsConnected()) return;
             for (int i = edges.Count - 1; i >= 0; i--) 
             {
                 var edge = graphBase.GetEdge(edges[i]);
-                if (isInput && edge.outputNodeId == nodeId) edges.RemoveAt(i); 
-                if (isOutput && edge.inputNodeId == nodeId) edges.RemoveAt(i);
+                if (IsInput() && edge.outputNodeId == nodeId) edges.RemoveAt(i); 
+                if (IsOutput() && edge.inputNodeId == nodeId) edges.RemoveAt(i);
             }
         }
         
@@ -341,8 +366,8 @@ namespace DaGenGraph
             foreach (var edgeId in edges) //iterate through all the connections list
             {
                 var edge = graphBase.GetEdge(edgeId);
-                if (isInput && edge.outputPortId == portId)return true; //if this is an input port -> look for the port id at the output port of the connection
-                if (isOutput && edge.inputPortId == portId)return true; //if this is an output port -> look for the port id at the input port of the connection
+                if (IsInput() && edge.outputPortId == portId)return true; //if this is an input port -> look for the port id at the output port of the connection
+                if (IsOutput() && edge.inputPortId == portId)return true; //if this is an output port -> look for the port id at the input port of the connection
             }
             return false;
         }
@@ -352,6 +377,32 @@ namespace DaGenGraph
         {
             id = Guid.NewGuid().ToString();
             return id;
+        }
+
+        /// <summary> Returns a list of two Edge points positions to the left of and the right of the Port </summary>
+        private List<Vector2> GetLeftAndRightEdgePoints()
+        {
+            return new List<Vector2> { GetLeftEdgePointPosition(), GetRightEdgePointPosition() };
+        }
+
+        /// <summary> Returns the default left edge point position for a Port </summary>
+        private Vector2 GetLeftEdgePointPosition()
+        {
+            return new Vector2(-2f, 24f / 2 - 16f / 2);
+        }
+
+        /// <summary> Returns the default right edge point position for a Port </summary>
+        private Vector2 GetRightEdgePointPosition()
+        {
+            return new Vector2(GetWidth() + 2f - 16f, 24f / 2 - 16f / 2);
+        }
+
+        private void RefreshPoints()
+        {
+            if (edgeType == EdgeType.Right || edgeType == EdgeType.Both)
+            {
+                edgePoints = null;
+            }
         }
         
         #endregion
@@ -379,5 +430,12 @@ namespace DaGenGraph
         ///     Socket can have multiple edges
         /// </summary>
         Multiple
+    }
+    
+    public enum EdgeType
+    {
+        Both,
+        Left,
+        Right,
     }
 }
