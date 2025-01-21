@@ -10,11 +10,10 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class OdinNodeView<T>: NodeView<T> where T: NodeBase
+    public abstract class OdinGraphView<T>: GraphWindow<T> where T: GraphBase
     {
         private static Dictionary<FieldInfo,string[]> valueDropdown = new Dictionary<FieldInfo, string[]>();
         private static List<string> temp = new List<string>();
-        private static Dictionary<string, Type> tempType = new Dictionary<string, Type>();
         private static Dictionary<Type, string[]> enumDropDown = new Dictionary<Type, string[]>();
         protected override float DrawFieldInspector(FieldInfo field, object obj, bool isDetails = false)
         {
@@ -79,7 +78,7 @@ namespace TaoTie
                             }
                         }
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField(GetShowName(field,out _), GUILayout.Width(100));
+                        EditorGUILayout.LabelField(GetShowName(field,out _), GUILayout.Width(150));
                         var newindex = EditorGUILayout.Popup(index, list);
                         if (newindex != index)
                         {
@@ -132,7 +131,7 @@ namespace TaoTie
                     }
                     
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(GetShowName(field,out _), GUILayout.Width(100));
+                    EditorGUILayout.LabelField(GetShowName(field,out _), GUILayout.Width(150));
                     var newindex = EditorGUILayout.Popup(index, names);
                     if (newindex != index)
                     {
@@ -148,36 +147,7 @@ namespace TaoTie
         protected virtual Type FinType(string name)
         {
             if (name == nameof(OdinDropdownHelper)) return typeof(OdinDropdownHelper);
-            if (tempType.TryGetValue(name, out var type))
-            {
-                return type;
-            }
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            for (int i = 0; i < assemblies.Length; i++)
-            {
-                var types = assemblies[i].GetTypes();
-                foreach (var item in types)
-                {
-                    if (item.IsClass)
-                    {
-                        if (item.FullName == name)
-                        {
-                            tempType.Add(name,type);
-                            return type;
-                        }
-                        if (item.Name == name)
-                        {
-                            type = item;
-                        }
-                    }
-                }
-            }
-
-            if (type != null)
-            {
-                tempType.Add(name,type);
-            }
-            return type;
+            return TypeHelper.FindType(name);
         }
 
         protected override string GetShowName(FieldInfo field,out bool rename)

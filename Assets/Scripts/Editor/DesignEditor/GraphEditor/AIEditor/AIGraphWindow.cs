@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class AIGraphWindow : GraphWindow<AIGraph>
+    public class AIGraphWindow : OdinGraphView<AIGraph>
     {
         public string path;
         
@@ -75,7 +75,7 @@ namespace TaoTie
 
         protected override AIGraph LoadGraph()
         {
-            string searchPath = EditorUtility.OpenFilePanel($"新建{typeof(AIGraph).Name}配置文件",
+            string searchPath = EditorUtility.OpenFilePanel($"新建{nameof(AIGraph)}配置文件",
                 "Assets/AssetsPackage/GraphAssets/AITree", "json");
             if (!string.IsNullOrEmpty(searchPath))
             { 
@@ -92,8 +92,8 @@ namespace TaoTie
         {
             if (string.IsNullOrEmpty(path))
             {
-                string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(AIGraph).Name}配置文件",
-                    "Assets/AssetsPackage/GraphAssets/AITree", typeof(AIGraph).Name, "json");
+                string searchPath = EditorUtility.SaveFilePanel($"新建{nameof(AIGraph)}配置文件",
+                    "Assets/AssetsPackage/GraphAssets/AITree", nameof(AIGraph), "json");
                 if (!string.IsNullOrEmpty(searchPath))
                 {
                     path = searchPath;

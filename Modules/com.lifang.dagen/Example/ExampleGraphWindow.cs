@@ -56,7 +56,7 @@ namespace DaGenGraph.Example
 
         protected override ExampleGraph LoadGraph()
         {
-            string searchPath = EditorUtility.OpenFilePanel($"新建{typeof(ExampleGraph).Name}配置文件", "Assets", "asset");
+            string searchPath = EditorUtility.OpenFilePanel($"新建{nameof(ExampleGraph)}配置文件", "Assets", "asset");
             if (!string.IsNullOrEmpty(searchPath))
             {
                 searchPath = "Assets/"+searchPath.Split("/Assets/")[1];
@@ -72,8 +72,8 @@ namespace DaGenGraph.Example
         {
             if (string.IsNullOrEmpty(path))
             {
-                string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(ExampleGraph).Name}配置文件", "Assets",
-                    typeof(ExampleGraph).Name, "asset");
+                string searchPath = EditorUtility.SaveFilePanel($"新建{nameof(ExampleGraph)}配置文件", "Assets",
+                    nameof(ExampleGraph), "asset");
                 if (string.IsNullOrEmpty(searchPath)) return;
                 
                 path = "Assets/"+searchPath.Split("/Assets/")[1];
@@ -99,8 +99,8 @@ namespace DaGenGraph.Example
                 }
                 if (string.IsNullOrEmpty(path))
                 {
-                    string searchPath = EditorUtility.SaveFilePanel($"新建{typeof(ExampleGraph).Name}配置文件", "Assets",
-                        typeof(ExampleGraph).Name, "asset");
+                    string searchPath = EditorUtility.SaveFilePanel($"新建{nameof(ExampleGraph)}配置文件", "Assets",
+                        nameof(ExampleGraph), "asset");
                     if (string.IsNullOrEmpty(searchPath)) return ;
                 
                     path = "Assets/"+searchPath.Split("/Assets/")[1];

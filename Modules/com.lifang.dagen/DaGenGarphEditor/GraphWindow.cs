@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DaGenGraph.Editor
 {
-    public abstract partial class GraphWindow  : EditorWindow  
+    public abstract partial class GraphWindow  : DrawBase  
     {
         protected GraphBase m_Graph;
         private GraphMode m_Mode = GraphMode.None;
@@ -234,18 +234,13 @@ namespace DaGenGraph.Editor
 
         private void DrawViewGraph()
         {
-            float width = 0;
-            if (!string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out var view))
-                width = Mathf.Max(300, position.width * 0.2f);
+            float nodeInspectorWidth = 300;
             ConstructGraphGUI();
-            var graphArea = new Rect(0, 0, position.width - width, position.height);
-            GraphBackground.DrawGrid(graphArea, currentZoom, Vector2.zero);
-            DrawInspector(width);
-            m_GraphAreaIncludingTab =
-                new Rect(0, 20, position.width, position.height);
-            m_ScaledGraphArea = new Rect(0, 0,
-                graphArea.width / currentZoom,
-                graphArea.height / currentZoom);
+            var graphViewArea = new Rect(0, 0, position.width - nodeInspectorWidth, position.height);
+            GraphBackground.DrawGrid(graphViewArea, currentZoom, Vector2.zero);
+            DrawInspector(graphViewArea.width, nodeInspectorWidth);
+            m_GraphAreaIncludingTab = new Rect(0, 20, position.width, position.height);
+            m_ScaledGraphArea = new Rect(0, 0, graphViewArea.width / currentZoom, graphViewArea.height / currentZoom);
             var initialMatrix = GUI.matrix; //save initial matrix
             HandleMouseHover();
             GUI.EndClip();
@@ -256,7 +251,7 @@ namespace DaGenGraph.Editor
                 GUI.matrix = translation * scale * translation.inverse;
                 {
                     DrawEdges();
-                    DrawNodes(graphArea);
+                    DrawNodes(graphViewArea);
                     DrawPortsEdgePoints();
                     DrawLineFromPortToPosition(m_ActivePort, Event.current.mousePosition);
                     DrawSelectionBox();

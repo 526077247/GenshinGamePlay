@@ -469,26 +469,51 @@ namespace DaGenGraph.Editor
 
         #region DrawInspector
 
-        private Vector2 scrollPos;
-        private void DrawInspector(float width)
+        private Vector2 nodeScrollPos;
+        private Vector2 graphScrollPos;
+        private bool foldGraph;
+        private bool foldNode;
+        private void DrawInspector(float start,float width)
         {
-            var inspectorArea = new Rect(position.width - width, 20, width, position.height-20);
-            GUILayout.BeginArea(inspectorArea);
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(inspectorArea.height));
             var selectedNode = m_SelectedNodes.FirstOrDefault();
             if (selectedNode != null)
             {
                 m_SelectedNodeId = selectedNode.id;
             }
-            if (!string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out var view))
+
+            NodeView view = null;
+            bool showNodeView = !string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out view);
+            var inspectorArea = new Rect(start, 20, width, position.height-20);
+            GUILayout.BeginArea(inspectorArea);
+            foldGraph = EditorGUILayout.InspectorTitlebar(foldGraph, m_Graph);
+            if (foldGraph)
             {
-                EditorGUILayout.LabelField(ObjectNames.NicifyVariableName(view.GetType().Name));
-                view.DrawInspector(true);
+                graphScrollPos = EditorGUILayout.BeginScrollView(graphScrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(showNodeView?200:inspectorArea.height-20));
+                EditorGUI.indentLevel++;
+                DrawGraphInspector();
+                EditorGUI.indentLevel--;
+                EditorGUILayout.EndScrollView();
             }
-            EditorGUILayout.EndScrollView();
+            if (showNodeView)
+            {
+                foldNode = EditorGUILayout.InspectorTitlebar(foldNode, m_Graph.FindNode(m_SelectedNodeId));
+                if (foldNode)
+                {
+                    EditorGUILayout.Space(10);
+                    nodeScrollPos = EditorGUILayout.BeginScrollView(nodeScrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(inspectorArea.height-(foldGraph?250:50)));
+                    EditorGUI.indentLevel++;
+                    view.DrawInspector(true);
+                    EditorGUI.indentLevel--;
+                    EditorGUILayout.EndScrollView();
+                }
+            }
             GUILayout.EndArea();
         }
 
+        protected virtual void DrawGraphInspector()
+        {
+            DrawObjectInspector(m_Graph, true);
+        }
         #endregion
     }
 }

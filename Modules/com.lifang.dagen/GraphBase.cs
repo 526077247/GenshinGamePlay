@@ -9,13 +9,19 @@ namespace DaGenGraph
     [Serializable]
     public abstract class GraphBase: ScriptableObject
     {
+        [HideInInspector]
         public Vector2 currentPanOffset = Vector2.zero;
+        [HideInInspector]
         public float currentZoom = 1f;
+        [HideInInspector]
         public int windowID;
+        [HideInInspector]
         public string startNodeId;
-
+        [HideInInspector]
         public bool leftInRightOut;
+        [HideInInspector]
         public List<NodeBase> values = new();
+        [HideInInspector]
         public List<Edge> edges = new();
         protected virtual T CreateNodeBase<T>() where T: NodeBase
         {

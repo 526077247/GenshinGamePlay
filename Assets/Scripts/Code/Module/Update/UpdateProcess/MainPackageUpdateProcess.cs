@@ -294,7 +294,7 @@ namespace TaoTie
             var op = YooAssetsMgr.Instance
                 .UpdatePackageManifestAsync(version, true, task.TimeOut, null);
             await op.Task;
-            bool res = op.Status != EOperationStatus.Succeed;
+            bool res = op.Status == EOperationStatus.Succeed;
             if (res && packageName != null)
             {
                 for (int i = 0; i < packageName.Length; i++)

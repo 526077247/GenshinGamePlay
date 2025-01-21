@@ -12,6 +12,7 @@ namespace DaGenGraph
     {
         private static Dictionary<Type, List<Type>> subTypes = new Dictionary<Type, List<Type>>();
         private static Dictionary<Type, string[]> fullNames = new Dictionary<Type, string[]>();
+        private static Dictionary<string, Type> tempType = new Dictionary<string, Type>();
         public static List<Type> GetSubClassList(Type type,out string[] names)
         {
             if (type == null)
@@ -44,6 +45,39 @@ namespace DaGenGraph
             fullNames.Add(type, names);
             subTypes.Add(type,res);
             return res;
+        }
+        public static Type FindType(string name)
+        {
+            if (tempType.TryGetValue(name, out var type))
+            {
+                return type;
+            }
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            for (int i = 0; i < assemblies.Length; i++)
+            {
+                var types = assemblies[i].GetTypes();
+                foreach (var item in types)
+                {
+                    if (item.IsClass)
+                    {
+                        if (item.FullName == name)
+                        {
+                            tempType.Add(name,item);
+                            return item;
+                        }
+                        if (item.Name == name)
+                        {
+                            type = item;
+                        }
+                    }
+                }
+            }
+
+            if (type != null)
+            {
+                tempType.Add(name,type);
+            }
+            return type;
         }
     }
 }
