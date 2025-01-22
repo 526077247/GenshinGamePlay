@@ -10,6 +10,27 @@ namespace DaGenGraph
 {
     public static class TypeHelper
     {
+        /// <summary>
+        /// Cached Models
+        /// </summary>
+        private static readonly Dictionary<string, Type> TypeCodes = new Dictionary<string, Type>(30)
+        {
+            {typeof(byte).FullName, typeof(byte)},
+            {typeof(sbyte).FullName, typeof(sbyte)},
+            {typeof(short).FullName, typeof(short)},
+            {typeof(ushort).FullName, typeof(ushort)},
+            {typeof(int).FullName, typeof(int)},
+            {typeof(uint).FullName, typeof(uint)},
+            {typeof(long).FullName, typeof(long)},
+            {typeof(ulong).FullName, typeof(ulong)},
+            {typeof(float).FullName, typeof(float)},
+            {typeof(double).FullName, typeof(double)},
+            {typeof(decimal).FullName, typeof(decimal)},
+            {typeof(char).FullName, typeof(char)},
+            {typeof(bool).FullName, typeof(bool)},
+            {typeof(string).FullName, typeof(string)},
+            {typeof(DateTime).FullName, typeof(DateTime)}
+        };
         private static Dictionary<Type, List<Type>> subTypes = new Dictionary<Type, List<Type>>();
         private static Dictionary<Type, string[]> fullNames = new Dictionary<Type, string[]>();
         private static Dictionary<string, Type> tempType = new Dictionary<string, Type>();
@@ -23,7 +44,10 @@ namespace DaGenGraph
             fullNames.TryGetValue(type, out names);
             if (subTypes.TryGetValue(type, out var res)) return res;
             res = new List<Type>();
-
+            if (!type.IsAbstract)
+            {
+                res.Add(type);
+            }
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             for (int i = 0; i < assemblies.Length; i++)
             {
@@ -48,7 +72,11 @@ namespace DaGenGraph
         }
         public static Type FindType(string name)
         {
-            if (tempType.TryGetValue(name, out var type))
+            if(TypeCodes.TryGetValue(name,out var type))
+            {
+                return type;
+            }
+            if (tempType.TryGetValue(name, out type))
             {
                 return type;
             }

@@ -20,6 +20,7 @@ namespace DaGenGraph.Editor
         private float m_CurrentZoom = 1f;
         private Rect m_GraphAreaIncludingTab;
         private Rect m_ScaledGraphArea;
+        private bool m_DrawInspector;
         private Dictionary<string, NodeView> m_NodeViews;
         private Dictionary<string, List<VirtualPoint>> m_Points;
         private Dictionary<string, Port> m_Ports;
@@ -188,6 +189,7 @@ namespace DaGenGraph.Editor
             AddButton(new GUIContent("新建"), InitGraph);
             AddButton(new GUIContent("打开"), LoadGraph);
             AddButton(new GUIContent("保存"), SaveGraph);
+            AddButton(new GUIContent("详情面板"), ChangeDrawInspector, false);
         }
 
         private void OnGUI()
@@ -232,13 +234,18 @@ namespace DaGenGraph.Editor
             UpdateNodesSelectedState(m_SelectedNodes);
         }
 
+        private void ChangeDrawInspector()
+        {
+            m_DrawInspector = !m_DrawInspector;
+        }
+
         private void DrawViewGraph()
         {
-            float nodeInspectorWidth = 300;
+            float nodeInspectorWidth = m_DrawInspector?400:0;
             ConstructGraphGUI();
             var graphViewArea = new Rect(0, 0, position.width - nodeInspectorWidth, position.height);
             GraphBackground.DrawGrid(graphViewArea, currentZoom, Vector2.zero);
-            DrawInspector(graphViewArea.width, nodeInspectorWidth);
+            if(m_DrawInspector) DrawInspector(graphViewArea.width, nodeInspectorWidth);
             m_GraphAreaIncludingTab = new Rect(0, 20, position.width, position.height);
             m_ScaledGraphArea = new Rect(0, 0, graphViewArea.width / currentZoom, graphViewArea.height / currentZoom);
             var initialMatrix = GUI.matrix; //save initial matrix

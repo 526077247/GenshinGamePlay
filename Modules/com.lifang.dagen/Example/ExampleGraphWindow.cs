@@ -38,7 +38,9 @@ namespace DaGenGraph.Example
             var data = EditorUtility.InstanceIDToObject(instanceID) as ExampleGraph;
             if (data != null)
             {
+                var path = AssetDatabase.GetAssetPath(data);
                 instance.Show();
+                instance.path = path;
                 instance.SetGraph(data);
             }
             return data != null;

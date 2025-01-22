@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace DaGenGraph
 {
-    [PortGroup(0)]
     public class Port: ScriptableObject
     {
         

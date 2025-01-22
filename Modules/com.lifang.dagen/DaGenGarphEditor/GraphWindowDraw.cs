@@ -71,7 +71,7 @@ namespace DaGenGraph.Editor
         private delegate void DrawToolbarHandler();
 
         private List<DrawToolbarHandler> m_DrawToolbarHandlers=new List<DrawToolbarHandler>();
-
+        private List<DrawToolbarHandler> m_DrawToolbarHandlersRight=new List<DrawToolbarHandler>();
         private Color m_CreateEdgeLineColor = Color.white;
         private Color m_ConnectionBackgroundColor;
         private Color m_EdgeColor;
@@ -85,6 +85,7 @@ namespace DaGenGraph.Editor
         private float m_DotSize;
         private int m_DotPointIndex;
         private int m_NumberOfPoints;
+       
 
         #endregion
 
@@ -295,10 +296,6 @@ namespace DaGenGraph.Editor
 
         #endregion
 
-        #region DrawNodeDetails
-
-        #endregion
-
         #region DrawPortsEdgePoints
 
         private void DrawPortsEdgePoints()
@@ -441,16 +438,29 @@ namespace DaGenGraph.Editor
 
         #region DrawToolbar
 
-        protected virtual void AddButton(GUIContent content, Action callback,
+        protected virtual void AddButton(GUIContent content, Action callback,bool left = true,
             params GUILayoutOption[] options)
         {
-            m_DrawToolbarHandlers.Add(() =>
+            if (left)
             {
-                if (GUILayout.Button(content, options))
+                m_DrawToolbarHandlers.Add(() =>
                 {
-                    callback.Invoke();
-                }
-            });
+                    if (GUILayout.Button(content, options))
+                    {
+                        callback.Invoke();
+                    }
+                });
+            }
+            else
+            {
+                m_DrawToolbarHandlersRight.Add(() =>
+                {
+                    if (GUILayout.Button(content, options))
+                    {
+                        callback.Invoke();
+                    }
+                });
+            }
         }
 
         private void DrawToolbar()
@@ -462,6 +472,10 @@ namespace DaGenGraph.Editor
             }
 
             GUILayout.FlexibleSpace();
+            foreach (var drawToolbarHandler in m_DrawToolbarHandlersRight)
+            {
+                drawToolbarHandler.Invoke();
+            }
             GUILayout.EndHorizontal();
         }
 
@@ -482,10 +496,10 @@ namespace DaGenGraph.Editor
             }
 
             NodeView view = null;
-            bool showNodeView = !string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out view);
+            bool showNodeView = m_Graph!=null && !string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out view);
             var inspectorArea = new Rect(start, 20, width, position.height-20);
             GUILayout.BeginArea(inspectorArea);
-            foldGraph = EditorGUILayout.InspectorTitlebar(foldGraph, m_Graph);
+            foldGraph = EditorGUILayout.BeginFoldoutHeaderGroup(foldGraph, m_Graph.name);
             if (foldGraph)
             {
                 graphScrollPos = EditorGUILayout.BeginScrollView(graphScrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(showNodeView?200:inspectorArea.height-20));
@@ -494,9 +508,10 @@ namespace DaGenGraph.Editor
                 EditorGUI.indentLevel--;
                 EditorGUILayout.EndScrollView();
             }
+            EditorGUILayout.EndFoldoutHeaderGroup();
             if (showNodeView)
             {
-                foldNode = EditorGUILayout.InspectorTitlebar(foldNode, m_Graph.FindNode(m_SelectedNodeId));
+                foldNode = EditorGUILayout.BeginFoldoutHeaderGroup(foldNode, m_Graph.FindNode(m_SelectedNodeId).name);
                 if (foldNode)
                 {
                     EditorGUILayout.Space(10);
@@ -506,6 +521,7 @@ namespace DaGenGraph.Editor
                     EditorGUI.indentLevel--;
                     EditorGUILayout.EndScrollView();
                 }
+                EditorGUILayout.EndFoldoutHeaderGroup();
             }
             GUILayout.EndArea();
         }

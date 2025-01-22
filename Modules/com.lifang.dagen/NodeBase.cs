@@ -246,7 +246,17 @@ namespace DaGenGraph
         {
             y = value;
         }
-
+        /// <summary> Convenience method to add a new input port to this node </summary>
+        /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
+        /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
+        /// <param name="edgeType"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
+        /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
+        /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
+        public Port AddInputPort<T>(string portName, EdgeMode edgeMode, bool canBeDeleted, EdgeType edgeType,
+            bool canBeReordered = true) where T: Port
+        {
+            return AddPort<T>(portName, PortDirection.Input, edgeMode, canBeDeleted, canBeReordered, edgeType);
+        }
         /// <summary> Convenience method to add a new input port to this node </summary>
         /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
@@ -256,7 +266,7 @@ namespace DaGenGraph
         public Port AddInputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, EdgeType edgeType,
             bool canBeReordered = true)
         {
-            return AddPort(portName, PortDirection.Input, edgeMode, canBeDeleted, canBeReordered, edgeType);
+            return AddPort<Port>(portName, PortDirection.Input, edgeMode, canBeDeleted, canBeReordered, edgeType);
         }
 
         /// <summary> Convenience method to add a new input port to this node. This port will have two edge points automatically added to it and they will be to the left of and the right the port </summary>
@@ -266,7 +276,7 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddInputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort(portName, PortDirection.Input, edgeMode,  canBeDeleted,
+            return AddPort<Port>(portName, PortDirection.Input, edgeMode,  canBeDeleted,
                 canBeReordered);
         }
 
@@ -276,10 +286,20 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddInputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort("", PortDirection.Input, edgeMode, canBeDeleted,
+            return AddPort<Port>("", PortDirection.Input, edgeMode, canBeDeleted,
                 canBeReordered);
         }
-
+        /// <summary> Convenience method to add a new output port to this node </summary>
+        /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
+        /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
+        /// <param name="edgeType"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
+        /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
+        /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
+        public Port AddOutputPort<T>(string portName, EdgeMode edgeMode, bool canBeDeleted, EdgeType edgeType ,
+            bool canBeReordered) where T: Port
+        {
+            return AddPort<T>(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered,edgeType);
+        }
         /// <summary> Convenience method to add a new output port to this node </summary>
         /// <param name="portName"> The name of the port (if null or empty, it will be auto-generated) </param>
         /// <param name="edgeMode"> The port edge mode (Multiple/Override) </param>
@@ -289,7 +309,7 @@ namespace DaGenGraph
         public Port AddOutputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, EdgeType edgeType ,
             bool canBeReordered)
         {
-            return AddPort(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered,edgeType);
+            return AddPort<Port>(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered,edgeType);
         }
 
         /// <summary> Convenience method to add a new output port to this node. This port will have two edge points automatically added to it and they will be to the left of and the right the port </summary>
@@ -299,7 +319,7 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddOutputPort(string portName, EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered);
+            return AddPort<Port>(portName, PortDirection.Output, edgeMode, canBeDeleted, canBeReordered);
         }
 
         /// <summary> Convenience method to add a new output port to this node. This port will have two edge points automatically added to it and they will be to the left of and the right the port </summary>
@@ -308,7 +328,7 @@ namespace DaGenGraph
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
         public Port AddOutputPort(EdgeMode edgeMode, bool canBeDeleted, bool canBeReordered)
         {
-            return AddPort("", PortDirection.Output, edgeMode,  canBeDeleted, canBeReordered);
+            return AddPort<Port>("", PortDirection.Output, edgeMode,  canBeDeleted, canBeReordered);
         }
 
         /// <summary> Returns TRUE if the target port can be deleted, after checking is it is marked as 'deletable' and that by deleting it the node minimum ports count does not go below the set threshold </summary>
@@ -359,45 +379,46 @@ namespace DaGenGraph
         /// <param name="edgeType"> The port edge points locations (if null or empty, it will automatically add two edge points to the left of and the right of the port) </param>
         /// <param name="canBeDeleted"> Determines if this port is a special port that cannot be deleted </param>
         /// <param name="canBeReordered"> Determines if this port is a special port that cannot be reordered </param>
-        private Port AddPort(string portName, PortDirection direction, EdgeMode edgeMode, 
-            bool canBeDeleted, bool canBeReordered , EdgeType edgeType = EdgeType.Both)
+        private Port AddPort<T>(string portName, PortDirection direction, EdgeMode edgeMode, 
+            bool canBeDeleted, bool canBeReordered , EdgeType edgeType = EdgeType.Both)where T:Port
         {
+            string baseName = portName;
             var portNames = new List<string>();
-            int counter;
+            int counter = 1;
             switch (direction)
             {
                 case PortDirection.Input:
                     foreach (Port port in inputPorts)
                         portNames.Add(port.portName);
-                    counter = 0;
-                    if (string.IsNullOrEmpty(portName))
+                    if (string.IsNullOrEmpty(baseName))
                     {
-                        portName = "InputPort_" + counter;
+                        baseName = "InputPort_";
+                        portName = baseName + counter++;
                     }
 
                     while (portNames.Contains(portName))
                     {
-                        portName = "InputPort_" + counter++;
+                        portName = baseName + counter++;
                     }
 
-                    var inputPort = CreatePortBase();
+                    var inputPort = CreatePortBase<T>();
                     inputPort.Init(this, portName, direction, edgeMode, edgeType, canBeDeleted, canBeReordered);
                     inputPorts.Add(inputPort);
                     return inputPort;
                 case PortDirection.Output:
                     foreach (Port port in outputPorts)
                         portNames.Add(port.portName);
-                    counter = 0;
-                    if (string.IsNullOrEmpty(portName))
+                    if (string.IsNullOrEmpty(baseName))
                     {
-                        portName = "OutputPort_" + counter;
+                        baseName = "OutputPort_";
+                        portName = baseName + counter++;
                     }
 
                     while (portNames.Contains(portName))
                     {
-                        portName = "OutputPort_" + counter++;
+                        portName = baseName + counter++;
                     }
-                    var outputPort = CreatePortBase();
+                    var outputPort = CreatePortBase<T>();
                     outputPort.Init(this, portName, direction, edgeMode, edgeType, canBeDeleted, canBeReordered);
                     outputPorts.Add(outputPort);
                     return outputPort;
@@ -416,9 +437,9 @@ namespace DaGenGraph
 
         #region Public virtual Methods
         
-        protected virtual Port CreatePortBase() 
+        protected virtual Port CreatePortBase<T>() where T:Port
         {
-            var node = CreateInstance<Port>();
+            var node = CreateInstance<T>();
             node.name = "Port";
             AssetDatabase.AddObjectToAsset(node,this);
             return node;

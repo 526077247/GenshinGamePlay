@@ -8,6 +8,7 @@ namespace DaGenGraph.Editor
     {
         [Tooltip("Node的边缘光颜色")] public Color nodeGlowColor;
         [Tooltip("Node的页眉和页脚背景颜色")] public Color nodeHeaderAndFooterBackgroundColor;
+        [Tooltip("起始Node的页眉和页脚背景颜色")] public Color nodeRootHeaderAndFooterBackgroundColor;
         [Tooltip("Node的主体颜色")] public Color nodeBodyColor;
         [Tooltip("Node的选中框颜色")] public Color nodeOutlineColor;
         [Tooltip("Node的运行状态下选中框的颜色")] public Color nodePlayingOutlineColor;

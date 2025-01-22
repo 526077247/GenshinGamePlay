@@ -12,17 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d62153adfe14b47838b7e9be2b9ab2b, type: 3}
   m_Name: UIColor
   m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
   nodeGlowColor: {r: 1, g: 1, b: 1, a: 1}
   nodeHeaderAndFooterBackgroundColor: {r: 0.745283, g: 0.745283, b: 0.745283, a: 1}
+  nodeRootHeaderAndFooterBackgroundColor: {r: 0.3207547, g: 0.3207547, b: 0.3207547, a: 1}
   nodeBodyColor: {r: 0, g: 0.6603774, b: 0.6130958, a: 1}
   nodeOutlineColor: {r: 1, g: 0, b: 0.51282024, a: 1}
   nodePlayingOutlineColor: {r: 0, g: 1, b: 0.017543793, a: 1}

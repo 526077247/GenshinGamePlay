@@ -32,6 +32,7 @@ namespace DaGenGraph.Editor
         private Rect m_NodeOutlineRect;
         private Color m_NodeGlowColor;
         private Color m_NodeHeaderAndFooterBackgroundColor;
+        private Color m_RootNodeHeaderAndFooterBackgroundColor;
         private Color m_NodeBodyColor;
         private Color m_NodeOutlineColor;
         private Color m_HeaderTextAndIconColor;
@@ -180,7 +181,7 @@ namespace DaGenGraph.Editor
             GUI.Box(bottomDividerRect, GUIContent.none, nodeHorizontalDivider);
             //reset the gui color            
             GUI.color = Color.white;
-            var label = port.IsInput() ? "Input" : port.portName;
+            var label = port.portName;
             var areaRect = new Rect(port.GetX() + 24, port.GetY(), port.GetWidth() - 48, port.GetHeight());
             GUILayout.BeginArea(areaRect);
             {
@@ -262,7 +263,7 @@ namespace DaGenGraph.Editor
             GUI.color = m_NodeGlowColor;
             GUI.Box(m_GlowRect, GUIContent.none, nodeGlowStyle); //node glow
 
-            GUI.color = m_NodeHeaderAndFooterBackgroundColor;
+            GUI.color = m_Graph.startNodeId == node.id ? m_RootNodeHeaderAndFooterBackgroundColor:m_NodeHeaderAndFooterBackgroundColor;
             GUI.Box(m_HeaderRect, GUIContent.none, nodeHeader); //header background
 
             GUI.color = m_HeaderTextAndIconColor;
@@ -275,7 +276,7 @@ namespace DaGenGraph.Editor
             GUI.color = m_NodeBodyColor;
             GUI.Box(m_BodyRect, GUIContent.none, nodeBody); //body background
 
-            GUI.color = m_NodeHeaderAndFooterBackgroundColor;
+            GUI.color = m_Graph.startNodeId == node.id ? m_RootNodeHeaderAndFooterBackgroundColor:m_NodeHeaderAndFooterBackgroundColor;
             GUI.Box(m_FooterRect, GUIContent.none, nodeFooter); //footer background
 
             GUI.color = m_NodeOutlineColor;
@@ -355,6 +356,7 @@ namespace DaGenGraph.Editor
             m_NodeOutlineColor = UColor.GetColor().nodeOutlineColor;
             m_NodeOutlineColor.a = GUI.color.a * (isSelected ? 1 : node.isHovered ? 0.4f : 0);
             m_NodeHeaderAndFooterBackgroundColor = UColor.GetColor().nodeHeaderAndFooterBackgroundColor;
+            m_RootNodeHeaderAndFooterBackgroundColor = UColor.GetColor().nodeRootHeaderAndFooterBackgroundColor;
             //NODE SELECETD COLOR
             if (EditorApplication.isPlaying)
             {

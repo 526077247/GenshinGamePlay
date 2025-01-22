@@ -1141,6 +1141,10 @@ namespace DaGenGraph.Editor
         protected virtual void SetGraph(GraphBase graphBase)
         {
             if (graphBase == null) return;
+            if (string.IsNullOrEmpty(graphBase.name))
+            {
+                graphBase.name = graphBase.GetType().Name;
+            }
             nodeViews.Clear();
             m_Graph = graphBase;
             foreach (var item in m_Graph.values)

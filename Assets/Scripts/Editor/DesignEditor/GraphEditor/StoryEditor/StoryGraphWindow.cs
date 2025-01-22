@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using DaGenGraph;
 using DaGenGraph.Editor;
@@ -69,7 +70,6 @@ namespace TaoTie
         protected override StoryGraph CreateGraph()
         {
             var res = new StoryGraph();
-            res.CreateNode<StoryClipNode>(new Vector2(position.width / 2, position.height / 2), "Root", true);
             return res;
         }
 
@@ -110,8 +110,14 @@ namespace TaoTie
         {
             var current = Event.current;
             if (m_Graph == null) InitGraph();
-            menu.AddItem(new GUIContent("Create/StoryClipNode"), false,
-                () => { CreateNodeView(m_Graph.CreateNode<StoryClipNode>(current.mousePosition,"Root",true)); });
+            menu.AddItem(new GUIContent("Create/普通节点"), false,
+                () => { CreateNodeView(m_Graph.CreateNode<StoryClipNode>(current.mousePosition,"节点")); });
+            menu.AddItem(new GUIContent("Create/选择节点"), false,
+                () => { CreateNodeView(m_Graph.CreateNode<StoryBranchClipNode>(current.mousePosition,"选择节点")); });
+            menu.AddItem(new GUIContent("Create/并行节点"), false,
+                () => { CreateNodeView(m_Graph.CreateNode<StoryParallelClipNode>(current.mousePosition,"并行节点")); });
+            menu.AddItem(new GUIContent("Create/选项"), false,
+                () => { CreateNodeView(m_Graph.CreateNode<StoryBranchClipItemNode>(current.mousePosition,"选项")); });
         }
 
         protected override void AddPortMenuItems(GenericMenu menu, Port port, bool isLine = false)
@@ -119,17 +125,44 @@ namespace TaoTie
             var current = Event.current;
             base.AddPortMenuItems(menu, port, isLine);
             if (m_Graph == null) return;
+            if (!isLine && port.canBeDeleted)
+            {
+                menu.AddItem(new GUIContent("Delete"), false, () => { RemovePort(port); });
+            }
             if (port.IsOutput())
             {
                 var nodeOutput = m_Graph.FindNode(port.nodeId);
                 if (nodeOutput == null) return;
-               
-                menu.AddItem(new GUIContent($"{port.portName}Connect/StoryClipNode"), false, () =>
+                if (port is StoryBranchPort)
                 {
-                    var node = m_Graph.CreateNode<StoryClipNode>(current.mousePosition, "Action");
-                    CreateNodeView(node);
-                    ConnectPorts(port, node.GetFirstInputPort());
-                });
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/选项"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<StoryBranchClipItemNode>(current.mousePosition, "选项");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                }
+                else
+                {
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/普通节点"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<StoryClipNode>(current.mousePosition, "节点");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/选择节点"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<StoryBranchClipNode>(current.mousePosition, "选择节点");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                    menu.AddItem(new GUIContent($"{port.portName}Connect/并行节点"), false, () =>
+                    {
+                        var node = m_Graph.CreateNode<StoryParallelClipNode>(current.mousePosition, "并行节点");
+                        CreateNodeView(node);
+                        ConnectPorts(port, node.GetFirstInputPort());
+                    });
+                }
             }
         }
 
@@ -141,6 +174,25 @@ namespace TaoTie
                 {
                     DeleteNode(nodeBase);
                 });
+            }
+
+            if (nodeBase is StoryClipNode clipNode)
+            {
+                if (clipNode.outputPorts.Count <= 0)
+                {
+                    menu.AddItem(new GUIContent("添加下一步"), false,
+                        () => { nodeBase.AddOutputPort("下一步", EdgeMode.Override, true, true); });
+                }
+            }
+            else if (nodeBase is StoryBranchClipNode)
+            {
+                menu.AddItem(new GUIContent("添加选项"), false,
+                    () => { nodeBase.AddOutputPort<StoryBranchPort>("选项", EdgeMode.Override, true,EdgeType.Both, true); });
+            }
+            else if (nodeBase is StoryParallelClipNode)
+            {
+                menu.AddItem(new GUIContent("添加并行项"), false,
+                    () => { nodeBase.AddOutputPort("并行项", EdgeMode.Override, true, true); });
             }
         }
 
@@ -158,9 +210,9 @@ namespace TaoTie
                 {
                     return;
                 }
-                // var obj = Convert(m_Graph);
-                // File.WriteAllText(path.Replace("bytes","json"),JsonHelper.ToJson(obj));
-                // File.WriteAllBytes(path,Serializer.Serialize(obj));
+                var obj = Convert(m_Graph);
+                File.WriteAllText(path.Replace("bytes","json"),JsonHelper.ToJson(obj));
+                File.WriteAllBytes(path,Serializer.Serialize(obj));
                 AssetDatabase.Refresh();
                 Debug.Log("导出成功");   
             }
@@ -171,77 +223,118 @@ namespace TaoTie
         
         }
         
-        // private ConfigAIDecisionTree Convert(GraphBase graph)
-        // {
-        //     ConfigAIDecisionTree res = null;
-        //     if (graph.GetStartNode() is AIRootNode node)
-        //     {
-        //         res = new ConfigAIDecisionTree();
-        //         res.Type = node.Type;
-        //         for (int i = 0; i < node.outputPorts.Count; i++)
-        //         {
-        //             if (node.outputPorts[i].portName == "Root")
-        //             {
-        //                 if (node.outputPorts[i].edges != null && node.outputPorts[i].edges.Count > 0)
-        //                 {
-        //                     var edge = m_Graph.GetEdge(node.outputPorts[i].edges[0]);
-        //                     res.Node = Convert(m_Graph.FindNode(edge.inputNodeId));
-        //                 }
-        //             }
-        //             else if (node.outputPorts[i].portName == "CombatRoot")
-        //             {
-        //                 if (node.outputPorts[i].edges != null && node.outputPorts[i].edges.Count > 0)
-        //                 {
-        //                     var edge = m_Graph.GetEdge(node.outputPorts[i].edges[0]);
-        //                     res.CombatNode = Convert(m_Graph.FindNode(edge.inputNodeId));
-        //                 }
-        //             }
-        //         }
-        //       
-        //     }
-        //
-        //     return res;
-        // }
-        //
-        // private DecisionNode Convert(NodeBase aiNode)
-        // {
-        //     if (aiNode is AIConditionNode cnode)
-        //     {
-        //         var res = new DecisionConditionNode();
-        //         res.Condition = cnode.Condition;
-        //         for (int i = 0; i < cnode.outputPorts.Count; i++)
-        //         {
-        //             if (cnode.outputPorts[i].portName == "True")
-        //             {
-        //                 if(cnode.outputPorts[i].edges!=null && cnode.outputPorts[i].edges.Count>0)
-        //                 {
-        //                     var edge = m_Graph.GetEdge(cnode.outputPorts[i].edges[0]);
-        //                     res.True = Convert(m_Graph.FindNode(edge.inputNodeId));
-        //                 }
-        //                 
-        //             }
-        //             else if (cnode.outputPorts[i].portName == "False")
-        //             {
-        //                 if (cnode.outputPorts[i].edges != null && cnode.outputPorts[i].edges.Count > 0)
-        //                 {
-        //                     var edge = m_Graph.GetEdge(cnode.outputPorts[i].edges[0]);
-        //                     res.False = Convert(m_Graph.FindNode(edge.inputNodeId));
-        //                 }
-        //             }
-        //         }
-        //         return res;
-        //     }
-        //     if (aiNode is AIActionNode anode)
-        //     {
-        //         var res = new DecisionActionNode();
-        //         res.Act = anode.Data.Act;
-        //         res.Tactic = anode.Data.Tactic;
-        //         res.Move = anode.Data.Move;
-        //         return res;
-        //     }
-        //     return null;
-        // }
+        private ConfigStory Convert(StoryGraph graph)
+        {
+            ConfigStory res = new ConfigStory();
+            res.Id = graph.Id;
+            res.Remarks = graph.Remarks;
+            res.Actors = graph.Actors;
+            res.Clips = new ConfigStorySerialClip();
+            if (graph.GetStartNode() != null)
+            {
+                List<ConfigStoryClip> clips = new List<ConfigStoryClip>();
+                Convert(graph.GetStartNode(), clips);
+                res.Clips.Clips = clips.ToArray();
+            }
+            return res;
+        }
+        
+        private void Convert(NodeBase clipNode, List<ConfigStoryClip> clips)
+        {
+            if (clipNode == null) return;
+            if (clipNode is StoryClipNode storyClipNode)
+            {
+                if (storyClipNode.Data != null)
+                    clips.Add(storyClipNode.Data);
+            }
+            else if (clipNode is StoryBranchClipNode storyBranchClipNode)
+            {
+                ConfigStoryBranchClip branchClip = new();
+                List<ConfigStoryBranchClipItem> choices = new List<ConfigStoryBranchClipItem>();
+                foreach (var item in storyBranchClipNode.outputPorts)
+                {
+                    if (item is StoryBranchPort)
+                    {
+                        if (item.edges != null && item.edges.Count > 0)
+                        {
+                            var edge = m_Graph.GetEdge(item.edges[0]);
+                            var node = m_Graph.FindNode(edge.inputNodeId) as StoryBranchClipItemNode;
+                            ConfigStoryBranchClipItem clipItem = Convert(node);
+                            choices.Add(clipItem);
+                        }
+                    }
+                }
+                branchClip.Branchs = choices.ToArray();
+                clips.Add(branchClip);
+            }
+            else if (clipNode is StoryParallelClipNode storyParallelClipNode)
+            {
+                ConfigStoryParallelClip parallelClip = new();
+                List<ConfigStoryClip> parallels = new List<ConfigStoryClip>();
+                foreach (var item in storyParallelClipNode.outputPorts)
+                {
+                    if (item.portName!="下一步")
+                    {
+                        if (item.edges != null && item.edges.Count > 0)
+                        {
+                            var edge = m_Graph.GetEdge(item.edges[0]);
+                            var node = m_Graph.FindNode(edge.inputNodeId);
+                            List<ConfigStoryClip> newClips = new List<ConfigStoryClip>();
+                            Convert(node, newClips);
+                            var clip = Convert(newClips);
+                            if (clip != null)
+                            {
+                                parallels.Add(clip);
+                            }
+                        }
+                    }
+                }
 
+                parallelClip.WaitAll = storyParallelClipNode.WaitAll;
+                parallelClip.Clips = parallels.ToArray();
+            }
+            var next = clipNode.GetFirstOutputPort();
+            if (next.edges != null && next.edges.Count > 0)
+            {
+                var edge = m_Graph.GetEdge(next.edges[0]);
+                var node = m_Graph.FindNode(edge.inputNodeId);
+                Convert(node, clips);
+            }
+        }
+
+        private ConfigStoryBranchClipItem Convert(StoryBranchClipItemNode batchItem)
+        {
+            ConfigStoryBranchClipItem res = new ConfigStoryBranchClipItem();
+            var item = batchItem.GetFirstOutputPort();
+            if (item.edges != null && item.edges.Count > 0)
+            {
+                var edge = m_Graph.GetEdge(item.edges[0]);
+                var node = m_Graph.FindNode(edge.inputNodeId);
+                List<ConfigStoryClip> newClips = new List<ConfigStoryClip>();
+                Convert(node, newClips);
+                res.Clip = Convert(newClips);
+            }
+
+            res.Text = batchItem.Text;
+            return res;
+        }
+
+        private ConfigStoryClip Convert(List<ConfigStoryClip> clips)
+        {
+            if (clips.Count > 1)
+            {
+                ConfigStorySerialClip serialClip = new ConfigStorySerialClip();
+                serialClip.Clips = clips.ToArray();
+                clips.Add(serialClip);
+                return serialClip;
+            }
+            else if (clips.Count == 1)
+            {
+                return clips[0];
+            }
+
+            return null;
+        }
         #endregion
 
     }

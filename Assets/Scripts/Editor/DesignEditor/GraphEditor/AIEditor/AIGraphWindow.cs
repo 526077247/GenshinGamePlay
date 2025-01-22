@@ -204,7 +204,7 @@ namespace TaoTie
         
         }
         
-        private ConfigAIDecisionTree Convert(GraphBase graph)
+        private ConfigAIDecisionTree Convert(AIGraph graph)
         {
             ConfigAIDecisionTree res = null;
             if (graph.GetStartNode() is AIRootNode node)
