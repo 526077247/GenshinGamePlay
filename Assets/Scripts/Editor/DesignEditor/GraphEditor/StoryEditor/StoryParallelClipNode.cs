@@ -17,7 +17,7 @@ namespace TaoTie
         {
             AddInputPort("上一步",EdgeMode.Override, false, false);
             AddOutputPort("下一步", EdgeMode.Override, true, true);
-            AddOutputPort("并行项", EdgeMode.Override, true, true);
+            AddOutputPort("并行项", EdgeMode.Multiple, true, true);
         }
     }
 }

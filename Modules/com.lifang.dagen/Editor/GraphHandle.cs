@@ -468,26 +468,29 @@ namespace DaGenGraph.Editor
                         m_SelectedNodes.Count >
                         1) //OR if there are at least 2 nodes selected -> allow dragging from any point on the node
                     {
-                        //pressed left mouse button over a node -> select/deselect it
-                        if (current.shift || current.control || current.command)
+                        if (!m_DrawInspector || Event.current.mousePosition.x < position.width - m_NodeInspectorWidth)
                         {
-                            //add/remove the node to/from selection
-                            SelectNodes(new List<NodeBase> { m_CurrentHoveredNode }, true);
-                        }
-                        //we may have a selection and we do not want to override it in order to be able to start dragging
-                        else if (!m_SelectedNodes.Contains(m_CurrentHoveredNode))
-                        {
-                            //select this node only
-                            SelectNodes(new List<NodeBase> { m_CurrentHoveredNode }, false);
-                        }
+                            //pressed left mouse button over a node -> select/deselect it
+                            if (current.shift || current.control || current.command)
+                            {
+                                //add/remove the node to/from selection
+                                SelectNodes(new List<NodeBase> {  }, true);
+                            }
+                            //we may have a selection and we do not want to override it in order to be able to start dragging
+                            else if (!m_SelectedNodes.Contains(m_CurrentHoveredNode))
+                            {
+                                //select this node only
+                                SelectNodes(new List<NodeBase> { m_CurrentHoveredNode }, false);
+                            }
 
-                        //allow dragging ONLY IF the mouse is over a selected node
-                        //in the previous lines we only checked if it's over a node, but not if the node we are hovering over is currently selected
-                        if (m_SelectedNodes.Contains(m_CurrentHoveredNode))
-                        {
-                            //pressed left mouse button over a node -> it's a possible start drag
-                            PrepareToDragSelectedNodes(Event.current.mousePosition);
-                            m_Mode = GraphMode.Drag;
+                            //allow dragging ONLY IF the mouse is over a selected node
+                            //in the previous lines we only checked if it's over a node, but not if the node we are hovering over is currently selected
+                            if (m_SelectedNodes.Contains(m_CurrentHoveredNode))
+                            {
+                                //pressed left mouse button over a node -> it's a possible start drag
+                                PrepareToDragSelectedNodes(Event.current.mousePosition);
+                                m_Mode = GraphMode.Drag;
+                            }
                         }
                     }
 
@@ -556,7 +559,14 @@ namespace DaGenGraph.Editor
                 }
 
                 //mouse left click is dragging and creating a selection box <- we know this because the the mouse is not over a point nor a node
-                if (m_StartSelectPoint != null) m_Mode = GraphMode.Select;
+                if (m_StartSelectPoint != null)
+                {
+                    if (!m_DrawInspector || Event.current.mousePosition.x < position.width - m_NodeInspectorWidth)
+                    {
+                        m_Mode = GraphMode.Select;
+                    }
+                }
+                
                 if (m_Mode == GraphMode.Select)
                 {
                     UpdateSelectionBox(Event.current.mousePosition);
@@ -670,8 +680,10 @@ namespace DaGenGraph.Editor
                     return;
                 }
 
-                //lifted mouse left button over nothing -> deselect all and select the graph itself
-                ExecuteGraphAction(GraphAction.DeselectAll); //deselect all nodes and select the graph itself
+               
+                if(!m_DrawInspector || Event.current.mousePosition.x<position.width-m_NodeInspectorWidth)
+                    //lifted mouse left button over nothing -> deselect all and select the graph itself
+                    ExecuteGraphAction(GraphAction.DeselectAll); //deselect all nodes and select the graph itself
                 m_Mode = GraphMode.None; //set the graph in idle mode
                 current.Use();
                 return;
@@ -864,7 +876,7 @@ namespace DaGenGraph.Editor
             graph.CreateEdge(outputPort, inputPort);
         }
 
-        private void DisconnectPort(Port port)
+        public void DisconnectPort(Port port)
         {
             if (!port.IsConnected()) return;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using DaGenGraph;
 using Nino.Core;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -22,7 +23,7 @@ namespace TaoTie
         [LabelText("到时间后执行")]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
-        [OnStateUpdate(nameof(Refresh))]
+        [OnStateUpdate(nameof(Refresh))][DrawIgnore]
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(HandleType)+")")]
 #endif
         public ConfigSceneGroupAction[] Actions;

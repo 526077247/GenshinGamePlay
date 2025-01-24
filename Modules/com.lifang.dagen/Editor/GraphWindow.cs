@@ -20,12 +20,13 @@ namespace DaGenGraph.Editor
         private float m_CurrentZoom = 1f;
         private Rect m_GraphAreaIncludingTab;
         private Rect m_ScaledGraphArea;
-        private bool m_DrawInspector;
+        private bool m_DrawInspector = true;
         private Dictionary<string, NodeView> m_NodeViews;
         private Dictionary<string, List<VirtualPoint>> m_Points;
         private Dictionary<string, Port> m_Ports;
         private Dictionary<string, EdgeView> m_EdgeViews;
-        private string m_SelectedNodeId;
+
+        private float m_NodeInspectorWidth = 400;
         private float currentZoom
         {
             get
@@ -230,8 +231,8 @@ namespace DaGenGraph.Editor
         private void OnLostFocus()
         {
             m_HasFocus = false;
-            m_SelectedNodes.Clear();
-            UpdateNodesSelectedState(m_SelectedNodes);
+            // m_SelectedNodes.Clear();
+            // UpdateNodesSelectedState(m_SelectedNodes);
         }
 
         private void ChangeDrawInspector()
@@ -241,7 +242,7 @@ namespace DaGenGraph.Editor
 
         private void DrawViewGraph()
         {
-            float nodeInspectorWidth = m_DrawInspector?400:0;
+            float nodeInspectorWidth = m_DrawInspector?m_NodeInspectorWidth:0;
             ConstructGraphGUI();
             var graphViewArea = new Rect(0, 0, position.width - nodeInspectorWidth, position.height);
             GraphBackground.DrawGrid(graphViewArea, currentZoom, Vector2.zero);
@@ -459,6 +460,14 @@ namespace DaGenGraph.Editor
         private void ConstructGraphGUI()
         {
             if (m_Graph == null) return;
+            if (m_NodeViews!=null && m_NodeViews.Count != m_Graph.values.Count)
+            {
+                nodeViews.Clear();
+                foreach (var item in m_Graph.values)
+                {
+                    CreateNodeView(item);
+                }
+            }
             m_Points = null;
             m_Ports = null;
             m_EdgeViews = null;

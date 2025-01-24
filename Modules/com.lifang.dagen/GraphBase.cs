@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace DaGenGraph
@@ -27,7 +26,17 @@ namespace DaGenGraph
         {
             var node = CreateInstance<T>() ;
             node.name = "Node";
-            AssetDatabase.AddObjectToAsset(node,this);
+#if UNITY_EDITOR
+            try
+            {
+                UnityEditor.AssetDatabase.AddObjectToAsset(node, this);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex);
+                return null;
+            }
+#endif
             return node;
         }
         
@@ -135,7 +144,17 @@ namespace DaGenGraph
         {
             var edge = CreateInstance<Edge>() ;
             edge.name = "Edge";
-            AssetDatabase.AddObjectToAsset(edge,this);
+#if UNITY_EDITOR
+            try
+            {
+                UnityEditor.AssetDatabase.AddObjectToAsset(edge, this);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex);
+                return null;
+            }
+#endif
             return edge;
         }
         

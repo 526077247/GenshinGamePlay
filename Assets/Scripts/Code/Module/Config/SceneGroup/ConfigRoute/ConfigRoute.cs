@@ -1,4 +1,5 @@
-﻿using Nino.Core;
+﻿using DaGenGraph;
+using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ namespace TaoTie
         [PropertyOrder(int.MinValue + 1)][LabelText("策划备注")]
         public string Remarks;
 #endif
-        [NinoMember(1)] public int LocalId;
+        [NinoMember(1)] [DrawIgnore]
+        public int LocalId;
         [LabelText("路径类型")] [NinoMember(2)] public RouteType Type = RouteType.OneWay;
 
         [LabelText("是否是前进")] [DisableInEditorMode] [NinoMember(3)]
@@ -25,7 +27,7 @@ namespace TaoTie
         [LabelText("判定抵达的范围")] [NinoMember(6)] [MinValue(0.1f)] public float ArriveRange;
         
         [LabelText("判定角色靠近的范围")] [NinoMember(8)] [MinValue(0.1f)] public float AvatarNearRange;
-        [OnCollectionChanged(nameof(RefreshIndex))]
+        [OnCollectionChanged(nameof(RefreshIndex))][DrawIgnore]
         [NinoMember(7)] public ConfigWaypoint[] Points;
 
         private void RefreshIndex()

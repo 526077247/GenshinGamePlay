@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class StoryGraphWindow : OdinGraphView<StoryGraph>
+    public class StoryGraphWindow : GraphWindow<StoryGraph>
     {
         public string path;
         
@@ -28,10 +28,10 @@ namespace TaoTie
 
         private static StoryGraphWindow s_Instance;
 
-        [MenuItem("Tools/Graph编辑器/StoryGraph")]
+        [MenuItem("Tools/Graph编辑器/剧情编辑器")]
         public static void GetWindow()
         {
-            instance.titleContent = new GUIContent("StoryGraphWindow");
+            instance.titleContent = new GUIContent("剧情编辑器");
             instance.Show();
             instance.InitGraph();
         }
@@ -277,14 +277,17 @@ namespace TaoTie
                     {
                         if (item.edges != null && item.edges.Count > 0)
                         {
-                            var edge = m_Graph.GetEdge(item.edges[0]);
-                            var node = m_Graph.FindNode(edge.inputNodeId);
-                            List<ConfigStoryClip> newClips = new List<ConfigStoryClip>();
-                            Convert(node, newClips);
-                            var clip = Convert(newClips);
-                            if (clip != null)
+                            for (int i = 0; i < item.edges.Count; i++)
                             {
-                                parallels.Add(clip);
+                                var edge = m_Graph.GetEdge(item.edges[i]);
+                                var node = m_Graph.FindNode(edge.inputNodeId);
+                                List<ConfigStoryClip> newClips = new List<ConfigStoryClip>();
+                                Convert(node, newClips);
+                                var clip = Convert(newClips);
+                                if (clip != null)
+                                {
+                                    parallels.Add(clip);
+                                }
                             }
                         }
                     }

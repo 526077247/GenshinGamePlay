@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NodeViewType(typeof(AIConditionNodeView))]
     public class AIConditionNode:JsonNodeBase
     {
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAIDecisionInterface)+"()")]

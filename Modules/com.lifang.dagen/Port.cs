@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.AnimatedValues;
 using UnityEngine;
 
 namespace DaGenGraph
@@ -11,8 +10,9 @@ namespace DaGenGraph
         
         #region public Variables
         
-        
-        [NonSerialized] public AnimBool showHover = new AnimBool(false);
+#if UNITY_EDITOR
+        [NonSerialized] public UnityEditor.AnimatedValues.AnimBool showHover = new (false);
+#endif
         [NonSerialized] public Rect hoverRect;
         [NonSerialized] private List<Vector2> edgePoints;
         

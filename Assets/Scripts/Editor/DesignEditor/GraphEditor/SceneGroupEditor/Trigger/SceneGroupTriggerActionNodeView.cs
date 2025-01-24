@@ -6,13 +6,13 @@ using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    public class StoryClipNodeView: NodeView<StoryClipNode>
+    public class SceneGroupTriggerActionNodeView: NodeView<SceneGroupTriggerActionNode>
     {
         private List<Type> subTypes;
         private string[] subNames;
         protected override List<Type> GetSubClassList(FieldInfo field,object obj, Type type, out string[] names)
         {
-            if (type == TypeInfo<ConfigStoryClip>.Type)
+            if (type == TypeInfo<ConfigSceneGroupAction>.Type)
             {
                 if (subTypes == null)
                 {
@@ -20,9 +20,10 @@ namespace TaoTie
                     var types = type.Assembly.GetTypes();
                     foreach (var item in types)
                     {
-                        if(item == TypeInfo<ConfigStoryBranchClip>.Type||
-                           item == TypeInfo<ConfigStoryParallelClip>.Type||
-                           item == TypeInfo<ConfigStorySerialClip>.Type) continue;
+                        if(item == TypeInfo<ConfigSceneGroupAndAction>.Type||
+                           item == TypeInfo<ConfigSceneGroupOrAction>.Type||
+                           item == TypeInfo<ConfigSceneGroupRestartPlatformMove>.Type||
+                           item == TypeInfo<ConfigSceneGroupDelayAction>.Type) continue;
                         if (item.IsClass && !item.IsAbstract && type.IsAssignableFrom(item))
                         {
                             subTypes.Add(item);   

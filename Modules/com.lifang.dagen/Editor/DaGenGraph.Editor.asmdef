@@ -1,5 +1,6 @@
 {
-    "name": "DaGenGraphEditor",
+    "name": "DaGenGraph.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:b637e77054d21444096d4d4e5637ed30"
     ],

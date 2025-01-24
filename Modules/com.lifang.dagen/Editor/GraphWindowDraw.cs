@@ -486,42 +486,43 @@ namespace DaGenGraph.Editor
         private Vector2 nodeScrollPos;
         private Vector2 graphScrollPos;
         private bool foldGraph;
-        private bool foldNode;
+        private Dictionary<string,bool> foldNode = new Dictionary<string, bool>();
         private void DrawInspector(float start,float width)
         {
-            var selectedNode = m_SelectedNodes.FirstOrDefault();
-            if (selectedNode != null)
-            {
-                m_SelectedNodeId = selectedNode.id;
-            }
-
-            NodeView view = null;
-            bool showNodeView = m_Graph!=null && !string.IsNullOrEmpty(m_SelectedNodeId) && nodeViews.TryGetValue(m_SelectedNodeId, out view);
+            bool showNodeView = m_Graph!=null && m_SelectedNodes!=null && m_SelectedNodes.Count>0;
             var inspectorArea = new Rect(start, 20, width, position.height-20);
             GUILayout.BeginArea(inspectorArea);
             foldGraph = EditorGUILayout.BeginFoldoutHeaderGroup(foldGraph, m_Graph.name);
             if (foldGraph)
             {
                 graphScrollPos = EditorGUILayout.BeginScrollView(graphScrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(showNodeView?200:inspectorArea.height-20));
-                EditorGUI.indentLevel++;
                 DrawGraphInspector();
-                EditorGUI.indentLevel--;
                 EditorGUILayout.EndScrollView();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
             if (showNodeView)
             {
-                foldNode = EditorGUILayout.BeginFoldoutHeaderGroup(foldNode, m_Graph.FindNode(m_SelectedNodeId).name);
-                if (foldNode)
+                nodeScrollPos = EditorGUILayout.BeginScrollView(nodeScrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(inspectorArea.height-(foldGraph?225:25)));
+                for (int i = 0; i < m_SelectedNodes.Count; i++)
                 {
-                    EditorGUILayout.Space(10);
-                    nodeScrollPos = EditorGUILayout.BeginScrollView(nodeScrollPos, GUILayout.Width(inspectorArea.width), GUILayout.Height(inspectorArea.height-(foldGraph?250:50)));
-                    EditorGUI.indentLevel++;
-                    view.DrawInspector(true);
-                    EditorGUI.indentLevel--;
-                    EditorGUILayout.EndScrollView();
+                    var node = m_SelectedNodes[i];
+                    if (node == null) continue;
+                    if(!nodeViews.TryGetValue(node.id,out var view)) continue;
+                    if (!foldNode.TryGetValue(node.id, out var fold))
+                    {
+                        fold = false;
+                        foldNode[m_SelectedNodes[i].id] = fold;
+                    }
+                    fold = EditorGUILayout.BeginFoldoutHeaderGroup(fold, $"{node.name}({node.id})");
+                    if (fold)
+                    {
+                        EditorGUILayout.Space(10);
+                        view.DrawInspector(true);
+                    }
+                    foldNode[m_SelectedNodes[i].id] = fold;
+                    EditorGUILayout.EndFoldoutHeaderGroup();
                 }
-                EditorGUILayout.EndFoldoutHeaderGroup();
+                EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();
         }

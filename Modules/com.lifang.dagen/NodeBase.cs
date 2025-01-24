@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace DaGenGraph
@@ -361,6 +360,10 @@ namespace DaGenGraph
             return false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="port"></param>
         public void DeletePort(Port port)
         {
             if (port.IsInput()) inputPorts.Remove(port);
@@ -439,10 +442,20 @@ namespace DaGenGraph
         
         protected virtual Port CreatePortBase<T>() where T:Port
         {
-            var node = CreateInstance<T>();
-            node.name = "Port";
-            AssetDatabase.AddObjectToAsset(node,this);
-            return node;
+            var port = CreateInstance<T>();
+            port.name = "Port";
+#if UNITY_EDITOR
+            try
+            {
+                UnityEditor.AssetDatabase.AddObjectToAsset(port, this);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex);
+                return null;
+            }
+#endif
+            return port;
         }
         
         protected virtual void DeletePortBase(Port port)

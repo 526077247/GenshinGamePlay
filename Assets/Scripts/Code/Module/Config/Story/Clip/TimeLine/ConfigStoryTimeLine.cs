@@ -31,13 +31,16 @@ namespace TaoTie
         public void Preview()
         {
             if (string.IsNullOrEmpty(Path)) return;
-            TimeLine = UnityEditor.AssetDatabase.LoadAssetAtPath<TimelineAsset>("Assets/AssetsPackage/" +Path);
+            if (!Path.StartsWith("Assets/AssetsPackage/")) 
+                TimeLine = UnityEditor.AssetDatabase.LoadAssetAtPath<TimelineAsset>("Assets/AssetsPackage/" +Path);
+            else
+                TimeLine = UnityEditor.AssetDatabase.LoadAssetAtPath<TimelineAsset>(Path);
         }
         [Sirenix.OdinInspector.BoxGroup("TimeLine")][Sirenix.OdinInspector.ReadOnly]
 #endif
         [NinoMember(10)]
         public string Path;
-        [NinoMember(11)][Sirenix.OdinInspector.ReadOnly]
+        [NinoMember(11)]
         public ConfigStoryTimeLineClip[] Clips;
         [NinoMember(12)]
         public Dictionary<string, int> Binding = new ();

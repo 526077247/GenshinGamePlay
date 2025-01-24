@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class AIGraphWindow : OdinGraphView<AIGraph>
+    public class AIGraphWindow : GraphWindow<AIGraph>
     {
         public string path;
         
@@ -27,10 +27,10 @@ namespace TaoTie
 
         private static AIGraphWindow s_Instance;
 
-        [MenuItem("Tools/Graph编辑器/AiGraph")]
+        [MenuItem("Tools/Graph编辑器/AI编辑器")]
         public static void GetWindow()
         {
-            instance.titleContent = new GUIContent("AIGraphWindow");
+            instance.titleContent = new GUIContent("AI编辑器");
             instance.Show();
             instance.InitGraph();
         }

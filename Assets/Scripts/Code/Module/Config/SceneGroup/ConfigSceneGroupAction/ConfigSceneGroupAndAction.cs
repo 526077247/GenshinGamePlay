@@ -1,4 +1,5 @@
 ﻿using System;
+using DaGenGraph;
 using Nino.Core;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -11,13 +12,13 @@ namespace TaoTie
     public partial class ConfigSceneGroupAndAction:ConfigSceneGroupAction
     {
         [NinoMember(10)]
-        [LabelText("条件")]
+        [LabelText("条件")][DrawIgnore]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]
 #endif
         public ConfigSceneGroupCondition[] Conditions;
         [NinoMember(11)]
-        [LabelText("所有条件都满足后执行")]
+        [LabelText("所有条件都满足后执行")][DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
@@ -25,7 +26,7 @@ namespace TaoTie
 #endif
         public ConfigSceneGroupAction[] Success;
         [NinoMember(12)]
-        [LabelText("任意一个条件不满足执行")]
+        [LabelText("任意一个条件不满足执行")][DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]

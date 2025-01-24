@@ -1,4 +1,5 @@
 ﻿using System;
+using DaGenGraph;
 using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigWaypoint
     {
-        [NinoMember(17)][DisableInEditorMode]
+        [NinoMember(17)][DisableInEditorMode][DrawIgnore]
         public int Index;
         
         [NinoMember(16)][LabelText("是否是相对坐标、方向")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using DaGenGraph;
 using LitJson.Extensions;
 using Nino.Core;
 using Sirenix.OdinInspector;
@@ -12,13 +13,13 @@ namespace TaoTie
     public abstract partial class ConfigSceneGroupTrigger
     {
         [PropertyOrder(int.MinValue)] 
-        [NinoMember(1)]
+        [NinoMember(1)][DrawIgnore]
         public int LocalId;
         [NinoMember(2)]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
 #endif
-        [SerializeReference] [PropertyOrder(int.MaxValue - 1)]
+        [SerializeReference] [PropertyOrder(int.MaxValue - 1)][DrawIgnore]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(GetType)+"())")]
 #endif

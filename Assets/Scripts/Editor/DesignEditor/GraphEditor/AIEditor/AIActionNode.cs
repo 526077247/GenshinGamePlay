@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NodeViewType(typeof(AIActionNodeView))]
     public class AIActionNode:JsonNodeBase
     {
         [HideReferenceObjectPicker]

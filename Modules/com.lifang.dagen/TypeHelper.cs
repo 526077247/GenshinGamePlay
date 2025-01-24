@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEditor;
-using UnityEngine;
-
+using System.Reflection;
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#endif
 namespace DaGenGraph
 {
     public static class TypeHelper
@@ -34,7 +32,7 @@ namespace DaGenGraph
         private static Dictionary<Type, List<Type>> subTypes = new Dictionary<Type, List<Type>>();
         private static Dictionary<Type, string[]> fullNames = new Dictionary<Type, string[]>();
         private static Dictionary<string, Type> tempType = new Dictionary<string, Type>();
-        public static List<Type> GetSubClassList(Type type,out string[] names)
+        public static List<Type> GetSubClassList(FieldInfo fieldInfo, Type type, out string[] names)
         {
             if (type == null)
             {
@@ -64,7 +62,14 @@ namespace DaGenGraph
             names = new string[res.Count];
             for (int i = 0; i < names.Length; i++)
             {
-                names[i] = res[i].FullName;
+                if (res[i].GetCustomAttribute(typeof(LabelTextAttribute)) is LabelTextAttribute labelTextAttribute)
+                {
+                    names[i] = labelTextAttribute.Text;
+                }
+                else
+                {
+                    names[i] = res[i].FullName;
+                }
             }
             fullNames.Add(type, names);
             subTypes.Add(type,res);
