@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    
+    [NodeViewType(typeof(SceneGroupTriggerConditionNodeView))]
     public class SceneGroupTriggerConditionNode: JsonNodeBase
     {
         [LabelText("判断")]

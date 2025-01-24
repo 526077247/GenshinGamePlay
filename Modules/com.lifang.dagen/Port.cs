@@ -248,7 +248,7 @@ namespace DaGenGraph
         /// <summary> Returns TRUE if this port can connect to another port </summary>
         /// <param name="other"> The other port we are trying to determine if this port can connect to </param>
         /// <param name="ignoreValueType"> If true, this check will not make sure that the sockets valueTypes match </param>
-        public bool CanConnect(Port other,GraphBase graphBase, bool ignoreValueType = false)
+        public virtual bool CanConnect(Port other,GraphBase graphBase, bool ignoreValueType = false)
         {
             if (other == null) return false; //check that the other port is not null
             if (IsConnectedToPort(other.id,graphBase))return false; //check that this port is not already connected to the other port

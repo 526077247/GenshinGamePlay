@@ -1165,7 +1165,7 @@ namespace DaGenGraph.Editor
             ValueDropdownAttribute valueDropdownAttribute)
         {
             object value = field.GetValue(obj);
-            string showText = value.ToString();
+            string showText = value?.ToString();
             if (valueDropdown.TryGetValue(field, out var list))
             {
                 int index = -1;

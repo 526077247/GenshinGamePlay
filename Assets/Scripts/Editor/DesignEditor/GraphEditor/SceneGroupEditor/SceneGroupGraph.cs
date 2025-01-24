@@ -1,3 +1,4 @@
+using System;
 using DaGenGraph;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -21,5 +22,36 @@ namespace TaoTie
         [LabelText("初始组")]
         [ShowIf("@!"+nameof(RandSuite))]
         public int InitSuite;
+        
+        public Type FindTriggerType(string nodeId)
+        {
+            NodeBase node = FindNode(nodeId);
+            while (node != null)
+            {
+                if (node is SceneGroupTriggerNode triggerNode)
+                {
+                    return triggerNode.Trigger?.GetType();
+                }
+                if (node.inputPorts != null && node.inputPorts.Count > 0 &&  node.inputPorts[0].edges.Count>0)
+                {
+                    var edgeId = node.inputPorts[0].edges[0];
+                    var edge = GetEdge(edgeId);
+                    if (edge != null)
+                    {
+                        var pre = FindNode(edge.outputNodeId);
+                        node = pre;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return null;
+        }
     }
 }
