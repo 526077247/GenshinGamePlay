@@ -70,6 +70,7 @@ namespace TaoTie
 
         public void TryMove(Vector3 direction, MotionFlag mFlag = MotionFlag.Run, MotionDirection mDirection = MotionDirection.Forward)
         {
+            if (moveComponent == null) return;
             if (direction == Vector3.zero)
             {
                 fsm.SetData(FSMConst.MotionFlag, 0);

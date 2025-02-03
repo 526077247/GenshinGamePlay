@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using YooAsset;
 
 namespace TaoTie
 {
@@ -71,7 +72,7 @@ namespace TaoTie
             playRot = default;
             StartTime = 0;
             clipIndex = 0;
-            
+            playableDirector?.Stop();
             foreach (var item in actor3d)
             {
                 storySystem.Recycle3dActor(item.Key, item.Value);
@@ -87,6 +88,8 @@ namespace TaoTie
                 GameObject.Destroy(playObj);
                 playableDirector = null;
                 playObj = null;
+                GameObjectPoolManager.GetInstance().Cleanup();
+                YooAssetsMgr.Instance.UnloadUnusedAssets();
             }
         }
 
@@ -114,6 +117,7 @@ namespace TaoTie
 
             if (offset > timelineAsset.duration)
             {
+                playableDirector.time = playableDirector.duration;
                 Dispose();
             }
         }

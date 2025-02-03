@@ -270,7 +270,7 @@ namespace TaoTie
         /// <summary>
         /// 等待预制体加载完成，注意判断加载完之后Component是否已经销毁
         /// </summary>
-        public async ETTask WaitLoadGameObjectOver()
+        public async ETTask<bool> WaitLoadGameObjectOver()
         {
             if (EntityView == null)
             {
@@ -280,6 +280,7 @@ namespace TaoTie
                 waitFinishTask.Enqueue(task);
                 await task;
             }
+            return !IsDispose;
         }
 
         public T GetCollectorObj<T>(string name) where T : class

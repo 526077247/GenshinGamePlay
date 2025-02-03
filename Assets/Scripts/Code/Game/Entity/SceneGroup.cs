@@ -417,6 +417,7 @@ namespace TaoTie
 
         private void AddonActors(ConfigSceneGroupSuites config)
         {
+            if (config.Actors == null) return;
             for (int i = 0; i < config.Actors.Length; i++)
             {
                 if (!this.actorEntities.ContainsKey(config.Actors[i]) &&
@@ -430,6 +431,7 @@ namespace TaoTie
 
         private void AddonTriggers(ConfigSceneGroupSuites config)
         {
+            if (config.Triggers == null) return;
             for (int i = 0; i < config.Triggers.Length; i++)
             {
                 if (this.triggers.TryGetValue(config.Triggers[i], out var trigger) &&
@@ -442,6 +444,7 @@ namespace TaoTie
 
         private void AddonZones(ConfigSceneGroupSuites config)
         {
+            if (config.Zones == null) return;
             for (int i = 0; i < config.Zones.Length; i++)
             {
                 if (!this.zoneEntities.ContainsKey(config.Zones[i]) &&
@@ -478,6 +481,7 @@ namespace TaoTie
             {
                 for (int i = 0; i < pre.Count; i++)
                 {
+                    if (pre[i] == null) continue;
                     for (int j = 0; j < pre[i].Length; j++)
                     {
                         if (!this.temp.ContainsKey(pre[i][j]))
@@ -524,7 +528,7 @@ namespace TaoTie
             this.Collect(pre, config.Actors);
             foreach (var item in this.temp)
             {
-                if (item.Value < 0) //消失actor
+                if (item.Value <= 0) //消失actor
                 {
                     if (this.actorEntities.TryGetValue(item.Key, out long entityId))
                     {
@@ -548,7 +552,7 @@ namespace TaoTie
             this.Collect(pre, config.Triggers);
             foreach (var item in this.temp)
             {
-                if (item.Value < 0) //消失
+                if (item.Value <= 0) //消失
                 {
                     if (this.triggers.TryGetValue(item.Key, out var trigger))
                     {
@@ -572,7 +576,7 @@ namespace TaoTie
             this.Collect(pre, config.Zones);
             foreach (var item in this.temp)
             {
-                if (item.Value < 0) //消失
+                if (item.Value <= 0) //消失
                 {
                     if (this.zoneEntities.TryGetValue(item.Key, out var zone))
                     {
@@ -628,15 +632,17 @@ namespace TaoTie
         public int GetSuiteMonsterCount()
         {
             int res = 0;
-            for (int i = 0; i < this.Config.Actors.Length; i++)
+            if (this.Config.Actors != null)
             {
-                if (this.Config.Actors[i] is ConfigSceneGroupActorMonster monster &&
-                    this.actorEntities.TryGetValue(monster.LocalId, out var eid))
+                for (int i = 0; i < this.Config.Actors.Length; i++)
                 {
-                    res++;
+                    if (this.Config.Actors[i] is ConfigSceneGroupActorMonster monster &&
+                        this.actorEntities.TryGetValue(monster.LocalId, out var eid))
+                    {
+                        res++;
+                    }
                 }
             }
-
             return res;
         }
 

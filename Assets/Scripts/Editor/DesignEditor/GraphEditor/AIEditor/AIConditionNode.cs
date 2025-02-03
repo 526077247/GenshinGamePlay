@@ -8,6 +8,7 @@ namespace TaoTie
     public class AIConditionNode:JsonNodeBase
     {
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAIDecisionInterface)+"()")]
+        [LabelText("判断")]
         public string Condition;
 
 
@@ -19,7 +20,7 @@ namespace TaoTie
 
         public override void AddDefaultPorts()
         {
-            AddInputPort(EdgeMode.Override, false, false);
+            AddInputPort("输入", EdgeMode.Override, false, false);
             AddOutputPort("True" , EdgeMode.Override, false, false);
             AddOutputPort("False" ,EdgeMode.Override, false, false);
         }

@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public bool IsPlaying { get; private set; }
         private ConfigStory config;
-        private SceneManagerProvider scene;
+        public SceneManagerProvider Scene;
         private Vector3 playPos;
         private Quaternion playRot;
         public SceneGroup SceneGroup { get; private set; }
@@ -18,7 +18,7 @@ namespace TaoTie
 
         public void Init(SceneManagerProvider scene)
         {
-            this.scene = scene;
+            this.Scene = scene;
             this.timeLineStoryRunners = new List<StoryTimeLineRunner>();
         }
 
@@ -100,7 +100,7 @@ namespace TaoTie
             {
                 if (config.Actors[i].Id == id)
                 {
-                    config.Actors[i].Recycle3dObj(obj);
+                    config.Actors[i].Recycle3dObj(this,obj);
                 }
             }
         }

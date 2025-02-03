@@ -252,7 +252,7 @@ namespace TaoTie
             {
                 var name = Path.GetFileNameWithoutExtension(this.path);
                 var path = EditorUtility.SaveFilePanel($"新建SceneGraphGraph配置文件",
-                    "Assets/AssetsPackage/EditConfig/SceneGraph/", name, "bytes");
+                    "Assets/AssetsPackage/EditConfig/SceneGroup/", name, "bytes");
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
@@ -399,7 +399,7 @@ namespace TaoTie
                     }
                 }
             }
-
+            temp.Sort(CompareConfigSceneGroupAction);
             res.Actions = temp.ToArray();
             return res;
         }
@@ -467,6 +467,7 @@ namespace TaoTie
                     }
                 }
 
+                actions.Sort(CompareConfigSceneGroupAction);
                 res.Actions = actions.ToArray();
                 return res;
             }
@@ -520,7 +521,8 @@ namespace TaoTie
                     }
                 }
             }
-
+            fail.Sort(CompareConfigSceneGroupAction);
+            succ.Sort(CompareConfigSceneGroupAction);
             conditionAction.Fail = fail.ToArray();
             conditionAction.Success = succ.ToArray();
             return conditionAction;
@@ -560,6 +562,11 @@ namespace TaoTie
 
             res.Triggers = temp.ToArray();
             return res;
+        }
+
+        private int CompareConfigSceneGroupAction(ConfigSceneGroupAction a, ConfigSceneGroupAction b)
+        {
+            return a.LocalId - b.LocalId;
         }
 
         #endregion

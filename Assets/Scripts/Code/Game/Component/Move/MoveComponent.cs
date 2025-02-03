@@ -90,7 +90,11 @@ namespace TaoTie
 			if (gh.IsDispose) return;
 			mover = gh.EntityView.GetComponent<Mover>();
 			ceilingDetector = gh.EntityView.GetComponent<CeilingDetector>();
-			if (mover != null) mover.OnAnimatorMoveEvt = OnAnimatorMove;
+			if (mover != null)
+			{
+				mover.enabled = true;
+				mover.OnAnimatorMoveEvt = OnAnimatorMove;
+			}
 			transform = gh.EntityView;
 			cameraTransform = CameraManager.Instance.MainCamera().transform;
 		}
@@ -100,6 +104,7 @@ namespace TaoTie
 			if (mover != null)
 			{
 				mover.OnAnimatorMoveEvt = null;
+				mover.enabled = false;
 				mover = null;
 			}
 

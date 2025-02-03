@@ -73,7 +73,28 @@ namespace TaoTie
                 valueDropdown[field] = temp.ToArray();
                 return true;
             }
+            if (valuesGetter == "@" + nameof(OdinDropdownHelper) + "." +
+                nameof(OdinDropdownHelper.GetSceneGroupSuiteIds) + "()")
+            {
+                temp.Clear();
+                for (int i = 0; i < m_Graph.values.Count; i++)
+                {
+                    if (m_Graph.values[i] is SceneGroupSuitesNode suitesNode)
+                    {
+                        temp.Add(new ValueDropdownItem()
+                        {
+                            Value = suitesNode.Id,
+                            Text = string.IsNullOrEmpty(suitesNode.Remarks)
+                                ? suitesNode.Id.ToString()
+                                : $"{suitesNode.Remarks}({suitesNode.Id})"
+                        });
+                    }
 
+                }
+
+                valueDropdown[field] = temp.ToArray();
+                return true;
+            }
             return false;
         }
     }

@@ -20,6 +20,6 @@ namespace TaoTie
 
         public abstract ETTask<GameObject> Get3dObj(StorySystem storySystem);
         
-        public virtual void Recycle3dObj(GameObject obj){}
+        public virtual void Recycle3dObj(StorySystem storySystem, GameObject obj){}
     }
 }

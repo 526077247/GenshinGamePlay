@@ -35,7 +35,7 @@ namespace TaoTie
             return await GameObjectPoolManager.GetInstance().GetGameObjectAsync(uc.Perfab);
         }
 
-        public override void Recycle3dObj(GameObject obj)
+        public override void Recycle3dObj(StorySystem storySystem,GameObject obj)
         {
             if (obj != null)
             {

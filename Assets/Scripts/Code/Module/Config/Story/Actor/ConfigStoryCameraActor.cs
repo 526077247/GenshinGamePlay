@@ -18,7 +18,7 @@ namespace TaoTie
             return CameraManager.Instance.MainCamera().gameObject;
         }
 
-        public override void Recycle3dObj(GameObject obj)
+        public override void Recycle3dObj(StorySystem storySystem,GameObject obj)
         {
             CameraManager.Instance.Remove(ref id);
             obj.transform.SetParent(null);
