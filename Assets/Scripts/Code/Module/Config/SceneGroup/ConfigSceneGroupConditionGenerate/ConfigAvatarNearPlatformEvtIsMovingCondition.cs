@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigAvatarNearPlatformEvtTrigger))]
     [NinoType(false)]
+    [LabelText("靠近单位的是否正在移动")]
     public partial class ConfigAvatarNearPlatformEvtIsMovingCondition : ConfigSceneGroupCondition<AvatarNearPlatformEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,6 +15,7 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
         public Boolean Value;

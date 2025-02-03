@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigAvatarNearPlatformEvtTrigger))]
     [NinoType(false)]
+    [LabelText("靠近寻路单位的ActorId")]
     public partial class ConfigAvatarNearPlatformEvtActorIdCondition : ConfigSceneGroupCondition<AvatarNearPlatformEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,10 +15,12 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
+        [LabelText("单位Id")]
 #endif
         public Int32 Value;
 

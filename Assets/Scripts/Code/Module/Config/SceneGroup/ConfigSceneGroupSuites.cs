@@ -38,7 +38,7 @@ namespace TaoTie
 #endif
         public int[] Triggers;
 #if UNITY_EDITOR
-        [ShowIf(nameof(RandSuite))]
+        [ShowIf(nameof(RandSuite))][LabelText("随机权值")]
 #endif
         [NinoMember(5)]
         public int RandWeight;

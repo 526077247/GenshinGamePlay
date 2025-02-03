@@ -7,12 +7,12 @@ using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    public class SceneGroupTriggerConditionNodeView: NodeView<SceneGroupTriggerConditionNode>
+    public class SceneGroupTriggerConditionNodeView: SceneGroupNodeView
     {
         private List<Type> types = new List<Type>();
         protected override List<Type> GetSubClassList(FieldInfo fieldInfo, object obj, Type type, out string[] names)
         {
-            if (fieldInfo.FieldType == typeof(ConfigSceneGroupCondition))
+            if (fieldInfo.Name == "Condition")
             {
                 var handleType = (graph as SceneGroupGraph)?.FindTriggerType(node.id);
                 if (handleType != null)

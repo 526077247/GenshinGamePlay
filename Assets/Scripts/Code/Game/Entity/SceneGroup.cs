@@ -190,33 +190,33 @@ namespace TaoTie
         {
             this.Variable.onValueChange += this.OnVariableChanged;
             this.activeEnv = new Dictionary<string, long>();
-            this.actors = new Dictionary<int, ConfigSceneGroupActor>(this.Config.Actors.Length);
-            this.routes = new Dictionary<int, ConfigRoute>(this.Config.Route != null ? this.Config.Route.Length : 0);
-            this.triggers = new Dictionary<int, ConfigSceneGroupTrigger>(this.Config.Triggers.Length);
-            this.zones = new Dictionary<int, ConfigSceneGroupZone>(this.Config.Zones.Length);
-            this.suite = new Dictionary<int, ConfigSceneGroupSuites>(this.Config.Suites.Length);
+            this.actors = new Dictionary<int, ConfigSceneGroupActor>(this.Config.Actors?.Length??0);
+            this.routes = new Dictionary<int, ConfigRoute>(this.Config.Route?.Length??0);
+            this.triggers = new Dictionary<int, ConfigSceneGroupTrigger>(this.Config.Triggers?.Length??0);
+            this.zones = new Dictionary<int, ConfigSceneGroupZone>(this.Config.Zones?.Length??0);
+            this.suite = new Dictionary<int, ConfigSceneGroupSuites>(this.Config.Suites?.Length??0);
 
-            for (int i = 0; i < (this.Config.Actors == null ? 0 : this.Config.Actors.Length); i++)
+            for (int i = 0; i < (this.Config.Actors?.Length??0); i++)
             {
                 this.actors.Add(this.Config.Actors[i].LocalId, this.Config.Actors[i]);
             }
 
-            for (int i = 0; i < (this.Config.Route == null ? 0 : this.Config.Route.Length); i++)
+            for (int i = 0; i < (this.Config.Route?.Length??0); i++)
             {
                 this.routes.Add(this.Config.Route[i].LocalId, this.Config.Route[i]);
             }
 
-            for (int i = 0; i < (this.Config.Triggers == null ? 0 : this.Config.Triggers.Length); i++)
+            for (int i = 0; i < (this.Config.Triggers?.Length??0); i++)
             {
                 this.triggers.Add(this.Config.Triggers[i].LocalId, this.Config.Triggers[i]);
             }
 
-            for (int i = 0; i < (this.Config.Zones == null ? 0 : this.Config.Zones.Length); i++)
+            for (int i = 0; i < (this.Config.Zones?.Length??0); i++)
             {
                 this.zones.Add(this.Config.Zones[i].LocalId, this.Config.Zones[i]);
             }
 
-            for (int i = 0; i < (this.Config.Suites == null ? 0 : this.Config.Suites.Length); i++)
+            for (int i = 0; i < (this.Config.Suites?.Length??0); i++)
             {
                 this.suite.Add(this.Config.Suites[i].LocalId, this.Config.Suites[i]);
             }

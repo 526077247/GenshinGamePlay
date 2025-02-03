@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigEnterZoneEventTrigger))]
     [NinoType(false)]
+    [LabelText("区域Id")]
     public partial class ConfigEnterZoneEventZoneLocalIdCondition : ConfigSceneGroupCondition<EnterZoneEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,10 +15,12 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()",AppendNextDrawer = true)]
+        [LabelText("区域Id")]
 #endif
         public Int32 Value;
 

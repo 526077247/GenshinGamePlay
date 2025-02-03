@@ -64,7 +64,7 @@ namespace TaoTie
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex);
+                            Log.Error(sceneGroups[i].AssetPath+"\r\n"+ex);
                         }
                     }
                     

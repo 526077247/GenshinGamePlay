@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigGameTimeChangeTrigger))]
     [NinoType(false)]
+    [LabelText("游戏时间(ms)")]
     public partial class ConfigGameTimeChangeGameTimeNowCondition : ConfigSceneGroupCondition<GameTimeChange>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,6 +15,7 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
         public Int64 Value;

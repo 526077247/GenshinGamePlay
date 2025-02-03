@@ -7,7 +7,7 @@ namespace TaoTie
 {
     
     [TriggerType]
-    [LabelText("SceneGroup当前剩余怪物数量")]
+    [LabelText("当前关卡剩余怪物数量")]
     [NinoType(false)]
     public partial class ConfigGetSuiteMonsterCountCondition : ConfigSceneGroupCondition
     {

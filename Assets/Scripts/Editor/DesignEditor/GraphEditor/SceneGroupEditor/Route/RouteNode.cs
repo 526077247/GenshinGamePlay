@@ -1,5 +1,6 @@
 using DaGenGraph;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -12,9 +13,22 @@ namespace TaoTie
         [HideReferenceObjectPicker]
         public ConfigRoute Route = new ConfigRoute();
 
-        [ShowIf(nameof(ShowEditorPoints))][PropertyOrder(1)]
+        [ShowIf(nameof(ShowEditorPoints))][PropertyOrder(1)][OnCollectionChanged(nameof(RefreshIndex))]
         public ConfigWaypoint[] Points;
 
+        public override void InitNode(Vector2 pos, string nodeName, int minInputPortsCount = 0, int minOutputPortsCount = 0)
+        {
+            base.InitNode(pos, nodeName, minInputPortsCount, minOutputPortsCount);
+            Route.LocalId = (int) (IdGenerater.Instance.GenerateId() % int.MaxValue);
+        }
+        private void RefreshIndex()
+        {
+            if(Points==null) return;
+            for (int i = 0; i < Points.Length; i++)
+            {
+                if(Points[i]!=null) Points[i].Index = i;
+            }
+        }
         public void RefreshNode()
         {
             if (!ShowEditorPoints)

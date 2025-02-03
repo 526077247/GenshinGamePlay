@@ -9,7 +9,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigWaypoint
     {
-        [NinoMember(17)][DisableInEditorMode][DrawIgnore]
+        [NinoMember(17)][DisableInEditorMode]
         public int Index;
         
         [NinoMember(16)][LabelText("是否是相对坐标、方向")]

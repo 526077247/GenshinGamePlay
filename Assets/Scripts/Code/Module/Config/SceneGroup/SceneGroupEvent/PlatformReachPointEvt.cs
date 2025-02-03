@@ -1,22 +1,26 @@
-﻿namespace TaoTie
+﻿using Sirenix.OdinInspector;
+namespace TaoTie
 {
     public class PlatformReachPointEvt: IEventBase
     {
         /// <summary>
-        /// 靠近单位的actorid
+        /// 抵达寻路点actorid
         /// </summary>
+        [LabelText("抵达寻路点ActorId")]
         [SceneGroupActorId]
         public int ActorId;
 
         /// <summary>
-        /// 靠近单位的寻路路径
+        /// 单位的寻路路径
         /// </summary>
         [SceneGroupRouterId]
+        [LabelText("单位的寻路路径")]
         public int RouteId;
 
         /// <summary>
-        /// 靠近单位的当前寻路点或下一个点的序号
+        /// 抵达的寻路点
         /// </summary>
+        [LabelText("抵达的寻路点")]
         public int PointIndex;
     }
 }

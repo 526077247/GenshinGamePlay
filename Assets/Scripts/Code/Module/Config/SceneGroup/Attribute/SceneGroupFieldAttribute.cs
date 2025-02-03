@@ -33,4 +33,12 @@ namespace TaoTie
     {
         
     }
+
+    /// <summary>
+    /// 标识导出不生成
+    /// </summary>
+    public class SceneGroupGenerateIgnoreAttribute: System.Attribute
+    {
+        
+    }
 }

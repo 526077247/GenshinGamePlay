@@ -185,19 +185,27 @@ namespace DaGenGraph
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class ShowIfAttribute : Attribute
     {
+
+        public string Condition;
+        public object Value;
+
         public ShowIfAttribute(string condition)
         {
             Condition = condition;
         }
 
-        public string Condition;
+        public ShowIfAttribute(string condition, object optionalValue)
+        {
+          this.Condition = condition;
+          this.Value = optionalValue;
+        }
     }
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class ValueDropdownAttribute : Attribute
     {
         public string ValuesGetter;
-
+        public bool AppendNextDrawer;
         public ValueDropdownAttribute(string valuesGetter)
         {
             ValuesGetter = valuesGetter;

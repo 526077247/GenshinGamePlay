@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigSuiteLoadEventTrigger))]
     [NinoType(false)]
+    [LabelText("附加(true)还是替换(false)")]
     public partial class ConfigSuiteLoadEventIsAddOnCondition : ConfigSceneGroupCondition<SuiteLoadEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,6 +15,7 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
         public Boolean Value;

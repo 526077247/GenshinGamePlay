@@ -30,16 +30,16 @@ namespace TaoTie
         [Tooltip("事件监听")]
         public ConfigSceneGroupTrigger[] Triggers;
         [NinoMember(7)]
-        [Tooltip("组")]
+        [Tooltip("阶段")]
         public ConfigSceneGroupSuites[] Suites;
         [NinoMember(8)]
         [Tooltip("寻路路径")]
         public ConfigRoute[] Route;
         [NinoMember(9)]
-        [LabelText("是否初始随机一个组？")]
+        [LabelText("是否初始随机一个阶段？")]
         public bool RandSuite;
         [NinoMember(10)]
-        [LabelText("初始组")]
+        [LabelText("初始阶段")]
         [ShowIf("@!"+nameof(RandSuite))]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]

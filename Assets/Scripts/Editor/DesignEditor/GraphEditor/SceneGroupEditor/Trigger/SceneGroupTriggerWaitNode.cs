@@ -14,6 +14,7 @@ namespace TaoTie
         public bool IsRealTime;
         public override void AddDefaultPorts()
         {
+            AddInputPort<SceneGroupActionPort>("执行", EdgeMode.Multiple, false, EdgeType.Both, false);
             AddOutputPort<SceneGroupActionPort>("当等待后", EdgeMode.Multiple, false, EdgeType.Both, false);
         }
     }

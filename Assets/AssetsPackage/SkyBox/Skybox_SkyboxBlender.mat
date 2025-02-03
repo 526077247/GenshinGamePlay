@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Skybox_SkyboxBlender
   m_Shader: {fileID: 4800000, guid: 06e8da9b2b26f09459e8a93e84b2e0c9, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,23 +19,24 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _Tex:
-        m_Texture: {fileID: 8900000, guid: 3919498387b483b478b11f88558bbc3f, type: 3}
+        m_Texture: {fileID: 8900000, guid: d1ef084f7a6a84d43ad06b3ba6d5e4aa, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Tex2:
-        m_Texture: {fileID: 8900000, guid: d1ef084f7a6a84d43ad06b3ba6d5e4aa, type: 3}
+        m_Texture: {fileID: 8900000, guid: 5c610bbc408a4ce498a1cc20c329466a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlendCubemaps: 0.3739
+    - _BlendCubemaps: 0.6209
     - _Exposure: 1
     - _Rotation: 0
     m_Colors:
-    - _Tint: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 0.5803922}
+    - _Tint: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 0.6745098}
     - _Tint2: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 0.6745098}
   m_BuildTextureStacks: []

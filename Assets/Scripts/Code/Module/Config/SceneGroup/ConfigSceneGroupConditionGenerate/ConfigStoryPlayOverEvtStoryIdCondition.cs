@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigStoryPlayOverEvtTrigger))]
     [NinoType(false)]
+    [LabelText("播完的剧情id")]
     public partial class ConfigStoryPlayOverEvtStoryIdCondition : ConfigSceneGroupCondition<StoryPlayOverEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,6 +15,7 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
         public UInt64 Value;

@@ -12,7 +12,7 @@ namespace TaoTie
         [PropertyOrder(int.MinValue + 1)][LabelText("策划备注")]
         public string Remarks;
 #endif
-        [NinoMember(1)] [DrawIgnore]
+        [NinoMember(1)]
         public int LocalId;
         [LabelText("路径类型")] [NinoMember(2)] public RouteType Type = RouteType.OneWay;
 
@@ -35,7 +35,7 @@ namespace TaoTie
             if(Points==null) return;
             for (int i = 0; i < Points.Length; i++)
             {
-                Points[i].Index = i;
+                if(Points[i]!=null) Points[i].Index = i;
             }
         }
     }

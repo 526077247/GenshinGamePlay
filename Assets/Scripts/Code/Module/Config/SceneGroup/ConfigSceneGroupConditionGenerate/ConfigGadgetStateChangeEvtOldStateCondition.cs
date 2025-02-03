@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigGadgetStateChangeEvtTrigger))]
     [NinoType(false)]
+    [LabelText("原状态")]
     public partial class ConfigGadgetStateChangeEvtOldStateCondition : ConfigSceneGroupCondition<GadgetStateChangeEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,6 +15,7 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
         public GadgetState Value;

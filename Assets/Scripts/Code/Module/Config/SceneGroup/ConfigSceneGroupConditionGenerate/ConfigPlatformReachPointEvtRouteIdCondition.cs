@@ -7,6 +7,7 @@ namespace TaoTie
 {
     [TriggerType(typeof(ConfigPlatformReachPointEvtTrigger))]
     [NinoType(false)]
+    [LabelText("单位的寻路路径")]
     public partial class ConfigPlatformReachPointEvtRouteIdCondition : ConfigSceneGroupCondition<PlatformReachPointEvt>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
@@ -14,6 +15,7 @@ namespace TaoTie
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
         [NinoMember(1)]
+        [LabelText("判断类型")]
         public CompareMode Mode;
         [NinoMember(2)]
         public Int32 Value;

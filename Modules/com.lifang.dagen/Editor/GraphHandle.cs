@@ -1104,7 +1104,7 @@ namespace DaGenGraph.Editor
         {
             if (node == null) return null;
             var typeAttributes = node.GetType().GetCustomAttributes(true);
-            Type viewType = typeof(NodeView);
+            Type viewType = FallBackNodeViewType();
             foreach (var attr in typeAttributes)
             {
                 if (attr is NodeViewTypeAttribute nodeViewTypeAttribute && viewType.IsAssignableFrom(nodeViewTypeAttribute.ViewType))
@@ -1119,6 +1119,11 @@ namespace DaGenGraph.Editor
             nodeView.Init(++m_Graph.windowID, node, m_Graph, this);
             m_NodeViews.Add(node.id, nodeView);
             return nodeView;
+        }
+
+        protected virtual Type FallBackNodeViewType()
+        {
+            return typeof(NodeView);
         }
 
         protected virtual void RemovePort(Port port,bool force = false)

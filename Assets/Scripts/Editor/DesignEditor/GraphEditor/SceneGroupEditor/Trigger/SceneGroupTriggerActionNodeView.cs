@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    public class SceneGroupTriggerActionNodeView: NodeView<SceneGroupTriggerActionNode>
+    public class SceneGroupTriggerActionNodeView: SceneGroupNodeView<SceneGroupTriggerActionNode>
     {
         private List<Type> subTypes;
         private string[] subNames;
@@ -47,5 +47,16 @@ namespace TaoTie
             }
             return base.GetSubClassList(field,obj, type, out names);
         }
+
+        protected override void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
+        {
+            var graph = this.graph as SceneGroupGraph;
+            if (ValueDropDownHelper.RefreshValueDropDown(graph, field, obj, valuesGetter, valueDropdown))
+            {
+                return;
+            }
+            base.RefreshValueDropDown(field, obj, valuesGetter);
+        }
+        
     }
 }

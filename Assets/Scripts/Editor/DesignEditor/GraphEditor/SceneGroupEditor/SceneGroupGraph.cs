@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using DaGenGraph;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -16,10 +18,10 @@ namespace TaoTie
         public ConfigSceneGroupActor[] Actors;
         [Tooltip("触发区域")]
         public ConfigSceneGroupZone[] Zones;
-        [LabelText("是否初始随机一个组？")]
+        [LabelText("是否初始随机一个阶段？")]
         public bool RandSuite;
 
-        [LabelText("初始组")]
+        [LabelText("初始阶段")]
         [ShowIf("@!"+nameof(RandSuite))]
         public int InitSuite;
         
@@ -31,6 +33,14 @@ namespace TaoTie
                 if (node is SceneGroupTriggerNode triggerNode)
                 {
                     return triggerNode.Trigger?.GetType();
+                }
+                if (node is SceneGroupTriggerConditionNode conditionNode)
+                {
+                    var type = conditionNode.Condition?.GetType()?.GetCustomAttribute(typeof(TriggerTypeAttribute)) as TriggerTypeAttribute;
+                    if(type !=null)
+                    {
+                        return type.Type;
+                    }
                 }
                 if (node.inputPorts != null && node.inputPorts.Count > 0 &&  node.inputPorts[0].edges.Count>0)
                 {

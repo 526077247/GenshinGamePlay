@@ -517,6 +517,7 @@ namespace DaGenGraph.Editor
                     if (fold)
                     {
                         EditorGUILayout.Space(10);
+                        //nodeView自己决定展示
                         view.DrawInspector(true);
                     }
                     foldNode[m_SelectedNodes[i].id] = fold;

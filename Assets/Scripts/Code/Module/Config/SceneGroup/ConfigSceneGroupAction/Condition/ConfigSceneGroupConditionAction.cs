@@ -1,24 +1,16 @@
-﻿using System;
+using System;
 using DaGenGraph;
 using Nino.Core;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
-
 namespace TaoTie
 {
-    [LabelText("与 逻辑节点")]
     [NinoType(false)]
-    public partial class ConfigSceneGroupOrAction : ConfigSceneGroupAction
+    public abstract class ConfigSceneGroupConditionAction:ConfigSceneGroupAction
     {
-        [NinoMember(10)]
-        [LabelText("条件")][DrawIgnore]
-#if UNITY_EDITOR
-        [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]
-#endif
-        public ConfigSceneGroupCondition[] Conditions;
         [NinoMember(11)]
-        [LabelText("满足任意一个条件后执行")][DrawIgnore]
+        [LabelText("满足条件后执行")][DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
@@ -26,7 +18,7 @@ namespace TaoTie
 #endif
         public ConfigSceneGroupAction[] Success;
         [NinoMember(12)]
-        [LabelText("所有条件都不满足后执行")][DrawIgnore]
+        [LabelText("不满足后执行")][DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
@@ -58,35 +50,5 @@ namespace TaoTie
             }
         }
 #endif
-        protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
-        {
-            bool isSuc = false;
-            if (Conditions == null || Conditions.Length == 0)
-            {
-                isSuc = true;
-            }
-            else
-            {
-                for (int i = 0; i < Conditions.Length; i++)
-                {
-                    isSuc |= Conditions[i].IsMatch(evt, aimSceneGroup);
-                }
-            }
-
-            if (isSuc)
-            {
-                for (int i = 0; i < (Success == null ? 0 : Success.Length); i++)
-                {
-                    Success[i]?.ExecuteAction(evt, aimSceneGroup,fromSceneGroup);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < (Fail == null ? 0 : Fail.Length); i++)
-                {
-                    Fail[i]?.ExecuteAction(evt, aimSceneGroup,fromSceneGroup);
-                }
-            }
-        }
     }
 }

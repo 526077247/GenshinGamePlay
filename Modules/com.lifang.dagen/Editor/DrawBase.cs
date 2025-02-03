@@ -12,6 +12,12 @@ namespace DaGenGraph.Editor
 {
     public abstract class DrawBase : EditorWindow
     {
+        protected enum ValueDropdownFieldType
+        {
+            Normal,
+            Array,
+            IList
+        }
         private static List<ISort> sortTemp = new();
         private static Dictionary<string, GroupItem> groupsTemp = new();
 
@@ -30,9 +36,9 @@ namespace DaGenGraph.Editor
         private static Dictionary<FieldInfo, object> dicInputKey = new();
         private static Dictionary<Type, string[]> enumDropDown = new();
 
-        private static Dictionary<FieldInfo, IValueDropdownItem[]> valueDropdown = new();
+        protected static Dictionary<FieldInfo, IValueDropdownItem[]> valueDropdown = new();
 
-        private static List<IValueDropdownItem> temp = new();
+        protected static List<IValueDropdownItem> temp = new();
         private static List<Type> temp2 = new();
         private static List<string> temp3 = new();
 
@@ -191,11 +197,6 @@ namespace DaGenGraph.Editor
             object value = field.GetValue(obj);
             object newValue = value;
             float height = 0;
-            if (field.GetCustomAttribute(typeof(ValueDropdownAttribute)) is ValueDropdownAttribute
-                valueDropdownAttribute)
-            {
-                return DrawValueDropdownFieldInspector(field, obj, valueDropdownAttribute);
-            }
 
             if (field.FieldType.IsEnum)
             {
@@ -350,7 +351,14 @@ namespace DaGenGraph.Editor
 
                 return height;
             }
-
+            //放到List后面
+            if (field.GetCustomAttribute(typeof(ValueDropdownAttribute)) is ValueDropdownAttribute
+                valueDropdownAttribute)
+            {
+                bool remove = false;
+                return DrawValueDropdownFieldInspector(field.FieldType, obj, valueDropdownAttribute, value,
+                    ValueDropdownFieldType.Normal,ref remove,field);
+            }
             // 显示字段名称和对应的值
             height += DrawNormalField(field.FieldType, GetShowName(field, value), ref newValue, isDetails, field);
             if (height > 0)
@@ -653,8 +661,20 @@ namespace DaGenGraph.Editor
             var itemType = TypeHelper.FindType(field.FieldType.FullName?.Replace("[]", ""));
             for (int i = 0; i < len; i++)
             {
-                EditorGUILayout.BeginHorizontal();
                 var item = list.GetValue(i);
+                if (field.GetCustomAttribute(typeof(ValueDropdownAttribute)) is ValueDropdownAttribute
+                    valueDropdownAttribute)
+                {
+                    bool remove = false;
+                    height += DrawValueDropdownFieldInspector(itemType, obj, valueDropdownAttribute, item, 
+                        ValueDropdownFieldType.Array,ref remove,field,i,list);
+                    if (remove)
+                    {
+                        removeIndex = i;
+                    }
+                    continue;
+                }
+                EditorGUILayout.BeginHorizontal();
                 if (itemType.IsValueType || itemType == stringType)
                 {
                     object newValue = item;
@@ -791,8 +811,20 @@ namespace DaGenGraph.Editor
             var itemType = field.FieldType.GenericTypeArguments[0];
             for (int i = 0; i < len; i++)
             {
-                EditorGUILayout.BeginHorizontal();
                 var item = list[i];
+                if (field.GetCustomAttribute(typeof(ValueDropdownAttribute)) is ValueDropdownAttribute
+                    valueDropdownAttribute)
+                {
+                    bool remove = false;
+                    height += DrawValueDropdownFieldInspector(itemType, obj, valueDropdownAttribute, item, 
+                        ValueDropdownFieldType.Array,ref remove,field,i,iList:list);
+                    if (remove)
+                    {
+                        removeIndex = i;
+                    }
+                    continue;
+                }
+                EditorGUILayout.BeginHorizontal();
                 if (itemType.IsValueType || itemType == stringType)
                 {
                     object newValue = item;
@@ -1161,11 +1193,98 @@ namespace DaGenGraph.Editor
             return 21;
         }
 
-        protected virtual float DrawValueDropdownFieldInspector(FieldInfo field, object obj,
-            ValueDropdownAttribute valueDropdownAttribute)
+        protected virtual float DrawValueDropdownFieldInspector(Type fieldType, object obj,
+            ValueDropdownAttribute valueDropdownAttribute,object value, ValueDropdownFieldType type,
+            ref bool remove,FieldInfo field = null, int aIndex = 0,Array array=null,IList iList = null)
         {
-            object value = field.GetValue(obj);
             string showText = value?.ToString();
+            if (valueDropdownAttribute.AppendNextDrawer)
+            {
+                EditorGUILayout.BeginHorizontal();
+                object newValue = value;
+                var itemHeight = DrawNormalField(fieldType,
+                    type == ValueDropdownFieldType.Normal? GetShowName(field, value):new GUIContent(aIndex.ToString()), 
+                    ref newValue, true, field);
+                if (itemHeight <= 0)
+                {
+                    EditorGUILayout.LabelField(showText);
+                }
+                else if (!IsEqual(newValue, value))
+                {
+                    switch (type)
+                    {
+                        case ValueDropdownFieldType.Normal:
+                            field.SetValue(obj, newValue);
+                            break;
+                        case ValueDropdownFieldType.IList:
+                            iList[aIndex] = newValue;
+                            break;
+                        case ValueDropdownFieldType.Array:
+                            array.SetValue(newValue,aIndex);
+                            break;
+                    }
+                }
+
+                if (GUILayout.Button(new GUIContent("▼")))
+                {
+                    GUI.FocusControl(null);
+                    RefreshValueDropDown(field, obj, valueDropdownAttribute.ValuesGetter);
+                    if (!valueDropdown.TryGetValue(field, out var dropdownItems))
+                    {
+                        Debug.LogError(valueDropdownAttribute.ValuesGetter);
+                    }
+                    else
+                    {
+                        int index = -1;
+                        for (int i = 0; i < dropdownItems.Length; i++)
+                        {
+                            if (IsEqual(value, dropdownItems[i].GetValue()))
+                            {
+                                index = i;
+                                break;
+                            }
+                        }
+
+                        var menu = new GenericMenu();
+                        for (int i = 0; i < dropdownItems.Length; i++)
+                        {
+                            var ii = i;
+                            menu.AddItem(new GUIContent(dropdownItems[i].GetText()), i == index, () =>
+                            {
+                                if (ii != index)
+                                {
+                                    newValue = dropdownItems[ii].GetValue();
+                                    switch (type)
+                                    {
+                                        case ValueDropdownFieldType.Normal:
+                                            field.SetValue(obj, newValue);
+                                            break;
+                                        case ValueDropdownFieldType.IList:
+                                            iList[aIndex] = newValue;
+                                            break;
+                                        case ValueDropdownFieldType.Array:
+                                            array.SetValue(newValue,aIndex);
+                                            break;
+                                    }
+                                }
+                            });
+                        }
+
+                        menu.ShowAsContext();
+                    }
+                }
+
+                if (type != ValueDropdownFieldType.Normal)
+                {
+                    if (GUILayout.Button("-", GUILayout.Width(40)))
+                    {
+                        remove = true;
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+                return itemHeight;
+            }
+            
             if (valueDropdown.TryGetValue(field, out var list))
             {
                 int index = -1;
@@ -1180,8 +1299,20 @@ namespace DaGenGraph.Editor
 
                 if (index == -1 && list.Length > 0)
                 {
-                    field.SetValue(obj, list[0].GetValue());
+                    var newValue = list[0].GetValue();
                     index = 0;
+                    switch (type)
+                    {
+                        case ValueDropdownFieldType.Normal:
+                            field.SetValue(obj, newValue);
+                            break;
+                        case ValueDropdownFieldType.IList:
+                            iList[aIndex] = newValue;
+                            break;
+                        case ValueDropdownFieldType.Array:
+                            array.SetValue(newValue,aIndex);
+                            break;
+                    }
                 }
 
                 if (index >= 0 && index < list.Length)
@@ -1193,14 +1324,27 @@ namespace DaGenGraph.Editor
             {
                 RefreshValueDropDown(field, obj, valueDropdownAttribute.ValuesGetter);
                 object newValue = value;
-                var itemHeight = DrawNormalField(field.FieldType, GetShowName(field, value), ref newValue, true, field);
+                var itemHeight = DrawNormalField(fieldType, 
+                    type == ValueDropdownFieldType.Normal? GetShowName(field, value):new GUIContent(aIndex.ToString()), 
+                    ref newValue, true, field);
                 if (itemHeight <= 0)
                 {
                     EditorGUILayout.LabelField(showText);
                 }
                 else if (!IsEqual(newValue, value))
                 {
-                    field.SetValue(obj, newValue);
+                    switch (type)
+                    {
+                        case ValueDropdownFieldType.Normal:
+                            field.SetValue(obj, newValue);
+                            break;
+                        case ValueDropdownFieldType.IList:
+                            iList[aIndex] = newValue;
+                            break;
+                        case ValueDropdownFieldType.Array:
+                            array.SetValue(newValue,aIndex);
+                            break;
+                    }
                 }
 
                 return itemHeight;
@@ -1235,7 +1379,19 @@ namespace DaGenGraph.Editor
                         {
                             if (ii != index)
                             {
-                                field.SetValue(obj, list[ii].GetValue());
+                                var newValue = list[ii].GetValue();
+                                switch (type)
+                                {
+                                    case ValueDropdownFieldType.Normal:
+                                        field.SetValue(obj, newValue);
+                                        break;
+                                    case ValueDropdownFieldType.IList:
+                                        iList[aIndex] = newValue;
+                                        break;
+                                    case ValueDropdownFieldType.Array:
+                                        array.SetValue(newValue,aIndex);
+                                        break;
+                                }
                             }
                         });
                     }
@@ -1448,7 +1604,7 @@ namespace DaGenGraph.Editor
             return res;
         }
 
-        private void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
+        protected virtual void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
         {
             Type type = obj.GetType();
             string funcName = valuesGetter;
@@ -1611,7 +1767,7 @@ namespace DaGenGraph.Editor
                     }
                 }
             }
-
+            object checkVal = showIf.Value??true;
             if (type != null)
             {
                 if (isFunc)
@@ -1620,22 +1776,22 @@ namespace DaGenGraph.Editor
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     if (method != null)
                     {
-                        bool val;
+                        object val;
                         if (method.IsStatic)
                         {
-                            val = (bool) method.Invoke(null, null);
+                            val = method.Invoke(null, null);
                         }
                         else
                         {
-                            val = (bool) method.Invoke(obj, null);
+                            val = method.Invoke(obj, null);
                         }
 
                         if (isInverse)
                         {
-                            return !val;
+                            return !IsEqual(val,checkVal);
                         }
 
-                        return val;
+                        return IsEqual(val,checkVal);
                     }
                 }
                 else
@@ -1644,26 +1800,26 @@ namespace DaGenGraph.Editor
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     if (property != null && property.CanRead)
                     {
-                        var val = (bool) property.GetValue(obj);
+                        object val = property.GetValue(obj);
                         if (isInverse)
                         {
-                            return !val;
+                            return !IsEqual(val,checkVal);
                         }
 
-                        return val;
+                        return IsEqual(val,checkVal);
                     }
 
                     var field2 = type.GetField(condition,
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                     if (field2 != null)
                     {
-                        var val = (bool) field2.GetValue(obj);
+                        object val = field2.GetValue(obj);
                         if (isInverse)
                         {
-                            return !val;
+                            return !IsEqual(val,checkVal);
                         }
 
-                        return val;
+                        return IsEqual(val,checkVal);
                     }
                 }
             }
