@@ -25,9 +25,9 @@ namespace TaoTie
         {
             return Activator.CreateInstance<T>();
         }
-
+#if RoslynAnalyzer
         protected abstract byte[] Serialize(T data);
-
+#endif
         [ShowIf("@data!=null")] [ReadOnly] public string filePath;
         [ShowIf("@data!=null")] [HideReferenceObjectPicker] public T data;
 
@@ -84,8 +84,10 @@ namespace TaoTie
                 var jStr = JsonHelper.ToJson(data);
                 oldJson = jStr;
                 File.WriteAllText(filePath, jStr);
+#if RoslynAnalyzer
                 var bytes = Serialize(data);
                 File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
+#endif
                 AssetDatabase.Refresh();
                 ShowNotification(new GUIContent("保存Json成功"));
             }
@@ -109,8 +111,10 @@ namespace TaoTie
                 var jStr = JsonHelper.ToJson(data);
                 oldJson = jStr;
                 File.WriteAllText(searchPath, jStr);
+#if RoslynAnalyzer
                 var bytes = Serialize(data);
                 File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
+#endif
                 AssetDatabase.Refresh();
                 filePath = searchPath;
             }

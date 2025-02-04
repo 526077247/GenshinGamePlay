@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using YooAsset;
 using System.Linq;
 using System.Reflection;
@@ -75,6 +76,18 @@ namespace TaoTie
 			if (CodeLoader.Instance.isReStart)
 			{
 				ReStart().Coroutine();
+			}
+			StartCoroutine(WaitFrameFinish());
+		}
+
+		private IEnumerator WaitFrameFinish()
+		{
+			yield return new WaitForEndOfFrame();
+			int count = WaitHelper.FrameFinishTask.Count;
+			while (count-- > 0)
+			{
+				ETTask task = WaitHelper.FrameFinishTask.Dequeue();
+				task.SetResult();
 			}
 		}
 

@@ -1,19 +1,23 @@
 ﻿using Nino.Core;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [NinoType(false)]
-    public partial class RemoveModifier: ConfigAbilityAction
+    public partial class RemoveAbility: ConfigAbilityAction
     {
         [NinoMember(10)]
-        public string ModifierName;
+#if UNITY_EDITOR
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
+#endif
+        public string AbilityName;
 
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var ac = target.GetComponent<AbilityComponent>();
             if (ac != null)
             {
-                ExecuteLater(ac,ability.Config.AbilityName).Coroutine();
+                ExecuteLater(ac,AbilityName).Coroutine();
             }
         }
 
@@ -25,7 +29,7 @@ namespace TaoTie
         private async ETTask ExecuteLater(AbilityComponent ac,string name)
         {
             await WaitHelper.WaitUpdateFinish();
-            ac.RemoveModifier(name, ModifierName);
+            ac.RemoveAbility(name);
         }
     }
 }

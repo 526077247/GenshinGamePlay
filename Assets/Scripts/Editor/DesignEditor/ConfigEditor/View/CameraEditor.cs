@@ -1,16 +1,20 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 namespace TaoTie
 {
     public class CameraEditor: BaseEditorWindow<ConfigCameras>
     {
         protected override string folderPath => base.folderPath + "/EditConfig";
+#if RoslynAnalyzer
         protected override byte[] Serialize(ConfigCameras data)
         {
             return Serializer.Serialize(data);
         }
+#endif
         [MenuItem("Tools/配置编辑器/Camera")]
         static void OpenAI()
         {

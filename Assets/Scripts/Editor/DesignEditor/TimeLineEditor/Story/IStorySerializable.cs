@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public interface IStorySerializableClip
+    public interface IStorySerializable
     {
         public void DoSerialize(List<ConfigStoryTimeLineClip> clips);
     }

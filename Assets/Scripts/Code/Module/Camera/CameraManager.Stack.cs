@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 using UnityEngine;
 
 namespace TaoTie
@@ -33,12 +35,16 @@ namespace TaoTie
                 var jStr = ResourcesManager.Instance.LoadConfigJson(path);
                 return JsonHelper.FromJson<ConfigCameras>(jStr);
             }
+#if RoslynAnalyzer
             else
             {
                 var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
                 Deserializer.Deserialize(bytes,out ConfigCameras res);
                 return res;
             }
+#endif
+            Log.Error($"GetConfig 失败，ConfigType = {Define.ConfigType} 未处理");
+            return null;
         }
         private partial void AfterInit()
         {

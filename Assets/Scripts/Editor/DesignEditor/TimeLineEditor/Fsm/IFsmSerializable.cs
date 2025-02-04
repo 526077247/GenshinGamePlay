@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public interface IFsmSerializableClip
+    public interface IFsmSerializable
     {
         public void DoSerialize(List<ConfigFsmClip> clips);
     }

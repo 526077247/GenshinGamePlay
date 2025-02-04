@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 using UnityEngine;
 using YooAsset;
 
@@ -47,6 +49,7 @@ namespace TaoTie
                             Log.Error("ConfigStory id重复 "+item.Id);
                         }
                     }
+#if RoslynAnalyzer
                     else if (Define.ConfigType == 1)
                     {
                         try
@@ -67,6 +70,7 @@ namespace TaoTie
                             Log.Error(ex);
                         }
                     }
+#endif
                     
                 }
                 op.Release();

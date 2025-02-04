@@ -52,11 +52,12 @@ namespace TaoTie
         }
 
         #endregion
-        public void AddAbility(ConfigAbility config)
+        public ActorAbility AddAbility(ConfigAbility config)
         {
             var ability = ActorAbility.Create(Id, config, this);
             abilities.AddLast(ability);
             ability.AfterAdd();
+            return ability;
         }
 
         public ActorModifier ApplyModifier(long applierID, ActorAbility ability, string modifierName)
@@ -166,7 +167,25 @@ namespace TaoTie
                 ability.Dispose();
             }
         }
-
+        public void RemoveAbility(string abilityName)
+        {
+            if (isDestroy) return;
+            ActorAbility ability = null;
+            foreach (var item in abilities)
+            {
+                if (item.Config.AbilityName == abilityName)
+                {
+                    ability = item;
+                }
+            }
+            if(ability==null) return;
+            if (abilities.Contains(ability))
+            {
+                ability.BeforeRemove();
+                abilities.Remove(ability);
+                ability.Dispose();
+            }
+        }
         public void ExecuteAbility(string ability)
         {
             foreach (var item in abilities)

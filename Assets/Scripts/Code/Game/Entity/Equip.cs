@@ -1,6 +1,4 @@
-﻿using Unity.Code.NinoGen;
-
-namespace TaoTie
+﻿namespace TaoTie
 {
     public class Equip : Unit,IEntity<int>
     {

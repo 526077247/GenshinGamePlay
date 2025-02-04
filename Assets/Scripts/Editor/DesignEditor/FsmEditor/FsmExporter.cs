@@ -5,7 +5,9 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 namespace TaoTie
 {
     class Transition
@@ -133,7 +135,9 @@ namespace TaoTie
             if (!hasError)
             {
                 File.WriteAllText(configSavePath+"json", JsonHelper.ToJson(newController));
+#if RoslynAnalyzer
                 File.WriteAllBytes(configSavePath+"bytes", Serializer.Serialize(newController));
+#endif
                 AssetDatabase.Refresh();
                 Debug.LogFormat("导出成功! {0}", configSavePath);
             }

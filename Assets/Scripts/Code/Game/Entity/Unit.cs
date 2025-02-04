@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 using UnityEngine;
 
 namespace TaoTie
@@ -61,12 +63,16 @@ namespace TaoTie
                 var jStr = ResourcesManager.Instance.LoadConfigJson(path);
                 return JsonHelper.FromJson<ConfigFsmController>(jStr);
             }
+#if RoslynAnalyzer
             else
             {
                 var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
                 Deserializer.Deserialize(bytes,out ConfigFsmController res);
                 return res;
             }
+#endif
+            Log.Error($"GetFsmConfig 失败，ConfigType = {Define.ConfigType} 未处理");
+            return null;
         }
         protected ConfigAIBeta GetAIConfig(string path)
         {
@@ -75,12 +81,16 @@ namespace TaoTie
                 var jStr = ResourcesManager.Instance.LoadConfigJson(path);
                 return JsonHelper.FromJson<ConfigAIBeta>(jStr);
             }
+#if RoslynAnalyzer
             else
             {
                 var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
                 Deserializer.Deserialize(bytes,out ConfigAIBeta res);
                 return res;
             }
+#endif
+            Log.Error($"GetAIConfig 失败，ConfigType = {Define.ConfigType} 未处理");
+            return null;
         }
         
         protected ConfigActor GetActorConfig(string path)
@@ -90,12 +100,16 @@ namespace TaoTie
                 var jStr = ResourcesManager.Instance.LoadConfigJson(path);
                 return JsonHelper.FromJson<ConfigActor>(jStr);
             }
+#if RoslynAnalyzer
             else
             {
                 var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
                 Deserializer.Deserialize(bytes,out ConfigActor res);
                 return res;
             }
+#endif
+            Log.Error($"GetActorConfig 失败，ConfigType = {Define.ConfigType} 未处理");
+            return null;
         }
     }
 }

@@ -1564,7 +1564,7 @@ AnimatorController:
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
-    m_DefaultBool: 0
+    m_DefaultBool: 1
     m_Controller: {fileID: 9100000}
   - m_Name: Speed
     m_Type: 1
@@ -1817,12 +1817,12 @@ AnimatorStateMachine:
   - {fileID: -1234581695312299368}
   m_EntryTransitions: []
   m_StateMachineTransitions:
-  - first: {fileID: -99970714858603394}
-    second:
-    - {fileID: 5759284054694948124}
   - first: {fileID: 2050181242708935422}
     second:
     - {fileID: -5335796317809217807}
+  - first: {fileID: -99970714858603394}
+    second:
+    - {fileID: 5759284054694948124}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -200, y: -170, z: 0}
   m_EntryPosition: {x: -204, y: 132, z: 0}

@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using DaGenGraph;
 using DaGenGraph.Editor;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -186,14 +188,16 @@ namespace TaoTie
             if (!string.IsNullOrEmpty(path))
             {
                 var name = Path.GetFileNameWithoutExtension(this.path);
-                var path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "bytes");
+                var path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "json");
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
                 }
                 var obj = Convert(m_Graph);
-                File.WriteAllText(path.Replace("bytes","json"),JsonHelper.ToJson(obj));
-                File.WriteAllBytes(path,Serializer.Serialize(obj));
+                File.WriteAllText(path,JsonHelper.ToJson(obj));
+#if RoslynAnalyzer
+                File.WriteAllBytes(path.Replace("json","bytes"),Serializer.Serialize(obj));
+#endif
                 AssetDatabase.Refresh();
                 Debug.Log("导出成功");   
             }

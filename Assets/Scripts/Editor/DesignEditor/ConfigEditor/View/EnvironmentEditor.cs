@@ -1,16 +1,20 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 namespace TaoTie
 {
     public class EnvironmentEditor: BaseEditorWindow<ConfigEnvironments>
     {
         protected override string folderPath => base.folderPath + "/EditConfig";
+#if RoslynAnalyzer
         protected override byte[] Serialize(ConfigEnvironments data)
         {
             return Serializer.Serialize(data);
         }
+#endif
         [MenuItem("Tools/配置编辑器/Environment")]
         static void OpenAI()
         {

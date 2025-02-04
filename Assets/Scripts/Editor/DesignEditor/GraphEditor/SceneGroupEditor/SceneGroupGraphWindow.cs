@@ -5,7 +5,9 @@ using System.Linq;
 using System.Reflection;
 using DaGenGraph;
 using DaGenGraph.Editor;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -252,15 +254,17 @@ namespace TaoTie
             {
                 var name = Path.GetFileNameWithoutExtension(this.path);
                 var path = EditorUtility.SaveFilePanel($"新建SceneGraphGraph配置文件",
-                    "Assets/AssetsPackage/EditConfig/SceneGroup/", name, "bytes");
+                    "Assets/AssetsPackage/EditConfig/SceneGroup/", name, "json");
                 if (string.IsNullOrEmpty(path))
                 {
                     return;
                 }
 
                 var obj = Convert(m_Graph);
-                File.WriteAllText(path.Replace("bytes","json"),JsonHelper.ToJson(obj));
-                File.WriteAllBytes(path, obj.Serialize());
+                File.WriteAllText(path,JsonHelper.ToJson(obj));
+#if RoslynAnalyzer
+                File.WriteAllBytes(path.Replace("json","bytes"), obj.Serialize());
+#endif
                 AssetDatabase.Refresh();
                 Debug.Log("导出成功");
             }

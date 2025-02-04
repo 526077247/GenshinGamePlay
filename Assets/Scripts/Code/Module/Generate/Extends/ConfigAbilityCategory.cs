@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 using UnityEngine;
 using YooAsset;
 
@@ -53,6 +55,7 @@ namespace TaoTie
                             }
                         }
                     }
+#if RoslynAnalyzer
                     else if (Define.ConfigType == 1)
                     {
                         try
@@ -77,6 +80,7 @@ namespace TaoTie
                             Log.Error(ex);
                         }
                     }
+#endif
                 }
                 op.Release();
             }

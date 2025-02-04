@@ -2,17 +2,20 @@
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+#if RoslynAnalyzer
 using Unity.Code.NinoGen;
+#endif
 namespace TaoTie
 {
     public class EntityEditor: BaseEditorWindow<ConfigActor>
     {
         protected override string folderPath => base.folderPath + "/Unit";
+#if RoslynAnalyzer
         protected override byte[] Serialize(ConfigActor data)
         {
             return Serializer.Serialize(data);
         }
-        
+#endif
         [MenuItem("Tools/配置编辑器/Entity")]
         static void OpenEntity()
         {

@@ -18,10 +18,15 @@ namespace TaoTie
                 for (int j = 0; j < track.GetMarkerCount(); j++)
                 {
                     var marker = track.GetMarker(j);
-                    if (marker is IFsmSerializableClip signal)
+                    if (marker is IFsmSerializable signal)
                     {
                         signal.DoSerialize(clips);
                     }
+                }
+
+                if (track is IFsmSerializable serializableTrack)
+                {
+                    serializableTrack.DoSerialize(clips);
                 }
             }
             ConfigFsmTimeline data = new ConfigFsmTimeline();
@@ -47,10 +52,14 @@ namespace TaoTie
                 for (int j = 0; j < track.GetMarkerCount(); j++)
                 {
                     var marker = track.GetMarker(j);
-                    if (marker is IStorySerializableClip signal)
+                    if (marker is IStorySerializable signal)
                     {
                         signal.DoSerialize(clips);
                     }
+                }
+                if (track is IStorySerializable serializableTrack)
+                {
+                    serializableTrack.DoSerialize(clips);
                 }
             }
 
