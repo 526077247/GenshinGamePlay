@@ -113,10 +113,11 @@ namespace DaGenGraph
         }
     }
 
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property)]
     public class PropertyOrderAttribute : Attribute
     {
         public float Order;
-
+        public PropertyOrderAttribute(){}
         public PropertyOrderAttribute(float order)
         {
             Order = order;

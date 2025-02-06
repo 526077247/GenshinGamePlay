@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using UnityEditor;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
@@ -43,7 +42,7 @@ namespace DaGenGraph.Example
         public List<TestClass> TestClasses;
         
         //详情面板选择有bug
-        [JsonIgnore][OnValueChanged(nameof(SetPath))][BoxGroup("Group")]
+        [NonSerialized][OnValueChanged(nameof(SetPath))][BoxGroup("Group")]
         public GameObject GameObject;
 
         public void SetPath()
@@ -72,7 +71,7 @@ namespace DaGenGraph.Example
         [ReadOnly] [BoxGroup("Group")]
         public string Path;
 
-        [JsonIgnore]
+        [NonSerialized]
         public Sprite Sprite;
 
         public AnimationCurve AnimationCurve;
