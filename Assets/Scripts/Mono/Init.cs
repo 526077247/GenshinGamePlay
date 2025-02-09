@@ -24,8 +24,8 @@ namespace TaoTie
 		public YooAsset.EPlayMode PlayMode = YooAsset.EPlayMode.EditorSimulateMode;
 
 		private bool IsInit = false;
-		
 
+		private WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
 		private async ETTask AwakeAsync()
 		{
 			InitUnitySetting();
@@ -77,12 +77,16 @@ namespace TaoTie
 			{
 				ReStart().Coroutine();
 			}
-			StartCoroutine(WaitFrameFinish());
+			int count = WaitHelper.FrameFinishTask.Count;
+			if (count > 0)
+			{
+				StartCoroutine(WaitFrameFinish());
+			}
 		}
 
 		private IEnumerator WaitFrameFinish()
 		{
-			yield return new WaitForEndOfFrame();
+			yield return waitForEndOfFrame;
 			int count = WaitHelper.FrameFinishTask.Count;
 			while (count-- > 0)
 			{

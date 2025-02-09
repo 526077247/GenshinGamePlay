@@ -9,7 +9,7 @@ namespace TaoTie
         protected LinkedList<int> priorityList;
         protected int count;
         public int Count => count;
-
+        public UnOrderMultiMap<int, T> Data => priorityStacks;
         public PriorityStack()
         {
             priorityStacks = new UnOrderMultiMap<int, T>();

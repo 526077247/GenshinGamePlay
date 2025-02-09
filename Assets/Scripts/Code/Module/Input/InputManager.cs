@@ -123,7 +123,47 @@ namespace TaoTie
             MouseAxisX = Input.GetAxis("Mouse X");
             MouseAxisY = Input.GetAxis("Mouse Y");
         }
+        /// <summary>
+        ///  获取按键
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public bool GetKey(GameKeyCode keyCode)
+        {
+            if ((keyStatus[(int) keyCode] & Key) != 0)
+            {
+                return true;
+            }
+            return false;
+        }
 
+        /// <summary>
+        ///  获取按键是否按下
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public bool GetKeyDown(GameKeyCode keyCode)
+        {
+            if ((keyStatus[(int) keyCode] & KeyDown) != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        
+        /// <summary>
+        ///  获取按键是否抬起
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public bool GetKeyUp(GameKeyCode keyCode)
+        {
+            if ((keyStatus[(int) keyCode] & KeyUp) != 0)
+            {
+                return true;
+            }
+            return false;
+        }
         /// <summary>
         ///  获取按键
         /// </summary>
@@ -169,6 +209,68 @@ namespace TaoTie
             {
                 if ((keyStatus[(int) keyCodes[i]] & KeyUp) != 0)
                 {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        ///  获取其他按键
+        /// </summary>
+        /// <param name="exceptKeyCode">不传为任意</param>
+        /// <returns></returns>
+        public bool GetAnyKeyExcept(GameKeyCode exceptKeyCode)
+        {
+            for (int i = 0; i < keyStatus.Length; i++)
+            {
+                if ((keyStatus[i] & Key) != 0)
+                {
+                    if ((int) exceptKeyCode == i)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///  获取其他按键是否按下
+        /// </summary>
+        /// <param name="exceptKeyCode">不传为任意</param>
+        /// <returns></returns>
+        public bool GetAnyKeyDownExcept(GameKeyCode exceptKeyCode)
+        {
+            for (int i = 0; i < keyStatus.Length; i++)
+            {
+                if ((keyStatus[i] & KeyDown) != 0)
+                {
+                    if ((int) exceptKeyCode == i)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        /// <summary>
+        ///  获取其他按键是否抬起
+        /// </summary>
+        /// <param name="exceptKeyCode">不传为任意</param>
+        /// <returns></returns>
+        public bool GetAnyKeyUpExcept(GameKeyCode exceptKeyCode)
+        {
+            for (int i = 0; i < keyStatus.Length; i++)
+            {
+                if ((keyStatus[i] & KeyUp) != 0)
+                {
+                    if ((int) exceptKeyCode == i)
+                    {
+                        return false;
+                    }
                     return true;
                 }
             }

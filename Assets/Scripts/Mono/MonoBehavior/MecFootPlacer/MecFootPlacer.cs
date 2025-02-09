@@ -49,6 +49,8 @@ public class MecFootPlacer : MonoBehaviour
     private bool mRightFootActive = true;
     private bool mLeftHandActive = true;
     private bool mRightHandActive = true;
+    
+    private RaycastHit[] lHit = new RaycastHit[1];
 
     //Functions
     /******************************************************/
@@ -666,28 +668,26 @@ public class MecFootPlacer : MonoBehaviour
                 return;
         }
 
-        RaycastHit lHit;
-
         /*******************************************************************************************/
         Vector3 lRayOrigin = lFootPos + lFoot.mUpVector * lFoot.mFootOffsetDist;
         Vector3 lRayDirection = -lFoot.mUpVector;
         float lRaySize = lFoot.mFootOffsetDist + lFoot.mFootHeight + lFoot.mExtraRayDistanceCheck;
 
-        if (Physics.Raycast(lRayOrigin, lRayDirection, out lHit, lRaySize, mLayerMask))
+        if (Physics.RaycastNonAlloc(lRayOrigin, lRayDirection, lHit, lRaySize, mLayerMask)>0)
         {
             SetIKWeight(foot_id, 1, lFoot.mTransitionTime);
                       
             {//Scope Start For lResult Var
-                Vector3 lResult = lHit.point;
+                Vector3 lResult = lHit[0].point;
 
                 if (lFoot.GetFootPlanted() && lFoot.GetPlantBlendFactor() > mEpsilon)
                 {
                     lRayOrigin = lFoot.GetPlantedPos() + lFoot.mUpVector * lFoot.mFootOffsetDist;
                     lRayDirection = -lFoot.mUpVector;
 
-                    if (Physics.Raycast(lRayOrigin, lRayDirection, out lHit, lRaySize, mLayerMask))
+                    if (Physics.RaycastNonAlloc(lRayOrigin, lRayDirection, lHit, lRaySize, mLayerMask)>0)
                     {
-                        lResult = Vector3.Lerp(lResult, lHit.point, lFoot.GetPlantBlendFactor());
+                        lResult = Vector3.Lerp(lResult, lHit[0].point, lFoot.GetPlantBlendFactor());
                     }
                 }
 
@@ -757,18 +757,18 @@ public class MecFootPlacer : MonoBehaviour
         lRayDirection = -lFoot.mUpVector;
         lRaySize = lFoot.mFootOffsetDist + lFoot.mFootLength + lFoot.mExtraRayDistanceCheck;
 
-        if (Physics.Raycast(lRayOrigin, lRayDirection, out lHit, lRaySize, mLayerMask) && lContactDetected)
+        if (Physics.RaycastNonAlloc(lRayOrigin, lRayDirection, lHit, lRaySize, mLayerMask)>0 && lContactDetected)
         {          
             {//Scope Start For lResult Var
-                Vector3 lResult = lHit.point;
+                Vector3 lResult = lHit[0].point;
                 if (lFoot.GetFootPlanted() && lFoot.GetPlantBlendFactor() > 0.0f)
                 {
                     lRayOrigin = lFoot.GetPlantedPos() + (lFoot.mUpVector * lFoot.mFootOffsetDist) + (lFoot.GetRotatedFwdVec() * lFoot.mFootLength);
                     lRayDirection = -lFoot.mUpVector;
 
-                    if (Physics.Raycast(lRayOrigin, lRayDirection, out lHit, lRaySize, mLayerMask))
+                    if (Physics.RaycastNonAlloc(lRayOrigin, lRayDirection, lHit, lRaySize, mLayerMask)>0)
                     {
-                        lResult = Vector3.Lerp(lResult, lHit.point, lFoot.GetPlantBlendFactor());
+                        lResult = Vector3.Lerp(lResult, lHit[0].point, lFoot.GetPlantBlendFactor());
                     }
                 }
 
@@ -838,19 +838,19 @@ public class MecFootPlacer : MonoBehaviour
         lRayDirection = -lFoot.mUpVector;
         lRaySize = lFoot.mFootOffsetDist + lFoot.mFootLength + lFoot.mExtraRayDistanceCheck;
 
-        if (Physics.Raycast(lRayOrigin, lRayDirection, out lHit, lRaySize, mLayerMask) && lContactDetected)
+        if (Physics.RaycastNonAlloc(lRayOrigin, lRayDirection, lHit, lRaySize, mLayerMask)>0 && lContactDetected)
         {            
             {//Scope Start For lResult Var
-                Vector3 lResult = lHit.point;              
+                Vector3 lResult = lHit[0].point;              
 
                 if (lFoot.GetFootPlanted() && lFoot.GetPlantBlendFactor() > mEpsilon)
                 {
                     lRayOrigin = lFoot.GetPlantedPos() + (lFoot.mUpVector * lFoot.mFootOffsetDist) + ((lQuat90 * lFoot.GetRotatedFwdVec()).normalized * lFoot.mFootHalfWidth);
                     lRayDirection = -lFoot.mUpVector;
 
-                    if (Physics.Raycast(lRayOrigin, lRayDirection, out lHit, lRaySize, mLayerMask))
+                    if (Physics.RaycastNonAlloc(lRayOrigin, lRayDirection, lHit, lRaySize, mLayerMask)>0)
                     {
-                        lResult = Vector3.Lerp(lResult, lHit.point, lFoot.GetPlantBlendFactor());
+                        lResult = Vector3.Lerp(lResult, lHit[0].point, lFoot.GetPlantBlendFactor());
                     }
                 }
 

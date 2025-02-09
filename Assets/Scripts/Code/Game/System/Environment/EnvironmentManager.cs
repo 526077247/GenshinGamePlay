@@ -118,9 +118,13 @@ namespace TaoTie
         {
             NowTime = GameTimerManager.Instance.GetTimeNow();
             NowTime %= DayTimeCount;
-            foreach (var item in envInfoStack)
+            foreach (var item in envInfoStack.Data)
             {
-                item.Update();
+                if(item.Value == null) continue;
+                for (int i = 0; i < item.Value.Count; i++)
+                {
+                    item.Value[i]?.Update();
+                }
             }
             if (envInfoStack.Count == 0) return;
 

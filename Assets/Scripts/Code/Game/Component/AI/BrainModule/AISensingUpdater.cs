@@ -55,8 +55,9 @@ namespace TaoTie
             var entityList = aiManager.GetEnemies(knowledge.CampID);
             foreach (var item in entityList)
             {
-                foreach (var entity in item.Value)
+                for (int i = 0; i < item.Value.Count; i++)
                 {
+                    var entity = item.Value[i];
                     var entityID = entity.Id;
                     var entityPos = entity.Position;
                     var selfPos = knowledge.Entity.Position + knowledge.Entity.Rotation * knowledge.EyePos;

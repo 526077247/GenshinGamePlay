@@ -147,8 +147,9 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action)?.Invoke();
                     }
                 }
@@ -162,8 +163,9 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         if (item is Action<P1> action)
                         {
                             action.Invoke(p1);
@@ -186,8 +188,9 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2>)?.Invoke(p1, p2);
                     }
                 }
@@ -201,8 +204,9 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2, P3>)?.Invoke(p1, p2, p3);
                     }
                 }
@@ -216,8 +220,9 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2, P3, P4>)?.Invoke(p1, p2, p3, p4);
                     }
                 }
@@ -231,8 +236,9 @@ namespace TaoTie
                 if (evts.TryGetValue(name, out var evt))
                 {
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2, P3, P4, P5>)?.Invoke(p1, p2, p3, p4, p5);
                     }
                 }
@@ -252,8 +258,9 @@ namespace TaoTie
                     await TimerManager.Instance.WaitAsync(1);
 
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action)?.Invoke();
                     }
                 }
@@ -268,8 +275,9 @@ namespace TaoTie
                 {
                     await TimerManager.Instance.WaitAsync(1);
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         if (item is Action<P1> action)
                         {
                             action.Invoke(p1);
@@ -293,8 +301,9 @@ namespace TaoTie
                 {
                     await TimerManager.Instance.WaitAsync(1);
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2>)?.Invoke(p1, p2);
                     }
                 }
@@ -309,8 +318,9 @@ namespace TaoTie
                 {
                     await TimerManager.Instance.WaitAsync(1);
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2, P3>)?.Invoke(p1, p2, p3);
                     }
                 }
@@ -325,8 +335,9 @@ namespace TaoTie
                 {
                     await TimerManager.Instance.WaitAsync(1);
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2, P3, P4>)?.Invoke(p1, p2, p3, p4);
                     }
                 }
@@ -341,8 +352,9 @@ namespace TaoTie
                 {
                     await TimerManager.Instance.WaitAsync(1);
                     using var list = ToList(evt);
-                    foreach (var item in list)
+                    for (int i = 0; i < list.Count; i++)
                     {
+                        var item = list[i];
                         (item as Action<P1, P2, P3, P4, P5>)?.Invoke(p1, p2, p3, p4, p5);
                     }
                 }

@@ -320,7 +320,7 @@ namespace CMF
 		public void SetVelocity(Vector3 velocity)
 		{
 			var vo = velocity + currentGroundAdjustmentVelocity;
-			rig.velocity = vo;
+			if(!rig.isKinematic) rig.velocity = vo;
 			rig.isKinematic = Vector3.SqrMagnitude(vo) < 0.001f;
 		}	
 

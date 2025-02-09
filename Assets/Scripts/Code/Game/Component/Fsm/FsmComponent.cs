@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace TaoTie
@@ -142,7 +143,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Warning("FsmController SetData Can Not Find float Param: {0}", key);
+                LogWarning($"FsmController SetData Can Not Find float Param: {key}");
             }
         }
 
@@ -158,7 +159,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Warning("FsmController SetData Can Not Find int Param: {0}", key);
+                LogWarning($"FsmController SetData Can Not Find int Param: {key}");
             }
         }
 
@@ -174,7 +175,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Warning("FsmController SetData Can Not Find bool Param: {0}", key);
+                LogWarning($"FsmController SetData Can Not Find bool Param: {key}");
             }
         }
 
@@ -186,7 +187,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Error("FsmController GetFloat Can Not Find float Param: {0}", key);
+                Log.Error($"FsmController GetFloat Can Not Find float Param: {key}");
                 return default (float);
             }
         }
@@ -199,7 +200,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Error("FsmController GetInt Can Not Find int Param: {0}", key);
+                Log.Error($"FsmController GetInt Can Not Find int Param: {key}");
                 return default (int);
             }
         }
@@ -212,7 +213,7 @@ namespace TaoTie
             }
             else
             {
-                Log.Error("FsmController GetBool Can Not Find bool Param: {0}", key);
+                Log.Error($"FsmController GetBool Can Not Find bool Param: {key}");
                 return default (bool);
             }
         }
@@ -222,6 +223,11 @@ namespace TaoTie
             return config.TryGetParam(key, out var param);
         }
 
+        [Conditional("ENABLE_FSM_WARNING")]
+        private void LogWarning(string str)
+        {
+            Log.Warning($"Id:{Id}\r\n" + str);
+        }
         #endregion
     }
 }

@@ -169,15 +169,22 @@ namespace TaoTie
             if (knowledge.Temperature < ThreatInfo.TEMPERVAL_ALERT)
             {
                 float decreaseTemperatureAmount = knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed * deltaTime / 1000;
-
-                var keys = candidateList.Keys.ToArray();
-                foreach (var key in keys)
+                using (ListComponent<long> temp = ListComponent<long>.Create())
                 {
-                    var candidate = candidateList[key];
-
-                    candidate.DecreaseTemper(decreaseTemperatureAmount);
-                    if (!ValidateCandidate(candidate))
+                    foreach (var kv in candidateList)
                     {
+                        var candidate = kv.Value;
+                        candidate.DecreaseTemper(decreaseTemperatureAmount);
+                        if (!ValidateCandidate(candidate))
+                        {
+                            var key = kv.Key;
+                            temp.Add(key);
+                        }
+                    }
+                    for (int i = 0; i < temp.Count; i++)
+                    {
+                        var key = temp[i];
+                        var candidate = candidateList[key];
                         candidateList.Remove(key);
                         disqualifiedCandidates.Add(candidate);
                     }
@@ -309,13 +316,20 @@ namespace TaoTie
                 candidate.Value.IncreaseThreat(candidate.Value.Temperature);
                 threatList.Add(candidate.Value.Id, candidate.Value);
             }
-
-            var targets = threatList.Keys.ToArray();
-            for (int i = 0; i < targets.Length; i++)
+            
+            using (ListComponent<long> temp = ListComponent<long>.Create())
             {
-                if (!ValidateThreat(threatList[targets[i]]))
+                foreach (var kv in threatList)
                 {
-                    InternalRemoveThreat(targets[i]);
+                    if (!ValidateThreat(kv.Value))
+                    {
+                        temp.Add(kv.Key);
+                    }
+                }
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    var key = temp[i];
+                    InternalRemoveThreat(key);
                 }
             }
         }

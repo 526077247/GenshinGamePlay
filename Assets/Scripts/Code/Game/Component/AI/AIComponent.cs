@@ -14,28 +14,28 @@ namespace TaoTie
         protected AIKnowledge knowledge;
 
         /// <summary> 这一帧决策结果 </summary>
-        protected AIDecision decision { get; private set; }= new AIDecision();
+        protected AIDecision decision = new AIDecision();
         /// <summary> 上一帧决策结果 </summary>
-        protected AIDecision decisionOld { get; private set; }= new AIDecision();
-        /// <summary> 移动summary>
-        public AIMoveUpdater MoveUpdater { get; private set; }= new AIMoveUpdater();
+        protected AIDecision decisionOld = new AIDecision();
+        /// <summary> 移动</summary>
+        protected AIMoveUpdater MoveUpdater = new AIMoveUpdater();
         /// <summary> 寻路 </summary>
-        public AIPathfindingUpdater Pathfinder { get; private set; }= new AIPathfindingUpdater();
+        protected AIPathfindingUpdater Pathfinder = new AIPathfindingUpdater();
         /// <summary> 目标 </summary>
-        public AITargetUpdater TargetUpdater { get; private set; }= new AITargetUpdater();
+        protected AITargetUpdater TargetUpdater = new AITargetUpdater();
         /// <summary> 感知 </summary>
-        public AISensingUpdater SensingUpdater { get; private set; }= new AISensingUpdater();
+        protected AISensingUpdater SensingUpdater = new AISensingUpdater();
         /// <summary> 威胁 </summary>
-        public AIThreatUpdater ThreatUpdater { get; private set; }= new AIThreatUpdater();
+        protected AIThreatUpdater ThreatUpdater = new AIThreatUpdater();
         /// <summary> pose </summary>
-        public AIPoseControlUpdater PoseControlUpdater { get; private set; }= new AIPoseControlUpdater();
+        protected AIPoseControlUpdater PoseControlUpdater = new AIPoseControlUpdater();
         /// <summary> 技能 </summary>
-        public AISkillUpdater SkillUpdater { get; private set; }= new AISkillUpdater();
+        protected AISkillUpdater SkillUpdater = new AISkillUpdater();
 
         /// <summary> 行动执行器 </summary>
-        public AIActionControl ActionController { get; private set; }= new AIActionControl();
+        protected AIActionControl ActionController = new AIActionControl();
         /// <summary> 移动执行器 </summary>
-        public AIMoveControl MoveController { get; private set; }= new AIMoveControl();
+        protected AIMoveControl MoveController = new AIMoveControl();
 
 
         #region Event
@@ -138,7 +138,7 @@ namespace TaoTie
             if (transform != null)
             {
                 var aiDebug = transform.GetComponent<AIDebug>();
-                if (aiDebug != null)
+                if (aiDebug != null && aiDebug.enabled)
                 {
                     aiDebug.Act = decision.Act.ToString();
                     aiDebug.Tactic = decision.Tactic.ToString();

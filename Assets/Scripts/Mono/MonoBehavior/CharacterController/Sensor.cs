@@ -90,6 +90,7 @@ namespace CMF
 		List<Vector3> arrayNormals = new List<Vector3>();
 		List<Vector3> arrayPoints = new List<Vector3>();
 
+		private RaycastHit[] hit = new RaycastHit[1];
 		//Constructor;
 		public Sensor (Transform _transform, Collider _collider)
 		{
@@ -216,17 +217,16 @@ namespace CMF
 			//Clear results from last frame;
 			arrayNormals.Clear();
 			arrayPoints.Clear();
-
-			RaycastHit _hit;
-
+			
 			//Cast array;
 			for(int i = 0; i < raycastArrayStartPositions.Length; i++)
 			{
 				//Calculate ray start position;
 				_rayStartPosition = _origin + tr.TransformDirection(raycastArrayStartPositions[i]);
 
-				if(Physics.Raycast(_rayStartPosition, rayDirection, out _hit, castLength, layermask, QueryTriggerInteraction.Ignore))
+				if(Physics.RaycastNonAlloc(_rayStartPosition, rayDirection, hit, castLength, layermask, QueryTriggerInteraction.Ignore)>0)
 				{
+					var _hit = hit[0];
 					if(isInDebugMode)
 						Debug.DrawRay(_hit.point, _hit.normal, Color.red, Time.fixedDeltaTime * 1.01f);
 
@@ -269,11 +269,11 @@ namespace CMF
 		//Cast a single ray into '_direction' from '_origin';
 		private void CastRay(Vector3 _origin, Vector3 _direction)
 		{
-			RaycastHit _hit;
-			hasDetectedHit = Physics.Raycast(_origin, _direction, out _hit, castLength, layermask, QueryTriggerInteraction.Ignore);
+			hasDetectedHit = Physics.RaycastNonAlloc(_origin, _direction, hit, castLength, layermask, QueryTriggerInteraction.Ignore)>0;
 
 			if(hasDetectedHit)
 			{
+				var _hit = hit[0];
 				hitPosition = _hit.point;
 				hitNormal = _hit.normal;
 
@@ -287,11 +287,11 @@ namespace CMF
 		//Cast a sphere into '_direction' from '_origin';
 		private void CastSphere(Vector3 _origin, Vector3 _direction)
 		{
-			RaycastHit _hit;
-			hasDetectedHit = Physics.SphereCast(_origin, sphereCastRadius, _direction, out _hit, castLength - sphereCastRadius, layermask, QueryTriggerInteraction.Ignore);
+			hasDetectedHit = Physics.SphereCastNonAlloc(_origin, sphereCastRadius, _direction, hit, castLength - sphereCastRadius, layermask, QueryTriggerInteraction.Ignore)>0;
 
 			if(hasDetectedHit)
 			{
+				var _hit = hit[0];
 				hitPosition = _hit.point;
 				hitNormal = _hit.normal;
 				hitColliders.Add(_hit.collider);

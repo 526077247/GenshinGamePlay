@@ -43,6 +43,8 @@ namespace TaoTie
         public void Lerp(EnvironmentInfo from, EnvironmentInfo to, float val)
         {
             Progress = val;
+            var before = SkyCubePath;
+            var before2 = SkyCubePath2;
             if (from.IsBlender)
                 SkyCubePath = from.Progress > 0.5 ? from.SkyCubePath2 : from.SkyCubePath;
             else
@@ -53,18 +55,39 @@ namespace TaoTie
             else
                 SkyCubePath2 = to.SkyCubePath;
 
-            SkyCube = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath);
-            SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath2);
+            if (before != SkyCubePath)
+            {
+                if(SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube);
+                SkyCube = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath);
+            }
+
+            if (before2 != SkyCubePath2)
+            {
+                if(SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube2);
+                SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath2);
+            }
+
             TintColor = from.TintColor;
             TintColor2 = to.TintColor;
         }
         public void Lerp(ConfigEnvironment from, ConfigEnvironment to, float val)
         {
             Progress = val;
-            SkyCubePath = from.SkyCubePath;
-            SkyCubePath2 = to.SkyCubePath;
-            SkyCube = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath);
-            SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath2);
+            var before = SkyCubePath;
+            var before2 = SkyCubePath2;
+            if (before != from.SkyCubePath)
+            {
+                SkyCubePath = from.SkyCubePath;
+                if(SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube);
+                SkyCube = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath);
+            }
+
+            if (before2 != to.SkyCubePath)
+            {
+                SkyCubePath2 = to.SkyCubePath;
+                if(SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube2);
+                SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath2);
+            }
             TintColor = from.TintColor;
             TintColor2 = to.TintColor;
         }

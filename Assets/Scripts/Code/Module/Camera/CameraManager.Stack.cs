@@ -89,9 +89,13 @@ namespace TaoTie
         public void Update()
         {
             if (cameraStack == null) return;
-            foreach (var item in cameraStack)
+            foreach (var item in cameraStack.Data)
             {
-                item.Update();
+                if(item.Value == null) continue;
+                for (int i = 0; i < item.Value.Count; i++)
+                {
+                    item.Value[i]?.Update();
+                }
             }
 
             var top = cameraStack.Peek();
@@ -162,6 +166,7 @@ namespace TaoTie
                 ApplyData(curCameraState.Data);
             }
 
+            if (InputManager.Instance == null) return;
             if (InputManager.Instance.GetKeyDown(GameKeyCode.CursorUnlock))
             {
                 ChangeCursorLock(true, CursorStateType.UserInput);
