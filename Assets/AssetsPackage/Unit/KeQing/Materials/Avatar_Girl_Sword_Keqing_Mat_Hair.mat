@@ -22,20 +22,25 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Hair
   m_Shader: {fileID: 4800000, guid: 0bb4a4d350ca3de41aed86ede804a971, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _KAJIYAHAIR
   - _OUTLINE
   - _RAMPSHADING
   - _RENDERENVSETTING
+  - _SPECULARMASK
+  - _USERAMPMAPCHANNEL
   m_InvalidKeywords:
   - _IS_FILTER_LIGHTCOLOR_ON
   - _USEHALFLAMBERT_ON
+  - _USERADIANCEOCCLUSION_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -178,8 +183,8 @@ Material:
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
-    - _RampMapUOffset: 0
-    - _RampMapVOffset: 0.5
+    - _RampMapUOffset: 0.97
+    - _RampMapVOffset: 0
     - _ReceiveShadows: 1
     - _RimDirectionLightContribution: 1
     - _RimSoftness: 0.01
@@ -191,7 +196,7 @@ Material:
     - _SpecularAA: 0
     - _SpecularAAThreshold: 1
     - _SpecularHighlights: 1
-    - _SpecularMask: 0
+    - _SpecularMask: 1
     - _SrcBlend: 1
     - _StylizedSpecularAlbedoWeight: 0
     - _StylizedSpecularSize: 0.1
@@ -203,6 +208,8 @@ Material:
     - _UseEmissionTex: 0
     - _UseHalfLambert: 1
     - _UseRadianceOcclusion: 0
+    - _UseRampMapChannel: 1
+    - _UseRampMapOffset: 1
     - _WorkflowMode: 1
     - _ZOffset: 0
     - _ZWrite: 1
@@ -212,7 +219,7 @@ Material:
     - _enum_outline_smoothed: 0
     - _enum_outline_width: 0
     - _enum_rim: 0
-    - _enum_specular: 1
+    - _enum_specular: 0
     - _group: 0
     - _group1: 1
     - _groupAI: 1
@@ -235,15 +242,16 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}
+    - _EmissionChannel: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
-    - _PBRMetallicChannel: {r: 1, g: 0, b: 0, a: 0}
-    - _PBROcclusionChannel: {r: 0, g: 1, b: 0, a: 0}
-    - _PBRSmothnessChannel: {r: 0, g: 0, b: 1, a: 0}
+    - _PBRMetallicChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _PBROcclusionChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _PBRSmothnessChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _RampMapVChannel: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularIntensityChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _SpecularIntensityChannel: {r: 0, g: 0, b: 1, a: 0}
   m_BuildTextureStacks: []

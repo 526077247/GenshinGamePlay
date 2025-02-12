@@ -10,7 +10,7 @@ Shader "FernRender/URP/FERNNPREye"
         [SubToggle(Surface, _NORMALMAP)] _BumpMapKeyword("Use Normal Map", Float) = 0.0
         [Tex(Surface_NORMALMAP)] _BumpMap ("Normal Map", 2D) = "bump" { }
         [Sub(Surface_NORMALMAP)] _BumpScale("Scale", Float) = 1.0
-        [Tex(Surface)] _LightMap ("PBR Light Map", 2D) = "white" { }
+        [Tex(Surface)] _LightMap ("Light Map", 2D) = "white" { }
         [Channel(Surface)] _PBRMetallicChannel("Metallic Channel", Vector) = (1,0,0,0)
         [Sub(Surface)] _Metallic("Metallic", Range(0, 1.0)) = 0.0
         [Channel(Surface)] _PBRSmothnessChannel("Smoothness Channel", Vector) = (0,0,0,1)
@@ -39,9 +39,12 @@ Shader "FernRender/URP/FERNNPREye"
         [Sub(Diffuse_LAMBERTIAN._CELLSHADING)] _DarkColor ("Dark Color", Color) = (0.5,0.5,0.5,1)
         [Sub(Diffuse_CELLSHADING)] _CELLThreshold ("Cell Threshold", Range(0.01,1)) = 0.5
         [Sub(Diffuse_CELLSHADING)] _CELLSmoothing ("Cell Smoothing", Range(0.001,1)) = 0.001
-        [Sub(Diffuse_RAMPSHADING)] _DiffuseRampMap ("Ramp Map", 2D) = "white" {}
-        [Sub(Diffuse_RAMPSHADING)] _RampMapUOffset ("Ramp Map U Offset", Range(-1,1)) = 0
-        [Sub(Diffuse_RAMPSHADING)] _RampMapVOffset ("Ramp Map V Offset", Range(0,1)) = 0.5
+        [SubToggle(Diffuse._CELLSHADING._LAMBERTIAN,_ADDRAMPSHADING)] _AddRampShading ("Add Ramp Shading", float) = 0
+        [Sub(Diffuse_RAMPSHADING._ADDRAMPSHADING)] _DiffuseRampMap ("Ramp Map", 2D) = "white" {}
+        [Sub(Diffuse_RAMPSHADING._ADDRAMPSHADING)] _RampMapUOffset ("Ramp Map U Offset", Range(-1,1)) = 0
+        [Sub(Diffuse_RAMPSHADING._ADDRAMPSHADING)] _RampMapVOffset ("Ramp Map V Offset", Range(0,1)) = 0.5
+        [SubToggle(Diffuse._RAMPSHADING._ADDRAMPSHADING, _USERAMPMAPCHANNEL)] _UseRampMapChannel("Use Ramp Map Channel", Float) = 0.0
+        [Channel(Diffuse_USERAMPMAPCHANNEL)] _RampMapVChannel("Ramp Map V Channel", Vector) = (0,0,0,1)
         
         [Main(Specular, _, off, off)]
         _groupSpecular ("SpecularSettings", float) = 1
@@ -130,6 +133,8 @@ Shader "FernRender/URP/FERNNPREye"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local _LAMBERTIAN _CELLSHADING _RAMPSHADING
+            #pragma shader_feature_local _USERAMPMAPCHANNEL
+            #pragma shader_feature_local _ADDRAMPSHADING
             #pragma shader_feature_local _GGX _STYLIZED _BLINNPHONG
             #pragma shader_feature_local _SPECULARMASK
             #pragma shader_feature_local _ _FRESNELRIM _SCREENSPACERIM
@@ -313,6 +318,8 @@ Shader "FernRender/URP/FERNNPREye"
             #pragma shader_feature_local _PARALLAXMAP
             #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local _LAMBERTIAN _CELLSHADING _RAMPSHADING
+            #pragma shader_feature_local _USERAMPMAPCHANNEL
+            #pragma shader_feature_local _ADDRAMPSHADING
 
             #pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
             #pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF

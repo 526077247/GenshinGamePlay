@@ -169,20 +169,24 @@ LightingData InitializeLightingData(Light mainLight, Varyings input, half3 norma
 //                         Shading Function                                  //
 ///////////////////////////////////////////////////////////////////////////////
 
-half3 NPRDiffuseLighting(BRDFData brdfData, half4 uv, LightingData lightingData, half radiance)
+half3 NPRDiffuseLighting(BRDFData brdfData, half4 uv, LightingData lightingData, half radiance, half rampMapVOffset)
 {
     half3 diffuse = 0;
 
-   #if _CELLSHADING
+    #if _CELLSHADING
         diffuse = CellShadingDiffuse(radiance, _CELLThreshold, _CELLSmoothing, _HighColor.rgb, _DarkColor.rgb);
     #elif _LAMBERTIAN
         diffuse = lerp(_DarkColor.rgb, _HighColor.rgb, radiance);
     #elif _RAMPSHADING
-        diffuse = RampShadingDiffuse(radiance, _RampMapVOffset, _RampMapUOffset, TEXTURE2D_ARGS(_DiffuseRampMap, sampler_DiffuseRampMap));
+        diffuse = RampShadingDiffuse(radiance, rampMapVOffset, _RampMapUOffset, TEXTURE2D_ARGS(_DiffuseRampMap, sampler_DiffuseRampMap));
     #elif _CELLBANDSHADING
         diffuse = CellBandsShadingDiffuse(radiance, _CELLThreshold, _CellBandSoftness, _CellBands,  _HighColor.rgb, _DarkColor.rgb);
     #elif _SDFFACE
         diffuse = SDFFaceDiffuse(uv, lightingData, _SDFShadingSoftness, _HighColor.rgb, _DarkColor.rgb, TEXTURECUBE_ARGS(_SDFFaceTex, sampler_SDFFaceTex));
+    #endif
+    #if !defined(_RAMPSHADING) && defined(_ADDRAMPSHADING)
+        float rampColor = RampShadingDiffuse(radiance, rampMapVOffset, _RampMapUOffset, TEXTURE2D_ARGS(_DiffuseRampMap, sampler_DiffuseRampMap));
+        diffuse = lerp(rampColor,diffuse, smoothstep(0.95,1.0,rampMapVOffset));
     #endif
     diffuse *= brdfData.diffuse;
     return diffuse;
@@ -225,7 +229,7 @@ half3 NPRSpecularLighting(BRDFData brdfData, NPRSurfaceData surfData, Varyings i
  */
 half3 NPRMainLightDirectLighting(BRDFData brdfData, BRDFData brdfDataClearCoat, Varyings input, InputData inputData, NPRSurfaceData surfData, half radiance, LightingData lightData)
 {
-    half3 diffuse = NPRDiffuseLighting(brdfData, input.uv, lightData, radiance);
+    half3 diffuse = NPRDiffuseLighting(brdfData, input.uv, lightData, radiance, surfData.rampMapVOffset);
     half3 specular = NPRSpecularLighting(brdfData, surfData, input, inputData, surfData.albedo, radiance, lightData);
     half3 brdf = (diffuse + specular) * lightData.lightColor;
 

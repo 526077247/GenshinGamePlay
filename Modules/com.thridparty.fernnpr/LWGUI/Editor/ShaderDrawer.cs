@@ -994,11 +994,13 @@ namespace LWGUI
 	/// </summary>
 	internal class ChannelDrawer : SubDrawer
 	{
-		private static GUIContent[] _names  = new[] { new GUIContent("PBR: R"), new GUIContent("PBR: G"), new GUIContent("PBR: B"), new GUIContent("PBR: A"),
+		private static GUIContent[] _names  = new[] { new GUIContent("None"), 
+			new GUIContent("LightMap: R"), new GUIContent("LightMap: G"), new GUIContent("LightMap: B"), new GUIContent("LightMap: A"),
 			new GUIContent("ShadingMap1: R"), new GUIContent("ShadingMap1: G"), new GUIContent("ShadingMap1: B"), new GUIContent("ShadingMap1: A") };
 		private static int[]     _intValues     = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
 		private static Vector4[] _vector4Values = new[]
 		{
+			new Vector4(0, 0, 0, 0),
 			new Vector4(1, 0, 0, 0),
 			new Vector4(0, 1, 0, 0),
 			new Vector4(0, 0, 1, 0),

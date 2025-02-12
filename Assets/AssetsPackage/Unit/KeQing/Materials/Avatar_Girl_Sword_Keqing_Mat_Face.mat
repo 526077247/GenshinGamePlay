@@ -22,6 +22,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Face
   m_Shader: {fileID: 4800000, guid: 4466465ffd73f3e42bae37fdf7e6ed2e, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _DEPTHSHADOW
   - _GGX
@@ -40,6 +42,7 @@ Material:
   stringTagMap:
     RenderType: Opaque
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -84,7 +87,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _LightMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: b199365a0c3cfa84fa9f99df72742363, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -129,6 +132,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddRampShading: 0
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpMapKeyword: 0
@@ -205,6 +209,7 @@ Material:
     - _UseEmissionTex: 0
     - _UseHalfLambert: 1
     - _UseRadianceOcclusion: 0
+    - _UseRampMapChannel: 0
     - _WorkflowMode: 1
     - _ZOffset: 0
     - _ZWrite: 1
@@ -233,13 +238,14 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
-    - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionChannel: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0.2627451, g: 0, b: 0, a: 1}
     - _HighColor: {r: 1, g: 0.9346648, b: 0.9009434, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
-    - _PBRMetallicChannel: {r: 1, g: 0, b: 0, a: 0}
-    - _PBROcclusionChannel: {r: 0, g: 1, b: 0, a: 0}
-    - _PBRSmothnessChannel: {r: 0, g: 0, b: 0, a: 1}
+    - _PBRMetallicChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _PBROcclusionChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _PBRSmothnessChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _RampMapVChannel: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}

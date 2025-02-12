@@ -18,6 +18,7 @@ struct NPRSurfaceData
     half  specularIntensity;
     half  diffuseID;
     half  innerLine;
+    half  rampMapVOffset;
     
     #if EYE
         half3 corneaNormalData;

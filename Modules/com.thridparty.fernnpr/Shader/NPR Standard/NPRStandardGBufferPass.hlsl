@@ -221,7 +221,7 @@ Varyings LitGBufferPassVertex(Attributes input)
     return output;
 }
 
-half3 NPRGDiffuseLightingBuffer(BRDFData brdfData, half2 uv, LightingData lightingData, half radiance)
+half3 NPRGDiffuseLightingBuffer(BRDFData brdfData, half2 uv, LightingData lightingData, half radiance, half rampMapVOffset)
 {
     half3 diffuse = 0;
 
@@ -230,7 +230,7 @@ half3 NPRGDiffuseLightingBuffer(BRDFData brdfData, half2 uv, LightingData lighti
     #elif _LAMBERTIAN
     diffuse = lerp(_DarkColor.rgb, _HighColor.rgb, radiance);
     #elif _RAMPSHADING
-    diffuse = RampShadingDiffuse(radiance, _RampMapVOffset, _RampMapUOffset, TEXTURE2D_ARGS(_DiffuseRampMap, sampler_DiffuseRampMap));
+    diffuse = RampShadingDiffuse(radiance, rampMapVOffset, _RampMapUOffset, TEXTURE2D_ARGS(_DiffuseRampMap, sampler_DiffuseRampMap));
     #elif _CELLBANDSHADING
     diffuse = CellBandsShadingDiffuse(radiance, _CELLThreshold, _CellBandSoftness, _CellBands,  _HighColor.rgb, _DarkColor.rgb);
     #elif _SDFFACE
@@ -304,7 +304,7 @@ FragmentOutput LitGBufferPassFragment(Varyings input)
     LightingData lightingData = InitializeLightingDataGBuffer(mainLight, input, inputData.normalWS, inputData.viewDirectionWS, addInputData);
     half radiance = LightingRadiance(lightingData, _UseHalfLambert, surfaceData.occlusion, _UseRadianceOcclusion);
 
-    half3 diffuse = NPRGDiffuseLightingBuffer(brdfData, input.uv, lightingData, radiance);
+    half3 diffuse = NPRGDiffuseLightingBuffer(brdfData, input.uv, lightingData, radiance, surfaceData.rampMapVOffset);
 
     return BRDFDataToGbuffer(brdfData, diffuse, inputData, surfaceData.smoothness, surfaceData.emission + indirectLighting, surfaceData.occlusion);
 }

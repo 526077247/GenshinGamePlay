@@ -38,6 +38,7 @@ half4 _PBRSmothnessChannel;
 half4 _PBROcclusionChannel;
 half4 _SpecularIntensityChannel;
 half4 _EmissionChannel;
+half4 _RampMapVChannel;
 
 #if EYE
     half4 _EyeParallaxChannel;
@@ -249,6 +250,10 @@ TEXTURE2D(_EmissionTex);       SAMPLER(sampler_EmissionTex);
 half GetVauleFromChannel(half4 pbrLightMap, half4 shadingMap01, half4 channel)
 {
     int index = length(channel);
+    if(index == 0)
+    {
+        return 0.0;
+    }
     half4 channelMap = pbrLightMap;
     if(index == 2)
     {
@@ -333,7 +338,11 @@ inline void InitializeNPRStandardSurfaceData(float2 uv, InputData inputData, out
     outSurfaceData.clearCoatSmoothness = _ClearCoatSmoothness;
     outSurfaceData.specularIntensity = GetVauleFromChannel(pbrLightMap, shadingMap01, _SpecularIntensityChannel);
     outSurfaceData.emission = EmissionColor(pbrLightMap, shadingMap01, outSurfaceData.albedo, uv);
-
+    #if _USERAMPMAPCHANNEL
+    outSurfaceData.rampMapVOffset = _RampMapVOffset + GetVauleFromChannel(pbrLightMap, shadingMap01, _RampMapVChannel);
+    #else
+    outSurfaceData.rampMapVOffset = _RampMapVOffset;
+    #endif
    
 }
 
@@ -357,6 +366,11 @@ inline void InitializeNPRStandardSurfaceData(float2 uv, out NPRSurfaceData outSu
     outSurfaceData.clearCoatSmoothness = _ClearCoatSmoothness;
     outSurfaceData.specularIntensity = GetVauleFromChannel(pbrLightMap, shadingMap01, _SpecularIntensityChannel);
     outSurfaceData.emission = EmissionColor(pbrLightMap, shadingMap01, outSurfaceData.albedo, uv);
+    #if _USERAMPMAPCHANNEL
+    outSurfaceData.rampMapVOffset = _RampMapVOffset + GetVauleFromChannel(pbrLightMap, shadingMap01, _RampMapVChannel);
+    #else
+    outSurfaceData.rampMapVOffset = _RampMapVOffset;
+    #endif
 }
 
 inline void InitAnisoSpecularData(out AnisoSpecularData anisoSpecularData)
