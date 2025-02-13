@@ -44,6 +44,7 @@ namespace YooAsset
                 {
                     CdnConfig = Resources.Load<CDNConfig>("CDNConfig");
                 }
+
                 var initParameters = new EditorSimulateModeParameters();
                 initParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
                 var op = package.InitializeAsync(initParameters);
@@ -54,14 +55,30 @@ namespace YooAsset
                 }
             }
             else
-#endif 
+#endif
+#if UNITY_WEBGL
+            if (mode == EPlayMode.WebPlayMode)
+            {
+                if (CdnConfig == null)
+                {
+                    CdnConfig = Resources.Load<CDNConfig>("CDNConfig");
+                }
+                var initParameters = new WebPlayModeParameters();
+                initParameters.RemoteServices = new RemoteServices(CdnConfig);
+                initParameters.BuildinQueryServices = new GameQueryServices();
+                initParameters.BuildinRootDirectory = StreamingAssetsDefine.StreamAssetsDir;
+            }
+            else
+#endif
                 // 单机运行模式
             if (mode == EPlayMode.OfflinePlayMode)
             {
                 if (offlinePlayModeParameters == null)
                 {
                     var initParameters = new OfflinePlayModeParameters();
+#if !UNITY_WEBGL
                     initParameters.DecryptionServices = new BundleDecryption();
+#endif
                     initParameters.BuildinRootDirectory = StreamingAssetsDefine.StreamAssetsDir;
                     offlinePlayModeParameters = initParameters;
                 }
@@ -85,7 +102,9 @@ namespace YooAsset
                 {
                     var initParameters = new HostPlayModeParameters();
                     initParameters.RemoteServices = new RemoteServices(CdnConfig);
+#if !UNITY_WEBGL
                     initParameters.DecryptionServices = new BundleDecryption();
+#endif
                     initParameters.BuildinQueryServices = new GameQueryServices();
                     initParameters.DeliveryQueryServices = new DefaultDeliveryQueryServices();
                     initParameters.BuildinRootDirectory = StreamingAssetsDefine.StreamAssetsDir;
@@ -175,6 +194,12 @@ namespace YooAsset
             var packageInfo = GetPackageSync(package);
             if (packageInfo == null) return null;
             return packageInfo.LoadAssetSync(assetInfo);
+        }
+        public AssetOperationHandle LoadAssetAsync(AssetInfo assetInfo, string package)
+        {
+            var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return null;
+            return packageInfo.LoadAssetAsync(assetInfo);
         }
         public AssetOperationHandle LoadAssetAsync<T>(string path,string package) where T : UnityEngine.Object
         {

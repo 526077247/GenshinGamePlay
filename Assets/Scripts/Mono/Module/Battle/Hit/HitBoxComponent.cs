@@ -9,5 +9,11 @@ namespace TaoTie
     public class HitBoxComponent: MonoBehaviour
     {
         public HitBoxType HitBoxType;
+
+        public void Awake()
+        {
+            var co = GetComponent<Collider>();
+            if (co != null) co.isTrigger = true;
+        }
     }
 }

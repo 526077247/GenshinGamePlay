@@ -10,11 +10,15 @@ namespace TaoTie
     public partial class ConfigSceneGroupRestartPlatformMove : ConfigSceneGroupAction
     {
         [NinoMember(10)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
+#endif
         public int ActorId;
         
         [NinoMember(11)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()",AppendNextDrawer = true)]
+#endif
         public int RouteId;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {

@@ -10,7 +10,9 @@ namespace TaoTie
     public partial class ConfigSceneGroupCreateEntityByActorIdAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
+#endif
         public int ActorId;
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)

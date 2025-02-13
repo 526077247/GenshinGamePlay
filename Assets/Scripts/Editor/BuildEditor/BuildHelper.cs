@@ -29,6 +29,7 @@ namespace TaoTie
                 {PlatformType.IOS, BuildTarget.iOS},
                 {PlatformType.MacOS, BuildTarget.StandaloneOSX},
                 {PlatformType.Linux, BuildTarget.StandaloneLinux64},
+                {PlatformType.WebGL, BuildTarget.WebGL},
             };
 
         public static readonly Dictionary<PlatformType, BuildTargetGroup> buildGroupmap =
@@ -39,6 +40,7 @@ namespace TaoTie
                 {PlatformType.IOS, BuildTargetGroup.iOS},
                 {PlatformType.MacOS, BuildTargetGroup.Standalone},
                 {PlatformType.Linux, BuildTargetGroup.Standalone},
+                {PlatformType.WebGL, BuildTargetGroup.WebGL},
             };
 
         public static void KeystoreSetting()
@@ -78,6 +80,7 @@ namespace TaoTie
             var cdn = Resources.Load<CDNConfig>("CDNConfig");
             cdn.Channel = channel;
 
+            
             if (mode == (int) Mode.自定义服务器)
             {
                 cdn.DefaultHostServer = cdnPath;
@@ -155,6 +158,10 @@ namespace TaoTie
                 case PlatformType.Linux:
                     buildTarget = BuildTarget.StandaloneLinux64;
                     platform = "pc";
+                    break;
+                case PlatformType.WebGL:
+                    buildTarget = BuildTarget.WebGL;
+                    platform = "webgl";
                     break;
             }
 
@@ -264,8 +271,9 @@ namespace TaoTie
                 buildParameters.CopyBuildinFileOption =
                     isBuildAll ? ECopyBuildinFileOption.OnlyCopyAll : ECopyBuildinFileOption.OnlyCopyByTags;
             }
-
+#if !UNITY_WEBGL
             buildParameters.EncryptionServices = new StreamEncryption();
+#endif
             buildParameters.CompressOption = ECompressOption.LZ4;
             buildParameters.DisableWriteTypeTree = true; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
             buildParameters.IgnoreTypeTreeChanges = false;
@@ -299,15 +307,20 @@ namespace TaoTie
             bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
             string channel, bool buildDll = true)
         {
-            // var scene = EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
-            // var init = GameObject.Find("Global").GetComponent<Init>();
-            // if (init.PlayMode == EPlayMode.EditorSimulateMode)
-            // {
-            //     init.PlayMode = EPlayMode.HostPlayMode;
-            //     init.CodeMode = CodeMode.Wolong;
-            //     EditorSceneManager.SaveScene(scene);
-            // }
-            var bundleVersionCode = int.Parse(Application.version.Split(".")[2]);
+            var scene = EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
+            var init = GameObject.Find("Global").GetComponent<Init>();
+            if (init.PlayMode == EPlayMode.EditorSimulateMode)
+            {
+#if UNITY_WEBGL
+                init.PlayMode = EPlayMode.WebPlayMode;
+#else
+                init.PlayMode = EPlayMode.HostPlayMode;
+#endif
+                // init.CodeMode = CodeMode.Wolong;
+                EditorSceneManager.SaveScene(scene);
+            }
+            var vs = Application.version.Split(".");
+            var bundleVersionCode = int.Parse(vs[vs.Length-1]);
             string exeName = programName + "_" + channel;
             string platform = "";
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
@@ -337,6 +350,10 @@ namespace TaoTie
                 case PlatformType.Linux:
                     buildTarget = BuildTarget.StandaloneLinux64;
                     platform = "pc";
+                    break;
+                case PlatformType.WebGL:
+                    buildTarget = BuildTarget.WebGL;
+                    platform = "webgl";
                     break;
             }
 
@@ -389,6 +406,7 @@ namespace TaoTie
 
             if (isBuildExe)
             {
+                FilterCodeAssemblies.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
                 // if (HybridCLR.Editor.SettingsUtil.Enable)
                 // {
                 //     HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;

@@ -4,7 +4,7 @@ namespace TaoTie
 {
     public interface IConfigLoader
     {
-        void GetAllConfigBytes(Dictionary<string, byte[]> output);
-        byte[] GetOneConfigBytes(string configName);
+        ETTask GetAllConfigBytes(Dictionary<string, byte[]> output);
+        ETTask<byte[]> GetOneConfigBytes(string configName);
     }
 }

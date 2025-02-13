@@ -5,6 +5,7 @@ namespace TaoTie
 {
     public class EnvironmentInfo: IDisposable
     {
+        private bool isDispose;
         public bool Changed;
         public bool IsBlender;
 
@@ -20,8 +21,14 @@ namespace TaoTie
         public static EnvironmentInfo Create(ConfigEnvironment config)
         {
             EnvironmentInfo res = ObjectPool.Instance.Fetch<EnvironmentInfo>();
+            res.isDispose = false;
             res.SkyCubePath = config.SkyCubePath;
-            res.SkyCube = ResourcesManager.Instance.Load<Cubemap>(config.SkyCubePath);
+            ResourcesManager.Instance.LoadAsync<Cubemap>(config.SkyCubePath, (cube) =>
+            {
+                if(res.SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(res.SkyCube);
+                if(res.isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                else res.SkyCube = cube;
+            }).Coroutine();
             res.TintColor = config.TintColor;
             return res;
         }
@@ -29,12 +36,27 @@ namespace TaoTie
         public static EnvironmentInfo DeepClone(EnvironmentInfo other)
         {
             EnvironmentInfo res = ObjectPool.Instance.Fetch<EnvironmentInfo>();
+            res.isDispose = false;
             res.Progress = other.Progress;
             res.SkyCubePath = other.SkyCubePath;
             res.SkyCubePath2 = other.SkyCubePath2;
-            res.SkyCube = ResourcesManager.Instance.Load<Cubemap>(other.SkyCubePath);
-            if(!string.IsNullOrEmpty(res.SkyCubePath2)) 
-                res.SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(other.SkyCubePath2);
+            ResourcesManager.Instance.LoadAsync<Cubemap>(other.SkyCubePath, (cube) =>
+            {
+                if(res.SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(res.SkyCube);
+                if(res.isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                else res.SkyCube = cube;
+            }).Coroutine();
+            
+            if (!string.IsNullOrEmpty(res.SkyCubePath2))
+            {
+                ResourcesManager.Instance.LoadAsync<Cubemap>(other.SkyCubePath2, (cube) =>
+                {
+                    if(res.SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(res.SkyCube2);
+                    if(res.isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                    else res.SkyCube2 = cube;
+                }).Coroutine();
+
+            }
             res.TintColor = other.TintColor;
             res.TintColor2 = other.TintColor2;
             return res;
@@ -57,14 +79,22 @@ namespace TaoTie
 
             if (before != SkyCubePath)
             {
-                if(SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube);
-                SkyCube = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath);
+                ResourcesManager.Instance.LoadAsync<Cubemap>(SkyCubePath, (cube) =>
+                {
+                    if(SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube);
+                    if(isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                    else SkyCube = cube;
+                }).Coroutine();
             }
 
             if (before2 != SkyCubePath2)
             {
-                if(SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube2);
-                SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath2);
+                ResourcesManager.Instance.LoadAsync<Cubemap>(SkyCubePath2, (cube) =>
+                {
+                    if(SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube2);
+                    if(isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                    else SkyCube2 = cube;
+                }).Coroutine();
             }
 
             TintColor = from.TintColor;
@@ -78,15 +108,23 @@ namespace TaoTie
             if (before != from.SkyCubePath)
             {
                 SkyCubePath = from.SkyCubePath;
-                if(SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube);
-                SkyCube = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath);
+                ResourcesManager.Instance.LoadAsync<Cubemap>(SkyCubePath, (cube) =>
+                {
+                    if(SkyCube!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube);
+                    if(isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                    else SkyCube = cube;
+                }).Coroutine();
             }
 
             if (before2 != to.SkyCubePath)
             {
                 SkyCubePath2 = to.SkyCubePath;
-                if(SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube2);
-                SkyCube2 = ResourcesManager.Instance.Load<Cubemap>(SkyCubePath2);
+                ResourcesManager.Instance.LoadAsync<Cubemap>(SkyCubePath2, (cube) =>
+                {
+                    if(SkyCube2!=null) ResourcesManager.Instance.ReleaseAsset(SkyCube2);
+                    if(isDispose) ResourcesManager.Instance.ReleaseAsset(cube);
+                    else SkyCube2 = cube;
+                }).Coroutine();
             }
             TintColor = from.TintColor;
             TintColor2 = to.TintColor;
@@ -108,6 +146,7 @@ namespace TaoTie
 
             TintColor = default;
             TintColor2 = default;
+            this.isDispose = true;
             ObjectPool.Instance.Recycle(this);
         }
     }

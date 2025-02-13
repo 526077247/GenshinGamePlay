@@ -15,9 +15,9 @@
       }
     },
     "com.thridparty.odin": {
-      "version": "file:../Modules/com.thridparty.odin",
+      "version": "file:com.thridparty.odin",
       "depth": 0,
-      "source": "local",
+      "source": "embedded",
       "dependencies": {}
     },
     "com.tuyoogame.yooasset": {

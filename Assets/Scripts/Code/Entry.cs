@@ -8,6 +8,11 @@ namespace TaoTie
     {
         public static void Start()
         {
+            StartAsync().Coroutine();
+        }
+
+        private static async ETTask StartAsync()
+        {
             try
             {
                 ManagerProvider.RegisterManager<Messager>();
@@ -19,8 +24,11 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<TimerManager>();
                 
                 ManagerProvider.RegisterManager<CacheManager>();
+                ManagerProvider.RegisterManager<HttpManager>();
                 
-                ManagerProvider.RegisterManager<ConfigManager>();
+                var cm = ManagerProvider.RegisterManager<ConfigManager>();
+                await cm.LoadAsync();
+                
                 ManagerProvider.RegisterManager<ResourcesManager>();
                 ManagerProvider.RegisterManager<GameObjectPoolManager>();
                 ManagerProvider.RegisterManager<ImageLoaderManager>();
@@ -38,7 +46,7 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<NavmeshSystem>();
                 
                 ManagerProvider.RegisterManager<InputManager>();
-                StartGameAsync().Coroutine();
+                await StartGameAsync();
             }
             catch (Exception e)
             {

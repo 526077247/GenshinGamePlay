@@ -16,7 +16,8 @@ namespace TaoTie
         {
             onDownloadSize = downloadSizeCallBack;
             list = process;
-            AppVer = int.Parse(Application.version.Split(".")[2]);
+            var vs = Application.version.Split(".");
+            AppVer = int.Parse(vs[vs.Length-1]);
             await GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(UIMsgBoxWin.PrefabPath,1);
         }
 

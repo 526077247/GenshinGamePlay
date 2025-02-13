@@ -65,7 +65,7 @@ namespace TaoTie
 			            if (Input.touchCount>=1)
 			            {
 			                var pos = Input.GetTouch(0).position;
-			                if (InputManager.IsPointerOverGameObject(pos))
+			                if (InputManager.Instance.IsPointerOverGameObject(pos))
 			                {
 #else
 						if (Input.GetKeyDown(KeyCode.Mouse0))

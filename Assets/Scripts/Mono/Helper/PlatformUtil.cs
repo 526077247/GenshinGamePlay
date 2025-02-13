@@ -32,6 +32,8 @@ namespace TaoTie
             return "android";
 #elif UNITY_IOS
             return "ios";
+#elif UNITY_WEBGL
+            return "webgl";
 #endif
             return "pc";
         }

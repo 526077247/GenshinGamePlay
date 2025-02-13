@@ -1,5 +1,4 @@
-﻿using UnityEditor.AnimatedValues;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DaGenGraph.Editor
 {

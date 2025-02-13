@@ -157,7 +157,7 @@ namespace TaoTie
             }
             AfterBuild(assemblyName);
             //反射获取当前Game视图，提示编译完成
-            ShowNotification("Build Code Success");
+            // ShowNotification("Build Code Success");
         }
         
         public static void AfterBuild(string assemblyName)
@@ -174,10 +174,8 @@ namespace TaoTie
 
         public static void ShowNotification(string tips)
         {
-            Log.Info(tips);
-            // 命令行模式启动可能会报错
-            // var game = EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView"));
-            // game?.ShowNotification(new GUIContent($"{tips}"));
+            var game = EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView"));
+            game?.ShowNotification(new GUIContent($"{tips}"));
         }
     }
     

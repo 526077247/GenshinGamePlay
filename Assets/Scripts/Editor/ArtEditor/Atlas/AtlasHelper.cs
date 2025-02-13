@@ -166,6 +166,15 @@ namespace TaoTie
                     // platformSetting.textureCompression = type;
                     platformSetting.format = format;
                     importer.SetPlatformTextureSettings(platformSetting);
+                    
+                    platformSetting = importer.GetPlatformTextureSettings("WebGL");
+                    platformSetting.maxTextureSize = 2048;
+                    platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
+                    platformSetting.overridden = true;
+                    // platformSetting.textureCompression = type;
+                    platformSetting.format = format;
+                    importer.SetPlatformTextureSettings(platformSetting);
+
 
                     importer.SaveAndReimport();
                 }
@@ -281,6 +290,16 @@ namespace TaoTie
             platformSetting = new TextureImporterPlatformSettings()
             {
                 name = "iPhone",
+                maxTextureSize = 2048,
+                format = _format,
+                overridden = true,
+            };
+
+            atlas.SetPlatformSettings(platformSetting);
+            
+            platformSetting = new TextureImporterPlatformSettings()
+            {
+                name = "WebGL",
                 maxTextureSize = 2048,
                 format = _format,
                 overridden = true,
@@ -481,6 +500,14 @@ namespace TaoTie
                         textureImporter.SetPlatformTextureSettings(setting);
 
                         setting = textureImporter.GetPlatformTextureSettings("iphone");
+                        setting.overridden = true;
+                        setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                        setting.maxTextureSize = 2048;
+                        textureImporter.SetPlatformTextureSettings(setting);
+
+                        textureImporter.SaveAndReimport();
+                        
+                        setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
                         setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
                         setting.maxTextureSize = 2048;

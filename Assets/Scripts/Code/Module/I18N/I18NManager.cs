@@ -32,14 +32,18 @@ namespace TaoTie
                 this.CurLangType = (LangType)lang;
             }
             this.i18nTextKeyDic = new Dictionary<string, string>();
-            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
+            InitAsync().Coroutine();
+            AddSystemFonts();
+        }
+
+        private async ETTask InitAsync()
+        {
+            var res = await ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
             for (int i = 0; i <res.GetAllList().Count; i++)
             {
                 var item = res.GetAllList()[i];
                 this.i18nTextKeyDic.Add(item.Key, item.Value);
             }
-            
-            AddSystemFonts();
         }
 
         public void Destroy()
@@ -110,13 +114,13 @@ namespace TaoTie
         /// 切换语言,外部接口
         /// </summary>
         /// <param name="langType"></param>
-        public void SwitchLanguage(int langType)
+        public async ETTask SwitchLanguage(int langType)
         {
             //修改当前语言
             CacheManager.Instance.SetInt(CacheKeys.CurLangType, langType);
             this.CurLangType = (LangType)langType;
+            var res = await ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
             this.i18nTextKeyDic.Clear();
-            var res = ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
             for (int i = 0; i <res.GetAllList().Count; i++)
             {
                 var item = res.GetAllList()[i];
@@ -149,18 +153,12 @@ namespace TaoTie
             string[] fonts = new[] { "msyhl" };//微软雅黑细体
 #elif UNITY_ANDROID
             string[] fonts = new[] {
-                "NotoSansDevanagari-Regular",//天城体梵文
-                "NotoSansThai-Regular",        //泰文
-                "NotoSerifHebrew-Regular",     //希伯来文
-                "NotoSansSymbols-Regular-Subsetted",  //符号
-                "NotoSansCJK-Regular"          //中日韩
+                "notosanscjksc-regular",
+                "notosanscjk-regular",
             };
 #elif UNITY_IOS
             string[] fonts = new[] {
-                "DevanagariSangamMN",  //天城体梵文
-                "AppleSDGothicNeo",    //韩文，包含日文，部分中文
-                "Thonburi",            //泰文
-                "ArialHB"              //希伯来文
+                "pingfang"
             };
 #else
             string[] fonts = new string[0];

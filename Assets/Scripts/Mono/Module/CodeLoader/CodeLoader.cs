@@ -112,7 +112,7 @@ namespace TaoTie
 					//没有内置AOTdll，或者热更完dll版本不同
 					if(this.assembly == null)
 					{
-						GetBytes(out assBytes, out pdbBytes);
+						(assBytes,pdbBytes) = await GetBytes();
 						if (assBytes != null)
 						{
 							assembly = Assembly.Load(assBytes, pdbBytes);
@@ -184,18 +184,19 @@ namespace TaoTie
 				Log.Error("assembly == null");
 			}
 		}
-		private void GetBytes(out byte[] assBytes,out byte[] pdbBytes)
+		private async ETTask<(byte[],byte[])> GetBytes()
 		{
-			assBytes = null;
-			pdbBytes= null;
+			byte[] assBytes = null, pdbBytes = null;
 			if (YooAssetsMgr.Instance.PlayMode != YooAsset.EPlayMode.EditorSimulateMode)
 			{
-				var op = YooAssetsMgr.Instance.LoadAssetSync<TextAsset>(
+				var op = YooAssetsMgr.Instance.LoadAssetAsync<TextAsset>(
 					$"{Define.HotfixLoadDir}Code{YooAssetsMgr.Instance.Config.Resver}.dll.bytes",YooAssetsMgr.DefaultName);
+				await op.Task;
 				assBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
-				op = YooAssetsMgr.Instance.LoadAssetSync<TextAsset>(
+				op = YooAssetsMgr.Instance.LoadAssetAsync<TextAsset>(
 					$"{Define.HotfixLoadDir}Code{YooAssetsMgr.Instance.Config.Resver}.pdb.bytes",YooAssetsMgr.DefaultName);
+				await op.Task;
 				pdbBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
 			}
@@ -210,6 +211,7 @@ namespace TaoTie
 					.bytes;
 			}
 #endif
+			return (assBytes, pdbBytes);
 		}
 		public bool isReStart = false;
 		public void ReStart()

@@ -24,7 +24,9 @@ namespace TaoTie
         [NinoMember(4)][LabelText("是否是相对坐标、方向")]
         public bool IsLocal = true;
         [NinoMember(5)]
+#if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
+#endif
         public uint CampId;
         
         public abstract Entity CreateActor(SceneGroup sceneGroup);

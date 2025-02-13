@@ -31,7 +31,7 @@ namespace TaoTie
 #if UNITY_EDITOR
                     false;
 #else
-        Application.internetReachability != NetworkReachability.NotReachable;
+        UnityEngine.Application.internetReachability != UnityEngine.NetworkReachability.NotReachable;
 #endif
 
         public static int Process = 1;

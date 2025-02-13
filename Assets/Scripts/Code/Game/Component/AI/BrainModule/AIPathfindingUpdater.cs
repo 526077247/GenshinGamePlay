@@ -50,10 +50,14 @@ namespace TaoTie
                         pc = this.knowledge.Entity.AddComponent<PathfindingComponent, string>(this.knowledge
                             .PathFindingKnowledge.NavMeshAgentName);
                     }
-                    pc.Find(task.Start, task.Destination, task.Corners);
-                    task.Status = QueryStatus.Success;
+                    FindNavmeshTask(pc, task).Coroutine();
                 }
             }
+        }
+        private async ETTask FindNavmeshTask(PathfindingComponent pc, PathQueryTask task)
+        {
+            task.Status = QueryStatus.Querying;
+            task.Status = await pc.Find(task.Start, task.Destination, task.Corners)?QueryStatus.Success:QueryStatus.Fail;
         }
     }
 }

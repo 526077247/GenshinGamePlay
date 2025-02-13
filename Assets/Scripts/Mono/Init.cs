@@ -60,10 +60,6 @@ namespace TaoTie
 
 		private void Start()
 		{
-#if UNITY_EDITOR
-			CodeMode = CodeMode.BuildIn;
-			PlayMode = EPlayMode.EditorSimulateMode;
-#endif
 			AwakeAsync().Coroutine();
 		}
 

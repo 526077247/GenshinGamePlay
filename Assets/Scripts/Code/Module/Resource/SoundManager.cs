@@ -39,19 +39,24 @@ namespace TaoTie
 
         public void Init()
         {
+            Instance = this;
+            InitAsync().Coroutine();
+        }
+
+        private async ETTask InitAsync()
+        {
             soundsRoot = new GameObject("SoundsRoot").transform;
             GameObject.DontDestroyOnLoad(soundsRoot);
-            var temp = ResourcesManager.Instance.Load<GameObject>("Audio/Common/BGMManager.prefab");
+            var temp = await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/BGMManager.prefab");
             var go = GameObject.Instantiate(temp);
             bgm = go.GetComponent<AudioSource>();
             bgm.transform.SetParent(soundsRoot);
             initMusicVolume = bgm.volume;
-            soundsClipClone = ResourcesManager.Instance.Load<GameObject>("Audio/Common/Source.prefab");
+            soundsClipClone = await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab");
 
-            SoundManager.Instance = this;
             for (int i = 0; i < initSoundsCount; i++)
             {
-                var item = CreateClipSource();
+                var item = await CreateClipSource();
                 item.gameObject.SetActive(false);
                 soundsPool.Add(item);
             }
@@ -94,12 +99,12 @@ namespace TaoTie
 
         #endregion
         
-        public AudioSource CreateClipSource()
+        public async ETTask<AudioSource> CreateClipSource()
         {
-            if (this.soundsClipClone == null )
+            if (this.soundsClipClone == null)
             {
                 //todo: 不知道谁给回收了
-                soundsClipClone = ResourcesManager.Instance.Load<GameObject>("Audio/Common/Source.prefab");
+                soundsClipClone = await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab");
             }
             if (this.soundsClipClone == null || this.soundsRoot == null)
             {
@@ -130,7 +135,8 @@ namespace TaoTie
                 this.BGM.SetFloat("BGM", (int) this.ValueList[value]);
             }
         }
-        public AudioSource GetClipSource() {
+        public async ETTask<AudioSource> GetClipSource() 
+        {
             AudioSource clipSource = null;
             for (int i = 0; i <  this.soundsPool.Count; i++) {
                 if ( this.soundsPool[i].gameObject.activeSelf == false) {
@@ -139,7 +145,7 @@ namespace TaoTie
                 }
             }
             if (clipSource == null) {
-                clipSource = this.CreateClipSource();
+                clipSource = await this.CreateClipSource();
                 if (clipSource == null) return null;
                 this.soundsPool.Add(clipSource);
             }
@@ -361,7 +367,7 @@ namespace TaoTie
                 }
                 if(!clear) this.Add(name, clip);
             }
-            AudioSource source = this.GetClipSource();
+            AudioSource source = await this.GetClipSource();
             if (source == null) return source; 
             source.clip = clip;
             source.Play();
@@ -396,7 +402,7 @@ namespace TaoTie
                     this.Add(name, clip);
                 }
             }
-            AudioSource source = this.GetClipSource();
+            AudioSource source = await this.GetClipSource();
             if (source == null)
             {
                 Log.Error("GetClipSource fail");
@@ -570,7 +576,7 @@ namespace TaoTie
                 return;
             }
 
-            AudioSource source = GetClipSource();
+            AudioSource source = await GetClipSource();
             if (source == null)
             {
                 Log.Error("Failed to get audio source.");

@@ -9,7 +9,7 @@ namespace TaoTie
     {
         private GUIStyle style = new GUIStyle();
         
-        public static AIDebug Show;
+        private static AIDebug Show;
         public string Act;
         public string Tactic;
         public string Move;
@@ -60,5 +60,21 @@ namespace TaoTie
         }
     }
 }
+#else
+using UnityEngine;
 
+namespace TaoTie
+{
+    public class AIDebug: MonoBehaviour
+    {
+        public string Act;
+        public string Tactic;
+        public string Move;
+        public string Target;
+        public Vector3? TargetPos;
+        public float ViewRange;
+        public string Alertness;
+        public string SkillStatus;
+    }
+}
 #endif
