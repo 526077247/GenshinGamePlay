@@ -83,6 +83,7 @@ namespace TaoTie
         {
             RegisterManager<GameTimerManager>();
             var envm = RegisterManager<EnvironmentManager>();
+            await envm.LoadAsync();
             if (config.DayNight == 1 && config.EnvIds.Length==4)
             {
                 envm.CreateDayNight(config.EnvIds[0],config.EnvIds[1],config.EnvIds[2],config.EnvIds[3]);

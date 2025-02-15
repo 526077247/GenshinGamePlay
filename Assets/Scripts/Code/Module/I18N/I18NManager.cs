@@ -149,20 +149,29 @@ namespace TaoTie
         /// </summary>
         public static void AddSystemFonts()
         {
-#if UNITY_EDITOR||UNITY_STANDALONE_WIN
-            string[] fonts = new[] { "msyhl" };//微软雅黑细体
-#elif UNITY_ANDROID
-            string[] fonts = new[] {
-                "notosanscjksc-regular",
-                "notosanscjk-regular",
-            };
-#elif UNITY_IOS
-            string[] fonts = new[] {
-                "pingfang"
-            };
-#else
-            string[] fonts = new string[0];
-#endif
+            string[] fonts;
+            int type = PlatformUtil.GetSystemTypeWithWebGL();
+            if (type == 1)
+            {
+                fonts = new[] { "msyhl" };//微软雅黑细体
+            }
+            else if (type == 2)
+            {
+                fonts = new[] {
+                    "notosanscjksc-regular",
+                    "notosanscjk-regular",
+                };
+            }
+            else if (type == 3)
+            {
+                fonts = new[] {
+                    "pingfang"
+                };
+            }
+            else
+            {
+                fonts = new string[0];
+            }
             TextMeshFontAssetManager.Instance.AddWithOSFont(fonts);
         }
 

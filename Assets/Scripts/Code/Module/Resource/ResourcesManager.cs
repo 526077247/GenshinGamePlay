@@ -56,42 +56,6 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 同步加载Asset
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="package"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T Load<T>(string path, string package = null) where T : UnityEngine.Object
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                Log.Error("path is empty");
-                return null;
-            }
-
-            if (package == null)
-            {
-                package = packageFinder.GetPackageName(path);
-            }
-
-            var op = YooAssetsMgr.Instance.LoadAssetSync<T>(path, package);
-            T obj = op.AssetObject as T;
-            if (obj != null && !this.temp.ContainsKey(op.AssetObject))
-            {
-                this.temp.Add(op.AssetObject, op);
-                cachedAssetOperationHandles.Add(op);
-            }
-            else
-            {
-                op.Release();
-            }
-
-            return obj;
-
-        }
-
-        /// <summary>
         /// 异步加载Asset
         /// </summary>
         /// <param name="path"></param>
@@ -250,11 +214,11 @@ namespace TaoTie
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public string LoadConfigJson(string path)
+        public async ETTask<string> LoadConfigJsonAsync(string path)
         {
             if (string.IsNullOrEmpty(path)) return default;
             path += ".json";
-            var file = Load<TextAsset>(path);
+            var file = await LoadAsync<TextAsset>(path);
             try
             {
                 var text = file.text;
@@ -274,11 +238,11 @@ namespace TaoTie
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public byte[] LoadConfigBytes(string path)
+        public async ETTask<byte[]> LoadConfigBytesAsync(string path)
         {
             if (string.IsNullOrEmpty(path)) return default;
             path += ".bytes";
-            var file = Load<TextAsset>(path);
+            var file = await LoadAsync<TextAsset>(path);
             try
             {
                 var bytes = file.bytes;

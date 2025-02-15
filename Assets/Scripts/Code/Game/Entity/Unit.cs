@@ -58,58 +58,16 @@ namespace TaoTie
         #endregion
         protected ConfigFsmController GetFsmConfig(string path)
         {
-            if (Define.ConfigType == 0)
-            {
-                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
-                return JsonHelper.FromJson<ConfigFsmController>(jStr);
-            }
-#if RoslynAnalyzer
-            else
-            {
-                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
-                Deserializer.Deserialize(bytes,out ConfigFsmController res);
-                return res;
-            }
-#endif
-            Log.Error($"GetFsmConfig 失败，ConfigType = {Define.ConfigType} 未处理");
-            return null;
+            return ConfigFsmControllerCategory.Instance.Get(path);
         }
         protected ConfigAIBeta GetAIConfig(string path)
         {
-            if (Define.ConfigType == 0)
-            {
-                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
-                return JsonHelper.FromJson<ConfigAIBeta>(jStr);
-            }
-#if RoslynAnalyzer
-            else
-            {
-                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
-                Deserializer.Deserialize(bytes,out ConfigAIBeta res);
-                return res;
-            }
-#endif
-            Log.Error($"GetAIConfig 失败，ConfigType = {Define.ConfigType} 未处理");
-            return null;
+            return ConfigAIBetaCategory.Instance.Get(path);
         }
         
         protected ConfigActor GetActorConfig(string path)
         {
-            if (Define.ConfigType == 0)
-            {
-                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
-                return JsonHelper.FromJson<ConfigActor>(jStr);
-            }
-#if RoslynAnalyzer
-            else
-            {
-                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
-                Deserializer.Deserialize(bytes,out ConfigActor res);
-                return res;
-            }
-#endif
-            Log.Error($"GetActorConfig 失败，ConfigType = {Define.ConfigType} 未处理");
-            return null;
+            return ConfigActorCategory.Instance.Get(path);
         }
     }
 }

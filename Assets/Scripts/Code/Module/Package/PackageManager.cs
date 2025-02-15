@@ -191,7 +191,7 @@ namespace TaoTie
         }
         private async ETTask InitAsync()
         {
-            var op = YooAssetsMgr.Instance.DefaultPackage.LoadRawFileSync("packageConfig.bytes");
+            var op = YooAssetsMgr.Instance.DefaultPackage.LoadRawFileAsync("packageConfig.bytes");
             await op.Task;
             var conf = op.GetRawFileText();
             config = JsonHelper.FromJson<PackageConfig>(conf);

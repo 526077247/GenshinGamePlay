@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ETFileServer
+namespace TaoTie
 {
     public class Startup
     {

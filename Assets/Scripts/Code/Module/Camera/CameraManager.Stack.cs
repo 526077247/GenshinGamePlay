@@ -28,17 +28,17 @@ namespace TaoTie
         public int CursorVisibleState { get; private set; }= 0;
         public int CursorLockState { get; private set; }= 0;
 
-        private ConfigCameras GetConfig(string path = "EditConfig/Others/ConfigCameras")
+        private async ETTask<ConfigCameras> GetConfig(string path = "EditConfig/Others/ConfigCameras")
         {
             if (Define.ConfigType == 0)
             {
-                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                var jStr = await ResourcesManager.Instance.LoadConfigJsonAsync(path);
                 return JsonHelper.FromJson<ConfigCameras>(jStr);
             }
 #if RoslynAnalyzer
             else
             {
-                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
                 Deserializer.Deserialize(bytes,out ConfigCameras res);
                 return res;
             }
@@ -46,10 +46,10 @@ namespace TaoTie
             Log.Error($"GetConfig 失败，ConfigType = {Define.ConfigType} 未处理");
             return null;
         }
-        private partial void AfterInit()
+        public async partial ETTask LoadAsync()
         {
             #region Config
-            var config = GetConfig("EditConfig/Others/ConfigCameras");
+            var config = await GetConfig("EditConfig/Others/ConfigCameras");
             DefaultBlend = config.DefaultBlend;
             defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();

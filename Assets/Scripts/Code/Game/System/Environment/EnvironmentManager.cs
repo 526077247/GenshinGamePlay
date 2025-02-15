@@ -20,6 +20,8 @@ namespace TaoTie
         const int mAfterNoonTimeStart = 70_000;
         //晚上开始时间
         const int mNightTimeStart = 80_000;
+
+        private bool isLoad = false;
         
         private PriorityStack<EnvironmentRunner> envInfoStack;
         private Dictionary<long, EnvironmentRunner> envInfoMap;
@@ -46,18 +48,29 @@ namespace TaoTie
         #endregion
         
         #region IManager
-        
-        private ConfigEnvironments GetConfig(string path = "EditConfig/Others/ConfigEnvironments")
+
+        public void Init()
+        {
+            isLoad = false;
+            Instance = this;
+            DayTimeCount = mDayTimeCount;
+            MorningTimeStart = mMorningTimeStart;
+            NoonTimeStart = mNoonTimeStart;
+            AfterNoonTimeStart = mAfterNoonTimeStart;
+            NightTimeStart = mNightTimeStart;
+        }
+
+        private async ETTask<ConfigEnvironments> GetConfig(string path = "EditConfig/Others/ConfigEnvironments")
         {
             if (Define.ConfigType == 0)
             {
-                var jStr = ResourcesManager.Instance.LoadConfigJson(path);
+                var jStr = await ResourcesManager.Instance.LoadConfigJsonAsync(path);
                 return JsonHelper.FromJson<ConfigEnvironments>(jStr);
             }
 #if RoslynAnalyzer
             else
             {
-                var bytes = ResourcesManager.Instance.LoadConfigBytes(path);
+                var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
                 Deserializer.Deserialize(bytes,out ConfigEnvironments res);
                 return res;
             }
@@ -65,17 +78,14 @@ namespace TaoTie
             Log.Error($"GetConfig 失败，ConfigType = {Define.ConfigType} 未处理");
             return null;
         }
-        public void Init()
+        public async ETTask LoadAsync()
         {
-            MaterialManager.Instance.LoadMaterialAsync("SkyBox/Skybox_SkyboxBlender.mat", (mat) =>
-            {
-                skybox = mat;
-                RenderSettings.skybox = skybox;
-            }).Coroutine();
-            Instance = this;
+            skybox = await MaterialManager.Instance.LoadMaterialAsync("SkyBox/Skybox_SkyboxBlender.mat");
+            RenderSettings.skybox = skybox;
+          
             #region Config
             
-            var config = GetConfig();
+            var config = await GetConfig();
             DefaultBlend = config.DefaultBlend;
             var defaultEnvironmentId = config.DefaultEnvironment.Id;
             configs = new Dictionary<int, ConfigEnvironment>();
@@ -91,14 +101,10 @@ namespace TaoTie
 
             envInfoStack = new PriorityStack<EnvironmentRunner>();
             envInfoMap = new Dictionary<long, EnvironmentRunner>();
-
-            DayTimeCount = mDayTimeCount;
-            MorningTimeStart = mMorningTimeStart;
-            NoonTimeStart = mNoonTimeStart;
-            AfterNoonTimeStart = mAfterNoonTimeStart;
-            NightTimeStart = mNightTimeStart;
+            
             NowTime = GameTimerManager.Instance.GetTimeNow();
             Create(defaultEnvironmentId, EnvironmentPriorityType.Default);
+            isLoad = true;
         }
 
         public void Destroy()
@@ -116,6 +122,7 @@ namespace TaoTie
         
         public void Update()
         {
+            if(!isLoad) return;
             NowTime = GameTimerManager.Instance.GetTimeNow();
             NowTime %= DayTimeCount;
             foreach (var item in envInfoStack.Data)

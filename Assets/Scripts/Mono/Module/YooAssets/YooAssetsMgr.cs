@@ -67,6 +67,12 @@ namespace YooAsset
                 initParameters.RemoteServices = new RemoteServices(CdnConfig);
                 initParameters.BuildinQueryServices = new GameQueryServices();
                 initParameters.BuildinRootDirectory = StreamingAssetsDefine.StreamAssetsDir;
+                var op = package.InitializeAsync(initParameters);
+                await op.Task;
+                if (op.Status == EOperationStatus.Failed)
+                {
+                    Log.Error(op.Error);
+                }
             }
             else
 #endif
@@ -151,8 +157,7 @@ namespace YooAsset
 
         public async ETTask UpdateConfig()
         {
-            var op = DefaultPackage.LoadRawFileSync("config.bytes");
-            if (op == null)return;
+            var op = DefaultPackage.LoadRawFileAsync("config.bytes");
             await op.Task;
             var conf = op.GetRawFileText();
             Config = JsonHelper.FromJson<BuildInConfig>(conf);

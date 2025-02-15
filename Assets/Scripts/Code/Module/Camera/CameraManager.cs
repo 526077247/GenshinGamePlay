@@ -7,7 +7,6 @@
         public void Init()
         {
             Instance = this;
-            AfterInit();
         }
 
         public void Destroy()
@@ -17,6 +16,6 @@
 
         #endregion
 
-        private partial void AfterInit();
+        public partial ETTask LoadAsync();
     }
 }

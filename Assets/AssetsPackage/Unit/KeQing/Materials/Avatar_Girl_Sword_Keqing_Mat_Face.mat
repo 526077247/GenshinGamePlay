@@ -29,6 +29,7 @@ Material:
   - _GGX
   - _OUTLINE
   - _SDFFACE
+  - _SPECULARMASK
   m_InvalidKeywords:
   - _DEPTHOFFSETSHADOWREVERSEX_ON
   - _IS_FILTER_LIGHTCOLOR_ON
@@ -197,7 +198,7 @@ Material:
     - _SpecularAA: 0
     - _SpecularAAThreshold: 1
     - _SpecularHighlights: 1
-    - _SpecularMask: 0
+    - _SpecularMask: 1
     - _SrcBlend: 1
     - _StylizedSpecularAlbedoWeight: 0
     - _StylizedSpecularSize: 0.1

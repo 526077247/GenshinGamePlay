@@ -22,6 +22,11 @@ namespace TaoTie
             Instance = this;
             list = new List<ConfigStory>();
             dict = new Dictionary<ulong, ConfigStory>();
+            
+        }
+
+        public async ETTask LoadAsync()
+        {
             var sceneGroups = YooAssets.GetAssetInfos("story");
             for (int i = 0; i < sceneGroups.Length; i++)
             {
@@ -33,7 +38,8 @@ namespace TaoTie
                 {
                     continue;
                 }
-                var op = YooAssets.LoadAssetSync(sceneGroups[i]);
+                var op = YooAssets.LoadAssetAsync(sceneGroups[i]);
+                await op.Task;
                 if (op.AssetObject is TextAsset textAsset)
                 {
                     if (Define.ConfigType == 0)

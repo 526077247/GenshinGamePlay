@@ -40,28 +40,29 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<UIToastManager>();
 
                 ManagerProvider.RegisterManager<CameraManager>();
+                await CameraManager.Instance.LoadAsync();
                 ManagerProvider.RegisterManager<SceneManager>();
                 
                 ManagerProvider.RegisterManager<ServerConfigManager>();
                 ManagerProvider.RegisterManager<NavmeshSystem>();
                 
                 ManagerProvider.RegisterManager<InputManager>();
-                await StartGameAsync();
+                if(YooAssetsMgr.Instance.PlayMode == EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))
+                    await UIManager.Instance.OpenWindow<UIUpdateView,Action>(UIUpdateView.PrefabPath,StartGame);//下载热更资源
+                else
+                    StartGame();
             }
             catch (Exception e)
             {
                 Log.Error(e);
             }
         }
-        static async ETTask StartGameAsync()
+        static void StartGame()
         {
-            if(YooAssetsMgr.Instance.PlayMode == EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))
-                await UIManager.Instance.OpenWindow<UIUpdateView,Action>(UIUpdateView.PrefabPath,StartGame);//下载热更资源
-            else
-                StartGame();
+            StartGameAsync().Coroutine();
         }
 
-        static void StartGame()
+        static async ETTask StartGameAsync()
         {
             ManagerProvider.RegisterManager<SoundManager>();
             ManagerProvider.RegisterManager<BillboardSystem>();
@@ -69,6 +70,20 @@ namespace TaoTie
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();
             ManagerProvider.RegisterManager<ConfigAbilityCategory>();
             ManagerProvider.RegisterManager<ConfigStoryCategory>();
+            ManagerProvider.RegisterManager<ConfigFsmControllerCategory>();
+            ManagerProvider.RegisterManager<ConfigAIBetaCategory>();
+            ManagerProvider.RegisterManager<ConfigActorCategory>();
+            using (ListComponent<ETTask> tasks = ListComponent<ETTask>.Create())
+            {
+                tasks.Add(ConfigSceneGroupCategory.Instance.LoadAsync());
+                tasks.Add(ConfigAIDecisionTreeCategory.Instance.LoadAsync());
+                tasks.Add(ConfigAbilityCategory.Instance.LoadAsync());
+                tasks.Add(ConfigStoryCategory.Instance.LoadAsync());
+                tasks.Add(ConfigFsmControllerCategory.Instance.LoadAsync());
+                tasks.Add(ConfigAIBetaCategory.Instance.LoadAsync());
+                tasks.Add(ConfigActorCategory.Instance.LoadAsync());
+                ETTaskHelper.WaitAll(tasks);
+            }
             ManagerProvider.RegisterManager<CampManager>();
             SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
         }

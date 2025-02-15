@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BuildSettings
   m_EditorClassIdentifier: 
   channel: googleplay
-  buildMode: 1
+  buildMode: 0
   clearFolder: 0
   isBuildExe: 1
   buildHotfixAssembliesAOT: 1
@@ -21,5 +21,5 @@ MonoBehaviour:
   isBuildAll: 1
   isPackAtlas: 0
   cdn: 
-  buildType: 1
+  buildType: 0
   buildAssetBundleOptions: 0

@@ -54,8 +54,8 @@ namespace TaoTie
             Animator = obj.GetComponentInChildren<Animator>();
             if (Animator != null && !string.IsNullOrEmpty(unit.Config.Controller))
             {
-                Animator.runtimeAnimatorController =
-                    ResourcesManager.Instance.Load<RuntimeAnimatorController>(unit.Config.Controller);
+                Animator.runtimeAnimatorController = await 
+                    ResourcesManager.Instance.LoadAsync<RuntimeAnimatorController>(unit.Config.Controller);
                 var fsm = parent.GetComponent<FsmComponent>();
                 if (fsm != null && fsm.Config.ParamDict != null)
                 {

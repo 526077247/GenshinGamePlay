@@ -50,7 +50,12 @@ namespace TaoTie
 
 			Dictionary<string, byte[]> configBytes = new Dictionary<string, byte[]>();
 			await this.ConfigLoader.GetAllConfigBytes(configBytes);
-
+#if UNITY_WEBGL
+			foreach (Type type in types)
+			{
+				this.LoadOneInThread(type, configBytes);
+			}	
+#else
 			using (ListComponent<Task> listTasks = ListComponent<Task>.Create())
 			{
 				foreach (Type type in types)
@@ -61,6 +66,7 @@ namespace TaoTie
 
 				await Task.WhenAll(listTasks.ToArray());
 			}
+#endif
 		}
 
 		private void LoadOneInThread(Type configType, Dictionary<string, byte[]> configBytes)

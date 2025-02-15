@@ -115,10 +115,6 @@ namespace TaoTie
                 this.layers[layer.Name] = newLayer;
                 windowStack[layer.Name] = new LinkedList<string>();
             }
-
-            var flagx = (float)Define.DesignScreen_Width / (Screen.width > Screen.height ? Screen.width : Screen.height);
-            var flagy = (float)Define.DesignScreen_Height / (Screen.width > Screen.height ? Screen.height : Screen.width);
-            ScreenSizeFlag = flagx > flagy ? flagx : flagy;
         }
 
         private void DestroyLayer()
