@@ -20,11 +20,13 @@ namespace TaoTie
         /// <returns></returns>
         public static int GetSystemTypeWithWebGL()
         {
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+            return 1;
+#elif UNITY_ANDROID
             return 2;
 #elif UNITY_IOS
             return 3;
-#elif UNITY_WEBGL && !UNITY_EDITOR
+#elif UNITY_WEBGL
             return GetWebGLUA();
 #endif
             return 1;

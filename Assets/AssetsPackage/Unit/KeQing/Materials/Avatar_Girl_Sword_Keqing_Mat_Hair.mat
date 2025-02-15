@@ -25,8 +25,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _ADDRAMPSHADING
+  - _CELLSHADING
   - _OUTLINE
-  - _RAMPSHADING
   - _RENDERENVSETTING
   - _SPECULARMASK
   - _USERAMPMAPCHANNEL
@@ -126,6 +127,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddRampShading: 1
     - _AlphaClip: 0
     - _AngleRingIntensity: 0
     - _AngleRingSoftness: 0
@@ -183,8 +185,8 @@ Material:
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
-    - _RampMapUOffset: 0.97
-    - _RampMapVOffset: 0
+    - _RampMapUOffset: 0
+    - _RampMapVOffset: 0.32
     - _ReceiveShadows: 1
     - _RimDirectionLightContribution: 1
     - _RimSoftness: 0.01
@@ -213,7 +215,7 @@ Material:
     - _WorkflowMode: 1
     - _ZOffset: 0
     - _ZWrite: 1
-    - _enum_diffuse: 1
+    - _enum_diffuse: 0
     - _enum_env: 1
     - _enum_outline_color: 0
     - _enum_outline_smoothed: 0
@@ -239,9 +241,9 @@ Material:
     - _AngleRingShadowColor: {r: 1, g: 1, b: 1, a: 1}
     - _AnisoSecondarySpecularColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _AnisoSpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 0.8923144, g: 0.8632076, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _DarkColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighColor: {r: 1, g: 1, b: 1, a: 1}

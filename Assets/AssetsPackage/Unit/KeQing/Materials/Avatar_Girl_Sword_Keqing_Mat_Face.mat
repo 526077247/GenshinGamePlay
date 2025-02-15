@@ -238,7 +238,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DarkColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
+    - _DarkColor: {r: 1, g: 0.71082854, b: 0.6462264, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0.2627451, g: 0, b: 0, a: 1}
     - _HighColor: {r: 1, g: 0.9346648, b: 0.9009434, a: 1}

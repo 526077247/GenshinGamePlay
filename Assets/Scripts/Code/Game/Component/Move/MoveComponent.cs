@@ -4,7 +4,7 @@ using CMF;
 namespace TaoTie
 {
 
-	public partial class MoveComponent : Component, IComponent, IUpdate
+	public partial class MoveComponent : Component, IComponent, IFixedUpdate
 	{
 		private Unit unit => parent as Unit;
 
@@ -114,7 +114,7 @@ namespace TaoTie
 
 		}
 
-		public void Update()
+		public void FixedUpdate()
 		{
 			if (transform == null || mover == null) return;
 			ControllerUpdate();
@@ -135,8 +135,12 @@ namespace TaoTie
 				if (angle > 3)
 				{
 					var flag = Vector3.Cross(lookDir, transform.forward);
-					var temp = (flag.y > 0 ? -1 : 1) * CharacterInput.RolateSpeed *
-						GameTimerManager.Instance.GetDeltaTime() / 1000f;
+					var deltaTime = Time.fixedDeltaTime;
+					if (this is IUpdate)
+					{
+						deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
+					}
+					var temp = (flag.y > 0 ? -1 : 1) * CharacterInput.RolateSpeed * deltaTime;
 					if (Mathf.Abs(temp - angle) < 0) temp = angle;
 					dir = Quaternion.Euler(0, temp, 0) * transform.forward;
 				}

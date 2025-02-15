@@ -119,6 +119,12 @@ namespace TaoTie
 		{
 			CodeLoader.Instance.LateUpdate?.Invoke();
 		}
+		
+		private void FixedUpdate()
+		{
+			CodeLoader.Instance.FixedUpdate?.Invoke();
+		}
+
 
 		private void OnApplicationQuit()
 		{
