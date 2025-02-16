@@ -60,7 +60,7 @@ namespace TaoTie
             else
             {
                 var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
-                Deserializer.Deserialize(bytes,out ConfigAIBeta res);
+                Unity.Code.NinoGen.Deserializer.Deserialize(bytes,out ConfigAIBeta res);
                 dict[path] =  res;
                 return;
             }

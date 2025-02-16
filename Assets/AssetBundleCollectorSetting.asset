@@ -192,8 +192,8 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Assets/AssetsPackage/GraphAssets
-        CollectorGUID: 83f00a5b27652b44e85842e12c16b0e6
+      - CollectPath: Assets/AssetsPackage/StoryTimeline
+        CollectorGUID: bac4e2f48ff562749a25bf287da1b5de
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackSeparately

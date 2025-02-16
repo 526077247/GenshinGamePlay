@@ -36,7 +36,7 @@ namespace TaoTie
             else
                 TimeLine = UnityEditor.AssetDatabase.LoadAssetAtPath<TimelineAsset>(Path);
         }
-        [Sirenix.OdinInspector.BoxGroup("TimeLine")][Sirenix.OdinInspector.ReadOnly]
+        [Sirenix.OdinInspector.BoxGroup("TimeLine")]
 #endif
         [NinoMember(10)]
         public string Path;

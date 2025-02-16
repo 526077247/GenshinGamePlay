@@ -122,5 +122,15 @@ namespace TaoTie
                 return campIdCampIdEntityTable[campID];
             return null;
         }
+
+        public Unit GetUnit(long id)
+        {
+            if (unitIdUnits.TryGetValue(id, out var res))
+            {
+                return res.GetParent<Unit>();
+            }
+
+            return null;
+        }
     }
 }

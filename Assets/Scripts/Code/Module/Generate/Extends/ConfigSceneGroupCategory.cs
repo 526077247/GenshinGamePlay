@@ -44,6 +44,7 @@ namespace TaoTie
                     if (Define.ConfigType == 0)
                     {
                         var item = JsonHelper.FromJson<ConfigSceneGroup>(textAsset.text);
+                        if(item.Disable) continue;
                         if (!dict.ContainsKey(item.Id))
                         {
                             list.Add(item);
@@ -60,6 +61,7 @@ namespace TaoTie
                         try
                         {
                             Deserializer.Deserialize(textAsset.bytes,out ConfigSceneGroup item);
+                            if(item.Disable) continue;
                             if (!dict.ContainsKey(item.Id))
                             {
                                 list.Add(item);

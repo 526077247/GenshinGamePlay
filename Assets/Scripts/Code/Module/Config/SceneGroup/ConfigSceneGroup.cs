@@ -9,6 +9,8 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigSceneGroup
     {
+        [NinoMember(11)][Tooltip("测试关闭")]
+        public bool Disable;
         [NinoMember(1)]
         [PropertyOrder(int.MinValue)]
         public ulong Id;

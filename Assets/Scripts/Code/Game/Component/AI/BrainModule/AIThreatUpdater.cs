@@ -305,9 +305,12 @@ namespace TaoTie
             }
             var deltaTime = GameTimerManager.Instance.GetDeltaTime();
             var decreaseThreat = deltaTime * knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed / 1000;
-            foreach (var item in threatList)
+            foreach (var kv in threatList)
             {
-                item.Value.DecreaseThreat(decreaseThreat);
+                if (!ValidateThreat(kv.Value))
+                {
+                    kv.Value.DecreaseThreat(decreaseThreat);
+                }
             }
             foreach (var candidate in candidateList)
             {
@@ -321,7 +324,7 @@ namespace TaoTie
             {
                 foreach (var kv in threatList)
                 {
-                    if (!ValidateThreat(kv.Value))
+                    if (kv.Value.ThreatValue <= ThreatInfo.THREATVAL_THREATLOST)
                     {
                         temp.Add(kv.Key);
                     }
@@ -387,12 +390,11 @@ namespace TaoTie
         /// <returns></returns>
         private bool ValidateThreat(ThreatInfo threatInfo)
         {
-            
-            if (threatInfo.ThreatValue <= ThreatInfo.THREATVAL_THREATLOST)
+            var sensibles = knowledge.SensingKnowledge.EnemySensibles;
+            if (!sensibles.ContainsKey(threatInfo.Id))
             {
                 return false;
             }
-            
             var timeNow = GameTimerManager.Instance.GetTimeNow();
             var distanceFromDefendCenter = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, threatInfo.ThreatPos);
             var distanceFromSelf = Vector3.Distance(knowledge.Entity.Position, threatInfo.ThreatPos);
@@ -402,7 +404,7 @@ namespace TaoTie
             //边缘距离限制
             var edgeRange = knowledge.ThreatKnowledge.Config.ClearThreatEdgeDistance;
             //目标距离限制
-            var targetDistance = knowledge.ThreatKnowledge.Config.ClearThreatTargetDistance;
+            var maxTargetDistance = knowledge.ThreatKnowledge.Config.ClearThreatTargetDistance;
 
             var clearThreatTimerByDistance = knowledge.ThreatKnowledge.Config.ClearThreatTimerByDistance;
             var clearThreatTimerByOutOfZone = knowledge.ThreatKnowledge.Config.ClearThreatTimerByTargetOutOfZone;
@@ -410,7 +412,7 @@ namespace TaoTie
             
             //超距
             //目标与AI距离 > 目标距离限制
-            if (distanceFromSelf > targetDistance)
+            if (distanceFromSelf > maxTargetDistance)
             {
                 if (!threatInfo.LctByFarDistance.IsRunning())
                     threatInfo.LctByFarDistance.Start(timeNow);
@@ -436,8 +438,10 @@ namespace TaoTie
             
             if (knowledge.ThreatKnowledge.Config.ClearThreatByTargetOutOfZone)
             {
+                var target = knowledge.AIManager.GetUnit(threatInfo.Id);
+                var targetZoneDistance = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, target.Position);
                 //超界
-                if (distanceFromDefendCenter > defendRange)
+                if (targetZoneDistance > defendRange)
                 {
                     if (!threatInfo.LctByOutOfZone.IsRunning())
                         threatInfo.LctByOutOfZone.Start(timeNow);
