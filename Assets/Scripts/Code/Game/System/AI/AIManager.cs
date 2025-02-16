@@ -125,6 +125,10 @@ namespace TaoTie
 
         public Unit GetUnit(long id)
         {
+            if (id == scene.MyId)
+            {
+                return scene.Self;
+            }
             if (unitIdUnits.TryGetValue(id, out var res))
             {
                 return res.GetParent<Unit>();

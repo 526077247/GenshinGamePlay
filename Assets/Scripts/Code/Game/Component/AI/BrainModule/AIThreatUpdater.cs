@@ -439,6 +439,7 @@ namespace TaoTie
             if (knowledge.ThreatKnowledge.Config.ClearThreatByTargetOutOfZone)
             {
                 var target = knowledge.AIManager.GetUnit(threatInfo.Id);
+                if (target == null) return true;
                 var targetZoneDistance = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, target.Position);
                 //超界
                 if (targetZoneDistance > defendRange)
