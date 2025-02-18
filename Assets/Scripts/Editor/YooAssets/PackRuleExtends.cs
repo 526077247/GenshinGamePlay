@@ -32,10 +32,6 @@ namespace YooAsset
                 throw new Exception($"Not found root directory : {assetPath}");
             }
         }
-
-        bool IPackRule.IsRawFilePackRule()
-        {
-            return false;
-        }
+        
     }
 }

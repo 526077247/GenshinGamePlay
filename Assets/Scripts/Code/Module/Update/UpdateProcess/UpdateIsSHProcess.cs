@@ -11,7 +11,7 @@ namespace TaoTie
         public override async ETTask<UpdateRes> Process(UpdateTask task)
         {
             await ETTask.CompletedTask;
-            var channel = YooAssetsMgr.Instance.CdnConfig.Channel;
+            var channel = PackageManager.Instance.CdnConfig.Channel;
             int setVal = PlayerPrefs.GetInt("DEBUG_IsSH", 0);
             if (setVal == 0)
             {

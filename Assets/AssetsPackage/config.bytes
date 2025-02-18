@@ -1,4 +1,4 @@
 {
-	"Resver" :  1,
-	"Dllver" :  1
+	"DefaultPackageVersion": 1,
+	"PackageVer" :  {}
 }

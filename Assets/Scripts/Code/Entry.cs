@@ -47,7 +47,7 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<NavmeshSystem>();
                 
                 ManagerProvider.RegisterManager<InputManager>();
-                if(YooAssetsMgr.Instance.PlayMode == EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))
+                if(PackageManager.Instance.PlayMode == EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))
                     await UIManager.Instance.OpenWindow<UIUpdateView,Action>(UIUpdateView.PrefabPath,StartGame);//下载热更资源
                 else
                     StartGame();

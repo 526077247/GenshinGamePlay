@@ -69,7 +69,7 @@ namespace TaoTie
 		private int package;
 
 		private BuildInConfig config;
-		private PackageConfig packageConfig;
+
 		[MenuItem("Tools/打包工具")]
 		public static void ShowWindow()
 		{
@@ -134,7 +134,7 @@ namespace TaoTie
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
 				config = JsonHelper.FromJson<BuildInConfig>(jstr);
 			}
-			EditorGUILayout.LabelField("资源版本：" + this.config.Resver);
+			EditorGUILayout.LabelField("资源版本：" + this.config.GetPackageMaxVersion(Define.DefaultName));
 			if (GUILayout.Button("修改配置"))
 			{
 				System.Diagnostics.Process.Start("notepad.exe", "Assets/AssetsPackage/config.bytes");
@@ -145,13 +145,6 @@ namespace TaoTie
 				config = JsonHelper.FromJson<BuildInConfig>(jstr);
 			}
 			EditorGUILayout.LabelField("");
-			int[] packageIndex = null;
-			string[] packageNames = null;
-			if (this.packageConfig == null)
-			{
-				string jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
-				packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
-			}
 
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);

@@ -16,10 +16,10 @@ namespace TaoTie
     public class ResourcesManager : IManager, IManager<IPackageFinder>
     {
         public static ResourcesManager Instance { get; private set; }
-        private Dictionary<object, AssetOperationHandle> temp;
-        private List<AssetOperationHandle> cachedAssetOperationHandles;
+        private Dictionary<object, AssetHandle> temp;
+        private List<AssetHandle> cachedAssetOperationHandles;
         public IPackageFinder packageFinder { get; private set; }
-        private HashSet<AssetOperationHandle> loadingOp;
+        private HashSet<AssetHandle> loadingOp;
 
         #region override
 
@@ -27,9 +27,9 @@ namespace TaoTie
         {
             Instance = this;
             if(packageFinder==null)packageFinder = new DefaultPackageFinder();
-            this.temp = new Dictionary<object, AssetOperationHandle>(1024);
-            this.cachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
-            loadingOp = new HashSet<AssetOperationHandle>();
+            this.temp = new Dictionary<object, AssetHandle>(1024);
+            this.cachedAssetOperationHandles = new List<AssetHandle>(1024);
+            loadingOp = new HashSet<AssetHandle>();
         }
 
         public void Init(IPackageFinder finder)
@@ -80,7 +80,7 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
-            var op = YooAssetsMgr.Instance.LoadAssetAsync<T>(path, package);
+            var op = PackageManager.Instance.LoadAssetAsync<T>(path, package);
             if (op == null)
             {
                 Log.Error(package + "加载资源前未初始化！" + path);
@@ -154,7 +154,7 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
-            var op = YooAssetsMgr.Instance.LoadSceneAsync(path,
+            var op = PackageManager.Instance.LoadSceneAsync(path,
                 isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package);
             if (op == null)
             {
@@ -173,10 +173,10 @@ namespace TaoTie
         /// <param name="excludeClearAssets">不需要清除的</param>
         public void ClearAssetsCache(UnityEngine.Object[] excludeClearAssets = null)
         {
-            HashSetComponent<AssetOperationHandle> temp = null;
+            HashSetComponent<AssetHandle> temp = null;
             if (excludeClearAssets != null)
             {
-                temp = HashSetComponent<AssetOperationHandle>.Create();
+                temp = HashSetComponent<AssetHandle>.Create();
                 for (int i = 0; i < excludeClearAssets.Length; i++)
                 {
                     temp.Add(this.temp[excludeClearAssets[i]]);
@@ -192,7 +192,7 @@ namespace TaoTie
                     this.cachedAssetOperationHandles.RemoveAt(i);
                 }
             }
-            YooAssetsMgr.Instance.UnloadUnusedAssets();
+            PackageManager.Instance.UnloadUnusedAssets();
         }
 
         /// <summary>

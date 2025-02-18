@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UniFramework.Window;
-using UniFramework.Pooling;
 using UniFramework.Event;
 using UniFramework.Utility;
 using YooAsset;
@@ -12,7 +10,7 @@ using Random = UnityEngine.Random;
 [Serializable]
 public class RoomBoundary
 {
-	public float xMin, xMax, zMin, zMax;
+    public float xMin, xMax, zMin, zMax;
 }
 
 /// <summary>
@@ -20,238 +18,217 @@ public class RoomBoundary
 /// </summary>
 public class BattleRoom
 {
-	private enum ESteps
-	{
-		None,
-		Ready,
-		Spawn,
-		WaitSpawn,
-		WaitWave,
-		GameOver,
-	}
+    private enum ESteps
+    {
+        None,
+        Ready,
+        SpawnEnemy,
+        WaitSpawn,
+        WaitWave,
+        GameOver,
+    }
 
-	private EventGroup _eventGroup = new EventGroup();
-	private Spawner _entitySpawner;
-	private GameObject _roomRoot;
-	private AssetOperationHandle _musicHandle;
+    private readonly EventGroup _eventGroup = new EventGroup();
+    private GameObject _roomRoot;
 
-	// 关卡参数
-	private const int EnemyCount = 10;
-	private const int EnemyScore = 10;
-	private const int AsteroidScore = 1;
-	private readonly Vector3 _spawnValues = new Vector3(6, 0, 20);
-	private readonly string[] _entityLocations = new string[]
-	{
-		"asteroid01", "asteroid02", "asteroid03", "enemy_ship"
-	};
+    // 关卡参数
+    private const int EnemyCount = 10;
+    private const int EnemyScore = 10;
+    private const int AsteroidScore = 1;
+    private readonly Vector3 _spawnValues = new Vector3(6, 0, 20);
+    private readonly string[] _entityLocations = new string[]
+    {
+        "asteroid01", "asteroid02", "asteroid03", "enemy_ship"
+    };
 
-	private ESteps _steps = ESteps.None;
-	private int _totalScore = 0;
-	private int _waveSpawnCount = 0;
+    private ESteps _steps = ESteps.None;
+    private int _totalScore = 0;
+    private int _waveSpawnCount = 0;
 
-	private UniTimer _startWaitTimer = UniTimer.CreateOnceTimer(1f);
-	private UniTimer _spawnWaitTimer = UniTimer.CreateOnceTimer(0.75f);
-	private UniTimer _waveWaitTimer = UniTimer.CreateOnceTimer(4f);
+    private readonly UniTimer _startWaitTimer = UniTimer.CreateOnceTimer(1f);
+    private readonly UniTimer _spawnWaitTimer = UniTimer.CreateOnceTimer(0.75f);
+    private readonly UniTimer _waveWaitTimer = UniTimer.CreateOnceTimer(4f);
+    private readonly List<AssetHandle> _handles = new List<AssetHandle>(1000);
 
 
-	/// <summary>
-	/// 销毁房间
-	/// </summary>
-	public void DestroyRoom()
-	{
-		if (_musicHandle != null)
-			_musicHandle.Release();
+    /// <summary>
+    /// 初始化房间
+    /// </summary>
+    public void IntRoom()
+    {
+        // 创建房间根对象
+        _roomRoot = new GameObject("BattleRoom");
 
-		if (_eventGroup != null)
-			_eventGroup.RemoveAllListener();
+        // 监听游戏事件
+        _eventGroup.AddListener<BattleEventDefine.PlayerDead>(OnHandleEventMessage);
+        _eventGroup.AddListener<BattleEventDefine.EnemyDead>(OnHandleEventMessage);
+        _eventGroup.AddListener<BattleEventDefine.AsteroidExplosion>(OnHandleEventMessage);
+        _eventGroup.AddListener<BattleEventDefine.PlayerFireBullet>(OnHandleEventMessage);
+        _eventGroup.AddListener<BattleEventDefine.EnemyFireBullet>(OnHandleEventMessage);
 
-		if (_entitySpawner != null)
-			_entitySpawner.DestroyAll(true);
+        _steps = ESteps.Ready;
+    }
 
-		if (_roomRoot != null)
-			GameObject.Destroy(_roomRoot);
+    /// <summary>
+    /// 销毁房间
+    /// </summary>
+    public void DestroyRoom()
+    {
+        if (_eventGroup != null)
+            _eventGroup.RemoveAllListener();
 
-		UniWindow.CloseWindow<UIBattleWindow>();
-	}
+        if (_roomRoot != null)
+            GameObject.Destroy(_roomRoot);
 
-	/// <summary>
-	/// 更新房间
-	/// </summary>
-	public void UpdateRoom()
-	{
-		if (_steps == ESteps.None || _steps == ESteps.GameOver)
-			return;
+        foreach(var handle in _handles)
+        {
+            handle.Release();
+        }
+        _handles.Clear();
+    }
 
-		if (_steps == ESteps.Ready)
-		{
-			if (_startWaitTimer.Update(Time.deltaTime))
-			{
-				_steps = ESteps.Spawn;
-			}
-		}
+    /// <summary>
+    /// 更新房间
+    /// </summary>
+    public void UpdateRoom()
+    {
+        if (_steps == ESteps.None || _steps == ESteps.GameOver)
+            return;
 
-		if (_steps == ESteps.Spawn)
-		{
-			var enemyLocation = _entityLocations[Random.Range(0, 4)];
-			Vector3 spawnPosition = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
-			Quaternion spawnRotation = Quaternion.identity;
+        if (_steps == ESteps.Ready)
+        {
+            if (_startWaitTimer.Update(Time.deltaTime))
+            {
+                // 生成实体
+                var assetHandle = YooAssets.LoadAssetAsync<GameObject>("player_ship");
+                assetHandle.Completed += (AssetHandle handle) =>
+                {
+                    handle.InstantiateSync(_roomRoot.transform);
+                };
+                _handles.Add(assetHandle);
+                _steps = ESteps.SpawnEnemy;
+            }
+        }
 
-			if (enemyLocation == "enemy_ship")
-			{
-				// 生成敌人实体
-				var handle = _entitySpawner.SpawnSync(enemyLocation, _roomRoot.transform, spawnPosition, spawnRotation);
-				var entity = handle.GameObj.GetComponent<EntityEnemy>();
-				entity.InitEntity(handle);
-			}
-			else
-			{
-				// 生成小行星实体
-				var handle = _entitySpawner.SpawnSync(enemyLocation, _roomRoot.transform, spawnPosition, spawnRotation);
-				var entity = handle.GameObj.GetComponent<EntityAsteroid>();
-				entity.InitEntity(handle);
-			}
+        if (_steps == ESteps.SpawnEnemy)
+        {
+            var enemyLocation = _entityLocations[Random.Range(0, 4)];
+            Vector3 spawnPosition = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+            Quaternion spawnRotation = Quaternion.identity;
 
-			_waveSpawnCount++;
-			if (_waveSpawnCount >= EnemyCount)
-			{
-				_steps = ESteps.WaitWave;
-			}
-			else
-			{
-				_steps = ESteps.WaitSpawn;
-			}
-		}
+            // 生成实体
+            var assetHandle = YooAssets.LoadAssetAsync<GameObject>(enemyLocation);
+            assetHandle.Completed += (AssetHandle handle) =>
+            {
+                handle.InstantiateSync(spawnPosition, spawnRotation, _roomRoot.transform);
+            };
+            _handles.Add(assetHandle);
 
-		if (_steps == ESteps.WaitSpawn)
-		{
-			if (_spawnWaitTimer.Update(Time.deltaTime))
-			{
-				_spawnWaitTimer.Reset();
-				_steps = ESteps.Spawn;
-			}
-		}
+            _waveSpawnCount++;
+            if (_waveSpawnCount >= EnemyCount)
+            {
+                _steps = ESteps.WaitWave;
+            }
+            else
+            {
+                _steps = ESteps.WaitSpawn;
+            }
+        }
 
-		if (_steps == ESteps.WaitWave)
-		{
-			if (_waveWaitTimer.Update(Time.deltaTime))
-			{
-				_waveWaitTimer.Reset();
-				_waveSpawnCount = 0;
-				_steps = ESteps.Spawn;
-			}
-		}
-	}
+        if (_steps == ESteps.WaitSpawn)
+        {
+            if (_spawnWaitTimer.Update(Time.deltaTime))
+            {
+                _spawnWaitTimer.Reset();
+                _steps = ESteps.SpawnEnemy;
+            }
+        }
 
-	/// <summary>
-	/// 加载房间
-	/// </summary>
-	public IEnumerator LoadRoom()
-	{
-		// 创建房间根对象
-		_roomRoot = new GameObject("BattleRoom");
+        if (_steps == ESteps.WaitWave)
+        {
+            if (_waveWaitTimer.Update(Time.deltaTime))
+            {
+                _waveWaitTimer.Reset();
+                _waveSpawnCount = 0;
+                _steps = ESteps.SpawnEnemy;
+            }
+        }
+    }
 
-		// 加载背景音乐
-		_musicHandle = YooAssets.LoadAssetAsync<AudioClip>("music_background");
-		yield return _musicHandle;
+    /// <summary>
+    /// 接收事件
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnHandleEventMessage(IEventMessage message)
+    {
+        if (message is BattleEventDefine.PlayerDead)
+        {
+            var msg = message as BattleEventDefine.PlayerDead;
 
-		// 播放背景音乐
-		var audioSource = _roomRoot.AddComponent<AudioSource>();
-		audioSource.loop = true;
-		audioSource.clip = _musicHandle.AssetObject as AudioClip;
-		audioSource.Play();
+            // 创建爆炸效果
+            var assetHandle = YooAssets.LoadAssetAsync<GameObject>("explosion_player");
+            assetHandle.Completed += (AssetHandle handle) =>
+            {
+                handle.InstantiateSync(msg.Position, msg.Rotation, _roomRoot.transform);
+            };
+            _handles.Add(assetHandle);
 
-		// 创建游戏对象发生器
-		_entitySpawner = UniPooling.CreateSpawner("DefaultPackage");
+            _steps = ESteps.GameOver;
+            BattleEventDefine.GameOver.SendEventMessage();
+        }
+        else if (message is BattleEventDefine.EnemyDead)
+        {
+            var msg = message as BattleEventDefine.EnemyDead;
 
-		// 创建游戏对象池
-		yield return _entitySpawner.CreateGameObjectPoolAsync("player_ship");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("player_bullet");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("enemy_ship");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("enemy_bullet");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid01");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid02");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("asteroid03");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_asteroid");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_enemy");
-		yield return _entitySpawner.CreateGameObjectPoolAsync("explosion_player");
+            // 创建爆炸效果
+            var assetHandle = YooAssets.LoadAssetAsync<GameObject>("explosion_enemy");
+            assetHandle.Completed += (AssetHandle handle) =>
+            {
+                handle.InstantiateSync(msg.Position, msg.Rotation, _roomRoot.transform);
+            };
+            _handles.Add(assetHandle);
 
-		// 创建玩家实体对象
-		var handle = _entitySpawner.SpawnSync("player_ship", _roomRoot.transform);
-		var entity = handle.GameObj.GetComponent<EntityPlayer>();
-		entity.InitEntity(handle);
+            _totalScore += EnemyScore;
+            BattleEventDefine.ScoreChange.SendEventMessage(_totalScore);
+        }
+        else if (message is BattleEventDefine.AsteroidExplosion)
+        {
+            var msg = message as BattleEventDefine.AsteroidExplosion;
 
-		// 显示战斗界面
-		yield return UniWindow.OpenWindowAsync<UIBattleWindow>("UIBattle");
+            // 创建爆炸效果
+            var assetHandle = YooAssets.LoadAssetAsync<GameObject>("explosion_asteroid");
+            assetHandle.Completed += (AssetHandle handle) =>
+            {
+                handle.InstantiateSync(msg.Position, msg.Rotation, _roomRoot.transform);
+            };
+            _handles.Add(assetHandle);
 
-		// 监听游戏事件
-		_eventGroup.AddListener<BattleEventDefine.PlayerDead>(OnHandleEventMessage);
-		_eventGroup.AddListener<BattleEventDefine.EnemyDead>(OnHandleEventMessage);
-		_eventGroup.AddListener<BattleEventDefine.AsteroidExplosion>(OnHandleEventMessage);
-		_eventGroup.AddListener<BattleEventDefine.PlayerFireBullet>(OnHandleEventMessage);
-		_eventGroup.AddListener<BattleEventDefine.EnemyFireBullet>(OnHandleEventMessage);
+            _totalScore += AsteroidScore;
+            BattleEventDefine.ScoreChange.SendEventMessage(_totalScore);
+        }
+        else if (message is BattleEventDefine.PlayerFireBullet)
+        {
+            var msg = message as BattleEventDefine.PlayerFireBullet;
 
-		_steps = ESteps.Ready;
-	}
+            // 创建子弹实体
+            var assetHandle = YooAssets.LoadAssetAsync<GameObject>("player_bullet");
+            assetHandle.Completed += (AssetHandle handle) =>
+            {
+                handle.InstantiateSync(msg.Position, msg.Rotation, _roomRoot.transform);
+            };
+            _handles.Add(assetHandle);
+        }
+        else if (message is BattleEventDefine.EnemyFireBullet)
+        {
+            var msg = message as BattleEventDefine.EnemyFireBullet;
 
-	/// <summary>
-	/// 接收事件
-	/// </summary>
-	/// <param name="message"></param>
-	private void OnHandleEventMessage(IEventMessage message)
-	{
-		if (message is BattleEventDefine.PlayerDead)
-		{
-			var msg = message as BattleEventDefine.PlayerDead;
-
-			// 创建爆炸效果
-			var handle = _entitySpawner.SpawnSync("explosion_player", _roomRoot.transform, msg.Position, msg.Rotation);
-			var entity = handle.GameObj.GetComponent<EntityEffect>();
-			entity.InitEntity(handle);
-
-			_steps = ESteps.GameOver;
-			BattleEventDefine.GameOver.SendEventMessage();
-		}
-		else if (message is BattleEventDefine.EnemyDead)
-		{
-			var msg = message as BattleEventDefine.EnemyDead;
-
-			// 创建爆炸效果
-			var handle = _entitySpawner.SpawnSync("explosion_enemy", _roomRoot.transform, msg.Position, msg.Rotation);
-			var entity = handle.GameObj.GetComponent<EntityEffect>();
-			entity.InitEntity(handle);
-
-			_totalScore += EnemyScore;
-			BattleEventDefine.ScoreChange.SendEventMessage(_totalScore);
-		}
-		else if (message is BattleEventDefine.AsteroidExplosion)
-		{
-			var msg = message as BattleEventDefine.AsteroidExplosion;
-
-			// 创建爆炸效果
-			var handle = _entitySpawner.SpawnSync("explosion_asteroid", _roomRoot.transform, msg.Position, msg.Rotation);
-			var entity = handle.GameObj.GetComponent<EntityEffect>();
-			entity.InitEntity(handle);
-
-			_totalScore += AsteroidScore;
-			BattleEventDefine.ScoreChange.SendEventMessage(_totalScore);
-		}
-		else if (message is BattleEventDefine.PlayerFireBullet)
-		{
-			var msg = message as BattleEventDefine.PlayerFireBullet;
-
-			// 创建子弹实体
-			var handle = _entitySpawner.SpawnSync("player_bullet", _roomRoot.transform, msg.Position, msg.Rotation);
-			var entity = handle.GameObj.GetComponent<EntityBullet>();
-			entity.InitEntity(handle);
-		}
-		else if (message is BattleEventDefine.EnemyFireBullet)
-		{
-			var msg = message as BattleEventDefine.EnemyFireBullet;
-
-			// 创建子弹实体
-			var handle = _entitySpawner.SpawnSync("enemy_bullet", _roomRoot.transform, msg.Position, msg.Rotation);
-			var entity = handle.GameObj.GetComponent<EntityBullet>();
-			entity.InitEntity(handle);
-		}
-	}
+            // 创建子弹实体
+            var assetHandle = YooAssets.LoadAssetAsync<GameObject>("enemy_bullet");
+            assetHandle.Completed += (AssetHandle handle) =>
+            {
+                handle.InstantiateSync(msg.Position, msg.Rotation, _roomRoot.transform);
+            };
+            _handles.Add(assetHandle);
+        }
+    }
 }

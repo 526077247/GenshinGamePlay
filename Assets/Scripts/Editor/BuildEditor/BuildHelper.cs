@@ -165,17 +165,14 @@ namespace TaoTie
                     break;
             }
 
-            string jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
-            var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
-            if (!packageConfig.packageVer.ContainsKey(packageName))
+            string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
+            int version = obj.GetPackageMaxVersion(packageName);
+            if (version<0)
             {
                 Debug.LogError("指定分包版本号不存在");
                 return;
             }
-
-            jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
-            int version = obj.Resver;
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
@@ -227,18 +224,20 @@ namespace TaoTie
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
-            int buildVersion = obj.Resver;
+            int buildVersion = obj.GetPackageMaxVersion(Define.DefaultName);
             Debug.Log($"开始构建 : {buildTarget}");
-            BuildPackage(buildTarget, isBuildAll, buildVersion, YooAssetsMgr.DefaultName, channel);
-            jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
-            var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
+            BuildPackage(buildTarget, isBuildAll, buildVersion, Define.DefaultName, channel);
             if (isContainsAb)
             {
-                if (packageConfig.packageVer != null)
+                if (obj.OtherPackageMaxVer != null)
                 {
-                    foreach (var item in packageConfig.packageVer)
+                    foreach (var item in obj.OtherPackageMaxVer)
                     {
-                        BuildPackage(buildTarget, isBuildAll, item.Value, item.Key, channel);
+                        for (int i = 0; i < item.Value.Length; i++)
+                        {
+                            if(item.Value[i] == Define.DefaultName) continue;
+                            BuildPackage(buildTarget, isBuildAll, item.Key, item.Value[i], channel);
+                        }
                     }
                 }
             }
@@ -247,52 +246,60 @@ namespace TaoTie
         public static void BuildPackage(BuildTarget buildTarget, bool isBuildAll, int buildVersion,
             string packageName, string channel)
         {
-            // 构建参数
-            string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
-            BuildParameters buildParameters = new BuildParameters();
-            buildParameters.BuildOutputRoot = defaultOutputRoot;
+            var buildoutputRoot = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
+            var streamingAssetsRoot = AssetBundleBuilderHelper.GetStreamingAssetsRoot();
+
+            var buildParameters = new ScriptableBuildParameters();
+            buildParameters.BuildOutputRoot = buildoutputRoot;
+            buildParameters.BuildinFileRoot = streamingAssetsRoot;
             buildParameters.BuildTarget = buildTarget;
             buildParameters.PackageName = packageName;
-            buildParameters.BuildPipeline = EBuildPipeline.ScriptableBuildPipeline;
-            buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
-            buildParameters.BuildMode = EBuildMode.IncrementalBuild;
+            buildParameters.BuildPipeline = EBuildPipeline.ScriptableBuildPipeline.ToString();
+            buildParameters.BuildBundleType = (int)EBuildBundleType.AssetBundle; //必须指定资源包类型
             buildParameters.PackageVersion = buildVersion.ToString();
-            buildParameters.CopyBuildinFileTags = buildAllChannel.Contains(channel)?"buildin;buildinplus":"buildin;";
+            buildParameters.BuildinFileCopyParams = buildAllChannel.Contains(channel)?"buildin;buildinplus":"buildin;";
             buildParameters.VerifyBuildingResult = true;
-            buildParameters.StreamingAssetsRoot = StreamingAssetsDefine.StreamAssetsDir;
-            if (packageName == YooAssetsMgr.DefaultName)
+            if (packageName == Define.DefaultName)
             {
-                buildParameters.CopyBuildinFileOption = isBuildAll
-                    ? ECopyBuildinFileOption.ClearAndCopyAll
-                    : ECopyBuildinFileOption.ClearAndCopyByTags;
+                buildParameters.BuildinFileCopyOption = isBuildAll
+                    ? EBuildinFileCopyOption.ClearAndCopyAll
+                    : EBuildinFileCopyOption.ClearAndCopyByTags;
             }
             else
             {
-                buildParameters.CopyBuildinFileOption =
-                    isBuildAll ? ECopyBuildinFileOption.OnlyCopyAll : ECopyBuildinFileOption.OnlyCopyByTags;
-            }
-#if !UNITY_WEBGL
-            buildParameters.EncryptionServices = new StreamEncryption();
-#endif
-            buildParameters.CompressOption = ECompressOption.LZ4;
-            buildParameters.DisableWriteTypeTree = true; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
-            buildParameters.IgnoreTypeTreeChanges = false;
-            buildParameters.SharedPackRule = new ZeroRedundancySharedPackRule();
-            if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
-            {
-                buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
-                buildParameters.SBPParameters.WriteLinkXML = true;
+                buildParameters.BuildinFileCopyOption =
+                    isBuildAll ? EBuildinFileCopyOption.OnlyCopyAll : EBuildinFileCopyOption.OnlyCopyByTags;
             }
 
+            buildParameters.EncryptionServices = new FileStreamEncryption();
+            buildParameters.CompressOption = ECompressOption.LZ4;
+            buildParameters.FileNameStyle = EFileNameStyle.HashName;
+            buildParameters.DisableWriteTypeTree = true; //禁止写入类型树结构（可以降低包体和内存并提高加载效率）
+            buildParameters.IgnoreTypeTreeChanges = false;
+            buildParameters.EnableSharePackRule = true;
+            buildParameters.SingleReferencedPackAlone = true;
+            buildParameters.WriteLinkXML = true;
+            buildParameters.BuiltinShadersBundleName = GetBuiltinShaderBundleName(packageName);
+            buildParameters.ClearBuildCacheFiles = false; //不清理构建缓存，启用增量构建，可以提高打包速度！
+            buildParameters.UseAssetDependencyDB = true; //使用资源依赖关系数据库，可以提高打包速度！
             // 执行构建
-            AssetBundleBuilder builder = new AssetBundleBuilder();
-            var buildResult = builder.Run(buildParameters);
+            ScriptableBuildPipeline builder = new ScriptableBuildPipeline();
+            var buildResult = builder.Run(buildParameters,true);
             if (buildResult.Success)
                 Debug.Log($"构建成功!");
             else
                 Debug.LogError(buildResult.ErrorInfo);
         }
-
+        /// <summary>
+        /// 内置着色器资源包名称
+        /// 注意：和自动收集的着色器资源包名保持一致！
+        /// </summary>
+        private static string GetBuiltinShaderBundleName(string packageName)
+        {
+            var uniqueBundleName = AssetBundleCollectorSettingData.Setting.UniqueBundleName;
+            var packRuleResult = DefaultPackRule.CreateShadersPackRuleResult();
+            return packRuleResult.GetBundleName(packageName, uniqueBundleName);
+        }
         public static void HandleAtlas()
         {
             //清除图集
@@ -447,29 +454,10 @@ namespace TaoTie
             if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
             FileHelper.CleanDirectory(targetPath);
             var dirs = new DirectoryInfo(fold).GetDirectories();
-            jstr = File.ReadAllText("Assets/AssetsPackage/packageConfig.bytes");
-            var packageConfig = JsonHelper.FromJson<PackageConfig>(jstr);
             for (int i = 0; i < dirs.Length; i++)
             {
-                string dir = null;
-                if (dirs[i].Name == YooAssetsMgr.DefaultName)
-                {
-                    dir = $"{fold}/{dirs[i].Name}/{obj.Resver}";
-                }
-                else
-                {
-                    if (packageConfig.packageVer != null)
-                    {
-                        foreach (var item in packageConfig.packageVer)
-                        {
-                            if (item.Key == dirs[i].Name && isContainsAb)
-                            {
-                                dir = $"{fold}/{dirs[i].Name}/{item.Value}";
-                            }
-                        }
-                    }
-                }
-
+                var version = obj.GetPackageMaxVersion(dirs[i].Name);
+                string dir = $"{fold}/{dirs[i].Name}/{version}";
                 if (dir != null)
                 {
                     FileHelper.CopyFiles(dir, targetPath, ignoreFile);

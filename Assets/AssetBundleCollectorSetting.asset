@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
   ShowPackageView: 1
-  EnableAddressable: 1
-  LocationToLower: 0
-  IncludeAssetGUID: 0
-  UniqueBundleName: 0
-  ShowEditorAlias: 0
+  ShowEditorAlias: 1
+  UniqueBundleName: 1
   Packages:
   - PackageName: DefaultPackage
     PackageDesc: 
+    EnableAddressable: 1
+    LocationToLower: 0
+    IncludeAssetGUID: 0
+    AutoCollectShaders: 1
+    IgnoreRuleName: NormalIgnoreRule
     Groups:
     - GroupName: BuildIn
       GroupDesc: 
@@ -63,7 +65,7 @@ MonoBehaviour:
         CollectorGUID: 57e2d00361bc93141a262692544a6c96
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackRawFile
+        PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
@@ -181,14 +183,6 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
-      - CollectPath: Assets/AssetsPackage/packageConfig.bytes
-        CollectorGUID: 433f60c16037e3d4eb43c781e7fdb018
-        CollectorType: 0
-        AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackRawFile
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 

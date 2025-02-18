@@ -1,42 +1,64 @@
-﻿
+﻿using System.IO;
+using UnityEngine;
+
 namespace YooAsset
 {
-	public struct DecryptFileInfo
-	{
-		/// <summary>
-		/// 资源包名称
-		/// </summary>
-		public string BundleName;
+    public struct DecryptFileInfo
+    {
+        /// <summary>
+        /// 资源包名称
+        /// </summary>
+        public string BundleName;
 
-		/// <summary>
-		/// 文件路径
-		/// </summary>
-		public string FilePath;
-	}
+        /// <summary>
+        /// 文件加载路径
+        /// </summary>
+        public string FileLoadPath;
 
-	/// <summary>
-	/// 解密类服务接口
-	/// </summary>
-	public interface IDecryptionServices
-	{
-		/// <summary>
-		/// 文件偏移解密方法
-		/// </summary>
-		ulong LoadFromFileOffset(DecryptFileInfo fileInfo);
+        /// <summary>
+        /// Unity引擎用于内容校验的CRC
+        /// </summary>
+        public uint FileLoadCRC;
+    }
+    public struct DecryptResult
+    {
+        /// <summary>
+        /// 资源包对象
+        /// </summary>
+        public AssetBundle Result;
 
-		/// <summary>
-		/// 文件内存解密方法
-		/// </summary>
-		byte[] LoadFromMemory(DecryptFileInfo fileInfo);
+        /// <summary>
+        /// 异步请求句柄
+        /// </summary>
+        public AssetBundleCreateRequest CreateRequest;
 
-		/// <summary>
-		/// 文件流解密方法
-		/// </summary>
-		System.IO.Stream LoadFromStream(DecryptFileInfo fileInfo);
+        /// <summary>
+        /// 托管流对象
+        /// 注意：流对象在资源包对象释放的时候会自动释放
+        /// </summary>
+        public Stream ManagedStream;
+    }
 
-		/// <summary>
-		/// 文件流解密的托管缓存大小
-		/// </summary>
-		uint GetManagedReadBufferSize();
-	}
+    public interface IDecryptionServices
+    {
+        /// <summary>
+        /// 同步方式获取解密的资源包对象
+        /// </summary>
+        DecryptResult LoadAssetBundle(DecryptFileInfo fileInfo);
+
+        /// <summary>
+        /// 异步方式获取解密的资源包对象
+        /// </summary>
+        DecryptResult LoadAssetBundleAsync(DecryptFileInfo fileInfo);
+
+        /// <summary>
+        /// 获取解密的字节数据
+        /// </summary>
+        byte[] ReadFileData(DecryptFileInfo fileInfo);
+
+        /// <summary>
+        /// 获取解密的文本数据
+        /// </summary>
+        string ReadFileText(DecryptFileInfo fileInfo);
+    }
 }

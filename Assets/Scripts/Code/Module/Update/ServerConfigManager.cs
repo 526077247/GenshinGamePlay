@@ -62,7 +62,7 @@ namespace TaoTie
         //获取环境更新列表cdn地址
         public string GetUpdateListUrl()
         {
-            return RemoteServices.Instance.whiteMode? YooAssetsMgr.Instance.CdnConfig.TestUpdateListUrl:YooAssetsMgr.Instance.CdnConfig.UpdateListUrl;
+            return RemoteServices.Instance.whiteMode? PackageManager.Instance.CdnConfig.TestUpdateListUrl:PackageManager.Instance.CdnConfig.UpdateListUrl;
         }
 
         public int GetEnvId()
@@ -89,7 +89,7 @@ namespace TaoTie
         //格式为json格式
 	    //{
 		// "WhiteList":[
-    	//	    {"env_id":1, "uid":11111}
+    	//	    {"EnvId":1, "Account":11111}
     	//    ]
         //}
         public void SetWhiteList(List<WhiteConfig> info)
@@ -99,7 +99,7 @@ namespace TaoTie
             var account = CacheManager.Instance.GetString(CacheKeys.Account);
             foreach (var item in info)
             {
-                if (item.env_id == envID && item.account == account)
+                if (item.EnvId == envID && item.Account == account)
                 {
                     this.inWhiteList = true;
                     Log.Info(" user is in white list "+account);
@@ -126,8 +126,8 @@ namespace TaoTie
         //设置更新列表
         public void SetUpdateList(UpdateConfig info)
         {
-            this.appUpdateList = info.app_list;
-            this.resUpdateList = info.res_list;
+            this.appUpdateList = info.AppList;
+            this.resUpdateList = info.ResList;
         }
 
         //根据渠道获取app更新列表
@@ -136,11 +136,11 @@ namespace TaoTie
             if (this.appUpdateList == null) return null;
             if (this.appUpdateList.TryGetValue(channel, out var data))
             {
-                if (GetJumpChannel(data.jump_channel,out var jumpData))
+                if (GetJumpChannel(data.JumpChannel,out var jumpData))
                 {
                     var newData = new AppConfig();
-                    newData.app_ver = jumpData.app_ver;
-                    newData.app_url = data.app_url;
+                    newData.AppVer = jumpData.AppVer;
+                    newData.AppUrl = data.AppUrl;
                     return newData;
                 }
 
@@ -154,7 +154,7 @@ namespace TaoTie
         {
             if (!string.IsNullOrEmpty(jumpChannel) && this.appUpdateList.TryGetValue(jumpChannel, out jumpData))
             {
-                if(GetJumpChannel(jumpData.jump_channel,out var newdata))
+                if(GetJumpChannel(jumpData.JumpChannel,out var newdata))
                 {
                     jumpData = newdata;
                 }
@@ -171,15 +171,15 @@ namespace TaoTie
             int lastVer = -1;
             if (this.appUpdateList.TryGetValue(channel, out var data))
             {
-                if (!string.IsNullOrEmpty(data.jump_channel))
-                    data = appUpdateList[data.jump_channel];
-                foreach (var item in data.app_ver)
+                if (!string.IsNullOrEmpty(data.JumpChannel))
+                    data = appUpdateList[data.JumpChannel];
+                foreach (var item in data.AppVer)
                 {
                     if (lastVer == -1) lastVer = item.Key;
                     else
                     {
                         if(item.Key > lastVer
-                           && IsStrInList(channel,item.Value.channel) && IsInTailNumber(item.Value.update_tailnumber))
+                           && IsStrInList(channel,item.Value.Channel) && IsInTailNumber(item.Value.UpdateTailNumber))
                         {
                             lastVer = item.Key;
                         }
@@ -195,11 +195,11 @@ namespace TaoTie
             if (this.appUpdateList == null) return false;
             if (this.appUpdateList.TryGetValue(channel, out var data))
             {
-                if (!string.IsNullOrEmpty(data.jump_channel))
-                    data = appUpdateList[data.jump_channel];
-                if (data.app_ver.TryGetValue(appVer, out var res))
+                if (!string.IsNullOrEmpty(data.JumpChannel))
+                    data = appUpdateList[data.JumpChannel];
+                if (data.AppVer.TryGetValue(appVer, out var res))
                 {
-                    version = res.max_res_ver;
+                    version = res.MaxResVer;
                     return true;
                 }
             }
@@ -233,7 +233,7 @@ namespace TaoTie
             for (int i = 0; i < verList.Count; i++)
             {
                 var info = resVerList[verList[i]];
-                if(this.IsStrInList(resverChannel,info.channel)&& this.IsInTailNumber(info.update_tailnumber))
+                if(this.IsStrInList(resverChannel,info.Channel)&& this.IsInTailNumber(info.UpdateTailNumber))
                 {
                     lastVer = verList[i];
                     break;

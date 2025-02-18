@@ -47,7 +47,7 @@ namespace TaoTie
 
 			Log.ILog = new UnityLogger();
 			
-			await YooAssetsMgr.Instance.Init(PlayMode);
+			await PackageManager.Instance.Init(PlayMode);
 			
 			RegisterManager();
 			
@@ -95,10 +95,11 @@ namespace TaoTie
 		{
 			CodeLoader.Instance.isReStart = false;
 			Resources.UnloadUnusedAssets();
-			YooAssetsMgr.Instance.ForceUnloadAllAssets(YooAssetsMgr.DefaultName);
+			var op = PackageManager.Instance.ForceUnloadAllAssets();
+			if(op!=null) await op.Task;
 			Resources.UnloadUnusedAssets();
 			ManagerProvider.Clear();
-			await YooAssetsMgr.Instance.UpdateConfig();
+			await PackageManager.Instance.UpdateConfig();
 			//清两次，清干净
 			GC.Collect();
 			GC.Collect();

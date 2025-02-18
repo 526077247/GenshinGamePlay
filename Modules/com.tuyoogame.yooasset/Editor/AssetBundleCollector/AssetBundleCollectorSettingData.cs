@@ -7,440 +7,483 @@ using UnityEditor;
 
 namespace YooAsset.Editor
 {
-	public class AssetBundleCollectorSettingData
-	{
-		private static readonly Dictionary<string, System.Type> _cacheActiveRuleTypes = new Dictionary<string, Type>();
-		private static readonly Dictionary<string, IActiveRule> _cacheActiveRuleInstance = new Dictionary<string, IActiveRule>();
+    public class AssetBundleCollectorSettingData
+    {
+        private static readonly Dictionary<string, System.Type> _cacheActiveRuleTypes = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, IActiveRule> _cacheActiveRuleInstance = new Dictionary<string, IActiveRule>();
 
-		private static readonly Dictionary<string, System.Type> _cacheAddressRuleTypes = new Dictionary<string, System.Type>();
-		private static readonly Dictionary<string, IAddressRule> _cacheAddressRuleInstance = new Dictionary<string, IAddressRule>();
+        private static readonly Dictionary<string, System.Type> _cacheAddressRuleTypes = new Dictionary<string, System.Type>();
+        private static readonly Dictionary<string, IAddressRule> _cacheAddressRuleInstance = new Dictionary<string, IAddressRule>();
 
-		private static readonly Dictionary<string, System.Type> _cachePackRuleTypes = new Dictionary<string, System.Type>();
-		private static readonly Dictionary<string, IPackRule> _cachePackRuleInstance = new Dictionary<string, IPackRule>();
+        private static readonly Dictionary<string, System.Type> _cachePackRuleTypes = new Dictionary<string, System.Type>();
+        private static readonly Dictionary<string, IPackRule> _cachePackRuleInstance = new Dictionary<string, IPackRule>();
 
-		private static readonly Dictionary<string, System.Type> _cacheFilterRuleTypes = new Dictionary<string, System.Type>();
-		private static readonly Dictionary<string, IFilterRule> _cacheFilterRuleInstance = new Dictionary<string, IFilterRule>();
+        private static readonly Dictionary<string, System.Type> _cacheFilterRuleTypes = new Dictionary<string, System.Type>();
+        private static readonly Dictionary<string, IFilterRule> _cacheFilterRuleInstance = new Dictionary<string, IFilterRule>();
 
-		/// <summary>
-		/// 配置数据是否被修改
-		/// </summary>
-		public static bool IsDirty { private set; get; } = false;
+        private static readonly Dictionary<string, System.Type> _cacheIgnoreRuleTypes = new Dictionary<string, System.Type>();
+        private static readonly Dictionary<string, IIgnoreRule> _cacheIgnoreRuleInstance = new Dictionary<string, IIgnoreRule>();
+
+        /// <summary>
+        /// 配置数据是否被修改
+        /// </summary>
+        public static bool IsDirty { private set; get; } = false;
 
 
-		static AssetBundleCollectorSettingData()
-		{
-			// IPackRule
-			{
-				// 清空缓存集合
-				_cachePackRuleTypes.Clear();
-				_cachePackRuleInstance.Clear();
+        static AssetBundleCollectorSettingData()
+        {
+            // IPackRule
+            {
+                // 清空缓存集合
+                _cachePackRuleTypes.Clear();
+                _cachePackRuleInstance.Clear();
 
-				// 获取所有类型
-				List<Type> types = new List<Type>(100)
-				{
-					typeof(PackSeparately),
-					typeof(PackDirectory),
-					typeof(PackTopDirectory),
-					typeof(PackCollector),
-					typeof(PackGroup),
-					typeof(PackRawFile),
-					typeof(PackShaderVariants)
-				};
+                // 获取所有类型
+                List<Type> types = new List<Type>(100)
+                {
+                    typeof(PackSeparately),
+                    typeof(PackDirectory),
+                    typeof(PackTopDirectory),
+                    typeof(PackCollector),
+                    typeof(PackGroup),
+                    typeof(PackRawFile),
+                    typeof(PackShaderVariants)
+                };
 
-				var customTypes = EditorTools.GetAssignableTypes(typeof(IPackRule));
-				types.AddRange(customTypes);
-				for (int i = 0; i < types.Count; i++)
-				{
-					Type type = types[i];
-					if (_cachePackRuleTypes.ContainsKey(type.Name) == false)
-						_cachePackRuleTypes.Add(type.Name, type);
-				}
-			}
+                var customTypes = EditorTools.GetAssignableTypes(typeof(IPackRule));
+                types.AddRange(customTypes);
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Type type = types[i];
+                    if (_cachePackRuleTypes.ContainsKey(type.Name) == false)
+                        _cachePackRuleTypes.Add(type.Name, type);
+                }
+            }
 
-			// IFilterRule
-			{
-				// 清空缓存集合
-				_cacheFilterRuleTypes.Clear();
-				_cacheFilterRuleInstance.Clear();
+            // IFilterRule
+            {
+                // 清空缓存集合
+                _cacheFilterRuleTypes.Clear();
+                _cacheFilterRuleInstance.Clear();
 
-				// 获取所有类型
-				List<Type> types = new List<Type>(100)
-				{
-					typeof(CollectAll),
-					typeof(CollectScene),
-					typeof(CollectPrefab),
-					typeof(CollectSprite)
-				};
+                // 获取所有类型
+                List<Type> types = new List<Type>(100)
+                {
+                    typeof(CollectAll),
+                    typeof(CollectScene),
+                    typeof(CollectPrefab),
+                    typeof(CollectSprite)
+                };
 
-				var customTypes = EditorTools.GetAssignableTypes(typeof(IFilterRule));
-				types.AddRange(customTypes);
-				for (int i = 0; i < types.Count; i++)
-				{
-					Type type = types[i];
-					if (_cacheFilterRuleTypes.ContainsKey(type.Name) == false)
-						_cacheFilterRuleTypes.Add(type.Name, type);
-				}
-			}
+                var customTypes = EditorTools.GetAssignableTypes(typeof(IFilterRule));
+                types.AddRange(customTypes);
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Type type = types[i];
+                    if (_cacheFilterRuleTypes.ContainsKey(type.Name) == false)
+                        _cacheFilterRuleTypes.Add(type.Name, type);
+                }
+            }
 
-			// IAddressRule
-			{
-				// 清空缓存集合
-				_cacheAddressRuleTypes.Clear();
-				_cacheAddressRuleInstance.Clear();
+            // IAddressRule
+            {
+                // 清空缓存集合
+                _cacheAddressRuleTypes.Clear();
+                _cacheAddressRuleInstance.Clear();
 
-				// 获取所有类型
-				List<Type> types = new List<Type>(100)
-				{
-					typeof(AddressByFileName),
-					typeof(AddressByFilePath),
-					typeof(AddressByFolderAndFileName),
-					typeof(AddressByGroupAndFileName),
-					typeof(AddressDisable)
-				};
+                // 获取所有类型
+                List<Type> types = new List<Type>(100)
+                {
+                    typeof(AddressByFileName),
+                    typeof(AddressByFolderAndFileName),
+                    typeof(AddressByGroupAndFileName),
+                    typeof(AddressDisable)
+                };
 
-				var customTypes = EditorTools.GetAssignableTypes(typeof(IAddressRule));
-				types.AddRange(customTypes);
-				for (int i = 0; i < types.Count; i++)
-				{
-					Type type = types[i];
-					if (_cacheAddressRuleTypes.ContainsKey(type.Name) == false)
-						_cacheAddressRuleTypes.Add(type.Name, type);
-				}
-			}
+                var customTypes = EditorTools.GetAssignableTypes(typeof(IAddressRule));
+                types.AddRange(customTypes);
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Type type = types[i];
+                    if (_cacheAddressRuleTypes.ContainsKey(type.Name) == false)
+                        _cacheAddressRuleTypes.Add(type.Name, type);
+                }
+            }
 
-			// IActiveRule
-			{
-				// 清空缓存集合
-				_cacheActiveRuleTypes.Clear();
-				_cacheActiveRuleInstance.Clear();
+            // IActiveRule
+            {
+                // 清空缓存集合
+                _cacheActiveRuleTypes.Clear();
+                _cacheActiveRuleInstance.Clear();
 
-				// 获取所有类型
-				List<Type> types = new List<Type>(100)
-				{
-					typeof(EnableGroup),
-					typeof(DisableGroup),
-				};
+                // 获取所有类型
+                List<Type> types = new List<Type>(100)
+                {
+                    typeof(EnableGroup),
+                    typeof(DisableGroup),
+                };
 
-				var customTypes = EditorTools.GetAssignableTypes(typeof(IActiveRule));
-				types.AddRange(customTypes);
-				for (int i = 0; i < types.Count; i++)
-				{
-					Type type = types[i];
-					if (_cacheActiveRuleTypes.ContainsKey(type.Name) == false)
-						_cacheActiveRuleTypes.Add(type.Name, type);
-				}
-			}
-		}
+                var customTypes = EditorTools.GetAssignableTypes(typeof(IActiveRule));
+                types.AddRange(customTypes);
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Type type = types[i];
+                    if (_cacheActiveRuleTypes.ContainsKey(type.Name) == false)
+                        _cacheActiveRuleTypes.Add(type.Name, type);
+                }
+            }
 
-		private static AssetBundleCollectorSetting _setting = null;
-		public static AssetBundleCollectorSetting Setting
-		{
-			get
-			{
-				if (_setting == null)
-					_setting = SettingLoader.LoadSettingData<AssetBundleCollectorSetting>();
-				return _setting;
-			}
-		}
+            // IIgnoreRule
+            {
+                // 清空缓存集合
+                _cacheIgnoreRuleTypes.Clear();
+                _cacheIgnoreRuleInstance.Clear();
 
-		/// <summary>
-		/// 存储配置文件
-		/// </summary>
-		public static void SaveFile()
-		{
-			if (Setting != null)
-			{
-				IsDirty = false;
-				EditorUtility.SetDirty(Setting);
-				AssetDatabase.SaveAssets();
-				Debug.Log($"{nameof(AssetBundleCollectorSetting)}.asset is saved!");
-			}
-		}
+                // 获取所有类型
+                List<Type> types = new List<Type>(100)
+                {
+                    typeof(NormalIgnoreRule),
+                    typeof(RawFileIgnoreRule),
+                };
 
-		/// <summary>
-		/// 修复配置文件
-		/// </summary>
-		public static void FixFile()
-		{
-			bool isFixed = Setting.FixAllPackageConfigError();
-			if (isFixed)
-			{
-				IsDirty = true;
-			}
-		}
+                var customTypes = EditorTools.GetAssignableTypes(typeof(IIgnoreRule));
+                types.AddRange(customTypes);
+                for (int i = 0; i < types.Count; i++)
+                {
+                    Type type = types[i];
+                    if (_cacheIgnoreRuleTypes.ContainsKey(type.Name) == false)
+                        _cacheIgnoreRuleTypes.Add(type.Name, type);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 清空所有数据
-		/// </summary>
-		public static void ClearAll()
-		{
-			Setting.ClearAll();
-			SaveFile();
-		}
+        private static AssetBundleCollectorSetting _setting = null;
+        public static AssetBundleCollectorSetting Setting
+        {
+            get
+            {
+                if (_setting == null)
+                    _setting = SettingLoader.LoadSettingData<AssetBundleCollectorSetting>();
+                return _setting;
+            }
+        }
 
-		public static List<RuleDisplayName> GetActiveRuleNames()
-		{
-			List<RuleDisplayName> names = new List<RuleDisplayName>();
-			foreach (var pair in _cacheActiveRuleTypes)
-			{
-				RuleDisplayName ruleName = new RuleDisplayName();
-				ruleName.ClassName = pair.Key;
-				ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
-				names.Add(ruleName);
-			}
-			return names;
-		}
-		public static List<RuleDisplayName> GetAddressRuleNames()
-		{
-			List<RuleDisplayName> names = new List<RuleDisplayName>();
-			foreach (var pair in _cacheAddressRuleTypes)
-			{
-				RuleDisplayName ruleName = new RuleDisplayName();
-				ruleName.ClassName = pair.Key;
-				ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
-				names.Add(ruleName);
-			}
-			return names;
-		}
-		public static List<RuleDisplayName> GetPackRuleNames()
-		{
-			List<RuleDisplayName> names = new List<RuleDisplayName>();
-			foreach (var pair in _cachePackRuleTypes)
-			{
-				RuleDisplayName ruleName = new RuleDisplayName();
-				ruleName.ClassName = pair.Key;
-				ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
-				names.Add(ruleName);
-			}
-			return names;
-		}
-		public static List<RuleDisplayName> GetFilterRuleNames()
-		{
-			List<RuleDisplayName> names = new List<RuleDisplayName>();
-			foreach (var pair in _cacheFilterRuleTypes)
-			{
-				RuleDisplayName ruleName = new RuleDisplayName();
-				ruleName.ClassName = pair.Key;
-				ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
-				names.Add(ruleName);
-			}
-			return names;
-		}
-		private static string GetRuleDisplayName(string name, Type type)
-		{
-			var attribute = DisplayNameAttributeHelper.GetAttribute<DisplayNameAttribute>(type);
-			if (attribute != null && string.IsNullOrEmpty(attribute.DisplayName) == false)
-				return attribute.DisplayName;
-			else
-				return name;
-		}
+        /// <summary>
+        /// 存储配置文件
+        /// </summary>
+        public static void SaveFile()
+        {
+            if (Setting != null)
+            {
+                IsDirty = false;
+                EditorUtility.SetDirty(Setting);
+                AssetDatabase.SaveAssets();
+                Debug.Log($"{nameof(AssetBundleCollectorSetting)}.asset is saved!");
+            }
+        }
 
-		public static bool HasActiveRuleName(string ruleName)
-		{
-			return _cacheActiveRuleTypes.Keys.Contains(ruleName);
-		}
-		public static bool HasAddressRuleName(string ruleName)
-		{
-			return _cacheAddressRuleTypes.Keys.Contains(ruleName);
-		}
-		public static bool HasPackRuleName(string ruleName)
-		{
-			return _cachePackRuleTypes.Keys.Contains(ruleName);
-		}
-		public static bool HasFilterRuleName(string ruleName)
-		{
-			return _cacheFilterRuleTypes.Keys.Contains(ruleName);
-		}
+        /// <summary>
+        /// 修复配置文件
+        /// </summary>
+        public static void FixFile()
+        {
+            bool isFixed = Setting.FixAllPackageConfigError();
+            if (isFixed)
+            {
+                IsDirty = true;
+                Debug.Log("Fix package config error done !");
+            }
+        }
 
-		public static IActiveRule GetActiveRuleInstance(string ruleName)
-		{
-			if (_cacheActiveRuleInstance.TryGetValue(ruleName, out IActiveRule instance))
-				return instance;
+        /// <summary>
+        /// 清空所有数据
+        /// </summary>
+        public static void ClearAll()
+        {
+            Setting.ClearAll();
+        }
 
-			// 如果不存在创建类的实例
-			if (_cacheActiveRuleTypes.TryGetValue(ruleName, out Type type))
-			{
-				instance = (IActiveRule)Activator.CreateInstance(type);
-				_cacheActiveRuleInstance.Add(ruleName, instance);
-				return instance;
-			}
-			else
-			{
-				throw new Exception($"{nameof(IActiveRule)}类型无效：{ruleName}");
-			}
-		}
-		public static IAddressRule GetAddressRuleInstance(string ruleName)
-		{
-			if (_cacheAddressRuleInstance.TryGetValue(ruleName, out IAddressRule instance))
-				return instance;
+        public static List<RuleDisplayName> GetActiveRuleNames()
+        {
+            List<RuleDisplayName> names = new List<RuleDisplayName>();
+            foreach (var pair in _cacheActiveRuleTypes)
+            {
+                RuleDisplayName ruleName = new RuleDisplayName();
+                ruleName.ClassName = pair.Key;
+                ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
+                names.Add(ruleName);
+            }
+            return names;
+        }
+        public static List<RuleDisplayName> GetAddressRuleNames()
+        {
+            List<RuleDisplayName> names = new List<RuleDisplayName>();
+            foreach (var pair in _cacheAddressRuleTypes)
+            {
+                RuleDisplayName ruleName = new RuleDisplayName();
+                ruleName.ClassName = pair.Key;
+                ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
+                names.Add(ruleName);
+            }
+            return names;
+        }
+        public static List<RuleDisplayName> GetPackRuleNames()
+        {
+            List<RuleDisplayName> names = new List<RuleDisplayName>();
+            foreach (var pair in _cachePackRuleTypes)
+            {
+                RuleDisplayName ruleName = new RuleDisplayName();
+                ruleName.ClassName = pair.Key;
+                ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
+                names.Add(ruleName);
+            }
+            return names;
+        }
+        public static List<RuleDisplayName> GetFilterRuleNames()
+        {
+            List<RuleDisplayName> names = new List<RuleDisplayName>();
+            foreach (var pair in _cacheFilterRuleTypes)
+            {
+                RuleDisplayName ruleName = new RuleDisplayName();
+                ruleName.ClassName = pair.Key;
+                ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
+                names.Add(ruleName);
+            }
+            return names;
+        }
+        public static List<RuleDisplayName> GetIgnoreRuleNames()
+        {
+            List<RuleDisplayName> names = new List<RuleDisplayName>();
+            foreach (var pair in _cacheIgnoreRuleTypes)
+            {
+                RuleDisplayName ruleName = new RuleDisplayName();
+                ruleName.ClassName = pair.Key;
+                ruleName.DisplayName = GetRuleDisplayName(pair.Key, pair.Value);
+                names.Add(ruleName);
+            }
+            return names;
+        }
+        private static string GetRuleDisplayName(string name, Type type)
+        {
+            var attribute = DisplayNameAttributeHelper.GetAttribute<DisplayNameAttribute>(type);
+            if (attribute != null && string.IsNullOrEmpty(attribute.DisplayName) == false)
+                return attribute.DisplayName;
+            else
+                return name;
+        }
 
-			// 如果不存在创建类的实例
-			if (_cacheAddressRuleTypes.TryGetValue(ruleName, out Type type))
-			{
-				instance = (IAddressRule)Activator.CreateInstance(type);
-				_cacheAddressRuleInstance.Add(ruleName, instance);
-				return instance;
-			}
-			else
-			{
-				throw new Exception($"{nameof(IAddressRule)}类型无效：{ruleName}");
-			}
-		}
-		public static IPackRule GetPackRuleInstance(string ruleName)
-		{
-			if (_cachePackRuleInstance.TryGetValue(ruleName, out IPackRule instance))
-				return instance;
+        public static bool HasActiveRuleName(string ruleName)
+        {
+            return _cacheActiveRuleTypes.ContainsKey(ruleName);
+        }
+        public static bool HasAddressRuleName(string ruleName)
+        {
+            return _cacheAddressRuleTypes.ContainsKey(ruleName);
+        }
+        public static bool HasPackRuleName(string ruleName)
+        {
+            return _cachePackRuleTypes.ContainsKey(ruleName);
+        }
+        public static bool HasFilterRuleName(string ruleName)
+        {
+            return _cacheFilterRuleTypes.ContainsKey(ruleName);
+        }
+        public static bool HasIgnoreRuleName(string ruleName)
+        {
+            return _cacheIgnoreRuleTypes.ContainsKey(ruleName);
+        }
 
-			// 如果不存在创建类的实例
-			if (_cachePackRuleTypes.TryGetValue(ruleName, out Type type))
-			{
-				instance = (IPackRule)Activator.CreateInstance(type);
-				_cachePackRuleInstance.Add(ruleName, instance);
-				return instance;
-			}
-			else
-			{
-				throw new Exception($"{nameof(IPackRule)}类型无效：{ruleName}");
-			}
-		}
-		public static IFilterRule GetFilterRuleInstance(string ruleName)
-		{
-			if (_cacheFilterRuleInstance.TryGetValue(ruleName, out IFilterRule instance))
-				return instance;
+        public static IActiveRule GetActiveRuleInstance(string ruleName)
+        {
+            if (_cacheActiveRuleInstance.TryGetValue(ruleName, out IActiveRule instance))
+                return instance;
 
-			// 如果不存在创建类的实例
-			if (_cacheFilterRuleTypes.TryGetValue(ruleName, out Type type))
-			{
-				instance = (IFilterRule)Activator.CreateInstance(type);
-				_cacheFilterRuleInstance.Add(ruleName, instance);
-				return instance;
-			}
-			else
-			{
-				throw new Exception($"{nameof(IFilterRule)}类型无效：{ruleName}");
-			}
-		}
+            // 如果不存在创建类的实例
+            if (_cacheActiveRuleTypes.TryGetValue(ruleName, out Type type))
+            {
+                instance = (IActiveRule)Activator.CreateInstance(type);
+                _cacheActiveRuleInstance.Add(ruleName, instance);
+                return instance;
+            }
+            else
+            {
+                throw new Exception($"{nameof(IActiveRule)} is invalid：{ruleName}");
+            }
+        }
+        public static IAddressRule GetAddressRuleInstance(string ruleName)
+        {
+            if (_cacheAddressRuleInstance.TryGetValue(ruleName, out IAddressRule instance))
+                return instance;
 
-		// 公共参数编辑相关
-		public static void ModifyPackageView(bool showPackageView)
-		{
-			Setting.ShowPackageView = showPackageView;
-			IsDirty = true;
-		}
-		public static void ModifyAddressable(bool enableAddressable)
-		{
-			Setting.EnableAddressable = enableAddressable;
-			IsDirty = true;
-		}
-		public static void ModifyLocationToLower(bool locationToLower)
-		{
-			Setting.LocationToLower = locationToLower;
-			IsDirty = true;
-		}
-		public static void ModifyIncludeAssetGUID(bool includeAssetGUID)
-		{
-			Setting.IncludeAssetGUID = includeAssetGUID;
-			IsDirty = true;
-		}
-		public static void ModifyUniqueBundleName(bool uniqueBundleName)
-		{
-			Setting.UniqueBundleName = uniqueBundleName;
-			IsDirty = true;
-		}
-		public static void ModifyShowEditorAlias(bool showAlias)
-		{
-			Setting.ShowEditorAlias = showAlias;
-			IsDirty = true;
-		}
+            // 如果不存在创建类的实例
+            if (_cacheAddressRuleTypes.TryGetValue(ruleName, out Type type))
+            {
+                instance = (IAddressRule)Activator.CreateInstance(type);
+                _cacheAddressRuleInstance.Add(ruleName, instance);
+                return instance;
+            }
+            else
+            {
+                throw new Exception($"{nameof(IAddressRule)} is invalid：{ruleName}");
+            }
+        }
+        public static IPackRule GetPackRuleInstance(string ruleName)
+        {
+            if (_cachePackRuleInstance.TryGetValue(ruleName, out IPackRule instance))
+                return instance;
 
-		// 资源包裹编辑相关
-		public static AssetBundleCollectorPackage CreatePackage(string packageName)
-		{
-			AssetBundleCollectorPackage package = new AssetBundleCollectorPackage();
-			package.PackageName = packageName;
-			Setting.Packages.Add(package);
-			IsDirty = true;
-			return package;
-		}
-		public static void RemovePackage(AssetBundleCollectorPackage package)
-		{
-			if (Setting.Packages.Remove(package))
-			{
-				IsDirty = true;
-			}
-			else
-			{
-				Debug.LogWarning($"Failed remove package : {package.PackageName}");
-			}
-		}
-		public static void ModifyPackage(AssetBundleCollectorPackage package)
-		{
-			if (package != null)
-			{
-				IsDirty = true;
-			}
-		}
+            // 如果不存在创建类的实例
+            if (_cachePackRuleTypes.TryGetValue(ruleName, out Type type))
+            {
+                instance = (IPackRule)Activator.CreateInstance(type);
+                _cachePackRuleInstance.Add(ruleName, instance);
+                return instance;
+            }
+            else
+            {
+                throw new Exception($"{nameof(IPackRule)} is invalid：{ruleName}");
+            }
+        }
+        public static IFilterRule GetFilterRuleInstance(string ruleName)
+        {
+            if (_cacheFilterRuleInstance.TryGetValue(ruleName, out IFilterRule instance))
+                return instance;
 
-		// 资源分组编辑相关
-		public static AssetBundleCollectorGroup CreateGroup(AssetBundleCollectorPackage package, string groupName)
-		{
-			AssetBundleCollectorGroup group = new AssetBundleCollectorGroup();
-			group.GroupName = groupName;
-			package.Groups.Add(group);
-			IsDirty = true;
-			return group;
-		}
-		public static void RemoveGroup(AssetBundleCollectorPackage package, AssetBundleCollectorGroup group)
-		{
-			if (package.Groups.Remove(group))
-			{
-				IsDirty = true;
-			}
-			else
-			{
-				Debug.LogWarning($"Failed remove group : {group.GroupName}");
-			}
-		}
-		public static void ModifyGroup(AssetBundleCollectorPackage package, AssetBundleCollectorGroup group)
-		{
-			if (package != null && group != null)
-			{
-				IsDirty = true;
-			}
-		}
+            // 如果不存在创建类的实例
+            if (_cacheFilterRuleTypes.TryGetValue(ruleName, out Type type))
+            {
+                instance = (IFilterRule)Activator.CreateInstance(type);
+                _cacheFilterRuleInstance.Add(ruleName, instance);
+                return instance;
+            }
+            else
+            {
+                throw new Exception($"{nameof(IFilterRule)} is invalid：{ruleName}");
+            }
+        }
+        public static IIgnoreRule GetIgnoreRuleInstance(string ruleName)
+        {
+            if (_cacheIgnoreRuleInstance.TryGetValue(ruleName, out IIgnoreRule instance))
+                return instance;
 
-		// 资源收集器编辑相关
-		public static void CreateCollector(AssetBundleCollectorGroup group, AssetBundleCollector collector)
-		{
-			group.Collectors.Add(collector);
-			IsDirty = true;
-		}
-		public static void RemoveCollector(AssetBundleCollectorGroup group, AssetBundleCollector collector)
-		{
-			if (group.Collectors.Remove(collector))
-			{
-				IsDirty = true;
-			}
-			else
-			{
-				Debug.LogWarning($"Failed remove collector : {collector.CollectPath}");
-			}
-		}
-		public static void ModifyCollector(AssetBundleCollectorGroup group, AssetBundleCollector collector)
-		{
-			if (group != null && collector != null)
-			{
-				IsDirty = true;
-			}
-		}
+            // 如果不存在创建类的实例
+            if (_cacheIgnoreRuleTypes.TryGetValue(ruleName, out Type type))
+            {
+                instance = (IIgnoreRule)Activator.CreateInstance(type);
+                _cacheIgnoreRuleInstance.Add(ruleName, instance);
+                return instance;
+            }
+            else
+            {
+                throw new Exception($"{nameof(IIgnoreRule)} is invalid：{ruleName}");
+            }
+        }
 
-		/// <summary>
-		/// 获取所有的资源标签
-		/// </summary>
-		public static string GetPackageAllTags(string packageName)
-		{
-			var allTags = Setting.GetPackageAllTags(packageName);
-			return string.Join(";", allTags);
-		}
-	}
+        // 公共参数编辑相关
+        public static void ModifyShowPackageView(bool showPackageView)
+        {
+            Setting.ShowPackageView = showPackageView;
+            IsDirty = true;
+        }
+        public static void ModifyShowEditorAlias(bool showAlias)
+        {
+            Setting.ShowEditorAlias = showAlias;
+            IsDirty = true;
+        }
+        public static void ModifyUniqueBundleName(bool uniqueBundleName)
+        {
+            Setting.UniqueBundleName = uniqueBundleName;
+            IsDirty = true;
+        }
+
+        // 资源包裹编辑相关
+        public static AssetBundleCollectorPackage CreatePackage(string packageName)
+        {
+            AssetBundleCollectorPackage package = new AssetBundleCollectorPackage();
+            package.PackageName = packageName;
+            Setting.Packages.Add(package);
+            IsDirty = true;
+            return package;
+        }
+        public static void RemovePackage(AssetBundleCollectorPackage package)
+        {
+            if (Setting.Packages.Remove(package))
+            {
+                IsDirty = true;
+            }
+            else
+            {
+                Debug.LogWarning($"Failed remove package : {package.PackageName}");
+            }
+        }
+        public static void ModifyPackage(AssetBundleCollectorPackage package)
+        {
+            if (package != null)
+            {
+                IsDirty = true;
+            }
+        }
+
+        // 资源分组编辑相关
+        public static AssetBundleCollectorGroup CreateGroup(AssetBundleCollectorPackage package, string groupName)
+        {
+            AssetBundleCollectorGroup group = new AssetBundleCollectorGroup();
+            group.GroupName = groupName;
+            package.Groups.Add(group);
+            IsDirty = true;
+            return group;
+        }
+        public static void RemoveGroup(AssetBundleCollectorPackage package, AssetBundleCollectorGroup group)
+        {
+            if (package.Groups.Remove(group))
+            {
+                IsDirty = true;
+            }
+            else
+            {
+                Debug.LogWarning($"Failed remove group : {group.GroupName}");
+            }
+        }
+        public static void ModifyGroup(AssetBundleCollectorPackage package, AssetBundleCollectorGroup group)
+        {
+            if (package != null && group != null)
+            {
+                IsDirty = true;
+            }
+        }
+
+        // 资源收集器编辑相关
+        public static void CreateCollector(AssetBundleCollectorGroup group, AssetBundleCollector collector)
+        {
+            group.Collectors.Add(collector);
+            IsDirty = true;
+        }
+        public static void RemoveCollector(AssetBundleCollectorGroup group, AssetBundleCollector collector)
+        {
+            if (group.Collectors.Remove(collector))
+            {
+                IsDirty = true;
+            }
+            else
+            {
+                Debug.LogWarning($"Failed remove collector : {collector.CollectPath}");
+            }
+        }
+        public static void ModifyCollector(AssetBundleCollectorGroup group, AssetBundleCollector collector)
+        {
+            if (group != null && collector != null)
+            {
+                IsDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// 获取所有的资源标签
+        /// </summary>
+        public static string GetPackageAllTags(string packageName)
+        {
+            var allTags = Setting.GetPackageAllTags(packageName);
+            return string.Join(";", allTags);
+        }
+    }
 }

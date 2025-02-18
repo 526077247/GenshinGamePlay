@@ -24,7 +24,7 @@ namespace TaoTie
     /// </summary>
     public class GameObjectPoolManager:IManager,IManager<string>
     {
-	    public string PackageName { get; private set; } = YooAssetsMgr.DefaultName;
+	    public string PackageName { get; private set; } = Define.DefaultName;
 	    private static Dictionary<string, GameObjectPoolManager> instances = new();
 
         private Transform cacheTransRoot;
@@ -42,7 +42,7 @@ namespace TaoTie
 
         public static GameObjectPoolManager GetInstance(string package = null)
         {
-	        if (package == null) package = YooAssetsMgr.DefaultName;
+	        if (package == null) package = Define.DefaultName;
 	        if (!instances.TryGetValue(package, out var mgr))
 	        {
 		        mgr = ManagerProvider.RegisterManager<GameObjectPoolManager,string>(package,package);
@@ -61,7 +61,7 @@ namespace TaoTie
 
         public void Init()
         {
-	        PackageName = YooAssetsMgr.DefaultName;
+	        PackageName = Define.DefaultName;
 	        this.goPool = new LruCache<string, GameObject>();
             this.goInstCountCache = new Dictionary<string, int>();
             this.goChildsCountPool = new Dictionary<string, int>();

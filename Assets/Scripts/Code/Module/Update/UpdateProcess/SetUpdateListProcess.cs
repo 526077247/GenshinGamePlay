@@ -9,38 +9,38 @@ namespace TaoTie
             var url = ServerConfigManager.Instance.GetUpdateListCdnUrl();
             // UpdateConfig aa = new UpdateConfig
             // {
-            //     app_list = new Dictionary<string, AppConfig>
+            //     AppList = new()
             //     {
             //         {
             //             "googleplay",
             //             new AppConfig()
             //             {
-            //                 app_url = "http://127.0.0.1",
-            //                 app_ver = new Dictionary<int, Resver>()
+            //                 AppUrl = "http://127.0.0.1",
+            //                 AppVer = new()
             //                 {
             //                     {
             //                         1,
             //                         new Resver()
             //                         {
-            //                             channel = new List<string>() { "all" },
-            //                             update_tailnumber = new List<string>() { "all" },
+            //                             Channel = new() {"all"},
+            //                             UpdateTailNumber = new() {"all"},
             //                         }
             //                     }
             //                 }
             //             }
             //         }
             //     },
-            //     res_list = new Dictionary<string, Dictionary<int, Resver>>
+            //     ResList = new()
             //     {
             //         {
             //             "googleplay",
-            //             new Dictionary<int, Resver>
+            //             new()
             //             {
             //                 {
             //                     1,
             //                     new Resver
             //                     {
-            //                         channel = new List<string>() { "all" }, update_tailnumber = new List<string>() { "all" },
+            //                         Channel = new() {"all"}, UpdateTailNumber = new() {"all"},
             //                     }
             //                 }
             //             }

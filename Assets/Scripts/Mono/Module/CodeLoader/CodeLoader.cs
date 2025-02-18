@@ -104,8 +104,8 @@ namespace TaoTie
 				{
 					byte[] assBytes = null;
 					byte[] pdbBytes= null;
-					
-					if (this.assemblyVer != YooAssetsMgr.Instance.Config.Resver)//dll版本不同
+					int version =  PackageManager.Instance.Config.GetPackageMaxVersion(Define.DefaultName);
+					if (this.assemblyVer != version)//dll版本不同
 					{
 						this.assembly = null;
 					}
@@ -117,7 +117,7 @@ namespace TaoTie
 						if (assBytes != null)
 						{
 							assembly = Assembly.Load(assBytes, pdbBytes);
-							Log.Info("Get Dll Success ! version=" + YooAssetsMgr.Instance.Config.Resver);
+							Log.Info("Get Dll Success ! version=" + version);
 						}
 						else
 						{
@@ -125,7 +125,7 @@ namespace TaoTie
 						}
 					}
 
-					this.assemblyVer = YooAssetsMgr.Instance.Config.Resver;//记录当前dll版本
+					this.assemblyVer = version;//记录当前dll版本
 					break;
 				}
 				case CodeMode.BuildIn:
@@ -147,7 +147,7 @@ namespace TaoTie
 				}
 				case CodeMode.LoadFromUrl:
 				{
-					int version = YooAssetsMgr.Instance.Config.Resver;
+					int version = PackageManager.Instance.Config.GetPackageMaxVersion(Define.DefaultName);
 					var path = PlayerPrefs.GetString("DEBUG_LoadFromUrlPath", "https://qqbkd.oss-cn-hangzhou.aliyuncs.com/cdn_test/");
 					path += $"Code{version}.dll.bytes";
 
@@ -174,7 +174,7 @@ namespace TaoTie
 
 			if (assembly != null)
 			{
-				this.assemblyVer = YooAssetsMgr.Instance.Config.Resver;//记录当前dll版本
+				this.assemblyVer = PackageManager.Instance.Config.GetPackageMaxVersion(Define.DefaultName);//记录当前dll版本
 				AssemblyManager.Instance.AddAssembly(GetType().Assembly);
 				AssemblyManager.Instance.AddHotfixAssembly(assembly);
 				IStaticAction start = new MonoStaticAction(assembly, "TaoTie.Entry", "Start");
@@ -187,16 +187,17 @@ namespace TaoTie
 		}
 		private async ETTask<(byte[],byte[])> GetBytes()
 		{
+			int version = PackageManager.Instance.Config.GetPackageMaxVersion(Define.DefaultName);
 			byte[] assBytes = null, pdbBytes = null;
-			if (YooAssetsMgr.Instance.PlayMode != YooAsset.EPlayMode.EditorSimulateMode)
+			if (PackageManager.Instance.PlayMode != YooAsset.EPlayMode.EditorSimulateMode)
 			{
-				var op = YooAssetsMgr.Instance.LoadAssetAsync<TextAsset>(
-					$"{Define.HotfixLoadDir}Code{YooAssetsMgr.Instance.Config.Resver}.dll.bytes",YooAssetsMgr.DefaultName);
+				var op = PackageManager.Instance.LoadAssetAsync<TextAsset>(
+					$"{Define.HotfixLoadDir}Code{version}.dll.bytes",Define.DefaultName);
 				await op.Task;
 				assBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
-				op = YooAssetsMgr.Instance.LoadAssetAsync<TextAsset>(
-					$"{Define.HotfixLoadDir}Code{YooAssetsMgr.Instance.Config.Resver}.pdb.bytes",YooAssetsMgr.DefaultName);
+				op = PackageManager.Instance.LoadAssetAsync<TextAsset>(
+					$"{Define.HotfixLoadDir}Code{version}.pdb.bytes",Define.DefaultName);
 				await op.Task;
 				pdbBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
@@ -204,8 +205,6 @@ namespace TaoTie
 #if UNITY_EDITOR
 			else
 			{
-				var obj = YooAssetsMgr.Instance.Config;
-				int version = obj.Resver;
 				assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", TypeInfo<TextAsset>.Type) as TextAsset)
 					.bytes;
 				pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", TypeInfo<TextAsset>.Type) as TextAsset)

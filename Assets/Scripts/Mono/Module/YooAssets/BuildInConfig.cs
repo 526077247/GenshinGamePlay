@@ -6,37 +6,54 @@ namespace TaoTie
 {
     public class BuildInConfig
     {
-        public int Resver;
-        public int Dllver;
+        public int DefaultPackageVersion;
+        public Dictionary<int, string[]> OtherPackageMaxVer;
+
+        public int GetPackageMaxVersion(string name)
+        {
+            if (name == Define.DefaultName)
+            {
+                return DefaultPackageVersion;
+            }
+            var ver = -1;
+            if (OtherPackageMaxVer == null) return ver;
+            foreach (var item in OtherPackageMaxVer)
+            {
+                if(item.Value == null) continue;
+                for (int i = 0; i < item.Value.Length; i++)
+                {
+                    if (item.Value[i] == name)
+                    {
+                        return item.Key;
+                    } 
+                }
+            }
+            return ver;
+        }
     }
     
     public class WhiteConfig
     {
-        public int env_id;
-        public string account;
+        public int EnvId;
+        public string Account;
     }
     
     public class Resver
     {
-        public List<string> channel;
-        public List<string> update_tailnumber;
-        public int force_update;
-        public int max_res_ver;
+        public List<string> Channel;
+        public List<string> UpdateTailNumber;
+        public int ForceUpdate;
+        public int MaxResVer;
     }
     public class AppConfig
     {
-        public string app_url;
-        public Dictionary<int, Resver> app_ver;
-        public string jump_channel;
+        public string AppUrl;
+        public Dictionary<int, Resver> AppVer;
+        public string JumpChannel;
     }
     public class UpdateConfig
     {
-        public Dictionary<string,Dictionary<int, Resver>> res_list;
-        public Dictionary<string, AppConfig> app_list;
-    }
-    
-    public class PackageConfig
-    {
-        public Dictionary<string,int> packageVer;
+        public Dictionary<string,Dictionary<int, Resver>> ResList;
+        public Dictionary<string, AppConfig> AppList;
     }
 }

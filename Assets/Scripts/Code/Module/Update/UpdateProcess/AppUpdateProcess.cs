@@ -7,9 +7,9 @@ namespace TaoTie
     {
         public override async ETTask<UpdateRes> Process(UpdateTask task)
         {
-            var appChannel = YooAssetsMgr.Instance.CdnConfig.Channel;
+            var appChannel = PackageManager.Instance.CdnConfig.Channel;
             var channelAppUpdateList = ServerConfigManager.Instance.GetAppUpdateListByChannel(appChannel);
-            if (channelAppUpdateList == null || channelAppUpdateList.app_ver == null)
+            if (channelAppUpdateList == null || channelAppUpdateList.AppVer == null)
             {
                 Log.Info("CheckAppUpdate channel_app_update_list or app_ver is nil, so return");
                 return UpdateRes.Over;
@@ -31,16 +31,16 @@ namespace TaoTie
                 return UpdateRes.Over;
             }
 
-            var appURL = channelAppUpdateList.app_url;
-            channelAppUpdateList.app_ver.TryGetValue(appVer, out var verInfo);//按当前版本来
+            var appURL = channelAppUpdateList.AppUrl;
+            channelAppUpdateList.AppVer.TryGetValue(appVer, out var verInfo);//按当前版本来
             Log.Info("CheckAppUpdate app_url = " + appURL);
             if (!Define.ForceUpdate)
             {
-                if (verInfo != null && verInfo.force_update == -1)//直接不提示
+                if (verInfo != null && verInfo.ForceUpdate == -1)//直接不提示
                     return UpdateRes.Over;
             }
             var forceUpdate = Define.ForceUpdate; 
-            if (verInfo != null && verInfo.force_update != 0)
+            if (verInfo != null && verInfo.ForceUpdate != 0)
                 forceUpdate = true;
 
             var check = CacheManager.Instance.GetInt(CacheKeys.CheckAppUpdate + version, 0);

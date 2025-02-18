@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public async ETTask GetAllConfigBytes(Dictionary<string, byte[]> output)
         {
-            var assets = YooAssetsMgr.Instance.GetAssetInfos("config",YooAssetsMgr.DefaultName);
+            var assets = PackageManager.Instance.GetAssetInfos("config",Define.DefaultName);
 
             using (ListComponent<ETTask> tasks = new ListComponent<ETTask>())
             {
@@ -22,7 +22,7 @@ namespace TaoTie
         }
         private async ETTask LoadConfigBytes(AssetInfo asset,Dictionary<string, byte[]> output)
         {
-            var op = YooAssetsMgr.Instance.LoadAssetAsync(asset,YooAssetsMgr.DefaultName);
+            var op = PackageManager.Instance.LoadAssetAsync(asset,Define.DefaultName);
             await op.Task;
             TextAsset v = op.AssetObject as TextAsset;
             string key = asset.Address;

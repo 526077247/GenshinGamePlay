@@ -89,7 +89,7 @@ namespace TaoTie
                 playableDirector = null;
                 playObj = null;
                 GameObjectPoolManager.GetInstance().Cleanup();
-                YooAssetsMgr.Instance.UnloadUnusedAssets();
+                PackageManager.Instance.UnloadUnusedAssets();
             }
         }
 

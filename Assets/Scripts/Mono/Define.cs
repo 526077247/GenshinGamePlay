@@ -2,9 +2,10 @@
 namespace TaoTie
 {
     public static class Define
-    {
+    { 
+        public const byte KEY = 64;
         public const string BuildOutputDir = "./Temp/Bin/Debug";
-
+        public const string DefaultName = "DefaultPackage";
         public static bool IsSH;
         
         public const string HotfixLoadDir = "Code/Hotfix/";
