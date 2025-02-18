@@ -274,7 +274,7 @@ namespace TaoTie
 		{
 			string[] ArtFolderNames = { "Animations", "Materials", "Models", "Textures", "Prefabs" };
 			string[] UnitFolderNames = { "Animations", "Edit", "Materials", "Models", "Textures", "Prefabs" };
-			string[] UIFolderNames = { "Animations", "Atlas", "DiscreteImages","DynamicAtlas", "Prefabs" };
+			string[] UIFolderNames = { "Animations", "Atlas", "DiscreteImages", "Prefabs" };
 			Debug.Log(selectPath);
 			if (Directory.Exists(selectPath))
 			{

@@ -126,14 +126,7 @@ namespace TaoTie
             if (assetPath.Contains("Assets/AssetsPackage/UI") && ti.textureType != TextureImporterType.Sprite)
             {
                 //动态图集需要Texture
-                if (assetPath.Contains("DynamicAtlas"))
-                {
-                    ti.textureType = TextureImporterType.Default;
-                }
-                else
-                {
-                    ti.textureType = TextureImporterType.Sprite;
-                }
+                ti.textureType = TextureImporterType.Sprite;
 
                 saveAndReimport = true;
             }

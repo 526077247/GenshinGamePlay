@@ -13,7 +13,6 @@ namespace TaoTie
         {
             public static int Sprite = 0;
             public static int SpriteAtlas = 1;
-            public static int DynSpriteAtlas = 2;
         }
         private class SpriteValue
         {
@@ -55,15 +54,12 @@ namespace TaoTie
         }
         
         private const string ATLAS_KEY = "/Atlas/";
-        private const string DYN_ATLAS_KEY="/DynamicAtlas/";
         public static ImageLoaderManager Instance { get; private set; }
 
         private LruCache<string, SpriteValue> cacheSingleSprite;
 
         private LruCache<string, SpriteAtlasValue> cacheSpriteAtlas;
 
-        private Dictionary<string, DynamicAtlas> cacheDynamicAtlas;
-        
         private Dictionary<string, OnlineImage> cacheOnlineImage;
 
 
@@ -74,7 +70,6 @@ namespace TaoTie
             Instance = this;
             this.cacheSingleSprite = new LruCache<string, SpriteValue>();
             this.cacheSpriteAtlas = new LruCache<string, SpriteAtlasValue>();
-            this.cacheDynamicAtlas = new Dictionary<string, DynamicAtlas>();
             cacheOnlineImage = new Dictionary<string, OnlineImage>();
             this.InitSingleSpriteCache(this.cacheSingleSprite);
             this.InitSpriteAtlasCache(this.cacheSpriteAtlas);
@@ -85,7 +80,6 @@ namespace TaoTie
         {
             this.Clear();
             this.cacheOnlineImage = null;
-            this.cacheDynamicAtlas = null;
             this.cacheSingleSprite = null;
             this.cacheSpriteAtlas = null;
             Instance = null;
@@ -93,15 +87,6 @@ namespace TaoTie
 
         #endregion
         
-        async ETTask PreLoad()
-        {
-            for (int i = 0; i < 2; i++)//看情况提前预加载，加载会卡顿
-            {
-                await TimerManager.Instance.WaitAsync(1);
-                var temp = DynamicAtlasPage.OnCreate(i, DynamicAtlasGroup.Size_2048, DynamicAtlasGroup.Size_2048,null);
-                temp.Dispose();
-            }
-        }
         void InitSpriteAtlasCache(LruCache<string, SpriteAtlasValue> cache)
         {
             cache.SetCheckCanPopCallback((string key, SpriteAtlasValue value) => {
@@ -168,10 +153,6 @@ namespace TaoTie
                 {
                     res = await this.LoadSingleImageAsyncInternal( assetAddress,callback);
                 }
-                else if (assetType == SpriteType.DynSpriteAtlas)
-                {
-                    res = await this.LoadDynSpriteImageAsyncInternal(assetAddress, callback);
-                }
                 else
                 {
                     res = await this.LoadSpriteImageAsyncInternal(assetAddress, subAssetName, callback);
@@ -215,15 +196,6 @@ namespace TaoTie
                             }
                         }
                     }
-                }
-            }
-            else if (assetType == SpriteType.DynSpriteAtlas)
-            {
-                var index = assetAddress.IndexOf(DYN_ATLAS_KEY);
-                var path = assetAddress.Substring(0, index);
-                if (this.cacheDynamicAtlas.TryGetValue(path, out var value))
-                {
-                    value.RemoveTexture(imagePath);
                 }
             }
             else
@@ -397,19 +369,8 @@ namespace TaoTie
             if (index < 0)
             {
                 //没有找到/atlas/，则是散图
-                index = imagePath.IndexOf(DYN_ATLAS_KEY);
-                if (index < 0)
-                {
-                    //是散图
-                    assetType = SpriteType.Sprite;
-                    return;
-                }
-                else
-                {
-                    //是动态图集
-                    assetType = SpriteType.DynSpriteAtlas;
-                    return;
-                }
+                assetType = SpriteType.Sprite;
+                return;
             }
             assetType = SpriteType.SpriteAtlas;
             var substr = imagePath.Substring(index + ATLAS_KEY.Length);
@@ -525,68 +486,7 @@ namespace TaoTie
             callback?.Invoke(null);
             return null;
         }
-
-        async ETTask<Sprite> LoadDynSpriteImageAsyncInternal(
-             string assetAddress, Action<Sprite> callback)
-        {
-            Dictionary<string, DynamicAtlas> cacheCls = this.cacheDynamicAtlas;
-            var index = assetAddress.IndexOf(DYN_ATLAS_KEY);
-            var path = assetAddress.Substring(0, index);
-            if (cacheCls.TryGetValue(path, out DynamicAtlas valueC))
-            {
-                Sprite result;
-                if (valueC.TryGetSprite(assetAddress,out result))
-                {
-                    callback?.Invoke(result);
-                    return result;
-                }
-                else
-                {
-                    var texture = await ResourcesManager.Instance.LoadAsync<Texture>(assetAddress);
-                    if (texture == null)
-                    {
-                        Log.Error("image not found:" + assetAddress);
-                        callback?.Invoke(null);
-                        return null;
-                    }
-                    valueC.SetTexture(assetAddress,texture);
-                    ResourcesManager.Instance.ReleaseAsset(texture);//动态图集拷贝过了，直接释放
-                    if (valueC.TryGetSprite(assetAddress,out  result))
-                    {
-                        callback?.Invoke(result);
-                        return result;
-                    }
-                    Log.Error("image not found:" + assetAddress );
-                    callback?.Invoke(null);
-                    return null;
-                }
-            }
-            else
-            {
-                // Log.Info(this.Id +" "+ cacheCls.Count);
-                Log.Info("CreateNewDynamicAtlas  ||"+path+"||");
-                valueC = new DynamicAtlas(DynamicAtlasGroup.Size_2048);
-                cacheCls.Add(path,valueC);
-                // Log.Info(this.Id +" "+ cacheCls.Count);
-                var texture = await ResourcesManager.Instance.LoadAsync<Texture>(assetAddress);
-                if (texture == null)
-                {
-                    Log.Error("image not found:" + assetAddress );
-                    callback?.Invoke(null);
-                    return null;
-                }
-                valueC.SetTexture(assetAddress,texture);
-                ResourcesManager.Instance.ReleaseAsset(texture);//动态图集拷贝过了，直接释放
-                if (valueC.TryGetSprite(assetAddress,out var result))
-                {
-                    callback?.Invoke(result);
-                    return result;
-                }
-                Log.Error("image not found:" + assetAddress);
-                callback?.Invoke(null);
-                return null;
-            }
-        }
+        
         #endregion
 
         public void Cleanup()
@@ -618,12 +518,6 @@ namespace TaoTie
                 value.RefCount = 0;
             }
             this.cacheSingleSprite.Clear();
-
-            foreach (var item in this.cacheDynamicAtlas)
-            {
-                item.Value.Dispose();
-            }
-            this.cacheDynamicAtlas.Clear();
 
             foreach (var item in this.cacheOnlineImage)
             {

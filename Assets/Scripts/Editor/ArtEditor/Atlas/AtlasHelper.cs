@@ -18,7 +18,6 @@ namespace TaoTie
         public static string AtlasName = "Atlas";
 
         public static string DiscreteImagesName = "DiscreteImages";
-        public static string DynamicAtlasName = "DynamicAtlas";
         public static string[] uipaths = {"UI", "UIGame", /*"UIHall"*/};
         /// <summary>
         /// 将UI目录下的小图 打成  图集
@@ -46,8 +45,7 @@ namespace TaoTie
                 bool hasAtlas = false;
                 //目录是否有DiscreteImages目录
                 bool hasDiscreteImages = false;
-                //目录是否有DynamicAtlas目录
-                bool hasDynamicAtlas = false;
+                
                 foreach (DirectoryInfo seconddirInfo in dirInfo.GetDirectories())
                 {
                     if (seconddirInfo.Name == AtlasName)
@@ -58,11 +56,6 @@ namespace TaoTie
                     if (seconddirInfo.Name == DiscreteImagesName)
                     {
                         hasDiscreteImages = true;
-                    }
-
-                    if (seconddirInfo.Name == DynamicAtlasName)
-                    {
-                        hasDynamicAtlas = true;
                     }
                 }
 
@@ -93,15 +86,6 @@ namespace TaoTie
                         new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
                     SetImagesFormat(discreteImagesDirInfo);
                 }
-
-                if (hasDynamicAtlas)
-                {
-                    //DynamicAtlas目录下的所以图片
-                    DirectoryInfo discreteImagesDirInfo =
-                        new DirectoryInfo(Path.Combine(dirInfo.FullName, DynamicAtlasName));
-                    SetImagesFormat(discreteImagesDirInfo, true);
-                }
-
             }
         }
 
