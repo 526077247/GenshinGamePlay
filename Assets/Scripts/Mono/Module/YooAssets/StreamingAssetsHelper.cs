@@ -51,7 +51,7 @@ namespace TaoTie
 			UnityEditor.AssetDatabase.CreateAsset(data, saveFilePath);
 			UnityEditor.AssetDatabase.SaveAssets();
 			UnityEditor.AssetDatabase.Refresh();
-			Debug.Log($"一共{data.PackageName.Count}个内置文件，内置版本清单保存成功 : {saveFilePath}");
+			Debug.Log($"一共{data.PackageName.Count}个内置包，内置版本清单保存成功 : {saveFilePath}");
 		}
 	}
 #endif

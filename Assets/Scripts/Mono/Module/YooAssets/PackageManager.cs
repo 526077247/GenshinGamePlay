@@ -87,8 +87,6 @@ namespace TaoTie
                 }
                 IRemoteServices remoteServices = new RemoteServices(CdnConfig);
                 var webServerFileSystemParams = FileSystemParameters.CreateDefaultWebServerFileSystemParameters(new WebDecryption());
-                if(BuildInPackageConfig!=null && BuildInPackageConfig.PackageName.Contains(packageName))
-                    webServerFileSystemParams.AddParameter(FileSystemParametersDefine.COPY_BUILDIN_PACKAGE_MANIFEST, true);
                 var webRemoteFileSystemParams = FileSystemParameters.CreateDefaultWebRemoteFileSystemParameters(remoteServices,new WebDecryption()); //支持跨域下载
     
                 var initParameters = new WebPlayModeParameters();
@@ -103,7 +101,7 @@ namespace TaoTie
             }
             else
 #endif
-                // 单机运行模式
+            // 单机运行模式
             if (mode == EPlayMode.OfflinePlayMode)
             {
                 if (offlinePlayModeParameters == null)
@@ -137,10 +135,7 @@ namespace TaoTie
                     var cacheFileSystemParams = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices,new FileStreamDecryption());
                     var buildinFileSystemParams = FileSystemParameters.CreateDefaultBuildinFileSystemParameters(new FileStreamDecryption());
                     if (BuildInPackageConfig != null && BuildInPackageConfig.PackageName.Contains(packageName))
-                    {
-                        Log.Info("Copy");
                         buildinFileSystemParams.AddParameter(FileSystemParametersDefine.COPY_BUILDIN_PACKAGE_MANIFEST, true);
-                    }
                     var initParameters = new HostPlayModeParameters();
                     initParameters.BuildinFileSystemParameters = buildinFileSystemParams; 
                     initParameters.CacheFileSystemParameters = cacheFileSystemParams;

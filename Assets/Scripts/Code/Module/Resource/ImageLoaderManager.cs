@@ -373,6 +373,7 @@ namespace TaoTie
                 return;
             }
             assetType = SpriteType.SpriteAtlas;
+            var prefix = imagePath.Substring(0, index+1);
             var substr = imagePath.Substring(index + ATLAS_KEY.Length);
             var subIndex = substr.IndexOf('/');
             string atlasPath;
@@ -380,7 +381,6 @@ namespace TaoTie
             if (subIndex >= 0)
             {
                 //有子目录
-                var prefix = imagePath.Substring(0, index+1);
                 var name = substr.Substring(0, subIndex);
                 atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
                 var dotIndex = substr.LastIndexOf(".");
@@ -389,13 +389,8 @@ namespace TaoTie
             }
             else
             {
-                var prefix = imagePath.Substring(0, index + 1);
-
                 atlasPath = prefix + "Atlas.spriteatlas";
-
-
                 var dotIndex = substr.LastIndexOf(".");
-
                 spriteName = substr.Substring(0, dotIndex);
             }
             assetAddress = atlasPath;

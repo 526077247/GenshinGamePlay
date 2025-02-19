@@ -211,22 +211,21 @@ namespace YooAsset.Editor
                 if (result.Contains(dependAssetPath))
                     continue;
                 //图集资源
-                var index = assetPath.IndexOf(ATLAS_KEY);
+                var index = dependAssetPath.IndexOf(ATLAS_KEY);
                 if (index > 0)
                 {
-                    var substr = assetPath.Substring(index + ATLAS_KEY.Length);
+                    var prefix = dependAssetPath.Substring(0, index + 1);
+                    var substr = dependAssetPath.Substring(index + ATLAS_KEY.Length);
                     var subIndex = substr.IndexOf('/');
                     string atlasPath;
                     if (subIndex >= 0)
                     {
                         //有子目录
-                        var prefix = assetPath.Substring(0, index + 1);
                         var name = substr.Substring(0, subIndex);
                         atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
                     }
                     else
                     {
-                        var prefix = assetPath.Substring(0, index + 1);
                         atlasPath = prefix + "Atlas.spriteatlas";
                     }
                     if (!result.Contains(atlasPath))

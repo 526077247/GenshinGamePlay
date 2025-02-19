@@ -8,8 +8,8 @@ namespace YooAsset
         private enum ESteps
         {
             None,
-            CopyBuildinManifest,
             InitUnpackFileSystem,
+            CopyBuildinManifest,
             LoadCatalogFile,
             Done,
         }
@@ -31,40 +31,14 @@ namespace YooAsset
             Status = EOperationStatus.Failed;
             Error = $"{nameof(DefaultBuildinFileSystem)} is not support WEBGL platform !";
 #else
-            if (_fileSystem.CopyBuildinPackageManifest)
-                _steps = ESteps.CopyBuildinManifest;
-            else
-                _steps = ESteps.InitUnpackFileSystem;
+            _steps = ESteps.InitUnpackFileSystem;
 #endif
         }
         internal override void InternalOnUpdate()
         {
             if (_steps == ESteps.None || _steps == ESteps.Done)
                 return;
-
-            if (_steps == ESteps.CopyBuildinManifest)
-            {
-                if (_copyBuildinPackageManifestOp == null)
-                {
-                    _copyBuildinPackageManifestOp = new CopyBuildinPackageManifestOperation(_fileSystem);
-                    OperationSystem.StartOperation(_fileSystem.PackageName, _copyBuildinPackageManifestOp);
-                }
-
-                if (_copyBuildinPackageManifestOp.IsDone == false)
-                    return;
-
-                if (_copyBuildinPackageManifestOp.Status == EOperationStatus.Succeed)
-                {
-                    _steps = ESteps.InitUnpackFileSystem;
-                }
-                else
-                {
-                    _steps = ESteps.Done;
-                    Status = EOperationStatus.Failed;
-                    Error = _copyBuildinPackageManifestOp.Error;
-                }
-            }
-
+            
             if (_steps == ESteps.InitUnpackFileSystem)
             {
                 if (_initUnpackFIleSystemOp == null)
@@ -76,7 +50,11 @@ namespace YooAsset
 
                 if (_initUnpackFIleSystemOp.Status == EOperationStatus.Succeed)
                 {
-                    if (_fileSystem.DisableCatalogFile)
+                    if (_fileSystem.CopyBuildinPackageManifest)
+                    {
+                        _steps = ESteps.CopyBuildinManifest;
+                    }
+                    else if (_fileSystem.DisableCatalogFile)
                     {
                         _steps = ESteps.Done;
                         Status = EOperationStatus.Succeed;
@@ -93,7 +71,38 @@ namespace YooAsset
                     Error = _initUnpackFIleSystemOp.Error;
                 }
             }
+            
+            if (_steps == ESteps.CopyBuildinManifest)
+            {
+                if (_copyBuildinPackageManifestOp == null)
+                {
+                    _copyBuildinPackageManifestOp = new CopyBuildinPackageManifestOperation(_fileSystem);
+                    OperationSystem.StartOperation(_fileSystem.PackageName, _copyBuildinPackageManifestOp);
+                }
 
+                if (_copyBuildinPackageManifestOp.IsDone == false)
+                    return;
+
+                if (_copyBuildinPackageManifestOp.Status == EOperationStatus.Succeed)
+                {
+                    if (_fileSystem.DisableCatalogFile)
+                    {
+                        _steps = ESteps.Done;
+                        Status = EOperationStatus.Succeed;
+                    }
+                    else
+                    {
+                        _steps = ESteps.LoadCatalogFile;
+                    }
+                }
+                else
+                {
+                    _steps = ESteps.Done;
+                    Status = EOperationStatus.Failed;
+                    Error = _copyBuildinPackageManifestOp.Error;
+                }
+            }
+            
             if (_steps == ESteps.LoadCatalogFile)
             {
                 if (_loadCatalogFileOp == null)

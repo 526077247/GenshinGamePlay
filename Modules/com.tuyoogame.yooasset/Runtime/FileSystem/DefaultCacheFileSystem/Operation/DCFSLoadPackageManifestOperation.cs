@@ -57,7 +57,7 @@ namespace YooAsset
                 else
                 {
                     _steps = ESteps.LoadCachePackageHash;
-                    Error = _downloadPackageHashOp.Error;
+                    Error = "DownloadPackageHash Error!\r\n" + _downloadPackageHashOp.Error;
                 }
             }
 
@@ -103,8 +103,15 @@ namespace YooAsset
                 {
                     _steps = ESteps.Done;
                     Status = EOperationStatus.Failed;
-                    if(string.IsNullOrEmpty(Error)) Error = _loadCachePackageHashOp.Error;
-                    ClearCacheFatalFile();
+                    if (string.IsNullOrEmpty(Error))
+                    {
+                        Error = _loadCachePackageHashOp.Error;
+                        ClearCacheFatalFile();
+                    }
+                    else
+                    {
+                        Error = "LoadCachePackageHash Error!\r\n" + _loadCachePackageHashOp.Error + "\r\n" + Error;
+                    }
                 }
             }
 
