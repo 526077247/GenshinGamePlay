@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class BuildInConfig
+    public class PackageConfig
     {
         public int DefaultPackageVersion;
         public Dictionary<int, string[]> OtherPackageMaxVer;

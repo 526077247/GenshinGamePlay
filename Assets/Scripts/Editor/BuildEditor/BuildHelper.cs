@@ -166,7 +166,7 @@ namespace TaoTie
             }
 
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
+            var obj = JsonHelper.FromJson<PackageConfig>(jstr);
             int version = obj.GetPackageMaxVersion(packageName);
             if (version<0)
             {
@@ -223,7 +223,7 @@ namespace TaoTie
         private static void BuildInternal(BuildTarget buildTarget,bool isBuildAll, bool isContainsAb, string channel)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
+            var obj = JsonHelper.FromJson<PackageConfig>(jstr);
             int buildVersion = obj.GetPackageMaxVersion(Define.DefaultName);
             Debug.Log($"开始构建 : {buildTarget}");
             BuildPackage(buildTarget, isBuildAll, buildVersion, Define.DefaultName, channel);
@@ -314,20 +314,6 @@ namespace TaoTie
             bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
             string channel, bool buildDll = true)
         {
-            var scene = EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
-            var init = GameObject.Find("Global").GetComponent<Init>();
-#if UNITY_WEBGL
-            if (init.PlayMode != EPlayMode.WebPlayMode) 
-            {
-                init.PlayMode = EPlayMode.WebPlayMode;
-#else
-            if (init.PlayMode == EPlayMode.EditorSimulateMode || init.PlayMode == EPlayMode.WebPlayMode) 
-            {
-                init.PlayMode = EPlayMode.HostPlayMode;
-#endif
-                // init.CodeMode = CodeMode.Wolong;
-                EditorSceneManager.SaveScene(scene);
-            }
             var vs = Application.version.Split(".");
             var bundleVersionCode = int.Parse(vs[vs.Length-1]);
             string exeName = programName + "_" + channel;
@@ -438,7 +424,7 @@ namespace TaoTie
             }
             
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var obj = JsonHelper.FromJson<BuildInConfig>(jstr);
+            var obj = JsonHelper.FromJson<PackageConfig>(jstr);
             
             string fold = $"{AssetBundleBuilderHelper.GetDefaultBuildOutputRoot()}/{buildTarget}";
             var config = Resources.Load<CDNConfig>("CDNConfig");

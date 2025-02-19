@@ -43,6 +43,25 @@ namespace TaoTie
                     }
                 }
             }
+            
+            public async ETTask RunSubCoroutineAsync<T>(ETTask<T> task)
+            {
+                try
+                {
+                    await task;
+                }
+                finally
+                {
+                    --this.count;
+                
+                    if (this.count <= 0 && this.tcs != null)
+                    {
+                        ETTask t = this.tcs;
+                        this.tcs = null;
+                        t.SetResult();
+                    }
+                }
+            }
 
             public async ETTask WaitAsync()
             {
@@ -116,6 +135,23 @@ namespace TaoTie
             CoroutineBlocker coroutineBlocker = new CoroutineBlocker(tasks.Count);
 
             foreach (ETTask task in tasks)
+            {
+                coroutineBlocker.RunSubCoroutineAsync(task).Coroutine();
+            }
+
+            await coroutineBlocker.WaitAsync();
+        }
+        
+        public static async ETTask WaitAll<T>(List<ETTask<T>> tasks)
+        {
+            if (tasks.Count == 0)
+            {
+                return;
+            }
+
+            CoroutineBlocker coroutineBlocker = new CoroutineBlocker(tasks.Count);
+
+            foreach (ETTask<T> task in tasks)
             {
                 coroutineBlocker.RunSubCoroutineAsync(task).Coroutine();
             }

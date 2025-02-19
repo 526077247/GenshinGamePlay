@@ -7,13 +7,7 @@ namespace TaoTie
     {
         private bool forceUpdate;
 
-        public override ETTask<UpdateRes> Process(UpdateTask task)
-        {
-            Log.Info("ProcessWithPackage");
-            return ProcessOnlyMain(task);
-        }
-
-        private async ETTask<UpdateRes> ProcessOnlyMain(UpdateTask task)
+        public override async ETTask<UpdateRes> Process(UpdateTask task)
         {
             var channel = PackageManager.Instance.CdnConfig.Channel;
             
@@ -96,7 +90,7 @@ namespace TaoTie
             //开始进行更新
             task.SetDownloadSize(size,0);
 
-            //2、更新资源
+            //更新资源
             downloader.DownloadUpdateCallback = (a) =>
             {
                 task.SetDownloadSize(a.TotalDownloadBytes,a.CurrentDownloadBytes);

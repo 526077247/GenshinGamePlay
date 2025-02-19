@@ -6,13 +6,18 @@ namespace TaoTie
 {
     public class OtherPackageUpdateProcess: UpdateProcess
     {
-        public string[] PackageNames;
+        private string[] PackageNames;
         public Func<ETTask<bool>> OnUpdateFail;
         public bool ForceUpdate = false;
-        private BuildInConfig Config => PackageManager.Instance.Config;
+        private PackageConfig Config => PackageManager.Instance.Config;
+        private OtherPackageUpdateProcess(){}
+        public OtherPackageUpdateProcess(params string[] packageNames)
+        {
+            PackageNames = packageNames;
+        }
         public override async ETTask<UpdateRes> Process(UpdateTask task)
         {
-            Log.Info("ProcessWithPackage");
+            if (PackageNames == null || PackageNames.Length <= 0) return UpdateRes.Over;
             // 非网络运行模式下跳过。
             if (PackageManager.Instance.PlayMode == EPlayMode.WebPlayMode && 
                 PackageManager.Instance.PlayMode == EPlayMode.HostPlayMode)
@@ -20,13 +25,21 @@ namespace TaoTie
                 Log.Info("非网络运行模式");
                 return UpdateRes.Over;
             }
-            if (PackageNames == null || PackageNames.Length <= 0) return UpdateRes.Over;
-            
-            // 更新补丁清单
-            Log.Info("更新补丁清单");
+
+            Log.Info("初始化分包");
+            using (ListComponent<ETTask<ResourcePackage>> tasks = ListComponent<ETTask<ResourcePackage>>.Create())
+            {
+                for (int i = 0; i < PackageNames.Length; i++)
+                {
+                    tasks.Add(PackageManager.Instance.GetPackageAsync(PackageNames[i]));
+                }
+                await ETTaskHelper.WaitAll(tasks);
+            }
+
+            Log.Info("更新分包补丁清单");
             for (int i = 0; i < PackageNames.Length; i++)
             {
-                await PackageManager.Instance.GetPackage(PackageNames[i]);
+                await PackageManager.Instance.GetPackageAsync(PackageNames[i]);
                 var maxVer = Config.GetPackageMaxVersion(PackageNames[i]);
                 var version = PackageManager.Instance.GetPackageVersion(PackageNames[i]);
                 if (version != maxVer)
@@ -41,7 +54,7 @@ namespace TaoTie
                 }
             }
             
-            Log.Info("创建补丁下载器.");
+            Log.Info("创建分包补丁下载器.");
             ResourceDownloaderOperation downloader = null;
             for (int i = 0; i < PackageNames.Length; i++)
             {
@@ -59,18 +72,18 @@ namespace TaoTie
                 }
             }
 
-            if (downloader == null)
+            if (downloader == null || downloader.TotalDownloadCount == 0)
             {
-                Log.Info("没有发现需要下载的资源");
+                Log.Info("没有发现分包需要下载的资源");
                 return UpdateRes.Over;
             }
             
             //获取需要更新的大小
             var size = downloader.TotalDownloadBytes;
             //提示给用户
-            Log.Info("downloadSize " + size);
+            Log.Info("分包 downloadSize " + size);
             double sizeMb = size / (1024f * 1024f);
-            Log.Info("CheckResUpdate res size_mb is " + sizeMb);//不屏蔽
+            Log.Info("CheckOtherPackageUpdate res size_mb is " + sizeMb);//不屏蔽
             if (sizeMb > 0 && sizeMb < 0.01) sizeMb = 0.01;
            
 
@@ -88,18 +101,17 @@ namespace TaoTie
                 //版本号设回去
                 return await ResetVersion(task);
             }
-
             
             //开始进行更新
             task.SetDownloadSize(size,0);
 
-            //2、更新资源
+            //更新资源
             downloader.DownloadUpdateCallback = (a) =>
             {
                 task.SetDownloadSize(a.TotalDownloadBytes,a.CurrentDownloadBytes);
             };
             downloader.BeginDownload();
-            Log.Info("CheckResUpdate DownloadContent begin");
+            Log.Info("CheckOtherPackageUpdate DownloadContent begin");
             await downloader.Task;
 
             if (downloader.Status != EOperationStatus.Succeed)
@@ -108,8 +120,8 @@ namespace TaoTie
                 return await UpdateFail(task, true);
             }
             
-            Log.Info("CheckResUpdate DownloadContent Success");
-            return UpdateRes.Restart;
+            Log.Info("CheckOtherPackageUpdate DownloadContent Success");
+            return UpdateRes.Over;
             
         }
 

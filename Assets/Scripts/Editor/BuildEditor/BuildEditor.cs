@@ -68,7 +68,7 @@ namespace TaoTie
 		private BuildSettings buildSettings;
 		private int package;
 
-		private BuildInConfig config;
+		private PackageConfig config;
 
 		[MenuItem("Tools/打包工具")]
 		public static void ShowWindow()
@@ -132,7 +132,7 @@ namespace TaoTie
 			if (this.config == null)
 			{
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-				config = JsonHelper.FromJson<BuildInConfig>(jstr);
+				config = JsonHelper.FromJson<PackageConfig>(jstr);
 			}
 			EditorGUILayout.LabelField("资源版本：" + this.config.GetPackageMaxVersion(Define.DefaultName));
 			if (GUILayout.Button("修改配置"))
@@ -142,7 +142,7 @@ namespace TaoTie
 			if (GUILayout.Button("刷新配置"))
 			{
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-				config = JsonHelper.FromJson<BuildInConfig>(jstr);
+				config = JsonHelper.FromJson<PackageConfig>(jstr);
 			}
 			EditorGUILayout.LabelField("");
 
@@ -155,8 +155,9 @@ namespace TaoTie
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
-	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle("  打AOT?(代码混淆会失效): ", this.buildHotfixAssembliesAOT);
-	            this.isBuildAll = EditorGUILayout.Toggle("    全量资源是否打进包:", this.isBuildAll);
+	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle(new GUIContent("   *热更代码是否打AOT:","可以把热更代码同时打一份到il2cpp，但是会增加构建代码大小（未使用热更方案时必须勾选此项）"), 
+		            this.buildHotfixAssembliesAOT);
+	            this.isBuildAll = EditorGUILayout.Toggle("   全量资源是否打进包:", this.isBuildAll);
 	            EditorGUILayout.LabelField("服务器:");
 	            this.buildMode = (Mode)EditorGUILayout.EnumPopup(buildMode);
             }

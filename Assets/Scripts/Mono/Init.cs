@@ -1,23 +1,21 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using YooAsset;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using UnityEngine;
+
 namespace TaoTie
 {
 
 	public enum CodeMode
 	{
-		LoadDll = 1,//加载dll
-		BuildIn = 2,//直接打进整包
+		LoadDll = 1, //加载dll
+		BuildIn = 2, //直接打进整包
+
 		// Wolong = 3,
 		LoadFromUrl = 4,
 	}
-	
-	public class Init: MonoBehaviour
+
+	public class Init : MonoBehaviour
 	{
 		public CodeMode CodeMode = CodeMode.LoadDll;
 
@@ -26,21 +24,26 @@ namespace TaoTie
 		private bool IsInit = false;
 
 		private WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+
 		private async ETTask AwakeAsync()
 		{
+#if !UNITY_EDITOR
 #if UNITY_WEBGL
-			if (PlayMode == EPlayMode.HostPlayMode)
+			if (PlayMode != EPlayMode.WebPlayMode)
 			{
 				PlayMode = EPlayMode.WebPlayMode;
+				Debug.LogError("Error PlayMode! " + PlayMode);
 			}
 #else
-			if (PlayMode == EPlayMode.WebPlayMode)
+			if (PlayMode == EPlayMode.EditorSimulateMode || PlayMode == EPlayMode.WebPlayMode)
 			{
 				PlayMode = EPlayMode.HostPlayMode;
+				Debug.LogError("Error PlayMode! " + PlayMode);
 			}	
 #endif
+#endif
 			InitUnitySetting();
-			
+
 			//设置时区
 			TimeInfo.Instance.TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
 // #if ENABLE_IL2CPP
@@ -57,14 +60,14 @@ namespace TaoTie
 			ETTask.ExceptionHandler += Log.Error;
 
 			Log.ILog = new UnityLogger();
-			
+
 			await PackageManager.Instance.Init(PlayMode);
-			
+
 			RegisterManager();
-			
+
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			IsInit = true;
-			
+
 			// CodeLoader.Instance.LoadMetadataForAOTAssembly(PlayMode);
 			await CodeLoader.Instance.Start();
 		}
@@ -84,6 +87,7 @@ namespace TaoTie
 			{
 				ReStart().Coroutine();
 			}
+
 			int count = WaitHelper.FrameFinishTask.Count;
 			if (count > 0)
 			{
@@ -116,7 +120,7 @@ namespace TaoTie
 			Log.Debug("ReStart");
 
 			RegisterManager();
-			
+
 			CodeLoader.Instance.OnApplicationQuit?.Invoke();
 			await CodeLoader.Instance.Start();
 		}
@@ -125,30 +129,32 @@ namespace TaoTie
 		{
 			ManagerProvider.RegisterManager<AssemblyManager>();
 		}
-		
+
 		private void LateUpdate()
 		{
 			CodeLoader.Instance.LateUpdate?.Invoke();
 		}
-		
+
 		private void FixedUpdate()
 		{
 			CodeLoader.Instance.FixedUpdate?.Invoke();
 		}
 
-
 		private void OnApplicationQuit()
 		{
 			CodeLoader.Instance.OnApplicationQuit?.Invoke();
 		}
+
 		void OnApplicationFocus(bool hasFocus)
 		{
 			CodeLoader.Instance.OnApplicationFocus?.Invoke(hasFocus);
 		}
+
 		void OnApplicationPause(bool pauseStatus)
 		{
 			CodeLoader.Instance.OnApplicationFocus?.Invoke(!pauseStatus);
 		}
+
 		// 一些unity的设置项目
 		void InitUnitySetting()
 		{

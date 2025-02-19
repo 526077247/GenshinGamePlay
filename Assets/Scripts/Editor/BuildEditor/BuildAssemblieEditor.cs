@@ -30,7 +30,7 @@ namespace TaoTie
         public static void BuildCodeDebug()
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var config = JsonHelper.FromJson<BuildInConfig>(jstr);
+            var config = JsonHelper.FromJson<PackageConfig>(jstr);
             string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
@@ -45,7 +45,7 @@ namespace TaoTie
         public static void BuildCodeRelease()
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var config = JsonHelper.FromJson<BuildInConfig>(jstr);
+            var config = JsonHelper.FromJson<PackageConfig>(jstr);
             string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
