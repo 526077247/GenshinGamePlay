@@ -135,9 +135,12 @@ namespace TaoTie
                 {
                     IRemoteServices remoteServices = new RemoteServices(CdnConfig);
                     var cacheFileSystemParams = FileSystemParameters.CreateDefaultCacheFileSystemParameters(remoteServices,new FileStreamDecryption());
-                    var buildinFileSystemParams = FileSystemParameters.CreateDefaultBuildinFileSystemParameters(new FileStreamDecryption());   
-                    if(BuildInPackageConfig!=null && BuildInPackageConfig.PackageName.Contains(packageName))
+                    var buildinFileSystemParams = FileSystemParameters.CreateDefaultBuildinFileSystemParameters(new FileStreamDecryption());
+                    if (BuildInPackageConfig != null && BuildInPackageConfig.PackageName.Contains(packageName))
+                    {
+                        Log.Info("Copy");
                         buildinFileSystemParams.AddParameter(FileSystemParametersDefine.COPY_BUILDIN_PACKAGE_MANIFEST, true);
+                    }
                     var initParameters = new HostPlayModeParameters();
                     initParameters.BuildinFileSystemParameters = buildinFileSystemParams; 
                     initParameters.CacheFileSystemParameters = cacheFileSystemParams;
@@ -206,25 +209,34 @@ namespace TaoTie
             }
             op.Release();
         }
-        public UnloadUnusedAssetsOperation UnloadUnusedAssets()
+        public async ETTask UnloadUnusedAssets(string package)
         {
-            return UnloadUnusedAssets(Define.DefaultName);
+            if (package == null) package = Define.DefaultName;
+            if (!packages.TryGetValue(package, out var packageInfo))
+            {
+                return;
+            }
+            var task = packageInfo.UnloadUnusedAssetsAsync();
+            await task.Task;
+            if (task.Status != EOperationStatus.Succeed)
+            {
+                Log.Error("UnloadUnusedAssets fail \r\n" + task.Error);
+            }
         }
-        public UnloadUnusedAssetsOperation UnloadUnusedAssets(string package)
+
+        public async ETTask ForceUnloadAllAssets(string package)
         {
-            var packageInfo = GetPackageSync(package);
-            Log.Info("UnloadUnusedAssets "+package);
-            return packageInfo?.UnloadUnusedAssetsAsync();
-        }
-        
-        public UnloadAllAssetsOperation ForceUnloadAllAssets()
-        {
-            return ForceUnloadAllAssets(Define.DefaultName);
-        }
-        public UnloadAllAssetsOperation ForceUnloadAllAssets(string package)
-        {
-            var packageInfo = GetPackageSync(package);
-            return packageInfo?.UnloadAllAssetsAsync();
+            if (package == null) package = Define.DefaultName;
+            if (!packages.TryGetValue(package, out var packageInfo))
+            {
+                return;
+            }
+            var task = packageInfo.UnloadAllAssetsAsync();
+            await task.Task;
+            if (task.Status != EOperationStatus.Succeed)
+            {
+                Log.Error("ForceUnloadAllAssets fail \r\n" + task.Error);
+            }
         }
 
         public AssetHandle LoadAssetSync<T>(string path,string package) where T : UnityEngine.Object

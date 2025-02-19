@@ -14,7 +14,7 @@ namespace YooAsset.Editor
     public class AssetDependencyDatabase
     {
         private const string FILE_VERSION = "1.0";
-
+        private const string ATLAS_KEY = "/Atlas/";
         private class DependencyInfo
         {
             /// <summary>
@@ -183,8 +183,10 @@ namespace YooAsset.Editor
             }
 
             var result = new HashSet<string> { assetPath };
-            CollectDependencies(assetPath, result, recursive);
-
+            if (!assetPath.EndsWith(".spriteatlas"))
+            {
+                CollectDependencies(assetPath, result, recursive);
+            }
             // 注意：AssetDatabase.GetDependencies保持一致，将主资源添加到依赖列表最前面
             return result.ToArray();
         }
@@ -208,7 +210,31 @@ namespace YooAsset.Editor
                 // 如果已经收集过
                 if (result.Contains(dependAssetPath))
                     continue;
-
+                //图集资源
+                var index = assetPath.IndexOf(ATLAS_KEY);
+                if (index > 0)
+                {
+                    var substr = assetPath.Substring(index + ATLAS_KEY.Length);
+                    var subIndex = substr.IndexOf('/');
+                    string atlasPath;
+                    if (subIndex >= 0)
+                    {
+                        //有子目录
+                        var prefix = assetPath.Substring(0, index + 1);
+                        var name = substr.Substring(0, subIndex);
+                        atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
+                    }
+                    else
+                    {
+                        var prefix = assetPath.Substring(0, index + 1);
+                        atlasPath = prefix + "Atlas.spriteatlas";
+                    }
+                    if (!result.Contains(atlasPath))
+                    {
+                        result.Add(atlasPath);
+                    }
+                    continue;
+                }
                 result.Add(dependAssetPath);
 
                 // 递归收集依赖

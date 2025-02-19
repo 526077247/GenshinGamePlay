@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: WoodChest
   m_Shader: {fileID: 4800000, guid: 335dcad6d9fdba943a91b0a9295ee10e, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _CELLSHADING
   - _EMISSION
@@ -27,6 +29,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -88,6 +91,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddRampShading: 0
     - _BumpMapKeyword: 1
     - _BumpScale: 1
     - _CELLSmoothing: 0.001
@@ -146,6 +150,7 @@ Material:
     - _UseEmissionTex: 1
     - _UseHalfLambert: 1
     - _UseRadianceOcclusion: 0
+    - _UseRampMapChannel: 0
     - _ZWrite: 1
     - _enum_diffuse: 0
     - _enum_env: 1
@@ -173,6 +178,7 @@ Material:
     - _PBRMetallicChannel: {r: 1, g: 0, b: 0, a: 0}
     - _PBROcclusionChannel: {r: 0, g: 1, b: 0, a: 0}
     - _PBRSmothnessChannel: {r: 0, g: 0, b: 0, a: 1}
+    - _RampMapVChannel: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularIntensityChannel: {r: 1, g: 0, b: 0, a: 0}

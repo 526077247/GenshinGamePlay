@@ -88,8 +88,9 @@ namespace TaoTie
                 GameObject.Destroy(playObj);
                 playableDirector = null;
                 playObj = null;
-                GameObjectPoolManager.GetInstance().Cleanup();
-                PackageManager.Instance.UnloadUnusedAssets();
+                //todo: 分包
+                GameObjectPoolManager.GetInstance(Define.DefaultName).Cleanup();
+                PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName).Coroutine();
             }
         }
 

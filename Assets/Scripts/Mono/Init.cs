@@ -21,13 +21,24 @@ namespace TaoTie
 	{
 		public CodeMode CodeMode = CodeMode.LoadDll;
 
-		public YooAsset.EPlayMode PlayMode = YooAsset.EPlayMode.EditorSimulateMode;
+		public EPlayMode PlayMode = EPlayMode.EditorSimulateMode;
 
 		private bool IsInit = false;
 
 		private WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
 		private async ETTask AwakeAsync()
 		{
+#if UNITY_WEBGL
+			if (PlayMode == EPlayMode.HostPlayMode)
+			{
+				PlayMode = EPlayMode.WebPlayMode;
+			}
+#else
+			if (PlayMode == EPlayMode.WebPlayMode)
+			{
+				PlayMode = EPlayMode.HostPlayMode;
+			}	
+#endif
 			InitUnitySetting();
 			
 			//设置时区
@@ -95,8 +106,7 @@ namespace TaoTie
 		{
 			CodeLoader.Instance.isReStart = false;
 			Resources.UnloadUnusedAssets();
-			var op = PackageManager.Instance.ForceUnloadAllAssets();
-			if(op!=null) await op.Task;
+			await PackageManager.Instance.ForceUnloadAllAssets(Define.DefaultName);
 			Resources.UnloadUnusedAssets();
 			ManagerProvider.Clear();
 			await PackageManager.Instance.UpdateConfig();

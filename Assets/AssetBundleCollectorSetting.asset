@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
   ShowPackageView: 1
-  ShowEditorAlias: 1
+  ShowEditorAlias: 0
   UniqueBundleName: 1
   Packages:
   - PackageName: DefaultPackage
@@ -42,7 +42,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackTopDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectUI
         AssetTags: 
         UserData: 
       - CollectPath: Assets/AssetsPackage/Config
@@ -74,7 +74,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackTopDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectUI
         AssetTags: 
         UserData: 
       - CollectPath: Assets/AssetsPackage/Audio

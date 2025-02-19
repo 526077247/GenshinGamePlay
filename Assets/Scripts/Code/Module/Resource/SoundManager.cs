@@ -256,7 +256,7 @@ namespace TaoTie
                             ResourcesManager.Instance.ReleaseAsset(old);
                             this.sounds.Remove(CurMusic);
                             var package = ResourcesManager.Instance.packageFinder.GetPackageName(path);
-                            PackageManager.Instance.UnloadUnusedAssets(package);
+                            PackageManager.Instance.UnloadUnusedAssets(package).Coroutine();
                         }
                         ClearMemory();
                     }
@@ -286,7 +286,7 @@ namespace TaoTie
                         ResourcesManager.Instance.ReleaseAsset(old);
                         this.sounds.Remove(path);
                         var package = ResourcesManager.Instance.packageFinder.GetPackageName(path);
-                        PackageManager.Instance.UnloadUnusedAssets(package);
+                        PackageManager.Instance.UnloadUnusedAssets(package).Coroutine();
                         ClearMemory();
                     }
                 }

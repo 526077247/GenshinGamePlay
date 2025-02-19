@@ -87,18 +87,21 @@ namespace TaoTie
                 slidValue += 0.01f;
                 await scene.SetProgress(slidValue);
                 //清除除loading外的资源缓存 
-                List<UnityEngine.Object> gos = new List<UnityEngine.Object>();
-                for (int i = 0; i < CurrentScene.GetScenesChangeIgnoreClean().Count; i++)
+                using (ListComponent<UnityEngine.Object> gos = ListComponent<UnityEngine.Object>.Create())
                 {
-                    var path = CurrentScene.GetScenesChangeIgnoreClean()[i];
-                    var go = GameObjectPoolManager.GetInstance().GetCachedGoWithPath(path);
-                    if (go != null)
+                    for (int i = 0; i < CurrentScene.GetScenesChangeIgnoreClean().Count; i++)
                     {
-                        gos.Add(go);
+                        var path = CurrentScene.GetScenesChangeIgnoreClean()[i];
+                        var go = GameObjectPoolManager.GetInstance().GetCachedGoWithPath(path);
+                        if (go != null)
+                        {
+                            gos.Add(go);
+                        }
                     }
+                    Log.Info("InnerSwitchScene ResourcesManager ClearAssetsCache excludeAssetLen = " + gos.Count);
+                    ResourcesManager.Instance.ClearAssetsCache(gos);
                 }
-                Log.Info("InnerSwitchScene ResourcesManager ClearAssetsCache excludeAssetLen = " + gos.Count);
-                ResourcesManager.Instance.ClearAssetsCache(gos.ToArray());
+                await PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName);
                 slidValue += 0.01f;
                 await scene.SetProgress(slidValue);
             }

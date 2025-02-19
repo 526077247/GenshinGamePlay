@@ -316,11 +316,13 @@ namespace TaoTie
         {
             var scene = EditorSceneManager.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
             var init = GameObject.Find("Global").GetComponent<Init>();
-            if (init.PlayMode == EPlayMode.EditorSimulateMode)
-            {
 #if UNITY_WEBGL
+            if (init.PlayMode != EPlayMode.WebPlayMode) 
+            {
                 init.PlayMode = EPlayMode.WebPlayMode;
 #else
+            if (init.PlayMode == EPlayMode.EditorSimulateMode || init.PlayMode == EPlayMode.WebPlayMode) 
+            {
                 init.PlayMode = EPlayMode.HostPlayMode;
 #endif
                 // init.CodeMode = CodeMode.Wolong;

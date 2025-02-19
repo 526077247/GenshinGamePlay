@@ -84,6 +84,7 @@ namespace TaoTie
                 tasks.Add(ConfigActorCategory.Instance.LoadAsync());
                 await ETTaskHelper.WaitAll(tasks);
             }
+            await PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName);
             ManagerProvider.RegisterManager<CampManager>();
             SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
         }

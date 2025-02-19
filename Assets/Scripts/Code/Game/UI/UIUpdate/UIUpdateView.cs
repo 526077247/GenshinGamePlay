@@ -88,6 +88,7 @@ namespace TaoTie
             await UIManager.Instance.DestroyAllWindow();
             GameObjectPoolManager.GetInstance().Cleanup();
             ResourcesManager.Instance.ClearAssetsCache();
+            await PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName);
             ObjectPool.Instance.Dispose();
             CodeLoader.Instance.ReStart();
         }

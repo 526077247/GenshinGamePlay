@@ -171,13 +171,13 @@ namespace TaoTie
         /// 清理资源：切换场景时调用
         /// </summary>
         /// <param name="excludeClearAssets">不需要清除的</param>
-        public void ClearAssetsCache(UnityEngine.Object[] excludeClearAssets = null)
+        public void ClearAssetsCache(List<UnityEngine.Object> excludeClearAssets = null)
         {
             HashSetComponent<AssetHandle> temp = null;
             if (excludeClearAssets != null)
             {
                 temp = HashSetComponent<AssetHandle>.Create();
-                for (int i = 0; i < excludeClearAssets.Length; i++)
+                for (int i = 0; i < excludeClearAssets.Count; i++)
                 {
                     temp.Add(this.temp[excludeClearAssets[i]]);
                 }
@@ -192,7 +192,7 @@ namespace TaoTie
                     this.cachedAssetOperationHandles.RemoveAt(i);
                 }
             }
-            PackageManager.Instance.UnloadUnusedAssets();
+            temp?.Dispose();
         }
 
         /// <summary>
