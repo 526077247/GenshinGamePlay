@@ -82,7 +82,7 @@ namespace TaoTie
                 tasks.Add(ConfigFsmControllerCategory.Instance.LoadAsync());
                 tasks.Add(ConfigAIBetaCategory.Instance.LoadAsync());
                 tasks.Add(ConfigActorCategory.Instance.LoadAsync());
-                ETTaskHelper.WaitAll(tasks);
+                await ETTaskHelper.WaitAll(tasks);
             }
             ManagerProvider.RegisterManager<CampManager>();
             SceneManager.Instance.SwitchScene<LoginScene>().Coroutine();
