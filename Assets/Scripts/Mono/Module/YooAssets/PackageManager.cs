@@ -24,6 +24,7 @@ namespace TaoTie
             InitBuildInPackageVersion();
             PlayMode = mode;
             // 初始化资源系统
+            YooAssets.SetOperationSystemQuickStartMode(true);
             YooAssets.Initialize();
             // 创建默认的资源包
             var package = await GetPackageAsync(Define.DefaultName);

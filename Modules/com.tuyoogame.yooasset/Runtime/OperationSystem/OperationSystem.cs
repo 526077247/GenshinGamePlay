@@ -12,6 +12,11 @@ namespace YooAsset
         // 计时器相关
         private static Stopwatch _watch;
         private static long _frameTime;
+        
+        /// <summary>
+        /// 快速启动模式
+        /// </summary>
+        public static bool QuickStartMode = false;
 
         /// <summary>
         /// 异步操作的最小时间片段
@@ -136,6 +141,11 @@ namespace YooAsset
             _newList.Add(operation);
             operation.SetPackageName(packageName);
             operation.SetStart();
+
+            if (QuickStartMode && !IsBusy)
+            {
+                operation.InternalOnUpdate();
+            }
         }
     }
 }

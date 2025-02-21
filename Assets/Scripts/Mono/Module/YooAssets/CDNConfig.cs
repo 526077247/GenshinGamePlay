@@ -28,5 +28,10 @@ namespace TaoTie
         /// 白名单更新列表地址
         /// </summary>
         public string TestUpdateListUrl;
+
+        /// <summary>
+        /// 是否打AOT
+        /// </summary>
+        public bool BuildHotfixAssembliesAOT;
     }
 }

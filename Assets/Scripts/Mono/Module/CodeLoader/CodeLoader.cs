@@ -134,8 +134,9 @@ namespace TaoTie
 					{
 						assembly = null;
 						//和内置包版本一致，检查是否有可用AOT代码
-						if (PackageManager.Instance.BuildInPackageConfig.GetBuildInPackageVersion(Define.DefaultName) ==
-						    version)
+						if (PackageManager.Instance.CdnConfig.BuildHotfixAssembliesAOT &&
+						    PackageManager.Instance.BuildInPackageConfig.GetBuildInPackageVersion(Define.DefaultName)
+						    == version)
 						{
 							foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
 							{
@@ -148,7 +149,7 @@ namespace TaoTie
 							}
 						}
 					}
-					
+
 					//没有内置AOTdll，或者热更完dll版本不同
 					if (this.assembly == null)
 					{

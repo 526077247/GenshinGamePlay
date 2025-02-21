@@ -75,11 +75,11 @@ namespace TaoTie
         /// <summary>
         /// 设置打包模式
         /// </summary>
-        public static void SetCdnConfig(string channel, int mode = 1, string cdnPath = "")
+        public static void SetCdnConfig(string channel,bool buildHotfixAssembliesAOT, int mode = 1, string cdnPath = "")
         {
             var cdn = Resources.Load<CDNConfig>("CDNConfig");
             cdn.Channel = channel;
-
+            cdn.BuildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
             
             if (mode == (int) Mode.自定义服务器)
             {
@@ -363,9 +363,9 @@ namespace TaoTie
                 //打程序集
                 FileHelper.CleanDirectory(Define.HotfixDir);
                 if ((buildOptions & BuildOptions.Development) == 0)
-                    BuildAssemblieEditor.BuildCodeRelease();
+                    BuildAssemblyEditor.BuildCodeRelease();
                 else
-                    BuildAssemblieEditor.BuildCodeDebug();
+                    BuildAssemblyEditor.BuildCodeDebug();
             }
             
             AssetDatabase.SaveAssets();

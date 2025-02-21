@@ -9,7 +9,7 @@ using UnityEditor.Compilation;
 
 namespace TaoTie
 {
-    public static class BuildAssemblieEditor
+    public static class BuildAssemblyEditor
     {
         private static bool IsBuildCodeAuto;
         [MenuItem("Tools/Build/EnableAutoBuildCodeDebug _F1")]
@@ -32,7 +32,7 @@ namespace TaoTie
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<PackageConfig>(jstr);
             string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
-            BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
+            BuildMuteAssembly(assemblyName, new []
             {
                 "Assets/Scripts/Code",
             }, Array.Empty<string>(), CodeOptimization.Debug);
@@ -47,7 +47,7 @@ namespace TaoTie
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<PackageConfig>(jstr);
             string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
-            BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
+            BuildMuteAssembly(assemblyName, new []
             {
                 "Assets/Scripts/Code",
             }, Array.Empty<string>(),CodeOptimization.Release);

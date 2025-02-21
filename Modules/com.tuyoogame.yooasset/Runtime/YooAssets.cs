@@ -222,6 +222,14 @@ namespace YooAsset
             }
             OperationSystem.MaxTimeSlice = milliseconds;
         }
+        		
+        /// <summary>
+        /// 设置异步系统参数，快速启动模式的开关
+        /// </summary>
+        public static void SetOperationSystemQuickStartMode(bool state)
+        {
+            OperationSystem.QuickStartMode = state;
+        }
         #endregion
 
         #region 调试信息
