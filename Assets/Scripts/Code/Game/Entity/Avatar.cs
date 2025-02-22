@@ -43,6 +43,7 @@ namespace TaoTie
                 thirdCameraId = CameraManager.Instance.Create(GameConst.ThirdCameraConfigId);
             }
 
+            await TimerManager.Instance.WaitAsync(1);
             var camera = CameraManager.Instance.Get<NormalCameraState>(thirdCameraId);
             var trans = ghc.EntityView;
             camera.SetFollow(trans);
