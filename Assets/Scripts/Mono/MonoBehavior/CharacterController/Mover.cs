@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace CMF
+namespace TaoTie
 {
 	//This script handles all physics, collision detection and ground detection;
 	//It expects a movement velocity (via 'SetVelocity') every 'FixedUpdate' frame from an external script (like a controller script) to work;

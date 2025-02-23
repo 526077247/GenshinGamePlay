@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace CMF
+namespace TaoTie
 {
 	//This is a static helper class that offers various methods for calculating and modifying vectors (as well as float values);
 	public static class VectorMath {

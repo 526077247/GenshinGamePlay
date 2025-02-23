@@ -908,7 +908,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4020983980232809014}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63f5026f802e4f379bc487e3b8cdb5f0, type: 3}
   m_Name: 
@@ -916,13 +916,20 @@ MonoBehaviour:
   stepHeightRatio: 0.1
   colliderHeight: 1.5
   colliderThickness: 1
-  colliderOffset: {x: 0, y: 0.465, z: 0}
-  sensorType: 0
+  colliderOffset: {x: 0, y: 0.5, z: 0}
+  sensorType: 1
   isInDebugMode: 0
   sensorArrayRows: 1
   sensorArrayRayCount: 6
   sensorArrayRowsAreOffset: 0
-  raycastArrayPreviewPositions: []
+  raycastArrayPreviewPositions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: 0.49999997, y: 0, z: 0.86602545}
+  - {x: -0.50000006, y: 0, z: 0.8660254}
+  - {x: -1, y: 0, z: -0.00000008742278}
+  - {x: -0.4999999, y: 0, z: -0.86602545}
+  - {x: 0.4999999, y: 0, z: -0.86602545}
 --- !u!136 &8043493818362539045
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -943,9 +950,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.5
+  m_Height: 1.35
   m_Direction: 1
-  m_Center: {x: 0, y: 0.75, z: 0}
+  m_Center: {x: 0, y: 0.825, z: 0}
 --- !u!54 &3132875742151801884
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ namespace TaoTie
 {
     public static class PhysicsHelper
     {
+        private static RaycastHit[] raycastHits = new RaycastHit[8];
         private static readonly Collider[] colliders = new Collider[64];
         private static readonly HitInfo[] hitInfos = new HitInfo[64];
         private static readonly long[] entities = new long[64];
@@ -15,6 +16,51 @@ namespace TaoTie
         private static readonly int defaultL = LayerMask.GetMask("Default");
         private static readonly Dictionary<long, int> idMapIndex = new Dictionary<long, int> ();
 
+        #region Raycast
+
+        public static bool RaycastNonAlloc(
+            Vector3 origin,
+            Vector3 direction,
+            out RaycastHit result,
+            float maxDistance,
+            int layerMask,
+            QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        {
+            var len = Physics.RaycastNonAlloc(origin, direction, raycastHits, maxDistance, layerMask,
+                queryTriggerInteraction);
+            result = raycastHits[0];
+            for (int i = 1; i < len; i++)
+            {
+                if (raycastHits[i].distance < result.distance)
+                {
+                    result = raycastHits[i];
+                }
+            }
+            return len > 0;
+        }
+
+        public static bool SphereCastNonAlloc(
+            Vector3 origin,
+            float radius,
+            Vector3 direction,
+            out RaycastHit result,
+            float maxDistance,
+            int layerMask,
+            QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+        {
+            var len = Physics.SphereCastNonAlloc(origin, radius, direction, raycastHits, maxDistance, layerMask,
+                queryTriggerInteraction);
+            result = raycastHits[0];
+            for (int i = 1; i < len; i++)
+            {
+                if (raycastHits[i].distance < result.distance)
+                {
+                    result = raycastHits[i];
+                }
+            }
+            return len > 0;
+        }
+        #endregion
         #region Entity
 
         public static int OverlapBoxNonAllocEntity(Vector3 center, Vector3 halfExtents, Quaternion orientation,

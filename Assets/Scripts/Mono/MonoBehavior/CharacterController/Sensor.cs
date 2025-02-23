@@ -1,14 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CMF
+namespace TaoTie
 {
 	//This script is responsible for casting rays and spherecasts;
 	//It is instantiated by the 'Mover' component at runtime;
 	[System.Serializable]
-	public class Sensor {
-
+	public class Sensor
+	{
 		//Basic raycast parameters;
 		public float castLength = 1f;
 		public float sphereCastRadius = 0.2f;
@@ -89,8 +90,7 @@ namespace CMF
 
 		List<Vector3> arrayNormals = new List<Vector3>();
 		List<Vector3> arrayPoints = new List<Vector3>();
-
-		private RaycastHit[] hit = new RaycastHit[1];
+		
 		//Constructor;
 		public Sensor (Transform _transform, Collider _collider)
 		{
@@ -223,10 +223,9 @@ namespace CMF
 			{
 				//Calculate ray start position;
 				_rayStartPosition = _origin + tr.TransformDirection(raycastArrayStartPositions[i]);
-
-				if(Physics.RaycastNonAlloc(_rayStartPosition, rayDirection, hit, castLength, layermask, QueryTriggerInteraction.Ignore)>0)
+				if(PhysicsHelper.RaycastNonAlloc(_rayStartPosition, rayDirection, out var _hit, castLength, layermask,
+					   QueryTriggerInteraction.Ignore))
 				{
-					var _hit = hit[0];
 					if(isInDebugMode)
 						Debug.DrawRay(_hit.point, _hit.normal, Color.red, Time.fixedDeltaTime * 1.01f);
 
@@ -269,11 +268,10 @@ namespace CMF
 		//Cast a single ray into '_direction' from '_origin';
 		private void CastRay(Vector3 _origin, Vector3 _direction)
 		{
-			hasDetectedHit = Physics.RaycastNonAlloc(_origin, _direction, hit, castLength, layermask, QueryTriggerInteraction.Ignore)>0;
-
+			hasDetectedHit = PhysicsHelper.RaycastNonAlloc(_origin, _direction, out var _hit, castLength, layermask,
+				QueryTriggerInteraction.Ignore);
 			if(hasDetectedHit)
 			{
-				var _hit = hit[0];
 				hitPosition = _hit.point;
 				hitNormal = _hit.normal;
 
@@ -287,11 +285,10 @@ namespace CMF
 		//Cast a sphere into '_direction' from '_origin';
 		private void CastSphere(Vector3 _origin, Vector3 _direction)
 		{
-			hasDetectedHit = Physics.SphereCastNonAlloc(_origin, sphereCastRadius, _direction, hit, castLength - sphereCastRadius, layermask, QueryTriggerInteraction.Ignore)>0;
-
+			hasDetectedHit = PhysicsHelper.SphereCastNonAlloc(_origin, sphereCastRadius, _direction,out var _hit,
+				castLength - sphereCastRadius, layermask, QueryTriggerInteraction.Ignore);
 			if(hasDetectedHit)
 			{
-				var _hit = hit[0];
 				hitPosition = _hit.point;
 				hitNormal = _hit.normal;
 				hitColliders.Add(_hit.collider);

@@ -48,6 +48,8 @@ namespace TaoTie
             var trans = ghc.EntityView;
             camera.SetFollow(trans);
             camera.SetTarget(trans);
+            CameraManager.Instance.ChangeCursorLock(true, CursorStateType.UserInput);
+            CameraManager.Instance.ChangeCursorVisible(true, CursorStateType.UserInput);
         }
 
         public void Destroy()
