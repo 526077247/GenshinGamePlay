@@ -217,11 +217,14 @@ namespace TaoTie
 				await op.Task;
 				assBytes = (op.AssetObject as TextAsset)?.bytes;
 				op.Release();
-				op = PackageManager.Instance.LoadAssetAsync<TextAsset>(
-					$"{Define.HotfixLoadDir}Code{version}.pdb.bytes", Define.DefaultName);
-				await op.Task;
-				pdbBytes = (op.AssetObject as TextAsset)?.bytes;
-				op.Release();
+				if (Define.Debug)
+				{
+					op = PackageManager.Instance.LoadAssetAsync<TextAsset>(
+						$"{Define.HotfixLoadDir}Code{version}.pdb.bytes", Define.DefaultName);
+					await op.Task;
+					pdbBytes = (op.AssetObject as TextAsset)?.bytes;
+					op.Release();
+				}
 			}
 #if UNITY_EDITOR
 			else

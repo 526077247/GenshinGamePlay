@@ -12,8 +12,8 @@ namespace TaoTie
         public static TextMeshFontAssetManager Instance { get; } = new TextMeshFontAssetManager();
         private Dictionary<string, TMP_FontAsset> addFontWithPathList = new Dictionary<string, TMP_FontAsset>();
 
-#if UNITY_IPHONE
-        [DllImport("__Internal")]
+#if UNITY_IPHONE || UNITY_IOS
+        [System.Runtime.InteropServices.DllImport("__Internal")]
         private static extern string __NT_GetSystemFonts();
 #endif
 
@@ -29,6 +29,8 @@ namespace TaoTie
             if (!CheckFontAsset(fontAsset)) return;
             var def = TMP_Settings.defaultFontAsset;
             def.fallbackFontAssetTable.Remove(fontAsset as TMP_FontAsset);
+            GameObject.Destroy((fontAsset as TMP_FontAsset).sourceFontFile);
+            GameObject.Destroy(fontAsset);
         }
 
         private bool CheckFontAsset(ScriptableObject fontAsset)
@@ -46,7 +48,7 @@ namespace TaoTie
             string jsonData = __NT_GetSystemFonts();
             if (!string.IsNullOrEmpty(jsonData))
             {
-                //Debug.Log(jsonData);
+                //Log.Info("GetSystemFonts: " + jsonData);
                 tempPaths = JsonHelper.FromJson<List<string>>(jsonData);
             }
 #else
@@ -75,7 +77,7 @@ namespace TaoTie
         }
 
         //可以从网上下载字体或获取到本地自带字体
-        private void AddFontAssetByFontPath(string fontPath)
+        public void AddFontAssetByFontPath(string fontPath)
         {
             if (addFontWithPathList.ContainsKey(fontPath))
                 return;
@@ -101,6 +103,7 @@ namespace TaoTie
                 TMP_Settings.defaultFontAsset.fallbackFontAssetTable.Remove(tpFont);
             }
             RemoveFontAsset(tpFont);
+            addFontWithPathList.Remove(fontPath);
         }
     }
 }
