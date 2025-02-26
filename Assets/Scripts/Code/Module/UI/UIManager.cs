@@ -17,8 +17,18 @@ namespace TaoTie
 
         private Dictionary<string, UIWindow> windows; //所有存活的窗体  {uiName:window}
         private Dictionary<UILayerNames, LinkedList<string>> windowStack; //窗口记录队列
-        public int MaxOderPerWindow { get; private set; } = 10;
-        public float ScreenSizeFlag { get; private set; }
+
+        public float ScreenSizeFlag
+        {
+            get
+            {
+                var flagx = (float) Define.DesignScreenWidth /
+                            (Screen.width > Screen.height ? Screen.width : Screen.height);
+                var flagy = (float) Define.DesignScreenHeight /
+                            (Screen.width > Screen.height ? Screen.height : Screen.width);
+                return flagx > flagy ? flagx : flagy;
+            }
+        }
         public float WidthPadding { get; private set; }
 
         #region override
