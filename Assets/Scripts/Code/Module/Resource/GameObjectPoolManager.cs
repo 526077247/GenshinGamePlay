@@ -485,9 +485,10 @@ namespace TaoTie
 			this.InitGoChildCount(path, go);
 			if (instCount > 0)
 			{
-				List<GameObject> cachedInst;
-				if (!this.instCache.TryGetValue(path, out cachedInst))
-					cachedInst = new List<GameObject>();
+				if (!this.instCache.TryGetValue(path, out var cachedInst))
+				{
+					this.instCache[path] = cachedInst = new List<GameObject>();
+				}
 				for (int i = 0; i < instCount; i++)
 				{
 					var inst = GameObject.Instantiate(go);
@@ -496,13 +497,19 @@ namespace TaoTie
 					cachedInst.Add(inst);
 					this.instPathCache[inst] = path;
 				}
-				this.instCache[path] = cachedInst;
-				if (!this.goInstCountCache.ContainsKey(path)) this.goInstCountCache[path] = 0;
-				this.goInstCountCache[path] += instCount;
+
+				if (!this.goInstCountCache.ContainsKey(path))
+				{
+					this.goInstCountCache[path] = instCount;
+				}
+				else
+				{
+					this.goInstCountCache[path] += instCount;
+				}
 			}
 		}
 		/// <summary>
-		/// 删除gameobject
+		/// 删除GameObject
 		/// </summary>
 		/// <param name="inst"></param>
 		void DestroyGameObject(GameObject inst)

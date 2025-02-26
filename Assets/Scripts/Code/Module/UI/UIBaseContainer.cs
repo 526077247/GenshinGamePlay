@@ -11,18 +11,20 @@ namespace TaoTie
     /// </summary>
     public abstract class UIBaseContainer
     {
-        UIBaseContainer Parent;
+        UIBaseContainer parent;
         UnOrderDoubleKeyDictionary<string, Type, UIBaseContainer> components; //[path]:[component_name:UIBaseContainer]
         int length;
         GameObject gameObject;
         Transform transform;
+        Transform parentTransform;
         string path;
-        public bool activeSelf { get; private set; }
         private long timerId;
         
-        public void SetGameObject(GameObject gameObject)
+        public bool ActiveSelf { get; private set; }
+        
+        public void SetGameObject(GameObject obj)
         {
-            this.gameObject = gameObject;
+            this.gameObject = obj;
         }
 
         public GameObject GetGameObject()
@@ -35,9 +37,9 @@ namespace TaoTie
             return gameObject;
         }
 
-        public void SetTransform(Transform transform)
+        public void SetTransform(Transform trans)
         {
-            this.transform = transform;
+            this.transform = trans;
         }
 
         public Transform GetTransform()
@@ -50,17 +52,17 @@ namespace TaoTie
             ActivatingComponent();
             return transform as RectTransform;
         }
-        Transform ParentTransform;
+
 
         Transform ActivatingComponent()
         {
             if (this.transform == null)
             {
-                var pui = this.Parent;
+                var pui = this.parent;
                 this.transform = this.GetParentTransform()?.Find(path);
                 if (this.transform == null)
                 {
-                    Log.Error(this.Parent.GetType().Name + "路径错误:" + path);
+                    Log.Error(this.parent.GetType().Name + "路径错误:" + path);
                 }
             }
 
@@ -69,9 +71,9 @@ namespace TaoTie
 
         Transform GetParentTransform()
         {
-            if (this.ParentTransform == null)
+            if (this.parentTransform == null)
             {
-                var pui = Parent;
+                var pui = parent;
                 if (pui == null)
                 {
                     Log.Error("ParentTransform is null Path:" + path);
@@ -79,11 +81,11 @@ namespace TaoTie
                 else
                 {
                     pui.ActivatingComponent();
-                    ParentTransform = pui.transform;
+                    parentTransform = pui.transform;
                 }
             }
 
-            return ParentTransform;
+            return parentTransform;
         }
 
         void AfterOnEnable()
@@ -91,7 +93,7 @@ namespace TaoTie
             Walk((component) =>
             {
                 if (component is IOnEnable a) a.OnEnable();
-                component.activeSelf = true;
+                component.ActiveSelf = true;
                 component.AfterOnEnable();
             });
             if (this is IUpdate)
@@ -143,8 +145,8 @@ namespace TaoTie
             length--;
             if (this.length <= 0)
             {
-                if (this.Parent != null && path != null)
-                    this.Parent.InnerRemoveComponent(this, path);
+                if (this.parent != null && path != null)
+                    this.parent.InnerRemoveComponent(this, path);
                 else
                     Log.Info("Close window here, type name: " + this.GetType().Name);
             }
@@ -152,7 +154,10 @@ namespace TaoTie
                 Log.Error("OnDestroy fail, length != 0");
         }
 
-        //遍历：注意，这里是无序的
+        /// <summary>
+        /// 遍历：注意，这里是无序的
+        /// </summary>
+        /// <param name="callback"></param>
         void Walk(Action<UIBaseContainer> callback)
         {
             if (components == null) return;
@@ -168,17 +173,22 @@ namespace TaoTie
             }
         }
 
-        //记录Component
-        void RecordUIComponent(string name, Type component_class, UIBaseContainer component)
+        /// <summary>
+        /// 记录Component
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="componentClass"></param>
+        /// <param name="component"></param>
+        void RecordUIComponent(string name, Type componentClass, UIBaseContainer component)
         {
             if (components == null) components = new UnOrderDoubleKeyDictionary<string, Type, UIBaseContainer>();
-            if (this.components.ContainSubKey(name, component_class))
+            if (this.components.ContainSubKey(name, componentClass))
             {
-                Log.Error("Aready exist component_class : " + component_class.Name);
+                Log.Error("Already exist component_class : " + componentClass.Name);
                 return;
             }
 
-            this.components.Add(name, component_class, component);
+            this.components.Add(name, componentClass, component);
         }
 
         /// <summary>
@@ -189,13 +199,13 @@ namespace TaoTie
         public T AddComponentNotCreate<T>(string name) where T : UIBaseContainer
         {
             Type type = TypeInfo<T>.Type;
-            T component_inst = Activator.CreateInstance<T>();
-            ;
-            component_inst.path = name;
-            component_inst.Parent = this;
-            this.RecordUIComponent(name, type, component_inst);
+            T componentInst = Activator.CreateInstance<T>();
+ 
+            componentInst.path = name;
+            componentInst.parent = this;
+            this.RecordUIComponent(name, type, componentInst);
             length++;
-            return component_inst;
+            return componentInst;
         }
 
         /// <summary>
@@ -206,16 +216,16 @@ namespace TaoTie
         public T AddComponent<T>(string path = "") where T : UIBaseContainer
         {
             Type type = TypeInfo<T>.Type;
-            T component_inst = Activator.CreateInstance<T>();
-            component_inst.path = path;
-            component_inst.Parent = this;
-            if (component_inst is IOnCreate a)
+            T componentInst = Activator.CreateInstance<T>();
+            componentInst.path = path;
+            componentInst.parent = this;
+            if (componentInst is IOnCreate a)
                 a.OnCreate();
-            if (component_inst is II18N i18n)
+            if (componentInst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
-            this.RecordUIComponent(path, type, component_inst);
+            this.RecordUIComponent(path, type, componentInst);
             length++;
-            return component_inst;
+            return componentInst;
         }
 
         /// <summary>
@@ -226,16 +236,16 @@ namespace TaoTie
         public T AddComponent<T, A>(string path, A a) where T : UIBaseContainer, IOnCreate<A>
         {
             Type type = TypeInfo<T>.Type;
-            T component_inst = Activator.CreateInstance<T>();
-            ;
-            component_inst.path = path;
-            component_inst.Parent = this;
-            component_inst.OnCreate(a);
-            if (component_inst is II18N i18n)
+            T componentInst = Activator.CreateInstance<T>();
+
+            componentInst.path = path;
+            componentInst.parent = this;
+            componentInst.OnCreate(a);
+            if (componentInst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
-            this.RecordUIComponent(path, type, component_inst);
+            this.RecordUIComponent(path, type, componentInst);
             length++;
-            return component_inst;
+            return componentInst;
         }
 
         /// <summary>
@@ -246,16 +256,16 @@ namespace TaoTie
         public T AddComponent<T, A, B>(string path, A a, B b) where T : UIBaseContainer, IOnCreate<A, B>
         {
             Type type = TypeInfo<T>.Type;
-            T component_inst = Activator.CreateInstance<T>();
-            ;
-            component_inst.path = path;
-            component_inst.Parent = this;
-            component_inst.OnCreate(a, b);
-            if (component_inst is II18N i18n)
+            T componentInst = Activator.CreateInstance<T>();
+
+            componentInst.path = path;
+            componentInst.parent = this;
+            componentInst.OnCreate(a, b);
+            if (componentInst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
-            this.RecordUIComponent(path, type, component_inst);
+            this.RecordUIComponent(path, type, componentInst);
             length++;
-            return component_inst;
+            return componentInst;
         }
 
         /// <summary>
@@ -266,21 +276,21 @@ namespace TaoTie
         public T AddComponent<T, A, B, C>(string path, A a, B b, C c) where T : UIBaseContainer, IOnCreate<A, B, C>
         {
             Type type = TypeInfo<T>.Type;
-            T component_inst = Activator.CreateInstance<T>();
-            ;
-            component_inst.path = path;
-            component_inst.Parent = this;
-            component_inst.OnCreate(a, b, c);
-            if (component_inst is II18N i18n)
+            T componentInst = Activator.CreateInstance<T>();
+            
+            componentInst.path = path;
+            componentInst.parent = this;
+            componentInst.OnCreate(a, b, c);
+            if (componentInst is II18N i18n)
                 I18NManager.Instance.RegisterI18NEntity(i18n);
-            this.RecordUIComponent(path, type, component_inst);
+            this.RecordUIComponent(path, type, componentInst);
             length++;
-            return component_inst;
+            return componentInst;
         }
 
         private void InnerSetActive(bool active)
         {
-            activeSelf = active;
+            ActiveSelf = active;
             if (GetGameObject() != null && gameObject.activeSelf != active)
                 gameObject.SetActive(active);
         }

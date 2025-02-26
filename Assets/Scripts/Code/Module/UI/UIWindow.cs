@@ -34,10 +34,6 @@ namespace TaoTie
         /// 窗口类型
         /// </summary>
         public UIBaseView View;
-        /// <summary>
-        /// 禁止物理按键
-        /// </summary>
-        public bool BanKey;
 
         public static UIWindow Create()
         {
@@ -50,9 +46,8 @@ namespace TaoTie
             Active = false;
             LoadingState = UIWindowLoadingState.NotStart;
             PrefabPath = null;
-            Layer = UILayerNames.BackgroudLayer;
+            Layer = UILayerNames.BackgroundLayer;
             View = null;
-            BanKey = false;
             ObjectPool.Instance.Recycle(this);
         }
     }

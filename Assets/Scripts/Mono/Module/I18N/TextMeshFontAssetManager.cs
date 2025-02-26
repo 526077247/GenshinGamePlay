@@ -12,11 +12,6 @@ namespace TaoTie
         public static TextMeshFontAssetManager Instance { get; } = new TextMeshFontAssetManager();
         private Dictionary<string, TMP_FontAsset> addFontWithPathList = new Dictionary<string, TMP_FontAsset>();
 
-#if UNITY_IPHONE || UNITY_IOS
-        [System.Runtime.InteropServices.DllImport("__Internal")]
-        private static extern string __NT_GetSystemFonts();
-#endif
-
         private void AddFontAsset(ScriptableObject fontAsset)
         {
             if (CheckFontAsset(fontAsset)) return;
@@ -42,41 +37,61 @@ namespace TaoTie
 
         public void AddWithOSFont(string[] tb)
         {
-            Dictionary<string, string> fontPaths = new Dictionary<string, string>();
-            IEnumerable tempPaths = null;
-#if UNITY_IPHONE && !UNITY_EDITOR
-            string jsonData = __NT_GetSystemFonts();
-            if (!string.IsNullOrEmpty(jsonData))
+            using (DictionaryComponent<string, string> fontPaths = DictionaryComponent<string, string>.Create())
             {
-                //Log.Info("GetSystemFonts: " + jsonData);
-                tempPaths = JsonHelper.FromJson<List<string>>(jsonData);
-            }
-#else
-            tempPaths = Font.GetPathsToOSFonts();
-#endif
+                var tempPaths = Font.GetPathsToOSFonts();
+                if (tempPaths == null)
+                    return;
 
-            if (tempPaths == null)
-                return;
-
-            foreach (string path in tempPaths)
-            {
-                string key = Path.GetFileNameWithoutExtension(path).ToLower();
-                //Debug.Log(key);
-                if (!fontPaths.ContainsKey(key))
-                    fontPaths.Add(key, path);
-            }
-
-            for (int i = 0; i < tb.Length; i++)
-            {
-                string fontName = tb[i].ToLower();
-                if (fontPaths.ContainsKey(fontName))
+                foreach (string path in tempPaths)
                 {
-                    AddFontAssetByFontPath(fontPaths[fontName]);
+                    string key = Path.GetFileNameWithoutExtension(path).ToLower();
+                    if (!fontPaths.ContainsKey(key))
+                        fontPaths.Add(key, path);
+                }
+
+                for (int i = 0; i < tb.Length; i++)
+                {
+                    string fontName = tb[i].ToLower();
+                    if (fontPaths.TryGetValue(fontName, out var path))
+                    {
+                        Log.Info($"添加字体: {fontName} {path}");
+                        AddFontAssetByFontPath(path);
+                    }
+                }
+            }
+        }
+        
+        public void RemoveWithOSFont(string[] tb)
+        {
+            using (DictionaryComponent<string, string> fontPaths = DictionaryComponent<string, string>.Create())
+            {
+                var tempPaths = Font.GetPathsToOSFonts();
+                if (tempPaths == null)
+                    return;
+
+                foreach (string path in tempPaths)
+                {
+                    string key = Path.GetFileNameWithoutExtension(path).ToLower();
+                    fontPaths.TryAdd(key, path);
+                }
+
+                for (int i = 0; i < tb.Length; i++)
+                {
+                    string fontName = tb[i].ToLower();
+                    if (fontPaths.TryGetValue(fontName, out var path))
+                    {
+                        Log.Info($"移除字体: {fontName} {path}");
+                        RemoveFontAssetByFontPath(path);
+                    }
                 }
             }
         }
 
-        //可以从网上下载字体或获取到本地自带字体
+        /// <summary>
+        /// 可以从网上下载字体或获取到本地自带字体
+        /// </summary>
+        /// <param name="fontPath"></param>
         public void AddFontAssetByFontPath(string fontPath)
         {
             if (addFontWithPathList.ContainsKey(fontPath))

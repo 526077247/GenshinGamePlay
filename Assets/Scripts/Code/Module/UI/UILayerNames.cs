@@ -2,8 +2,8 @@
 {
     public enum UILayerNames : byte
     {
-        GameBackgroudLayer,
-        BackgroudLayer,
+        GameBackgroundLayer,
+        BackgroundLayer,
         GameLayer,
         SceneLayer,
         NormalLayer,

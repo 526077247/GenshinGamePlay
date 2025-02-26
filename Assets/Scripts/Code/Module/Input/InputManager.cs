@@ -20,6 +20,7 @@ namespace TaoTie
             KeyCode.Mouse0,
             KeyCode.F,
             KeyCode.LeftAlt,
+            KeyCode.Escape,
         };
         
         public static InputManager Instance { get; private set; }

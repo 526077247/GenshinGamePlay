@@ -6,9 +6,9 @@ using UnityEngine;
 namespace TaoTie
 {
     /// <summary>
-    /// fd: UI管理类，所有UI都应该通过该管理类进行创建 
-    /// UIManager.Instance.OpenWindow<T>();
-    /// 提供UI操作、UI层级、UI消息、UI资源加载、UI调度、UI缓存等管理
+    /// <p>fd: UI管理类，所有UI都应该通过该管理类进行创建 </p>
+    /// <p>如打开UI窗口 <see cref="OpenWindow{P,T1}"/></p>
+    /// <p>提供UI操作、UI层级、UI消息、UI资源加载、UI调度、UI缓存等管理</p>
     /// </summary>
     public partial class UIManager : IManager
     {
@@ -18,32 +18,25 @@ namespace TaoTie
         private Dictionary<string, UIWindow> windows; //所有存活的窗体  {uiName:window}
         private Dictionary<UILayerNames, LinkedList<string>> windowStack; //窗口记录队列
         public int MaxOderPerWindow { get; private set; } = 10;
-
-        public float ScreenSizeFlag
-        {
-            get
-            {
-                var flagx = (float) Define.DesignScreen_Width /
-                            (Screen.width > Screen.height ? Screen.width : Screen.height);
-                var flagy = (float) Define.DesignScreen_Height /
-                            (Screen.width > Screen.height ? Screen.height : Screen.width);
-                return flagx > flagy ? flagx : flagy;
-            }
-        }
+        public float ScreenSizeFlag { get; private set; }
         public float WidthPadding { get; private set; }
 
         #region override
 
         public void Init()
         {
+            Rect safeAreaRect = Screen.safeArea;
+            WidthPadding = safeAreaRect.x / 2;
             Instance = this;
-            this.windows = new Dictionary<string, UIWindow>();
-            this.windowStack = new Dictionary<UILayerNames, LinkedList<string>>();
+            windows = new Dictionary<string, UIWindow>();
+            windowStack = new Dictionary<UILayerNames, LinkedList<string>>();
             InitLayer();
+            Messager.Instance.AddListener<int, int>(0, MessageId.OnKeyInput, OnKeyInput);
         }
 
         public void Destroy()
         {
+            Messager.Instance.RemoveListener<int, int>(0, MessageId.OnKeyInput, OnKeyInput);
             Instance = null;
             DestroyLayer();
             OnDestroyAsync().Coroutine();
@@ -51,17 +44,34 @@ namespace TaoTie
 
         private async ETTask OnDestroyAsync()
         {
-            await this.DestroyAllWindow();
-            this.windows.Clear();
-            this.windows = null;
-            this.windowStack.Clear();
-            this.windowStack = null;
-            // InputWatcherComponent.Instance?.RemoveInputUIBaseView(this);
-            Log.Info("UIManagerComponent Dispose");
+            await DestroyAllWindow();
+            windows.Clear();
+            windows = null;
+            windowStack.Clear();
+            windowStack = null;
+            Log.Info("UIManagerComponent Destroy");
+        }
+
+        private void OnKeyInput(int key, int state)
+        {
+            if (key == (int) GameKeyCode.Back && (state & InputManager.KeyDown) != 0)
+            {
+                var win = GetTopWindow();
+                if (win != null && win.View != null && win.View.CanBack)
+                {
+                    win.View.OnInputKeyBack().Coroutine();
+                }
+            }
         }
 
         #endregion
 
+        public void ResetSafeArea()
+        {
+            Rect safeAreaRect = Screen.safeArea;
+            SetWidthPadding(safeAreaRect.x / 2);
+            Log.Info(safeAreaRect);
+        }
 
         /// <summary>
         /// 获取UI窗口
@@ -71,7 +81,7 @@ namespace TaoTie
         /// <returns></returns>
         public UIWindow GetWindow(string uiName, int active = 0)
         {
-            if (this.windows.TryGetValue(uiName, out var target))
+            if (windows.TryGetValue(uiName, out var target))
             {
                 if (active == 0 || active * (target.Active ? 1 : -1) > 0)
                 {
@@ -79,6 +89,7 @@ namespace TaoTie
                     {
                         return target.LoadingState == UIWindowLoadingState.LoadOver ? target : null;
                     }
+
                     return target;
                 }
 
@@ -107,7 +118,7 @@ namespace TaoTie
                     var layer = (UILayerNames) i;
                     if (!ignores.Contains(layer))
                     {
-                        var win = this.GetTopWindow(layer);
+                        var win = GetTopWindow(layer);
                         if (win != null) return win;
                     }
                 }
@@ -123,12 +134,12 @@ namespace TaoTie
         /// <returns></returns>
         public UIWindow GetTopWindow(UILayerNames layer)
         {
-            var wins = this.windowStack[layer];
+            var wins = windowStack[layer];
             if (wins.Count <= 0) return null;
             for (var node = wins.First; node != null; node = node.Next)
             {
                 var name = node.Value;
-                var win = this.GetWindow(name, 1);
+                var win = GetWindow(name, 1);
                 if (win != null)
                     return win;
             }
@@ -145,14 +156,15 @@ namespace TaoTie
         public T GetWindow<T>(int active = 0) where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
-            if (this != null && this.windows != null && this.windows.TryGetValue(uiName, out var target))
+            if (windows != null && windows.TryGetValue(uiName, out var target))
             {
-                if (active == 0 || active * (target.Active ? 1 : -1)>0)
+                if (active == 0 || active * (target.Active ? 1 : -1) > 0)
                 {
                     if (active == 2)
                     {
                         return target.LoadingState == UIWindowLoadingState.LoadOver ? target as T : null;
                     }
+
                     return target.View as T;
                 }
 
@@ -169,7 +181,7 @@ namespace TaoTie
         public async ETTask CloseWindow(UIBaseView window)
         {
             string uiName = window.GetType().Name;
-            await this.CloseWindow(uiName);
+            await CloseWindow(uiName);
         }
 
         /// <summary>
@@ -179,7 +191,7 @@ namespace TaoTie
         public async ETTask CloseWindow<T>()
         {
             string uiName = TypeInfo<T>.TypeName;
-            await this.CloseWindow(uiName);
+            await CloseWindow(uiName);
         }
 
         /// <summary>
@@ -188,15 +200,15 @@ namespace TaoTie
         /// <param name="uiName"></param>
         public async ETTask CloseWindow(string uiName)
         {
-            var target = this.GetWindow(uiName, 1);
+            var target = GetWindow(uiName, 1);
             if (target == null) return;
             while (target.LoadingState != UIWindowLoadingState.LoadOver)
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
 
-            this.RemoveFromStack(target);
-            this.InnnerCloseWindow(target);
+            RemoveFromStack(target);
+            InnerCloseWindow(target);
         }
 
         /// <summary>
@@ -218,11 +230,11 @@ namespace TaoTie
 
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
-                foreach (var item in this.windows)
+                foreach (var item in windows)
                 {
                     if (item.Value.Layer == layer && (dictUINames == null || !dictUINames.ContainsKey(item.Key)))
                     {
-                        taskScheduler.Add(this.CloseWindow(item.Key));
+                        taskScheduler.Add(CloseWindow(item.Key));
                     }
                 }
 
@@ -237,21 +249,21 @@ namespace TaoTie
         public async ETTask DestroyWindow<T>(bool clear = false) where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
-            await this.DestroyWindow(uiName,clear);
+            await DestroyWindow(uiName, clear);
         }
 
         /// <summary>
         /// 销毁窗体
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public async ETTask DestroyWindow(string uiName,bool clear = false)
+        public async ETTask DestroyWindow(string uiName, bool clear = false)
         {
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target != null)
             {
-                await this.CloseWindow(uiName);
-                InnerDestroyWindow(target,clear);
-                this.windows.Remove(target.Name);
+                await CloseWindow(uiName);
+                InnerDestroyWindow(target, clear);
+                windows.Remove(target.Name);
                 target.Dispose();
             }
         }
@@ -263,88 +275,108 @@ namespace TaoTie
         {
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
-                foreach (var key in this.windows.Keys.ToList())
+                foreach (var key in windows.Keys.ToList())
                 {
-                    if (!this.windows[key].Active)
+                    if (!windows[key].Active)
                     {
-                        taskScheduler.Add(this.DestroyWindow(key));
+                        taskScheduler.Add(DestroyWindow(key));
                     }
                 }
 
                 await ETTaskHelper.WaitAll(taskScheduler);
             }
         }
+
         /// <summary>
         /// 打开窗口 对应 <see cref="IOnCreate"/>
         /// </summary>
         /// <param name="fullname">类名</param>
         /// <param name="path">预制体路径</param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <returns></returns>
-        public async ETTask<UIBaseView> OpenWindow(string fullname,string path,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+        public async ETTask<UIBaseView> OpenWindow(string fullname, string path,
+            UILayerNames layerName = UILayerNames.NormalLayer)
         {
             string uiName = fullname;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow(fullname,path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow(fullname, path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow(target);
+            return await InnerOpenWindow(target);
 
         }
-        
+
         /// <summary>
         /// 打开窗口 对应 <see cref="IOnCreate"/>
         /// </summary>
         /// <param name="fullname">类名</param>
         /// <param name="path">预制体路径</param>
+        /// <param name="para">参数</param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <returns></returns>
-        public async ETTask<UIBaseView> OpenWindow<P1>(string fullname,string path,P1 p1,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+        public async ETTask<UIBaseView> OpenWindow(string fullname, string path, object[] para,
+            UILayerNames layerName = UILayerNames.NormalLayer)
         {
             string uiName = fullname;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow(fullname,path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow(fullname, path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow(target,p1);
+            return await InnerOpenWindow(target, para);
 
         }
+
+        /// <summary>
+        /// 打开窗口 对应 <see cref="IOnCreate{P1}"/>
+        /// </summary>
+        /// <param name="fullname">类名</param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layerName">UI层级</param>
+        /// <returns></returns>
+        public async ETTask<UIBaseView> OpenWindow<P1>(string fullname, string path, P1 p1,
+            UILayerNames layerName = UILayerNames.NormalLayer)
+        {
+            string uiName = fullname;
+            var target = GetWindow(uiName);
+            if (target == null)
+            {
+                target = InitWindow(fullname, path, layerName);
+                windows[uiName] = target;
+            }
+
+            target.Layer = layerName;
+            return await InnerOpenWindow(target, p1);
+
+        }
+
         /// <summary>
         /// 打开窗口 对应 <see cref="IOnCreate"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
         /// <returns></returns>
         public async ETTask<T> OpenWindow<T>(string path,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true) where T : UIBaseView, IOnCreate
+            UILayerNames layerName = UILayerNames.NormalLayer) where T : UIBaseView, IOnCreate
         {
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow<T>(path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow<T>(path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow<T>(target);
+            return await InnerOpenWindow<T>(target);
 
         }
 
@@ -352,26 +384,26 @@ namespace TaoTie
         /// 打开窗口 对应 <see cref="IOnCreate{P1}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
         /// <returns></returns>
         public async ETTask<T> OpenWindow<T, P1>(string path, P1 p1,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+            UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable<P1>
         {
 
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow<T>(path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow<T>(path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow<T, P1>(target, p1);
+            return await InnerOpenWindow<T, P1>(target, p1);
 
         }
 
@@ -379,26 +411,28 @@ namespace TaoTie
         /// 打开窗口 对应 <see cref="IOnCreate{P1,P2}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
         /// <returns></returns>
         public async ETTask<T> OpenWindow<T, P1, P2>(string path, P1 p1, P2 p2,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+            UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable<P1, P2>
         {
 
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow<T>(path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow<T>(path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow<T, P1, P2>(target, p1, p2);
+            return await InnerOpenWindow<T, P1, P2>(target, p1, p2);
 
         }
 
@@ -406,26 +440,30 @@ namespace TaoTie
         /// 打开窗口 对应 <see cref="IOnCreate{P1,P2,P3}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="p3"></param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <typeparam name="P3"></typeparam>
         /// <returns></returns>
         public async ETTask<T> OpenWindow<T, P1, P2, P3>(string path, P1 p1, P2 p2, P3 p3,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+            UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable<P1, P2, P3>
         {
 
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow<T>(path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow<T>(path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow<T, P1, P2, P3>(target, p1, p2, p3);
+            return await InnerOpenWindow<T, P1, P2, P3>(target, p1, p2, p3);
 
         }
 
@@ -433,26 +471,32 @@ namespace TaoTie
         /// 打开窗口 对应 <see cref="IOnCreate{P1,P2,P3,P4}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="p3"></param>
+        /// <param name="p4"></param>
         /// <param name="layerName">UI层级</param>
-        /// <param name="banKey">是否禁止监听返回键事件</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <typeparam name="P3"></typeparam>
+        /// <typeparam name="P4"></typeparam>
         /// <returns></returns>
         public async ETTask<T> OpenWindow<T, P1, P2, P3, P4>(string path, P1 p1, P2 p2, P3 p3, P4 p4,
-            UILayerNames layerName = UILayerNames.NormalLayer, bool banKey = true)
+            UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable<P1, P2, P3, P4>
         {
 
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
-                target = this.InitWindow<T>(path, layerName);
-                this.windows[uiName] = target;
+                target = InitWindow<T>(path, layerName);
+                windows[uiName] = target;
             }
 
             target.Layer = layerName;
-            target.BanKey = banKey;
-            return await this.InnerOpenWindow<T, P1, P2, P3, P4>(target, p1, p2, p3, p4);
+            return await InnerOpenWindow<T, P1, P2, P3, P4>(target, p1, p2, p3, p4);
 
         }
 
@@ -466,60 +510,79 @@ namespace TaoTie
         public async ETTask OpenWindowTask<T>(string path, UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable
         {
-            await this.OpenWindow<T>(path, layerName);
+            await OpenWindow<T>(path, layerName);
         }
 
         /// <summary>
         /// 打开窗口（返回ETTask）  对应 <see cref="IOnCreate{P1}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
         /// <param name="layerName">UI层级</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
         /// <returns></returns>
         public async ETTask OpenWindowTask<T, P1>(string path, P1 p1, UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable<P1>
         {
-            await this.OpenWindow<T, P1>(path, p1, layerName);
+            await OpenWindow<T, P1>(path, p1, layerName);
         }
 
         /// <summary>
         /// 打开窗口（返回ETTask）  对应 <see cref="IOnCreate{P1,P2}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
         /// <param name="layerName">UI层级</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
         /// <returns></returns>
         public async ETTask OpenWindowTask<T, P1, P2>(string path, P1 p1, P2 p2,
             UILayerNames layerName = UILayerNames.NormalLayer) where T : UIBaseView, IOnCreate, IOnEnable<P1, P2>
         {
-            await this.OpenWindow<T, P1, P2>(path, p1, p2, layerName);
+            await OpenWindow<T, P1, P2>(path, p1, p2, layerName);
         }
 
         /// <summary>
         /// 打开窗口（返回ETTask） 对应 <see cref="IOnCreate{P1,P2,P3}"/>
         /// </summary>
         /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="p3"></param>
         /// <param name="layerName">UI层级</param>
         /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <typeparam name="P3"></typeparam>
         /// <returns></returns>
         public async ETTask OpenWindowTask<T, P1, P2, P3>(string path, P1 p1, P2 p2, P3 p3,
             UILayerNames layerName = UILayerNames.NormalLayer) where T : UIBaseView, IOnCreate, IOnEnable<P1, P2, P3>
         {
-            await this.OpenWindow<T, P1, P2, P3>(path, p1, p2, p3, layerName);
+            await OpenWindow<T, P1, P2, P3>(path, p1, p2, p3, layerName);
         }
 
         /// <summary>
         /// 打开窗口（返回ETTask）  对应 <see cref="IOnCreate{P1,P2,P3,P4}"/>
         /// </summary>
-        /// <param name="path">预制体路径</param>
-        /// <param name="layerName">UI层级</param>
-        /// <typeparam name="T">要打开的窗口</typeparam>
-        /// <returns></returns>
+        /// <param name="path"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="p3"></param>
+        /// <param name="p4"></param>
+        /// <param name="layerName"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <typeparam name="P3"></typeparam>
+        /// <typeparam name="P4"></typeparam>
         public async ETTask OpenWindowTask<T, P1, P2, P3, P4>(string path, P1 p1, P2 p2, P3 p3, P4 p4,
             UILayerNames layerName = UILayerNames.NormalLayer)
             where T : UIBaseView, IOnCreate, IOnEnable<P1, P2, P3, P4>
         {
-            await this.OpenWindow<T, P1, P2, P3, P4>(path, p1, p2, p3, p4, layerName);
+            await OpenWindow<T, P1, P2, P3, P4>(path, p1, p2, p3, p4, layerName);
         }
 
         /// <summary>
@@ -537,14 +600,14 @@ namespace TaoTie
                 }
             }
 
-            var keys = this.windows.Keys.ToArray();
+            var keys = windows.Keys.ToArray();
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
-                for (int i = this.windows.Count - 1; i >= 0; i--)
+                for (int i = windows.Count - 1; i >= 0; i--)
                 {
                     if (!dictUINames.ContainsKey(keys[i]))
                     {
-                        taskScheduler.Add(this.DestroyWindow(keys[i]));
+                        taskScheduler.Add(DestroyWindow(keys[i]));
                     }
                 }
 
@@ -558,14 +621,14 @@ namespace TaoTie
         /// <param name="layer">指定层级</param>
         public async ETTask DestroyWindowExceptLayer(UILayerNames layer)
         {
-            var keys = this.windows.Keys.ToArray();
+            var keys = windows.Keys.ToArray();
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
-                for (int i = this.windows.Count - 1; i >= 0; i--)
+                for (int i = windows.Count - 1; i >= 0; i--)
                 {
-                    if (this.windows[keys[i]].Layer != layer)
+                    if (windows[keys[i]].Layer != layer)
                     {
-                        taskScheduler.Add(this.DestroyWindow(keys[i]));
+                        taskScheduler.Add(DestroyWindow(keys[i]));
                     }
                 }
 
@@ -579,14 +642,14 @@ namespace TaoTie
         /// <param name="layer">指定层级</param>
         public async ETTask DestroyWindowByLayer(UILayerNames layer)
         {
-            var keys = this.windows.Keys.ToArray();
+            var keys = windows.Keys.ToArray();
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
-                for (int i = this.windows.Count - 1; i >= 0; i--)
+                for (int i = windows.Count - 1; i >= 0; i--)
                 {
-                    if (this.windows[keys[i]].Layer == layer)
+                    if (windows[keys[i]].Layer == layer)
                     {
-                        taskScheduler.Add(this.DestroyWindow(this.windows[keys[i]].Name));
+                        taskScheduler.Add(DestroyWindow(windows[keys[i]].Name));
                     }
                 }
 
@@ -599,12 +662,12 @@ namespace TaoTie
         /// </summary>
         public async ETTask DestroyAllWindow()
         {
-            var keys = this.windows.Keys.ToArray();
+            var keys = windows.Keys.ToArray();
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
-                for (int i = this.windows.Count - 1; i >= 0; i--)
+                for (int i = windows.Count - 1; i >= 0; i--)
                 {
-                    taskScheduler.Add(this.DestroyWindow(this.windows[keys[i]].Name));
+                    taskScheduler.Add(DestroyWindow(windows[keys[i]].Name));
                 }
 
                 await ETTaskHelper.WaitAll(taskScheduler);
@@ -619,7 +682,7 @@ namespace TaoTie
         public bool IsActiveWindow<T>() where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName);
+            var target = GetWindow(uiName);
             if (target == null)
             {
                 return false;
@@ -630,7 +693,7 @@ namespace TaoTie
 
         #region 私有方法
 
-        void InnerDestroyWindow(UIWindow target,bool clear = false)
+        void InnerDestroyWindow(UIWindow target, bool clear = false)
         {
             var view = target.View;
             if (view != null)
@@ -641,7 +704,7 @@ namespace TaoTie
                     if (GameObjectPoolManager.GetInstance() == null)
                         GameObject.Destroy(obj);
                     else
-                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj,clear);
+                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj, clear);
                 }
 
                 if (view is II18N i18n)
@@ -650,6 +713,7 @@ namespace TaoTie
                 (view as IOnDestroy)?.OnDestroy();
             }
         }
+
         /// <summary>
         /// 初始化window
         /// </summary>
@@ -661,9 +725,16 @@ namespace TaoTie
             window.Layer = layerName;
             window.LoadingState = UIWindowLoadingState.NotStart;
             window.PrefabPath = path;
-            window.View = Activator.CreateInstance(GetType().Assembly.GetType(name)) as UIBaseView;
+            var fullName = name;
+            if (!fullName.Contains("."))
+            {
+                fullName = GetType().Namespace + "." + fullName;
+            }
+
+            window.View = Activator.CreateInstance(GetType().Assembly.GetType(fullName)) as UIBaseView;
             return window;
         }
+
         /// <summary>
         /// 初始化window
         /// </summary>
@@ -703,6 +774,7 @@ namespace TaoTie
             if (view is IOnWidthPaddingChange)
                 OnWidthPaddingChange(view);
         }
+
         async ETTask<UIBaseView> InnerOpenWindow(UIWindow target)
         {
             CoroutineLock coroutineLock = null;
@@ -720,7 +792,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target);
+                await AddWindowToStack(target);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -730,7 +802,8 @@ namespace TaoTie
             }
 
         }
-        async ETTask<UIBaseView> InnerOpenWindow<P1>(UIWindow target,P1 p1)
+
+        async ETTask<UIBaseView> InnerOpenWindow<P1>(UIWindow target, P1 p1)
         {
             CoroutineLock coroutineLock = null;
             try
@@ -747,7 +820,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target, p1);
+                await AddWindowToStack(target, p1);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -757,6 +830,7 @@ namespace TaoTie
             }
 
         }
+
         async ETTask<T> InnerOpenWindow<T>(UIWindow target) where T : UIBaseView
         {
             CoroutineLock coroutineLock = null;
@@ -774,7 +848,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target);
+                await AddWindowToStack(target);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -802,7 +876,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target, p1);
+                await AddWindowToStack(target, p1);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -829,7 +903,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target, p1, p2);
+                await AddWindowToStack(target, p1, p2);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -856,7 +930,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target, p1, p2, p3);
+                await AddWindowToStack(target, p1, p2, p3);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -884,7 +958,7 @@ namespace TaoTie
                 }
 
                 InnerResetWindowLayer(target);
-                await this.AddWindowToStack(target, p1, p2, p3, p4);
+                await AddWindowToStack(target, p1, p2, p3, p4);
                 target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
@@ -903,7 +977,7 @@ namespace TaoTie
             var go = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(path);
             if (go == null)
             {
-                Log.Error(string.Format("UIManager InnerOpenWindow {0} faild", target.PrefabPath));
+                Log.Error($"UIManager InnerOpenWindow {target.PrefabPath} fail");
                 return;
             }
 
@@ -923,7 +997,7 @@ namespace TaoTie
         /// 内部关闭窗体，OnDisableSystem
         /// </summary>
         /// <param name="target"></param>
-        void InnnerCloseWindow(UIWindow target)
+        void InnerCloseWindow(UIWindow target)
         {
             if (target.Active)
             {
@@ -939,19 +1013,19 @@ namespace TaoTie
         public void MoveWindowToTop<T>() where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
-            var target = this.GetWindow(uiName, 1);
+            var target = GetWindow(uiName, 1);
             if (target == null)
             {
                 return;
             }
 
             var layerName = target.Layer;
-            if (this.windowStack[layerName].Contains(uiName))
+            if (windowStack[layerName].Contains(uiName))
             {
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
 
-            this.windowStack[layerName].AddFirst(uiName);
+            windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
         }
 
@@ -960,23 +1034,23 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (this.windowStack[layerName].Contains(uiName))
+            if (windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
 
-            this.windowStack[layerName].AddFirst(uiName);
+            windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true);
-            if (isFirst && (layerName == UILayerNames.BackgroudLayer || layerName == UILayerNames.GameBackgroudLayer))
+            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
-                await this.CloseWindowByLayer(UILayerNames.NormalLayer);
-                await this.CloseWindowByLayer(UILayerNames.GameLayer);
-                await this.CloseWindowByLayer(UILayerNames.BackgroudLayer, uiName);
-                await this.CloseWindowByLayer(UILayerNames.GameBackgroudLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.NormalLayer);
+                await CloseWindowByLayer(UILayerNames.GameLayer);
+                await CloseWindowByLayer(UILayerNames.BackgroundLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.GameBackgroundLayer, uiName);
             }
         }
 
@@ -985,23 +1059,23 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (this.windowStack[layerName].Contains(uiName))
+            if (windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
 
-            this.windowStack[layerName].AddFirst(uiName);
+            windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1);
-            if (isFirst && (layerName == UILayerNames.BackgroudLayer || layerName == UILayerNames.GameBackgroudLayer))
+            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
-                await this.CloseWindowByLayer(UILayerNames.NormalLayer);
-                await this.CloseWindowByLayer(UILayerNames.GameLayer);
-                await this.CloseWindowByLayer(UILayerNames.BackgroudLayer, uiName);
-                await this.CloseWindowByLayer(UILayerNames.GameBackgroudLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.NormalLayer);
+                await CloseWindowByLayer(UILayerNames.GameLayer);
+                await CloseWindowByLayer(UILayerNames.BackgroundLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.GameBackgroundLayer, uiName);
             }
         }
 
@@ -1010,23 +1084,23 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (this.windowStack[layerName].Contains(uiName))
+            if (windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
 
-            this.windowStack[layerName].AddFirst(uiName);
+            windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2);
-            if (isFirst && (layerName == UILayerNames.BackgroudLayer || layerName == UILayerNames.GameBackgroudLayer))
+            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
-                await this.CloseWindowByLayer(UILayerNames.NormalLayer);
-                await this.CloseWindowByLayer(UILayerNames.GameLayer);
-                await this.CloseWindowByLayer(UILayerNames.BackgroudLayer, uiName);
-                await this.CloseWindowByLayer(UILayerNames.GameBackgroudLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.NormalLayer);
+                await CloseWindowByLayer(UILayerNames.GameLayer);
+                await CloseWindowByLayer(UILayerNames.BackgroundLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.GameBackgroundLayer, uiName);
             }
         }
 
@@ -1035,23 +1109,23 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (this.windowStack[layerName].Contains(uiName))
+            if (windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
 
-            this.windowStack[layerName].AddFirst(uiName);
+            windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2, p3);
-            if (isFirst && (layerName == UILayerNames.BackgroudLayer || layerName == UILayerNames.GameBackgroudLayer))
+            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
-                await this.CloseWindowByLayer(UILayerNames.NormalLayer);
-                await this.CloseWindowByLayer(UILayerNames.GameLayer);
-                await this.CloseWindowByLayer(UILayerNames.BackgroudLayer, uiName);
-                await this.CloseWindowByLayer(UILayerNames.GameBackgroudLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.NormalLayer);
+                await CloseWindowByLayer(UILayerNames.GameLayer);
+                await CloseWindowByLayer(UILayerNames.BackgroundLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.GameBackgroundLayer, uiName);
             }
         }
 
@@ -1060,23 +1134,23 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (this.windowStack[layerName].Contains(uiName))
+            if (windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
 
-            this.windowStack[layerName].AddFirst(uiName);
+            windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2, p3, p4);
-            if (isFirst && (layerName == UILayerNames.BackgroudLayer || layerName == UILayerNames.GameBackgroudLayer))
+            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
-                //如果是背景layer，则销毁所有的normal层|BackgroudLayer
-                await this.CloseWindowByLayer(UILayerNames.NormalLayer);
-                await this.CloseWindowByLayer(UILayerNames.GameLayer);
-                await this.CloseWindowByLayer(UILayerNames.BackgroudLayer, uiName);
-                await this.CloseWindowByLayer(UILayerNames.GameBackgroudLayer, uiName);
+                //如果是背景layer，则销毁所有的normal层或BackgroundLayer
+                await CloseWindowByLayer(UILayerNames.NormalLayer);
+                await CloseWindowByLayer(UILayerNames.GameLayer);
+                await CloseWindowByLayer(UILayerNames.BackgroundLayer, uiName);
+                await CloseWindowByLayer(UILayerNames.GameBackgroundLayer, uiName);
             }
         }
 
@@ -1087,6 +1161,7 @@ namespace TaoTie
             if (uiTrans != null)
             {
                 uiTrans.SetAsLastSibling();
+                // GuidanceManager.Instance?.NoticeEvent("Open_"+target.Name);
             }
         }
 
@@ -1098,9 +1173,9 @@ namespace TaoTie
         {
             var uiName = target.Name;
             var layerName = target.Layer;
-            if (this.windowStack.ContainsKey(layerName))
+            if (windowStack.ContainsKey(layerName))
             {
-                this.windowStack[layerName].Remove(uiName);
+                windowStack[layerName].Remove(uiName);
             }
             else
             {
@@ -1118,14 +1193,14 @@ namespace TaoTie
         /// <param name="value"></param>
         public void SetWidthPadding(float value)
         {
-            this.WidthPadding = value;
-            foreach (var layer in this.windowStack.Values)
+            WidthPadding = value;
+            foreach (var layer in windowStack.Values)
             {
                 if (layer != null)
                 {
                     for (LinkedListNode<string> node = layer.First; null != node; node = node.Next)
                     {
-                        var target = this.GetWindow(node.Value);
+                        var target = GetWindow(node.Value);
                         if (target.View is IOnWidthPaddingChange)
                         {
                             OnWidthPaddingChange(target.View);
@@ -1138,9 +1213,9 @@ namespace TaoTie
         private void OnWidthPaddingChange(UIBaseView target)
         {
             var rectTrans = target.GetTransform().GetComponent<RectTransform>();
-            var pandding = WidthPadding;
-            rectTrans.offsetMin = new Vector2(pandding * (1 - rectTrans.anchorMin.x), 0);
-            rectTrans.offsetMax = new Vector2(-pandding * rectTrans.anchorMax.x, 0);
+            var padding = WidthPadding;
+            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), 0);
+            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, 0);
         }
 
         #endregion
@@ -1154,7 +1229,7 @@ namespace TaoTie
 
         public UIBaseView GetView(string uiName)
         {
-            var res = this.GetWindow(uiName);
+            var res = GetWindow(uiName);
             if (res != null)
             {
                 return res.View;
@@ -1172,7 +1247,6 @@ namespace TaoTie
 
             return null;
         }
-
 
         #endregion
     }

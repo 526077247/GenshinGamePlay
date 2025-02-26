@@ -13,7 +13,7 @@ namespace TaoTie
 
         public LangType CurLangType { get; private set; }
         private Dictionary<string, string> i18nTextKeyDic;
-
+        private bool addFonts = false;
         #region override
 
         public void Init()
@@ -143,38 +143,53 @@ namespace TaoTie
         
                 
         #region 添加系统字体
-
+#if !UNITY_WEBGL
         /// <summary>
         /// 需要就添加
         /// </summary>
-        public static void AddSystemFonts()
+        public void AddSystemFonts()
         {
-            string[] fonts;
-            int type = PlatformUtil.GetSystemTypeWithWebGL();
-            if (type == 1)
-            {
-                fonts = new[] { "msyhl" };//微软雅黑细体
-            }
-            else if (type == 2)
-            {
-                fonts = new[] {
-                    "notosanscjksc-regular",
-                    "notosanscjk-regular",
-                };
-            }
-            else if (type == 3)
-            {
-                fonts = new[] {
-                    "pingfang"
-                };
-            }
-            else
-            {
-                fonts = new string[0];
-            }
+             if(addFonts) return;
+             addFonts = true;
+#if UNITY_EDITOR||UNITY_STANDALONE_WIN
+            string[] fonts = new[] { "msyhl" };//微软雅黑细体
+#elif UNITY_ANDROID
+            string[] fonts = new[] {
+                "notosanscjksc-regular",
+                "notosanscjk-regular",
+            };
+#elif UNITY_IOS
+            string[] fonts = new[] {
+                "pingfang" // 注意内存占用70m+
+            };
+#else
+            string[] fonts = Array.Empty<string>();
+#endif
             TextMeshFontAssetManager.Instance.AddWithOSFont(fonts);
         }
-
+#else
+        public void AddSystemFonts(){}
+#endif
+        public void RemoveSystemFonts()
+        {
+            if(!addFonts) return;
+            addFonts = false;
+#if UNITY_EDITOR||UNITY_STANDALONE_WIN
+            string[] fonts = new[] { "msyhl" };//微软雅黑细体
+#elif UNITY_ANDROID
+            string[] fonts = new[] {
+                "notosanscjksc-regular",
+                "notosanscjk-regular",
+            };
+#elif UNITY_IOS
+            string[] fonts = new[] {
+                "pingfang"// 注意内存占用70m+
+            };
+#else
+            string[] fonts = Array.Empty<string>();
+#endif
+            TextMeshFontAssetManager.Instance.RemoveWithOSFont(fonts);
+        }
         #endregion
     }
 }

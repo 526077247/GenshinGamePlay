@@ -10,27 +10,6 @@ namespace TaoTie
 {
     public class PlatformUtil
     {
-#if UNITY_WEBGL
-        [DllImport("__Internal")]
-        private static extern int GetWebGLUA();
-#endif
-        /// <summary>
-        /// 1：pc 2: android 3: ios
-        /// </summary>
-        /// <returns></returns>
-        public static int GetSystemTypeWithWebGL()
-        {
-#if UNITY_EDITOR
-            return 1;
-#elif UNITY_ANDROID
-            return 2;
-#elif UNITY_IOS
-            return 3;
-#elif UNITY_WEBGL
-            return GetWebGLUA();
-#endif
-            return 1;
-        }
         public static int GetIntPlatform()
         {
             return (int)Application.platform;

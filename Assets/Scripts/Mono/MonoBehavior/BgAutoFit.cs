@@ -30,9 +30,9 @@ public class BgAutoFit : MonoBehaviour
         //屏幕缩放比
         var CS_SCREEN_H = Screen.height;
         var CS_SCREEN_W = Screen.width;
-        var flagx = (float)Define.DesignScreen_Width / Define.DesignScreen_Height;
+        var flagx = (float)Define.DesignScreenWidth / Define.DesignScreenHeight;
         var flagy = (float)CS_SCREEN_W / CS_SCREEN_H;
-        var sign_flag = flagx > flagy ? (float)Define.DesignScreen_Width / CS_SCREEN_W : (float)Define.DesignScreen_Height / CS_SCREEN_H;
+        var sign_flag = flagx > flagy ? (float)Define.DesignScreenWidth / CS_SCREEN_W : (float)Define.DesignScreenHeight / CS_SCREEN_H;
         //图片缩放比
         var cs_width = CS_SCREEN_W > CS_SCREEN_H ? CS_SCREEN_W : CS_SCREEN_H;
         var cs_height = CS_SCREEN_W < CS_SCREEN_H ? CS_SCREEN_W : CS_SCREEN_H;

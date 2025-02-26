@@ -22,51 +22,51 @@ namespace TaoTie
 
         UILayerDefine[] GetConfig()
         {
-            UILayerDefine GameBackgroudLayer = new UILayerDefine
+            UILayerDefine gameBackgroundLayer = new UILayerDefine
             {
-                Name = UILayerNames.GameBackgroudLayer,
+                Name = UILayerNames.GameBackgroundLayer,
                 PlaneDistance = 1000,
                 OrderInLayer = 0,
             };
 
             //主界面、全屏的一些界面
-            UILayerDefine BackgroudLayer = new UILayerDefine
+            UILayerDefine backgroundLayer = new UILayerDefine
             {
-                Name = UILayerNames.BackgroudLayer,
+                Name = UILayerNames.BackgroundLayer,
                 PlaneDistance = 900,
                 OrderInLayer = 1000,
             };
 
             //游戏内的View层
-            UILayerDefine GameLayer = new UILayerDefine
+            UILayerDefine gameLayer = new UILayerDefine
             {
                 Name = UILayerNames.GameLayer,
                 PlaneDistance = 800,
                 OrderInLayer = 1800,
             };
             // 场景UI，如：点击建筑查看建筑信息---一般置于场景之上，界面UI之下
-            UILayerDefine SceneLayer = new UILayerDefine
+            UILayerDefine sceneLayer = new UILayerDefine
             {
                 Name = UILayerNames.SceneLayer,
                 PlaneDistance = 700,
                 OrderInLayer = 2000,
             };
             //普通UI，一级、二级、三级等窗口---一般由用户点击打开的多级窗口
-            UILayerDefine NormalLayer = new UILayerDefine
+            UILayerDefine normalLayer = new UILayerDefine
             {
                 Name = UILayerNames.NormalLayer,
                 PlaneDistance = 600,
                 OrderInLayer = 3000,
             };
             //提示UI，如：错误弹窗，网络连接弹窗等
-            UILayerDefine TipLayer = new UILayerDefine
+            UILayerDefine tipLayer = new UILayerDefine
             {
                 Name = UILayerNames.TipLayer,
                 PlaneDistance = 500,
                 OrderInLayer = 4000,
             };
             //顶层UI，如：场景加载
-            UILayerDefine TopLayer = new UILayerDefine
+            UILayerDefine topLayer = new UILayerDefine
             {
                 Name = UILayerNames.TopLayer,
                 PlaneDistance = 400,
@@ -75,13 +75,13 @@ namespace TaoTie
 
             return new UILayerDefine[]
             {
-                GameBackgroudLayer ,
-                BackgroudLayer,
-                GameLayer,
-                SceneLayer,
-                NormalLayer,
-                TipLayer,
-                TopLayer,
+                gameBackgroundLayer ,
+                backgroundLayer,
+                gameLayer,
+                sceneLayer,
+                normalLayer,
+                tipLayer,
+                topLayer,
             };
         }
         
@@ -91,20 +91,20 @@ namespace TaoTie
             Log.Info("UILayersComponent Awake");
             var UIRootPath = "Global/UI";
             var EventSystemPath = "EventSystem";
-            var UICameraPath = UIRootPath + "/UICamera";
+            var uiCameraPath = UIRootPath + "/UICamera";
             this.gameObject = GameObject.Find(UIRootPath);
             var eventSystem = GameObject.Find(EventSystemPath);
             var transform = this.gameObject.transform;
-            this.UICamera = GameObject.Find(UICameraPath).GetComponent<Camera>();
+            this.UICamera = GameObject.Find(uiCameraPath).GetComponent<Camera>();
             GameObject.DontDestroyOnLoad(this.gameObject);
             GameObject.DontDestroyOnLoad(eventSystem);
-            this.Resolution = new Vector2(Define.DesignScreen_Width, Define.DesignScreen_Height);//分辨率
+            this.Resolution = new Vector2(Define.DesignScreenWidth, Define.DesignScreenHeight);//分辨率
             this.layers = new Dictionary<UILayerNames, UILayer>();
 
-            var UILayers = GetConfig();
-            for (int i = 0; i < UILayers.Length; i++)
+            var uiLayers = GetConfig();
+            for (int i = 0; i < uiLayers.Length; i++)
             {
-                var layer = UILayers[i];
+                var layer = uiLayers[i];
                 var go = new GameObject(layer.Name.ToString())
                 {
                     layer = 5
@@ -136,7 +136,7 @@ namespace TaoTie
             this.layers[UILayerNames.GameLayer].SetCanvasScaleEditorPortrait(flag);
             this.layers[UILayerNames.TipLayer].SetCanvasScaleEditorPortrait(flag);
             this.layers[UILayerNames.TopLayer].SetCanvasScaleEditorPortrait(flag);
-            this.layers[UILayerNames.GameBackgroudLayer].SetCanvasScaleEditorPortrait(flag);
+            this.layers[UILayerNames.GameBackgroundLayer].SetCanvasScaleEditorPortrait(flag);
         }
 
     }
