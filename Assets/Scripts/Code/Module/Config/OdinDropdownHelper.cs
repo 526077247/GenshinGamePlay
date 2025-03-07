@@ -156,7 +156,7 @@ namespace TaoTie
                 {
                     var item = monster.GetAllList()[i];
                     var u = unit.Get(item.UnitId);
-                    string name = u == null ? ("未找到UnitId" + item.UnitId) : u.Name;
+                    string name = u == null ? ("未找到UnitId" + item.UnitId) : u.Chinese;
                     list.Add($"{name}({item.Id})", item.Id);
                 }
             }
@@ -176,7 +176,7 @@ namespace TaoTie
                 {
                     var item = gadget.GetAllList()[i];
                     var u = unit.Get(item.UnitId);
-                    string name = u == null ? ("未找到UnitId" + item.UnitId) : u.Name;
+                    string name = u == null ? ("未找到UnitId" + item.UnitId) : u.Chinese;
                     list.Add($"{name}({item.Id})", item.Id);
                 }
             }

@@ -65,9 +65,10 @@ namespace TaoTie
 		/// <summary>Id</summary>
 		[NinoMember(1)]
 		public int Id { get; set; }
-		/// <summary>索引标识</summary>
-		[NinoMember(2)]
+#if NOT_UNITY
+        /// <summary>索引标识</summary>
 		public string Key { get; set; }
+#endif
 		/// <summary>内容</summary>
 		[NinoMember(3)]
 		public string Value { get; set; }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasRenderer))]
 public class EmptyGraphic : Graphic
 {
 #if UNITY_EDITOR

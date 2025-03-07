@@ -11,7 +11,7 @@ namespace TaoTie
         [NinoMember(1)]
         public int LocalId;
         [NinoMember(2)]
-        public string I18NKey;
+        public I18NKey I18NKey;
         [NinoMember(3)]
         public string[] I18NParams;
         [NinoMember(4)] [LabelText("默认启用")]

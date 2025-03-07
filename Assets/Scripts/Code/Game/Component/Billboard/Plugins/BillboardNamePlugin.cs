@@ -63,9 +63,9 @@ namespace TaoTie
             if (config.ShowUnitName)
             {
                 var unit = billboardComponent.GetParent<Unit>();
-                if (unit != null && !string.IsNullOrEmpty(unit.Config.Name))
+                if (unit != null)
                 {
-                    font.text = I18NManager.Instance.I18NGetText(unit.Config.Name);
+                    font.text = I18NManager.Instance.I18NGetText(unit.Config);
                     return;
                 }
             }

@@ -6,7 +6,8 @@ namespace TaoTie
 {
     public partial class ExcelExporter
     {
-        private const string ClassDir = "../Assets/Scripts/Code/Module/I18N/LangType.cs";
+        private const string ClassDir = "../Assets/Scripts/Code/Module/Const/LangType.cs";
+        private const string ClassDir2 = "../Assets/Scripts/Code/Module/Const/I18NKey.cs";
         public static void ExportI18N()
         {
             Console.WriteLine("I18NExporter 开始");
@@ -38,8 +39,24 @@ namespace TaoTie
                 ExcelPackage p = GetPackage(Path.GetFullPath(excelPath));
                 ExportExcelI18N(p, i18nconfig);
                 ExportI18NExcelProtobuf(i18nconfig, relativePath);
-
-                
+                StringBuilder str = new StringBuilder();
+                str.AppendLine("using System.Collections.Generic;");
+                str.AppendLine("namespace TaoTie");
+                str.AppendLine("{");
+                str.AppendLine("    public enum I18NKey");
+                str.AppendLine("    {");
+                foreach (var item in i18nconfig)
+                {
+                    foreach (var item2 in item.Value.GetAllList()) 
+                    {
+                        str.AppendLine($"        {item2.Key} = {item2.Id},");
+                    }
+                   
+                    break;
+                }
+                str.AppendLine("    }");
+                str.AppendLine("}");
+                File.WriteAllText(ClassDir2, str.ToString());
             }
             Console.WriteLine("I18NExporter 成功");
         }

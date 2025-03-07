@@ -7,26 +7,13 @@ using UnityEngine.Networking;
 
 namespace TaoTie
 {
-
-    public class HttpManager: IManager
+    public class HttpManager
     {
         const int DEFAULT_TIMEOUT = 10; // 默认超时时间
-        private AcceptAllCertificate certificateHandler;
-        public static HttpManager Instance;
-        private string persistentDataPath;
-
-        public void Init()
-        {
-            Instance = this;
-            certificateHandler = new AcceptAllCertificate();
-            persistentDataPath = Application.persistentDataPath;
-        }
-
-        public void Destroy()
-        {
-            certificateHandler = null;
-            Instance = null;
-        }
+        private AcceptAllCertificate certificateHandler = new AcceptAllCertificate();
+        public static HttpManager Instance { get; } = new HttpManager();
+        private string persistentDataPath = Application.persistentDataPath;
+        
         
         public UnityWebRequest HttpGet(string url, Dictionary<string, string> headers = null,
             Dictionary<string, string> param = null, int timeout = DEFAULT_TIMEOUT)

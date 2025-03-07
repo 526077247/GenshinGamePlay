@@ -69,7 +69,7 @@ namespace TaoTie
         /// <param name="confirmBtnText"></param>
         /// <param name="cancelBtnText"></param>
         /// <returns></returns>
-        public async ETTask<bool> ShowMsgBoxView(string content, string confirmBtnText, string cancelBtnText)
+        public async ETTask<bool> ShowMsgBoxView(I18NKey content, I18NKey confirmBtnText, I18NKey cancelBtnText)
         {
             ETTask<bool> tcs = ETTask<bool>.Create();
             void ConfirmBtnFunc(UIBaseView win)
@@ -94,6 +94,37 @@ namespace TaoTie
             return result;
         }
         
+        /// <summary>
+        /// 提示窗
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="confirmBtnText"></param>
+        /// <param name="cancelBtnText"></param>
+        /// <returns></returns>
+        public async ETTask<bool> ShowMsgBoxView(string content, I18NKey confirmBtnText, I18NKey cancelBtnText)
+        {
+            ETTask<bool> tcs = ETTask<bool>.Create();
+            void ConfirmBtnFunc(UIBaseView win)
+            { 
+                tcs.SetResult(true);
+                UIMsgBoxManager.Instance.CloseMsgBox(win).Coroutine();
+            }
+            void CancelBtnFunc(UIBaseView win)
+            {
+                tcs.SetResult(false);
+                UIMsgBoxManager.Instance.CloseMsgBox(win).Coroutine();
+            }
+
+            this.para.Content = content;
+            I18NManager.Instance.I18NTryGetText(confirmBtnText, out this.para.ConfirmText);
+            I18NManager.Instance.I18NTryGetText(cancelBtnText, out this.para.CancelText);
+            this.para.ConfirmCallback = ConfirmBtnFunc;
+            this.para.CancelCallback = CancelBtnFunc;
+            await UIMsgBoxManager.Instance.OpenMsgBox<UIMsgBoxWin>(UIMsgBoxWin.PrefabPath,
+                this.para,UILayerNames.TipLayer);
+            var result = await tcs;
+            return result;
+        }
 
         #endregion
     }

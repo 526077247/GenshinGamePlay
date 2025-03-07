@@ -12,7 +12,7 @@ namespace TaoTie
     {
         private TMPro.TMP_Text text;
         private I18NText i18nCompTouched;
-        private string textKey;
+        private I18NKey textKey;
         private object[] keyParams;
         
         void ActivatingComponent()
@@ -47,15 +47,15 @@ namespace TaoTie
             return this.text.text;
         }
 
-        public void SetText( string text)
+        public void SetText(string text)
         {
             this.DisableI18Component();
-            this.textKey = null;
+            this.textKey = default;
             this.text.text = text;
         }
-        public void SetI18NKey( string key)
+        public void SetI18NKey(I18NKey key)
         {
-            if (string.IsNullOrEmpty(key))
+            if (key == default)
             {
                 this.SetText("");
                 return;
@@ -64,21 +64,22 @@ namespace TaoTie
             this.textKey = key;
             this.SetI18NText(null);
         }
-        public void SetI18NKey( string key, params object[] paras)
+        public void SetI18NKey(I18NKey key, params object[] paras)
         {
-            if (string.IsNullOrEmpty(key))
+            if (key == default)
             {
                 this.SetText("");
                 return;
             }
+
             this.DisableI18Component();
             this.textKey = key;
             this.SetI18NText(paras);
         }
 
-        public void SetI18NText( params object[] paras)
+        public void SetI18NText(params object[] paras)
         {
-            if (string.IsNullOrEmpty(this.textKey))
+            if (textKey == default)
             {
                 Log.Error("there is not key ");
             }
@@ -96,7 +97,7 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             {
-                if (this.textKey != null)
+                if (textKey != default)
                 {
                     if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && this.keyParams != null)
                         text = string.Format(text, this.keyParams);
@@ -105,13 +106,13 @@ namespace TaoTie
             }
         }
 
-        public void SetTextColor( Color color)
+        public void SetTextColor(Color color)
         {
             this.ActivatingComponent();
             this.text.color = color;
         }
 
-        public void SetTextWithColor( string text, string colorstr)
+        public void SetTextWithColor(string text, string colorstr)
         {
             if (string.IsNullOrEmpty(colorstr))
                 this.SetText(text);

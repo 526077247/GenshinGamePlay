@@ -67,9 +67,9 @@ namespace TaoTie
             if (sizeMb > 0 && sizeMb < 0.01) sizeMb = 0.01;
            
 
-            var ct = I18NManager.Instance.I18NGetParamText("Update_Info", sizeMb.ToString("0.00"));
-            var btnState = await task.ShowMsgBoxView(ct, "Global_Btn_Confirm",
-                forceUpdate ? "Btn_Exit" : "Update_Skip");
+            var ct = I18NManager.Instance.I18NGetParamText(I18NKey.Update_Info, sizeMb.ToString("0.00"));
+            var btnState = await task.ShowMsgBoxView(ct, I18NKey.Global_Btn_Confirm,
+                forceUpdate ? I18NKey.Btn_Exit : I18NKey.Update_Skip);
             if (!btnState)
             {
                 if (forceUpdate)
@@ -126,7 +126,8 @@ namespace TaoTie
             {
                 Log.Error(op.Error);
                 //设回去失败
-                var btnState = await task.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", "Btn_Exit");
+                var btnState =
+                    await task.ShowMsgBoxView(I18NKey.Update_Get_Fail, I18NKey.Update_ReTry, I18NKey.Btn_Exit);
                 if (btnState)
                 {
                     return await Process(task);
@@ -146,7 +147,8 @@ namespace TaoTie
         /// <returns></returns>
         private async ETTask<UpdateRes> UpdateFail(UpdateTask task, bool reset)
         {
-            var btnState = await task.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", this.forceUpdate?"Btn_Exit":"Update_Skip");
+            var btnState = await task.ShowMsgBoxView(I18NKey.Update_Get_Fail, I18NKey.Update_ReTry,
+                this.forceUpdate ? I18NKey.Btn_Exit : I18NKey.Update_Skip);
             if (btnState)
             {
                 return await this.Process(task);

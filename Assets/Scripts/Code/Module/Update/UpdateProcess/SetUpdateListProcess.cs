@@ -50,7 +50,9 @@ namespace TaoTie
             var info = await HttpManager.Instance.HttpGetResult<UpdateConfig>(url);
             if (info == null)
             {
-                var btnState = await task.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", Define.ForceUpdate?"Btn_Exit":"Update_Skip");
+                var btnState = await task.ShowMsgBoxView(I18NKey.Update_Get_Fail, I18NKey.Update_ReTry, 
+                    Define.ForceUpdate?I18NKey.Btn_Exit:I18NKey.Update_Skip);
+                
                 if (btnState)
                 {
                     await this.Process(task);

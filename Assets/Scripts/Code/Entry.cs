@@ -24,8 +24,7 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<TimerManager>();
                 
                 ManagerProvider.RegisterManager<CacheManager>();
-                ManagerProvider.RegisterManager<HttpManager>();
-                
+
                 var cm = ManagerProvider.RegisterManager<ConfigManager>();
                 await cm.LoadAsync();
                 

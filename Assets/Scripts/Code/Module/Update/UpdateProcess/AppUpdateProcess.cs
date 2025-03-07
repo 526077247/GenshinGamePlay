@@ -49,9 +49,9 @@ namespace TaoTie
                 return UpdateRes.Over;
             }
 
-            var cancelBtnText = forceUpdate ? "Btn_Exit" : "Btn_Enter_Game";
-            var contentUpdate = forceUpdate ? "Update_ReDownload" : "Update_SuDownload";
-            var btnState = await task.ShowMsgBoxView(contentUpdate, "Global_Btn_Confirm", cancelBtnText);
+            var cancelBtnText = forceUpdate ? I18NKey.Btn_Exit : I18NKey.Btn_Enter_Game;
+            var contentUpdate = forceUpdate ? I18NKey.Update_ReDownload : I18NKey.Update_SuDownload;
+            var btnState = await task.ShowMsgBoxView(contentUpdate, I18NKey.Global_Btn_Confirm, cancelBtnText);
 
             if (btnState)
             {

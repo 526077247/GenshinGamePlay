@@ -19,8 +19,8 @@ namespace TaoTie
                 ServerConfigManager.Instance.SetWhiteList(info);
                 if (ServerConfigManager.Instance.IsInWhiteList())
                 {
-                    var btnState = await task.ShowMsgBoxView("Update_White", "Global_Btn_Confirm",
-                        "Global_Btn_Cancel");
+                    var btnState = await task.ShowMsgBoxView(I18NKey.Update_White, I18NKey.Global_Btn_Confirm,
+                        I18NKey.Global_Btn_Cancel);
                     if (btnState)
                     {
                         ServerConfigManager.Instance.SetWhiteMode(true);

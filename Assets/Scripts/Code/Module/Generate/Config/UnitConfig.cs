@@ -85,21 +85,24 @@ namespace TaoTie
 		public int Type { get; set; }
 		/// <summary>名字</summary>
 		[NinoMember(3)]
-		public string Name { get; set; }
-		/// <summary>描述</summary>
+		public string Chinese { get; set; }
+		/// <summary>名字</summary>
 		[NinoMember(4)]
+		public string English { get; set; }
+		/// <summary>描述</summary>
+		[NinoMember(5)]
 		public string Desc { get; set; }
 		/// <summary>预制体路径</summary>
-		[NinoMember(5)]
+		[NinoMember(6)]
 		public string Perfab { get; set; }
 		/// <summary>ActorConfig</summary>
-		[NinoMember(6)]
+		[NinoMember(7)]
 		public string ActorConfig { get; set; }
 		/// <summary>FSM路径</summary>
-		[NinoMember(7)]
+		[NinoMember(8)]
 		public string FSM { get; set; }
 		/// <summary>Controller路径</summary>
-		[NinoMember(8)]
+		[NinoMember(9)]
 		public string Controller { get; set; }
 
 	}

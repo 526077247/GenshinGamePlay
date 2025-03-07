@@ -10,7 +10,7 @@ namespace TaoTie
         [NinoMember(10)][LabelText("是否展示Unit表对应名称")]
         public bool ShowUnitName;
         [NinoMember(11)] [ShowIf("@!"+nameof(ShowUnitName))]
-        public string NameI18NKey;
+        public I18NKey NameI18NKey;
         [NinoMember(12)]
         public Color BaseColor = Color.white;
     }
