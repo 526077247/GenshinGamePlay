@@ -1224,8 +1224,10 @@ namespace TaoTie
         {
             var rectTrans = target.GetTransform().GetComponent<RectTransform>();
             var padding = WidthPadding;
-            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), 0);
-            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, 0);
+            var safeArea = Screen.safeArea;
+            var height = Screen.height;
+            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), safeArea.top * rectTrans.anchorMax.y/ ScreenSizeFlag);
+            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.bottom) * (1 - rectTrans.anchorMin.y) / ScreenSizeFlag);
         }
 
         #endregion

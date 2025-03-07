@@ -985,7 +985,8 @@ namespace DaGenGraph.Editor
                 case GraphAction.SelectNodes:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(graphAction), graphAction, null);
+                    Debug.LogWarning("ExecuteErrorGraphAction: "+graphAction);
+                    break;
             }
         }
 
