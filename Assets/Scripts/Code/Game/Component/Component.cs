@@ -7,21 +7,6 @@ namespace TaoTie
     /// </summary>
     public abstract class Component : IDisposable
     {
-        [Timer(TimerType.ComponentUpdate)]
-        public class ComponentUpdate : ATimer<IUpdate>
-        {
-            public override void Run(IUpdate t)
-            {
-                try
-                {
-                    t.Update();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex);
-                }
-            }
-        }
         protected Entity parent { get; private set; }
         public long Id => parent != null ? parent.Id : 0;
         private long timerId;
