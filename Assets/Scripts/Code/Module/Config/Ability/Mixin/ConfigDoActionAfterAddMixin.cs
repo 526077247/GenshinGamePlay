@@ -14,7 +14,7 @@ namespace TaoTie
 
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<DoActionAfterAddMixin>.Type) as DoActionAfterAddMixin;
+            var res = ObjectPool.Instance.Fetch<DoActionAfterAddMixin>();
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

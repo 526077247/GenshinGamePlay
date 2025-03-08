@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public static DictionaryComponent<T,V> Create()
         {
-            return ObjectPool.Instance.Fetch(TypeInfo<DictionaryComponent<T,V>>.Type) as DictionaryComponent<T,V>;
+            return ObjectPool.Instance.Fetch<DictionaryComponent<T,V>>();
         }
 
         public void Dispose()

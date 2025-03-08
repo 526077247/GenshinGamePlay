@@ -35,10 +35,12 @@ Build-Mac
 /Bundles
 /Tools/FileServer/obj
 /Tools/FileServer/.idea
+/Tools/FileServer/.vs
 /FileServer
 /Bin
 /Tools/ExcelExport/ExcelExport/obj
 /Tools/ExcelExport/.idea
+/Tools/ExcelExport/.vs
 /Excel/Json
 /Assets/Modules/
 /Packages/com.thridparty-moudule.*

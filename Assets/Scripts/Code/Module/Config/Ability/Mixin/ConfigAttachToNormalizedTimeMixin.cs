@@ -21,7 +21,7 @@ namespace TaoTie
         public float normalizeEndRawNum;
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<AttachToStateIDMixin>.Type) as AttachToStateIDMixin;
+            var res = ObjectPool.Instance.Fetch<AttachToStateIDMixin>();
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

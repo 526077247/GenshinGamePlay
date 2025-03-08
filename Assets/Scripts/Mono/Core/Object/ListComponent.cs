@@ -9,7 +9,7 @@ namespace TaoTie
     {
         public static ListComponent<T> Create()
         {
-            return ObjectPool.Instance.Fetch(TypeInfo<ListComponent<T>>.Type) as ListComponent<T>;
+            return ObjectPool.Instance.Fetch<ListComponent<T>>();
         }
 
         public void Dispose()

@@ -13,7 +13,7 @@ namespace TaoTie
         public ConfigAbilityAction[] Actions;
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<DoActionBeforeBeAttackMixin>.Type) as DoActionBeforeBeAttackMixin;
+            var res = ObjectPool.Instance.Fetch<DoActionBeforeBeAttackMixin>();
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

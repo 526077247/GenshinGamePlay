@@ -15,8 +15,7 @@ namespace TaoTie
             this.TryGetValue(t, out list);
             if (list == null)
             {
-                list = ObjectPool.Instance.Fetch(TypeInfo<List<K>>.Type) as List<K>;
-                list.Clear();
+                list = ObjectPool.Instance.Fetch<List<K>>();
                 this.Add(t, list);
             }
             list.Add(k);

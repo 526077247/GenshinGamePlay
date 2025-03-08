@@ -24,7 +24,7 @@ namespace TaoTie
         public ConfigAbilityAction[] ExitActions;
         public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<DoActionByStateIDMixin>.Type) as DoActionByStateIDMixin;
+            var res = ObjectPool.Instance.Fetch<DoActionByStateIDMixin>();
             res.Init(actorAbility, actorModifier, this);
             return res;
         }

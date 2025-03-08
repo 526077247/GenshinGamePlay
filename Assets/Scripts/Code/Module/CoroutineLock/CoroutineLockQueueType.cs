@@ -8,7 +8,7 @@ namespace TaoTie
 
         public static CoroutineLockQueueType Create()
         {
-            var res = ObjectPool.Instance.Fetch(TypeInfo<CoroutineLockQueueType>.Type) as CoroutineLockQueueType;
+            var res = ObjectPool.Instance.Fetch<CoroutineLockQueueType>();
             res.dictionary = new Dictionary<long, CoroutineLockQueue>();
             return res;
         }

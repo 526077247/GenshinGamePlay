@@ -37,7 +37,7 @@ namespace TaoTie
 
         public static UIWindow Create()
         {
-            return ObjectPool.Instance.Fetch(TypeInfo<UIWindow>.Type) as UIWindow;
+            return ObjectPool.Instance.Fetch<UIWindow>();
         }
 
         public void Dispose()

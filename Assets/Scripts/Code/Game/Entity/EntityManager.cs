@@ -34,7 +34,7 @@ namespace TaoTie
 
             Entitys.Dispose();
             IdEntityMap.Dispose();
-            TypeEntitys.Clear();
+            TypeEntitys.Dispose();
             Entitys = null;
             IdEntityMap = null;
             TypeEntitys = null;
@@ -114,8 +114,7 @@ namespace TaoTie
 
         public T CreateEntity<T>() where T : Entity, IEntity
         {
-            Type type = TypeInfo<T>.Type;
-            T res = ObjectPool.Instance.Fetch(type) as T;
+            T res = ObjectPool.Instance.Fetch<T>();
             res.BeforeInit(this);
             res.Init();
             Add(res);
@@ -124,8 +123,7 @@ namespace TaoTie
 
         public T CreateEntity<T, P1>(P1 p1) where T : Entity, IEntity<P1>
         {
-            Type type = TypeInfo<T>.Type;
-            T res = ObjectPool.Instance.Fetch(type) as T;
+            T res = ObjectPool.Instance.Fetch<T>();
             res.BeforeInit(this);
             res.Init(p1);
             Add(res);
@@ -134,8 +132,7 @@ namespace TaoTie
 
         public T CreateEntity<T, P1, P2>(P1 p1, P2 p2) where T : Entity, IEntity<P1, P2>
         {
-            Type type = TypeInfo<T>.Type;
-            T res = ObjectPool.Instance.Fetch(type) as T;
+            T res = ObjectPool.Instance.Fetch<T>();
             res.BeforeInit(this);
             res.Init(p1, p2);
             Add(res);
@@ -144,8 +141,7 @@ namespace TaoTie
 
         public T CreateEntity<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : Entity, IEntity<P1, P2, P3>
         {
-            Type type = TypeInfo<T>.Type;
-            T res = ObjectPool.Instance.Fetch(type) as T;
+            T res = ObjectPool.Instance.Fetch<T>();
             res.BeforeInit(this);
             res.Init(p1, p2, p3);
             Add(res);
@@ -154,8 +150,7 @@ namespace TaoTie
 
         public T CreateEntity<T, P1, P2, P3, P4>(P1 p1, P2 p2, P3 p3, P4 p4) where T : Entity, IEntity<P1, P2, P3, P4>
         {
-            Type type = TypeInfo<T>.Type;
-            T res = ObjectPool.Instance.Fetch(type) as T;
+            T res = ObjectPool.Instance.Fetch<T>();
             res.BeforeInit(this);
             res.Init(p1, p2, p3, p4);
             Add(res);
@@ -165,8 +160,7 @@ namespace TaoTie
         public T CreateEntity<T, P1, P2, P3, P4, P5>(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
             where T : Entity, IEntity<P1, P2, P3, P4, P5>
         {
-            Type type = TypeInfo<T>.Type;
-            T res = ObjectPool.Instance.Fetch(type) as T;
+            T res = ObjectPool.Instance.Fetch<T>();
             res.BeforeInit(this);
             res.Init(p1, p2, p3, p4, p5);
             Add(res);

@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public static LinkedListComponent<T> Create()
         {
-            return ObjectPool.Instance.Fetch(TypeInfo<LinkedListComponent<T>>.Type) as LinkedListComponent<T>;
+            return ObjectPool.Instance.Fetch<LinkedListComponent<T>>();
         }
 
         public void Dispose()
