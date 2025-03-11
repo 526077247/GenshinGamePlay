@@ -8,12 +8,12 @@ namespace TaoTie
     /// <summary>
     /// UI绑定按键
     /// </summary>
-    public class PointerInputBind: MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    public class InputKeyBind: MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         public KeyCode BindingKey;
-        public static MultiMapSet<KeyCode, PointerInputBind> Key = new MultiMapSet<KeyCode, PointerInputBind>();
-        public static MultiMapSet<KeyCode, PointerInputBind> KeyDown = new MultiMapSet<KeyCode, PointerInputBind>();
-        public static MultiMapSet<KeyCode, PointerInputBind> KeyUp = new MultiMapSet<KeyCode, PointerInputBind>();
+        public static MultiMapSet<KeyCode, InputKeyBind> Key = new MultiMapSet<KeyCode, InputKeyBind>();
+        public static MultiMapSet<KeyCode, InputKeyBind> KeyDown = new MultiMapSet<KeyCode, InputKeyBind>();
+        public static MultiMapSet<KeyCode, InputKeyBind> KeyUp = new MultiMapSet<KeyCode, InputKeyBind>();
         public void LateUpdate()
         {
             KeyDown.Remove(BindingKey,this);

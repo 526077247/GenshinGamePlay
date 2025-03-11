@@ -47,9 +47,9 @@ namespace TaoTie
         {
             Input.gyro.enabled = true;
             Instance = this;
-            PointerInputBind.Key.Clear();
-            PointerInputBind.KeyDown.Clear();
-            PointerInputBind.KeyUp.Clear();
+            InputKeyBind.Key.Clear();
+            InputKeyBind.KeyDown.Clear();
+            InputKeyBind.KeyUp.Clear();
             //todo:
             for (int i = 0; i < (int)GameKeyCode.Max; i++)
             {
@@ -102,11 +102,11 @@ namespace TaoTie
                         val |= clickValue;
                     } else {
 #endif
-                    if (Input.GetKeyDown(key) || PointerInputBind.KeyDown[key].Count > 0)
+                    if (Input.GetKeyDown(key) || InputKeyBind.KeyDown[key].Count > 0)
                         val |= KeyDown;
-                    if (Input.GetKeyUp(key) || PointerInputBind.KeyUp[key].Count > 0)
+                    if (Input.GetKeyUp(key) || InputKeyBind.KeyUp[key].Count > 0)
                         val |= KeyUp;
-                    if (Input.GetKey(key) || PointerInputBind.Key[key].Count > 0)
+                    if (Input.GetKey(key) || InputKeyBind.Key[key].Count > 0)
                         val |= Key;
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
                     }

@@ -102,6 +102,8 @@ namespace TaoTie
             RegisterManager<StorySystem,SceneManagerProvider>(this);
             await UIManager.Instance.OpenWindow<UIDamageView>(UIDamageView.PrefabPath,UILayerNames.GameLayer);
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
+            if(PlatformUtil.IsMobile()) 
+                await UIManager.Instance.OpenWindow<UIMobileMainView>(UIMobileMainView.PrefabPath);
             var selfGhc = Self.GetComponent<GameObjectHolderComponent>();
             await selfGhc.WaitLoadGameObjectOver();
             await UIManager.Instance.DestroyWindow<UILoadingView>();

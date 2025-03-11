@@ -21,14 +21,15 @@ namespace TaoTie
 
         public void Destroy()
         {
-            if (ParentEntity!=null && ParentEntity.Childs != null)
+            if (ParentEntity != null && ParentEntity.Childs != null)
             {
                 ParentEntity.Childs.Remove(Id);
             }
-            for (int i = Childs.Count-1; i >=0; i--)
+
+            for (int i = Childs.Count - 1; i >= 0; i--)
             {
                 var e = parent.Parent.Get<Entity>(Childs[i]);
-                var ac =  e.GetComponent<AttachComponent>();
+                var ac = e.GetComponent<AttachComponent>();
                 if (ac.LifeByOwnerIsAlive)
                 {
                     e.Dispose();
@@ -38,8 +39,10 @@ namespace TaoTie
                     ac.ParentEntity = null;
                 }
             }
+
             Childs.Dispose();
             Childs = null;
+            ParentEntity = null;
         }
 
         #endregion
