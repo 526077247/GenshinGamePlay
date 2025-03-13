@@ -16,6 +16,12 @@ namespace TaoTie
         {
             return config.Perfab;
         }
+        public void GetProgressPercent(out float cleanup, out float loadScene, out float prepare)
+        {
+            cleanup = 0.2f;
+            loadScene = 0.65f;
+            prepare = 0.15f;
+        }
         
         #region 玩家信息
         /// <summary>
@@ -63,7 +69,7 @@ namespace TaoTie
             RemoveManager<GameTimerManager>();
         }
 
-        public async ETTask OnPrepare()
+        public async ETTask OnPrepare(float progressStart,float progressEnd)
         {
             await BillboardSystem.Instance.PreloadLoadAsset();
         }

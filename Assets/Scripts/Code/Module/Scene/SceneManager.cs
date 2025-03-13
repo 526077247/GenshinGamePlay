@@ -55,6 +55,13 @@ namespace TaoTie
             {
                 map.ConfigId = id;
             }
+            
+            scene.GetProgressPercent(out float cleanup, out float loadScene, out float prepare);
+            float total = cleanup + loadScene + prepare;
+            cleanup /= total * 0.9f;
+            loadScene /= total * 0.9f;
+            prepare /= total * 0.9f;
+            
             await scene.OnEnter();
             await scene.SetProgress(slidValue);
 
@@ -125,19 +132,19 @@ namespace TaoTie
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
-            slidValue += 0.12f;
+            slidValue += cleanup;
             await scene.SetProgress(slidValue);
 
             Log.Info("异步加载目标场景 Start");
             //异步加载目标场景
             await ResourcesManager.Instance.LoadSceneAsync(scene.GetScenePath(), false);
             await scene.OnComplete();
-            slidValue += 0.65f;
+            slidValue += loadScene;
             await scene.SetProgress(slidValue);
             //准备工作：预加载资源等
-            await scene.OnPrepare();
+            await scene.OnPrepare(slidValue, slidValue + prepare);
 
-            slidValue += 0.15f;
+            slidValue += prepare;
             await scene.SetProgress(slidValue);
             CameraManager.Instance.SetCameraStackAtLoadingDone();
 

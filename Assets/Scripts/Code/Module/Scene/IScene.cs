@@ -7,7 +7,10 @@ namespace TaoTie
     {
         public string GetName();
         public string GetScenePath();
-
+        /// <summary>
+        /// 获取各阶段进度比例
+        /// </summary>
+        public void GetProgressPercent(out float cleanup, out float loadScene, out float prepare);
         public string[] GetDontDestroyWindow();
 
         public List<string> GetScenesChangeIgnoreClean();
@@ -29,7 +32,7 @@ namespace TaoTie
         /// 场景加载结束：后续资源准备（预加载等）
         /// </summary>
         /// <returns></returns>
-        public ETTask OnPrepare();
+        public ETTask OnPrepare(float progressStart,float progressEnd);
 
         /// <summary>
         /// 场景加载完毕

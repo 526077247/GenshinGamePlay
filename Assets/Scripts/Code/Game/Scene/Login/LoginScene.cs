@@ -16,6 +16,13 @@ namespace TaoTie
         {
             return scenesChangeIgnoreClean;
         }
+        public void GetProgressPercent(out float cleanup, out float loadScene, out float prepare)
+        {
+            cleanup = 0.2f;
+            loadScene = 0.65f;
+            prepare = 0.15f;
+        }
+        
         public async ETTask OnCreate()
         {
             scenesChangeIgnoreClean = new List<string>();
@@ -36,7 +43,7 @@ namespace TaoTie
             await ETTask.CompletedTask;
         }
 
-        public async ETTask OnPrepare()
+        public async ETTask OnPrepare(float progressStart,float progressEnd)
         {
             await ETTask.CompletedTask;
         }

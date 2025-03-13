@@ -2,6 +2,9 @@
 {
     public static class MessageId
     {
+        /// <summary> 游戏时间缩放改变 </summary>
+        public const int TimeScaleChange = -1;
+        
         /// <summary> 数值变化 </summary>
         public const int NumericChangeEvt = 1;
         /// <summary> 坐标变化 </summary>
@@ -50,7 +53,5 @@
         public const int SetUseRagDoll = 22;
         /// <summary> 战斗状态改变 </summary>
         public const int CombatStateChange = 23;
-        public const int Package_DownLoading = 10007;
-        public const int Package_DownLoad = 10008;
     }
 }

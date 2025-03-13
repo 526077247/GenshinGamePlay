@@ -4,6 +4,13 @@ namespace TaoTie
 {
     public class LoadingScene:IScene
     {
+        public void GetProgressPercent(out float cleanup, out float loadScene, out float prepare)
+        {
+            cleanup = 0.2f;
+            loadScene = 0.65f;
+            prepare = 0.15f;
+        }
+
         public string GetName()
         {
             return "Loading";
@@ -32,7 +39,7 @@ namespace TaoTie
             await ETTask.CompletedTask;
         }
 
-        public async ETTask OnPrepare()
+        public async ETTask OnPrepare(float progressStart,float progressEnd)
         {
             await ETTask.CompletedTask;
         }
