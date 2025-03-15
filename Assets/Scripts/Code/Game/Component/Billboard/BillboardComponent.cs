@@ -5,11 +5,13 @@ namespace TaoTie
 {
     public class BillboardComponent : Component, IComponent<ConfigBillboard>, IUpdate
     {
-        private List<BillboardPlugin> plugins;
+        private List<BassBillboardPlugin> plugins;
         public ConfigBillboard Config { get; private set; }
         public bool Enable { get; private set; }
 
         public float Scale{ get; private set; }
+
+        public Vector3 Offset => Config.Offset;
         
         public Transform Target{ get; private set; }
         
@@ -19,7 +21,7 @@ namespace TaoTie
         {
             Config = config;
             Enable = false;
-            plugins = new List<BillboardPlugin>();
+            plugins = new List<BassBillboardPlugin>();
             Scale = 1;
             if (Config != null && Config.Plugins != null)
             {
@@ -75,6 +77,13 @@ namespace TaoTie
         public void SetEnable(bool enable)
         {
             Enable = enable;
+        }
+        
+        public void CreateBillboard<T>() where T:BassBillboardPlugin
+        {
+            var res = ObjectPool.Instance.Fetch<T>();
+            res.Init(this);
+            plugins.Add(res);
         }
     }
 }

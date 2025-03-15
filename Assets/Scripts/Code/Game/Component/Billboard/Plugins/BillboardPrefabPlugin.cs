@@ -25,10 +25,10 @@ namespace TaoTie
         protected override void UpdateInternal()
         {
             var mainC = CameraManager.Instance.MainCamera();
-            if (mainC != null && obj != null)
+            if (mainC != null && obj != null && target!=null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
+                obj.transform.position = target.position + billboardComponent.Offset + config.Offset;
             }
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)
             {
@@ -47,7 +47,6 @@ namespace TaoTie
             }
 
             this.obj = obj;
-            obj.transform.position = target.position + billboardComponent.Config.Offset + config.Offset;
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
             {

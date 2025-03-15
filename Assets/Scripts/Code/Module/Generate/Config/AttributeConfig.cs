@@ -98,8 +98,11 @@ namespace TaoTie
 		/// <summary>最大值</summary>
 		[NinoMember(7)]
 		public string MaxAttr { get; set; }
-		/// <summary>描述</summary>
+		/// <summary>回复值</summary>
 		[NinoMember(8)]
+		public string AttrReUp { get; set; }
+		/// <summary>描述</summary>
+		[NinoMember(9)]
 		public string Desc { get; set; }
 
 	}

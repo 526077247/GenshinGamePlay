@@ -41,6 +41,11 @@ namespace TaoTie
 			}
 			set
 			{
+				if (numericType < NumericType.Max)
+				{
+					Log.Error("不允许直接设置最终值，请检查代码");
+					numericType = numericType * 10 + 1;
+				}
 				this.Insert(numericType,value);
 			}
 		}
@@ -69,25 +74,43 @@ namespace TaoTie
 				return this.GetByKey(numericType);
 		}
 
-		public void Set(int nt, float value,bool isRealValue=false)
+		/// <summary>
+		/// 设置值
+		/// </summary>
+		/// <param name="nt"> nt>NumericType.Max </param>
+		/// <param name="value"></param>
+		/// <param name="isRealValue"></param>
+		public void Set(int nt, float value, bool isRealValue = false)
 		{
-			if(!isRealValue&&this.IsFloat(nt))
+			if (!isRealValue && this.IsFloat(nt))
 				this[nt] = (int) (value * 10000);
 			else
 				this[nt] = (int) value;
 		}
 
-		public void Set(int nt, int value,bool isRealValue=false)
+		/// <summary>
+		/// 设置值
+		/// </summary>
+		/// <param name="nt"> nt>NumericType.Max </param>
+		/// <param name="value"></param>
+		/// <param name="isRealValue"></param>
+		public void Set(int nt, int value, bool isRealValue = false)
 		{
-			if(!isRealValue&&this.IsFloat(nt))
+			if (!isRealValue && this.IsFloat(nt))
 				this[nt] = value * 10000;
 			else
 				this[nt] = value;
 		}
-		
-		public void Set(int nt, long value,bool isRealValue=false)
+
+		/// <summary>
+		/// 设置值
+		/// </summary>
+		/// <param name="nt"> nt>NumericType.Max </param>
+		/// <param name="value"></param>
+		/// <param name="isRealValue"></param>
+		public void Set(int nt, long value, bool isRealValue = false)
 		{
-			if(!isRealValue&&this.IsFloat(nt))
+			if (!isRealValue && this.IsFloat(nt))
 				this[nt] = value * 10000;
 			else
 				this[nt] = value;

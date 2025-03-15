@@ -4,10 +4,21 @@ namespace TaoTie
 {
     public class NumericSystem:IManager
     {
+        /// <summary>
+        /// 数值变化检测间隔
+        /// </summary>
+        private const int ATTRCHANGE_CHECKTIME = 250;
+        /// <summary>
+        /// 数值变化间隔
+        /// </summary>
+        private const int ATTRCHANGE_DELTATIME = 1000;
+        
         public List<NumericComponent> Data;
         private long Timer;
-
-        private long lastUpdateTime;
+        
+        private List<int> attrList;
+        private List<int> reUpList;
+        private List<int> maxList;
         #region override
         
         [Timer(TimerType.NumericUpdate)]
@@ -21,9 +32,26 @@ namespace TaoTie
 
         public void Init()
         {
+            attrList = new List<int>();
+            reUpList = new List<int>();
+            maxList = new List<int>();
+            var attrs = AttributeConfigCategory.Instance.GetAllList();
+            for (int i = 0; i < attrs.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(attrs[i].AttrReUp) && !string.IsNullOrEmpty(attrs[i].MaxAttr))
+                {
+                    var reup = NumericType.GetKey(attrs[i].AttrReUp);
+                    var max = NumericType.GetKey(attrs[i].MaxAttr);
+                    if (reup >= 0 && max>=0)
+                    {
+                        attrList.Add(attrs[i].Id * 10 + 1);
+                        reUpList.Add(reup * 10 + 1);
+                        maxList.Add(max * 10 + 1);
+                    }
+                }
+            }
             Data = new List<NumericComponent>();
-            Timer = GameTimerManager.Instance.NewRepeatedTimer(250, TimerType.NumericUpdate, this);
-            lastUpdateTime = GameTimerManager.Instance.GetTimeNow();
+            Timer = GameTimerManager.Instance.NewRepeatedTimer(ATTRCHANGE_CHECKTIME, TimerType.NumericUpdate, this);
         }
 
         public void Destroy()
@@ -35,14 +63,28 @@ namespace TaoTie
 
         public void Update()
         {
-            var timeNow = GameTimerManager.Instance.GetTimeNow();
-            long deltaTime = timeNow - lastUpdateTime;
             //遍历回血，回蓝
             for (int i = 0; i < Data.Count; i++)
             {
-                
+                var numc = Data[i];
+                for (int j = 0; j < attrList.Count; j++)
+                {
+                    float reUpNum = numc.GetAsFloat(reUpList[j]);
+                    reUpNum = reUpNum * ATTRCHANGE_CHECKTIME / ATTRCHANGE_DELTATIME;
+                    if (reUpNum > 0)
+                    {
+                        var maxValue = numc.GetAsInt(maxList[j]);
+                        float nowValue = numc.GetAsInt(attrList[j]);
+                        if (nowValue < maxValue)
+                        {
+                            nowValue += reUpNum;
+                            if (nowValue > maxValue) nowValue = maxValue;
+                            numc.Set(attrList[j], nowValue);
+                        }
+                    }
+                }
             }
-            lastUpdateTime = timeNow;
+
         }
 
         #endregion

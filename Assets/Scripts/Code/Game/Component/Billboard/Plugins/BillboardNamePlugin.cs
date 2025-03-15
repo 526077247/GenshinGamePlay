@@ -12,7 +12,6 @@ namespace TaoTie
         protected override void InitInternal()
         {
             obj = new GameObject("Name");
-            obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset) * billboardComponent.Scale;
             obj.transform.localScale = Vector3.one * (billboardComponent.Scale * 0.1f);
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
@@ -33,10 +32,10 @@ namespace TaoTie
         protected override void UpdateInternal()
         {
             var mainC = CameraManager.Instance.MainCamera();
-            if (mainC != null && obj != null)
+            if (mainC != null && obj != null && target!=null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset)* billboardComponent.Scale;
+                obj.transform.position = target.position + (billboardComponent.Offset + config.Offset)* billboardComponent.Scale;
                 obj.transform.localScale = Vector3.one * (billboardComponent.Scale * 0.1f);
             }
             if (obj != null && obj.activeSelf!= billboardComponent.Enable)

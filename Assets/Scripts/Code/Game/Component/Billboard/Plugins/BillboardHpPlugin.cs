@@ -22,7 +22,6 @@ namespace TaoTie
             x = 0.01f * config.Size.x;
             y = 0.01f * config.Size.y;
             obj = new GameObject("Hp");
-            obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset) * billboardComponent.Scale;
             obj.transform.localScale = Vector3.one * billboardComponent.Scale;
             var mainC = CameraManager.Instance.MainCamera();
             if (mainC != null && obj != null)
@@ -75,10 +74,10 @@ namespace TaoTie
         protected override void UpdateInternal()
         {
             var mainC = CameraManager.Instance.MainCamera();
-            if (mainC != null && obj != null)
+            if (mainC != null && obj != null && target!=null)
             {
                 obj.transform.rotation = mainC.transform.rotation;
-                obj.transform.position = target.position + (billboardComponent.Config.Offset + config.Offset)* billboardComponent.Scale;
+                obj.transform.position = target.position + (billboardComponent.Offset + config.Offset)* billboardComponent.Scale;
                 obj.transform.localScale = Vector3.one * billboardComponent.Scale;
             }
 

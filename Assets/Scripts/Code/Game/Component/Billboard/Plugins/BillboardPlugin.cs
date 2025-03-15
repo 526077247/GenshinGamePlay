@@ -3,25 +3,23 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public abstract class BillboardPlugin: IDisposable
+    public abstract class BillboardPlugin : BassBillboardPlugin
     {
+        public sealed override void Init(BillboardComponent comp)
+        {
+            base.Init(comp);
+        }
+
         public abstract void Init(ConfigBillboardPlugin config, BillboardComponent comp);
-        public abstract void Update();
-        public abstract void Dispose();
     }
-    
     public abstract class BillboardPlugin<T>: BillboardPlugin where T : ConfigBillboardPlugin
     {
         protected T config { get; private set; }
-
-        protected BillboardComponent billboardComponent;
-
-        protected Transform target => billboardComponent.Target;
         
-        public sealed override void Init(ConfigBillboardPlugin config, BillboardComponent comp)
+        public override void Init(ConfigBillboardPlugin config, BillboardComponent comp)
         {
             this.config = config as T;
-            this.billboardComponent = comp;
+            base.Init(comp);
             InitInternal();
         }
         
