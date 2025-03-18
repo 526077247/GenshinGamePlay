@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class NumericSystem:IManager
+    public class NumericSystem:IManager,IUpdate
     {
         /// <summary>
         /// 数值变化检测间隔
@@ -26,7 +26,7 @@ namespace TaoTie
         {
             public override void Run(NumericSystem t)
             {
-                t.Update();
+                t.NumericUpdate();
             }
         }
 
@@ -51,17 +51,28 @@ namespace TaoTie
                 }
             }
             Data = new List<NumericComponent>();
-            Timer = GameTimerManager.Instance.NewRepeatedTimer(ATTRCHANGE_CHECKTIME, TimerType.NumericUpdate, this);
         }
 
         public void Destroy()
         {
-            GameTimerManager.Instance.Remove(ref Timer);
+            GameTimerManager.Instance?.Remove(ref Timer);
             Data.Clear();
             Data = null;
         }
 
         public void Update()
+        {
+            if (GameTimerManager.Instance == null)
+            {
+                Timer = 0;
+            }
+            if (Timer == 0 && GameTimerManager.Instance != null)
+            {
+                Timer = GameTimerManager.Instance.NewRepeatedTimer(ATTRCHANGE_CHECKTIME, TimerType.NumericUpdate, this);
+            }
+        }
+
+        public void NumericUpdate()
         {
             //遍历回血，回蓝
             for (int i = 0; i < Data.Count; i++)

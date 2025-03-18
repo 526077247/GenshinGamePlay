@@ -81,7 +81,9 @@ namespace TaoTie
                 return res as List<T>;
             }
 
-            return null;
+            res = new List<T>();
+            TypeEntitys.Add(type, res);
+            return res as List<T>;
         }
 
         private void Add<T>(T entity) where T : Entity
@@ -93,14 +95,14 @@ namespace TaoTie
                 TypeEntitys.Add(entity.GetType(), new List<T>());
             }
 
-            (TypeEntitys[entity.GetType()] as List<T>)?.Add(entity);
+            TypeEntitys[entity.GetType()]?.Add(entity);
         }
 
         public void Remove<T>(T entity) where T : Entity
         {
             IdEntityMap.Remove(entity.Id);
             Entitys.Remove(entity);
-            (TypeEntitys[entity.GetType()] as List<T>)?.Remove(entity);
+            TypeEntitys[entity.GetType()]?.Remove(entity);
             entity.Dispose();
         }
 
@@ -110,6 +112,11 @@ namespace TaoTie
             {
                 Remove(entity);
             }
+        }
+
+        public int GetTotal()
+        {
+            return Entitys.Count;
         }
 
         public T CreateEntity<T>() where T : Entity, IEntity
