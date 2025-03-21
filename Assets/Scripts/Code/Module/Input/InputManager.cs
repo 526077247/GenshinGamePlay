@@ -75,15 +75,15 @@ namespace TaoTie
             if (IsPause) return;
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
             int clickValue = 0;
-            if (Input.touchCount > 0|| PointerInputBind.Key[KeyCode.Mouse0].Count > 0)
+            if (Input.touchCount > 0|| InputKeyBind.Key[KeyCode.Mouse0].Count > 0)
             {
                 clickValue |= Key;
             }
-            if ((Input.touchCount > 0 && touchCount == 0)|| PointerInputBind.KeyDown[KeyCode.Mouse0].Count > 0)
+            if ((Input.touchCount > 0 && touchCount == 0)|| InputKeyBind.KeyDown[KeyCode.Mouse0].Count > 0)
             {
                 clickValue |= KeyDown;
             }
-            if ((Input.touchCount == 0 && touchCount > 0)|| PointerInputBind.KeyUp[KeyCode.Mouse0].Count > 0)
+            if ((Input.touchCount == 0 && touchCount > 0)|| InputKeyBind.KeyUp[KeyCode.Mouse0].Count > 0)
             {
                 clickValue |= KeyUp;
             }

@@ -39,15 +39,17 @@ public class BgAutoFit : MonoBehaviour
             ? (float) Define.DesignScreenWidth / screenW
             : (float) Define.DesignScreenHeight / screenH;
         //图片缩放比
-        var width = screenW > screenH ? screenW : screenH;
-        var height = screenW < screenH ? screenW : screenH;
         var texture = bgSprite;
-        var flag1 = (float) width / texture.bounds.size.x;
-        var flag2 = (float) height / texture.bounds.size.y;
+        var flag1 = screenW / texture.bounds.size.x;
+        var flag2 = screenH / texture.bounds.size.y;
         if (flag1 < flag2)
-            rectTransform.sizeDelta = new Vector2(flag2 * texture.bounds.size.x * signFlag, height * signFlag);
+        {
+            rectTransform.sizeDelta = new Vector2(flag2 * texture.bounds.size.x * signFlag, screenH * signFlag);
+        }
         else
-            rectTransform.sizeDelta = new Vector2(width * signFlag, flag1 * texture.bounds.size.y * signFlag);
+        {
+            rectTransform.sizeDelta = new Vector2(screenW * signFlag, flag1 * texture.bounds.size.y * signFlag);
+        }
     }
 
     public void SetSprite(Sprite newBgSprite)
