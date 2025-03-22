@@ -1226,8 +1226,8 @@ namespace TaoTie
             var padding = WidthPadding;
             var safeArea = Screen.safeArea;
             var height = Screen.height;
-            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), safeArea.top * rectTrans.anchorMax.y/ ScreenSizeFlag);
-            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.bottom) * (1 - rectTrans.anchorMin.y) / ScreenSizeFlag);
+            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), safeArea.yMin * rectTrans.anchorMax.y/ ScreenSizeFlag);
+            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.yMax) * (1 - rectTrans.anchorMin.y) / ScreenSizeFlag);
         }
 
         #endregion

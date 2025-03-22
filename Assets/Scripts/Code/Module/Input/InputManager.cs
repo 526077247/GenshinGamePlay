@@ -137,13 +137,13 @@ namespace TaoTie
         /// <returns></returns>
         public bool GetKey(GameKeyCode keyCode, bool ignoreUI = false)
         {
-            if (ignoreUI)
-            {
-                var pos = GetTouchPos();
-                return !IsPointerOverGameObject(pos);
-            }
             if ((keyStatus[(int) keyCode] & Key) != 0)
             {
+                if (ignoreUI)
+                {
+                    var pos = GetTouchPos();
+                    return !IsPointerOverGameObject(pos);
+                }
                 return true;
             }
             return false;

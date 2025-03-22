@@ -118,10 +118,15 @@ namespace TaoTie
                 {
                     for (int i = 0; i < compilerMessages.Length; i++)
                     {
-                        if (compilerMessages[i].type == CompilerMessageType.Error||compilerMessages[i].type == CompilerMessageType.Warning)
+                        if (compilerMessages[i].type == CompilerMessageType.Error ||
+                            compilerMessages[i].type == CompilerMessageType.Warning)
                         {
-                            if(!compilerMessages[i].message.Contains("CS0436"))
+                            if (!compilerMessages[i].message.Contains("CS0436")
+                                && !compilerMessages[i].message.Contains("CS0618"))
                                 Debug.LogError(compilerMessages[i].message);
+                            else
+                                Debug.LogWarning(compilerMessages[i].message);
+
                         }
                     }
                 }

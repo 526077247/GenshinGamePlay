@@ -7,7 +7,6 @@ namespace TaoTie
         
         public static UIMsgBoxManager Instance;
 
-        private int index;
         private UIBaseView currentMsgBox;
         private LinkedList<MsgBoxInfoNode> stack;
         public void Init()

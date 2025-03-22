@@ -517,8 +517,7 @@ namespace TaoTie
             stream.Write(subChunk1, 0, 4);
  
             UInt16 one = 1;
-            UInt16 two = 2;
-        
+
             Byte[] audioFormat = BitConverter.GetBytes(one);
             stream.Write(audioFormat, 0, 2);
  
