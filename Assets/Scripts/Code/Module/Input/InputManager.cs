@@ -41,11 +41,12 @@ namespace TaoTie
         private readonly int[] keyStatus = new int[(int)GameKeyCode.Max];
 
         private int touchCount = 0;
+        private Vector2 mousePosition;
         #region IManager
 
         public void Init()
         {
-            Input.gyro.enabled = true;
+            //Input.gyro.enabled = true;
             Instance = this;
             InputKeyBind.Key.Clear();
             InputKeyBind.KeyDown.Clear();
@@ -74,6 +75,10 @@ namespace TaoTie
             MouseAxisY = 0;
             if (IsPause) return;
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            if (Input.touchCount > 0)
+            {
+                mousePosition = Input.GetTouch(0).position;
+            }
             int clickValue = 0;
             if (Input.touchCount > 0|| InputKeyBind.Key[KeyCode.Mouse0].Count > 0)
             {
@@ -125,12 +130,18 @@ namespace TaoTie
             MouseAxisY = Input.GetAxis("Mouse Y");
         }
         /// <summary>
-        ///  获取按键
+        /// 获取按键
         /// </summary>
         /// <param name="keyCode"></param>
+        /// <param name="ignoreUI"></param>
         /// <returns></returns>
-        public bool GetKey(GameKeyCode keyCode)
+        public bool GetKey(GameKeyCode keyCode, bool ignoreUI = false)
         {
+            if (ignoreUI)
+            {
+                var pos = GetTouchPos();
+                return !IsPointerOverGameObject(pos);
+            }
             if ((keyStatus[(int) keyCode] & Key) != 0)
             {
                 return true;
@@ -139,28 +150,40 @@ namespace TaoTie
         }
 
         /// <summary>
-        ///  获取按键是否按下
+        /// 获取按键是否按下
         /// </summary>
         /// <param name="keyCode"></param>
+        /// <param name="ignoreUI"></param>
         /// <returns></returns>
-        public bool GetKeyDown(GameKeyCode keyCode)
+        public bool GetKeyDown(GameKeyCode keyCode, bool ignoreUI = false)
         {
             if ((keyStatus[(int) keyCode] & KeyDown) != 0)
             {
+                if (ignoreUI)
+                {
+                    var pos = GetTouchPos();
+                    return !IsPointerOverGameObject(pos);
+                }
                 return true;
             }
             return false;
         }
         
         /// <summary>
-        ///  获取按键是否抬起
+        /// 获取按键是否抬起
         /// </summary>
         /// <param name="keyCode"></param>
+        /// <param name="ignoreUI"></param>
         /// <returns></returns>
-        public bool GetKeyUp(GameKeyCode keyCode)
+        public bool GetKeyUp(GameKeyCode keyCode, bool ignoreUI = false)
         {
             if ((keyStatus[(int) keyCode] & KeyUp) != 0)
             {
+                if (ignoreUI)
+                {
+                    var pos = GetTouchPos();
+                    return !IsPointerOverGameObject(pos);
+                }
                 return true;
             }
             return false;
@@ -361,25 +384,15 @@ namespace TaoTie
             return false;
         }
         
-        public bool TryGetTouchPos(out Vector2 pos)
+        public Vector2 GetTouchPos()
         {
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-            if(Input.touchCount > 0)
-            {
-                pos = Input.GetTouch(0).position;
-                return true;
-            }
-           
+            return mousePosition;
 #else
-            if (Input.GetKey(KeyCode.Mouse0))
-            {
-                var data = Input.mousePosition;
-                pos = new Vector2(data.x, data.y);
-                return true;
-            }
+            var data = Input.mousePosition;
+            return new Vector2(data.x, data.y);
 #endif
-            pos = Vector2.zero;
-            return false;
+            return Vector2.zero;
         }
 
         /// <summary>
