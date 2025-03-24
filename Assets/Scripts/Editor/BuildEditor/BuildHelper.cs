@@ -399,14 +399,18 @@ namespace TaoTie
                 Directory.CreateDirectory(relativeDirPrefix);
             }
 
-            if (isBuildExe)
+            if (isBuildExe || buildTarget == BuildTarget.WebGL)
             {
                 FilterCodeAssemblies.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
                 // if (HybridCLR.Editor.SettingsUtil.Enable)
                 // {
                 //     HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
                 //     HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
-                // } 
+                // }
+            }
+
+            if(!isBuildExe)
+            {
  
                 AssetDatabase.Refresh();
                 string[] levels = {

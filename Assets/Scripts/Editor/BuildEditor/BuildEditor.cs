@@ -152,19 +152,19 @@ namespace TaoTie
 			EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
             this.isPackAtlas = EditorGUILayout.Toggle("是否需要重新打图集: ", isPackAtlas);
+            this.isBuildAll = EditorGUILayout.Toggle("全量资源是否打进包:", this.isBuildAll);
+            if (!this.isBuildAll)
+            {
+	            this.isContainsAb = EditorGUILayout.Toggle("是否同时打分包资源: ", this.isContainsAb);
+            }
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
 	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle(
 		            new GUIContent("   *热更代码是否打AOT:", "可以把热更代码同时打一份到il2cpp使首包代码运行速度达到最快，但是会增加构建代码大小以及代码占用内存大小（未使用热更方案时必须勾选此项）"),
 		            this.buildHotfixAssembliesAOT);
-	            this.isBuildAll = EditorGUILayout.Toggle("   全量资源是否打进包:", this.isBuildAll);
 	            EditorGUILayout.LabelField("服务器:");
 	            this.buildMode = (Mode)EditorGUILayout.EnumPopup(buildMode);
-            }
-            if (!this.isBuildExe || !this.isBuildAll)
-            {
-	            this.isContainsAb = EditorGUILayout.Toggle("是否同时打分包资源: ", this.isContainsAb);
             }
             if (this.buildMode== Mode.自定义服务器)
             {
