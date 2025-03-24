@@ -49,7 +49,7 @@ namespace TaoTie
 
 	public class BuildEditor : EditorWindow
 	{
-		private const string settingAsset = "Assets/Scripts/Editor/BuildEditor/BuildSettings.asset";
+		public const string settingAsset = "Assets/Scripts/Editor/BuildEditor/BuildSettings.asset";
 
 		private string channel;
 		private string cdn;
@@ -194,6 +194,7 @@ namespace TaoTie
 
 			if (GUILayout.Button("开始打包"))
 			{
+				SaveSettings();
 				BuildHelper.SetCdnConfig(channel, buildHotfixAssembliesAOT, (int) buildMode, cdn);
 				if (this.platformType == PlatformType.None)
 				{

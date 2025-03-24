@@ -399,19 +399,17 @@ namespace TaoTie
                 Directory.CreateDirectory(relativeDirPrefix);
             }
 
-            if (isBuildExe || buildTarget == BuildTarget.WebGL)
-            {
-                FilterCodeAssemblies.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
-                // if (HybridCLR.Editor.SettingsUtil.Enable)
-                // {
-                //     HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
-                //     HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
-                // }
-            }
+            // if (isBuildExe || buildTarget == BuildTarget.WebGL)
+            // {
+            //     if (HybridCLR.Editor.SettingsUtil.Enable)
+            //     {
+            //         HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
+            //         HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
+            //     }
+            // }
 
-            if(!isBuildExe)
+            if(isBuildExe)
             {
- 
                 AssetDatabase.Refresh();
                 string[] levels = {
                     "Assets/AssetsPackage/Scenes/InitScene/Init.unity",

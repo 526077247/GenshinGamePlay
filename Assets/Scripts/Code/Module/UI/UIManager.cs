@@ -22,10 +22,10 @@ namespace TaoTie
         {
             get
             {
-                var flagx = (float) Define.DesignScreenWidth /
-                            (Screen.width > Screen.height ? Screen.width : Screen.height);
-                var flagy = (float) Define.DesignScreenHeight /
-                            (Screen.width > Screen.height ? Screen.height : Screen.width);
+                float width = Screen.width;
+                float height = Screen.height;
+                var flagx = Define.DesignScreenWidth / width;
+                var flagy = Define.DesignScreenHeight / height;
                 return flagx > flagy ? flagx : flagy;
             }
         }
@@ -35,8 +35,10 @@ namespace TaoTie
 
         public void Init()
         {
-            Rect safeAreaRect = Screen.safeArea;
-            WidthPadding = safeAreaRect.x / 2;
+
+            var safeArea = Screen.safeArea;
+            WidthPadding = safeArea.x;
+
             Instance = this;
             windows = new Dictionary<string, UIWindow>();
             windowStack = new Dictionary<UILayerNames, LinkedList<string>>();
@@ -78,9 +80,9 @@ namespace TaoTie
 
         public void ResetSafeArea()
         {
-            Rect safeAreaRect = Screen.safeArea;
-            SetWidthPadding(safeAreaRect.x / 2);
-            Log.Info(safeAreaRect);
+            var safeArea = Screen.safeArea;
+            var temp = safeArea.x;
+            SetWidthPadding(temp);
         }
 
         /// <summary>
@@ -1224,10 +1226,12 @@ namespace TaoTie
         {
             var rectTrans = target.GetTransform().GetComponent<RectTransform>();
             var padding = WidthPadding;
+
             var safeArea = Screen.safeArea;
             var height = Screen.height;
-            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), safeArea.yMin * rectTrans.anchorMax.y/ ScreenSizeFlag);
-            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.yMax) * (1 - rectTrans.anchorMin.y) / ScreenSizeFlag);
+
+            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), safeArea.top * rectTrans.anchorMax.y * ScreenSizeFlag);
+            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.bottom) * (1 - rectTrans.anchorMin.y) * ScreenSizeFlag);
         }
 
         #endregion
