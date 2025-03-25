@@ -190,6 +190,7 @@ namespace DaGenGraph.Editor
             AddButton(new GUIContent("新建"), InitGraph);
             AddButton(new GUIContent("打开"), LoadGraph);
             AddButton(new GUIContent("保存"), SaveGraph);
+            AddButton(new GUIContent("展示或隐藏节点信息"), ChangeShowNodeViewDetails);
             AddButton(new GUIContent("详情面板"), ChangeDrawInspector, false);
         }
 
@@ -238,6 +239,11 @@ namespace DaGenGraph.Editor
         private void ChangeDrawInspector()
         {
             m_DrawInspector = !m_DrawInspector;
+        }
+
+        private void ChangeShowNodeViewDetails()
+        {
+            m_Graph.showNodeViewDetails = !m_Graph.showNodeViewDetails;
         }
 
         private void DrawViewGraph()

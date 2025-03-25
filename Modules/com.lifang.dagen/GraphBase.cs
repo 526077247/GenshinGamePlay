@@ -9,6 +9,8 @@ namespace DaGenGraph
     public abstract class GraphBase: ScriptableObject
     {
         [HideInInspector]
+        public bool showNodeViewDetails = true;
+        [HideInInspector]
         public Vector2 currentPanOffset = Vector2.zero;
         [HideInInspector]
         public float currentZoom = 1f;
