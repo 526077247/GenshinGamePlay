@@ -8,7 +8,7 @@ namespace TaoTie
 {
 	public class UILobbyView : UIBaseView, IOnCreate, IOnEnable
 	{
-		public static string PrefabPath => "UIGame/UILobby/Prefab/UILobbyView.prefab";
+		public static string PrefabPath => "UIGame/UILobby/Prefabs/UILobbyView.prefab";
 		public UIButton btn_start;
 		
 		#region override

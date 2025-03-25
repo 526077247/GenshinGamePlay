@@ -54,7 +54,7 @@ namespace TaoTie
             this.CanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             this.CanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             this.CanvasScaler.referenceResolution = UIManager.Instance.Resolution;
-            if (Screen.width / Screen.height > Define.DesignScreenWidth / Define.DesignScreenHeight)
+            if ((float)Screen.width / Screen.height > Define.DesignScreenWidth / Define.DesignScreenHeight)
                 this.CanvasScaler.matchWidthOrHeight = 1;
             else
                 this.CanvasScaler.matchWidthOrHeight = 0;

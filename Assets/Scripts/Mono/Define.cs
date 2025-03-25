@@ -1,4 +1,5 @@
-﻿
+﻿using UnityEngine;
+
 namespace TaoTie
 {
     public static class Define
@@ -23,8 +24,13 @@ namespace TaoTie
 #else
         public static readonly bool Debug = UnityEngine.Debug.isDebugBuild;
 #endif
-        public static readonly int DesignScreenWidth = 1920;
-        public static readonly int DesignScreenHeight = 1080;
+        private const int dWidth = 1920;
+        private const int dHeight = 1080;
+
+        public static readonly float DesignScreenWidth =
+                Screen.width > Screen.height ? Mathf.Max(dWidth, dHeight) : Mathf.Min(dWidth, dHeight);
+        public static readonly float DesignScreenHeight =
+                Screen.width > Screen.height ? Mathf.Min(dWidth, dHeight) : Mathf.Max(dWidth, dHeight);
         public static int LogLevel = 1;
 
         
