@@ -48,6 +48,8 @@ namespace TaoTie
                 rectTransform.sizeDelta = new Vector2(flag2 * texture.bounds.size.x * signFlag, screenH * signFlag);
             else
                 rectTransform.sizeDelta = new Vector2(screenW * signFlag, flag1 * texture.bounds.size.y * signFlag);
+            rectTransform.position = Vector3.zero;
+            rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, rectTransform.localPosition.y, 0);
         }
 
         public void SetSprite(Sprite newBgSprite)
