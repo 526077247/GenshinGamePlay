@@ -16,7 +16,7 @@ namespace TaoTie
 		[NinoMember(3), LabelText("空中死亡是否下落")] 
 		public bool FallWhenAirDie;
 
-		[NinoMember(4), LabelText("死亡表现持续时间"), Min(-1),Tooltip("单位ms，-1不消失")]
+		[NinoMember(4), LabelText("死亡表现持续时间"), MinValue(-1),Tooltip("单位ms，-1不消失")]
 		public int DieEndTime;
 
 		[NinoMember(5), LabelText("死亡后，力延迟消失时间")] //暂不清楚
@@ -25,7 +25,7 @@ namespace TaoTie
 		[NinoMember(6), LabelText("死亡特效")] 
 		public string DieDisappearEffect;
 
-		[NinoMember(7), LabelText("死亡消失特效延迟播放时间")][Min(0)]
+		[NinoMember(7), LabelText("死亡消失特效延迟播放时间")][MinValue(0)]
 		public int DieDisappearEffectDelay;
 
 		[NinoMember(8), LabelText("消融shader")] 
@@ -37,13 +37,13 @@ namespace TaoTie
 		[NinoMember(10), LabelText("消融shader持续时间")]
 		public int DieShaderDisableDurationTime;
 
-		[NinoMember(11), LabelText("死亡模型消失时间"), Min(-1),Tooltip("单位ms，-1不消失")]
+		[NinoMember(11), LabelText("死亡模型消失时间"), MinValue(-1),Tooltip("单位ms，-1不消失")]
 		public int DieModelFadeDelay;
 
 		[NinoMember(12), LabelText("是否使用RagDoll")]
 		public bool UseRagDoll;
 
-		[NinoMember(13), ShowIf(nameof(UseRagDoll)), LabelText("RagDoll Die延迟时间"), Min(-1), Tooltip("单位ms，-1不消失")]
+		[NinoMember(13), ShowIf(nameof(UseRagDoll)), LabelText("RagDoll Die延迟时间"), MinValue(-1), Tooltip("单位ms，-1不消失")]
 		public int RagDollDieEndTimeDelay;
 	}
 }

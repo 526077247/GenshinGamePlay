@@ -7,7 +7,7 @@ namespace TaoTie
     [NinoType(false)]
     public class ConfigAISensingSetting
     {
-        [LabelText("敏感性")][Min(0)]
+        [LabelText("敏感性")][MinValue(0)]
         public float Sensitivity = 1;
         [LabelText("启用视觉")]
         public bool EnableVision;

@@ -9,9 +9,9 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public MotionFlag SpeedLevel;
-        [NinoMember(2)][Min(0.1f)]
+        [NinoMember(2)][MinValue(0.1f)]
         public float RangeMin;
-        [NinoMember(3)][Min(0.1f)]
+        [NinoMember(3)][MinValue(0.1f)]
         public float RangeMax;
         [NinoMember(4)][LabelText("随机重置时间min（ms）")]
         public int RestTimeMin;

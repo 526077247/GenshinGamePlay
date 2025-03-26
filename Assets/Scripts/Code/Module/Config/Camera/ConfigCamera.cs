@@ -9,7 +9,7 @@ namespace TaoTie
     public partial class ConfigCamera
     {
 
-        [NinoMember(1)] [PropertyOrder(int.MinValue)] [Min(0)]
+        [NinoMember(1)] [PropertyOrder(int.MinValue)] [MinValue(0)]
         public int Id;
 #if UNITY_EDITOR
         [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]

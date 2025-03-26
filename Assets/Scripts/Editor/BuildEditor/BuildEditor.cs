@@ -49,7 +49,7 @@ namespace TaoTie
 
 	public class BuildEditor : EditorWindow
 	{
-		public const string settingAsset = "Assets/Scripts/Editor/BuildEditor/BuildSettings.asset";
+		private const string settingAsset = "Assets/Scripts/Editor/BuildEditor/BuildSettings.asset";
 
 		private string channel;
 		private string cdn;

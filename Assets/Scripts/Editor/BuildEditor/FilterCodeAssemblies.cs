@@ -13,8 +13,8 @@ namespace TaoTie
         public string[] OnFilterAssemblies(BuildOptions buildOptions, string[] assemblies)
         {
             bool buildHotfixAssembliesAOT = false;
-            var buildSettings = AssetDatabase.LoadAssetAtPath<BuildSettings>(BuildEditor.settingAsset);
-            if (buildSettings != null) buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
+            var config = Resources.Load<CDNConfig>("CDNConfig");
+            if (config != null) buildHotfixAssembliesAOT = config.BuildHotfixAssembliesAOT;
             if(buildHotfixAssembliesAOT) return assemblies;
             // 将热更dll从打包列表中移除
             return assemblies.Where(ass =>

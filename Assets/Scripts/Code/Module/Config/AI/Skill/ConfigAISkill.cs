@@ -27,9 +27,9 @@ namespace TaoTie
 
         #region 技能cd
 
-        [NinoMember(7)][BoxGroup("技能cd")][Min(100)]
+        [NinoMember(7)][BoxGroup("技能cd")][MinValue(100)]
         public int CD = 1000;
-        [NinoMember(8)][LabelText("技能cd增长随机最大值")][BoxGroup("技能cd")][Min(0)]
+        [NinoMember(8)][LabelText("技能cd增长随机最大值")][BoxGroup("技能cd")][MinValue(0)]
         public int CdUpperRange;
 
         #endregion

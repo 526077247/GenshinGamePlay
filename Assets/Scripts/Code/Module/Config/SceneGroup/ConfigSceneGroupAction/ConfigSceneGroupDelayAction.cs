@@ -11,7 +11,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigSceneGroupDelayAction: ConfigSceneGroupAction
     {
-        [NinoMember(10)][Min(1)]
+        [NinoMember(10)][MinValue(1)]
         [LabelText("延迟时间（ms）")]
         public long Delay = 1;
         

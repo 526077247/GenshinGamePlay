@@ -6,7 +6,7 @@ namespace TaoTie
 {
     public class SceneGroupTriggerWaitNode: JsonNodeBase
     {
-        [Min(1)]
+        [MinValue(1)]
         [LabelText("延迟时间（ms）")]
         public long Delay = 1;
         
