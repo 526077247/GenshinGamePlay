@@ -11,12 +11,12 @@
         public const int ChangePositionEvt = 2;
         /// <summary> 方向变化 </summary>
         public const int ChangeRotationEvt = 3;
+        /// <summary> 缩放变化 </summary>
+        public const int ChangeScaleEvt = 4;
         /// <summary> SceneGroupEvent </summary>
-        public const int SceneGroupEvent = 4;
+        public const int SceneGroupEvent = 5;
         /// <summary> PoseChange </summary>
-        public const int PoseChange = 5;
-        /// <summary> UpdateMotionFlag </summary>
-        public const int UpdateMotionFlag = 6;
+        public const int PoseChange = 6;
         /// <summary> UpdateTurnTargetPos </summary>
         public const int UpdateTurnTargetPos = 7;
 

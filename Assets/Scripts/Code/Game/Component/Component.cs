@@ -21,12 +21,16 @@ namespace TaoTie
                 timerId = GameTimerManager.Instance.NewFrameTimer(TimerType.ComponentUpdate, updater);
             if (this is IFixedUpdate fixedUpdate)
                 CodeLoader.Instance.FixedUpdate += fixedUpdate.FixedUpdate;
+            if (this is ILateUpdate lateUpdate)
+                CodeLoader.Instance.LateUpdate += lateUpdate.LateUpdate;
         }
         public void BeforeDestroy()
         {
             IsDispose = true;
             if (this is IFixedUpdate fixedUpdate)
                 CodeLoader.Instance.FixedUpdate -= fixedUpdate.FixedUpdate;
+            if (this is ILateUpdate lateUpdate)
+                CodeLoader.Instance.LateUpdate -= lateUpdate.LateUpdate;
             GameTimerManager.Instance?.Remove(ref timerId);
         }
         public void AfterDestroy()

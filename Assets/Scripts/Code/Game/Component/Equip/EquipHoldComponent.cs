@@ -73,7 +73,7 @@ namespace TaoTie
                         {
                             var point = gameObjectHolderComponent.GetCollectorObj<Transform>(pointName);
                             goh.EntityView.SetParent(point, false);
-                            goh.EntityView.localScale = Vector3.one;
+                            equip.LocalScale = Vector3.one;
                             goh.EntityView.localPosition = Vector3.zero;
                             goh.EntityView.localRotation = Quaternion.identity;
                             return;

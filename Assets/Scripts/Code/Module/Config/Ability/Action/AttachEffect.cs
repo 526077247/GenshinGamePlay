@@ -34,6 +34,7 @@ namespace TaoTie
            
             res.Position = pos;
             res.Rotation = rot;
+            res.LocalScale = Vector3.one * scale;
             var count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target, out var entities);
             if (count > 0)
             {
@@ -43,11 +44,6 @@ namespace TaoTie
             }
             
             await Born.AfterBorn(applier, ability, modifier, target,res);
-            
-            var goh = res.GetComponent<GameObjectHolderComponent>();
-            await goh.WaitLoadGameObjectOver();
-            if(goh.IsDispose) return;
-            goh.EntityView.localScale = Vector3.one * scale;
         }
     }
 }

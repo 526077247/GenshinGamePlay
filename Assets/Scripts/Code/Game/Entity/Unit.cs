@@ -54,6 +54,18 @@ namespace TaoTie
                 Messager.Instance.Broadcast(Id, MessageId.ChangeRotationEvt, this, oldRot);
             }
         }
+        
+        private Vector3 localScale = Vector3.zero;
+        public Vector3 LocalScale
+        {
+            get => this.localScale;
+            set
+            {
+                var oldScale = this.localScale;
+                this.localScale = value;
+                Messager.Instance.Broadcast(Id, MessageId.ChangeScaleEvt, this, oldScale);
+            }
+        }
 
         #endregion
         protected ConfigFsmController GetFsmConfig(string path)

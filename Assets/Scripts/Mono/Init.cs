@@ -97,7 +97,7 @@ namespace TaoTie
 				ReStart().Coroutine();
 			}
 
-			int count = WaitHelper.FrameFinishTask.Count;
+			int count = UnityLifeTimeHelper.FrameFinishTask.Count;
 			if (count > 0)
 			{
 				StartCoroutine(WaitFrameFinish());
@@ -107,10 +107,10 @@ namespace TaoTie
 		private IEnumerator WaitFrameFinish()
 		{
 			yield return waitForEndOfFrame;
-			int count = WaitHelper.FrameFinishTask.Count;
+			int count = UnityLifeTimeHelper.FrameFinishTask.Count;
 			while (count-- > 0)
 			{
-				ETTask task = WaitHelper.FrameFinishTask.Dequeue();
+				ETTask task = UnityLifeTimeHelper.FrameFinishTask.Dequeue();
 				task.SetResult();
 			}
 		}
@@ -142,11 +142,13 @@ namespace TaoTie
 		private void LateUpdate()
 		{
 			CodeLoader.Instance.LateUpdate?.Invoke();
+			ManagerProvider.LateUpdate();
 		}
 
 		private void FixedUpdate()
 		{
 			CodeLoader.Instance.FixedUpdate?.Invoke();
+			ManagerProvider.FixedUpdate();
 		}
 
 		private void OnApplicationQuit()

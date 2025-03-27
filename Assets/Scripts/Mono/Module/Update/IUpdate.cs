@@ -8,4 +8,8 @@
     {
         public void FixedUpdate();
     }
+    public interface ILateUpdate
+    {
+        public void LateUpdate();
+    }
 }

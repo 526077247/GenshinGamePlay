@@ -103,6 +103,7 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
             Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
             Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
@@ -149,6 +150,7 @@ namespace TaoTie
                 EntityView.rotation = unit.Rotation;
                 Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
                 Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+                Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
             }
             else if (parent is Effect effect)
             {
@@ -178,6 +180,7 @@ namespace TaoTie
             Messager.Instance.RemoveListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
@@ -230,6 +233,11 @@ namespace TaoTie
             EntityView.rotation = unit.Rotation;
         }
 
+        private void OnChangeScale(Unit unit, Vector3 old)
+        {
+            if(EntityView == null) return;
+            EntityView.localScale = unit.LocalScale;
+        }
         private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
         {
             if (parent == null) return;

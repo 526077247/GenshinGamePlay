@@ -28,7 +28,7 @@ namespace TaoTie
         /// <param name="name"></param>
         private async ETTask ExecuteLater(AbilityComponent ac,string name)
         {
-            await WaitHelper.WaitUpdateFinish();
+            await UnityLifeTimeHelper.WaitUpdateFinish();
             ac.RemoveAbility(name);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Nino.Core;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -7,5 +8,7 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public float Damping;
+        [NinoMember(2)]
+        public Vector3 Offset;
     }
 }

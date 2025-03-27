@@ -41,7 +41,9 @@ namespace TaoTie
         private readonly int[] keyStatus = new int[(int)GameKeyCode.Max];
 
         private int touchCount = 0;
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
         private Vector2 mousePosition;
+#endif
         #region IManager
 
         public void Init()
@@ -392,7 +394,6 @@ namespace TaoTie
             var data = Input.mousePosition;
             return new Vector2(data.x, data.y);
 #endif
-            return Vector2.zero;
         }
 
         /// <summary>
