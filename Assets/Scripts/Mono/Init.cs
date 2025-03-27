@@ -59,9 +59,10 @@ namespace TaoTie
 			Log.ILog = new UnityLogger();
 
 			await PackageManager.Instance.Init(PlayMode);
+#if !UNITY_EDITOR
 			if(this.CodeMode == CodeMode.BuildIn && !PackageManager.Instance.CdnConfig.BuildHotfixAssembliesAOT)
 				this.CodeMode = CodeMode.LoadDll;
-
+#endif
 			RegisterManager();
 
 			CodeLoader.Instance.CodeMode = this.CodeMode;
