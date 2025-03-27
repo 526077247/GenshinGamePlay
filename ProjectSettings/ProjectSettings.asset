@@ -582,7 +582,7 @@ PlayerSettings:
   - m_BuildTarget: Android
     m_Format: 3
   - m_BuildTarget: WebGL
-    m_Format: 3
+    m_Format: 5
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1

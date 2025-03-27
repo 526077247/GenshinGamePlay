@@ -47,10 +47,6 @@ namespace TaoTie
 
 			//设置时区
 			TimeInfo.Instance.TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
-// #if ENABLE_IL2CPP
-// 			if(this.CodeMode== CodeMode.LoadDll)
-// 				this.CodeMode = CodeMode.Wolong;
-// #endif
 			System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 			{
 				Log.Error(e.ExceptionObject.ToString());
@@ -63,6 +59,8 @@ namespace TaoTie
 			Log.ILog = new UnityLogger();
 
 			await PackageManager.Instance.Init(PlayMode);
+			if(this.CodeMode == CodeMode.BuildIn && !PackageManager.Instance.CdnConfig.BuildHotfixAssembliesAOT)
+				this.CodeMode = CodeMode.LoadDll;
 
 			RegisterManager();
 

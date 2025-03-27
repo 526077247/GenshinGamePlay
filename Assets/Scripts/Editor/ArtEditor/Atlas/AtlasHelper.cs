@@ -156,7 +156,7 @@ namespace TaoTie
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
-                    platformSetting.format = format;
+                    platformSetting.format = TextureImporterFormat.DXT5;
                     importer.SetPlatformTextureSettings(platformSetting);
 
 
@@ -285,7 +285,7 @@ namespace TaoTie
             {
                 name = "WebGL",
                 maxTextureSize = 2048,
-                format = _format,
+                format = TextureImporterFormat.DXT5,
                 overridden = true,
             };
 
@@ -493,7 +493,7 @@ namespace TaoTie
                         
                         setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
-                        setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                        setting.format = TextureImporterFormat.DXT5; //设置格式
                         setting.maxTextureSize = 2048;
                         textureImporter.SetPlatformTextureSettings(setting);
 
