@@ -49,7 +49,7 @@ namespace TaoTie
         public void AddEvent(EventTriggerType triggerType, UnityAction<PointerEventData> callback)
         {
             this.ActivatingComponent();
-            RemoveOnPointerEnter();
+            RemoveEvent(triggerType);
             EventTrigger.Entry onPointerEnterEntry = null;
             for (int i = 0; i < this.EventTrigger.triggers.Count; i++)
             {
@@ -99,22 +99,22 @@ namespace TaoTie
         
         public void AddOnPointerExit(UnityAction<PointerEventData> callback)
         {
-            AddEvent(EventTriggerType.PointerEnter, callback);
+            AddEvent(EventTriggerType.PointerExit, callback);
         }
         
         public void AddOnDrag(UnityAction<PointerEventData> callback)
         {
-            AddEvent(EventTriggerType.PointerEnter, callback);
+            AddEvent(EventTriggerType.Drag, callback);
         }
         
         public void AddOnDrop(UnityAction<PointerEventData> callback)
         {
-            AddEvent(EventTriggerType.PointerEnter, callback);
+            AddEvent(EventTriggerType.Drop, callback);
         }
         
         public void AddOnPointerDown(UnityAction<PointerEventData> callback)
         {
-            AddEvent(EventTriggerType.PointerEnter, callback);
+            AddEvent(EventTriggerType.PointerDown, callback);
         }
         
         public void AddOnPointerUp(UnityAction<PointerEventData> callback)
