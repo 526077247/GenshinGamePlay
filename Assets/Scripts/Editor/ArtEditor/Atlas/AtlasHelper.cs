@@ -152,7 +152,7 @@ namespace TaoTie
                     importer.SetPlatformTextureSettings(platformSetting);
                     
                     platformSetting = importer.GetPlatformTextureSettings("WebGL");
-                    platformSetting.maxTextureSize = 2048;
+                    platformSetting.maxTextureSize = GetTextureWebGlSize(importer);
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
@@ -494,7 +494,7 @@ namespace TaoTie
                         setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
                         setting.format = TextureImporterFormat.DXT5; //设置格式
-                        setting.maxTextureSize = 2048;
+                        setting.maxTextureSize = GetTextureWebGlSize(textureImporter);
                         textureImporter.SetPlatformTextureSettings(setting);
 
                         textureImporter.SaveAndReimport();
@@ -503,6 +503,21 @@ namespace TaoTie
 
                 }
             }
+        }
+
+        private static int GetTextureWebGlSize(TextureImporter textureImporter)
+        {
+            int width = 0; int height = 0; 
+            ImportUtil.GetTextureRealWidthAndHeight(textureImporter, ref width, ref height);
+            var min = Math.Min(width, height);
+            min++;
+            min |= min >> 1;
+            min |= min >> 2;
+            min |= min >> 4;
+            min |= min >> 8;
+            min |= min >> 16;
+            var res = (min < 0) ? 1 : min + 1;
+            return res >> 1;
         }
 
         private static void CheckSpriteAtlas(SpriteAtlas sptAtlas, string atlasName)
