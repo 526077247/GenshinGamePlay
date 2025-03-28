@@ -22,6 +22,7 @@ namespace TaoTie
 
         public static readonly Dictionary<string, int> MaxSize = new()
         {
+            {"Standalone",4096},
             {"iPhone", 2048},
             {"Android", 2048},
             {"WebGL", 1024},
@@ -125,7 +126,7 @@ namespace TaoTie
 
                 string allPath = pngFile.FullName;
                 string assetPath = allPath.Substring(allPath.IndexOf("Assets"));
-                DefaultAsset sprite = AssetDatabase.LoadAssetAtPath<DefaultAsset>(assetPath);
+                Object sprite = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
                 if (IsPackable(sprite))
                 {
                     //Logger.LogError("=============" + assetPath);
@@ -181,13 +182,20 @@ namespace TaoTie
                     importer.SetPlatformTextureSettings(platformSetting);
                     
                     platformSetting = importer.GetPlatformTextureSettings("WebGL");
-                    platformSetting.maxTextureSize = GetTextureWebGlSize(importer, assetPath);
+                    platformSetting.maxTextureSize = MaxSize["WebGL"];
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
-                    platformSetting.format = TextureImporterFormat.DXT5;
+                    platformSetting.format =  format;
                     importer.SetPlatformTextureSettings(platformSetting);
 
+                    platformSetting = importer.GetPlatformTextureSettings("Standalone");
+                    platformSetting.maxTextureSize = MaxSize["Standalone"];
+                    platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
+                    platformSetting.overridden = true;
+                    // platformSetting.textureCompression = type;
+                    platformSetting.format = type == ImageType.Atlas?format:TextureImporterFormat.DXT5;
+                    importer.SetPlatformTextureSettings(platformSetting);
 
                     importer.SaveAndReimport();
                 }
@@ -289,7 +297,7 @@ namespace TaoTie
             TextureImporterPlatformSettings platformSetting = new TextureImporterPlatformSettings()
             {
                 name = "Android",
-                maxTextureSize = 2048,
+                maxTextureSize = MaxSize["Android"],
                 format = _format,
                 overridden = true,
             };
@@ -299,7 +307,7 @@ namespace TaoTie
             platformSetting = new TextureImporterPlatformSettings()
             {
                 name = "iPhone",
-                maxTextureSize = 2048,
+                maxTextureSize = MaxSize["iPhone"],
                 format = _format,
                 overridden = true,
             };
@@ -310,12 +318,20 @@ namespace TaoTie
             {
                 name = "WebGL",
                 maxTextureSize = 2048,
+                format = _format,
+                overridden = true,
+            };
+
+            atlas.SetPlatformSettings(platformSetting);
+            platformSetting = new TextureImporterPlatformSettings()
+            {
+                name = "Standalone",
+                maxTextureSize = MaxSize["Standalone"],
                 format = TextureImporterFormat.DXT5,
                 overridden = true,
             };
 
             atlas.SetPlatformSettings(platformSetting);
-
         }
 
 
@@ -519,21 +535,29 @@ namespace TaoTie
                         TextureImporterPlatformSettings setting = textureImporter.GetPlatformTextureSettings("Android");
                         setting.overridden = true;
                         setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
-                        setting.maxTextureSize = 2048;
+                        setting.maxTextureSize = MaxSize["Android"];
                         textureImporter.SetPlatformTextureSettings(setting);
 
-                        setting = textureImporter.GetPlatformTextureSettings("iphone");
+                        setting = textureImporter.GetPlatformTextureSettings("iPhone");
                         setting.overridden = true;
                         setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
-                        setting.maxTextureSize = 2048;
+                        setting.maxTextureSize = MaxSize["iPhone"];
                         textureImporter.SetPlatformTextureSettings(setting);
 
                         textureImporter.SaveAndReimport();
                         
                         setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
+                        setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                        setting.maxTextureSize = MaxSize["WebGL"];
+                        textureImporter.SetPlatformTextureSettings(setting);
+
+                        textureImporter.SaveAndReimport();
+                        
+                        setting = textureImporter.GetPlatformTextureSettings("Standalone");
+                        setting.overridden = true;
                         setting.format = TextureImporterFormat.DXT5; //设置格式
-                        setting.maxTextureSize = GetTextureWebGlSize(textureImporter, file);
+                        setting.maxTextureSize = GetTextureDXT5Size(textureImporter, file, MaxSize["Standalone"]);
                         textureImporter.SetPlatformTextureSettings(setting);
 
                         textureImporter.SaveAndReimport();
@@ -544,14 +568,14 @@ namespace TaoTie
             }
         }
 
-        private static int GetTextureWebGlSize(TextureImporter textureImporter,string path)
+        private static int GetTextureDXT5Size(TextureImporter textureImporter,string path,int maxSize)
         {
             int width = 0; int height = 0; 
             ImportUtil.GetTextureRealWidthAndHeight(textureImporter, ref width, ref height);
             if (Get2Flag(width) && Get2Flag(height))
             {
                 var max = Math.Max(width, height);
-                return Math.Min(max, MaxSize["WebGL"]);
+                return Math.Min(max, maxSize);
             }
             if (Math.Max(width, height) % Math.Min(width, height) != 0)
             {
@@ -566,7 +590,7 @@ namespace TaoTie
             res |= res >> 8;
             res |= res >> 16;
             res = (res < 0) ? 1 : res + 1;
-            return Math.Min(res >> 1, MaxSize["WebGL"]);
+            return Math.Min(res >> 1, maxSize);
         }
 
         private static bool Get2Flag(int num)

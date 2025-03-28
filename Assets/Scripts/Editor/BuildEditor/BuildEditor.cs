@@ -157,12 +157,12 @@ namespace TaoTie
             {
 	            this.isContainsAb = EditorGUILayout.Toggle("是否同时打分包资源: ", this.isContainsAb);
             }
+            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle(
+	            new GUIContent("*热更代码是否打AOT:", "可以把热更代码同时打一份到il2cpp使首包代码运行速度达到最快，但是会增加构建代码大小以及代码占用内存大小（未使用热更方案时必须勾选此项, WebGL建议勾选此项）"),
+	            this.buildHotfixAssembliesAOT);
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
-	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle(
-		            new GUIContent("   *热更代码是否打AOT:", "可以把热更代码同时打一份到il2cpp使首包代码运行速度达到最快，但是会增加构建代码大小以及代码占用内存大小（未使用热更方案时必须勾选此项）"),
-		            this.buildHotfixAssembliesAOT);
 	            EditorGUILayout.LabelField("服务器:");
 	            this.buildMode = (Mode)EditorGUILayout.EnumPopup(buildMode);
             }
