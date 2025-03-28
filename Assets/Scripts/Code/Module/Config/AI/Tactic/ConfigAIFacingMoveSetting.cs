@@ -11,6 +11,6 @@ namespace TaoTie
         [NinoMember(10)][NotNull]
         public ConfigAIFacingMoveData DefaultSetting;
         [NinoMember(11)]
-        public Dictionary<int, ConfigAIFacingMoveData> Specification = new();
+        public Dictionary<int, ConfigAIFacingMoveData> Specification = new Dictionary<int, ConfigAIFacingMoveData>();
     }
 }

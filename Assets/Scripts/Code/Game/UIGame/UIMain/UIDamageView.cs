@@ -11,7 +11,7 @@ namespace TaoTie
 	public class UIDamageView : UIBaseView, IOnCreate, IOnEnable, IOnDisable
 	{
 		public static string PrefabPath => "UIGame/UIMain/Prefabs/UIDamageView.prefab";
-		private List<DamageText> showFightTexts = new();
+		private List<DamageText> showFightTexts = new List<DamageText>();
 		private long fightTextExpireTime = 1000; //毫秒
 
 		#region override

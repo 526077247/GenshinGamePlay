@@ -15,11 +15,11 @@ namespace TaoTie
         const int FindRandomNavPosMaxRadius = 15000;  // 随机找寻路点的最大半径
         
         public static NavmeshSystem Instance;
-        private readonly Dictionary<string, DtNavMeshQuery> navmeshs = new();
+        private readonly Dictionary<string, DtNavMeshQuery> navmeshs = new Dictionary<string, DtNavMeshQuery>();
         private readonly DtQueryDefaultFilter filter = new DtQueryDefaultFilter();
-        private RcVec3f extents = new(15, 10, 15);
-        private List<long> polys = new(MAX_POLYS);
-        private List<StraightPathItem> straightPath = new();
+        private RcVec3f extents = new RcVec3f(15, 10, 15);
+        private List<long> polys = new List<long>(MAX_POLYS);
+        private List<StraightPathItem> straightPath = new List<StraightPathItem>();
         public void Init()
         {
             Instance = this;
@@ -39,9 +39,9 @@ namespace TaoTie
                 return null;
             }
 
-            DtMeshSetReader reader = new();
-            using MemoryStream ms = new(buffer);
-            using BinaryReader br = new(ms);
+            DtMeshSetReader reader = new DtMeshSetReader();
+            using MemoryStream ms = new MemoryStream(buffer);
+            using BinaryReader br = new BinaryReader(ms);
             var navMesh = reader.Read32Bit(br, 6); // cpp recast导出来的要用Read32Bit读取，DotRecast导出来的还没试过
             
             if (navMesh == null)

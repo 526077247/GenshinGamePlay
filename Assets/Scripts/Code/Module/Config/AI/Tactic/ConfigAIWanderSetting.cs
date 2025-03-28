@@ -11,6 +11,6 @@ namespace TaoTie
         [NinoMember(10)] [NotNull]
         public ConfigAIWanderData DefaultSetting;
         [NinoMember(11)] 
-        public Dictionary<int, ConfigAIWanderData> Specification = new();
+        public Dictionary<int, ConfigAIWanderData> Specification = new Dictionary<int, ConfigAIWanderData>();
     }
 }

@@ -13,7 +13,7 @@ namespace TaoTie
         [NinoMember(2)]
         public ConfigAISensingSetting Setting;
         [NinoMember(3)]
-        public Dictionary<string, ConfigAISensingSetting> Settings = new();
+        public Dictionary<string, ConfigAISensingSetting> Settings = new Dictionary<string, ConfigAISensingSetting>();
 
     }
 }

@@ -8,7 +8,7 @@ namespace TaoTie
     public sealed partial class ConfigFsmController
     {
         [NinoMember(1)]
-        public Dictionary<string, ConfigParam> ParamDict = new();
+        public Dictionary<string, ConfigParam> ParamDict = new Dictionary<string, ConfigParam>();
         [NinoMember(2)]
         public ConfigFsm[] FsmConfigs;
 

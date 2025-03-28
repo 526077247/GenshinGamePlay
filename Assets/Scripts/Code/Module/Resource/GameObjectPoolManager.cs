@@ -25,7 +25,7 @@ namespace TaoTie
     public class GameObjectPoolManager:IManager,IManager<string>
     {
 	    public string PackageName { get; private set; } = Define.DefaultName;
-	    private static Dictionary<string, GameObjectPoolManager> instances = new();
+	    private static Dictionary<string, GameObjectPoolManager> instances = new Dictionary<string, GameObjectPoolManager>();
 
         private Transform cacheTransRoot;
 

@@ -11,6 +11,6 @@ namespace TaoTie
         [NinoMember(10)][NotNull]
         public ConfigAIFleeData DefaultSetting; 
         [NinoMember(11)]
-        public Dictionary<int, ConfigAIFleeData> Specification = new();
+        public Dictionary<int, ConfigAIFleeData> Specification = new Dictionary<int, ConfigAIFleeData>();
     }
 }

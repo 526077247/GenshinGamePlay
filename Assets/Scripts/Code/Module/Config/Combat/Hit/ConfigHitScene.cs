@@ -9,6 +9,6 @@ namespace TaoTie
         [NinoMember(1)]
         public string DefaultEffect;
         [NinoMember(2)]
-        public Dictionary<string, string> SurfaceEffect = new();
+        public Dictionary<string, string> SurfaceEffect = new Dictionary<string, string>();
     }
 }

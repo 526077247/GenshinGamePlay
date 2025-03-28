@@ -11,6 +11,6 @@ namespace TaoTie
         [NinoMember(10)] [NotNull]
         public ConfigAIMeleeChargeData DefaultSetting;
         [NinoMember(11)] 
-        public Dictionary<int, ConfigAIMeleeChargeData> Specification = new();
+        public Dictionary<int, ConfigAIMeleeChargeData> Specification = new Dictionary<int, ConfigAIMeleeChargeData>();
     }
 }

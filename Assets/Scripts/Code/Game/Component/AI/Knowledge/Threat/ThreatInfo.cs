@@ -31,9 +31,9 @@ namespace TaoTie
 
         public float CaredGlobalValue;
 
-        public AITimer LctByFarDistance = new();
-        public AITimer LctByEntityDisappear = new();
-        public AITimer LctByOutOfZone = new();
+        public AITimer LctByFarDistance = new AITimer();
+        public AITimer LctByEntityDisappear = new AITimer();
+        public AITimer LctByOutOfZone = new AITimer();
 
         public ThreatInfo(long id, Vector3 position, ThreatAddReason reason)
         {

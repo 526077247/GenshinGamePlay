@@ -10,7 +10,7 @@ namespace TaoTie
         [NinoMember(1)][LabelText("默认内容")]
         public string Default;
         [NinoMember(2)][LabelText("多语言")]
-        public Dictionary<LangType, string> Others = new();
+        public Dictionary<LangType, string> Others = new Dictionary<LangType, string>();
 
         public override string GetShowText()
         {

@@ -20,7 +20,7 @@ namespace TaoTie
         public const string DiscreteImagesName = "DiscreteImages";
         public static readonly string[] uipaths = {"UI", "UIGame", /*"UIHall"*/};
 
-        public static readonly Dictionary<string, int> MaxSize = new()
+        public static readonly Dictionary<string, int> MaxSize = new Dictionary<string, int>()
         {
             {"Standalone",4096},
             {"iPhone", 2048},
@@ -186,7 +186,11 @@ namespace TaoTie
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
-                    platformSetting.format =  format;
+#if UNITY_2021_3_OR_NEWER
+                    platformSetting.format = format;
+#else
+                    platformSetting.format = type == ImageType.Atlas?format:TextureImporterFormat.DXT5;
+#endif
                     importer.SetPlatformTextureSettings(platformSetting);
 
                     platformSetting = importer.GetPlatformTextureSettings("Standalone");
@@ -318,8 +322,12 @@ namespace TaoTie
             {
                 name = "WebGL",
                 maxTextureSize = 2048,
+#if UNITY_2021_3_OR_NEWER
                 format = _format,
-                overridden = true,
+#else
+                format = TextureImporterFormat.DXT5; //设置格式
+#endif
+                overridden = true, 
             };
 
             atlas.SetPlatformSettings(platformSetting);
@@ -548,8 +556,13 @@ namespace TaoTie
                         
                         setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
+#if UNITY_2021_3_OR_NEWER
                         setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
                         setting.maxTextureSize = MaxSize["WebGL"];
+#else
+                        setting.format = TextureImporterFormat.DXT5; //设置格式
+                        setting.maxTextureSize = GetTextureDXT5Size(textureImporter, file, MaxSize["WebGL"]);
+#endif
                         textureImporter.SetPlatformTextureSettings(setting);
 
                         textureImporter.SaveAndReimport();

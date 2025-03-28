@@ -14,7 +14,7 @@ namespace TaoTie
         [NinoMember(3)]
         public string Entry;
         [NinoMember(4)]
-        public Dictionary<string, ConfigFsmState> StateDict = new();
+        public Dictionary<string, ConfigFsmState> StateDict = new Dictionary<string, ConfigFsmState>();
         [NinoMember(5)]
         public ConfigTransition[] AnyStateTransitions;
 

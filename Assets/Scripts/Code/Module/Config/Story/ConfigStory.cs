@@ -16,7 +16,7 @@ namespace TaoTie
         public ConfigStoryActor[] Actors;
             
         [NinoMember(4)][HideReferenceObjectPicker]
-        public ConfigStorySerialClip Clips = new ();
+        public ConfigStorySerialClip Clips = new ConfigStorySerialClip();
         
     }
 }

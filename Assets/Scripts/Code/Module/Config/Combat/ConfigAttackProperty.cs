@@ -15,7 +15,7 @@ namespace TaoTie
         [NinoMember(3)][LabelText("击打类型")]
         public StrikeType StrikeType;
         [NinoMember(4)][LabelText("破霸体值")] 
-        public Dictionary<HitBoxType, BaseValue> EnBreak = new();
+        public Dictionary<HitBoxType, BaseValue> EnBreak = new Dictionary<HitBoxType, BaseValue>();
         [NinoMember(5)][LabelText("攻击类型")]
         public AttackType AttackType;
         [NinoMember(6)][LabelText("额外伤害值")][NotNull]

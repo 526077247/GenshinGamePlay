@@ -20,7 +20,8 @@ namespace TaoTie
             Instance = null;
         }
 
-        readonly Dictionary<long, MultiMapSet<int, MulticastDelegate>> evtGroup = new();
+        readonly Dictionary<long, MultiMapSet<int, MulticastDelegate>> evtGroup = 
+            new Dictionary<long, MultiMapSet<int, MulticastDelegate>>();
 
         #region 注册
 

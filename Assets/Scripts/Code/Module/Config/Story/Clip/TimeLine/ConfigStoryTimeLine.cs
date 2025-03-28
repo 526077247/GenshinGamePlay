@@ -43,7 +43,7 @@ namespace TaoTie
         [NinoMember(11)]
         public ConfigStoryTimeLineClip[] Clips;
         [NinoMember(12)]
-        public Dictionary<string, int> Binding = new ();
+        public Dictionary<string, int> Binding = new Dictionary<string, int>();
         public override async ETTask Process(StorySystem storySystem)
         {
             await storySystem.PlayTimeLine(this);

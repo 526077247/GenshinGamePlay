@@ -32,8 +32,8 @@ namespace TaoTie
         public bool ReachAwareThisFrame;
         public bool ReachAlertThisFrame;
 
-        private Dictionary<int, ThreatInfo> candidateList = new();
-        private Dictionary<int, ThreatInfo> threatList = new();
+        private Dictionary<int, ThreatInfo> candidateList = new Dictionary<int, ThreatInfo>();
+        private Dictionary<int, ThreatInfo> threatList = new Dictionary<int, ThreatInfo>();
 
         /// <summary>
         /// 主要目标

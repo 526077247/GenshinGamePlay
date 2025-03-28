@@ -7,7 +7,8 @@ namespace TaoTie
     public class UIEventTrigger:UIBaseContainer,IOnDestroy
     {
         private EventTrigger EventTrigger;
-        private Dictionary<EventTriggerType, UnityAction<BaseEventData>> events = new ();
+        private Dictionary<EventTriggerType, UnityAction<BaseEventData>> events = 
+            new Dictionary<EventTriggerType, UnityAction<BaseEventData>>();
 
         #region override
         public void OnDestroy()
