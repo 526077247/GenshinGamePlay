@@ -15,10 +15,23 @@ namespace TaoTie
     public class AtlasHelper
     {
         ///=========================================================================================
-        public static string AtlasName = "Atlas";
+        public const string AtlasName = "Atlas";
+        public const string TextureName = "Textures";
+        public const string DiscreteImagesName = "DiscreteImages";
+        public static readonly string[] uipaths = {"UI", "UIGame", /*"UIHall"*/};
 
-        public static string DiscreteImagesName = "DiscreteImages";
-        public static string[] uipaths = {"UI", "UIGame", /*"UIHall"*/};
+        public static readonly Dictionary<string, int> MaxSize = new()
+        {
+            {"iPhone", 2048},
+            {"Android", 2048},
+            {"WebGL", 1024},
+        };
+        public enum ImageType
+        {
+            Atlas,
+            DiscreteImages,
+            Texture
+        }
         /// <summary>
         /// 将UI目录下的小图 打成  图集
         /// </summary>
@@ -26,73 +39,82 @@ namespace TaoTie
         {
             for (int i = 0; i < uipaths.Length; i++)
             {
-                GeneratingAtlasByDir(uipaths[i]);
+                //将UI目录下的Atlas 打成 图集
+                string uiPath = Path.Combine(Application.dataPath, "AssetsPackage", uipaths[i]);
+                DirectoryInfo uiDirInfo = new DirectoryInfo(uiPath);
+                foreach (DirectoryInfo dirInfo in uiDirInfo.GetDirectories())
+                {
+                    GeneratingAtlasByDir(dirInfo);
+                }
             }
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
 
-        private static void GeneratingAtlasByDir(string dir)
+        public static void GeneratingAtlasByDir(DirectoryInfo dirInfo)
         {
-            //将UI目录下的Atlas 打成 图集
-            string uiPath = Path.Combine(Application.dataPath, "AssetsPackage", dir);
-            DirectoryInfo uiDirInfo = new DirectoryInfo(uiPath);
-
-
-            foreach (DirectoryInfo dirInfo in uiDirInfo.GetDirectories())
+            //目录是否有Atlas目录
+            bool hasAtlas = false;
+            //目录是否有DiscreteImages目录
+            bool hasDiscreteImages = false;
+            //目录是否有Texture目录
+            bool hasTextureImages = false;
+            foreach (DirectoryInfo seconddirInfo in dirInfo.GetDirectories())
             {
-                //目录是否有Atlas目录
-                bool hasAtlas = false;
-                //目录是否有DiscreteImages目录
-                bool hasDiscreteImages = false;
+                if (seconddirInfo.Name == AtlasName)
+                {
+                    hasAtlas = true;
+                }
+
+                if (seconddirInfo.Name == DiscreteImagesName)
+                {
+                    hasDiscreteImages = true;
+                }
                 
-                foreach (DirectoryInfo seconddirInfo in dirInfo.GetDirectories())
+                if (seconddirInfo.Name == TextureName)
                 {
-                    if (seconddirInfo.Name == AtlasName)
-                    {
-                        hasAtlas = true;
-                    }
-
-                    if (seconddirInfo.Name == DiscreteImagesName)
-                    {
-                        hasDiscreteImages = true;
-                    }
-                }
-
-                if (hasAtlas)
-                {
-                    if (dirInfo != null)
-                    {
-
-                        //Atlas目录下是否还有目录
-                        DirectoryInfo atlasDirInfo = new DirectoryInfo(Path.Combine(dirInfo.FullName, AtlasName));
-
-                        SetImagesFormat(atlasDirInfo, true);
-
-                        foreach (DirectoryInfo atlasDir in atlasDirInfo.GetDirectories())
-                        {
-                            CreateAtlasByFolders(dirInfo, atlasDir);
-                        }
-
-                        //Atlas目录上的小图打成一个图集
-                        CreateAtlasBySprite(dirInfo);
-                    }
-                }
-
-                if (hasDiscreteImages)
-                {
-                    //DiscreteImages目录下的所以图片
-                    DirectoryInfo discreteImagesDirInfo =
-                        new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
-                    SetImagesFormat(discreteImagesDirInfo);
+                    hasTextureImages = true;
                 }
             }
+
+            if (hasAtlas)
+            {
+                //Atlas目录下是否还有目录
+                DirectoryInfo atlasDirInfo = new DirectoryInfo(Path.Combine(dirInfo.FullName, AtlasName));
+
+                SetImagesFormat(atlasDirInfo, ImageType.Atlas);
+
+                foreach (DirectoryInfo atlasDir in atlasDirInfo.GetDirectories())
+                {
+                    CreateAtlasByFolders(dirInfo, atlasDir);
+                }
+
+                //Atlas目录上的小图打成一个图集
+                CreateAtlasBySprite(dirInfo);
+            }
+
+            if (hasDiscreteImages)
+            {
+                //DiscreteImages目录下的所有图片
+                DirectoryInfo discreteImagesDirInfo =
+                    new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
+                SetImagesFormat(discreteImagesDirInfo, ImageType.DiscreteImages);
+            }
+
+            if (hasTextureImages)
+            {
+                //DiscreteImages目录下的所有图片
+                DirectoryInfo discreteImagesDirInfo =
+                    new DirectoryInfo(Path.Combine(dirInfo.FullName, TextureName));
+                SetImagesFormat(discreteImagesDirInfo, ImageType.Texture);
+            }
+            
         }
 
         /// <summary>
-        /// 设置discreteimages目录下的图片压缩格式
+        /// 设置图片压缩格式
         /// </summary>
-        private static void SetImagesFormat(DirectoryInfo discreteImagesDirInfo, bool isARGB32 = false)
+        private static void SetImagesFormat(DirectoryInfo discreteImagesDirInfo, ImageType type = ImageType.Atlas)
         {
             foreach (FileInfo pngFile in discreteImagesDirInfo.GetFiles("*.*", SearchOption.AllDirectories))
             {
@@ -103,23 +125,30 @@ namespace TaoTie
 
                 string allPath = pngFile.FullName;
                 string assetPath = allPath.Substring(allPath.IndexOf("Assets"));
-                Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+                DefaultAsset sprite = AssetDatabase.LoadAssetAtPath<DefaultAsset>(assetPath);
                 if (IsPackable(sprite))
                 {
                     //Logger.LogError("=============" + assetPath);
                     var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
 
-                    importer.textureType = TextureImporterType.Sprite;
-                    importer.spriteImportMode = SpriteImportMode.Single;
-                    importer.spritePixelsPerUnit = 100;
-
-                    TextureImporterSettings textureImportSetting = new TextureImporterSettings();
-                    importer.ReadTextureSettings(textureImportSetting);
-                    textureImportSetting.spriteMeshType = SpriteMeshType.FullRect;
-                    textureImportSetting.spriteExtrude = 1;
-                    textureImportSetting.spriteGenerateFallbackPhysicsShape = false;
-                    importer.SetTextureSettings(textureImportSetting);
-
+                    if (type == ImageType.Texture)
+                    {
+                        if(importer.textureType == TextureImporterType.Sprite) importer.textureType = TextureImporterType.Default;
+                    }
+                    else
+                    {
+                        importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Single;
+                        importer.spritePixelsPerUnit = 100;
+                        
+                        TextureImporterSettings textureImportSetting = new TextureImporterSettings();
+                        importer.ReadTextureSettings(textureImportSetting);
+                        textureImportSetting.spriteMeshType = SpriteMeshType.FullRect;
+                        textureImportSetting.spriteExtrude = 1;
+                        textureImportSetting.spriteGenerateFallbackPhysicsShape = false;
+                        importer.SetTextureSettings(textureImportSetting);
+                    }
+                    
                     importer.mipmapEnabled = false;
                     importer.isReadable = false;
                     importer.wrapMode = TextureWrapMode.Clamp;
@@ -129,13 +158,13 @@ namespace TaoTie
                     importer.sRGBTexture = true;
                     //TextureImporterCompression type = TextureImporterCompression.Compressed;
                     TextureImporterFormat format = TextureImporterFormat.ASTC_6x6;
-                    if (assetPath.Contains("Uncompressed") || isARGB32)
+                    if (assetPath.Contains("Uncompressed") || type == ImageType.Atlas)
                     {
                         format = TextureImporterFormat.RGBA32;
                     }
 
                     TextureImporterPlatformSettings platformSetting = importer.GetPlatformTextureSettings("iPhone");
-                    platformSetting.maxTextureSize = 2048;
+                    platformSetting.maxTextureSize = MaxSize["iPhone"];
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     //.compressionQuality = 100;
@@ -144,7 +173,7 @@ namespace TaoTie
                     importer.SetPlatformTextureSettings(platformSetting);
 
                     platformSetting = importer.GetPlatformTextureSettings("Android");
-                    platformSetting.maxTextureSize = 2048;
+                    platformSetting.maxTextureSize =  MaxSize["Android"];
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
@@ -152,7 +181,7 @@ namespace TaoTie
                     importer.SetPlatformTextureSettings(platformSetting);
                     
                     platformSetting = importer.GetPlatformTextureSettings("WebGL");
-                    platformSetting.maxTextureSize = GetTextureWebGlSize(importer);
+                    platformSetting.maxTextureSize = GetTextureWebGlSize(importer, assetPath);
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
@@ -197,8 +226,6 @@ namespace TaoTie
             {
                 AddPackAtlas(sptAtlas, spts.ToArray());
             }
-
-            CheckSpriteAtlas(sptAtlas, Path.Combine(dirInfoPath, atlasName));
         }
 
 
@@ -225,8 +252,6 @@ namespace TaoTie
             {
                 AddPackAtlas(sptAtlas, folders.ToArray());
             }
-
-            CheckSpriteAtlas(sptAtlas, Path.Combine(assetPath, atlasName));
         }
 
         /// <summary>
@@ -454,12 +479,26 @@ namespace TaoTie
                 {
                     DirectoryInfo di = new DirectoryInfo(paths[i]);
 
-                    if (di.Name == "Tmp" || di.Name == "UI" || di.Name == "Fonts" || di.Name == "FmodBanks" ||
+                    if (di.Name == "Tmp" || di.Name == "Fonts" || di.Name == "FmodBanks" ||
                         di.Name == "Shaders")
                     {
                         continue;
                     }
 
+                    bool hasUI = false;
+                    for (int j = 0; j < uipaths.Length; j++)
+                    {
+                        if (di.Name == uipaths[j])
+                        {
+                            hasUI = true;
+                            break;
+                        }
+                    }
+
+                    if (hasUI)
+                    {
+                        continue;
+                    }
 
                     string[] fileStrs = Directory.GetFiles(Path.GetFullPath("Assets/AssetsPackage/" + di.Name), "*.*",
                         SearchOption.AllDirectories);
@@ -476,7 +515,7 @@ namespace TaoTie
                         {
                             continue;
                         }
-
+                        
                         TextureImporterPlatformSettings setting = textureImporter.GetPlatformTextureSettings("Android");
                         setting.overridden = true;
                         setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
@@ -494,7 +533,7 @@ namespace TaoTie
                         setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
                         setting.format = TextureImporterFormat.DXT5; //设置格式
-                        setting.maxTextureSize = GetTextureWebGlSize(textureImporter);
+                        setting.maxTextureSize = GetTextureWebGlSize(textureImporter, file);
                         textureImporter.SetPlatformTextureSettings(setting);
 
                         textureImporter.SaveAndReimport();
@@ -505,41 +544,35 @@ namespace TaoTie
             }
         }
 
-        private static int GetTextureWebGlSize(TextureImporter textureImporter)
+        private static int GetTextureWebGlSize(TextureImporter textureImporter,string path)
         {
             int width = 0; int height = 0; 
             ImportUtil.GetTextureRealWidthAndHeight(textureImporter, ref width, ref height);
-            var min = Math.Min(width, height);
-            min++;
-            min |= min >> 1;
-            min |= min >> 2;
-            min |= min >> 4;
-            min |= min >> 8;
-            min |= min >> 16;
-            var res = (min < 0) ? 1 : min + 1;
-            return res >> 1;
+            if (Get2Flag(width) && Get2Flag(height))
+            {
+                var max = Math.Max(width, height);
+                return Math.Min(max, MaxSize["WebGL"]);
+            }
+            if (Math.Max(width, height) % Math.Min(width, height) != 0)
+            {
+                if(textureImporter.textureType == TextureImporterType.Sprite)
+                    Debug.LogError("不为2的幂"+path);
+            }
+            var res = Math.Max(width, height);
+            res++;
+            res |= res >> 1;
+            res |= res >> 2;
+            res |= res >> 4;
+            res |= res >> 8;
+            res |= res >> 16;
+            res = (res < 0) ? 1 : res + 1;
+            return Math.Min(res >> 1, MaxSize["WebGL"]);
         }
 
-        private static void CheckSpriteAtlas(SpriteAtlas sptAtlas, string atlasName)
+        private static bool Get2Flag(int num)
         {
-
-            System.Type type = typeof(UnityEditor.U2D.SpriteAtlasExtensions);
-            MethodInfo methodInfo = type.GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
-            if (methodInfo == null)
-            {
-                Debug.LogWarning("Failed to get UnityEditor.U2D.SpriteAtlasExtensions");
-                return;
-            }
-
-            Texture2D[] textures = (Texture2D[]) methodInfo.Invoke(null, new object[] {sptAtlas});
-            if (textures != null && textures.Length > 0)
-            {
-                //Debug.LogError(atlasName + " width:" + textures[0].width + " height:" + textures[0].height);
-                if (textures[0].width > 2048 || textures[0].height > 2048)
-                {
-                    Debug.LogError(atlasName + "大小超过了2048*2048");
-                }
-            }
+            if (num < 1) return false;
+            return (num & num - 1) == 0;
         }
     }
 }

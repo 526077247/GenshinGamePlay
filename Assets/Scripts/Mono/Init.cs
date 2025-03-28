@@ -67,8 +67,7 @@ namespace TaoTie
 
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			IsInit = true;
-
-			// CodeLoader.Instance.LoadMetadataForAOTAssembly(PlayMode);
+			
 			await CodeLoader.Instance.Start();
 		}
 
