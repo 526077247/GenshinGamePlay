@@ -1,17 +1,15 @@
 ﻿using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
     [NinoType(false)]
     public partial class ConfigAbilityModifier
     {
-        [NinoMember(1)]
+        [NinoMember(1)][Tooltip("当前Ability唯一")]
         public string ModifierName;
-        /// <summary>
-        /// 持续时间，-1无限，0瞬时，0+毫秒
-        /// </summary>
-        [NinoMember(2)]
+        [NinoMember(2)][Tooltip("持续时间，-1无限，0瞬时，0+毫秒")]
         public int Duration;
         [NinoMember(3)][ShowIf("@"+nameof(Duration)+"!=0")]
         public StackingType StackingType;

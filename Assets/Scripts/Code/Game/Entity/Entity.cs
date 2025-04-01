@@ -37,13 +37,15 @@ namespace TaoTie
             if (delayDestroyTimerId != 0) GameTimerManager.Instance.Remove(ref delayDestroyTimerId);
             foreach (var item in Components)
             { 
-                (item.Value as Component)?.BeforeDestroy();
+                item.Value?.BeforeDestroy();
                 (item.Value as IComponentDestroy)?.Destroy();
-                (item.Value as Component)?.AfterDestroy();
+                item.Value?.AfterDestroy();
             }
 
             Components.Dispose();
             Components = null;
+            OtherComponents.Dispose();
+            OtherComponents = null;
             (this as IEntityDestroy)?.Destroy();
             Parent?.Remove(this);
             Parent = null;
@@ -56,7 +58,8 @@ namespace TaoTie
             Parent = um;
             Id = IdGenerater.Instance.GenerateInstanceId();
             IsDispose = false;
-            Components = DictionaryComponent<Type, object>.Create();
+            Components = DictionaryComponent<Type, Component>.Create();
+            OtherComponents = DictionaryComponent<Type, Component>.Create();
             CreateTime = GameTimerManager.Instance.GetTimeNow();
         }
 
@@ -66,8 +69,14 @@ namespace TaoTie
 
         #region 扩展数据
 
-        protected DictionaryComponent<Type, object> Components;
-
+        /// <summary>
+        /// 自己的Component
+        /// </summary>
+        protected DictionaryComponent<Type, Component> Components;
+        /// <summary>
+        /// 添加共用其他人的Component，不处理生命周期
+        /// </summary>
+        protected DictionaryComponent<Type, Component> OtherComponents;
         public T AddComponent<T>() where T : Component
         {
             Type type = TypeInfo<T>.Type;
@@ -137,10 +146,27 @@ namespace TaoTie
             return data;
         }
 
-        public T GetComponent<T>() where T : Component, IComponentDestroy
+        /// <summary>
+        /// 获取自身或绑定他人的组件
+        /// </summary>
+        /// <param name="includeOther">包括绑定他人的？</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetComponent<T>(bool includeOther = true) where T : Component, IComponentDestroy
         {
             Type type = TypeInfo<T>.Type;
-            if (Components.TryGetValue(type, out var res))
+            if (includeOther && OtherComponents.TryGetValue(type, out var res))
+            {
+                if (res.IsDispose)
+                {
+                    OtherComponents.Remove(type);
+                }
+                else
+                {
+                    return (T) res;
+                }
+            }
+            if (Components.TryGetValue(type, out res))
             {
                 return (T) res;
             }
@@ -177,6 +203,21 @@ namespace TaoTie
             {
                 Components.Remove(type);
                 (res as Component)?.Dispose();
+            }
+        }
+
+        public void AddOtherComponent<T>(T t) where T : Component
+        {
+            if (t == null) return;
+            OtherComponents[t.GetType()] = t;
+        }
+        
+        public void RemoveOtherComponent<T>(T t) where T : Component
+        {
+            if (t == null) return;
+            if (OtherComponents.TryGetValue(t.GetType(), out var res) && res == t)
+            {
+                OtherComponents.Remove(t.GetType());
             }
         }
 

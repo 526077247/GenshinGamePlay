@@ -11,7 +11,8 @@ namespace TaoTie
 
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var goh = target.GetComponent<GameObjectHolderComponent>();
+            var entity = AbilityHelper.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var goh = entity?.GetComponent<GameObjectHolderComponent>();
             if (goh != null)
             {
                 var trans = goh.GetCollectorObj<Transform>(AttachPointName);

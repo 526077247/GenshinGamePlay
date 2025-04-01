@@ -70,6 +70,37 @@ namespace TaoTie
             }
         }
         
+        /// <summary>
+        /// 获取目标
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="ability"></param>
+        /// <param name="modifier"></param>
+        /// <param name="target"></param>
+        /// <param name="targetting"></param>
+        /// <returns></returns>
+        public static Entity ResolveTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
+                    AttachPointTargetType targetting)
+        {
+            switch (targetting)
+            {
+                case AttachPointTargetType.Self:
+                    return actor;
+                case AttachPointTargetType.Caster:
+                    return ability.Parent.GetParent<Entity>();
+                case AttachPointTargetType.Target:
+                    return target;
+                case AttachPointTargetType.Applier:
+                    if (modifier != null)
+                    {
+                        var em = ability.Parent.GetParent<Entity>().Parent;
+                        return em.Get<Entity>(modifier.ApplierID);
+                    }
+                    break;
+            }
+            return null;
+        }
+                
         public static bool IsTarget(Actor self, Actor other, TargetType type)
         {
             switch (type)

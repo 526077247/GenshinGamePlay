@@ -1,18 +1,19 @@
 ﻿using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
     [NinoType(false)]
     public abstract class ConfigAbilityAction
     {
-        [NinoMember(1)][BoxGroup("Common")][LabelText("Targetting目标重新选定生效前过滤")]
+        [NinoMember(1)][BoxGroup("Common")][LabelText("重定向前过滤...")][Tooltip("Targetting目标重新选定生效前过滤")]
         public ConfigAbilityPredicate Predicate;
         [NinoMember(2)][LabelText("Action目标")][BoxGroup("Common")]
         public AbilityTargetting Targetting;
         [NinoMember(3)][ShowIf(nameof(Targetting), AbilityTargetting.Other)][BoxGroup("Common")]
         public ConfigSelectTargets OtherTargets;
-        [NinoMember(4)][BoxGroup("Common")][LabelText("Targetting目标重新选定生效后对每一个目标进行过滤")]
+        [NinoMember(4)][BoxGroup("Common")][LabelText("重定向后过滤...")][Tooltip("Targetting目标重新选定生效后对每一个目标进行过滤")]
         public ConfigAbilityPredicate PredicateForeach; 
         protected abstract void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target);
 

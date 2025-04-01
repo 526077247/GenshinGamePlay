@@ -11,17 +11,19 @@ namespace TaoTie
         public bool OwnerIsTarget;
         [NinoMember(11)][ShowIf(nameof(OwnerIsTarget))][LabelText("所有者是？")]
         public AbilityTargetting OwnerIs;
-        [NinoMember(12)][ShowIf(nameof(OwnerIsTarget))][LabelText("和所有者相同生命周期")]
+        [NinoMember(12)][ShowIf(nameof(OwnerIsTarget))][LabelText("属性所有者是？")]
+        public AbilityTargetting PropOwnerIs;
+        [NinoMember(13)][ShowIf(nameof(OwnerIsTarget))][LabelText("和所有者相同生命周期")]
         public bool LifeByOwnerIsAlive;
-        [NinoMember(13)][LabelText("和所有者共享视野")][ShowIf(nameof(OwnerIsTarget))]
+        [NinoMember(14)][LabelText("和所有者共享视野")][ShowIf(nameof(OwnerIsTarget))]
         public bool SightGroupWithOwner;
-        [NinoMember(14)]
-        public ConfigBornType Born;
         [NinoMember(15)]
-        public CheckGround CheckGround;
+        public ConfigBornType Born;
         [NinoMember(16)]
-        public int GadgetID;
+        public CheckGround CheckGround;
         [NinoMember(17)]
+        public int GadgetID;
+        [NinoMember(18)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
 #endif
@@ -56,7 +58,13 @@ namespace TaoTie
                 {
                     var owner = entities[0];
                     //todo: sightGroupWithOwner
-                    owner.GetOrAddComponent<AttachComponent>().AddChild(res,LifeByOwnerIsAlive);
+                    owner.GetOrAddComponent<AttachComponent>().AddChild(res, LifeByOwnerIsAlive);
+                }
+                count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, PropOwnerIs, out entities);
+                if (count > 0)
+                {
+                    var owner = entities[0];
+                    res.AddOtherComponent(owner.GetComponent<NumericComponent>());
                 }
             }
             Born.AfterBorn(applier, ability, modifier, target,res).Coroutine();
