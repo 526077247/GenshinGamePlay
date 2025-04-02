@@ -7,7 +7,8 @@ namespace TaoTie
     {
         public string channel = "googleplay";
         public Mode buildMode = Mode.内网测试;
-        public bool clearFolder = false;
+        public bool clearReleaseFolder = false;
+        public bool clearABFolder = false;
         public bool isBuildExe = false;
         public bool buildHotfixAssembliesAOT = true;
         public bool isContainsAb = false;

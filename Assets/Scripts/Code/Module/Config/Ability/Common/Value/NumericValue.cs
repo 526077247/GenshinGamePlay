@@ -9,6 +9,9 @@ namespace TaoTie
     public partial class NumericValue: BaseValue
     {
         [NinoMember(1)]
+#if UNITY_EDITOR
+        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericFinalTypeId)+"()")]
+#endif
         public int Key;
         public override float Resolve(Entity entity,ActorAbility ability)
         {

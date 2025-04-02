@@ -99,15 +99,15 @@ namespace TaoTie
             AssetDatabase.SaveAssetIfDirty(cdn);
         }
 
-        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearFolder,
-            bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, string channel,
-            bool buildDll = true)
+        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
+            bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
+            string channel, bool buildDll = true)
         {
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe, clearFolder, buildHotfixAssembliesAOT, isBuildAll,
-                    packAtlas, isContainsAb, channel, buildDll);
+                BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
+                    isBuildAll, packAtlas, isContainsAb, channel, buildDll);
             }
             else
             {
@@ -116,8 +116,8 @@ namespace TaoTie
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, buildHotfixAssembliesAOT, isBuildAll,
-                            packAtlas, isContainsAb, channel, buildDll);
+                        BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
+                            isBuildAll, packAtlas, isContainsAb, channel, buildDll);
                     }
                 };
                 if (buildGroupmap.TryGetValue(type, out var group))
@@ -310,8 +310,8 @@ namespace TaoTie
             AtlasHelper.GeneratingAtlas();
         }
 
-        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearFolder,
-            bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
+        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
+            bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
             string channel, bool buildDll = true)
         {
             var vs = Application.version.Split(".");
@@ -385,11 +385,21 @@ namespace TaoTie
                 }
                 AssetDatabase.Refresh();
             }
+
+            if (clearABFolder)
+            {
+                string abPath = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
+                if (Directory.Exists(abPath))
+                {
+                    Directory.Delete(relativeDirPrefix, true);
+                    Directory.CreateDirectory(relativeDirPrefix);
+                }
+            }
                               
             //打ab
             BuildInternal(buildTarget, isBuildAll, isContainsAb, channel);
 
-            if (clearFolder && Directory.Exists(relativeDirPrefix))
+            if (clearReleaseFolder && Directory.Exists(relativeDirPrefix))
             {
                 Directory.Delete(relativeDirPrefix, true);
                 Directory.CreateDirectory(relativeDirPrefix);

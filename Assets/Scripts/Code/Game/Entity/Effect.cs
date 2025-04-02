@@ -54,7 +54,7 @@ namespace TaoTie
         public void Init(string name)
         {
             EffectName = name;
-            AddComponent<GameObjectHolderComponent, string>($"Effect/{name}/Prefabs/{name}.prefab");
+            AddComponent<EffectComponent, string>($"Effect/{name}/Prefabs/{name}.prefab");
         }
         public void Init(string name, long delay)
         {
@@ -62,7 +62,7 @@ namespace TaoTie
             string path = $"Effect/{name}/Prefabs/{name}.prefab";
             if (delay <= 0)
             {
-                AddComponent<GameObjectHolderComponent, string>(path);
+                AddComponent<EffectComponent, string>(path);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace TaoTie
         {
             await GameTimerManager.Instance.WaitAsync(delay);
             if(IsDispose) return;
-            AddComponent<GameObjectHolderComponent, string>(path);
+            AddComponent<EffectComponent, string>(path);
         }
         
         public void Destroy()

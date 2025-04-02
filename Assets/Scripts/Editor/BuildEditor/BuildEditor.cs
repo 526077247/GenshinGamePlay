@@ -56,7 +56,8 @@ namespace TaoTie
 		private Mode buildMode;
 		private PlatformType activePlatform;
 		private PlatformType platformType;
-		private bool clearFolder;
+		private bool clearReleaseFolder;
+		private bool clearABFolder;
 		private bool isBuildExe;
 		private bool buildHotfixAssembliesAOT;
 		private bool isContainsAb;
@@ -106,7 +107,8 @@ namespace TaoTie
 
 				if(buildSettings == null) return;
 				
-				clearFolder = buildSettings.clearFolder;
+				clearReleaseFolder = buildSettings.clearReleaseFolder;
+				clearABFolder = buildSettings.clearABFolder;
 				isBuildExe = buildSettings.isBuildExe;
 				buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
 				isContainsAb = buildSettings.isContainsAb;
@@ -150,7 +152,8 @@ namespace TaoTie
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             
 			EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-			this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
+			this.clearReleaseFolder = EditorGUILayout.Toggle("清理打包输出文件夹: ", clearReleaseFolder);
+			this.clearABFolder = EditorGUILayout.Toggle("清理AB缓存文件夹: ", clearABFolder);
             this.isPackAtlas = EditorGUILayout.Toggle("是否需要重新打图集: ", isPackAtlas);
             this.isBuildAll = EditorGUILayout.Toggle("全量资源是否打进包:", this.isBuildAll);
             if (!this.isBuildAll)
@@ -216,7 +219,8 @@ namespace TaoTie
                     }
                 }
 				
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT,this.isBuildAll,this.isPackAtlas,this.isBuildAll || this.isContainsAb,this.channel);
+				BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
+					isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
 			}
 		}
 
@@ -224,7 +228,8 @@ namespace TaoTie
 		{
 			if (buildSettings == null) return;
 			
-			buildSettings.clearFolder = clearFolder;
+			buildSettings.clearReleaseFolder = clearReleaseFolder;
+			buildSettings.clearABFolder = clearABFolder;
 			buildSettings.isBuildExe = isBuildExe;
 			buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
 			buildSettings.isContainsAb = isContainsAb;

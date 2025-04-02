@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   channel: googleplay
   buildMode: 0
-  clearFolder: 0
+  clearReleaseFolder: 1
+  clearABFolder: 1
   isBuildExe: 1
-  buildHotfixAssembliesAOT: 1
+  buildHotfixAssembliesAOT: 0
   isContainsAb: 0
   isBuildAll: 1
   isPackAtlas: 0
   cdn: 
-  buildType: 0
+  buildType: 1
   buildAssetBundleOptions: 0

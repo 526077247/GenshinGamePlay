@@ -259,6 +259,29 @@ namespace TaoTie
             return list;
         }
         /// <summary>
+        /// 数值类型
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetNumericFinalTypeId()
+        {
+            var fields = typeof(NumericType).GetFields();
+            ValueDropdownList<int> list = new ValueDropdownList<int>();
+            if (fields.Length > 0)
+            {
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    if (!fields[i].IsStatic)
+                    {
+                        continue;
+                    }
+                    var val = (int) fields[i].GetValue(null);
+                    if (val >= NumericType.Max) continue;
+                    list.Add($"{fields[i].Name}({val})", val);
+                }
+            }
+            return list;
+        }
+        /// <summary>
         /// 阵营类型
         /// </summary>
         /// <returns></returns>

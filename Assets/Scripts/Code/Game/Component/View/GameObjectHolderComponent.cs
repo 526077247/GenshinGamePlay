@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent : Component, IComponent, IComponent<string>
+    public partial class GameObjectHolderComponent : Component, IComponent
     {
         public Transform EntityView;
 
@@ -23,15 +23,7 @@ namespace TaoTie
             Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             LoadGameObjectAsync().Coroutine();
         }
-
-        public void Init(string path)
-        {
-            if(fsm?.DefaultFsm?.CurrentState!=null)
-                fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
-            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
-            Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
-            LoadGameObjectAsync(path).Coroutine();
-        }
+        
         private async ETTask LoadGameObjectAsync()
         {
             var unit = this.GetParent<Unit>();
@@ -121,59 +113,7 @@ namespace TaoTie
             }
             
         }
-
-        private async ETTask LoadGameObjectAsync(string path)
-        {
-            var obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(path);
-            if (this.IsDispose)
-            {
-                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
-                return;
-            }
-            Animator = obj.GetComponentInChildren<Animator>();
-            EntityView = obj.transform;
-            collector = obj.GetComponent<ReferenceCollector>();
-            EntityView.SetParent(this.parent.Parent.GameObjectRoot);
-            var ec = obj.GetComponent<EntityComponent>();
-            if (ec == null) ec = obj.AddComponent<EntityComponent>();
-            ec.Id = this.Id;
-            ec.EntityType = parent.Type;
-            if (parent is Actor actor)
-            {
-                ec.CampId = actor.CampId;
-                EntityView.localScale = Vector3.one * actor.configActor.Common.Scale;
-            }
-
-            if (parent is Unit unit)
-            {
-                EntityView.position = unit.Position;
-                EntityView.rotation = unit.Rotation;
-                Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
-                Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-                Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
-            }
-            else if (parent is Effect effect)
-            {
-                EntityView.position = effect.Position;
-                EntityView.rotation = effect.Rotation;
-            }
-            
-            Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
-                CrossFadeInFixedTime);
-            Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
-            Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
-            Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
-            UpdateRagDollState();
-            if (waitFinishTask != null)
-            {
-                while (waitFinishTask.TryDequeue(out var task))
-                {
-                    task.SetResult();
-                }
-
-                waitFinishTask = null;
-            }
-        }
+        
 
         public void Destroy()
         {
