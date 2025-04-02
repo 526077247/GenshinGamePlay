@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -79,6 +80,23 @@ namespace TaoTie
                     }
                 }
             }
+        }
+
+        [MenuItem("Assets/复制相对路径", false, 500)]
+        static void CopyPath()
+        {
+            string[] guids = Selection.assetGUIDs;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < guids.Length; i++)
+            {
+                if (i > 0) sb.AppendLine();
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                if(path.Contains("/AssetsPackage/"))
+                    path = path.Split("/AssetsPackage/")[1];
+                sb.Append(path);
+            }
+
+            GUIUtility.systemCopyBuffer = sb.ToString();
         }
     }
 }
