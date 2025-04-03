@@ -145,6 +145,8 @@ MonoBehaviour:
     gameObject: {fileID: 8019388696331482130}
   - key: WeaponR
     gameObject: {fileID: 4719210459658680367}
+  - key: Center
+    gameObject: {fileID: 5115794191283898161}
 --- !u!95 &5001083197151544805
 Animator:
   serializedVersion: 5
