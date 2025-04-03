@@ -7,11 +7,27 @@ namespace TaoTie
     public class RotateAroundArrangePlugin: ArrangePlugin<ConfigRotateAroundArrange>
     {
         private LinkedList<GameObjectHolder> holders;
-        private Quaternion Default;
+
+        private Vector3 up;
+        private Vector3 forward;
         protected override void InitInternal()
         {
             holders = model.Holders;
-            Default = Quaternion.Euler(Config.ItemEuler);
+            switch (Config.RotAngleType)
+            {
+                case RotAngleType.ROT_ANGLE_X:
+                    up = Vector3.right;
+                    forward = Vector3.up;
+                    break;
+                case RotAngleType.ROT_ANGLE_Y:
+                    up = Vector3.up;
+                    forward = Vector3.forward;
+                    break;
+                case RotAngleType.ROT_ANGLE_Z:
+                    up = Vector3.back;
+                    forward = Vector3.up;
+                    break;
+            }
         }
 
         public override void Update()
@@ -27,18 +43,18 @@ namespace TaoTie
                 var holder = node.Value;
                 if (holder.EntityView != null)
                 {
-                    var euler = new Vector3(0, angel * i + offset, 0);
+                    var euler = up * (angel * i + offset);
                     if (Config.FollowParentRotation)
                     {
-                        holder.EntityView.localRotation = Default * Quaternion.Euler(euler);
-                        holder.EntityView.localPosition = holder.EntityView.localRotation * Vector3.forward * radius;
+                        holder.EntityView.localRotation = Quaternion.Euler(euler);
+                        holder.EntityView.localPosition = holder.EntityView.localRotation * forward * radius;
                     }
                     else
                     {
-                        var posRot = Default * Quaternion.Euler(euler);
-                        var localPos = posRot * Vector3.forward * radius;
+                        var posRot = Quaternion.Euler(euler);
+                        var localPos = posRot * forward * radius;
                         holder.EntityView.position = model.EntityView.position + localPos;
-                        holder.EntityView.rotation = Default * Quaternion.LookRotation(localPos, Vector3.up);
+                        holder.EntityView.rotation = Quaternion.LookRotation(localPos, up);
                     }
                     
                 }
