@@ -84,17 +84,17 @@ namespace TaoTie
 
 		private async ETTask InitAsync()
 		{
-			var gh = parent.GetComponent<GameObjectHolderComponent>();
-			await gh.WaitLoadGameObjectOver();
-			if (gh.IsDispose) return;
-			mover = gh.EntityView.GetComponent<Mover>();
-			ceilingDetector = gh.EntityView.GetComponent<CeilingDetector>();
+			var model = parent.GetComponent<ModelComponent>();
+			await model.WaitLoadGameObjectOver();
+			if (model.IsDispose) return;
+			mover = model.EntityView.GetComponent<Mover>();
+			ceilingDetector = model.EntityView.GetComponent<CeilingDetector>();
 			if (mover != null)
 			{
 				mover.enabled = true;
 				mover.OnAnimatorMoveEvt = OnAnimatorMove;
 			}
-			transform = gh.EntityView;
+			transform = model.EntityView;
 			cameraTransform = CameraManager.Instance.MainCamera().transform;
 		}
 

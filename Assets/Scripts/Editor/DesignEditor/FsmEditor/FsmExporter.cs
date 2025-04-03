@@ -31,25 +31,20 @@ namespace TaoTie
         const string EditDirName = "Edit";
         const string PublishDirName = "Animations";
         
-        const string ControllerConfigName = "FsmConfig.";
-        const string AIControllerConfigName = "PoseConfig.";
-        const string FsmConfig = EditDirName + "/" + "FsmConfig.controller";
-        const string PoseConfig = EditDirName + "/" + "PoseConfig.controller";
-        
         [MenuItem("Assets/工具/状态机导出", false)]
         static void ExportFsm()
         {
-            var path = AssetDatabase.GetAssetPath(Selection.activeObject);
             if (Selection.activeObject is AnimatorController controller)
             {
-                if (path.EndsWith(FsmConfig))
-                {
-                    ExportController(controller, ControllerConfigName);
-                }
-                else if (path.EndsWith(PoseConfig))
-                {
-                    ExportController(controller, AIControllerConfigName, false);
-                }
+                ExportController(controller, controller.name + ".");
+            }
+        }
+        [MenuItem("Assets/工具/状态机导出(Pose-不生成空动画)", false)]
+        static void ExportFsm2()
+        {
+            if (Selection.activeObject is AnimatorController controller)
+            {
+                ExportController(controller, controller.name + ".", false);
             }
         }
         [MenuItem("Assets/工具/状态机导出", true)]
@@ -58,11 +53,20 @@ namespace TaoTie
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);
             if (Selection.activeObject is AnimatorController controller)
             {
-                if (path.EndsWith(FsmConfig))
+                if (path.Contains("/"+EditDirName+"/"))
                 {
                     return true;
                 }
-                else if (path.EndsWith(PoseConfig))
+            }
+            return false;
+        }
+        [MenuItem("Assets/工具/状态机导出(Pose-不生成空动画)", true)]
+        static bool ExportFsmCheck2()
+        {
+            var path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (Selection.activeObject is AnimatorController controller)
+            {
+                if (path.Contains("/"+EditDirName+"/"))
                 {
                     return true;
                 }

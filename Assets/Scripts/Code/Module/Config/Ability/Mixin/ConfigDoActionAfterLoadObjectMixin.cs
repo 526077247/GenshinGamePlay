@@ -12,11 +12,5 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public ConfigAbilityAction[] Actions;
-        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
-        {
-            var res = ObjectPool.Instance.Fetch<DoActionAfterLoadObjectMixin>();
-            res.Init(actorAbility, actorModifier, this);
-            return res;
-        }
     }
 }

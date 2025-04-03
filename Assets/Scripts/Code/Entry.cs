@@ -64,6 +64,8 @@ namespace TaoTie
         static async ETTask StartGameAsync()
         {
             ManagerProvider.RegisterManager<SoundManager>();
+            ManagerProvider.RegisterManager<AbilitySystem>();
+            ManagerProvider.RegisterManager<ModelSystem>();
             ManagerProvider.RegisterManager<BillboardSystem>();
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();

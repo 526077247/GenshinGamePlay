@@ -110,8 +110,8 @@ namespace TaoTie
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
             if(PlatformUtil.IsMobile()) 
                 await UIManager.Instance.OpenWindow<UIMobileMainView>(UIMobileMainView.PrefabPath);
-            var selfGhc = Self.GetComponent<GameObjectHolderComponent>();
-            await selfGhc.WaitLoadGameObjectOver();
+            var model = Self.GetComponent<ModelComponent>();
+            await model.WaitLoadGameObjectOver();
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;
             Log.Info("进入场景 " + GetScenePath());

@@ -2,12 +2,13 @@
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent
+    public partial class GameObjectHolder
     {
         private bool fsmUseRagDoll;
         private bool useRagDoll;
         public Animator Animator;
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
+
         public void SetWeight(int index, float weight)
         {
             if (Animator != null)
@@ -18,8 +19,8 @@ namespace TaoTie
 
         private void UpdateMotionFlag(MotionFlag level)
         {
-	        if (fsm == null) return;
-            fsm.SetData(FSMConst.MotionFlag,(int)level);
+            if (fsm == null) return;
+            fsm.SetData(FSMConst.MotionFlag, (int) level);
         }
 
         private void SetData(string key, int data)
@@ -63,7 +64,7 @@ namespace TaoTie
                 }
             }
         }
-        
+
         private void SetUseRagDoll(bool use)
         {
             if (useRagDoll != use)

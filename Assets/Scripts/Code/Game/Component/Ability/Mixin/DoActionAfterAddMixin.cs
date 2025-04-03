@@ -1,12 +1,11 @@
 ﻿namespace TaoTie
 {
-    public class DoActionAfterAddMixin : AbilityMixin
+    public class DoActionAfterAddMixin : AbilityMixin<ConfigDoActionAfterAddMixin>
     {
-        public ConfigDoActionAfterAddMixin Config => baseConfig as ConfigDoActionAfterAddMixin;
 
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionAfterAddMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             if (actorModifier == null)
             {
                 actorAbility.afterAdd += Execute;
@@ -29,7 +28,7 @@
             }
         }
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             if (actorModifier == null)
             {
@@ -39,7 +38,6 @@
             {
                 actorModifier.afterAdd -= Execute;
             }
-            base.Dispose();
         }
     }
 }

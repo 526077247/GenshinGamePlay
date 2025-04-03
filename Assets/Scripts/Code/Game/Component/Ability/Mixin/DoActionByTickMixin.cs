@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class DoActionByTickMixin : AbilityMixin
+    public class DoActionByTickMixin : AbilityMixin<ConfigDoActionByTickMixin>
     {
         
         [Timer(TimerType.TickMixin)]
@@ -21,12 +21,11 @@ namespace TaoTie
             }
         }
         
-        public ConfigDoActionByTickMixin Config => baseConfig as ConfigDoActionByTickMixin;
 
         private long timerId;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionByTickMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             timerId = GameTimerManager.Instance.NewRepeatedTimer(this.Config.Interval, TimerType.TickMixin, this);
             if (this.Config.TickFirstOnAdd)
             {
@@ -45,10 +44,9 @@ namespace TaoTie
             }
         }
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             GameTimerManager.Instance.Remove(ref timerId);
-            base.Dispose();
         }
 
     }

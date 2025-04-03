@@ -32,10 +32,10 @@ namespace TaoTie
 
         private async ETTask InitInternal()
         {
-            var goh = GetComponent<GameObjectHolderComponent>();
-            await goh.WaitLoadGameObjectOver();
-            if(goh.IsDispose || IsDispose) return;
-            Target = goh.GetCollectorObj<Transform>(Config.AttachPoint);
+            var model = GetComponent<ModelComponent>();
+            await model.WaitLoadGameObjectOver();
+            if(model.IsDispose || IsDispose) return;
+            Target = model.GetCollectorObj<Transform>(Config.AttachPoint);
             for (int i = 0; i < Config.Plugins.Length; i++)
             {
                 var plugin = BillboardSystem.Instance.CreateBillboardPlugin(Config.Plugins[i], this);

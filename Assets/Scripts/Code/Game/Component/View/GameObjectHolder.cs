@@ -1,12 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace TaoTie
 {
-    public partial class GameObjectHolderComponent : Component, IComponent
+    public partial class GameObjectHolder : IDisposable
     {
+        protected ModelComponent ModelComponent { get; private set; }
+        protected Unit parent => ModelComponent.GetParent<Unit>();
+        protected long Id => parent.Id;
+
+        public static GameObjectHolder Create(ModelComponent model)
+        {
+            GameObjectHolder res = ObjectPool.Instance.Fetch<GameObjectHolder>();
+            res.Init(model);
+            return res;
+        }
+        
+        private void Init(ModelComponent model)
+        {
+            ModelComponent = model;
+            if(fsm?.DefaultFsm?.CurrentState!=null)
+                fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
+            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
+            Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
+            LoadGameObjectAsync().Coroutine();
+        }
+        
+        
+        public void Dispose()
+        {
+            Destroy();
+            ModelComponent = null;
+            ObjectPool.Instance.Recycle(this);
+        }
+        
         public Transform EntityView;
 
         private ReferenceCollector collector;
@@ -15,18 +43,9 @@ namespace TaoTie
 
         #region override
 
-        public void Init()
-        {
-            if(fsm?.DefaultFsm?.CurrentState!=null)
-                fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
-            Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
-            Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
-            LoadGameObjectAsync().Coroutine();
-        }
-        
         private async ETTask LoadGameObjectAsync()
         {
-            var unit = this.GetParent<Unit>();
+            var unit = parent;
             GameObject obj;
             if (unit.ConfigId < 0)//约定小于0的id都是用空物体
             {
@@ -35,7 +54,7 @@ namespace TaoTie
             else
             {
                 obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(unit.Config.Perfab);
-                if (this.IsDispose)
+                if (parent.IsDispose)
                 {
                     GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
                     return;
@@ -80,7 +99,6 @@ namespace TaoTie
 
             EntityView = obj.transform;
             collector = obj.GetComponent<ReferenceCollector>();
-            EntityView.SetParent(this.parent.Parent.GameObjectRoot);
             var ec = obj.GetComponent<EntityComponent>();
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
@@ -88,14 +106,8 @@ namespace TaoTie
             if (parent is Actor actor)
             {
                 ec.CampId = actor.CampId;
-                EntityView.localScale = Vector3.one * actor.configActor.Common.Scale;
             }
-
-            EntityView.position = unit.Position;
-            EntityView.rotation = unit.Rotation;
-            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
-            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
+            
             Messager.Instance.AddListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
@@ -115,12 +127,9 @@ namespace TaoTie
         }
         
 
-        public void Destroy()
+        private void Destroy()
         {
             Messager.Instance.RemoveListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
-            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
-            Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
@@ -153,6 +162,7 @@ namespace TaoTie
             if (Animator != null && Animator.runtimeAnimatorController != null)
             {
                 ResourcesManager.Instance.ReleaseAsset(Animator.runtimeAnimatorController);
+                Animator.runtimeAnimatorController = null;
                 Animator = null;
             }
         }
@@ -160,30 +170,12 @@ namespace TaoTie
         #endregion
 
         #region Event
-        
-        private void OnChangePosition(Unit unit, Vector3 old)
-        {
-            if(EntityView == null) return;
-            EntityView.position = unit.Position;
-        }
-
-        private void OnChangeRotation(Unit unit, Quaternion old)
-        {
-            if(EntityView == null) return;
-            EntityView.rotation = unit.Rotation;
-        }
-
-        private void OnChangeScale(Unit unit, Vector3 old)
-        {
-            if(EntityView == null) return;
-            EntityView.localScale = unit.LocalScale;
-        }
         private void OnBeKill(ConfigDie configDie, DieStateFlag flag)
         {
             if (parent == null) return;
             if (configDie != null)
             {
-                var unit = GetParent<Unit>();
+                var unit = parent;
                 if (unit == null) return;
                 //特效
                 if (!string.IsNullOrWhiteSpace(configDie.DieDisappearEffect))
@@ -227,7 +219,7 @@ namespace TaoTie
                 waitFinishTask.Enqueue(task);
                 await task;
             }
-            return !IsDispose;
+            return !parent.IsDispose;
         }
 
         public T GetCollectorObj<T>(string name) where T : class
@@ -247,7 +239,7 @@ namespace TaoTie
             {
                 coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
                 await this.WaitLoadGameObjectOver();
-                if(this.IsDispose) return;
+                if(parent.IsDispose) return;
                 var renders = this.EntityView.GetComponentsInChildren<Renderer>();
                 for (int i = 0; i < renders.Length; i++)
                 {
@@ -269,7 +261,7 @@ namespace TaoTie
         public async ETTask EnableHitBox(string hitBox, bool enable)
         {
             await this.WaitLoadGameObjectOver();
-            if(this.IsDispose) return;
+            if(parent.IsDispose) return;
             this.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
         }
     }

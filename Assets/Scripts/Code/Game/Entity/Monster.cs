@@ -19,7 +19,7 @@ namespace TaoTie
             var monster = AddComponent<MonsterComponent,int>(configId);
             ConfigId = monster.Config.UnitId;
             configActor = GetActorConfig(Config.ActorConfig);
-            AddComponent<GameObjectHolderComponent>();
+            AddComponent<ModelComponent,ConfigModel>(configActor.Model);
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);

@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class AttachToNormalizedTimeMixin: AbilityMixin
+    public class AttachToNormalizedTimeMixin:  AbilityMixin<ConfigAttachToNormalizedTimeMixin>
     {
         [Timer(TimerType.AttachToNormalizedTimeMixinUpdate)]
         public class AttachToNormalizedTimeMixinUpdate : ATimer<AttachToNormalizedTimeMixin>
@@ -19,16 +19,15 @@ namespace TaoTie
                 }
             }
         }
-        public ConfigAttachToNormalizedTimeMixin Config => baseConfig as ConfigAttachToNormalizedTimeMixin;
 
         private Fsm fsm;
         private bool hasAddModifier;
         private Entity owner;
         private AbilityComponent abilityComponent;
         private long timerId;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAttachToNormalizedTimeMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
             fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.Config.ChargeLayer);
             abilityComponent = owner?.GetComponent<AbilityComponent>();
@@ -91,7 +90,7 @@ namespace TaoTie
             hasAddModifier = false;
         }
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             if (fsm != null)
             {
@@ -102,7 +101,6 @@ namespace TaoTie
             hasAddModifier = false;
             abilityComponent = null;
             owner = null;
-            base.Dispose();
         }
     }
 }

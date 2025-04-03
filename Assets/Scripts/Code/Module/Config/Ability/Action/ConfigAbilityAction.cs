@@ -21,7 +21,7 @@ namespace TaoTie
         {
             if (Predicate == null || Predicate.Evaluate(applier,ability,modifier,target))
             {
-                var res = AbilityHelper.ResolveTarget(applier, ability, modifier, target,Targetting, out Entity[] targetLs, OtherTargets);
+                var res = AbilitySystem.ResolveTarget(applier, ability, modifier, target,Targetting, out Entity[] targetLs, OtherTargets);
                 if (res > 0)
                 {
                     foreach (Entity item in targetLs)

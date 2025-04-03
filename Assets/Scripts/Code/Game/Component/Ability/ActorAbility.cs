@@ -30,7 +30,7 @@ namespace TaoTie
             {
                 for (int i = 0; i < config.AbilityMixins.Length; i++)
                 {
-                    var mixin = config.AbilityMixins[i].CreateAbilityMixin(res, null);
+                    var mixin = AbilitySystem.Instance.CreateAbilityMixin(res, null, config.AbilityMixins[i]);
                     res.mixins.Add(mixin);
                 }
             }

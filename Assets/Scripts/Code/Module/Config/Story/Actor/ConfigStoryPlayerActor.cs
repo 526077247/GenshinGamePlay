@@ -11,12 +11,12 @@ namespace TaoTie
             if (storySystem.Scene is MapScene scene)
             {
                 var avatar = scene.Self as Avatar;
-                var ghc = avatar?.GetComponent<GameObjectHolderComponent>();
-                if (ghc == null) return null;
-                await ghc.WaitLoadGameObjectOver();
-                if (ghc.IsDispose) return null;
+                var model = avatar?.GetComponent<ModelComponent>();
+                if (model == null) return null;
+                await model.WaitLoadGameObjectOver();
+                if (model.IsDispose) return null;
                 avatar.RemoveComponent<MoveComponent>();
-                return avatar.GetComponent<GameObjectHolderComponent>().EntityView.gameObject;
+                return avatar.GetComponent<ModelComponent>().EntityView.gameObject;
             }
             return null;
         }

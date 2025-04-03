@@ -12,7 +12,7 @@
             var weapon = AddComponent<EquipComponent,int>(configId);
             ConfigId = weapon.Config.UnitId;
             AddComponent<AttachComponent>();
-            AddComponent<GameObjectHolderComponent>();
+            AddComponent<ModelComponent,ConfigModel>(null);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
         }
 

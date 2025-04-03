@@ -25,10 +25,13 @@ namespace TaoTie
             {
                 AddComponent<InteeComponent, ConfigIntee>(configActor.Intee);
             }
-            AddComponent<GameObjectHolderComponent>();
+            AddComponent<ModelComponent,ConfigModel>(configActor.Model);
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
-            var fsm = AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
-            fsm.SetData(FSMConst.GadgetState,(int)state);
+            if(!string.IsNullOrEmpty(Config.FSM))
+            {
+                var fsm = AddComponent<FsmComponent, ConfigFsmController>(GetFsmConfig(Config.FSM));
+                fsm.SetData(FSMConst.GadgetState,(int)state);
+            }
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);

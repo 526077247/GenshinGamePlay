@@ -25,12 +25,12 @@ namespace TaoTie
             }
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
             entity.Position = position;
-            var ghc = entity.GetComponent<GameObjectHolderComponent>();
-            ghc.EntityView.gameObject.layer = LayerMask.NameToLayer("Entity");
-            var collider = ghc.EntityView.gameObject.AddComponent<SphereCollider>();
+            GameObject obj = new GameObject("Zone");
+            obj.layer = LayerMask.NameToLayer("Entity");
+            var collider = obj.AddComponent<SphereCollider>();
             collider.isTrigger = true;
             collider.radius = Radius;
-            entity.AddComponent<SceneGroupZoneComponent, int, long>(LocalId, sceneGroup.Id);
+            entity.AddComponent<SceneGroupZoneComponent, int, long,GameObject>(LocalId, sceneGroup.Id, obj);
             return entity;
         }
     }

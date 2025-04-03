@@ -20,7 +20,7 @@ namespace TaoTie
             ConfigId = avatar.Config.UnitId;
             configActor = GetActorConfig(Config.ActorConfig);
             AddComponent<AttachComponent>();
-            AddComponent<GameObjectHolderComponent>();
+            AddComponent<ModelComponent,ConfigModel>(configActor.Model);
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
@@ -35,9 +35,9 @@ namespace TaoTie
 
         private async ETTask InitAsync()
         {
-            var ghc = GetComponent<GameObjectHolderComponent>();
-            await ghc.WaitLoadGameObjectOver();
-            if(ghc.IsDispose) return;
+            var model = GetComponent<ModelComponent>();
+            await model.WaitLoadGameObjectOver();
+            if(model.IsDispose) return;
             if (thirdCameraId == 0)
             {
                 thirdCameraId = CameraManager.Instance.Create(GameConst.ThirdCameraConfigId);
@@ -45,7 +45,7 @@ namespace TaoTie
 
             await TimerManager.Instance.WaitAsync(1);
             var camera = CameraManager.Instance.Get<NormalCameraState>(thirdCameraId);
-            var trans = ghc.EntityView;
+            var trans = model.EntityView;
             camera.SetFollow(trans);
             camera.SetTarget(trans);
             CameraManager.Instance.ChangeCursorLock(true, CursorStateType.UserInput);

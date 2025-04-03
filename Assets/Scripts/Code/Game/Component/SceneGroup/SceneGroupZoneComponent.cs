@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
-    public class SceneGroupZoneComponent: Component,IComponent<int,long>
+    public class SceneGroupZoneComponent: Component,IComponent<int,long,GameObject>
     {
         private int localId;
 
@@ -11,18 +12,19 @@ namespace TaoTie
         
         private List<long> innerEntity;
         private ColliderComponent colliderComponent;
+        private GameObject zone;
         #region IComponent
 
-        public void Init(int p1, long p2)
+        public void Init(int p1, long p2,GameObject obj)
         {
             innerEntity = new List<long>();
             localId = p1;
             sceneGroupId = p2;
-            var ghc = parent.GetComponent<GameObjectHolderComponent>();
-            colliderComponent = ghc.EntityView.GetComponent<ColliderComponent>();
+            zone = obj;
+            colliderComponent = zone.GetComponent<ColliderComponent>();
             if (colliderComponent == null)
             {
-                colliderComponent = ghc.EntityView.gameObject.AddComponent<ColliderComponent>();
+                colliderComponent = zone.AddComponent<ColliderComponent>();
             }
             colliderComponent.OnEntityTrigger = OnEntityTrigger;
         }
@@ -37,6 +39,11 @@ namespace TaoTie
             sceneGroupId = 0;
             localId = 0;
             innerEntity = null;
+            if (zone != null)
+            {
+                GameObject.Destroy(zone);
+                zone = null;
+            }
         }
 
         #endregion

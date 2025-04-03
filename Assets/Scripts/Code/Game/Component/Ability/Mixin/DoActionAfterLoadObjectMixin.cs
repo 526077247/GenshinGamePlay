@@ -1,22 +1,21 @@
 ﻿namespace TaoTie
 {
-    public class DoActionAfterLoadObjectMixin: AbilityMixin
+    public class DoActionAfterLoadObjectMixin: AbilityMixin<ConfigDoActionAfterLoadObjectMixin>
     {
-        public ConfigDoActionAfterLoadObjectMixin Config => baseConfig as ConfigDoActionAfterLoadObjectMixin;
 
-        private GameObjectHolderComponent holderComponent;
+        private ModelComponent modelComponent;
         private Entity owner;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionAfterLoadObjectMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
-            holderComponent = owner?.GetComponent<GameObjectHolderComponent>();
-            if (holderComponent != null) CheckObjLoad().Coroutine();
+            modelComponent = owner?.GetComponent<ModelComponent>();
+            if (modelComponent != null) CheckObjLoad().Coroutine();
         }
 
         private async ETTask CheckObjLoad()
         {
-            await holderComponent.WaitLoadGameObjectOver();
+            await modelComponent.WaitLoadGameObjectOver();
             if (owner == null || owner.IsDispose) return;
             if (Config.Actions!=null)
             {
@@ -26,11 +25,10 @@
                 }
             }
         }
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
-            holderComponent = null;
+            modelComponent = null;
             owner = null;
-            base.Dispose();
         }
     }
 }

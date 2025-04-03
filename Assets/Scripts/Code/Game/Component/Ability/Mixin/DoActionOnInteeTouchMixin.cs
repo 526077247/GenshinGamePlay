@@ -1,14 +1,12 @@
 ﻿namespace TaoTie
 {
-    public class DoActionOnInteeTouchMixin : AbilityMixin
+    public class DoActionOnInteeTouchMixin : AbilityMixin<ConfigDoActionOnInteeTouchMixin>
     {
-        public ConfigDoActionOnInteeTouchMixin Config => baseConfig as ConfigDoActionOnInteeTouchMixin;
-        
         private InteeComponent intee;
         private Entity owner;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionOnInteeTouchMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
             intee = owner?.GetComponent<InteeComponent>();
             if (intee != null)
@@ -16,9 +14,7 @@
                 intee.OnTouch += Execute;
             }
         }
-
         
-
         private void Execute(int configId)
         {
             if(configId != Config.LocalId) return;
@@ -32,7 +28,7 @@
         }
 
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             if (intee != null)
             {
@@ -41,7 +37,6 @@
             }
             
             owner = null;
-            base.Dispose();
         }
     }
 }

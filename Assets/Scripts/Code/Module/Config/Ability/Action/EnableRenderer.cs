@@ -17,8 +17,8 @@ namespace TaoTie
         private void TryEnableRenderer(Entity target)
         {
             if(target == null || target.IsDispose) return;
-            GameObjectHolderComponent holderComponent = target.GetComponent<GameObjectHolderComponent>();
-            holderComponent?.EnableRenderer(SetEnable).Coroutine();
+            ModelComponent modelComponent = target.GetComponent<ModelComponent>();
+            modelComponent?.EnableRenderer(SetEnable).Coroutine();
             EffectComponent effectComponent = target.GetComponent<EffectComponent>();
             effectComponent?.EnableRenderer(SetEnable).Coroutine();
             if (IncludeChild)

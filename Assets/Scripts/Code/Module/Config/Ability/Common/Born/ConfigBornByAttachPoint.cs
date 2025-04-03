@@ -11,14 +11,18 @@ namespace TaoTie
 
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var entity = AbilityHelper.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
-            var goh = entity?.GetComponent<GameObjectHolderComponent>();
-            if (goh != null)
+            var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var model = entity?.GetComponent<ModelComponent>();
+            if (model != null)
             {
-                var trans = goh.GetCollectorObj<Transform>(AttachPointName);
+                var trans = model.GetCollectorObj<Transform>(AttachPointName);
                 if (trans != null)
                 {
                     return trans.position + trans.rotation * PositionOffset.Resolve(actor, ability);
+                }
+                else
+                {
+                    Log.Error("挂点不存在"+AttachPointName);
                 }
             }
 
@@ -27,13 +31,17 @@ namespace TaoTie
 
         public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var goh = target.GetComponent<GameObjectHolderComponent>();
-            if (goh != null)
+            var model = target.GetComponent<ModelComponent>();
+            if (model != null)
             {
-                var trans = goh.GetCollectorObj<Transform>(AttachPointName);
+                var trans = model.GetCollectorObj<Transform>(AttachPointName);
                 if (trans != null)
                 {
                     return Quaternion.Euler(trans.eulerAngles + RotationOffset.Resolve(actor, ability));
+                }
+                else
+                {
+                    Log.Error("挂点不存在"+AttachPointName);
                 }
             }
 
@@ -43,23 +51,27 @@ namespace TaoTie
         public override async ETTask AfterBorn(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
             Entity bornEntity)
         {
-            var goh = target.GetComponent<GameObjectHolderComponent>();
-            if (goh != null)
+            var model = target.GetComponent<ModelComponent>();
+            if (model != null)
             {
-                await goh.WaitLoadGameObjectOver();
-                if(goh.IsDispose) return;
-                var trans = goh.GetCollectorObj<Transform>(AttachPointName);
+                await model.WaitLoadGameObjectOver();
+                if(model.IsDispose) return;
+                var trans = model.GetCollectorObj<Transform>(AttachPointName);
                 if (trans != null)
                 {
-                    var goh2 = bornEntity.GetComponent<GameObjectHolderComponent>();
-                    if (goh2 != null)
+                    var model2 = bornEntity.GetComponent<ModelComponent>();
+                    if (model2 != null)
                     {
-                        await goh2.WaitLoadGameObjectOver();
-                        if (!goh.IsDispose && !goh2.IsDispose)//防止创建回来父节点已经被销毁
+                        await model2.WaitLoadGameObjectOver();
+                        if (!model.IsDispose && !model2.IsDispose)//防止创建回来父节点已经被销毁
                         {
-                            goh2.EntityView.SetParent(trans);
+                            model2.EntityView.SetParent(trans);
                         }
                     }
+                }
+                else
+                {
+                    Log.Error("挂点不存在"+AttachPointName);
                 }
             }
         }

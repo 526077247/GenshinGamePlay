@@ -16,12 +16,5 @@ namespace TaoTie
         public bool TickFirstOnAdd;
         [NinoMember(3)]
         public ConfigAbilityAction[] Actions;
-
-        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
-        {
-            var res = ObjectPool.Instance.Fetch<DoActionByTickMixin>();
-            res.Init(actorAbility, actorModifier, this);
-            return res;
-        }
     }
 }

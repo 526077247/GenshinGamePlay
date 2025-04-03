@@ -1,16 +1,15 @@
 ﻿namespace TaoTie
 {
-    public class AttachToStateIDMixin : AbilityMixin
+    public class AttachToStateIDMixin : AbilityMixin<ConfigAttachToStateIDMixin>
     {
-        public ConfigAttachToStateIDMixin Config => baseConfig as ConfigAttachToStateIDMixin;
 
         private Fsm fsm;
         private bool hasAddModifier;
         private Entity owner;
         private AbilityComponent abilityComponent;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAttachToStateIDMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
             fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.Config.ChargeLayer);
             abilityComponent = owner?.GetComponent<AbilityComponent>();
@@ -68,7 +67,7 @@
             hasAddModifier = false;
         }
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             if (fsm != null)
             {
@@ -79,7 +78,6 @@
             hasAddModifier = false;
             abilityComponent = null;
             owner = null;
-            base.Dispose();
         }
     }
 }

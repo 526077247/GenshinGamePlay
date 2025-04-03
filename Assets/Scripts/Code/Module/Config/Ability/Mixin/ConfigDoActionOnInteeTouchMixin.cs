@@ -14,12 +14,5 @@ namespace TaoTie
 
         [NinoMember(2)]
         public int LocalId;
-
-        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
-        {
-            var res = ObjectPool.Instance.Fetch<DoActionOnInteeTouchMixin>();
-            res.Init(actorAbility, actorModifier, this);
-            return res;
-        }
     }
 }

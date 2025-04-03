@@ -6,7 +6,7 @@ namespace TaoTie
     public class EquipHoldComponent: Component, IComponent
     {
         private AttachComponent attachComponent => parent.GetComponent<AttachComponent>();
-        private GameObjectHolderComponent gameObjectHolderComponent => parent.GetComponent<GameObjectHolderComponent>();
+        private ModelComponent ModelComponent => parent.GetComponent<ModelComponent>();
 
         private Dictionary<EquipType, Equip> euips;
         private bool showWeaponState;
@@ -64,18 +64,18 @@ namespace TaoTie
                     euips[equipType] = equip;
                     attachComponent.AddChild(equip);
                     equip.GetComponent<FsmComponent>()?.SetData(FSMConst.ShowWeapon,showWeaponState);
-                    await gameObjectHolderComponent.WaitLoadGameObjectOver();
-                    if (!gameObjectHolderComponent.IsDispose)
+                    await ModelComponent.WaitLoadGameObjectOver();
+                    if (!ModelComponent.IsDispose)
                     {
-                        var goh = equip.GetComponent<GameObjectHolderComponent>();
-                        await goh.WaitLoadGameObjectOver();
-                        if (!goh.IsDispose)
+                        var model = equip.GetComponent<ModelComponent>();
+                        await model.WaitLoadGameObjectOver();
+                        if (!model.IsDispose)
                         {
-                            var point = gameObjectHolderComponent.GetCollectorObj<Transform>(pointName);
-                            goh.EntityView.SetParent(point, false);
+                            var point = ModelComponent.GetCollectorObj<Transform>(pointName);
+                            model.EntityView.SetParent(point, false);
                             equip.LocalScale = Vector3.one;
-                            goh.EntityView.localPosition = Vector3.zero;
-                            goh.EntityView.localRotation = Quaternion.identity;
+                            model.EntityView.localPosition = Vector3.zero;
+                            model.EntityView.localRotation = Quaternion.identity;
                             return;
                         }
                     }

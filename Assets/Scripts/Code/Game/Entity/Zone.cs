@@ -9,7 +9,6 @@
         public void Init()
         {
             ConfigId = -1;
-            AddComponent<GameObjectHolderComponent>();
         }
 
         public void Destroy()

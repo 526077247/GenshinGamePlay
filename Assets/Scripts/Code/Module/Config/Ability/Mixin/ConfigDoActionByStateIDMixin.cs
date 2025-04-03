@@ -22,11 +22,5 @@ namespace TaoTie
         public ConfigAbilityPredicate ExitPredicate;
         [NinoMember(6)]
         public ConfigAbilityAction[] ExitActions;
-        public override AbilityMixin CreateAbilityMixin(ActorAbility actorAbility, ActorModifier actorModifier)
-        {
-            var res = ObjectPool.Instance.Fetch<DoActionByStateIDMixin>();
-            res.Init(actorAbility, actorModifier, this);
-            return res;
-        }
     }
 }

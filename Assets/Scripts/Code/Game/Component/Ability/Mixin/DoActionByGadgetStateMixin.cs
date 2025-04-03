@@ -1,14 +1,13 @@
 ﻿namespace TaoTie
 {
-    public class DoActionByGadgetStateMixin: AbilityMixin
+    public class DoActionByGadgetStateMixin: AbilityMixin<ConfigDoActionByGadgetStateMixin>
     {
-        public ConfigDoActionByGadgetStateMixin Config => baseConfig as ConfigDoActionByGadgetStateMixin;
 
         private GadgetComponent gadgetComponent;
         private Entity owner;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionByGadgetStateMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
             gadgetComponent = owner?.GetComponent<GadgetComponent>();
             
@@ -69,7 +68,7 @@
             }
         }
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             if (gadgetComponent != null)
             {
@@ -78,7 +77,6 @@
             }
             
             owner = null;
-            base.Dispose();
         }
     }
 }

@@ -1,14 +1,13 @@
 ﻿namespace TaoTie
 {
-    public class DoActionByStateIDMixin : AbilityMixin
+    public class DoActionByStateIDMixin : AbilityMixin<ConfigDoActionByStateIDMixin>
     {
-        public ConfigDoActionByStateIDMixin Config => baseConfig as ConfigDoActionByStateIDMixin;
         
         private Fsm fsm;
         private Entity owner;
-        public override void Init(ActorAbility actorAbility, ActorModifier actorModifier, ConfigAbilityMixin config)
+
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionByStateIDMixin config)
         {
-            base.Init(actorAbility, actorModifier, config);
             owner = actorAbility.Parent.GetParent<Entity>();
             fsm = owner?.GetComponent<FsmComponent>()?.GetFsm(this.Config.ChargeLayer);
             
@@ -69,7 +68,7 @@
             }
         }
 
-        public override void Dispose()
+        protected override void DisposeInternal()
         {
             if (fsm != null)
             {
@@ -78,7 +77,6 @@
             }
             
             owner = null;
-            base.Dispose();
         }
     }
 }

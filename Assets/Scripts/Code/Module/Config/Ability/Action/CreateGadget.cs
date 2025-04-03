@@ -53,14 +53,14 @@ namespace TaoTie
 
             if (OwnerIsTarget)
             {
-                var count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, OwnerIs, out var entities);
+                var count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, OwnerIs, out var entities);
                 if (count > 0)
                 {
                     var owner = entities[0];
                     //todo: sightGroupWithOwner
                     owner.GetOrAddComponent<AttachComponent>().AddChild(res, LifeByOwnerIsAlive);
                 }
-                count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, PropOwnerIs, out entities);
+                count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, PropOwnerIs, out entities);
                 if (count > 0)
                 {
                     var owner = entities[0];

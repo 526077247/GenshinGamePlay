@@ -49,7 +49,7 @@ namespace TaoTie
             {
                 for (int i = 0; i < config.Mixins.Length; i++)
                 {
-                    var mixin = config.Mixins[i].CreateAbilityMixin(ability, res);
+                    var mixin = AbilitySystem.Instance.CreateAbilityMixin(ability, res, config.Mixins[i]);
                     res.mixins.Add(mixin);
                 }
             }

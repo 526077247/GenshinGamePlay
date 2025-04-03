@@ -35,7 +35,7 @@ namespace TaoTie
             res.Position = pos;
             res.Rotation = rot;
             res.LocalScale = Vector3.one * scale;
-            var count = AbilityHelper.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target, out var entities);
+            var count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target, out var entities);
             if (count > 0)
             {
                 var owner = entities[0];
