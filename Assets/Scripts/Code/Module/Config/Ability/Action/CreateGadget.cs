@@ -28,6 +28,9 @@ namespace TaoTie
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
 #endif
         public uint CampID;
+        [NinoMember(19)]
+        public GadgetState DefaultState;
+
         protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var pos = Born.ResolvePos(applier, ability, modifier, target);
@@ -46,8 +49,9 @@ namespace TaoTie
                     }
                 }
             }
+
             var rot = Born.ResolveRot(applier, ability, modifier, target);
-            var res = target.Parent.CreateEntity<Gadget, int,uint>(GadgetID,CampID);
+            var res = target.Parent.CreateEntity<Gadget>();
             res.Position = pos;
             res.Rotation = rot;
 
@@ -60,6 +64,7 @@ namespace TaoTie
                     //todo: sightGroupWithOwner
                     owner.GetOrAddComponent<AttachComponent>().AddChild(res, LifeByOwnerIsAlive);
                 }
+
                 count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, PropOwnerIs, out entities);
                 if (count > 0)
                 {
@@ -67,7 +72,8 @@ namespace TaoTie
                     res.AddOtherComponent(owner.GetComponent<NumericComponent>());
                 }
             }
-            Born.AfterBorn(applier, ability, modifier, target,res).Coroutine();
+            res.Init(GadgetID, DefaultState, CampID);
+            Born.AfterBorn(applier, ability, modifier, target, res).Coroutine();
         }
     }
 }

@@ -12,10 +12,12 @@ namespace TaoTie
         private bool needDestroy;
         private Queue<ETTask> waitFinishTask;
         private ArrangePlugin arrangePlugin;
+        private int countKey;
         public void Init(ConfigModel config)
         {
             configModel = config;
             needDestroy = false;
+            countKey = 0;
             Holders = LinkedListComponent<GameObjectHolder>.Create();
             if (configModel == null || configModel is ConfigSingletonModel)
             {
@@ -31,6 +33,12 @@ namespace TaoTie
                 {
                     var plugin = GameObjectHolder.Create(this);
                     Holders.AddLast(plugin);
+                }
+
+                if (aroundModel.Count is NumericValue numericValue)
+                {
+                    countKey = numericValue.Key;
+                    Messager.Instance.AddListener<NumericChange>(GetComponent<NumericComponent>().Id, MessageId.NumericChangeEvt, OnNumericChange);
                 }
 
                 arrangePlugin = ModelSystem.Instance.CreateArrangePlugin(aroundModel.Arrange, this);
@@ -94,6 +102,10 @@ namespace TaoTie
         {
             arrangePlugin?.Dispose();
             arrangePlugin = null;
+            if (countKey!=0)
+            {
+                Messager.Instance.RemoveListener<NumericChange>(GetComponent<NumericComponent>().Id, MessageId.NumericChangeEvt, OnNumericChange);
+            }
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
             Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
@@ -120,6 +132,23 @@ namespace TaoTie
 
         #region Event
 
+        private void OnNumericChange(NumericChange evt)
+        {
+            if (evt.NumericType == countKey)
+            {
+                while (Holders.Count > evt.New)
+                {
+                    var first = Holders.First;
+                    Holders.RemoveFirst();
+                    first.Value.Dispose();
+                }
+                while (Holders.Count < evt.New)
+                {
+                    var plugin = GameObjectHolder.Create(this);
+                    Holders.AddLast(plugin);
+                }
+            }
+        }
         
         private void OnChangePosition(Unit unit, Vector3 old)
         {
