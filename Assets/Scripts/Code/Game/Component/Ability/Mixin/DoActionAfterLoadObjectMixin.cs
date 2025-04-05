@@ -3,19 +3,19 @@
     public class DoActionAfterLoadObjectMixin: AbilityMixin<ConfigDoActionAfterLoadObjectMixin>
     {
 
-        private ModelComponent modelComponent;
+        private UnitModelComponent unitModelComponent;
         private Entity owner;
 
         protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionAfterLoadObjectMixin config)
         {
             owner = actorAbility.Parent.GetParent<Entity>();
-            modelComponent = owner?.GetComponent<ModelComponent>();
-            if (modelComponent != null) CheckObjLoad().Coroutine();
+            unitModelComponent = owner?.GetComponent<UnitModelComponent>();
+            if (unitModelComponent != null) CheckObjLoad().Coroutine();
         }
 
         private async ETTask CheckObjLoad()
         {
-            await modelComponent.WaitLoadGameObjectOver();
+            await unitModelComponent.WaitLoadGameObjectOver();
             if (owner == null || owner.IsDispose) return;
             if (Config.Actions!=null)
             {
@@ -27,7 +27,7 @@
         }
         protected override void DisposeInternal()
         {
-            modelComponent = null;
+            unitModelComponent = null;
             owner = null;
         }
     }

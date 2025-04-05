@@ -22,7 +22,7 @@ namespace TaoTie
         private void TryEnableHitBox(Entity target)
         {
             if(target == null || target.IsDispose) return;
-            ModelComponent holderComponent = target.GetComponent<ModelComponent>();
+            UnitModelComponent holderComponent = target.GetComponent<UnitModelComponent>();
             for (int i = 0; i < HitBoxNames.Length; i++)
             {
                 holderComponent?.EnableHitBox(HitBoxNames[i], SetEnable).Coroutine();

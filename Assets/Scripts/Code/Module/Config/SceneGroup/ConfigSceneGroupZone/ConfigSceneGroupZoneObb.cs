@@ -30,10 +30,9 @@ namespace TaoTie
                 rotation = Quaternion.Euler(Rotation);
             }
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
-            entity.Rotation = rotation;
-            entity.Position = position;
-            GameObject obj = new GameObject("Zone");
-            obj.layer = LayerMask.NameToLayer("Entity");
+            var obj = entity.GameObject;
+            obj.transform.rotation = rotation;
+            obj.transform.position = position;
             var collider = obj.AddComponent<BoxCollider>();
             collider.isTrigger = true;
             collider.size = Size;

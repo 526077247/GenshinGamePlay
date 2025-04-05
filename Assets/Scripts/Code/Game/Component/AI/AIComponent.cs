@@ -134,7 +134,7 @@ namespace TaoTie
                 knowledge.MoveDecisionChanged = true;
             }
 #if UNITY_EDITOR
-            var transform = parent.GetComponent<ModelComponent>()?.EntityView;
+            var transform = parent.GetComponent<UnitModelComponent>()?.EntityView;
             if (transform != null)
             {
                 var aiDebug = transform.GetComponent<AIDebug>();

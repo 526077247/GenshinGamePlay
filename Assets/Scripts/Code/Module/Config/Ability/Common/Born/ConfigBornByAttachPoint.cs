@@ -12,7 +12,7 @@ namespace TaoTie
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
-            var model = entity?.GetComponent<ModelComponent>();
+            var model = entity?.GetComponent<UnitModelComponent>();
             if (model != null)
             {
                 var trans = model.GetCollectorObj<Transform>(AttachPointName);
@@ -31,7 +31,8 @@ namespace TaoTie
 
         public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var model = target.GetComponent<ModelComponent>();
+            var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var model = entity?.GetComponent<UnitModelComponent>();
             if (model != null)
             {
                 var trans = model.GetCollectorObj<Transform>(AttachPointName);
@@ -51,29 +52,38 @@ namespace TaoTie
         public override async ETTask AfterBorn(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
             Entity bornEntity)
         {
-            var model = target.GetComponent<ModelComponent>();
+            var attachPoint = await GetAttachPoint(actor,ability,modifier,target);
+            if (attachPoint != null)
+            {
+                var model = bornEntity.GetComponent<UnitModelComponent>();
+                if (model != null)
+                {
+                    await model.SetAttachPoint(attachPoint);
+                }
+                var effect = bornEntity.GetComponent<EffectModelComponent>();
+                if (effect != null)
+                {
+                    await effect.SetAttachPoint(attachPoint);
+                }
+            }
+            else
+            {
+                Log.Error("挂点不存在" + AttachPointName);
+            }
+        }
+
+        private async ETTask<Transform> GetAttachPoint(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
+        {
+            var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var model = entity?.GetComponent<UnitModelComponent>();
             if (model != null)
             {
                 await model.WaitLoadGameObjectOver();
-                if(model.IsDispose) return;
-                var trans = model.GetCollectorObj<Transform>(AttachPointName);
-                if (trans != null)
-                {
-                    var model2 = bornEntity.GetComponent<ModelComponent>();
-                    if (model2 != null)
-                    {
-                        await model2.WaitLoadGameObjectOver();
-                        if (!model.IsDispose && !model2.IsDispose)//防止创建回来父节点已经被销毁
-                        {
-                            model2.EntityView.SetParent(trans);
-                        }
-                    }
-                }
-                else
-                {
-                    Log.Error("挂点不存在"+AttachPointName);
-                }
+                if(model.IsDispose) return null;
+                return model.GetCollectorObj<Transform>(AttachPointName);
             }
+            return null;
         }
+        
     }
 }

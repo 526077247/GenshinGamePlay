@@ -32,7 +32,7 @@ namespace TaoTie
 
         private async ETTask InitInternal()
         {
-            var model = GetComponent<ModelComponent>();
+            var model = GetComponent<UnitModelComponent>();
             await model.WaitLoadGameObjectOver();
             if(model.IsDispose || IsDispose) return;
             Target = model.GetCollectorObj<Transform>(Config.AttachPoint);

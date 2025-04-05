@@ -110,7 +110,7 @@ namespace TaoTie
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
             if(PlatformUtil.IsMobile()) 
                 await UIManager.Instance.OpenWindow<UIMobileMainView>(UIMobileMainView.PrefabPath);
-            var model = Self.GetComponent<ModelComponent>();
+            var model = Self.GetComponent<UnitModelComponent>();
             await model.WaitLoadGameObjectOver();
             await UIManager.Instance.DestroyWindow<UILoadingView>();
             win = null;

@@ -192,7 +192,18 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2>)?.Invoke(p1, p2);
+                        if (item is Action<P1, P2> action)
+                        {
+                            action.Invoke(p1, p2);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 2) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            item.DynamicInvoke(p1, p2);
+                        }
                     }
                 }
             }
@@ -208,7 +219,19 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2, P3>)?.Invoke(p1, p2, p3);
+                        if (item is Action<P1, P2, P3> action)
+                        {
+                            action.Invoke(p1, p2, p3);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 3) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            item.DynamicInvoke(p1, p2, p3);
+                        }
                     }
                 }
             }
@@ -224,7 +247,20 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2, P3, P4>)?.Invoke(p1, p2, p3, p4);
+                        if (item is Action<P1, P2, P3, P4> action)
+                        {
+                            action.Invoke(p1, p2, p3, p4);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 4) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
+                            item.DynamicInvoke(p1, p2, p3, p4);
+                        }
                     }
                 }
             }
@@ -240,7 +276,21 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2, P3, P4, P5>)?.Invoke(p1, p2, p3, p4, p5);
+                        if (item is Action<P1, P2, P3, P4, P5> action)
+                        {
+                            action.Invoke(p1, p2, p3, p4, p5);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 5) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
+                            if (!param[4].ParameterType.IsAssignableFrom(TypeInfo<P5>.Type)) return;
+                            item.DynamicInvoke(p1, p2, p3, p4, p5);
+                        }
                     }
                 }
             }
@@ -305,7 +355,18 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2>)?.Invoke(p1, p2);
+                        if (item is Action<P1, P2> action)
+                        {
+                            action.Invoke(p1, p2);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 2) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            item.DynamicInvoke(p1, p2);
+                        }
                     }
                 }
             }
@@ -322,7 +383,19 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2, P3>)?.Invoke(p1, p2, p3);
+                        if (item is Action<P1, P2, P3> action)
+                        {
+                            action.Invoke(p1, p2, p3);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 3) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            item.DynamicInvoke(p1, p2, p3);
+                        }
                     }
                 }
             }
@@ -339,7 +412,20 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2, P3, P4>)?.Invoke(p1, p2, p3, p4);
+                        if (item is Action<P1, P2, P3, P4> action)
+                        {
+                            action.Invoke(p1, p2, p3, p4);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 4) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
+                            item.DynamicInvoke(p1, p2, p3, p4);
+                        }
                     }
                 }
             }
@@ -356,7 +442,21 @@ namespace TaoTie
                     for (int i = 0; i < list.Count; i++)
                     {
                         var item = list[i];
-                        (item as Action<P1, P2, P3, P4, P5>)?.Invoke(p1, p2, p3, p4, p5);
+                        if (item is Action<P1, P2, P3, P4, P5> action)
+                        {
+                            action.Invoke(p1, p2, p3, p4, p5);
+                        }
+                        else //多态支持
+                        {
+                            var param = item.GetMethodInfo().GetParameters();
+                            if (param.Length != 5) return;
+                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
+                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
+                            if (!param[4].ParameterType.IsAssignableFrom(TypeInfo<P5>.Type)) return;
+                            item.DynamicInvoke(p1, p2, p3, p4, p5);
+                        }
                     }
                 }
             }

@@ -24,9 +24,8 @@ namespace TaoTie
                 position = Position;
             }
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
-            entity.Position = position;
-            GameObject obj = new GameObject("Zone");
-            obj.layer = LayerMask.NameToLayer("Entity");
+            var obj = entity.GameObject;
+            obj.transform.position = position;
             var collider = obj.AddComponent<SphereCollider>();
             collider.isTrigger = true;
             collider.radius = Radius;

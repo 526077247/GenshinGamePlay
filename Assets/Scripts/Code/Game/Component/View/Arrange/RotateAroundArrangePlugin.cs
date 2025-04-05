@@ -12,7 +12,7 @@ namespace TaoTie
         private Vector3 forward;
         protected override void InitInternal()
         {
-            holders = model.Holders;
+            holders = UnitModel.Holders;
             switch (Config.RotAngleType)
             {
                 case RotAngleType.ROT_ANGLE_X:
@@ -33,7 +33,7 @@ namespace TaoTie
         public override void Update()
         {
             if (holders == null) return;
-            var entity = model.GetParent<Entity>();
+            var entity = UnitModel.GetParent<Entity>();
             var node = holders.First;
             var angel = 360f / holders.Count;
             float offset = Config.AngleSpeed.Resolve(entity, null) * GameTimerManager.Instance.GetTimeNow() / 1000f % 360;
@@ -53,7 +53,7 @@ namespace TaoTie
                     {
                         var posRot = Quaternion.Euler(euler);
                         var localPos = posRot * forward * radius;
-                        holder.EntityView.position = model.EntityView.position + localPos;
+                        holder.EntityView.position = UnitModel.EntityView.position + localPos;
                         holder.EntityView.rotation = Quaternion.LookRotation(localPos, up);
                     }
                     

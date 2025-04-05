@@ -5,11 +5,11 @@ namespace TaoTie
     public abstract class ArrangePlugin : IDisposable
     {
         protected ConfigArrange configArrange;
-        protected ModelComponent model;
+        protected UnitModelComponent UnitModel;
         public bool IsDispose { get;protected set; }
         public abstract void Update();
 
-        public abstract void Init(ConfigArrange config, ModelComponent modelComponent);
+        public abstract void Init(ConfigArrange config, UnitModelComponent unitModelComponent);
 
         public abstract void Dispose();
     }
@@ -18,9 +18,9 @@ namespace TaoTie
     {
         protected T Config => configArrange as T;
 
-        public sealed override void Init(ConfigArrange config, ModelComponent component)
+        public sealed override void Init(ConfigArrange config, UnitModelComponent component)
         {
-            model = component;
+            UnitModel = component;
             configArrange = config;
             IsDispose = false;
             InitInternal();
@@ -29,7 +29,7 @@ namespace TaoTie
         public sealed override void Dispose()
         {
             DisposeInternal();
-            model = null;
+            UnitModel = null;
             configArrange = null;
             IsDispose = true;
             ObjectPool.Instance.Recycle(this);

@@ -6,32 +6,32 @@ namespace TaoTie
 {
     public partial class GameObjectHolder : IDisposable
     {
-        protected ModelComponent ModelComponent { get; private set; }
-        protected Unit parent => ModelComponent.GetParent<Unit>();
+        protected UnitModelComponent UnitModelComponent { get; private set; }
+        protected Entity parent => UnitModelComponent.GetParent<Entity>();
         protected long Id => parent.Id;
 
-        public static GameObjectHolder Create(ModelComponent model)
+        public static GameObjectHolder Create(UnitModelComponent unitModel, Transform tranParent)
         {
             GameObjectHolder res = ObjectPool.Instance.Fetch<GameObjectHolder>();
-            res.Init(model);
+            res.Init(unitModel, tranParent);
             return res;
         }
         
-        private void Init(ModelComponent model)
+        private void Init(UnitModelComponent unitModel, Transform tranParent)
         {
-            ModelComponent = model;
+            UnitModelComponent = unitModel;
             if(fsm?.DefaultFsm?.CurrentState!=null)
                 fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
             Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
-            LoadGameObjectAsync().Coroutine();
+            LoadGameObjectAsync(tranParent).Coroutine();
         }
         
         
         public void Dispose()
         {
             Destroy();
-            ModelComponent = null;
+            UnitModelComponent = null;
             ObjectPool.Instance.Recycle(this);
         }
         
@@ -43,24 +43,16 @@ namespace TaoTie
 
         #region override
 
-        private async ETTask LoadGameObjectAsync()
+        private async ETTask LoadGameObjectAsync(Transform tranParent)
         {
-            var unit = parent;
-            GameObject obj;
-            if (unit.ConfigId < 0)//约定小于0的id都是用空物体
+            var unit = parent as Unit;
+            GameObject obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(unit.Config.Perfab);
+            if (parent.IsDispose)
             {
-                obj = new GameObject("Empty");
+                GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
+                return;
             }
-            else
-            {
-                obj = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(unit.Config.Perfab);
-                if (parent.IsDispose)
-                {
-                    GameObjectPoolManager.GetInstance().RecycleGameObject(obj);
-                    return;
-                }
-            }
-
+            
             Animator = obj.GetComponentInChildren<Animator>();
             if (Animator != null && !string.IsNullOrEmpty(unit.Config.Controller))
             {
@@ -98,6 +90,12 @@ namespace TaoTie
             }
 
             EntityView = obj.transform;
+            
+            EntityView.SetParent(tranParent);
+            EntityView.localScale = unit.LocalScale;
+            EntityView.position = unit.Position;
+            EntityView.rotation = unit.Rotation;
+            
             collector = obj.GetComponent<ReferenceCollector>();
             var ec = obj.GetComponent<EntityComponent>();
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
@@ -138,15 +136,9 @@ namespace TaoTie
             Messager.Instance.RemoveListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             if (EntityView != null)
             {
-                if (parent is Unit unit && unit.ConfigId < 0)
-                {
-                    GameObject.Destroy(EntityView.gameObject);
-                }
-                else
-                {
-                    GameObjectPoolManager.GetInstance().RecycleGameObject(EntityView.gameObject);
-                }
-
+                var ec = EntityView.GetComponent<EntityComponent>();
+                if (ec != null) GameObject.Destroy(ec);
+                GameObjectPoolManager.GetInstance().RecycleGameObject(EntityView.gameObject);
                 EntityView = null;
             }
 
@@ -175,7 +167,7 @@ namespace TaoTie
             if (parent == null) return;
             if (configDie != null)
             {
-                var unit = parent;
+                var unit = parent as Unit;
                 if (unit == null) return;
                 //特效
                 if (!string.IsNullOrWhiteSpace(configDie.DieDisappearEffect))

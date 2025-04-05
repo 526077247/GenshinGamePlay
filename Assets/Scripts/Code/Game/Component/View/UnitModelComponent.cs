@@ -3,8 +3,11 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class ModelComponent: Component, IComponent<ConfigModel>
+    public class UnitModelComponent: Component, IComponent<ConfigModel>
     {
+        /// <summary>
+        /// 不要直接设置Parent
+        /// </summary>
         public Transform EntityView { get; private set; }
 
         private ConfigModel configModel;
@@ -13,6 +16,7 @@ namespace TaoTie
         private Queue<ETTask> waitFinishTask;
         private ArrangePlugin arrangePlugin;
         private int countKey;
+        private Transform attachPoint;
         public void Init(ConfigModel config)
         {
             configModel = config;
@@ -21,17 +25,18 @@ namespace TaoTie
             Holders = LinkedListComponent<GameObjectHolder>.Create();
             if (configModel == null || configModel is ConfigSingletonModel)
             {
-                var plugin = GameObjectHolder.Create(this);
+                var plugin = GameObjectHolder.Create(this,this.parent.Parent.GameObjectRoot);
                 Holders.AddLast(plugin);
             }
             else if (configModel is ConfigMultiModel aroundModel)
             {
                 needDestroy = true;
                 EntityView = new GameObject("AroundCenter").transform;
+                EntityView.SetParent(this.parent.Parent.GameObjectRoot);
                 var count = aroundModel.Count.Resolve(parent, null);
                 for (int i = 0; i < count; i++)
                 {
-                    var plugin = GameObjectHolder.Create(this);
+                    var plugin = GameObjectHolder.Create(this,EntityView);
                     Holders.AddLast(plugin);
                 }
 
@@ -43,10 +48,10 @@ namespace TaoTie
 
                 arrangePlugin = ModelSystem.Instance.CreateArrangePlugin(aroundModel.Arrange, this);
             }
-            InitAsync(configModel).Coroutine();
+            InitAsync().Coroutine();
         }
 
-        private async ETTask InitAsync(ConfigModel configModel)
+        private async ETTask InitAsync()
         {
             using (ListComponent<ETTask<bool>> tasks = ListComponent<ETTask<bool>>.Create())
             {
@@ -58,24 +63,15 @@ namespace TaoTie
                 await ETTaskHelper.WaitAll(tasks);
             }
             if(IsDispose) return;
-            var unit = GetParent<Unit>();
+            
             if (configModel == null || configModel is ConfigSingletonModel)
             {
                 EntityView = Holders.First.Value.EntityView;
             }
-            
-            EntityView.SetParent(this.parent.Parent.GameObjectRoot);
-            
-            if (parent is Actor actor)
+            else if (configModel is ConfigMultiModel aroundModel)
             {
-                EntityView.localScale = Vector3.one * actor.configActor.Common.Scale;
-            }
-            EntityView.position = unit.Position;
-            EntityView.rotation = unit.Rotation;
-            
-            if (configModel is ConfigMultiModel aroundModel)
-            {
-                EntityView.localPosition = unit.Position + unit.Rotation * aroundModel.Offset.Resolve(unit, null);
+                var unit = GetParent<Unit>();
+                EntityView.localPosition = unit.Position + unit.Rotation * aroundModel.Offset.Resolve(parent, null);
                 for (var item = Holders.First; item!=null; item = item.Next)
                 {
                     item.Value.EntityView.SetParent(EntityView);
@@ -83,9 +79,9 @@ namespace TaoTie
                 
             }
             
-            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
-            Messager.Instance.AddListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.AddListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
+            Messager.Instance.AddListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+            Messager.Instance.AddListener<SceneEntity, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.AddListener<SceneEntity, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
             
             
             if (waitFinishTask != null)
@@ -100,15 +96,16 @@ namespace TaoTie
 
         public void Destroy()
         {
+            attachPoint = null;
             arrangePlugin?.Dispose();
             arrangePlugin = null;
             if (countKey!=0)
             {
                 Messager.Instance.RemoveListener<NumericChange>(GetComponent<NumericComponent>().Id, MessageId.NumericChangeEvt, OnNumericChange);
             }
-            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
-            Messager.Instance.RemoveListener<Unit, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
-            Messager.Instance.RemoveListener<Unit, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
+            Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+            Messager.Instance.RemoveListener<SceneEntity, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
+            Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
             
             foreach (var item in Holders)
             {
@@ -124,8 +121,11 @@ namespace TaoTie
                 }
                 waitFinishTask = null;
             }
-            
-            if(needDestroy) GameObject.Destroy(EntityView);
+
+            if (needDestroy)
+            {
+                GameObject.Destroy(EntityView.gameObject);
+            }
             EntityView = null;
             configModel = null;
         }
@@ -144,35 +144,83 @@ namespace TaoTie
                 }
                 while (Holders.Count < evt.New)
                 {
-                    var plugin = GameObjectHolder.Create(this);
+                    var plugin = GameObjectHolder.Create(this,EntityView);
                     Holders.AddLast(plugin);
                 }
             }
         }
         
-        private void OnChangePosition(Unit unit, Vector3 old)
+        private void OnChangePosition(SceneEntity sceneEntity, Vector3 old)
         {
             if(EntityView == null) return;
-            EntityView.position = unit.Position;
+            var offset = Vector3.zero;
             if (configModel is ConfigMultiModel aroundModel)
             {
-                EntityView.position = unit.Position + unit.Rotation * aroundModel.Offset.Resolve(unit, null);
+                offset = sceneEntity.Rotation * aroundModel.Offset.Resolve(parent, null);
+            }
+            if (attachPoint != null)
+            {
+                EntityView.localPosition = sceneEntity.Position + offset;
+            }
+            else
+            {
+                EntityView.position = sceneEntity.Position + offset;
+            }
+            
+        }
+
+        private void OnChangeRotation(SceneEntity sceneEntity, Quaternion old)
+        {
+            if(EntityView == null) return;
+            if (attachPoint != null)
+            {
+                EntityView.localRotation = sceneEntity.Rotation;
+            }
+            else
+            {
+                EntityView.rotation = sceneEntity.Rotation;
             }
         }
 
-        private void OnChangeRotation(Unit unit, Quaternion old)
+        private void OnChangeScale(SceneEntity sceneEntity, Vector3 old)
         {
             if(EntityView == null) return;
-            EntityView.rotation = unit.Rotation;
-        }
-
-        private void OnChangeScale(Unit unit, Vector3 old)
-        {
-            if(EntityView == null) return;
-            EntityView.localScale = unit.LocalScale;
+            EntityView.localScale = sceneEntity.LocalScale;
         }
 
         #endregion
+
+        public async ETTask SetAttachPoint(Transform target, bool worldPositionStays = false)
+        {
+            attachPoint = target;
+            var sceneEntity = GetParent<SceneEntity>();
+            await WaitLoadGameObjectOver();
+            await TimerManager.Instance.WaitAsync(1);
+            if(IsDispose) return;
+            
+            EntityView.SetParent(attachPoint, worldPositionStays);
+            if (!worldPositionStays)
+            {
+                if (configModel is ConfigMultiModel aroundModel)
+                {
+                    EntityView.localPosition = aroundModel.Offset.Resolve(parent, null);
+                }
+                else
+                {
+                    EntityView.localPosition = Vector3.zero;
+                }
+                EntityView.localRotation = Quaternion.identity;
+                EntityView.localScale = sceneEntity.LocalScale;
+                sceneEntity.SyncViewPosition(EntityView.localPosition);
+                sceneEntity.SyncViewRotation(EntityView.localRotation);
+            }
+            else
+            {
+                sceneEntity.SyncViewPosition(EntityView.localPosition);
+                sceneEntity.SyncViewRotation(EntityView.localRotation);
+                sceneEntity.SyncViewLocalScale(EntityView.localScale);
+            }
+        }
         
         public Animator GetAnimator(int index = 0)
         {

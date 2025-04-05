@@ -16,11 +16,11 @@ namespace TaoTie
             if (storySystem.SceneGroup.TryGetActorEntity(SceneGroupActorId, out var unitId))
             {
                 var unit = storySystem.Scene.GetManager<EntityManager>()?.Get(unitId);
-                var model = unit?.GetComponent<ModelComponent>();
+                var model = unit?.GetComponent<UnitModelComponent>();
                 if (model == null) return null;
                 await model.WaitLoadGameObjectOver();
                 if(unit is Character) unit.RemoveComponent<MoveComponent>();
-                return unit.GetComponent<ModelComponent>().EntityView.gameObject;
+                return unit.GetComponent<UnitModelComponent>().EntityView.gameObject;
             }
 
             return null;

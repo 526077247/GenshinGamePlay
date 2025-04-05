@@ -6,7 +6,7 @@ namespace TaoTie
     public class EquipHoldComponent: Component, IComponent
     {
         private AttachComponent attachComponent => parent.GetComponent<AttachComponent>();
-        private ModelComponent ModelComponent => parent.GetComponent<ModelComponent>();
+        private UnitModelComponent modelComponent => parent.GetComponent<UnitModelComponent>();
 
         private Dictionary<EquipType, Equip> euips;
         private bool showWeaponState;
@@ -64,18 +64,15 @@ namespace TaoTie
                     euips[equipType] = equip;
                     attachComponent.AddChild(equip);
                     equip.GetComponent<FsmComponent>()?.SetData(FSMConst.ShowWeapon,showWeaponState);
-                    await ModelComponent.WaitLoadGameObjectOver();
-                    if (!ModelComponent.IsDispose)
+                    await modelComponent.WaitLoadGameObjectOver();
+                    if (!modelComponent.IsDispose)
                     {
-                        var model = equip.GetComponent<ModelComponent>();
+                        var model = equip.GetComponent<UnitModelComponent>();
                         await model.WaitLoadGameObjectOver();
                         if (!model.IsDispose)
                         {
-                            var point = ModelComponent.GetCollectorObj<Transform>(pointName);
-                            model.EntityView.SetParent(point, false);
-                            equip.LocalScale = Vector3.one;
-                            model.EntityView.localPosition = Vector3.zero;
-                            model.EntityView.localRotation = Quaternion.identity;
+                            var point = modelComponent.GetCollectorObj<Transform>(pointName);
+                            await model.SetAttachPoint(point);
                             return;
                         }
                     }

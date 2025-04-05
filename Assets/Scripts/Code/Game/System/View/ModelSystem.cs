@@ -56,12 +56,12 @@ namespace TaoTie
         /// <param name="config"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ArrangePlugin CreateArrangePlugin<T>(T config,ModelComponent modelComponent) where T:ConfigArrange
+        public ArrangePlugin CreateArrangePlugin<T>(T config,UnitModelComponent unitModelComponent) where T:ConfigArrange
         {
             if(configArrangeType.TryGetValue(config.GetType(), out var type))
             {
                 var res = ObjectPool.Instance.Fetch(type) as ArrangePlugin;
-                res.Init(config,modelComponent);
+                res.Init(config,unitModelComponent);
                 arrangePlugins.AddLast(res);
                 return res;
             }

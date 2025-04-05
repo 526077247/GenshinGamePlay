@@ -84,7 +84,7 @@ namespace TaoTie
 
 		private async ETTask InitAsync()
 		{
-			var model = parent.GetComponent<ModelComponent>();
+			var model = parent.GetComponent<UnitModelComponent>();
 			await model.WaitLoadGameObjectOver();
 			if (model.IsDispose) return;
 			mover = model.EntityView.GetComponent<Mover>();

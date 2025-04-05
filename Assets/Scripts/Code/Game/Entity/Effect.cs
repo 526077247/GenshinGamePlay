@@ -2,59 +2,16 @@
 
 namespace TaoTie
 {
-    public class Effect : Entity, IEntity<string>,IEntity<string,long>
+    public class Effect : SceneEntity, IEntity<string>,IEntity<string,long>
     {
         public override EntityType Type => EntityType.Effect;
 
         public string EffectName;
         
-        private Vector3 position; //坐标
-
-        
-        public Vector3 Position
-        {
-            get => this.position;
-            set
-            {
-                var oldPos = this.position;
-                this.position = value;
-                Messager.Instance.Broadcast(Id, MessageId.ChangePositionEvt, this, oldPos);
-            }
-        }
-        
-        public Vector3 Forward
-        {
-            get => this.Rotation * Vector3.forward;
-            set => this.Rotation = Quaternion.LookRotation(value, Vector3.up);
-        }
-        public Vector3 Up => this.Rotation * Vector3.up;
-        private Quaternion rotation;
-        public Quaternion Rotation
-        {
-            get => this.rotation;
-            set
-            {
-                var oldRot = this.rotation;
-                this.rotation = value;
-                Messager.Instance.Broadcast(Id, MessageId.ChangeRotationEvt, this, oldRot);
-            }
-        }
-        
-        private Vector3 localScale = Vector3.zero;
-        public Vector3 LocalScale
-        {
-            get => this.localScale;
-            set
-            {
-                var oldScale = this.localScale;
-                this.localScale = value;
-                Messager.Instance.Broadcast(Id, MessageId.ChangeScaleEvt, this, oldScale);
-            }
-        }
         public void Init(string name)
         {
             EffectName = name;
-            AddComponent<EffectComponent, string>($"Effect/{name}/Prefabs/{name}.prefab");
+            AddComponent<EffectModelComponent, string>($"Effect/{name}/Prefabs/{name}.prefab");
         }
         public void Init(string name, long delay)
         {
@@ -62,7 +19,7 @@ namespace TaoTie
             string path = $"Effect/{name}/Prefabs/{name}.prefab";
             if (delay <= 0)
             {
-                AddComponent<EffectComponent, string>(path);
+                AddComponent<EffectModelComponent, string>(path);
             }
             else
             {
@@ -75,7 +32,7 @@ namespace TaoTie
         {
             await GameTimerManager.Instance.WaitAsync(delay);
             if(IsDispose) return;
-            AddComponent<EffectComponent, string>(path);
+            AddComponent<EffectModelComponent, string>(path);
         }
         
         public void Destroy()

@@ -7,7 +7,7 @@ namespace TaoTie
         private FsmComponent fsm => GetComponent<FsmComponent>();
         private void OnAnimatorMove()
         {
-            var animator = GetComponent<ModelComponent>()?.GetAnimator();
+            var animator = GetComponent<UnitModelComponent>()?.GetAnimator();
             if (animator != null)
             {
                 CharacterInput.Speed = Quaternion.Inverse(transform.rotation) * animator.velocity;

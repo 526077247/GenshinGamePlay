@@ -17,10 +17,10 @@ namespace TaoTie
         private void TryEnableRenderer(Entity target)
         {
             if(target == null || target.IsDispose) return;
-            ModelComponent modelComponent = target.GetComponent<ModelComponent>();
-            modelComponent?.EnableRenderer(SetEnable).Coroutine();
-            EffectComponent effectComponent = target.GetComponent<EffectComponent>();
-            effectComponent?.EnableRenderer(SetEnable).Coroutine();
+            UnitModelComponent unitModelComponent = target.GetComponent<UnitModelComponent>();
+            unitModelComponent?.EnableRenderer(SetEnable).Coroutine();
+            EffectModelComponent effectModelComponent = target.GetComponent<EffectModelComponent>();
+            effectModelComponent?.EnableRenderer(SetEnable).Coroutine();
             if (IncludeChild)
             {
                 var ac = target.GetComponent<AttachComponent>();

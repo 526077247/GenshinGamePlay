@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -21,11 +22,12 @@ namespace TaoTie
             var gadget = AddComponent<GadgetComponent,int,GadgetState>(id,state);
             ConfigId = gadget.Config.UnitId;
             configActor = GetActorConfig(Config.ActorConfig);
+            if(configActor.Common!=null) LocalScale = Vector3.one * configActor.Common.Scale;
             if (configActor.Intee != null)
             {
                 AddComponent<InteeComponent, ConfigIntee>(configActor.Intee);
             }
-            AddComponent<ModelComponent,ConfigModel>(configActor.Model);
+            AddComponent<UnitModelComponent,ConfigModel>(configActor.Model);
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             if(!string.IsNullOrEmpty(Config.FSM))
             {

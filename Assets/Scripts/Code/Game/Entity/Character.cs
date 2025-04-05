@@ -18,8 +18,9 @@ namespace TaoTie
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
             configActor = GetActorConfig(Config.ActorConfig);
+            if(configActor.Common!=null) LocalScale = Vector3.one * configActor.Common.Scale;
             AddComponent<AttachComponent>();
-            AddComponent<ModelComponent,ConfigModel>(configActor.Model);
+            AddComponent<UnitModelComponent,ConfigModel>(configActor.Model);
             AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
