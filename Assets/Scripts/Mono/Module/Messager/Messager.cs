@@ -174,8 +174,9 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
-                                item.DynamicInvoke(p1);
+                            if (param.Length != 1) return;
+                            if (p1 != null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            item.DynamicInvoke(p1);
                         }
                     }
                 }
@@ -200,8 +201,8 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 2) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
                             item.DynamicInvoke(p1, p2);
                         }
                     }
@@ -227,9 +228,9 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 3) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
-                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
                             item.DynamicInvoke(p1, p2, p3);
                         }
                     }
@@ -255,10 +256,10 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 4) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
-                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
-                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
                             item.DynamicInvoke(p1, p2, p3, p4);
                         }
                     }
@@ -284,11 +285,11 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 5) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
-                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
-                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
-                            if (!param[4].ParameterType.IsAssignableFrom(TypeInfo<P5>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
+                            if (p5!=null && !param[4].ParameterType.IsInstanceOfType(p5)) return;
                             item.DynamicInvoke(p1, p2, p3, p4, p5);
                         }
                     }
@@ -336,8 +337,9 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length == 1 && param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type))
-                                item.DynamicInvoke(p1);
+                            if (param.Length != 1) return;
+                            if (p1 != null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            item.DynamicInvoke(p1);
                         }
                     }
                 }
@@ -363,8 +365,8 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 2) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
                             item.DynamicInvoke(p1, p2);
                         }
                     }
@@ -391,9 +393,9 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 3) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
-                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
                             item.DynamicInvoke(p1, p2, p3);
                         }
                     }
@@ -420,10 +422,10 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 4) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
-                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
-                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
                             item.DynamicInvoke(p1, p2, p3, p4);
                         }
                     }
@@ -450,11 +452,11 @@ namespace TaoTie
                         {
                             var param = item.GetMethodInfo().GetParameters();
                             if (param.Length != 5) return;
-                            if (!param[0].ParameterType.IsAssignableFrom(TypeInfo<P1>.Type)) return;
-                            if (!param[1].ParameterType.IsAssignableFrom(TypeInfo<P2>.Type)) return;
-                            if (!param[2].ParameterType.IsAssignableFrom(TypeInfo<P3>.Type)) return;
-                            if (!param[3].ParameterType.IsAssignableFrom(TypeInfo<P4>.Type)) return;
-                            if (!param[4].ParameterType.IsAssignableFrom(TypeInfo<P5>.Type)) return;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
+                            if (p5!=null && !param[4].ParameterType.IsInstanceOfType(p5)) return;
                             item.DynamicInvoke(p1, p2, p3, p4, p5);
                         }
                     }
