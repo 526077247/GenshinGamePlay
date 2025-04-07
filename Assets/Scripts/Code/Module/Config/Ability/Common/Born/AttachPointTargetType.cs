@@ -11,7 +11,7 @@ namespace TaoTie
         Self = 1,
         [LabelText("Caster,Ability持有者")]
         Caster = 2,
-        [LabelText("ModifierApplier,Modifier施加者*")][Tooltip("非Modifier则为空")]
+        [LabelText("*ModifierApplier,Modifier施加者")][Tooltip("非Modifier则为空")]
         Applier = 3
     }
 }

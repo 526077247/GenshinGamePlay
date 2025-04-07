@@ -9,7 +9,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigSceneGroup
     {
-        [NinoMember(11)][Tooltip("测试关闭")]
+        [NinoMember(11)][LabelText("测试-是否关闭")]
         public bool Disable;
         [NinoMember(1)]
         [PropertyOrder(int.MinValue)]
@@ -23,19 +23,19 @@ namespace TaoTie
         [NinoMember(3)]
         public Vector3 Rotation;
         [NinoMember(4)]
-        [Tooltip("实体")]
+        [LabelText("Actors,实体")]
         public ConfigSceneGroupActor[] Actors;
         [NinoMember(5)]
-        [Tooltip("触发区域")]
+        [LabelText("Zones,触发区域")]
         public ConfigSceneGroupZone[] Zones;
         [NinoMember(6)]
-        [Tooltip("事件监听")]
+        [LabelText("Triggers,事件监听")]
         public ConfigSceneGroupTrigger[] Triggers;
         [NinoMember(7)]
-        [Tooltip("阶段")]
+        [LabelText("Suites,阶段")]
         public ConfigSceneGroupSuites[] Suites;
         [NinoMember(8)]
-        [Tooltip("寻路路径")]
+        [LabelText("Route,寻路路径")]
         public ConfigRoute[] Route;
         [NinoMember(9)]
         [LabelText("是否初始随机一个阶段？")]

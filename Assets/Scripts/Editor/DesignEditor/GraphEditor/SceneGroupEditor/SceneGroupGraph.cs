@@ -14,9 +14,9 @@ namespace TaoTie
         public string Remarks;
         public Vector3 Position;
         public Vector3 Rotation;
-        [Tooltip("实体")]
+        [LabelText("Actors,实体")]
         public ConfigSceneGroupActor[] Actors;
-        [Tooltip("触发区域")]
+        [LabelText("Zones,触发区域")]
         public ConfigSceneGroupZone[] Zones;
         [LabelText("是否初始随机一个阶段？")]
         public bool RandSuite;

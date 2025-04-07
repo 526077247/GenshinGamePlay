@@ -1,4 +1,5 @@
 ﻿using Nino.Core;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
@@ -7,10 +8,12 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public CheckHitLayerType CheckHitLayerType;
+
         [NinoMember(2)]
+        [ShowIf("@" + nameof(CheckHitLayerType) + "!=TaoTie." + nameof(TaoTie.CheckHitLayerType) + "." +
+                nameof(CheckHitLayerType.OnlyHitBox))]
         public ConfigHitScene HitScene;
-        [NotNull] [NinoMember(3)]
-        public ConfigBornType Born;
+
 
         public abstract int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier,
             Entity target, EntityType[] filter, out HitInfo[] hitInfos);

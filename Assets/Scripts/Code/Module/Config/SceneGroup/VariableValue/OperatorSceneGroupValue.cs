@@ -11,7 +11,7 @@ namespace TaoTie
         [NinoMember(1)][LabelText("左值")]
         public BaseSceneGroupValue Value1;
 
-        [NinoMember(2)][Tooltip("操作类型")]
+        [NinoMember(2)][LabelText("操作类型")]
         public LogicMode Op;
         
         [InfoBox("注意：除数不能为0")]

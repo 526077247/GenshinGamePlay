@@ -132,7 +132,30 @@ namespace TaoTie
             var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
         }
-
+        public static int OverlapColliderNonAllocHitInfo(TriggerBoxComponent triggerBox, EntityType[] filter,
+            CheckHitLayerType type,
+            out HitInfo[] res)
+        {
+            res = hitInfos;
+            if (triggerBox == null) return 0;
+            int len = 0;
+            var hitLayer = GetHitLayer(type);
+            for (int i = 0; i < triggerBox.TriggerList.Count; i++)
+            {
+                var other = triggerBox.TriggerList[i];
+                if ((other.gameObject.layer & hitLayer) != 0)
+                {
+                    colliders[len] = other;
+                    len++;
+                    if (len == colliders.Length)
+                    {
+                        break;
+                    }
+                }
+            }
+            Vector3 center = triggerBox.GetComponent<Collider>().bounds.center;
+            return FilterHitInfo(filter,len,center);
+        }
         private static int GetHitLayer(CheckHitLayerType type)
         {
             switch (type)

@@ -51,7 +51,7 @@ namespace TaoTie
         public int SkillGroupCDID;
         #endregion
         
-        [NinoMember(13)][LabelText("该技能包含的State")][Tooltip("不处于这些状态中时算技能释放完成")]
+        [NinoMember(13)][LabelText("*该技能包含的State")][Tooltip("不处于这些状态中时算技能释放完成")]
         public string[] StateIds;
         [NinoMember(14)][LabelText("技能开始时就触发冷却")]
         public bool TriggerCDOnStart;

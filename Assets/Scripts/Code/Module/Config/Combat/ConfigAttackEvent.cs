@@ -8,6 +8,6 @@ namespace TaoTie
         [NotNull][NinoMember(1)]
         public ConfigBaseAttackPattern AttackPattern;
         [NotNull][NinoMember(2)]
-        public ConfigAttackInfo AttackInfo;
+        public ConfigAttackInfo AttackInfo = new ConfigAttackInfo();
     }
 }

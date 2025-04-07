@@ -15,15 +15,15 @@ namespace TaoTie
         [NinoMember(3)][LabelText("衰减分组")]
         public string AttenuationGroup;
         [NinoMember(4)][LabelText("伤害数据")][NotNull]
-        public ConfigAttackProperty AttackProperty;
+        public ConfigAttackProperty AttackProperty = new ConfigAttackProperty();
         [NinoMember(5)][LabelText("默认打击数据")][NotNull]
-        public ConfigHitPattern HitPattern;
+        public ConfigHitPattern HitPattern = new ConfigHitPattern();
         [NinoMember(6)][LabelText("打击数据")]
         public Dictionary<HitBoxType, ConfigHitPattern> HitPatternOverwrite = new Dictionary<HitBoxType, ConfigHitPattern>();
-        [NinoMember(7)][LabelText("强制抖动摄像机")]
+        [NinoMember(7)][LabelText("摄像机抖动")]
         public bool ForceCameraShake;
-        [NinoMember(8)][LabelText("抖动摄像机参数")][ShowIf(nameof(ForceCameraShake))][NotNull]
-        public ConfigCameraShake CameraShake;
+        [NinoMember(8)][LabelText("摄像机抖动参数")][ShowIf(nameof(ForceCameraShake))][NotNull]
+        public ConfigCameraShake CameraShake = new ConfigCameraShake();
         [NinoMember(9)][LabelText("子弹衰减")]
         public ConfigBulletWane BulletWane;
     }
