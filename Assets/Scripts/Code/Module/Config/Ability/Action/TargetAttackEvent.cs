@@ -7,19 +7,22 @@ namespace TaoTie
     [NinoType(false)][LabelText("指定目标攻击")]
     public partial class TargetAttackEvent : ConfigAbilityAction
     {
-        [NinoMember(10)][LabelText("攻击者")]
+        [NinoMember(10)][LabelText("*攻击者")][Tooltip("仅支持指定一个,若选择结果超过1个默认取第一个")]
         public AbilityTargetting AttackTargetting = AbilityTargetting.Owner;
         [NinoMember(11)][LabelText("防御者")]
         public AbilityTargetting BeAttackTargetting = AbilityTargetting.Target;
-        [NotNull][NinoMember(12)]
+        [NinoMember(12)][ShowIf(nameof(BeAttackTargetting), AbilityTargetting.Other)]
+        public ConfigSelectTargets OtherBeAttackTargets;
+        [NotNull][NinoMember(13)]
         public ConfigAttackInfo AttackInfo = new ConfigAttackInfo();
 
-        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier,
+            Entity target)
         {
             if (AttackInfo == null) return;
             Entity attacker;
-            Entity beAttacker;
-            using (var attackers = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, AttackTargetting))
+            using (var attackers =
+                   AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, AttackTargetting))
             {
                 if (attackers.Count == 0)
                 {
@@ -29,18 +32,7 @@ namespace TaoTie
 
                 attacker = attackers[0];
             }
-            using (var beAttackers = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, BeAttackTargetting))
-            {
-                if (beAttackers.Count == 0)
-                {
-                    Log.Error("没有找到防御方，请检查逻辑");
-                    return;
-                }
 
-                beAttacker = beAttackers[0];
-            }
-            var len = ResolveHit(attacker, beAttacker, new[] {EntityType.ALL}, out var infos);
-            if (len < 1) return;
             EntityManager entityManager = actionExecuter.Parent;
             bool isBullet = false;
             long startTime = 0;
@@ -50,46 +42,64 @@ namespace TaoTie
                 isBullet = true;
                 startTime = bullet.CreateTime;
             }
-            
-            var info = infos[0];
-            var hitEntity = entityManager.Get<Entity>(info.EntityId);
-            AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackInfo,
-                isBullet, startTime);
-            AttackHelper.DamageClose(ability, modifier, result);
-            //时停
-            if (result.HitPattern != null)
+
+            bool isTimeScale = false;
+            bool isBroadcast = false;
+            using (var beAttackers = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target,
+                       BeAttackTargetting, OtherBeAttackTargets))
             {
-                if (result.HitPattern.HitHaltTime > 0)
+                for (int i = 0; i < beAttackers.Count; i++)
                 {
-                    //todo:格挡是否时停判断,临时用最终伤害大于0判定
-                    if (result.HitPattern.CanBeDefenceHalt || result.FinalRealDamage > 0)
+                    var beAttacker = beAttackers[i];
+                    var len = ResolveHit(attacker, beAttacker, new[] {EntityType.ALL}, out var infos);
+                    if (len < 1) continue;
+                    var info = infos[0];
+                    var hitEntity = entityManager.Get<Entity>(info.EntityId);
+                    AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackInfo,
+                        isBullet, startTime);
+                    AttackHelper.DamageClose(ability, modifier, result);
+
+                    //时停
+                    if (!isTimeScale && result.HitPattern != null)
                     {
-                        GameTimerManager.Instance.SetTimeScale(result.HitPattern.HitHaltTimeScale,
-                            result.HitPattern.HitHaltTime);
+                        if (result.HitPattern.HitHaltTime > 0)
+                        {
+                            //todo:格挡是否时停判断,临时用最终伤害大于0判定
+                            if (result.HitPattern.CanBeDefenceHalt || result.FinalRealDamage > 0)
+                            {
+                                GameTimerManager.Instance.SetTimeScale(result.HitPattern.HitHaltTimeScale,
+                                    result.HitPattern.HitHaltTime);
+                                isTimeScale = true;
+                            }
+                        }
+                    }
+
+                    result.Dispose();
+                    if (!isBroadcast)
+                    {
+                        //相机震动
+                        if (AttackInfo.ForceCameraShake && !AttackInfo.CameraShake.BroadcastOnHit &&
+                            AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector)
+                        {
+                            Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
+                            {
+                                Source = info.HitPos,
+                                ShakeDir = AttackInfo.CameraShake.ShakeType == CameraShakeType.Center
+                                    ? Vector3.zero
+                                    : AttackInfo.CameraShake.ShakeDir,
+                                ShakeRange = AttackInfo.CameraShake.ShakeRange,
+                                ShakeFrequency = AttackInfo.CameraShake.ShakeFrequency,
+                                ShakeTime = AttackInfo.CameraShake.ShakeTime,
+                                ShakeDistance = AttackInfo.CameraShake.ShakeDistance,
+                                RangeAttenuation = AttackInfo.CameraShake.RangeAttenuation
+                            });
+                            isBroadcast = true;
+                        }
                     }
                 }
             }
-            result.Dispose();
-            
-            //相机震动
-            if (AttackInfo.ForceCameraShake && !AttackInfo.CameraShake.BroadcastOnHit &&
-                AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector)
-            {
-                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
-                    {
-                        Source = info.HitPos,
-                        ShakeDir = AttackInfo.CameraShake.ShakeType == CameraShakeType.Center
-                            ? Vector3.zero
-                            : AttackInfo.CameraShake.ShakeDir,
-                        ShakeRange = AttackInfo.CameraShake.ShakeRange,
-                        ShakeFrequency = AttackInfo.CameraShake.ShakeFrequency,
-                        ShakeTime = AttackInfo.CameraShake.ShakeTime,
-                        ShakeDistance = AttackInfo.CameraShake.ShakeDistance,
-                        RangeAttenuation = AttackInfo.CameraShake.RangeAttenuation
-                    });
-            }
         }
-        
+
         private int ResolveHit(Entity attacker, Entity beAttacker, EntityType[] filter, out HitInfo[] hitInfos)
         {
             var vcf = attacker.GetComponent<UnitModelComponent>();

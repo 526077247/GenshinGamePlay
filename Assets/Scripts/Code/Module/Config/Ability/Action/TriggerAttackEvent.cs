@@ -49,16 +49,18 @@ namespace TaoTie
                 temp.Add(info.EntityId,info);
             }
 
+            bool isTimeScale = false;
+            bool isBroadcast = false;
             foreach (var item in temp)
             {
                 var info = item.Value[0];
                 if (item.Value.Count > 1)
                 {
                     // 根据最佳点公式计算每个受击点最小权值
-                    var minWeight = AttackHelper.CalcWeightBaseAngle(actionExecuter,info,A,B);
+                    var minWeight = AttackHelper.CalcWeightBaseAngle(actionExecuter, info, A, B);
                     for (int i = 1; i < item.Value.Count; i++)
                     {
-                        var weight = AttackHelper.CalcWeightBaseAngle(actionExecuter,item.Value[i],A,B);
+                        var weight = AttackHelper.CalcWeightBaseAngle(actionExecuter, item.Value[i], A, B);
                         if (weight < minWeight)
                         {
                             minWeight = weight;
@@ -66,12 +68,13 @@ namespace TaoTie
                         }
                     }
                 }
+
                 var hitEntity = entityManager.Get<Entity>(info.EntityId);
                 AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo,
                     isBullet, startTime);
                 AttackHelper.DamageClose(ability, modifier, result);
                 //时停
-                if (result.HitPattern != null)
+                if (!isTimeScale && result.HitPattern != null)
                 {
                     if (result.HitPattern.HitHaltTime > 0)
                     {
@@ -80,20 +83,21 @@ namespace TaoTie
                         {
                             GameTimerManager.Instance.SetTimeScale(result.HitPattern.HitHaltTimeScale,
                                 result.HitPattern.HitHaltTime);
+                            isTimeScale = true;
                         }
                     }
                 }
+
                 result.Dispose();
-            }
-            temp.Clear();
-            ObjectPool.Instance.Recycle(temp);
-            //相机震动
-            if (AttackEvent.AttackInfo.ForceCameraShake && !AttackEvent.AttackInfo.CameraShake.BroadcastOnHit &&
-                AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector && actionExecuter is SceneEntity u)
-            {
-                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
+
+                //相机震动
+                if (!isBroadcast && AttackEvent.AttackInfo.ForceCameraShake &&
+                    !AttackEvent.AttackInfo.CameraShake.BroadcastOnHit &&
+                    AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector)
+                {
+                    Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
                     {
-                        Source = u.Position,
+                        Source = info.HitPos,
                         ShakeDir = AttackEvent.AttackInfo.CameraShake.ShakeType == CameraShakeType.Center
                             ? Vector3.zero
                             : AttackEvent.AttackInfo.CameraShake.ShakeDir,
@@ -103,7 +107,12 @@ namespace TaoTie
                         ShakeDistance = AttackEvent.AttackInfo.CameraShake.ShakeDistance,
                         RangeAttenuation = AttackEvent.AttackInfo.CameraShake.RangeAttenuation
                     });
+                    isBroadcast = true;
+                }
             }
+
+            temp.Clear();
+            ObjectPool.Instance.Recycle(temp);
         }
     }
 }

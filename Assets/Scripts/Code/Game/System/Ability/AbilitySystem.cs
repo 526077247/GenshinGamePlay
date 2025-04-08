@@ -190,7 +190,17 @@ namespace TaoTie
                         var em = ability.Parent.GetParent<Entity>().Parent;
                         return em.Get<Entity>(modifier.ApplierID);
                     }
-                    break;
+                    return ability.Parent.GetParent<Entity>();
+                case AttachPointTargetType.Owner:
+                    var selfAc = actor.GetComponent<AttachComponent>();
+                    if (selfAc == null || selfAc.ParentEntity == null)
+                    {
+                        return actor;
+                    }
+                    else
+                    {
+                        return selfAc.ParentEntity.GetParent<Entity>();
+                    }
             }
             return null;
         }
