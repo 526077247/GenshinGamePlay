@@ -11,7 +11,7 @@ namespace TaoTie
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
 #endif
         public GadgetState GadgetState;
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var gc = target.GetComponent<GadgetComponent>();
             if (gc != null)

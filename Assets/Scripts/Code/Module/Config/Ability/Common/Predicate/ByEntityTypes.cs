@@ -9,14 +9,16 @@ namespace TaoTie
         public EntityType[] EntityTypes;
         public override bool Evaluate(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var res = AbilitySystem.ResolveTarget(actor, ability, modifier, target, Target,out Entity[] targetLs);
-            if (res > 0)
+            using(var entities = AbilitySystem.ResolveTarget(actor, ability, modifier, target, Target))
             {
-                for (int i = 0; i < EntityTypes.Length; i++)
+                if (entities.Count > 0)
                 {
-                    if (targetLs[0].Type == EntityTypes[i])
+                    for (int i = 0; i < EntityTypes.Length; i++)
                     {
-                        return true;
+                        if (entities[0].Type == EntityTypes[i])
+                        {
+                            return true;
+                        }
                     }
                 }
             }

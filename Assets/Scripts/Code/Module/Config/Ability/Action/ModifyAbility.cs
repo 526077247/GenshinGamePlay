@@ -9,7 +9,7 @@ namespace TaoTie
         public string Key;
         [NinoMember(11)]
         public float Value;
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             ability.SetSpecials(Key, Value);
         }

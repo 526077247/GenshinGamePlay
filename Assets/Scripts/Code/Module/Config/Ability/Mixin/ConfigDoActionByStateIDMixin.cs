@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -16,11 +17,11 @@ namespace TaoTie
         public List<string> StateIDs;
         [NinoMember(3)]
         public ConfigAbilityPredicate EnterPredicate;
-        [NinoMember(4)]
+        [NinoMember(4)][LabelText("Actions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
         public ConfigAbilityAction[] EnterActions;
         [NinoMember(5)]
         public ConfigAbilityPredicate ExitPredicate;
-        [NinoMember(6)]
+        [NinoMember(6)][LabelText("Actions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
         public ConfigAbilityAction[] ExitActions;
     }
 }

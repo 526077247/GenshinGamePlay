@@ -11,14 +11,26 @@ namespace TaoTie
     public class TriggerBoxComponent: MonoBehaviour
     {
         public List<Collider> TriggerList = new List<Collider>();
+
+        public event Action<Collider> onTriggerEnterEvt;
+        public event Action<Collider> onTriggerExitEvt;
+        // public event Action<Collider> onTriggerStayEvt;
+
         public void OnTriggerEnter(Collider other)
         {
             TriggerList.Add(other);
+            onTriggerEnterEvt?.Invoke(other);
         }
         
         public void OnTriggerExit(Collider other)
         {
             TriggerList.Remove(other);
+            onTriggerExitEvt?.Invoke(other);
         }
+        
+        // public void OnTriggerStay(Collider other)
+        // {
+        //     onTriggerStayEvt?.Invoke(other);
+        // }
     }
 }

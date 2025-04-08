@@ -18,27 +18,25 @@ namespace TaoTie
         public TargetType CampTargetType;
         [NinoMember(4)]
         public AbilityTargetting CampBasedOn;
-        public override Entity[] ResolveTargets(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
+        public override ListComponent<Entity> ResolveTargets(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            using (ListComponent<Entity> list = ListComponent<Entity>.Create())
+            ListComponent<Entity> list = ListComponent<Entity>.Create();
+            int result = Range.ResolveEntity(actor, ability, modifier, target, EntityTypes, list);
+            if (result == 0) return list;
+            using(var entities = AbilitySystem.ResolveTarget(actor, ability, modifier, target, CampBasedOn))
             {
-                int result = Range.ResolveEntity(actor, ability, modifier, target,EntityTypes,list);
-                if (result == 0) return Array.Empty<Entity>();
-                if (AbilitySystem.ResolveTarget(actor, ability, modifier, target, CampBasedOn,out var entities) > 0)
+                if (entities.Count>0 && entities[0] is Actor unit)
                 {
-                    if (entities[0] is Actor unit)
+                    for (int i = list.Count-1; i >= 0 ; i--)
                     {
-                        for (int i = list.Count-1; i >= 0 ; i--)
+                        if (!(list[i] is Actor item) || !AbilitySystem.IsTarget(unit, item, CampTargetType))
                         {
-                            if (!(list[i] is Actor item) || !AbilitySystem.IsTarget(unit, item, CampTargetType))
-                            {
-                                list.RemoveAt(i);
-                            }
+                            list.RemoveAt(i);
                         }
                     }
                 }
-                return list.ToArray();
             }
+            return list;
         }
     }
 }

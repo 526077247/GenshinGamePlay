@@ -10,7 +10,7 @@ namespace TaoTie
         [NinoMember(11)]
         public T Value;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             FsmComponent fc = target.GetComponent<FsmComponent>();
             if (fc != null)

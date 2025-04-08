@@ -44,9 +44,10 @@ namespace TaoTie
         {
             if (Config.Actions != null)
             {
+                var executer = GetActionExecuter();
                 for (int i = 0; i < Config.Actions.Length; i++)
                 {
-                    Config.Actions[i].DoExecute(actorAbility.Parent.GetParent<Entity>(), actorAbility, actorModifier, null);
+                    Config.Actions[i].DoExecute(executer, actorAbility, actorModifier, executer);
                 }
             }
         }

@@ -31,9 +31,9 @@ namespace TaoTie
         [NinoMember(19)]
         public GadgetState DefaultState;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var pos = Born.ResolvePos(applier, ability, modifier, target);
+            var pos = Born.ResolvePos(actionExecuter, ability, modifier, target);
             if (CheckGround != null && CheckGround.Enable)
             {
                 if (!PhysicsHelper.LinecastScene(pos + Vector3.up * CheckGround.RaycastUpHeight,
@@ -50,30 +50,33 @@ namespace TaoTie
                 }
             }
 
-            var rot = Born.ResolveRot(applier, ability, modifier, target);
+            var rot = Born.ResolveRot(actionExecuter, ability, modifier, target);
             var res = target.Parent.CreateEntity<Gadget>();
             res.Position = pos;
             res.Rotation = rot;
 
             if (OwnerIsTarget)
             {
-                var count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, OwnerIs, out var entities);
-                if (count > 0)
+                using (var entities = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, OwnerIs))
                 {
-                    var owner = entities[0];
-                    //todo: sightGroupWithOwner
-                    owner.GetOrAddComponent<AttachComponent>().AddChild(res, LifeByOwnerIsAlive);
+                    if (entities.Count > 0)
+                    {
+                        var owner = entities[0];
+                        //todo: sightGroupWithOwner
+                        owner.GetOrAddComponent<AttachComponent>().AddChild(res, LifeByOwnerIsAlive);
+                    }
                 }
-
-                count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, PropOwnerIs, out entities);
-                if (count > 0)
+                using (var entities = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, PropOwnerIs))
                 {
-                    var owner = entities[0];
-                    res.AddOtherComponent(owner.GetComponent<NumericComponent>());
+                    if (entities.Count > 0)
+                    {
+                        var owner = entities[0];
+                        res.AddOtherComponent(owner.GetComponent<NumericComponent>());
+                    }
                 }
             }
             res.Init(GadgetID, DefaultState, CampID);
-            Born.AfterBorn(applier, ability, modifier, target, res).Coroutine();
+            Born.AfterBorn(actionExecuter, ability, modifier, target, res).Coroutine();
         }
     }
 }

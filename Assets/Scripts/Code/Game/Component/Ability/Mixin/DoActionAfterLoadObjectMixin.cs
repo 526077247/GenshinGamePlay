@@ -19,9 +19,10 @@
             if (owner == null || owner.IsDispose) return;
             if (Config.Actions!=null)
             {
+                var executer = GetActionExecuter();
                 for (int i = 0; i < Config.Actions.Length; i++)
                 {
-                    Config.Actions[i].DoExecute(owner, actorAbility, actorModifier, null);
+                    Config.Actions[i].DoExecute(executer, actorAbility, actorModifier, executer);
                 }
             }
         }

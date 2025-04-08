@@ -16,7 +16,7 @@ namespace TaoTie
         [NinoMember(12)][ShowIf("@!"+nameof(IsGlobal))]
         public int LocalId;
         
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var ic = target.GetComponent<InteeComponent>();
             if (ic != null)

@@ -1,5 +1,6 @@
 ﻿using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -16,7 +17,7 @@ namespace TaoTie
         
         [NinoMember(2)][LabelText("添加后立即触发一次tick")]
         public bool TickFirstOnAdd;
-        [NinoMember(3)]
+        [NinoMember(3)][LabelText("Actions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
         public ConfigAbilityAction[] Actions;
     }
 }

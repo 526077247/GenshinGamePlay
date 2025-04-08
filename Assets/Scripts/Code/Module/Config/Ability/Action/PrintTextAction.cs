@@ -12,7 +12,7 @@ namespace TaoTie
         /// </summary>
         [NinoMember(1)]
         public string text;
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             Debug.Log(text);
         }

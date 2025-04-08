@@ -8,7 +8,7 @@ namespace TaoTie
     {
         public static AbilitySystem Instance;
         private Dictionary<Type, Type> configMixinType;
-        
+
         public void Init()
         {
             Instance = this;
@@ -59,58 +59,72 @@ namespace TaoTie
         /// <param name="targetting"></param>
         /// <param name="otherTargets"></param>
         /// <returns></returns>
-        public static int ResolveTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
-            AbilityTargetting targetting, out Entity[] entities, ConfigSelectTargets otherTargets = null)
+        public static ListComponent<Entity> ResolveTarget(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
+            AbilityTargetting targetting, ConfigSelectTargets otherTargets = null)
         {
+            ListComponent<Entity> res;
             switch (targetting)
             {
                 case AbilityTargetting.Self:
-                    entities = new[] { actor };
-                    return 1;
+                    res = ListComponent<Entity>.Create();
+                    res.Add(actor);
+                    break;
                 case AbilityTargetting.Caster:
-                    entities = new[] { ability.Parent.GetParent<Entity>() };
-                    return 1;
+                    res = ListComponent<Entity>.Create();
+                    res.Add(ability.Parent.GetParent<Entity>());
+                    break;
                 case AbilityTargetting.Target:
-                    entities = new[] { target };
-                    return 1;
+                    res = ListComponent<Entity>.Create();
+                    res.Add(target);
+                    break;
                 case AbilityTargetting.SelfAttackTarget:
-                    entities = null;
-                    return 0;
+                    res = ListComponent<Entity>.Create();
+                    var attackTarget = actor.GetComponent<CombatComponent>()?.GetAttackTarget();
+                    if (attackTarget != null)
+                    {
+                        res.Add(attackTarget);
+                    }
+                    break;
                 case AbilityTargetting.Applier:
+                    res = ListComponent<Entity>.Create();
                     if (modifier != null)
                     {
                         var em = ability.Parent.GetParent<Entity>().Parent;
                         Entity applierEntity = em.Get<Entity>(modifier.ApplierID);
                         if (applierEntity != null)
                         {
-                            entities = new[] { applierEntity };
-                            return 1;
+                            res.Add(applierEntity);
                         }
                     }
-
-                    entities = null;
-                    return 0;
+                    else
+                    {
+                        res.Add(ability.Parent.GetParent<Entity>());
+                    }
+                    break;
                 case AbilityTargetting.CurLocalAvatar:
+                    res = ListComponent<Entity>.Create();
                     var scene = SceneManager.Instance.GetCurrentScene<MapScene>();
                     if (scene != null)
                     {
-                        entities = new[] { scene.Self };
-                        return 1;
+                        res.Add(scene.Self);
                     }
-                    entities = null;
-                    return 0;
+                    break;
                 case AbilityTargetting.Other:
-                    if (otherTargets == null)
+                    if (otherTargets != null)
                     {
-                        entities = null;
-                        return 0;
+                        res = otherTargets.ResolveTargets(actor, ability, modifier, target);
                     }
-                    entities = otherTargets.ResolveTargets(actor, ability, modifier, target);
-                    return entities.Length;
+                    else
+                    {
+                        res = ListComponent<Entity>.Create();
+                        Log.Error("指定AbilityTargetting.Other没有配置otherTargets");
+                    }
+                    break;
                 default:
-                    entities = null;
-                    return 0;
+                    res = ListComponent<Entity>.Create();
+                    break;
             }
+            return res;
         }
         
         /// <summary>

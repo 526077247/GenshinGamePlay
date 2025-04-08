@@ -20,9 +20,9 @@ namespace TaoTie
         [NinoMember(12)]
         public BaseValue Scale;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            ExecuteAsync(applier,ability,modifier,target).Coroutine();
+            ExecuteAsync(actionExecuter,ability,modifier,target).Coroutine();
         }
 
         protected async ETTask ExecuteAsync(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
@@ -35,14 +35,15 @@ namespace TaoTie
             res.Position = pos;
             res.Rotation = rot;
             res.LocalScale = Vector3.one * scale;
-            var count = AbilitySystem.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target, out var entities);
-            if (count > 0)
+            using (var entities = AbilitySystem.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target))
             {
-                var owner = entities[0];
-                //todo: sightGroupWithOwner
-                owner.GetOrAddComponent<AttachComponent>().AddChild(res);
+                if (entities.Count > 0)
+                {
+                    var owner = entities[0];
+                    //todo: sightGroupWithOwner
+                    owner.GetOrAddComponent<AttachComponent>().AddChild(res);
+                }
             }
-            
             await Born.AfterBorn(applier, ability, modifier, target,res);
         }
     }

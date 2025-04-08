@@ -8,12 +8,14 @@ namespace TaoTie
         [NinoMember(10)]
         public ConfigSelectTargetsByChildren GadgetInfo;
         
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var entities = GadgetInfo.ResolveTargets(applier, ability, modifier, target);
-            for (int i = 0; i < entities.Length; i++)
+            using (var entities = GadgetInfo.ResolveTargets(actionExecuter, ability, modifier, target))
             {
-                entities[i].Dispose();
+                for (int i = 0; i < entities.Count; i++)
+                {
+                    entities[i].Dispose();
+                }
             }
         }
     }

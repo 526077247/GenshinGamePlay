@@ -1,5 +1,6 @@
 ﻿using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -9,7 +10,7 @@ namespace TaoTie
     [NinoType(false)][LabelText("攻击后DoAction")]
     public partial class ConfigDoActionAfterAttackMixin: ConfigAbilityMixin
     {
-        [NinoMember(1)]
+        [NinoMember(1)][LabelText("Actions:初始Action目标(Target)为受击者")]
         public ConfigAbilityAction[] Actions;
     }
 }

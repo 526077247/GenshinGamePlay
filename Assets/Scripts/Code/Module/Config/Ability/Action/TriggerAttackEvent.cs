@@ -9,22 +9,23 @@ namespace TaoTie
     {
         private static readonly UnOrderMultiMap<long, HitInfo> temp = new UnOrderMultiMap<long, HitInfo>();
         [NinoMember(10)]
-        public TargetType TargetType;
+        public TargetType TargetType = TargetType.Enemy;
         [NotNull] [NinoMember(11)]
         public ConfigAttackEvent AttackEvent = new ConfigAttackEvent();
         [NinoMember(12)][Range(0,1)][LabelText("夹角权值（负相关）")][BoxGroup("碰撞盒优先级")]
         public float A;
         [NinoMember(13)][Range(0,1)][LabelText("高度差权值（正相关）")][BoxGroup("碰撞盒优先级")]
         public float B;
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             if (TargetType.None == TargetType || AttackEvent == null || AttackEvent.AttackInfo == null ||
                 AttackEvent.AttackPattern == null) return;
-            var len = AttackEvent.AttackPattern.ResolveHit(applier, ability, modifier, target,
+            var len = AttackEvent.AttackPattern.ResolveHit(actionExecuter, ability, modifier, target,
                 new[] {EntityType.ALL}, out var infos);
+            EntityManager entityManager = actionExecuter.Parent;
             bool isBullet = false;
             long startTime = 0;
-            var bullet = applier.GetComponent<BulletComponent>();
+            var bullet = target.GetComponent<BulletComponent>();
             if (bullet != null)
             {
                 isBullet = true;
@@ -33,10 +34,8 @@ namespace TaoTie
             
             for (int i = 0; i < len; i++)
             {
-                if (TargetType == TargetType.None)
-                    continue;
                 var info = infos[i];
-                var hitEntity = target.Parent.Get<Entity>(info.EntityId);
+                var hitEntity = entityManager.Get<Entity>(info.EntityId);
                 if (TargetType == TargetType.Self && info.EntityId != target.Id)
                     continue;
                 if (TargetType == TargetType.AllExceptSelf && info.EntityId == target.Id)
@@ -56,10 +55,10 @@ namespace TaoTie
                 if (item.Value.Count > 1)
                 {
                     // 根据最佳点公式计算每个受击点最小权值
-                    var minWeight = AttackHelper.CalcWeightBaseAngle(applier,info,A,B);
+                    var minWeight = AttackHelper.CalcWeightBaseAngle(actionExecuter,info,A,B);
                     for (int i = 1; i < item.Value.Count; i++)
                     {
-                        var weight = AttackHelper.CalcWeightBaseAngle(applier,item.Value[i],A,B);
+                        var weight = AttackHelper.CalcWeightBaseAngle(actionExecuter,item.Value[i],A,B);
                         if (weight < minWeight)
                         {
                             minWeight = weight;
@@ -67,7 +66,7 @@ namespace TaoTie
                         }
                     }
                 }
-                var hitEntity = target.Parent.Get<Entity>(info.EntityId);
+                var hitEntity = entityManager.Get<Entity>(info.EntityId);
                 AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo,
                     isBullet, startTime);
                 AttackHelper.DamageClose(ability, modifier, result);
@@ -90,7 +89,7 @@ namespace TaoTie
             
             //相机震动
             if (AttackEvent.AttackInfo.ForceCameraShake && !AttackEvent.AttackInfo.CameraShake.BroadcastOnHit &&
-                AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector && applier is Unit u)
+                AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector && actionExecuter is Unit u)
             {
                 Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
                     {

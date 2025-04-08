@@ -41,9 +41,10 @@
         {
             if (Config.EnterActions!=null && EvaluatePredicate(Config.EnterPredicate))
             {
+                var executer = GetActionExecuter();
                 for (int i = 0; i < Config.EnterActions.Length; i++)
                 {
-                    Config.EnterActions[i].DoExecute(owner, actorAbility, actorModifier, null);
+                    Config.EnterActions[i].DoExecute(executer, actorAbility, actorModifier, executer);
                 }
             }
         }
@@ -52,7 +53,8 @@
         {
             if (predicate != null)
             {
-                return predicate.Evaluate(owner, actorAbility, actorModifier, owner);
+                var executer = GetActionExecuter();
+                return predicate.Evaluate(executer, actorAbility, actorModifier, executer);
             }
             return true;
         }
@@ -61,9 +63,10 @@
         {
             if (Config.ExitActions!=null && EvaluatePredicate(Config.ExitPredicate))
             {
+                var executer = GetActionExecuter();
                 for (int i = 0; i < Config.ExitActions.Length; i++)
                 {
-                    Config.ExitActions[i].DoExecute(owner, actorAbility, actorModifier, null);
+                    Config.ExitActions[i].DoExecute(executer, actorAbility, actorModifier, executer);
                 }
             }
         }

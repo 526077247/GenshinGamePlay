@@ -15,15 +15,15 @@ namespace TaoTie
         [NinoMember(12)]
         public ConfigAbilityAction[] FailActions;
         
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            if (TargetPredicate.Evaluate(applier, ability, modifier, target))
+            if (TargetPredicate.Evaluate(actionExecuter, ability, modifier, target))
             {
                 if (SuccessActions != null)
                 {
                     for (int i = 0; i < SuccessActions.Length; i++)
                     {
-                        SuccessActions[i].DoExecute(applier, ability, modifier, target);
+                        SuccessActions[i].DoExecute(actionExecuter, ability, modifier, target);
                     }
                 }
             }
@@ -33,7 +33,7 @@ namespace TaoTie
                 {
                     for (int i = 0; i < FailActions.Length; i++)
                     {
-                        FailActions[i].DoExecute(applier, ability, modifier, target);
+                        FailActions[i].DoExecute(actionExecuter, ability, modifier, target);
                     }
                 }
             }

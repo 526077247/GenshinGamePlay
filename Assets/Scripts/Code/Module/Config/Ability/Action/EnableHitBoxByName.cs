@@ -11,7 +11,7 @@ namespace TaoTie
         public bool SetEnable;
         [NinoMember(12)]
         public bool IncludeChild;
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             if (HitBoxNames != null)
             {

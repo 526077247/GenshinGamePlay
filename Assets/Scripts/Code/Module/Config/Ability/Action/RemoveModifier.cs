@@ -8,7 +8,7 @@ namespace TaoTie
         [NinoMember(10)]
         public string ModifierName;
 
-        protected override void Execute(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var ac = target.GetComponent<AbilityComponent>();
             if (ac != null)

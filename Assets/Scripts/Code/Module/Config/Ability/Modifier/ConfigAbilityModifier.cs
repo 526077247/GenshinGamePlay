@@ -15,7 +15,7 @@ namespace TaoTie
         public StackingType StackingType;
         [NinoMember(4)][ShowIf(nameof(StackingType),StackingType.Multiple)]
         public int StackLimitCount;
-        [NinoMember(5)]
+        [NinoMember(5)][LabelText("*Mixins")][Tooltip("其中所有Action的默认applier都为ability持有者")]
         public ConfigAbilityMixin[] Mixins;
         [NinoMember(6)][LabelText("修改玩家数值")]
         public ConfigCombatProperty[] Properties;
