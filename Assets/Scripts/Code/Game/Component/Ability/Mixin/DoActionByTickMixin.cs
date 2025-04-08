@@ -26,7 +26,14 @@ namespace TaoTie
 
         protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionByTickMixin config)
         {
-            timerId = GameTimerManager.Instance.NewRepeatedTimer(this.Config.Interval, TimerType.TickMixin, this);
+            if (Config.EveryFrame)
+            {
+                timerId = GameTimerManager.Instance.NewFrameTimer(TimerType.TickMixin, this);
+            }
+            else
+            {
+                timerId = GameTimerManager.Instance.NewRepeatedTimer(this.Config.Interval, TimerType.TickMixin, this);
+            }
             if (this.Config.TickFirstOnAdd)
             {
                 Execute();

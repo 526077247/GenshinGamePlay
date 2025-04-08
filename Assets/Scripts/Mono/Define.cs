@@ -59,5 +59,7 @@ namespace TaoTie
 #endif
         
         public static readonly string[] RenameList = {"iOS"};
+
+        public const int MinRepeatedTimerInterval = 100;
     }
 }

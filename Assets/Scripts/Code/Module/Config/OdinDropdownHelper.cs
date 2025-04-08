@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using Sirenix.Utilities;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +14,15 @@ namespace TaoTie
 {
     public static class OdinDropdownHelper
     {
-        
+        public class StringComparer :IComparer<ValueDropdownItem<string>>
+        {
+            public int Compare(ValueDropdownItem<string> x, ValueDropdownItem<string> y)
+            {
+                return string.Compare(x.Value,y.Value);
+            }
+        }
+
+        public static StringComparer DefaultStringComparer = new StringComparer();
         #region SceneGroup
         public static ConfigSceneGroup sceneGroup;
         public static IEnumerable<Type> GetFilteredConditionTypeList(Type type)
@@ -354,6 +363,7 @@ namespace TaoTie
                     }
                 }
             }
+            list.Sort(DefaultStringComparer);
             return list;
         }
 
@@ -371,6 +381,7 @@ namespace TaoTie
 
                 list.Add(Path.GetFileNameWithoutExtension(path));
             }
+            list.Sort(DefaultStringComparer);
             return list;
         }
         #endregion
@@ -408,6 +419,7 @@ namespace TaoTie
                 }
                
             }
+            list.Sort(DefaultStringComparer);
             return list;
         }
 

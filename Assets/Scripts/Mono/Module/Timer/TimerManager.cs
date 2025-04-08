@@ -359,7 +359,7 @@ namespace TaoTie
 
         public long NewRepeatedTimer(long time, int type, object args)
         {
-            if (time < 100)
+            if (time < Define.MinRepeatedTimerInterval)
             {
                 Log.Error($"time too small: {time}");
                 return 0;
