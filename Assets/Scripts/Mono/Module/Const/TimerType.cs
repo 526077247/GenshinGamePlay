@@ -16,5 +16,7 @@
         public const int AttachToNormalizedTimeMixinUpdate = 1005;
         /// <summary> 游戏时间计时 </summary>
         public const int GameTimeEventTrigger = 1006;
+        /// <summary> 重置时间缩放 </summary>
+        public const int ResetTimeScale = 1007;
     }
 }

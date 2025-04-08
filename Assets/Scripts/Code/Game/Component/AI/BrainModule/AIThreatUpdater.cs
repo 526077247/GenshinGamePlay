@@ -50,13 +50,10 @@ namespace TaoTie
             var sourcelessHitAttractionRange = knowledge.SensingKnowledge.SourcelessHitAttractionRange;
             if (other.GetParent<Entity>() is Unit unit)
             {
-                if (result.AttackType == AttackType.Range)
-                {
-                    var currentPos = knowledge.CurrentPos;
-                    float distanceToTarget = Vector3.Distance(currentPos, unit.Position);
-                    if (distanceToTarget < sourcelessHitAttractionRange) return;
-                }
-
+                var currentPos = knowledge.CurrentPos;
+                float distanceToTarget = Vector3.Distance(currentPos, unit.Position);
+                if (distanceToTarget < sourcelessHitAttractionRange) return;
+                
                 ExternalAddCandidate(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
                 ExternalAddThreat(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
                 ForceEnterCombat();

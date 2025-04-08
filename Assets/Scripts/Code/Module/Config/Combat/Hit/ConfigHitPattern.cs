@@ -25,7 +25,7 @@ namespace TaoTie
         public int HitHaltTime;
         [NinoMember(9)][ShowIf("@"+nameof(HitHaltTime)+">0")][LabelText("时停时间比例")][BoxGroup("击中时停")][Range(0,1)]
         public float HitHaltTimeScale;
-        [NinoMember(10)][ShowIf("@"+nameof(HitHaltTime)+">0")][LabelText("被格挡时是否时停")][BoxGroup("击中时停")]
+        [NinoMember(10)][ShowIf("@"+nameof(HitHaltTime)+">0")][LabelText("*被格挡时是否时停")][BoxGroup("击中时停")][Tooltip("暂用最终伤害等于0判定为格挡")]
         public bool CanBeDefenceHalt;
         [NinoMember(11)][LabelText("击中飘字")]
         public bool MuteHitText;

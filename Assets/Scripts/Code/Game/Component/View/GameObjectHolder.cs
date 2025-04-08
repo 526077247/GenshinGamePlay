@@ -22,6 +22,7 @@ namespace TaoTie
             UnitModelComponent = unitModel;
             if(fsm?.DefaultFsm?.CurrentState!=null)
                 fsmUseRagDoll = fsm.DefaultFsm.CurrentState.UseRagDoll;
+            Messager.Instance.AddListener<float>(0,MessageId.TimeScaleChange,ChangeTimeScale);
             Messager.Instance.AddListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.AddListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
             LoadGameObjectAsync(tranParent).Coroutine();
@@ -58,6 +59,7 @@ namespace TaoTie
             {
                 Animator.runtimeAnimatorController = await 
                     ResourcesManager.Instance.LoadAsync<RuntimeAnimatorController>(unit.Config.Controller);
+                Animator.speed = GameTimerManager.Instance.GetTimeScale();
                 var fsm = parent.GetComponent<FsmComponent>();
                 if (fsm != null && fsm.Config.ParamDict != null)
                 {
@@ -127,6 +129,7 @@ namespace TaoTie
 
         private void Destroy()
         {
+            Messager.Instance.RemoveListener<float>(0,MessageId.TimeScaleChange,ChangeTimeScale);
             Messager.Instance.RemoveListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);

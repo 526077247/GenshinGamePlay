@@ -10,6 +10,21 @@ namespace TaoTie
     /// </summary>
     public class GameTimerManager:TimerManager
     {
+        [Timer(TimerType.ResetTimeScale)]
+        public class ResetTimeScale : ATimer<GameTimerManager>
+        {
+            public override void Run(GameTimerManager t)
+            {
+                try
+                {
+                    t.SetTimeScale(1);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+        }
         public static GameTimerManager Instance  { get; private set; }
 
         /// <summary> 时间缩放,标准值为1 </summary>
@@ -20,6 +35,8 @@ namespace TaoTie
         private long deltaTime;
         
         private long timeNow;
+
+        private long resetTimeScaleId;
         #region override
         
         public override void Init()
@@ -44,9 +61,15 @@ namespace TaoTie
         public override void Update()
         {
             var serverNow = TimerManager.Instance.GetTimeNow();
-            deltaTime = (int)((serverNow - lastUpdateTime)*timeScale);
-            lastUpdateTime = serverNow;
-            if(timeScale<=0) return;
+            long changeTime = serverNow - lastUpdateTime;
+            deltaTime = (int) (changeTime * timeScale);
+            if (timeScale <= 0)
+            {
+                lastUpdateTime = serverNow;
+                return;
+            }
+
+            lastUpdateTime = Math.Min(serverNow, lastUpdateTime + (int) (deltaTime / timeScale));
             timeNow += deltaTime;
             #region 每帧执行的timer，不用foreach TimeId，减少GC
 
@@ -115,11 +138,22 @@ namespace TaoTie
         
         #endregion
 
-        public void SetTimeScale(float scale)
+        /// <summary>
+        /// 重复设置会覆盖
+        /// </summary>
+        /// <param name="scale"></param>
+        /// <param name="during"></param>
+        public void SetTimeScale(float scale, int during = -1)
         {
             if(scale<0) return;
             timeScale = scale;
-            Messager.Instance.Broadcast(0,MessageId.TimeScaleChange,timeScale);
+            TimerManager.Instance.Remove(ref resetTimeScaleId);
+            if (during >= 0)
+            {
+                resetTimeScaleId = TimerManager.Instance.NewOnceTimer(TimerManager.Instance.GetTimeNow() + during,
+                    TimerType.ResetTimeScale, this);
+            }
+            Messager.Instance.Broadcast(0, MessageId.TimeScaleChange, timeScale);
         }
         
         public float GetTimeScale()

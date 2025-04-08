@@ -11,7 +11,7 @@ namespace TaoTie
         [NinoMember(10)]
         public TargetType TargetType;
         [NotNull] [NinoMember(11)]
-        public ConfigAttackEvent AttackEvent;
+        public ConfigAttackEvent AttackEvent = new ConfigAttackEvent();
         [NinoMember(12)][Range(0,1)][LabelText("夹角权值（负相关）")][BoxGroup("碰撞盒优先级")]
         public float A;
         [NinoMember(13)][Range(0,1)][LabelText("高度差权值（正相关）")][BoxGroup("碰撞盒优先级")]
@@ -71,6 +71,19 @@ namespace TaoTie
                 AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo,
                     isBullet, startTime);
                 AttackHelper.DamageClose(ability, modifier, result);
+                //时停
+                if (result.HitPattern != null)
+                {
+                    if (result.HitPattern.HitHaltTime > 0)
+                    {
+                        //todo:格挡是否时停判断,临时用最终伤害大于0判定
+                        if (result.HitPattern.CanBeDefenceHalt || result.FinalRealDamage > 0)
+                        {
+                            GameTimerManager.Instance.SetTimeScale(result.HitPattern.HitHaltTimeScale,
+                                result.HitPattern.HitHaltTime);
+                        }
+                    }
+                }
                 result.Dispose();
             }
             temp.Clear();

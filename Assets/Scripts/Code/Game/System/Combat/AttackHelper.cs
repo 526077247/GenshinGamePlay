@@ -143,13 +143,15 @@ namespace TaoTie
             //等级差异加伤减伤
             if (!result.IgnoreLevelDiff)
             {
-                result.DamagePercentageRatio *= (float)Math.Tanh(numA.GetAsFloat(NumericType.Lv)/10) + 1;
+                var lvDiff = numA.GetAsFloat(NumericType.Lv) - numD.GetAsFloat(NumericType.Lv);
+                result.DamagePercentageRatio *= (float)Math.Tanh(lvDiff/10) + 1;
             }
             
             //非真伤，防御减免
             if (!result.TrueDamage)
             {
-                var lv = Mathf.Max(1, numD.GetAsFloat(NumericType.Lv));
+                //攻击方的
+                var lv = Mathf.Max(1, numA.GetAsFloat(NumericType.Lv));
                 var flag = 100 * lv;
                 var def = Mathf.Max(numD.GetAsFloat(NumericType.DEF), 1);
                 result.DamagePercentageRatio *= flag / (def + flag);
@@ -167,8 +169,7 @@ namespace TaoTie
             }
             
             //最终伤害
-            result.FinalRealDamage = (int) (
-                result.DamagePercentage * result.DamagePercentageRatio *
+            result.FinalRealDamage = (int) (Mathf.Max(0, result.DamagePercentage * result.DamagePercentageRatio) *
                 (result.IsCritical ? (result.BonusCriticalHurt + 1) : 1) + result.DamageExtra);
             Log.Info("最终伤害： "+result.FinalRealDamage +" HitBoxType: "+ result.HitInfo.HitBoxType);
             //修改血量

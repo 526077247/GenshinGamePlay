@@ -9,6 +9,15 @@ namespace TaoTie
         public Animator Animator;
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
 
+        
+        private void ChangeTimeScale(float scale)
+        {
+            if (Animator != null && Animator.runtimeAnimatorController != null)
+            {
+                Animator.speed = GameTimerManager.Instance.GetTimeScale();
+            }
+        }
+        
         public void SetWeight(int index, float weight)
         {
             if (Animator != null)
