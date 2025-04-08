@@ -17,11 +17,11 @@ namespace TaoTie
         public List<string> StateIDs;
         [NinoMember(3)]
         public ConfigAbilityPredicate EnterPredicate;
-        [NinoMember(4)][LabelText("Actions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
+        [NinoMember(4)][LabelText("EnterActions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
         public ConfigAbilityAction[] EnterActions;
         [NinoMember(5)]
         public ConfigAbilityPredicate ExitPredicate;
-        [NinoMember(6)][LabelText("Actions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
+        [NinoMember(6)][LabelText("ExitActions:初始Action目标(Target)为Applier(Modify或Ability持有者)")]
         public ConfigAbilityAction[] ExitActions;
     }
 }

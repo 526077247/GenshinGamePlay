@@ -11,10 +11,10 @@ namespace TaoTie
         /// 打印的文本
         /// </summary>
         [NinoMember(1)]
-        public string text;
+        public string Text;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            Debug.Log(text);
+            Debug.Log(Text);
         }
     }
 }

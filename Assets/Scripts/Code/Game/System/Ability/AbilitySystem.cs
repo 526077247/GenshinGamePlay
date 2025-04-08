@@ -120,6 +120,43 @@ namespace TaoTie
                         Log.Error("指定AbilityTargetting.Other没有配置otherTargets");
                     }
                     break;
+                case AbilityTargetting.Owner:
+                    res = ListComponent<Entity>.Create();
+                    var selfAc = actor.GetComponent<AttachComponent>();
+                    if (selfAc == null || selfAc.ParentEntity == null)
+                    {
+                        res.Add(actor);
+                    }
+                    else
+                    {
+                        res.Add(selfAc.ParentEntity.GetParent<Entity>());
+                    }
+                    break;
+                case AbilityTargetting.TargetOwner:
+                    res = ListComponent<Entity>.Create();
+                    var targetAc = target.GetComponent<AttachComponent>();
+                    if (targetAc == null || targetAc.ParentEntity == null)
+                    {
+                        res.Add(target);
+                    }
+                    else
+                    {
+                        res.Add(targetAc.ParentEntity.GetParent<Entity>());
+                    }
+                    break;
+                case AbilityTargetting.CasterOwner:
+                    res = ListComponent<Entity>.Create();
+                    var caster = ability.Parent.GetParent<Entity>();
+                    var casterAc = caster.GetComponent<AttachComponent>();
+                    if (casterAc == null || casterAc.ParentEntity == null)
+                    {
+                        res.Add(caster);
+                    }
+                    else
+                    {
+                        res.Add(casterAc.ParentEntity.GetParent<Entity>());
+                    }
+                    break;
                 default:
                     res = ListComponent<Entity>.Create();
                     break;
