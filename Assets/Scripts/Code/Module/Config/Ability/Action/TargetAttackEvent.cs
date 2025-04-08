@@ -55,7 +55,7 @@ namespace TaoTie
                     if (len < 1) continue;
                     var info = infos[0];
                     var hitEntity = entityManager.Get<Entity>(info.EntityId);
-                    AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackInfo,
+                    AttackResult result = AttackResult.Create(attacker.Id, hitEntity.Id, info, AttackInfo,
                         isBullet, startTime);
                     AttackHelper.DamageClose(ability, modifier, result);
 

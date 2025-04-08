@@ -142,7 +142,7 @@ namespace TaoTie
             for (int i = 0; i < triggerBox.TriggerList.Count; i++)
             {
                 var other = triggerBox.TriggerList[i];
-                if ((other.gameObject.layer & hitLayer) != 0)
+                if ((2<<other.gameObject.layer & hitLayer) != 0)
                 {
                     colliders[len] = other;
                     len++;
@@ -167,7 +167,7 @@ namespace TaoTie
             for (int i = 0; i < triggers.Length; i++)
             {
                 var other = triggers[i];
-                if ((other.gameObject.layer & hitLayer) != 0)
+                if ((2<<other.gameObject.layer & hitLayer) != 0)
                 {
                     colliders[len] = other;
                     len++;
