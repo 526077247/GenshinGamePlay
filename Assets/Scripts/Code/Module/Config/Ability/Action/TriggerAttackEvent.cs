@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [NinoType(false)][LabelText("*范围检测攻击")][Tooltip("攻击者为Target")]
     public partial class TriggerAttackEvent : ConfigAbilityAction
     {
-        private static readonly UnOrderMultiMap<long, HitInfo> temp = new UnOrderMultiMap<long, HitInfo>();
         [NinoMember(10)]
         public TargetType TargetType = TargetType.Enemy;
         [NotNull] [NinoMember(11)]
@@ -25,13 +24,14 @@ namespace TaoTie
             EntityManager entityManager = actionExecuter.Parent;
             bool isBullet = false;
             long startTime = 0;
-            var bullet = target.GetComponent<BulletComponent>();
+            var bullet = actionExecuter.GetComponent<BulletComponent>();
             if (bullet != null)
             {
                 isBullet = true;
                 startTime = bullet.CreateTime;
             }
-            
+
+            UnOrderMultiMap<long, HitInfo> temp = ObjectPool.Instance.Fetch<UnOrderMultiMap<long, HitInfo>>();
             for (int i = 0; i < len; i++)
             {
                 var info = infos[i];
@@ -86,10 +86,10 @@ namespace TaoTie
                 result.Dispose();
             }
             temp.Clear();
-            
+            ObjectPool.Instance.Recycle(temp);
             //相机震动
             if (AttackEvent.AttackInfo.ForceCameraShake && !AttackEvent.AttackInfo.CameraShake.BroadcastOnHit &&
-                AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector && actionExecuter is Unit u)
+                AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector && actionExecuter is SceneEntity u)
             {
                 Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
                     {
