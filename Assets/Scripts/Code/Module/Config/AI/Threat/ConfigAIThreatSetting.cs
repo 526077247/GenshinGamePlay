@@ -10,10 +10,10 @@ namespace TaoTie
         [LabelText("启用")]
         [NinoMember(1)]
         public bool Enable = true;
-        [NinoMember(2)][MinValue(0.1f)][LabelText("超过范围清除威胁值")]
+        [NinoMember(2)][MinValue(0.1f)][LabelText("超过目标距离范围清除威胁值")]
         public float ClearThreatTargetDistance = 10;
-        [NinoMember(3)][LabelText("超过防守区域边缘距离清除威胁值")]
-        public float ClearThreatEdgeDistance = 1;
+        [NinoMember(3)][LabelText("超过出生地范围清除威胁值")]
+        public float ClearThreatEdgeDistance = 100;
         [NinoMember(4)][LabelText("超过范围清除威胁值倒计时（ms）")]
         public int ClearThreatTimerByDistance = 3000;
         

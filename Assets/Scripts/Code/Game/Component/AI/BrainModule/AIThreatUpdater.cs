@@ -50,10 +50,14 @@ namespace TaoTie
             var sourcelessHitAttractionRange = knowledge.SensingKnowledge.SourcelessHitAttractionRange;
             if (other.GetParent<Entity>() is Unit unit)
             {
-                var currentPos = knowledge.CurrentPos;
-                float distanceToTarget = Vector3.Distance(currentPos, unit.Position);
-                if (distanceToTarget < sourcelessHitAttractionRange) return;
-                
+                if (result.IsBullet)
+                {
+                    var currentPos = knowledge.CurrentPos;
+                    float distanceToTarget = Vector3.Distance(currentPos, unit.Position);
+                    //无源受击感知范围判断
+                    if (distanceToTarget > sourcelessHitAttractionRange) return;
+                }
+
                 ExternalAddCandidate(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
                 ExternalAddThreat(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
                 ForceEnterCombat();
@@ -202,9 +206,7 @@ namespace TaoTie
             foreach (var sensible in sensibles)
             {
                 //防守区域范围
-                var distanceFromDefendCenter = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, sensible.Value.Position);
-                var defendRange = knowledge.DefendAreaKnowledge.DefendRange;
-                if(distanceFromDefendCenter>defendRange) continue;
+                if(!knowledge.DefendAreaKnowledge.IsInDefendRange) continue;
                 
                 float distanceToSensible = sensible.Value.Distance;
                 var feelRange = knowledge.SensingKnowledge.FeelRange;
@@ -393,37 +395,21 @@ namespace TaoTie
                 return false;
             }
             var timeNow = GameTimerManager.Instance.GetTimeNow();
-            var distanceFromDefendCenter = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, threatInfo.ThreatPos);
+            var distanceFromBorn = Vector3.Distance(knowledge.BornPos, threatInfo.ThreatPos);
             var distanceFromSelf = Vector3.Distance(knowledge.Entity.Position, threatInfo.ThreatPos);
-
-            //防守区域范围
-            var defendRange = knowledge.DefendAreaKnowledge.DefendRange;
+            
             //边缘距离限制
             var edgeRange = knowledge.ThreatKnowledge.Config.ClearThreatEdgeDistance;
             //目标距离限制
             var maxTargetDistance = knowledge.ThreatKnowledge.Config.ClearThreatTargetDistance;
-
             var clearThreatTimerByDistance = knowledge.ThreatKnowledge.Config.ClearThreatTimerByDistance;
-            var clearThreatTimerByOutOfZone = knowledge.ThreatKnowledge.Config.ClearThreatTimerByTargetOutOfZone;
-
             
-            //超距
-            //目标与AI距离 > 目标距离限制
-            if (distanceFromSelf > maxTargetDistance)
+            //超距, 目标与AI距离 > 目标距离限制 , 目标处于(防守区域 + 边缘距离限制)外
+            if (distanceFromSelf > maxTargetDistance || distanceFromBorn > edgeRange)
             {
                 if (!threatInfo.LctByFarDistance.IsRunning())
                     threatInfo.LctByFarDistance.Start(timeNow);
                 if (threatInfo.LctByFarDistance.IsElapsed(timeNow, clearThreatTimerByDistance))
-                {
-                    return false;
-                }
-            }
-            //目标处于(防守区域 + 边缘距离限制)外
-            else if (distanceFromDefendCenter > (defendRange + edgeRange))
-            {
-                if (!threatInfo.LctByFarDistance.IsRunning())
-                    threatInfo.LctByFarDistance.Start(timeNow);
-                if (threatInfo.LctByFarDistance.IsElapsed(timeNow, clearThreatTimerByOutOfZone))
                 {
                     return false;
                 }
@@ -433,13 +419,14 @@ namespace TaoTie
                 threatInfo.LctByFarDistance.Reset(timeNow);
             }
             
+            //目标离开防守区域
+            var clearThreatTimerByOutOfZone = knowledge.ThreatKnowledge.Config.ClearThreatTimerByTargetOutOfZone;
             if (knowledge.ThreatKnowledge.Config.ClearThreatByTargetOutOfZone)
             {
                 var target = knowledge.AIManager.GetUnit(threatInfo.Id);
                 if (target == null) return true;
-                var targetZoneDistance = Vector3.Distance(knowledge.DefendAreaKnowledge.DefendCenter, target.Position);
                 //超界
-                if (targetZoneDistance > defendRange)
+                if (!knowledge.DefendAreaKnowledge.CheckInDefendArea(target.Position))
                 {
                     if (!threatInfo.LctByOutOfZone.IsRunning())
                         threatInfo.LctByOutOfZone.Start(timeNow);

@@ -140,7 +140,7 @@ namespace TaoTie
             if (EntityView != null)
             {
                 var ec = EntityView.GetComponent<EntityComponent>();
-                if (ec != null) GameObject.Destroy(ec);
+                if (ec != null) GameObject.DestroyImmediate(ec);
                 GameObjectPoolManager.GetInstance().RecycleGameObject(EntityView.gameObject);
                 EntityView = null;
             }
