@@ -17,16 +17,16 @@ namespace TaoTie
             CampId = campId;
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
-            configActor = GetActorConfig(Config.ActorConfig);
-            if(configActor.Common!=null) LocalScale = Vector3.one * configActor.Common.Scale;
+            ConfigActor = GetActorConfig(Config.ActorConfig);
+            if(ConfigActor.Common!=null) LocalScale = Vector3.one * ConfigActor.Common.Scale;
             AddComponent<AttachComponent>();
-            AddComponent<UnitModelComponent,ConfigModel>(configActor.Model);
-            AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
+            AddComponent<UnitModelComponent,ConfigModel>(ConfigActor.Model);
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
-            AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
+            AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);
             AddComponent<AvatarSkillComponent>();
             AddComponent<MoveComponent>();
-            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             AddComponent<EquipHoldComponent>();
         }
@@ -34,7 +34,7 @@ namespace TaoTie
 
         public void Destroy()
         {
-            configActor = null;
+            ConfigActor = null;
             ConfigId = default;
             CampId = 0;
         }

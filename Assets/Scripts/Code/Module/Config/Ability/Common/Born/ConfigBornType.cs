@@ -10,9 +10,9 @@ namespace TaoTie
     public abstract partial class ConfigBornType
     {
         [NinoMember(1)][NotNull]
-        public DynamicVector3 PositionOffset;
+        public DynamicVector3 PositionOffset = new DynamicVector3();
         [NinoMember(2)][NotNull]
-        public DynamicVector3 RotationOffset;
+        public DynamicVector3 RotationOffset = new DynamicVector3();
 
         public abstract Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);
 

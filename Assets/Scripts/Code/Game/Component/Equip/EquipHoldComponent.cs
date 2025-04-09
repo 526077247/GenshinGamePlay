@@ -55,7 +55,7 @@ namespace TaoTie
             var apt = equip.GetComponent<EquipComponent>().Config.EquipType;
             if (EquipType.TryParse(apt, out EquipType equipType))
             {
-                if((parent as Actor).configActor.EquipController.AttachPoints.TryGetValue(equipType,out var pointName))
+                if((parent as Actor).ConfigActor.EquipController.AttachPoints.TryGetValue(equipType,out var pointName))
                 {
                     if (euips.TryGetValue(equipType, out var old))
                     {

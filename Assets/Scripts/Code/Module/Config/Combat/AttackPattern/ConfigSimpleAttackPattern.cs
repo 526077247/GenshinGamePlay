@@ -6,6 +6,6 @@ namespace TaoTie
     public abstract class ConfigSimpleAttackPattern: ConfigBaseAttackPattern
     {
         [NotNull] [NinoMember(3)]
-        public ConfigBornType Born;
+        public ConfigBornType Born = new ConfigBornByTarget();
     }
 }

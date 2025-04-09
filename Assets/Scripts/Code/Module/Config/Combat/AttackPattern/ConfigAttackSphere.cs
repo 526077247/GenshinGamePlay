@@ -6,7 +6,7 @@ namespace TaoTie
     public partial class ConfigAttackSphere: ConfigSimpleAttackPattern
     {
         [NotNull][NinoMember(10)]
-        public BaseValue Radius;
+        public BaseValue Radius = new SingleValue(1);
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target,
             EntityType[] filter, out HitInfo[] hitInfos)

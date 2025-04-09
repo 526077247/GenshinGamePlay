@@ -60,10 +60,14 @@ namespace TaoTie
             if (Target != null)
             {
                 var camera = CameraManager.Instance.MainCamera();
-                if (camera != null)
+                if (camera != null && !camera.orthographic)
                 {
                     var distance2Camera = Vector3.Distance(camera.transform.position, Target.position);
                     Scale = Mathf.Lerp(0.1f, 6f, (distance2Camera-0.5f)/40);
+                }
+                else
+                {
+                    Scale = 1;
                 }
             }
             for (int i = 0; i < plugins.Count; i++)

@@ -79,7 +79,7 @@ namespace TaoTie
             }
             float temp1 = (1 - Mathf.Cos(Mathf.Deg2Rad * Vector3.Angle(info.HitDir, info.HitPos - u.Position))) / 2;
             temp1 = temp1 * (1 - a) + a;
-            float temp2 = Mathf.Abs(b / (1 - b) * (info.HitPos.y - u.Position.y + u.configActor.Common.Height / 2)) + 1;
+            float temp2 = Mathf.Abs(b / (1 - b) * (info.HitPos.y - u.Position.y + u.ConfigActor.Common.Height / 2)) + 1;
             return Mathf.Abs(info.Distance * temp1 * temp2);
         }
         
@@ -171,7 +171,7 @@ namespace TaoTie
             //最终伤害
             result.FinalRealDamage = (int) (Mathf.Max(0, result.DamagePercentage * result.DamagePercentageRatio) *
                 (result.IsCritical ? (result.BonusCriticalHurt + 1) : 1) + result.DamageExtra);
-            Log.Info("最终伤害： "+result.FinalRealDamage +" HitBoxType: "+ result.HitInfo.HitBoxType);
+            Log.Info($"最终伤害： {result.FinalRealDamage} HitBoxType: {result.HitInfo.HitBoxType} \r\nFrom:{attacker.Id} To:{defence.Id}");
             //修改血量
             var finalHp = numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage;
             if (finalHp < 0) finalHp = 0;

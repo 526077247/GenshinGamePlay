@@ -8,7 +8,7 @@ namespace TaoTie
     {
         [NinoMember(1)][LabelText("数量")]
         public BaseValue Count = new NumericValue();
-        [NinoMember(2)][LabelText("中心点偏移")] 
+        [NinoMember(2)][LabelText("中心点偏移")] [NotNull]
         public DynamicVector3 Offset = new DynamicVector3();
         [NinoMember(3)][LabelText("排列方式")]
         public ConfigArrange Arrange;

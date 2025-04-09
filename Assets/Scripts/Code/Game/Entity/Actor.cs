@@ -7,6 +7,6 @@
         /// </summary>
         public uint CampId;
         
-        public ConfigActor configActor;
+        public ConfigActor ConfigActor { get; protected set; }
     }
 }

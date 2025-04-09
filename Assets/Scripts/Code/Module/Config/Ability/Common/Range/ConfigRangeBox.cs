@@ -7,8 +7,8 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigRangeBox: ConfigRange
     {
-        [NinoMember(10)][NotNull]
-        public DynamicVector3 Size;
+        [NinoMember(10)] [NotNull] 
+        public DynamicVector3 Size = new DynamicVector3();
 
         public override int ResolveEntity(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,
             EntityType[] filter, List<Entity> results)

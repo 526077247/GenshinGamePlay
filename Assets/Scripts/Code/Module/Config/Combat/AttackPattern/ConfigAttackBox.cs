@@ -7,7 +7,7 @@ namespace TaoTie
     public partial class ConfigAttackBox: ConfigSimpleAttackPattern
     {
         [NinoMember(10)][NotNull]
-        public DynamicVector3 Size;
+        public DynamicVector3 Size = new DynamicVector3();
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target,
             EntityType[] filter, out HitInfo[] hitInfos)

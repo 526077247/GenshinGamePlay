@@ -18,13 +18,13 @@ namespace TaoTie
             CampId = campId;
             var monster = AddComponent<MonsterComponent,int>(configId);
             ConfigId = monster.Config.UnitId;
-            configActor = GetActorConfig(Config.ActorConfig);
-            if(configActor.Common!=null) LocalScale = Vector3.one * configActor.Common.Scale;
-            AddComponent<UnitModelComponent,ConfigModel>(configActor.Model);
-            AddComponent<NumericComponent,ConfigCombatProperty[]>(configActor.Combat?.DefaultProperty);
+            ConfigActor = GetActorConfig(Config.ActorConfig);
+            if(ConfigActor.Common!=null) LocalScale = Vector3.one * ConfigActor.Common.Scale;
+            AddComponent<UnitModelComponent,ConfigModel>(ConfigActor.Model);
+            AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
-            AddComponent<CombatComponent,ConfigCombat>(configActor.Combat);
-            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(configActor.Abilities);
+            AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);
+            using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(monster.Config.AIPath))
             {
@@ -36,13 +36,13 @@ namespace TaoTie
             {
                 AddComponent<PoseFSMComponent,ConfigFsmController>(GetFsmConfig(monster.Config.PoseFSM));
             }
-            AddComponent<BillboardComponent, ConfigBillboard>(configActor.Billboard);
+            AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);
             AddComponent<MoveComponent>();
         }
         
         public void Destroy()
         {
-            configActor = null;
+            ConfigActor = null;
             ConfigId = default;
             CampId = 0;
         }

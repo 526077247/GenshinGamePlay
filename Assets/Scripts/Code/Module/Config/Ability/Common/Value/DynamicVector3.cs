@@ -7,11 +7,11 @@ namespace TaoTie
     public partial class DynamicVector3
     {
         [NinoMember(1)][NotNull]
-        public BaseValue X = new ZeroValue();
+        public BaseValue X = new SingleValue();
         [NinoMember(2)][NotNull]
-        public BaseValue Y = new ZeroValue();
+        public BaseValue Y = new SingleValue();
         [NinoMember(3)][NotNull]
-        public BaseValue Z = new ZeroValue();
+        public BaseValue Z = new SingleValue();
         
         public Vector3 Resolve(Entity entity, ActorAbility ability)
         {

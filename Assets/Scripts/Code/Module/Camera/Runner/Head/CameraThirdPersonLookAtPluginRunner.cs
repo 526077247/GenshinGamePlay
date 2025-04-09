@@ -41,7 +41,7 @@ namespace TaoTie
                     if (SceneManager.Instance.CurrentScene is MapScene map)
                     {
                         var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
-                        actorCommon = unit.configActor.Common;
+                        actorCommon = unit.ConfigActor.Common;
                     }
                 }
             }
