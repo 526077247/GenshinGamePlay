@@ -53,5 +53,7 @@
         public const int SetUseRagDoll = 22;
         /// <summary> 战斗状态改变 </summary>
         public const int CombatStateChange = 23;
+        /// <summary> 模型数量改变 </summary>
+        public const int OnHolderCountChange = 24;
     }
 }

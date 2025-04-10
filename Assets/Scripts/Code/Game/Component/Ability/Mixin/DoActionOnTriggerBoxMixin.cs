@@ -5,25 +5,55 @@ namespace TaoTie
     public class DoActionOnTriggerBoxMixin : AbilityMixin<ConfigDoActionOnTriggerBoxMixin>
     {
         private Entity owner;
-        private TriggerBoxComponent triggerBoxComponent;
+        private ListComponent<GameObjectHolder> addHolders;
         protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionOnTriggerBoxMixin config)
         {
+            addHolders = ListComponent<GameObjectHolder>.Create();
             owner = actorAbility.Parent.GetParent<Entity>();
-            InitInternalAsync().Coroutine();
+            var umv = owner.GetComponent<UnitModelComponent>();
+            for (var node = umv.Holders.First; node!=null; node = node.Next)
+            {
+                OnHolderCountChange(node.Value,true);
+            }
+            
+            Messager.Instance.AddListener<GameObjectHolder,bool>(owner.Id, MessageId.OnHolderCountChange, OnHolderCountChange);
         }
 
-        private async ETTask InitInternalAsync()
+        private async ETTask AddAsync(GameObjectHolder holder)
         {
-            var umv = owner.GetComponent<UnitModelComponent>();
-            await umv.WaitLoadGameObjectOver();
-            if (owner == null || umv.IsDispose) return;
-            triggerBoxComponent = umv.EntityView.GetComponentInChildren<TriggerBoxComponent>(true);
-            if (triggerBoxComponent != null)
+            await holder.WaitLoadGameObjectOver();
+            if (owner == null || addHolders == null) return;
+            
+            var components = holder.EntityView.GetComponentsInChildren<TriggerBoxComponent>(true);
+            for (int i = 0; i < components.Length; i++)
             {
-                triggerBoxComponent.onTriggerEnterEvt += ExecuteTriggerEnter;
-                triggerBoxComponent.onTriggerExitEvt += ExecuteTriggerExit;
-                // triggerBoxComponent.onTriggerStayEvt += ExecuteTriggerStay;
-
+                components[i].onTriggerEnterEvt += ExecuteTriggerEnter;
+                components[i].onTriggerExitEvt += ExecuteTriggerExit;
+                // components[i].onTriggerStayEvt += ExecuteTriggerStay;
+            }
+        }
+        private void RemoveSync(GameObjectHolder holder)
+        {
+            if (holder.EntityView == null) return;
+            var components = holder.EntityView.GetComponentsInChildren<TriggerBoxComponent>(true);
+            for (int i = 0; i < components.Length; i++)
+            {
+                components[i].onTriggerEnterEvt -= ExecuteTriggerEnter;
+                components[i].onTriggerExitEvt -= ExecuteTriggerExit;
+                // components[i].onTriggerStayEvt -= ExecuteTriggerStay;
+            }
+        }
+        private void OnHolderCountChange(GameObjectHolder holder,bool isAdd)
+        {
+            if (isAdd)
+            {
+                addHolders.Add(holder);
+                AddAsync(holder).Coroutine();
+            }
+            else if (addHolders.Contains(holder))
+            {
+                RemoveSync(holder);
+                addHolders.Remove(holder);
             }
         }
         
@@ -82,13 +112,17 @@ namespace TaoTie
 
         protected override void DisposeInternal()
         {
-            if (triggerBoxComponent != null)
+            Messager.Instance.RemoveListener<GameObjectHolder,bool>(owner.Id, MessageId.OnHolderCountChange,OnHolderCountChange);
+            if (addHolders != null)
             {
-                triggerBoxComponent.onTriggerEnterEvt -= ExecuteTriggerEnter;
-                triggerBoxComponent.onTriggerExitEvt -= ExecuteTriggerExit;
-                // triggerBoxComponent.onTriggerStayEvt -= ExecuteTriggerStay;
-                triggerBoxComponent = null;
+                for (int i = 0; i < addHolders.Count; i++)
+                {
+                    RemoveSync(addHolders[i]);
+                }
+                addHolders.Dispose();
+                addHolders = null;
             }
+            
             owner = null;
         }
     }

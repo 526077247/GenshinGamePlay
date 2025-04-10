@@ -27,6 +27,7 @@ namespace TaoTie
             {
                 var plugin = GameObjectHolder.Create(this,this.parent.Parent.GameObjectRoot);
                 Holders.AddLast(plugin);
+                Messager.Instance.Broadcast(Id,MessageId.OnHolderCountChange,plugin,true);
             }
             else if (configModel is ConfigMultiModel aroundModel)
             {
@@ -38,6 +39,7 @@ namespace TaoTie
                 {
                     var plugin = GameObjectHolder.Create(this,EntityView);
                     Holders.AddLast(plugin);
+                    Messager.Instance.Broadcast(Id,MessageId.OnHolderCountChange,plugin,true);
                 }
 
                 if (aroundModel.Count is NumericValue numericValue)
@@ -106,12 +108,17 @@ namespace TaoTie
             Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<SceneEntity, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);
             Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id, MessageId.ChangeScaleEvt, OnChangeScale);
-            
-            foreach (var item in Holders)
+
+            if (Holders != null)
             {
-                item.Dispose();
+                foreach (var item in Holders)
+                {
+                    Messager.Instance.Broadcast(Id,MessageId.OnHolderCountChange,item,false);
+                    item.Dispose();
+                }
+                Holders.Dispose();
+                Holders = null;
             }
-            Holders.Dispose();
             
             if (waitFinishTask != null)
             {
@@ -139,6 +146,7 @@ namespace TaoTie
                 while (Holders.Count > evt.New)
                 {
                     var first = Holders.First;
+                    Messager.Instance.Broadcast(Id, MessageId.OnHolderCountChange, first.Value, false);
                     Holders.RemoveFirst();
                     first.Value.Dispose();
                 }
@@ -146,6 +154,7 @@ namespace TaoTie
                 {
                     var plugin = GameObjectHolder.Create(this,EntityView);
                     Holders.AddLast(plugin);
+                    Messager.Instance.Broadcast(Id, MessageId.OnHolderCountChange, plugin, true);
                 }
             }
         }
