@@ -163,32 +163,31 @@ namespace TaoTie
                 currentTask.OnCloseTask(this);
                 currentTask = null;
             }
-            TryMoveAsync(Vector3.zero, MotionFlag.Idle, MotionDirection.Forward).Coroutine();
+            TryMove(Vector3.zero, MotionFlag.Idle, MotionDirection.Forward);
         }
         
         public void UpdateMotionFlag(MotionFlag newSpeed, MotionDirection direction = MotionDirection.Forward)
         {
             if (newSpeed == MotionFlag.Idle)
             {
-                TryMoveAsync(Vector3.zero, newSpeed, direction).Coroutine();
+                TryMove(Vector3.zero, newSpeed, direction);
                 return;
             }
             if(currentTask == null) return;
             var dir = currentTask.GetDestination() - knowledge.Entity.Position;
-            TryMoveAsync(dir, newSpeed, direction).Coroutine();
+            TryMove(dir, newSpeed, direction);
         }
         
-        private async ETTask TryMoveAsync(Vector3 dir,MotionFlag newSpeed,MotionDirection direction)
+        private void TryMove(Vector3 dir,MotionFlag newSpeed,MotionDirection direction)
         {
-            knowledge.OrcaAgent?.SetDir(dir);
-            await UnityLifeTimeHelper.WaitUpdateFinish();
+            var velocity = dir.normalized;
             if (knowledge.PathFindingKnowledge.UseRVO2 && knowledge.OrcaAgent != null)
             {
-                knowledge.Input.TryMove(knowledge.OrcaAgent.GetDir(), newSpeed, direction);
+                knowledge.Input.TryMove(knowledge.OrcaAgent.GetVelocity(), newSpeed, direction);
             }
             else
             {
-                knowledge.Input.TryMove(dir, newSpeed, direction);
+                knowledge.Input.TryMove(velocity, newSpeed, direction);
             }
         }
 
@@ -204,7 +203,7 @@ namespace TaoTie
         public void ForceLookAt()
         {
             if (currentTask == null) return;
-            knowledge.Mover.ForceLookAt(currentTask.GetDestination());
+            knowledge.Mover?.ForceLookAt(currentTask.GetDestination());
         }
     }
 }

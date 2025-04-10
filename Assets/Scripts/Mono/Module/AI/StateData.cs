@@ -1,5 +1,6 @@
 ﻿using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -24,5 +25,7 @@ namespace TaoTie
         public bool ShowWeapon;
         [LabelText("是否使用RagDoll")][TabGroup("FSM")][NinoMember(9)]
         public bool UseRagDoll;
+        [LabelText("*受速度影响")][TabGroup("FSM")][NinoMember(10)][Tooltip("一般Run,Walk动作需要勾上")]
+        public bool EffectBySpeed;
     }
 }

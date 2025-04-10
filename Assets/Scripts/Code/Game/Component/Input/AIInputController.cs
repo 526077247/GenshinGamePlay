@@ -9,6 +9,8 @@ namespace TaoTie
     {
         private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
+        private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
+
         private bool canMove = true;
         private bool canTurn = true;
         
@@ -43,10 +45,16 @@ namespace TaoTie
                 fsm.SetData(FSMConst.MotionFlag, (int)mFlag);
                 fsm.SetData(FSMConst.MotionDirection, (int)mDirection);
             }
-            if (canTurn)
-                moveComponent.CharacterInput.Direction = direction;
+            if (!canTurn)
+            {
+                direction = new Vector3(0, 0, direction.z);
+            }
+            if (canMove)
+                moveComponent.CharacterInput.Direction = direction.normalized;
             else
                 moveComponent.CharacterInput.Direction = Vector3.zero;
+            //因为是动画驱动移动，所以这里速度指的是速度比例
+            moveComponent.CharacterInput.SpeedScale = numericComponent.GetAsFloat(NumericType.Speed);
         }
         
         private void SetCanMove(bool canMove)

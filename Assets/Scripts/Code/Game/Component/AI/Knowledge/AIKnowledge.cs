@@ -39,6 +39,7 @@ namespace TaoTie
         public AIInputController Input => Entity.GetComponent<AIInputController>();
         
         public ORCAAgentComponent OrcaAgent => Entity.GetComponent<ORCAAgentComponent>();
+        public NumericComponent Numeric => Entity.GetComponent<NumericComponent>();
         
         public AISkillKnowledge SkillKnowledge;
         public AIMoveKnowledge MoveKnowledge;

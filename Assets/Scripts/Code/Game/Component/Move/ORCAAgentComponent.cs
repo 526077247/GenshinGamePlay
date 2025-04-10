@@ -7,6 +7,7 @@ namespace TaoTie
     {
         private Actor actor => GetParent<Actor>();
         private Agent agent;
+        private Vector3 prefVelocity;
         public void Init()
         {
             if (actor?.ConfigActor?.Common != null && SceneManager.Instance.CurrentScene is MapScene scene)
@@ -36,13 +37,17 @@ namespace TaoTie
             agent.navigationEnabled = enable;
         }
 
-        public void SetDir(Vector3 dir)
+        public void SetVelocity(Vector3 velocity, float maxSpeed)
         {
-            agent.prefVelocity = dir;
+            prefVelocity = velocity;
+            if (agent == null) return;
+            agent.prefVelocity = prefVelocity;
+            agent.maxSpeed = maxSpeed;
         }
         
-        public Vector3 GetDir()
+        public Vector3 GetVelocity()
         {
+            if (agent == null) return prefVelocity;
             return agent.velocity;
         }
 

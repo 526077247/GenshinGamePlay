@@ -10,11 +10,15 @@ namespace TaoTie
 		/// <summary>
 		/// 速度
 		/// </summary>
-	    public Vector3 Speed;
+	    public Vector3 Velocity;
 		/// <summary>
 		/// 朝向
 		/// </summary>
 	    public Vector3 Direction;
+		/// <summary>
+		/// 速度比例
+		/// </summary>
+		public float SpeedScale = 1;
 		/// <summary>
 		/// 转向速度(°/s)
 		/// </summary>
@@ -29,7 +33,7 @@ namespace TaoTie
 
 	    public float GetVerticalMovementInput()
 	    {
-		    return Speed.z;
+		    return Velocity.z;
 	    }
 
 	    public bool IsJumpKeyPressed()
