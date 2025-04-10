@@ -80,6 +80,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 0
 --- !u!1101 &-6366894700637108712
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -181,6 +182,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 1
 --- !u!1101 &-4897850199127859911
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -235,6 +237,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 0
 --- !u!1102 &-3573532505272882320
 AnimatorState:
   serializedVersion: 6
@@ -365,6 +368,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 0
 --- !u!114 &-1603563280062419696
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -394,6 +398,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 1
 --- !u!114 &-1514476544771069628
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -423,6 +428,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 0
 --- !u!1101 &-1417068260191224458
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -858,6 +864,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 0
 --- !u!1102 &3641277205969579029
 AnimatorState:
   serializedVersion: 6
@@ -964,6 +971,7 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 1
 --- !u!1109 &4408507750954874016
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -1292,3 +1300,4 @@ MonoBehaviour:
         IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
+        EffectBySpeed: 0
