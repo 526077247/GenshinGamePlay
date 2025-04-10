@@ -163,32 +163,19 @@ namespace TaoTie
                 currentTask.OnCloseTask(this);
                 currentTask = null;
             }
-            TryMove(Vector3.zero, MotionFlag.Idle, MotionDirection.Forward);
+            knowledge.Input.TryMove(Vector3.zero, MotionFlag.Idle);
         }
         
         public void UpdateMotionFlag(MotionFlag newSpeed, MotionDirection direction = MotionDirection.Forward)
         {
             if (newSpeed == MotionFlag.Idle)
             {
-                TryMove(Vector3.zero, newSpeed, direction);
+                knowledge.Input.TryMove(Vector3.zero, newSpeed, direction);
                 return;
             }
             if(currentTask == null) return;
             var dir = currentTask.GetDestination() - knowledge.Entity.Position;
-            TryMove(dir, newSpeed, direction);
-        }
-        
-        private void TryMove(Vector3 dir,MotionFlag newSpeed,MotionDirection direction)
-        {
-            var velocity = dir.normalized;
-            if (knowledge.PathFindingKnowledge.UseRVO2 && knowledge.OrcaAgent != null)
-            {
-                knowledge.Input.TryMove(knowledge.OrcaAgent.GetVelocity(), newSpeed, direction);
-            }
-            else
-            {
-                knowledge.Input.TryMove(velocity, newSpeed, direction);
-            }
+            knowledge.Input.TryMove(dir, newSpeed, direction);
         }
 
         public void UpdateTaskSpeed(MotionFlag newSpeed)
