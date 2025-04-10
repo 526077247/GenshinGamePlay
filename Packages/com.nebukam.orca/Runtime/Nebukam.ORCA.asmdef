@@ -1,9 +1,9 @@
 {
     "name": "Nebukam.ORCA",
+    "rootNamespace": "",
     "references": [
         "Unity.Burst",
         "Unity.Collections",
-        "Unity.Jobs",
         "Unity.Mathematics",
         "Nebukam.Common",
         "Nebukam.JobAssist"
@@ -15,5 +15,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }
