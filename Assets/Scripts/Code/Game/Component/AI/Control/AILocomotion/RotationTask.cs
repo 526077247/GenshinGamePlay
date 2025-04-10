@@ -11,7 +11,7 @@ namespace TaoTie
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamRotation param)
         {
             base.Init(knowledge);
-            targetPosition = param.targetPosition;
+            targetPosition = param.TargetPosition;
             timeoutTick = GameTimerManager.Instance.GetTimeNow() + TIMEOUT;
             Messager.Instance.Broadcast(base.knowledge.Entity.Id, MessageId.UpdateTurnTargetPos, targetPosition,
                 TIMEOUT);

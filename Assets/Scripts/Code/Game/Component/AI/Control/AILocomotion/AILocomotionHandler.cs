@@ -7,88 +7,86 @@ namespace TaoTie
     {
         private AIKnowledge knowledge;
         private LocoBaseTask currentTask;
-        public LocoTaskState currentState;
         private float? originalYawSpeed;
         
+        public LocoTaskState CurrentState;
         public struct ParamGoTo
         {
-            public bool scripted;
-            public Vector3 targetPosition;
-            public MotionFlag speedLevel;
-            public LocoBaseTask.ObstacleHandling obstacleHandling;
-            public float cannedTurnSpeedOverride;
-            public bool delayStopping;
-            public bool spacial;
-            public bool spacialRoll;
-            public NavMeshUseType useNavmesh;
-            public bool exactlyMove;
+            public bool Scripted;
+            public Vector3 TargetPosition;
+            public MotionFlag SpeedLevel;
+            public float CannedTurnSpeedOverride;
+            public bool DelayStopping;
+            public bool Spacial;
+            public bool SpacialRoll;
+            public NavMeshUseType UseNavmesh;
+            public bool ExactlyMove;
             
         }
 
         public struct ParamFacingMove
         {
-            public Unit anchor;
-            public MotionFlag speedLevel;
-            public MotionDirection movingDirection;
-            public float duration;
+            public Unit Anchor;
+            public MotionFlag SpeedLevel;
+            public MotionDirection MovingDirection;
+            public float Duration;
         }
 
         public struct ParamSurroundDash
         {
-
-            public Entity anchorEntity;
-            public Vector3? anchorFixedPoint;
-            public MotionFlag speedLevel;
-            public float cannedTurnSpeedOverride;
-            public bool spacial;
-            public bool spacialRoll;
-            public bool clockwise;
-            public bool reverseMoveDir;
-            public float radius;
-            public bool delayStopping;
+            public Unit Anchor;
+            public Vector3? AnchorFixedPoint;
+            public MotionFlag SpeedLevel;
+            public float CannedTurnSpeedOverride;
+            public bool Spacial;
+            public bool SpacialRoll;
+            public bool Clockwise;
+            public bool ReverseMoveDir;
+            public float Radius;
+            public bool DelayStopping;
         }
 
         public struct ParamRotation
         {
-            public Vector3 targetPosition;
+            public Vector3 TargetPosition;
         }
 
         public struct ParamFollowMove
         {
-            public Unit anchor;
-            public bool useMeleeSlot;
-            public MotionFlag speedLevel;
-            public float turnSpeed;
-            public float targetAngle;
-            public float stopDistance;
+            public Unit Anchor;
+            public bool UseMeleeSlot;
+            public MotionFlag SpeedLevel;
+            public float TurnSpeed;
+            public float TargetAngle;
+            public float StopDistance;
         }
 
         public AILocomotionHandler(AIKnowledge knowledge)
         {
             this.knowledge = knowledge;
-            currentState = LocoTaskState.Finished;
+            CurrentState = LocoTaskState.Finished;
         }
 
         public void RefreshTask(Vector3 position)
         {
             currentTask.RefreshTask(this, position);
-            currentState = LocoTaskState.Running;
+            CurrentState = LocoTaskState.Running;
         }
         public void UpdateTasks(AITransform currentTransform)
         {
-            if (currentState == LocoTaskState.Interrupted)
+            if (CurrentState == LocoTaskState.Interrupted)
             {
-                currentState = LocoTaskState.Finished;
+                CurrentState = LocoTaskState.Finished;
             }
 
-            if (currentState == LocoTaskState.Finished)
+            if (CurrentState == LocoTaskState.Finished)
             {
                 FinishTask();
             }
 
-            if (currentState == LocoTaskState.Running)
+            if (CurrentState == LocoTaskState.Running)
             {
-                currentTask.UpdateLoco(this, currentTransform, ref currentState);
+                currentTask.UpdateLoco(this, currentTransform, ref CurrentState);
             }
 
         }
@@ -101,7 +99,7 @@ namespace TaoTie
                 ClearTask();
             }
             currentTask = task;
-            currentState = LocoTaskState.Running;
+            CurrentState = LocoTaskState.Running;
         }
 
         public void CreateGoToTask(ParamGoTo param)
@@ -118,8 +116,12 @@ namespace TaoTie
 
 
             CreateTask_Internal(facingMoveTask);
-        } 
-        public void CreateSurroundDashTask(ParamSurroundDash param) {}
+        }
+
+        public void CreateSurroundDashTask(ParamSurroundDash param)
+        {
+            
+        }
 
         public void CreateRotationTask(ParamRotation param)
         {
@@ -128,8 +130,12 @@ namespace TaoTie
 
 
             CreateTask_Internal(rotationTask);
+        }
+
+        public void CreateSnakelickMove(ParamGoTo param)
+        {
+            
         } 
-        public void CreateSnakelickMove(ParamGoTo param) {} 
         public void CreateFollowMoveTask(ParamFollowMove param)
         {
             FollowMoveTask followMoveTask = new FollowMoveTask();
@@ -157,18 +163,33 @@ namespace TaoTie
                 currentTask.OnCloseTask(this);
                 currentTask = null;
             }
-            knowledge.Input.TryMove(Vector3.zero);
+            TryMoveAsync(Vector3.zero, MotionFlag.Idle, MotionDirection.Forward).Coroutine();
         }
         
         public void UpdateMotionFlag(MotionFlag newSpeed, MotionDirection direction = MotionDirection.Forward)
         {
             if (newSpeed == MotionFlag.Idle)
             {
-                knowledge.Input.TryMove(Vector3.zero);
+                TryMoveAsync(Vector3.zero, newSpeed, direction).Coroutine();
                 return;
             }
             if(currentTask == null) return;
-            knowledge.Input.TryMove(currentTask.GetDestination() - knowledge.Entity.Position, newSpeed, direction);
+            var dir = currentTask.GetDestination() - knowledge.Entity.Position;
+            TryMoveAsync(dir, newSpeed, direction).Coroutine();
+        }
+        
+        private async ETTask TryMoveAsync(Vector3 dir,MotionFlag newSpeed,MotionDirection direction)
+        {
+            knowledge.OrcaAgent?.SetDir(dir);
+            await UnityLifeTimeHelper.WaitUpdateFinish();
+            if (knowledge.PathFindingKnowledge.UseRVO2 && knowledge.OrcaAgent != null)
+            {
+                knowledge.Input.TryMove(knowledge.OrcaAgent.GetDir(), newSpeed, direction);
+            }
+            else
+            {
+                knowledge.Input.TryMove(dir, newSpeed, direction);
+            }
         }
 
         public void UpdateTaskSpeed(MotionFlag newSpeed)

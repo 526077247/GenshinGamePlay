@@ -6,6 +6,7 @@ namespace TaoTie
 {
     public class AIPathFindingKnowledge: IDisposable
     {
+        public bool UseRVO2;
         public PathFindingType Type;
         public string NavMeshAgentName;
         public DictionaryComponent<long, PathQueryTask> QueryTasks;
@@ -14,12 +15,14 @@ namespace TaoTie
         {
             AIPathFindingKnowledge res = ObjectPool.Instance.Fetch<AIPathFindingKnowledge>();
             res.Type = config.Path.Type;
+            res.UseRVO2 = config.Path.UseRVO2;
             res.NavMeshAgentName = config.Path.NavMeshAgentName;
             res.QueryTasks = DictionaryComponent<long, PathQueryTask>.Create();
             return res;
         }
         public void Dispose()
         {
+            UseRVO2 = default;
             Type = default;
             NavMeshAgentName = null;
             foreach (var item in QueryTasks)

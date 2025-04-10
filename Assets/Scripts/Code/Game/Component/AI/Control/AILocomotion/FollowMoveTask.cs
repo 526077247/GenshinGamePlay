@@ -46,11 +46,11 @@ namespace TaoTie
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamFollowMove param)
         {
             base.Init(knowledge);
-            anchor = param.anchor;
-            useMeleeSlot = param.useMeleeSlot;
-            stopDistance = param.stopDistance;
-            targetAngle = param.targetAngle;
-            speedLevel = param.speedLevel;
+            anchor = param.Anchor;
+            useMeleeSlot = param.UseMeleeSlot;
+            stopDistance = param.StopDistance;
+            targetAngle = param.TargetAngle;
+            speedLevel = param.SpeedLevel;
         }
     }
 }

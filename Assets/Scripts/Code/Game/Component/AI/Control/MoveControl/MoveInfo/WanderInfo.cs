@@ -20,7 +20,7 @@ namespace TaoTie
         
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent ai, AIManager aiManager)
         {
-            if (Status == WanderStatus.Wandering && taskHandler.currentState == LocoTaskState.Running)
+            if (Status == WanderStatus.Wandering && taskHandler.CurrentState == LocoTaskState.Running)
             {
                 if (!InWanderArea(aiKnowledge.CurrentPos,aiKnowledge.BornPos,aiKnowledge.WanderTactic.Data))
                 {
@@ -34,7 +34,7 @@ namespace TaoTie
             {
                 StartNewTask(taskHandler, aiKnowledge);
             }
-            else if (taskHandler.currentState == LocoTaskState.Finished)
+            else if (taskHandler.CurrentState == LocoTaskState.Finished)
             {
                 Status = WanderStatus.Inactive;
             }
@@ -68,9 +68,9 @@ namespace TaoTie
 
             AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
             {
-                targetPosition = WanderToPosCandidate,
-                cannedTurnSpeedOverride = turnSpeed,
-                speedLevel = data.SpeedLevel,
+                TargetPosition = WanderToPosCandidate,
+                CannedTurnSpeedOverride = turnSpeed,
+                SpeedLevel = data.SpeedLevel,
             };
 
             taskHandler.CreateGoToTask(param);
@@ -87,8 +87,8 @@ namespace TaoTie
         {
             base.Leave(taskHandler, aiKnowledge,aiManager);
             Status = WanderStatus.Inactive;
-            if (taskHandler.currentState == LocoTaskState.Running)
-                taskHandler.currentState = LocoTaskState.Interrupted;
+            if (taskHandler.CurrentState == LocoTaskState.Running)
+                taskHandler.CurrentState = LocoTaskState.Interrupted;
         }
 
         public bool InWanderArea(Vector3 bornPos, Vector3 checkPos, ConfigAIWanderData wanderSetting)

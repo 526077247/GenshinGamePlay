@@ -44,13 +44,13 @@ namespace TaoTie
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamFacingMove param)
         {
             base.Init(knowledge);
-            anchor = param.anchor;
-            speedLevel = param.speedLevel;
-            movingDirection = param.movingDirection;
+            anchor = param.Anchor;
+            speedLevel = param.SpeedLevel;
+            movingDirection = param.MovingDirection;
             if(anchor!=null)
                 destination = anchor.Position;
             innerState = FacingMoveTaskState.Start;
-            duration = param.duration;
+            duration = param.Duration;
             
         }
 

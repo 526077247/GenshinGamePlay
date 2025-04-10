@@ -42,9 +42,9 @@ namespace TaoTie
 
                 AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
                 {
-                    targetPosition = (Vector3)FleePoint,
-                    cannedTurnSpeedOverride = data.TurnSpeedOverride,
-                    speedLevel = (MotionFlag)data.SpeedLevel,
+                    TargetPosition = (Vector3)FleePoint,
+                    CannedTurnSpeedOverride = data.TurnSpeedOverride,
+                    SpeedLevel = (MotionFlag)data.SpeedLevel,
                 };
 
                 taskHandler.CreateGoToTask(param);
@@ -53,7 +53,7 @@ namespace TaoTie
 
             if (Status == FleeStatus.Fleeing)
             {
-                if (taskHandler.currentState == LocoTaskState.Finished)
+                if (taskHandler.CurrentState == LocoTaskState.Finished)
                 {
                     Status = FleeStatus.FleeFinish;
                 }
@@ -63,12 +63,12 @@ namespace TaoTie
             {
                 if (aiKnowledge.FleeTactic.Data.TurnToTarget)
                 {
-                    if (taskHandler.currentState == LocoTaskState.Finished)
+                    if (taskHandler.CurrentState == LocoTaskState.Finished)
                     {
                         Unit target = aiKnowledge.TargetKnowledge.TargetEntity;
                         AILocomotionHandler.ParamRotation param = new AILocomotionHandler.ParamRotation
                         {
-                            targetPosition = target.Position
+                            TargetPosition = target.Position
                         };
                         taskHandler.CreateRotationTask(param);
 
@@ -84,7 +84,7 @@ namespace TaoTie
 
             if (Status == FleeStatus.RotateToTarget)
             {
-                if (taskHandler.currentState == LocoTaskState.Finished)
+                if (taskHandler.CurrentState == LocoTaskState.Finished)
                 {
                     Status = FleeStatus.Inactive;
                     TriggerCD(aiKnowledge);
@@ -101,9 +101,9 @@ namespace TaoTie
 
             AILocomotionHandler.ParamGoTo param = new AILocomotionHandler.ParamGoTo
             {
-                targetPosition = (Vector3)FleePoint,
-                cannedTurnSpeedOverride = data.TurnSpeedOverride,
-                speedLevel = (MotionFlag)data.SpeedLevel,
+                TargetPosition = (Vector3)FleePoint,
+                CannedTurnSpeedOverride = data.TurnSpeedOverride,
+                SpeedLevel = (MotionFlag)data.SpeedLevel,
             };
 
             taskHandler.CreateGoToTask(param);

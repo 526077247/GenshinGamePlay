@@ -35,7 +35,7 @@ namespace TaoTie
             if (holders == null) return;
             var entity = UnitModel.GetParent<Entity>();
             var node = holders.First;
-            var angel = 360f / holders.Count;
+            var angle = 360f / holders.Count;
             float offset = Config.AngleSpeed.Resolve(entity, null) * GameTimerManager.Instance.GetTimeNow() / 1000f % 360;
             float radius = Config.Radius.Resolve(entity, null);
             for (int i = 0; i < holders.Count; i++)
@@ -43,7 +43,7 @@ namespace TaoTie
                 var holder = node.Value;
                 if (holder.EntityView != null)
                 {
-                    var euler = up * (angel * i + offset);
+                    var euler = up * (angle * i + offset);
                     if (Config.FollowParentRotation)
                     {
                         holder.EntityView.localRotation = Quaternion.Euler(euler);

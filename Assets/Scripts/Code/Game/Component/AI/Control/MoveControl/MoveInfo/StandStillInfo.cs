@@ -15,8 +15,8 @@
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             base.Enter(taskHandler, aiKnowledge, aiManager);
-            if(taskHandler.currentState == LocoTaskState.Running)
-                taskHandler.currentState = LocoTaskState.Interrupted;
+            if(taskHandler.CurrentState == LocoTaskState.Running)
+                taskHandler.CurrentState = LocoTaskState.Interrupted;
             taskHandler.UpdateMotionFlag(MotionFlag.Idle);
         }
 

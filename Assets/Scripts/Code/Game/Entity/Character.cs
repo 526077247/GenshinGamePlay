@@ -26,6 +26,7 @@ namespace TaoTie
             AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);
             AddComponent<AvatarSkillComponent>();
             AddComponent<MoveComponent>();
+            AddComponent<ORCAAgentComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             AddComponent<EquipHoldComponent>();

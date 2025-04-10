@@ -30,11 +30,11 @@ namespace TaoTie
 
                 AILocomotionHandler.ParamFollowMove param = new AILocomotionHandler.ParamFollowMove
                 {
-                    anchor = aiKnowledge.TargetKnowledge.TargetEntity,
-                    useMeleeSlot = useMeleeSlot,
-                    speedLevel = speedLevel,
-                    turnSpeed = turnSpeed,
-                    stopDistance = stopDistance
+                    Anchor = aiKnowledge.TargetKnowledge.TargetEntity,
+                    UseMeleeSlot = useMeleeSlot,
+                    SpeedLevel = speedLevel,
+                    TurnSpeed = turnSpeed,
+                    StopDistance = stopDistance
                 };
 
                 // taskHandler.CreateFollowMoveTask(param);

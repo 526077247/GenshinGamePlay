@@ -39,8 +39,8 @@ namespace TaoTie
         public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
             base.Leave(taskHandler, aiKnowledge, aiManager);
-            if(taskHandler.currentState == LocoTaskState.Running)
-                taskHandler.currentState = LocoTaskState.Interrupted;
+            if(taskHandler.CurrentState == LocoTaskState.Running)
+                taskHandler.CurrentState = LocoTaskState.Interrupted;
         }
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,
@@ -88,10 +88,10 @@ namespace TaoTie
             MotionFlag speedLevel = dir == MotionDirection.Idle?MotionFlag.Idle:data.SpeedLevel;
             AILocomotionHandler.ParamFacingMove param = new AILocomotionHandler.ParamFacingMove
             {
-                anchor = aiKnowledge.TargetKnowledge.TargetEntity,
-                speedLevel = speedLevel,
-                duration = during,
-                movingDirection = dir
+                Anchor = aiKnowledge.TargetKnowledge.TargetEntity,
+                SpeedLevel = speedLevel,
+                Duration = during,
+                MovingDirection = dir
             };
 
             taskHandler.CreateFacingMoveTask(param);

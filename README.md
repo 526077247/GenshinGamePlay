@@ -29,6 +29,7 @@
 6. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) 节点编辑器
 7. [ET](https://github.com/egametang/ET) 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
 8. [UnityScriptHotReload](https://github.com/Misaka-Mikoto-Tech/UnityScriptHotReload) 运行中无感重载C#代码
+9. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) 动态避障寻路
 
 ## 付费插件
 1. [Odin Inspector](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041) 编辑器扩展

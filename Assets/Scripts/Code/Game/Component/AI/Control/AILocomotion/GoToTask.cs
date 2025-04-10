@@ -21,12 +21,11 @@ namespace TaoTie
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamGoTo param)
         {
             base.Init(knowledge);
-            obstacleHandling = param.obstacleHandling;
-            speedLevel = param.speedLevel;
-            destination = param.targetPosition;
-            useNavMesh = param.useNavmesh;
-            getCloseDistance = knowledge.MoveKnowledge.GetAlmostReachDistance(param.speedLevel);
-            turnSpeed = param.cannedTurnSpeedOverride;
+            speedLevel = param.SpeedLevel;
+            destination = param.TargetPosition;
+            useNavMesh = param.UseNavmesh;
+            getCloseDistance = knowledge.MoveKnowledge.GetAlmostReachDistance(param.SpeedLevel);
+            turnSpeed = param.CannedTurnSpeedOverride;
             innerState = GoToTaskState.QueryPathfinder;
             index = 0;
         }

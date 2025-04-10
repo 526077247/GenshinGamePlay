@@ -29,10 +29,10 @@
                         moveFSM.Goto(decision.Move, loco, knowledge,knowledge.AIManager);
                         break;
                     default:
-                        if (loco.currentState == LocoTaskState.Running)
-                            loco.currentState = LocoTaskState.Interrupted;
+                        if (loco.CurrentState == LocoTaskState.Running)
+                            loco.CurrentState = LocoTaskState.Interrupted;
 
-                        if (loco.currentState == LocoTaskState.Finished)
+                        if (loco.CurrentState == LocoTaskState.Finished)
                         {
                             knowledge.MoveDecisionChanged = false;
                             moveFSM.Goto(decision.Move, loco,knowledge,knowledge.AIManager);

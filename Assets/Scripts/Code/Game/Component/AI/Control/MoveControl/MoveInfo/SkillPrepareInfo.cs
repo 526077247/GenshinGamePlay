@@ -22,10 +22,10 @@
             {
                 AILocomotionHandler.ParamFacingMove param = new AILocomotionHandler.ParamFacingMove
                 {
-                    anchor = aiKnowledge.TargetKnowledge.TargetEntity,
-                    speedLevel = skillConfig.SkillPrepareSpeedLevel,
-                    duration = 1000,
-                    movingDirection = MotionDirection.Forward
+                    Anchor = aiKnowledge.TargetKnowledge.TargetEntity,
+                    SpeedLevel = skillConfig.SkillPrepareSpeedLevel,
+                    Duration = 1000,
+                    MovingDirection = MotionDirection.Forward
                 };
                 taskHandler.CreateFacingMoveTask(param);
             }
@@ -33,10 +33,10 @@
             {
                 AILocomotionHandler.ParamFacingMove param = new AILocomotionHandler.ParamFacingMove
                 {
-                    anchor = aiKnowledge.TargetKnowledge.TargetEntity,
-                    speedLevel = skillConfig.SkillPrepareSpeedLevel,
-                    duration = 1000,
-                    movingDirection = MotionDirection.Backward
+                    Anchor = aiKnowledge.TargetKnowledge.TargetEntity,
+                    SpeedLevel = skillConfig.SkillPrepareSpeedLevel,
+                    Duration = 1000,
+                    MovingDirection = MotionDirection.Backward
                 };
 
                 taskHandler.CreateFacingMoveTask(param);

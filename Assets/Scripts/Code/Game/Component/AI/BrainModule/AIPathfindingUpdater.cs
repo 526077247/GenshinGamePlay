@@ -7,6 +7,11 @@ namespace TaoTie
     /// </summary>
     public class AIPathfindingUpdater : BrainModuleBase
     {
+        protected override void InitInternal()
+        {
+            base.InitInternal();
+            knowledge.Entity.GetComponent<ORCAAgentComponent>()?.EnableRVO2(knowledge.PathFindingKnowledge.UseRVO2);
+        }
 
         protected override void UpdateMainThreadInternal()
         {

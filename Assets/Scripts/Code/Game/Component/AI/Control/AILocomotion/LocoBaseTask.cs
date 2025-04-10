@@ -9,7 +9,6 @@ namespace TaoTie
         protected Vector3 destination;
         protected MotionFlag speedLevel;
         protected long startTick;
-        protected ObstacleHandling obstacleHandling;
         protected AIKnowledge knowledge;
         protected Vector3? prevPos;
         protected AITimer moveFailTimer;
@@ -18,14 +17,6 @@ namespace TaoTie
         protected DirectionLock directionLock;
 
         public bool Stopped { get; protected set; }
-        
-        public enum ObstacleHandling
-        {
-            KeepMoving = 0,
-            Stop = 1,
-            StopOnlyByPathEnd = 2,
-            Teleport = 3
-        }
 
         public struct DirectionLock
         {
