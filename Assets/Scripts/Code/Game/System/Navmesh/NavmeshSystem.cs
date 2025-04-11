@@ -57,53 +57,56 @@ namespace TaoTie
         
         public async ETTask<bool> Find(string name, Vector3 start, Vector3 target, List<Vector3> result)
         {
-            if (!navmeshs.TryGetValue(name,out var query))
+            using(await CoroutineLockManager.Instance.Wait(CoroutineLockType.PathQuery, name.GetHashCode()))
             {
-                query = await Load(name);
-                if (query == null)
+                if (!navmeshs.TryGetValue(name,out var query))
                 {
-                    Log.Error($"寻路| Find 失败 pathfinding ptr is zero: {name}");
-                    return false;
+                    query = await Load(name);
+                    if (query == null)
+                    {
+                        Log.Error($"寻路| Find 失败 pathfinding ptr is zero: {name}");
+                        return false;
+                    }
                 }
-            }
             
-            RcVec3f startPos = new(-start.x, start.y, start.z);
-            RcVec3f endPos = new(-target.x, target.y, target.z);
+                RcVec3f startPos = new(-start.x, start.y, start.z);
+                RcVec3f endPos = new(-target.x, target.y, target.z);
 
-            long startRef;
-            long endRef;
-            RcVec3f startPt;
-            RcVec3f endPt;
+                long startRef;
+                long endRef;
+                RcVec3f startPt;
+                RcVec3f endPt;
             
-            query.FindNearestPoly(startPos, extents, filter, out startRef, out startPt, out _);
-            query.FindNearestPoly(endPos, extents, filter, out endRef, out endPt, out _);
+                query.FindNearestPoly(startPos, extents, filter, out startRef, out startPt, out _);
+                query.FindNearestPoly(endPos, extents, filter, out endRef, out endPt, out _);
             
-            query.FindPath(startRef, endRef, startPt, endPt, filter, ref polys, new DtFindPathOption(0, float.MaxValue));
+                query.FindPath(startRef, endRef, startPt, endPt, filter, ref polys, new DtFindPathOption(0, float.MaxValue));
 
-            if (0 >= polys.Count)
-            {
+                if (0 >= polys.Count)
+                {
+                    return true;
+                }
+            
+                // In case of partial path, make sure the end point is clamped to the last polygon.
+                RcVec3f epos = RcVec3f.Of(endPt.x, endPt.y, endPt.z);
+                if (polys[^1] != endRef)
+                {
+                    DtStatus dtStatus = query.ClosestPointOnPoly(polys[^1], endPt, out RcVec3f closest, out bool _);
+                    if (dtStatus.Succeeded())
+                    {
+                        epos = closest;
+                    }
+                }
+
+                query.FindStraightPath(startPt, epos, polys, ref straightPath, MAX_POLYS, DtNavMeshQuery.DT_STRAIGHTPATH_ALL_CROSSINGS);
+
+                for (int i = 0; i < straightPath.Count; ++i)
+                {
+                    RcVec3f pos = straightPath[i].pos;
+                    result.Add(new Vector3(-pos.x, pos.y, pos.z));
+                }
                 return true;
             }
-            
-            // In case of partial path, make sure the end point is clamped to the last polygon.
-            RcVec3f epos = RcVec3f.Of(endPt.x, endPt.y, endPt.z);
-            if (polys[^1] != endRef)
-            {
-                DtStatus dtStatus = query.ClosestPointOnPoly(polys[^1], endPt, out RcVec3f closest, out bool _);
-                if (dtStatus.Succeeded())
-                {
-                    epos = closest;
-                }
-            }
-
-            query.FindStraightPath(startPt, epos, polys, ref straightPath, MAX_POLYS, DtNavMeshQuery.DT_STRAIGHTPATH_ALL_CROSSINGS);
-
-            for (int i = 0; i < straightPath.Count; ++i)
-            {
-                RcVec3f pos = straightPath[i].pos;
-                result.Add(new Vector3(-pos.x, pos.y, pos.z));
-            }
-            return true;
         }
     }
 }

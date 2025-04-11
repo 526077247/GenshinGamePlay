@@ -189,6 +189,13 @@ namespace TaoTie
             {
                 combatD.DoKill(combatA.Id, DieStateFlag.None); //todo: State
             }
+
+            if (!string.IsNullOrEmpty(result.HitPattern?.OnHitEffectName))
+            {
+                var effect = em.CreateEntity<Effect, string>(result.HitPattern.OnHitEffectName);
+                effect.Position = result.HitInfo.HitPos;
+                effect.DelayDispose(2000);
+            }
         }
     }
 }

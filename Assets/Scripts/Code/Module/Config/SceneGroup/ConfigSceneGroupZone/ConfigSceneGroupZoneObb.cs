@@ -31,11 +31,13 @@ namespace TaoTie
             }
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
             var obj = entity.GameObject;
+            obj.name = "ZoneObb";
             obj.transform.rotation = rotation;
             obj.transform.position = position;
             var collider = obj.AddComponent<BoxCollider>();
             collider.isTrigger = true;
             collider.size = Size;
+            entity.Collider = collider;
             entity.AddComponent<SceneGroupZoneComponent, int, long,GameObject >(LocalId, sceneGroup.Id, obj);
             return entity;
         }

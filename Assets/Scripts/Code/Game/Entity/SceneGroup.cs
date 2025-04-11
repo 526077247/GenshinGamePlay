@@ -249,8 +249,8 @@ namespace TaoTie
             if (this.suite.TryGetValue(suiteId, out var config))
             {
                 this.ChangeTriggers(config);
-                this.ChangeActors(config);
                 this.ChangeZones(config);
+                this.ChangeActors(config);
                 this.curSuiteId = config.LocalId;
                 Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteLoadEvent()
                 {
@@ -404,8 +404,8 @@ namespace TaoTie
                 }
 
                 this.AddonTriggers(config);
-                this.AddonActors(config);
                 this.AddonZones(config);
+                this.AddonActors(config);
                 this.addOnSuiteConfig.Add(config.LocalId);
                 Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteLoadEvent()
                 {
@@ -466,8 +466,8 @@ namespace TaoTie
             if (this.suite.TryGetValue(group, out var config) && this.addOnSuiteConfig != null &&
                 this.addOnSuiteConfig.Contains(config.LocalId))
             {
-                this.RemoveAddonZones(config);
                 this.RemoveAddonActors(config);
+                this.RemoveAddonZones(config);
                 this.RemoveAddonTriggers(config);
                 this.addOnSuiteConfig.Remove(config.LocalId);
             }
@@ -599,7 +599,10 @@ namespace TaoTie
         {
             return this.actorEntities.TryGetValue(actorId, out entityId);
         }
-
+        public bool TryGetZoneEntity(int actorId, out long entityId)
+        {
+            return this.zoneEntities.TryGetValue(actorId, out entityId);
+        }
         /// <summary>
         /// 从SceneGroup的管理中移除，不会销毁Entity
         /// </summary>

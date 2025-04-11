@@ -6,13 +6,18 @@ namespace TaoTie
     /// <summary>
     /// 怪物
     /// </summary>
-    public class Monster: Actor,IEntity<int,Vector3,uint>
+    public class Monster: Actor, IEntity<int,Vector3,uint>, IEntity<int,Vector3,uint,Zone>
     {
         #region IEntity
         
         public override EntityType Type => EntityType.Monster;
         
         public void Init(int configId,Vector3 bornPos,uint campId)
+        {
+            Init(configId, bornPos, campId, null);
+        }
+        
+        public void Init(int configId,Vector3 bornPos,uint campId, Zone defendArea)
         {
             Position = bornPos;
             CampId = campId;
@@ -30,8 +35,8 @@ namespace TaoTie
             if (!string.IsNullOrEmpty(monster.Config.AIPath))
             {
                 var config = GetAIConfig(monster.Config.AIPath);
-                if(config!=null && config.Enable)
-                    AddComponent<AIComponent,ConfigAIBeta>(config);
+                if (config != null && config.Enable)
+                    AddComponent<AIComponent, ConfigAIBeta, Zone>(config, defendArea);
             }
             if (!string.IsNullOrEmpty(monster.Config.PoseFSM))
             {
@@ -40,7 +45,6 @@ namespace TaoTie
             AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);
             AddComponent<MoveComponent>();
         }
-        
         public void Destroy()
         {
             ConfigActor = null;

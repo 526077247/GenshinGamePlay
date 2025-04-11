@@ -71,9 +71,12 @@ namespace TaoTie
             if (text != null)
             {
                 text.text = showDmg.ToString();
-                Vector2 pt = CameraManager.Instance.MainCamera().WorldToScreenPoint(showPos) *
-                             UIManager.Instance.ScreenSizeFlag;
-                rect.anchoredPosition = pt;
+                var mainCamera = CameraManager.Instance.MainCamera();
+                if (mainCamera != null)
+                {
+                    Vector2 pt = mainCamera.WorldToScreenPoint(showPos) * UIManager.Instance.ScreenSizeFlag;
+                    rect.anchoredPosition = pt;
+                }
             }
         }
 
@@ -84,6 +87,7 @@ namespace TaoTie
             if (rect != null)
             {
                 GameObjectPoolManager.GetInstance().RecycleGameObject(rect.gameObject);
+                rect = null;
             }
 
             ObjectPool.Instance.Recycle(this);

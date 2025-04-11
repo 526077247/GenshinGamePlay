@@ -32,7 +32,7 @@
                         if (loco.CurrentState == LocoTaskState.Running)
                             loco.CurrentState = LocoTaskState.Interrupted;
 
-                        if (loco.CurrentState == LocoTaskState.Finished)
+                        if (loco.CurrentState != LocoTaskState.Running)
                         {
                             knowledge.MoveDecisionChanged = false;
                             moveFSM.Goto(decision.Move, loco,knowledge,knowledge.AIManager);

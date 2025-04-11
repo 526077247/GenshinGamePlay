@@ -1,4 +1,5 @@
 ﻿using Nino.Core;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
@@ -7,7 +8,7 @@ namespace TaoTie
     {
         [NinoMember(1)]
         public bool Enable = true;
-        [NinoMember(2)]
+        [NinoMember(2)][LabelText("防守距边界范围")]
         public float DefendRange; 
     }
 }

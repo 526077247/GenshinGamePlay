@@ -40,7 +40,7 @@ namespace TaoTie
             
             res.IsOver = false;
             res.lerpFunc = EasingFunction.GetEasingFunction(res.config.Ease);
-            res.startlerpTime = GameTimerManager.Instance.GetTimeNow();
+            res.startlerpTime = TimerManager.Instance.GetTimeNow();
             return res;
         }
         public override void OnEnter()
@@ -54,7 +54,7 @@ namespace TaoTie
         {
             if (To.IsOver) IsOver = true;
             if (IsOver) return;
-            var timeNow = GameTimerManager.Instance.GetTimeNow();
+            var timeNow = TimerManager.Instance.GetTimeNow();
             if (timeNow >= startlerpTime + config.DeltaTime)
             {
                 IsOver = true;
@@ -98,7 +98,7 @@ namespace TaoTie
             Priority = to.Priority;
             IsOver = false;
             lerpFunc = EasingFunction.GetEasingFunction(config.Ease);
-            startlerpTime = GameTimerManager.Instance.GetTimeNow();
+            startlerpTime = TimerManager.Instance.GetTimeNow();
             CameraManager.Instance.ChangeCursorVisible(To.Config.VisibleCursor, CursorStateType.Camera);
             CameraManager.Instance.ChangeCursorLock(To.Config.UnLockCursor, CursorStateType.Camera);
         }

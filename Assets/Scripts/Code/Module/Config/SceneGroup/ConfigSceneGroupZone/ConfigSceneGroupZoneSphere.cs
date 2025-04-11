@@ -25,10 +25,12 @@ namespace TaoTie
             }
             var entity = sceneGroup.Parent.CreateEntity<Zone>();
             var obj = entity.GameObject;
+            obj.name = "ZoneSphere";
             obj.transform.position = position;
             var collider = obj.AddComponent<SphereCollider>();
             collider.isTrigger = true;
             collider.radius = Radius;
+            entity.Collider = collider;
             entity.AddComponent<SceneGroupZoneComponent, int, long,GameObject>(LocalId, sceneGroup.Id, obj);
             return entity;
         }

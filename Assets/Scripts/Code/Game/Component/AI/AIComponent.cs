@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// AI组件，注意回收的问题
     /// </summary>
-    public class AIComponent: Component,IComponent<ConfigAIBeta>
+    public class AIComponent: Component,IComponent<ConfigAIBeta>,IComponent<ConfigAIBeta, Zone>
     {
 
         protected AIManager aiManager;
@@ -46,7 +46,12 @@ namespace TaoTie
         #endregion
         #region IComponent
 
-        public virtual void Init(ConfigAIBeta config)
+        public void Init(ConfigAIBeta config)
+        {
+            Init(config, null);
+        }
+
+        public virtual void Init(ConfigAIBeta config, Zone defendArea)
         {
             parent.AddComponent<AIInputController>();
             if (SceneManager.Instance.CurrentScene is MapScene scene)
@@ -54,7 +59,7 @@ namespace TaoTie
                 aiManager = scene.GetManager<AIManager>();
             }
             knowledge = ObjectPool.Instance.Fetch<AIKnowledge>();
-            knowledge.Init(GetParent<Actor>(), config, aiManager);
+            knowledge.Init(GetParent<Actor>(), config, aiManager, defendArea);
             
             SensingUpdater.Init(knowledge);
             ThreatUpdater.Init(knowledge);

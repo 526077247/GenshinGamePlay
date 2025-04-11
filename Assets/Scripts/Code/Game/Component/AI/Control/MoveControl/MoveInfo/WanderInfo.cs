@@ -20,9 +20,9 @@ namespace TaoTie
         
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent ai, AIManager aiManager)
         {
-            if (Status == WanderStatus.Wandering && taskHandler.CurrentState == LocoTaskState.Running)
+            if (Status == WanderStatus.Wandering && taskHandler.CurrentState != LocoTaskState.Running)
             {
-                if (!InWanderArea(aiKnowledge.CurrentPos,aiKnowledge.BornPos,aiKnowledge.WanderTactic.Data))
+                if (!InWanderArea(aiKnowledge.CurrentPos, aiKnowledge.BornPos, aiKnowledge.WanderTactic.Data))
                 {
                     StartNewTask(taskHandler, aiKnowledge);
                     return;

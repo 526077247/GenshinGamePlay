@@ -54,26 +54,27 @@ namespace TaoTie
         public AITacticKnowledge_MeleeCharge MeleeChargeTactic;
         public AITacticKnowledge_Flee FleeTactic;
         public AITacticKnowledge_Wander WanderTactic;
-        public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager)
+
+        public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager, Zone defendArea)
         {
             AIManager = aiManager;
             Entity = aiEntity;
             BornPos = Entity.Position;
             CampID = Entity.CampId;
             DecisionArchetype = config.DecisionArchetype;
-            
+
             MoveControlState = AIMoveControlState.Create();
             ActionControlState = AIActionControlState.Create();
-            
+
             SensingKnowledge = AISensingKnowledge.Create(config);
             ThreatKnowledge = AIThreatKnowledge.Create(config);
             TargetKnowledge = AITargetKnowledge.Create();
-            DefendAreaKnowledge = AIDefendAreaKnowledge.Create(config,BornPos);
+            DefendAreaKnowledge = AIDefendAreaKnowledge.Create(config, BornPos, defendArea);
             SkillKnowledge = AISkillKnowledge.Create(config);
             MoveKnowledge = AIMoveKnowledge.Create(config);
-            
+
             PathFindingKnowledge = AIPathFindingKnowledge.Create(config);
-            
+
             FacingMoveTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_FacingMove>();
             FacingMoveTactic.LoadData(config.FacingMoveTactic);
             MeleeChargeTactic = ObjectPool.Instance.Fetch<AITacticKnowledge_MeleeCharge>();
