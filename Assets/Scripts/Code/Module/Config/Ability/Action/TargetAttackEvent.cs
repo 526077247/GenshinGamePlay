@@ -7,6 +7,8 @@ namespace TaoTie
     [NinoType(false)][LabelText("指定目标攻击")]
     public partial class TargetAttackEvent : ConfigAbilityAction
     {
+        [NinoMember(14)]
+        public TargetType TargetType = TargetType.Enemy;
         [NinoMember(10)][LabelText("*攻击者")][Tooltip("仅支持指定一个,若选择结果超过1个默认取第一个")]
         public AbilityTargetting AttackTargetting = AbilityTargetting.Owner;
         [NinoMember(11)][LabelText("防御者")]
@@ -19,7 +21,7 @@ namespace TaoTie
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier,
             Entity target)
         {
-            if (AttackInfo == null) return;
+            if (TargetType == TargetType.None || AttackInfo == null) return;
             Entity attacker;
             using (var attackers =
                    AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, AttackTargetting))
@@ -51,6 +53,16 @@ namespace TaoTie
                 for (int i = 0; i < beAttackers.Count; i++)
                 {
                     var beAttacker = beAttackers[i];
+                    if (TargetType == TargetType.Self && beAttacker.Id != target.Id)
+                        continue;
+                    if (TargetType == TargetType.AllExceptSelf && beAttacker.Id == target.Id)
+                        continue;
+                    if (TargetType == TargetType.Enemy && !AttackHelper.CheckIsEnemy(attacker, beAttacker))
+                        continue;
+                    if (TargetType == TargetType.SelfCamp && !AttackHelper.CheckIsCamp(attacker, beAttacker))
+                        continue;
+                    if (TargetType == TargetType.Alliance && !AttackHelper.CheckIsAlliance(attacker, beAttacker))
+                        continue;
                     var len = ResolveHit(attacker, beAttacker, new[] {EntityType.ALL}, out var infos);
                     if (len < 1) continue;
                     var info = infos[0];
