@@ -33,7 +33,7 @@ namespace LitJson
         private Type element_type;
         private bool is_array;
         private bool is_list;
-
+        private bool is_hashSet;
 
         public Type ElementType
         {
@@ -58,6 +58,12 @@ namespace LitJson
         {
             get { return is_list; }
             set { is_list = value; }
+        }
+        
+        public bool IsHashSet
+        {
+            get { return is_hashSet; }
+            set { is_hashSet = value; }
         }
     }
 
@@ -197,6 +203,12 @@ namespace LitJson
 
             if (type.GetInterface("System.Collections.IList") != null)
                 data.IsList = true;
+
+            if (type.GetInterface("System.Collections.Generic.ISet`1") != null)
+            {
+                data.IsHashSet = true;
+                data.ElementType = type.GetGenericArguments()[0];
+            }
 
             foreach (PropertyInfo p_info in type.GetProperties()) {
                 if (p_info.Name != "Item")
@@ -456,45 +468,62 @@ namespace LitJson
                 AddArrayMetadata(inst_type);
                 ArrayMetadata t_data = array_metadata[inst_type];
 
-                if (!t_data.IsArray && !t_data.IsList)
+                if (!t_data.IsArray && !t_data.IsList && !t_data.IsHashSet)
                     throw new JsonException(String.Format(
                             "Type {0} can't act as an array",
                             inst_type));
 
-                IList list;
-                Type elem_type;
+                if (!t_data.IsHashSet)
+                {
+                    IList list;
+                    Type elem_type;
 
-                if (!t_data.IsArray)
-                {
-                    list = (IList)Activator.CreateInstance(inst_type);
-                    elem_type = t_data.ElementType;
-                }
-                else
-                {
-                    list = new ArrayList();
-                    elem_type = inst_type.GetElementType();
-                }
+                    if (!t_data.IsArray)
+                    {
+                        list = (IList)Activator.CreateInstance(inst_type);
+                        elem_type = t_data.ElementType;
+                    }
+                    else
+                    {
+                        list = new ArrayList();
+                        elem_type = inst_type.GetElementType();
+                    }
 
-                while (true)
-                {
-                    object item = ReadValue(elem_type, reader);
-                    if (item == null && reader.Token == JsonToken.ArrayEnd)
-                        break;
+                    while (true)
+                    {
+                        object item = ReadValue(elem_type, reader);
+                        if (item == null && reader.Token == JsonToken.ArrayEnd)
+                            break;
                     
-                    list.Add(item);
-                }
+                        list.Add(item);
+                    }
 
-                if (t_data.IsArray)
+                    if (t_data.IsArray)
+                    {
+                        int n = list.Count;
+                        instance = Array.CreateInstance(elem_type, n);
+
+                        for (int i = 0; i < n; i++)
+                            ((Array)instance).SetValue(list[i], i);
+                    }
+                    else
+                        instance = list;
+                }
+                else 
                 {
-                    int n = list.Count;
-                    instance = Array.CreateInstance(elem_type, n);
-
-                    for (int i = 0; i < n; i++)
-                        ((Array)instance).SetValue(list[i], i);
+                    instance = Activator.CreateInstance(inst_type);
+                    var elem_type = t_data.ElementType;
+                    var addMethod = inst_type.GetMethod("Add");
+                    object[] param = new object[1];
+                    while (true)
+                    {
+                        object item = ReadValue(elem_type, reader);
+                        if (item == null && reader.Token == JsonToken.ArrayEnd)
+                            break;
+                        param[0] = item;
+                        addMethod.Invoke(instance, param);
+                    }
                 }
-                else
-                    instance = list;
-
             }
             else if (reader.Token == JsonToken.ObjectStart)
             {
@@ -956,6 +985,16 @@ namespace LitJson
             }
 
             Type obj_type= obj.GetType();
+            
+            if (obj_type.IsGenericType && obj_type.GetInterface("System.Collections.Generic.ISet`1") != null)
+            {
+                writer.WriteArrayStart();
+                foreach (object elem in (IEnumerable)obj)
+                    WriteValue(elem, writer, writer_is_private, depth + 1);
+                writer.WriteArrayEnd();
+
+                return;
+            }
 
             // See if there's a custom exporter for the object
             if (custom_exporters_table.ContainsKey(obj_type))
