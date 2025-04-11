@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoType(false)]
-    public class CreateGadget: ConfigAbilityAction
+    public partial class CreateGadget: ConfigAbilityAction
     {
         [NinoMember(10)][LabelText("是否存在所有者？")]
         public bool OwnerIsTarget;
@@ -23,9 +23,12 @@ namespace TaoTie
         public CheckGround CheckGround;
         [NinoMember(17)]
         public int GadgetID;
+        [NinoMember(20)]
+        public bool OverrideCampId;
         [NinoMember(18)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
+        [ShowIf(nameof(OverrideCampId))]
 #endif
         public uint CampID;
         [NinoMember(19)]
@@ -75,7 +78,22 @@ namespace TaoTie
                     }
                 }
             }
-            res.Init(GadgetID, DefaultState, CampID);
+
+            uint campId = CampConst.Default;
+            if (OverrideCampId)
+            {
+                campId = CampID;
+            }
+            else if (target is Actor actor)
+            {
+                campId = actor.CampId;
+            }
+            else
+            {
+                Log.Error("campId 获取失败");
+            }
+
+            res.Init(GadgetID, DefaultState, campId);
             Born.AfterBorn(actionExecuter, ability, modifier, target, res).Coroutine();
         }
     }
