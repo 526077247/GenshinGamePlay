@@ -79,16 +79,30 @@ namespace TaoTie
         public void Update()
         {
             if (fsms == null) return;
-            for (int i = 0; i < fsms.Length; i++)
+            using (ListComponent<ConfigParamTrigger> triggerBefore = ListComponent<ConfigParamTrigger>.Create())
             {
-                if (fsms[i] == null) continue; //可能在其他状态中entity被销毁了
-                fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
-            }
-
-            if (triggers == null) return;
-            for (int i = 0; i < triggers.Count; i++)
-            {
-                triggers[i].SetValue(DynDictionary, false);
+                if (triggers != null)
+                {
+                    for (int i = 0; i < triggers.Count; i++)
+                    {
+                        if (triggers[i].GetBool(DynDictionary))
+                        {
+                            triggerBefore.Add(triggers[i]);
+                        }
+                    }
+                }
+                
+                for (int i = 0; i < fsms.Length; i++)
+                {
+                    if (fsms[i] == null) continue; //可能在其他状态中entity被销毁了
+                    fsms[i].Update(GameTimerManager.Instance.GetDeltaTime() / 1000f);
+                }
+                
+                //只还原已经触发过的Trigger
+                for (int i = 0; i < triggerBefore.Count; i++)
+                {
+                    triggerBefore[i].SetValue(DynDictionary, false);
+                }
             }
         }
         

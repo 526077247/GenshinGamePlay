@@ -71,8 +71,8 @@ namespace TaoTie
                 currentState.StatePassTime += currentState.StateElapseTime;
                 currentState.StateTime += currentState.StateElapseTime;
                 currentState.StateNormalizedTime = currentState.StateTime / stateCfg.StateDuration;
-                
-                if (preState!=null )
+
+                if (preState != null)
                 {
                     preState.StateElapseTime = elapsetime;
                     preState.StatePassTime += preState.StateElapseTime;
@@ -158,6 +158,10 @@ namespace TaoTie
             }
             currentState?.OnUpdate();
             preState?.OnUpdate();
+            
+            // Debug 为啥死了没有过渡状态
+            // if (Component.GetBool(FSMConst.Die))
+            //     ;
         }
 
         public void ChangeState(string name, ConfigTransition transition = null)

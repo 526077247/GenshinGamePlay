@@ -1,26 +1,18 @@
-﻿namespace TaoTie
+﻿using Sirenix.OdinInspector;
+
+namespace TaoTie
 {
     public enum TransitionInterruptionSource
     {
-        /// <summary>
-        ///   <para>The Transition cannot be interrupted. Formely know as Atomic.</para>
-        /// </summary>
+        [LabelText("不能中断")]
         None,
-        /// <summary>
-        ///   <para>The Transition can be interrupted by transitions in the source AnimatorState.</para>
-        /// </summary>
+        [LabelText("可以被源动画中的过渡中断")]
         Source,
-        /// <summary>
-        ///   <para>The Transition can be interrupted by transitions in the destination AnimatorState.</para>
-        /// </summary>
+        [LabelText("可以被目标动画中的过渡中断")]
         Destination,
-        /// <summary>
-        ///   <para>The Transition can be interrupted by transitions in the source or the destination AnimatorState.</para>
-        /// </summary>
+        [LabelText("可以被源(优先)和目标动画中的过渡中断")]
         SourceThenDestination,
-        /// <summary>
-        ///   <para>The Transition can be interrupted by transitions in the source or the destination AnimatorState.</para>
-        /// </summary>
+        [LabelText("可以被目标(优先)和源动画中的过渡中断")]
         DestinationThenSource,
     }
 }
