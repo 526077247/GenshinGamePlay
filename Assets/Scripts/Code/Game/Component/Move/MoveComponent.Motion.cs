@@ -11,12 +11,25 @@ namespace TaoTie
             var animator = GetComponent<UnitModelComponent>()?.GetAnimator();
             if (animator != null)
             {
-                var timeScale = GameTimerManager.Instance.GetTimeScale();
                 float playSpeed = fsm.DefaultFsm.CurrentState.EffectBySpeed ? CharacterInput.SpeedScale : 1f;
-                var velocity = Quaternion.Inverse(transform.rotation) * animator.velocity;
+                var animVelocity = animator.velocity;
+                var preVelocity = animVelocity * animator.speed;
+                
+                var velocity = Quaternion.Inverse(transform.rotation) * animVelocity;
+                orcaAgent?.SetVelocity(preVelocity, preVelocity.magnitude);
+                if (orcaAgent != null && fsm.DefaultFsm.CurrentState.EffectBySpeed)
+                {
+                    var agentVelocity = orcaAgent.GetVelocity();
+                    if (agentVelocity.magnitude < animator.velocity.magnitude)
+                    {
+                        playSpeed *= agentVelocity.magnitude / animator.velocity.magnitude;
+                    }
+                    velocity = Quaternion.Inverse(transform.rotation) * agentVelocity;
+                }
+                var timeScale = GameTimerManager.Instance.GetTimeScale();
+               
                 animator.speed = timeScale * playSpeed;
                 CharacterInput.Velocity = velocity;
-                orcaAgent?.SetVelocity(velocity, velocity.magnitude);
                 // animator.ApplyBuiltinRootMotion();
                 CharacterInput.Jump = fsm.DefaultFsm.CurrentState.IsJump;
                 fsm.SetData(FSMConst.Speed, CharacterInput.GetVerticalMovementInput());

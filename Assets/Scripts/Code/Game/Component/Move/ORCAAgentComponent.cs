@@ -47,7 +47,7 @@ namespace TaoTie
         
         public Vector3 GetVelocity()
         {
-            if (agent == null) return prefVelocity;
+            if (agent == null || !agent.navigationEnabled) return prefVelocity;
             return agent.velocity;
         }
 
