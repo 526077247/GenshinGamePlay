@@ -18,5 +18,9 @@
         public const int GameTimeEventTrigger = 1006;
         /// <summary> 重置时间缩放 </summary>
         public const int ResetTimeScale = 1007;
+        /// <summary> 移除组件 </summary>
+        public const int RemoveComponent = 1008;
+        /// <summary> 触发器触发检测 </summary>
+        public const int TriggerCheck = 1009;
     }
 }

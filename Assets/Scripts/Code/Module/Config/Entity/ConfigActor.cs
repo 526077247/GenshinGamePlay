@@ -1,5 +1,6 @@
 ﻿using Nino.Core;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -23,9 +24,11 @@ namespace TaoTie
         public ConfigEquipController EquipController;
         [NinoMember(5)]
         public ConfigBillboard Billboard;
-        [NinoMember(6)]
+        [NinoMember(6)][Tooltip("仅Gadget添加生效")]
         public ConfigIntee Intee;
         [NinoMember(8)][NotNull]
         public ConfigModel Model = new ConfigSingletonModel();
+        [NinoMember(9)][Tooltip("仅Monster,Gadget添加生效")]
+        public ConfigTrigger Trigger;
     }
 }

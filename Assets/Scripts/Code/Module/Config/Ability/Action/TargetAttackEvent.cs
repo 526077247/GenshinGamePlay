@@ -53,15 +53,7 @@ namespace TaoTie
                 for (int i = 0; i < beAttackers.Count; i++)
                 {
                     var beAttacker = beAttackers[i];
-                    if (TargetType == TargetType.Self && beAttacker.Id != target.Id)
-                        continue;
-                    if (TargetType == TargetType.AllExceptSelf && beAttacker.Id == target.Id)
-                        continue;
-                    if (TargetType == TargetType.Enemy && !AttackHelper.CheckIsEnemy(attacker, beAttacker))
-                        continue;
-                    if (TargetType == TargetType.SelfCamp && !AttackHelper.CheckIsCamp(attacker, beAttacker))
-                        continue;
-                    if (TargetType == TargetType.Alliance && !AttackHelper.CheckIsAlliance(attacker, beAttacker))
+                    if (!AttackHelper.CheckIsTarget(attacker, beAttacker, TargetType))
                         continue;
                     var len = ResolveHit(attacker, beAttacker, new[] {EntityType.ALL}, out var infos);
                     if (len < 1) continue;
@@ -115,7 +107,7 @@ namespace TaoTie
         private int ResolveHit(Entity attacker, Entity beAttacker, EntityType[] filter, out HitInfo[] hitInfos)
         {
             var vcf = attacker.GetComponent<UnitModelComponent>();
-            var tbc = vcf?.EntityView?.GetComponentInChildren<TriggerBoxComponent>();
+            var tbc = vcf?.EntityView?.GetComponentInChildren<ColliderBoxComponent>();
             var vct = beAttacker.GetComponent<UnitModelComponent>();
             var colliders = vct?.EntityView?.GetComponentsInChildren<Collider>();
             return PhysicsHelper.OverlapColliderNonAllocHitInfo(tbc, colliders, filter, CheckHitLayerType.Both,

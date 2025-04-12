@@ -7,6 +7,21 @@ namespace TaoTie
     /// </summary>
     public abstract class Component : IDisposable
     {
+        [Timer(TimerType.RemoveComponent)]
+        public class RemoveComponent: ATimer<Component>
+        {
+            public override void Run(Component c)
+            {
+                try
+                {
+                    c.parent.RemoveComponent(c);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+        }
         protected Entity parent { get; private set; }
         public long Id => parent != null ? parent.Id : 0;
         private long timerId;

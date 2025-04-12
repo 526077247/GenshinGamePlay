@@ -26,6 +26,10 @@ namespace TaoTie
             ConfigActor = GetActorConfig(Config.ActorConfig);
             if(ConfigActor.Common!=null) LocalScale = Vector3.one * ConfigActor.Common.Scale;
             AddComponent<UnitModelComponent,ConfigModel>(ConfigActor.Model);
+            if (ConfigActor.Trigger != null)
+            {
+                AddComponent<TriggerComponent, ConfigTrigger>(ConfigActor.Trigger);
+            }
             AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);

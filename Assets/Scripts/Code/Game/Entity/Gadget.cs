@@ -28,6 +28,10 @@ namespace TaoTie
                 AddComponent<InteeComponent, ConfigIntee>(ConfigActor.Intee);
             }
             AddComponent<UnitModelComponent,ConfigModel>(ConfigActor.Model);
+            if (ConfigActor.Trigger != null)
+            {
+                AddComponent<TriggerComponent, ConfigTrigger>(ConfigActor.Trigger);
+            }
             AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigActor.Combat?.DefaultProperty);
             if(!string.IsNullOrEmpty(Config.FSM))
             {

@@ -2,11 +2,11 @@
 
 namespace TaoTie
 {
-    public class DoActionOnTriggerBoxMixin : AbilityMixin<ConfigDoActionOnTriggerBoxMixin>
+    public class DoActionOnColliderBoxMixin : AbilityMixin<ConfigDoActionOnColliderBoxMixin>
     {
         private Entity owner;
         private ListComponent<GameObjectHolder> addHolders;
-        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionOnTriggerBoxMixin config)
+        protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier, ConfigDoActionOnColliderBoxMixin config)
         {
             addHolders = ListComponent<GameObjectHolder>.Create();
             owner = actorAbility.Parent.GetParent<Entity>();
@@ -24,22 +24,22 @@ namespace TaoTie
             await holder.WaitLoadGameObjectOver();
             if (owner == null || addHolders == null) return;
             
-            var components = holder.EntityView.GetComponentsInChildren<TriggerBoxComponent>(true);
+            var components = holder.EntityView.GetComponentsInChildren<ColliderBoxComponent>(true);
             for (int i = 0; i < components.Length; i++)
             {
-                components[i].onTriggerEnterEvt += ExecuteTriggerEnter;
-                components[i].onTriggerExitEvt += ExecuteTriggerExit;
+                components[i].OnTriggerEnterEvt += ExecuteTriggerEnter;
+                components[i].OnTriggerExitEvt += ExecuteTriggerExit;
                 // components[i].onTriggerStayEvt += ExecuteTriggerStay;
             }
         }
         private void RemoveSync(GameObjectHolder holder)
         {
             if (holder.EntityView == null) return;
-            var components = holder.EntityView.GetComponentsInChildren<TriggerBoxComponent>(true);
+            var components = holder.EntityView.GetComponentsInChildren<ColliderBoxComponent>(true);
             for (int i = 0; i < components.Length; i++)
             {
-                components[i].onTriggerEnterEvt -= ExecuteTriggerEnter;
-                components[i].onTriggerExitEvt -= ExecuteTriggerExit;
+                components[i].OnTriggerEnterEvt -= ExecuteTriggerEnter;
+                components[i].OnTriggerExitEvt -= ExecuteTriggerExit;
                 // components[i].onTriggerStayEvt -= ExecuteTriggerStay;
             }
         }

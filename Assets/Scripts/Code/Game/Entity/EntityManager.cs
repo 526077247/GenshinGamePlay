@@ -7,46 +7,46 @@ namespace TaoTie
 {
     public class EntityManager : IManager
     {
-        private GameObject Root;
-        private ListComponent<Entity> Entitys;
-        private DictionaryComponent<long, Entity> IdEntityMap;
-        private DictionaryComponent<Type, IList> TypeEntitys;
+        private GameObject root;
+        private ListComponent<Entity> entities;
+        private DictionaryComponent<long, Entity> idEntityMap;
+        private DictionaryComponent<Type, IList> typeEntities;
 
-        public Transform GameObjectRoot => Root.transform;
+        public Transform GameObjectRoot => root.transform;
 
         #region override
 
         public void Init()
         {
-            Entitys = ListComponent<Entity>.Create();
-            IdEntityMap = DictionaryComponent<long, Entity>.Create();
-            TypeEntitys = DictionaryComponent<Type, IList>.Create();
-            Root = new GameObject("EntityRoot");
-            GameObject.DontDestroyOnLoad(Root);
+            entities = ListComponent<Entity>.Create();
+            idEntityMap = DictionaryComponent<long, Entity>.Create();
+            typeEntities = DictionaryComponent<Type, IList>.Create();
+            root = new GameObject("EntityRoot");
+            GameObject.DontDestroyOnLoad(root);
         }
 
         public void Destroy()
         {
-            for (int i = Entitys.Count - 1; i >= 0 && Entitys.Count>0; i--)
+            for (int i = entities.Count - 1; i >= 0 && entities.Count>0; i--)
             {
-                if (i > Entitys.Count - 1) i = Entitys.Count - 1;
-                Entitys[i].Dispose();
+                if (i > entities.Count - 1) i = entities.Count - 1;
+                entities[i].Dispose();
             }
 
-            Entitys.Dispose();
-            IdEntityMap.Dispose();
-            TypeEntitys.Dispose();
-            Entitys = null;
-            IdEntityMap = null;
-            TypeEntitys = null;
-            GameObject.Destroy(Root);
+            entities.Dispose();
+            idEntityMap.Dispose();
+            typeEntities.Dispose();
+            entities = null;
+            idEntityMap = null;
+            typeEntities = null;
+            GameObject.Destroy(root);
         }
 
         #endregion
 
         public Entity Get(long id)
         {
-            if (IdEntityMap.TryGetValue(id, out var res) && !res.IsDispose)
+            if (idEntityMap.TryGetValue(id, out var res) && !res.IsDispose)
             {
                 return res;
             }
@@ -56,7 +56,7 @@ namespace TaoTie
 
         public T Get<T>(long id) where T : Entity
         {
-            if (IdEntityMap.TryGetValue(id, out var res) && !res.IsDispose)
+            if (idEntityMap.TryGetValue(id, out var res) && !res.IsDispose)
             {
                 return res as T;
             }
@@ -66,7 +66,7 @@ namespace TaoTie
 
         public bool TryGet(long id, out Entity res)
         {
-            if (IdEntityMap.TryGetValue(id, out res) && !res.IsDispose)
+            if (idEntityMap.TryGetValue(id, out res) && !res.IsDispose)
             {
                 return true;
             }
@@ -77,33 +77,36 @@ namespace TaoTie
         public List<T> GetAll<T>() where T : Entity
         {
             var type = TypeInfo<T>.Type;
-            if (TypeEntitys.TryGetValue(type, out var res))
+            if (typeEntities.TryGetValue(type, out var res))
             {
                 return res as List<T>;
             }
 
             res = new List<T>();
-            TypeEntitys.Add(type, res);
+            typeEntities.Add(type, res);
             return res as List<T>;
         }
-
+        public Dictionary<long, Entity> GetAllDict()
+        {
+            return idEntityMap;
+        }
         private void Add<T>(T entity) where T : Entity
         {
-            IdEntityMap.Add(entity.Id, entity);
-            Entitys.Add(entity);
-            if (!TypeEntitys.ContainsKey(entity.GetType()))
+            idEntityMap.Add(entity.Id, entity);
+            entities.Add(entity);
+            if (!typeEntities.ContainsKey(entity.GetType()))
             {
-                TypeEntitys.Add(entity.GetType(), new List<T>());
+                typeEntities.Add(entity.GetType(), new List<T>());
             }
 
-            TypeEntitys[entity.GetType()]?.Add(entity);
+            typeEntities[entity.GetType()]?.Add(entity);
         }
 
         public void Remove<T>(T entity) where T : Entity
         {
-            IdEntityMap.Remove(entity.Id);
-            Entitys.Remove(entity);
-            TypeEntitys[entity.GetType()]?.Remove(entity);
+            idEntityMap.Remove(entity.Id);
+            entities.Remove(entity);
+            typeEntities[entity.GetType()]?.Remove(entity);
             entity.Dispose();
         }
 
@@ -117,7 +120,7 @@ namespace TaoTie
 
         public int GetTotal()
         {
-            return Entitys.Count;
+            return entities.Count;
         }
 
         public T CreateEntity<T>() where T : Entity, IEntity

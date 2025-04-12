@@ -3,86 +3,75 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class SceneGroupZoneComponent: Component,IComponent<int,long,GameObject>
+    public class SceneGroupZoneComponent: Component,IComponent<int,long>
     {
         private int localId;
 
         private long sceneGroupId;
-        private SceneGroup sceneGroup => parent.Parent.Get<SceneGroup>(sceneGroupId);
-        
+
         private List<long> innerEntity;
-        private ColliderComponent colliderComponent;
-        private GameObject zone;
+        private TriggerComponent colliderComponent;
         #region IComponent
 
-        public void Init(int p1, long p2,GameObject obj)
+        public void Init(int p1, long p2)
         {
             innerEntity = new List<long>();
             localId = p1;
             sceneGroupId = p2;
-            zone = obj;
-            colliderComponent = zone.GetComponent<ColliderComponent>();
-            if (colliderComponent == null)
-            {
-                colliderComponent = zone.AddComponent<ColliderComponent>();
-            }
-            colliderComponent.OnEntityTrigger = OnEntityTrigger;
+
+            colliderComponent = parent.GetComponent<TriggerComponent>();
+            colliderComponent.OnTriggerEnterEvt += OnTriggerEnterEvt;
+            colliderComponent.OnTriggerExitEvt += OnTriggerExitEvt;
         }
 
         public void Destroy()
         {
             if (colliderComponent != null)
             {
-                colliderComponent.OnEntityTrigger = null;
+                colliderComponent.OnTriggerExitEvt -= OnTriggerEnterEvt;
+                colliderComponent.OnTriggerEnterEvt -= OnTriggerExitEvt;
                 colliderComponent = null;
             }
             sceneGroupId = 0;
             localId = 0;
             innerEntity = null;
-            if (zone != null)
-            {
-                GameObject.Destroy(zone);
-                zone = null;
-            }
         }
 
         #endregion
 
-        private void OnEntityTrigger(long id, bool isEnter)
+        private void OnTriggerEnterEvt(Entity other)
         {
-            if (isEnter)
+            if (!innerEntity.Contains(other.Id))
             {
-                if (!innerEntity.Contains(id))
+                innerEntity.Add(other.Id);
+                Messager.Instance.Broadcast(sceneGroupId, MessageId.SceneGroupEvent, new EnterZoneEvent()
                 {
-                    innerEntity.Add(id);
-                    Messager.Instance.Broadcast(sceneGroupId,MessageId.SceneGroupEvent,new EnterZoneEvent()
-                    {
-                        ZoneLocalId = localId,
-                        ZoneEntityId = Id,
-                        EntityId = id
-                    });
-                }
-                else
-                {
-                    Log.Error($"重复进入sceneGroupId{sceneGroupId} localId{localId} entityId{id}");
-                }
+                    ZoneLocalId = localId,
+                    ZoneEntityId = Id,
+                    EntityId = other.Id
+                });
             }
             else
             {
-                if (innerEntity.Contains(id))
+                Log.Error($"重复进入sceneGroupId{sceneGroupId} localId{localId} entityId{other.Id}");
+            }
+        }
+
+        private void OnTriggerExitEvt(Entity other)
+        {
+            if (innerEntity.Contains(other.Id))
+            {
+                Messager.Instance.Broadcast(sceneGroupId,MessageId.SceneGroupEvent,new ExitZoneEvent()
                 {
-                    Messager.Instance.Broadcast(sceneGroupId,MessageId.SceneGroupEvent,new ExitZoneEvent()
-                    {
-                       ZoneLocalId = localId,
-                       ZoneEntityId = Id,
-                       EntityId = id
-                    });
-                    innerEntity.Remove(id);
-                }
-                else
-                {
-                    Log.Error($"重复离开 sceneGroupId{sceneGroupId} localId{localId} entityId{id}");
-                }
+                    ZoneLocalId = localId,
+                    ZoneEntityId = Id,
+                    EntityId = other.Id
+                });
+                innerEntity.Remove(other.Id);
+            }
+            else
+            {
+                Log.Error($"重复离开 sceneGroupId{sceneGroupId} localId{localId} entityId{other.Id}");
             }
         }
         

@@ -7,6 +7,27 @@ namespace TaoTie
     public static class AttackHelper
     {
         /// <summary>
+        /// 检查是否目标
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="target"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool CheckIsTarget(Entity self, Entity target, TargetType type)
+        {
+            if (type == TargetType.Self && self.Id != target.Id)
+                return false;
+            if (type == TargetType.AllExceptSelf && self.Id == target.Id)
+                return false;
+            if (type == TargetType.Enemy && !CheckIsEnemy(self, target))
+                return false;
+            if (type == TargetType.SelfCamp && !CheckIsCamp(self, target))
+                return false;
+            if (type == TargetType.Alliance && !CheckIsAlliance(self, target))
+                return false;
+            return true;
+        }
+        /// <summary>
         /// 检查是否是敌人
         /// </summary>
         /// <param name="actor"></param>

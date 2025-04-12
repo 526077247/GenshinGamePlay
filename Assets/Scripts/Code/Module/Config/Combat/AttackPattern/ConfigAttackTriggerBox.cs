@@ -10,7 +10,7 @@ namespace TaoTie
             out HitInfo[] hitInfos)
         {
             var vc = target.GetComponent<UnitModelComponent>();
-            var tbs = vc?.EntityView?.GetComponentInChildren<TriggerBoxComponent>();
+            var tbs = vc?.EntityView?.GetComponentInChildren<ColliderBoxComponent>();
             return PhysicsHelper.OverlapColliderNonAllocHitInfo(tbs, filter, CheckHitLayerType,
                 out hitInfos);
         }

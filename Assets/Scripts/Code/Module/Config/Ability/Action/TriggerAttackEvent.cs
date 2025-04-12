@@ -36,15 +36,7 @@ namespace TaoTie
             {
                 var info = infos[i];
                 var hitEntity = entityManager.Get<Entity>(info.EntityId);
-                if (TargetType == TargetType.Self && info.EntityId != target.Id)
-                    continue;
-                if (TargetType == TargetType.AllExceptSelf && info.EntityId == target.Id)
-                    continue;
-                if (TargetType == TargetType.Enemy && !AttackHelper.CheckIsEnemy(target, hitEntity))
-                    continue;
-                if (TargetType == TargetType.SelfCamp && !AttackHelper.CheckIsCamp(target, hitEntity))
-                    continue;
-                if (TargetType == TargetType.Alliance && !AttackHelper.CheckIsAlliance(target, hitEntity))
+                if (!AttackHelper.CheckIsTarget(target,hitEntity,TargetType))
                     continue;
                 temp.Add(info.EntityId,info);
             }

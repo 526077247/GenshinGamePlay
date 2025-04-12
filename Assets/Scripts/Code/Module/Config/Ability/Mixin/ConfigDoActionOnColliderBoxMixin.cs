@@ -6,10 +6,10 @@ using UnityEngine;
 namespace TaoTie
 {
     /// <summary>
-    /// 监听触发器触发
+    /// 监听模型上触发器触发
     /// </summary>
     [NinoType(false)][LabelText("监听触发器触发事件DoAction")]
-    public partial class ConfigDoActionOnTriggerBoxMixin: ConfigAbilityMixin
+    public partial class ConfigDoActionOnColliderBoxMixin: ConfigAbilityMixin
     {
         [NinoMember(1)][LabelText("TriggerEnterActions:初始Action目标(Target)为进入触发器的Entity")]
         public ConfigAbilityAction[] TriggerEnterActions;

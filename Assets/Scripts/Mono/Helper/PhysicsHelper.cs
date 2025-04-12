@@ -132,16 +132,16 @@ namespace TaoTie
             var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
         }
-        public static int OverlapColliderNonAllocHitInfo(TriggerBoxComponent triggerBox, EntityType[] filter,
+        public static int OverlapColliderNonAllocHitInfo(ColliderBoxComponent colliderBox, EntityType[] filter,
             CheckHitLayerType type, out HitInfo[] res)
         {
             res = hitInfos;
-            if (triggerBox == null) return 0;
+            if (colliderBox == null) return 0;
             int len = 0;
             var hitLayer = GetHitLayer(type);
-            for (int i = 0; i < triggerBox.TriggerList.Count; i++)
+            for (int i = 0; i < colliderBox.TriggerList.Count; i++)
             {
-                var other = triggerBox.TriggerList[i];
+                var other = colliderBox.TriggerList[i];
                 if ((2<<other.gameObject.layer & hitLayer) != 0)
                 {
                     colliders[len] = other;
@@ -152,16 +152,16 @@ namespace TaoTie
                     }
                 }
             }
-            Vector3 center = triggerBox.GetComponent<Collider>().bounds.center;
+            Vector3 center = colliderBox.GetComponent<Collider>().bounds.center;
             return FilterHitInfo(filter,len,center);
         }
 
-        public static int OverlapColliderNonAllocHitInfo(TriggerBoxComponent triggerBox, Collider[] triggers,
+        public static int OverlapColliderNonAllocHitInfo(ColliderBoxComponent colliderBox, Collider[] triggers,
             EntityType[] filter,
             CheckHitLayerType type, out HitInfo[] res)
         {
             res = hitInfos;
-            if (triggerBox == null || triggers == null || triggers.Length == 0) return 0;
+            if (colliderBox == null || triggers == null || triggers.Length == 0) return 0;
             int len = 0;
             var hitLayer = GetHitLayer(type);
             for (int i = 0; i < triggers.Length; i++)
@@ -178,7 +178,7 @@ namespace TaoTie
                 }
             }
 
-            Vector3 center = triggerBox.GetComponent<Collider>().bounds.center;
+            Vector3 center = colliderBox.GetComponent<Collider>().bounds.center;
             return FilterHitInfo(filter, len, center);
         }
 
