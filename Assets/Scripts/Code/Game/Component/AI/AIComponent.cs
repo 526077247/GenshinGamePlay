@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// AI组件，注意回收的问题
     /// </summary>
-    public class AIComponent: Component,IComponent<ConfigAIBeta>,IComponent<ConfigAIBeta, Zone>
+    public class AIComponent: Component,IComponent<ConfigAIBeta>,IComponent<ConfigAIBeta, ConfigShape>
     {
 
         protected AIManager aiManager;
@@ -51,7 +51,7 @@ namespace TaoTie
             Init(config, null);
         }
 
-        public virtual void Init(ConfigAIBeta config, Zone defendArea)
+        public virtual void Init(ConfigAIBeta config, ConfigShape defendArea)
         {
             parent.AddComponent<AIInputController>();
             if (SceneManager.Instance.CurrentScene is MapScene scene)

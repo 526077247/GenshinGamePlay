@@ -14,14 +14,9 @@ namespace TaoTie
 #endif
         public int ConfigID;
         
-        [NinoMember(11)][LabelText("是否有防御区域")]
-        public bool HasDefendArea;
-#if UNITY_EDITOR
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()")]
-        [ShowIf(nameof(HasDefendArea))]
-#endif
-        [NinoMember(12)][LabelText("防御区域ZoneId")]
-        public int DefendAreaZone;
+        [NinoMember(11)][LabelText("防御区域")]
+        public ConfigShape DefendArea;
+
         public override Entity CreateActor(SceneGroup sceneGroup)
         {
             Vector3 position;
@@ -38,22 +33,14 @@ namespace TaoTie
             }
 
             Monster entity = null;
-            if (HasDefendArea)
+            if (DefendArea != null)
             {
-                if (sceneGroup.TryGetZoneEntity(DefendAreaZone, out var zoneId))
-                {
-                    var zone = sceneGroup.Parent.Get<Zone>(zoneId);
-                    entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3,uint,Zone>(ConfigID, position, CampId, zone);
-                }
-                else
-                {
-                    Log.Error("防御区域未创建 monsterId = " + LocalId);
-                    entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3,uint>(ConfigID, position, CampId);
-                }
+                entity = sceneGroup.Parent.CreateEntity<Monster, int, Vector3, uint, ConfigShape>(ConfigID, position,
+                    CampId, DefendArea);
             }
             else
             {
-                entity = sceneGroup.Parent.CreateEntity<Monster, int,Vector3,uint>(ConfigID, position, CampId);
+                entity = sceneGroup.Parent.CreateEntity<Monster, int, Vector3, uint>(ConfigID, position, CampId);
             }
 
             entity.Rotation = rotation;

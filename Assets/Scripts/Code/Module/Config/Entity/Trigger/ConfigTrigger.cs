@@ -12,7 +12,9 @@ namespace TaoTie
         [NinoMember(2)][LabelText("目标类型")]
         public TargetType TriggerFlag;
         [NinoMember(3)][LabelText("触发检查精度级别")]
-        public TriggerCheckType CheckType;
+        public TriggerCheckType CheckType = TriggerCheckType.ModelHeight;
+        [NinoMember(9)][NotNull]
+        public Vector3 Offset;
         [NinoMember(4)][NotNull]
         public ConfigShape ConfigShape;
         [NinoMember(5)][LabelText("创建后第一次开始检测时间")][MinValue(0)]

@@ -55,7 +55,7 @@ namespace TaoTie
         public AITacticKnowledge_Flee FleeTactic;
         public AITacticKnowledge_Wander WanderTactic;
 
-        public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager, Zone defendArea)
+        public void Init(Actor aiEntity, ConfigAIBeta config, AIManager aiManager, ConfigShape defendArea)
         {
             AIManager = aiManager;
             Entity = aiEntity;

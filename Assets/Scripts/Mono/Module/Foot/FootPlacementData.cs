@@ -344,7 +344,7 @@ public class FootPlacementData : MonoBehaviour
 
 
     /***************************************************/
-    void OnAnimatorIK()
+    void OnAnimatorIK(int layerIndex)
     {
         //to check foot stability
 

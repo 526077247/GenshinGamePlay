@@ -27,6 +27,7 @@ namespace TaoTie
         private TriggerCheckType checkType;
         private int configCheckCount;
         private TargetType triggerFlag;
+        private Vector3 offset;
 
         private long lifeTimerId;
         private long checkTimerId;
@@ -39,6 +40,7 @@ namespace TaoTie
         public event Action<Entity> OnTriggerExitEvt;
         public void Init(ConfigTrigger configTrigger)
         {
+            offset = configTrigger.Offset;
             concernType = configTrigger.ConcernType;
             shape = configTrigger.ConfigShape;
             configCheckCount = configTrigger.CheckCount;
@@ -60,6 +62,7 @@ namespace TaoTie
 
         public void Init(ConfigShape configShape,int checkInterval)
         {
+            offset = Vector3.zero;
             shape = configShape;
             concernType = ConcernType.AllExcludeGWGO;
             configCheckCount = -1;
@@ -114,38 +117,70 @@ namespace TaoTie
 
         private void Check()
         {
-            switch (concernType)
+            if (checkType == TriggerCheckType.Collider)
             {
-                case ConcernType.LocalAvatar:
-                    CheckItem(map.Self);
-                    break;
-                case ConcernType.AllAvatars:
-                    var avatars = em.GetAll<Avatar>();
-                    for (int i = 0; i < avatars.Count; i++)
+                if (checkType == TriggerCheckType.Collider)
+                {
+                    EntityType[] filter = AttackHelper.ActorEntityType;
+                    if (concernType == ConcernType.AllAvatars || concernType == ConcernType.LocalAvatar)
                     {
-                        CheckItem(avatars[i]);
+                        filter = AttackHelper.AvatarEntityType;
                     }
-                    break;
-                default:
-                    var all = em.GetAllDict();
-                    foreach (var item in all)
-                    {
-                        if(!(item.Value is SceneEntity sceneEntity)) continue;
-                        if (concernType == ConcernType.CombatExcludeGWGO)
-                        {
-                            if(sceneEntity.GetComponent<CombatComponent>() == null) 
-                                continue;
-                            CheckItem(sceneEntity);
-                        }
-                        else if (concernType == ConcernType.AllExcludeGWGO)
-                        {
-                            CheckItem(sceneEntity);
-                        }
-                    }
-                    break;
-                    
-            }
 
+                    var count = shape.RaycastEntities(pSceneEntity.Position, pSceneEntity.Rotation,
+                        filter, out long[] ids);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        var sceneEntity = em.Get<SceneEntity>(ids[i]);
+                        if (sceneEntity != null)
+                        {
+                            if (concernType == ConcernType.CombatExcludeGWGO)
+                            {
+                                if(sceneEntity.GetComponent<CombatComponent>() == null) 
+                                    continue;
+                            }
+                            CheckItem(sceneEntity);
+                        }
+                        
+                    }
+                }
+            }
+            else
+            {
+                switch (concernType)
+                {
+                    case ConcernType.LocalAvatar:
+                        CheckItem(map.Self);
+                        break;
+                    case ConcernType.AllAvatars:
+                        var avatars = em.GetAll<Avatar>();
+                        for (int i = 0; i < avatars.Count; i++)
+                        {
+                            CheckItem(avatars[i]);
+                        }
+                        break;
+                    default:
+                        var all = em.GetAllDict();
+                        foreach (var item in all)
+                        {
+                            if(!(item.Value is SceneEntity sceneEntity)) continue;
+                            if (concernType == ConcernType.CombatExcludeGWGO)
+                            {
+                                if(sceneEntity.GetComponent<CombatComponent>() == null) 
+                                    continue;
+                                CheckItem(sceneEntity);
+                            }
+                            else if (concernType == ConcernType.AllExcludeGWGO)
+                            {
+                                CheckItem(sceneEntity);
+                            }
+                        }
+                        break;
+                    
+                }
+
+            }
             checkCount++;
             if (configCheckCount > 0 && checkCount > configCheckCount)
             {
@@ -175,7 +210,7 @@ namespace TaoTie
         }
         private bool InRange(SceneEntity sceneEntity)
         {
-            var targetPos = Transformation(pSceneEntity.Position, pSceneEntity.Rotation, sceneEntity.Position);
+            var targetPos = PhysicsHelper.Transformation(pSceneEntity.Position + offset, pSceneEntity.Rotation, sceneEntity.Position);
             if (checkType == TriggerCheckType.Point)
             {
                 return shape.Contains(targetPos);
@@ -188,33 +223,12 @@ namespace TaoTie
                 }
                 if (sceneEntity is Actor actor && actor.ConfigActor?.Common!=null)
                 {
-                    return shape.Contains(targetPos +
-                                          Vector3.up * actor.ConfigActor.Common.ModelHeight);
+                    //todo:穿过的情况
+                    return shape.Contains(targetPos + Vector3.up * actor.ConfigActor.Common.ModelHeight);
                 }
                 return false;
             }
-
-            if (checkType == TriggerCheckType.Collider)
-            {
-                //todo:
-                Log.Error("TriggerCheckType.Collider InRange 未实现！");
-            }
-            
-            return false;
+            return true;
         }
-        
-        /// <summary>
-        /// 坐标系转换
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="rot"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public Vector3 Transformation(Vector3 pos, Quaternion rot, Vector3 target)
-        {
-            var posTrans = target - pos;
-            return Quaternion.Inverse(rot) * posTrans;
-        }
-
     }
 }

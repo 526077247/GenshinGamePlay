@@ -6,6 +6,10 @@ namespace TaoTie
 {
     public static class AttackHelper
     {
+        public static readonly EntityType[] ActorEntityType = new EntityType[]
+            {EntityType.Avatar, EntityType.Monster, EntityType.Gadget};
+        public static readonly EntityType[] AvatarEntityType = new EntityType[]
+            {EntityType.Avatar};
         /// <summary>
         /// 检查是否目标
         /// </summary>

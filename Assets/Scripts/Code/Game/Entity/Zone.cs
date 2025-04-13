@@ -25,9 +25,7 @@ namespace TaoTie
 
         public float GetSqrDistance(Vector3 target)
         {
-            if (Contains(target)) return 0;
-            //todo:
-            return Vector3.SqrMagnitude(target - Position);
+            return Config.SqrMagnitude(target - Position);
         }
         
         public bool Contains(Vector3 target)

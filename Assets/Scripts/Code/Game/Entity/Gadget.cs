@@ -45,7 +45,7 @@ namespace TaoTie
             {
                 var config = GetAIConfig(gadget.Config.AIPath);
                 if(config!=null && config.Enable)
-                    AddComponent<AIComponent,ConfigAIBeta,Zone>(config, null);
+                    AddComponent<AIComponent,ConfigAIBeta>(config);
             }
 
             AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);

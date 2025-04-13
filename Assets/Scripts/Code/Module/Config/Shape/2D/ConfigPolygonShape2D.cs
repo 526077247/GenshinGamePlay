@@ -32,41 +32,69 @@ namespace TaoTie
             return flag;
         }
 
-        public override void GetMeshData(List<int> triangles, List<Vector3> vertices)
+        public override float Distance(Vector2 target)
         {
-            var triangulates = MeshHelper.Triangulate(Points);
-            using (DictionaryComponent<Vector2, int> temp = DictionaryComponent<Vector2, int>.Create())
+            var distance = Mathf.Sqrt(SqrMagnitude(target, out bool inner));
+            return inner ? -distance : distance;
+        }
+
+        public override float SqrMagnitude(Vector2 target)
+        {
+            // Vector2 closePoint = Points[0];
+            float minSqrMagnitude = float.MaxValue;
+            for (int i = 0; i < Points.Length; i++)
             {
-                for (int i = 0; i < triangulates.Length; i++)
+                var p1 = Points[i];
+                var p2 = Points[(i + 1) % Points.Length];
+                var pp = GetProjectPoint(target, p1, p2);
+                if ((pp.x - p1.x) * (pp.x - p2.x) <= 0) // 投影在线段范围内
                 {
-                    var triangulate = triangulates[i];
-                    if (!temp.TryGetValue(triangulate.a, out var index1))
+                    var ppsm = Vector2.SqrMagnitude(target - pp);
+                    if (i == 0)
                     {
-                        index1 = vertices.Count;
-                        temp.Add(triangulate.a, index1);
-                        vertices.Add(new Vector3(triangulate.a.x, 0, triangulate.a.y));
+                        // closePoint = pp;
+                        minSqrMagnitude = ppsm;
                     }
-
-                    if (!temp.TryGetValue(triangulate.b, out var index2))
+                    else
                     {
-                        index2 = vertices.Count;
-                        temp.Add(triangulate.b, index2);
-                        vertices.Add(new Vector3(triangulate.b.x, 0, triangulate.b.y));
+                        if (ppsm < minSqrMagnitude)
+                        {
+                            // closePoint = pp;
+                            minSqrMagnitude = ppsm;
+                        }
                     }
-
-                    if (!temp.TryGetValue(triangulate.c, out var index3))
+                }
+                else if (i != Points.Length-1)
+                {
+                    var p2sm = Vector2.SqrMagnitude(target - p2);
+                    if (p2sm < minSqrMagnitude)
                     {
-                        index3 = vertices.Count;
-                        temp.Add(triangulate.c, index3);
-                        vertices.Add(new Vector3(triangulate.c.x, 0, triangulate.c.y));
+                        // closePoint = p2;
+                        minSqrMagnitude = p2sm;
                     }
-
-                    triangles.Add(index1);
-                    triangles.Add(index2);
-                    triangles.Add(index3);
                 }
             }
+            return minSqrMagnitude;
+        }
 
+        public override float SqrMagnitude(Vector2 target, out bool inner)
+        {
+            inner = Contains(target);
+            return SqrMagnitude(target);
+        }
+
+        public override void GetMeshData(List<int> triangles, List<Vector3> vertices)
+        {
+            MeshHelper.GetPolygonMeshData(Points, triangles, vertices);
+        }
+        
+        Vector2 GetProjectPoint(Vector2 point, Vector2 start, Vector2 end) {
+            Vector2 sp = point - start;
+            Vector2 se = end - start;
+            Vector2 project = Vector3.Project (sp, se);
+            Vector2 line = sp - project;
+            Vector2 projectPoint = point + line;
+            return projectPoint;
         }
     }
 }

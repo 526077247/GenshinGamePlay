@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 怪物
     /// </summary>
-    public class Monster: Actor, IEntity<int,Vector3,uint>, IEntity<int,Vector3,uint,Zone>
+    public class Monster: Actor, IEntity<int,Vector3,uint>, IEntity<int,Vector3,uint,ConfigShape>
     {
         #region IEntity
         
@@ -17,7 +17,7 @@ namespace TaoTie
             Init(configId, bornPos, campId, null);
         }
         
-        public void Init(int configId,Vector3 bornPos,uint campId, Zone defendArea)
+        public void Init(int configId,Vector3 bornPos,uint campId, ConfigShape defendArea)
         {
             Position = bornPos;
             CampId = campId;
@@ -40,7 +40,7 @@ namespace TaoTie
             {
                 var config = GetAIConfig(monster.Config.AIPath);
                 if (config != null && config.Enable)
-                    AddComponent<AIComponent, ConfigAIBeta, Zone>(config, defendArea);
+                    AddComponent<AIComponent, ConfigAIBeta, ConfigShape>(config, defendArea);
             }
             if (!string.IsNullOrEmpty(monster.Config.PoseFSM))
             {

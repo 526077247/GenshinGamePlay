@@ -1,28 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TaoTie
 {
     public static class MeshHelper
     {
-        public class PointNode
+        private static SortedSet<PointNode> sortedSet = new SortedSet<PointNode>(new PointNodeComparer());
+
+        class PointNodeComparer : IComparer<PointNode>
+        {
+            public int Compare(PointNode a, PointNode b)
+            {
+                return a.Index - b.Index;
+            }
+        }
+
+        private class PointNode : IDisposable
         {
             public Vector2 Position;
             public PointNode PreviousNode;
             public PointNode NextNode;
+            public int Index;
 
-            public PointNode(Vector2 position)
+            public static PointNode Create(Vector2 position, int index)
             {
-                this.Position = position;
+                PointNode res = ObjectPool.Instance.Fetch<PointNode>();
+                res.Position = position;
+                res.Index = index;
+                return res;
+            }
+
+            public void Dispose()
+            {
+                PreviousNode = null;
+                NextNode = null;
             }
         }
-        public struct Triangle
+
+        private struct Triangle
         {
-            public Vector2 a;
-            public Vector2 b;
-            public Vector2 c;
+            public PointNode a;
+            public PointNode b;
+            public PointNode c;
         }
-        
+
         private static bool IsInside(Vector2 c, Vector2 a, Vector2 b, Vector2 p)
         {
             // p点是否在abc三角形内
@@ -33,7 +55,7 @@ namespace TaoTie
                 (c1 > 0f && c2 >= 0f && c3 >= 0f) ||
                 (c1 < 0f && c2 <= 0f && c3 <= 0f);
         }
-        
+
         /// <summary>
         /// 判断角的类型,oa & ob 之间的夹角，（右手法则）
         /// </summary>
@@ -43,15 +65,15 @@ namespace TaoTie
             bool flag = isClockWise ? f > 0 : f < 0;
             if (f == 0)
             {
-                return 0;//平角
+                return 0; //平角
             }
             else if (flag)
             {
-                return 2;//劣角
+                return 2; //劣角
             }
             else
             {
-                return 1;//优角
+                return 1; //优角
             }
         }
 
@@ -67,27 +89,29 @@ namespace TaoTie
                 vb = (i == count - 1) ? points[0] : points[i + 1];
                 sum += va.x * vb.y - va.y * vb.x;
             }
+
             return sum < 0;
         }
-        
+
         /// <summary>
         /// 生成点节点
         /// </summary>
         private static PointNode GenPointNote(Vector2[] points)
         {
             // 创建第一个节点
-            PointNode firstNode = new PointNode(points[0]);
+            PointNode firstNode = PointNode.Create(points[0], 0);
             // 创建后续节点
             PointNode now = firstNode, previous;
             // Vector2[] points
             for (int i = 1; i < points.Length; i++)
             {
                 previous = now;
-                now = new PointNode(points[i]);
+                now = PointNode.Create(points[i], i);
                 // 关联
                 now.PreviousNode = previous;
                 previous.NextNode = now;
             }
+
             // 关联头尾
             firstNode.PreviousNode = now;
             now.NextNode = firstNode;
@@ -106,54 +130,58 @@ namespace TaoTie
             for (int i = 0; i < checkCount; i++)
             {
                 now = now.NextNode;
-                if (IsInside(node.PreviousNode.Position,node.Position,node.NextNode.Position, now.Position))
+                if (IsInside(node.PreviousNode.Position, node.Position, node.NextNode.Position, now.Position))
                 {
                     flag = true;
                     break;
                 }
             }
+
             return flag;
         }
 
         private static PointNode RemovePoint(PointNode node)
         {
-            var res = node.NextNode;
-            node.PreviousNode.NextNode = res;
-            return res;
+            var next = node.NextNode;
+            var pre = node.PreviousNode;
+            node.PreviousNode.NextNode = next;
+            node.NextNode.PreviousNode = pre;
+            node.Dispose();
+            return next;
         }
 
         private static Triangle GenTriangle(PointNode node)
         {
             return new Triangle()
             {
-                a = node.PreviousNode.Position,
-                b = node.Position,
-                c = node.NextNode.Position
+                a = node.PreviousNode,
+                b = node,
+                c = node.NextNode
             };
         }
-        
+
         /// <summary>
         /// 三角形化
         /// </summary>
         /// <returns></returns>
-        public static Triangle[] Triangulate(Vector2[] points)
+        private static Triangle[] Triangulate(Vector2[] points)
         {
             if (points.Length < 3)
             {
-                return new Triangle[0];
+                return Array.Empty<Triangle>();
             }
-            else
+
+            // 节点数量
+            int count = points.Length;
+            // 确定方向
+            bool isClockWise = IsClockWise(points);
+            // 初始化节点
+            PointNode curNode = GenPointNote(points);
+            // 三角形数量
+            int triangleCount = count - 2;
+            // 获取三角形
+            using (ListComponent<Triangle> triangles = ListComponent<Triangle>.Create())
             {
-                // 节点数量
-                int count = points.Length;
-                // 确定方向
-                bool isClockWise = IsClockWise(points);
-                // 初始化节点
-                PointNode curNode = GenPointNote(points);
-                // 三角形数量
-                int triangleCount = count - 2;
-                // 获取三角形
-                List<Triangle> triangles = new List<Triangle>();
                 int angleType;
                 while (triangles.Count < triangleCount)
                 {
@@ -161,7 +189,8 @@ namespace TaoTie
                     int i = 0, maxI = count - 1;
                     for (; i <= maxI; i++)
                     {
-                        angleType = GetAngleType(curNode.Position,curNode.PreviousNode.Position,curNode.NextNode.Position,isClockWise);
+                        angleType = GetAngleType(curNode.Position, curNode.PreviousNode.Position,
+                            curNode.NextNode.Position, isClockWise);
                         if (angleType == 0)
                         {
                             // 等于180，不可能为耳点
@@ -189,18 +218,59 @@ namespace TaoTie
                             break;
                         }
                     }
-                    // DebugDraw(curNode, count, triangles);
+
                     // 还需要分割耳点,但找不到ear
                     if (triangles.Count < triangleCount && i > maxI)
                     {
-                        Debug.Log("找不到ear");
+                        Log.Info("找不到ear");
                         triangles.Clear();
                         break;
                     }
                 }
+
                 return triangles.ToArray();
             }
         }
 
+        /// <summary>
+        /// 获取多边形Mesh数据
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="triangles"></param>
+        /// <param name="vertices"></param>
+        public static void GetPolygonMeshData(Vector2[] points, List<int> triangles, List<Vector3> vertices)
+        {
+            int i;
+            var triangulates = Triangulate(points);
+            for (i = 0; i < triangulates.Length; i++)
+            {
+                var triangulate = triangulates[i];
+                sortedSet.Add(triangulate.a);
+                sortedSet.Add(triangulate.b);
+                sortedSet.Add(triangulate.c);
+            }
+            var start = vertices.Count;
+            i = 0;
+            foreach (var item in sortedSet)
+            {
+                item.Index = start + i;
+                vertices.Add(new Vector3(item.Position.x, 0, item.Position.y));
+                i++;
+            }
+
+            for (i = 0; i < triangulates.Length; i++)
+            {
+                var triangulate = triangulates[i];
+                triangles.Add(triangulate.a.Index);
+                triangles.Add(triangulate.b.Index);
+                triangles.Add(triangulate.c.Index);
+            }
+
+            foreach (var item in sortedSet)
+            {
+                item.Dispose();
+            }
+            sortedSet.Clear();
+        }
     }
 }

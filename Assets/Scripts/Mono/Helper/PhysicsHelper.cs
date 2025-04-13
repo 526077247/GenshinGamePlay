@@ -62,10 +62,18 @@ namespace TaoTie
         }
         #endregion
         #region Entity
+        public static int OverlapCapsuleNonAlloc(Vector3 p1, Vector3 p2, float radius, 
+            EntityType[] filter, out long[] res)
+        {
+            res = entities;
+            if (filter == null) return 0;
 
+            var len = Physics.OverlapCapsuleNonAlloc(p1, p2,radius, colliders, entity,
+                QueryTriggerInteraction.Ignore);
+            return FilterEntity(filter,len);
+        }
         public static int OverlapBoxNonAllocEntity(Vector3 center, Vector3 halfExtents, Quaternion orientation,
-            EntityType[] filter,
-            out long[] res)
+            EntityType[] filter, out long[] res)
         {
             res = entities;
             if (filter == null) return 0;
@@ -284,5 +292,18 @@ namespace TaoTie
 
 
         #endregion
+        
+        /// <summary>
+        /// 坐标系转换
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="rot"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static Vector3 Transformation(Vector3 pos, Quaternion rot, Vector3 target)
+        {
+            var posTrans = target - pos;
+            return Quaternion.Inverse(rot) * posTrans;
+        }
     }
 }

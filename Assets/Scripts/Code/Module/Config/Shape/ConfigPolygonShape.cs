@@ -70,5 +70,68 @@ namespace TaoTie
             var p = new Vector2(target.x, target.z);
             return ConfigShape2D.Contains(p);
         }
+
+        public override float Distance(Vector3 target)
+        {
+            var distance = Mathf.Sqrt(SqrMagnitude(target, out bool inner));
+            return inner ? -distance : distance;
+        }
+
+        public override float SqrMagnitude(Vector3 target)
+        {
+            var y = Height / 2;
+            var p = new Vector2(target.x, target.z);
+            bool bottom = target.y < -y;
+            bool up = target.y > y;
+            if (bottom || up)
+            {
+                var sqrH = Mathf.Pow(bottom ? (-y - target.y) : (target.y - y), 2);
+                var sqrMagnitude = ConfigShape2D.SqrMagnitude(p, out bool inner2d);
+                if (inner2d)
+                {
+                    return sqrH;
+                }
+                else
+                {
+                    return sqrMagnitude + sqrH;
+                }
+            }
+            else
+            {
+                return ConfigShape2D.SqrMagnitude(p);
+            }
+        }
+
+        public override float SqrMagnitude(Vector3 target, out bool inner)
+        {
+            inner = false;
+            var y = Height / 2;
+            var p = new Vector2(target.x, target.z);
+            bool bottom = target.y < -y;
+            bool up = target.y > y;
+            if (bottom || up)
+            {
+                var sqrH = Mathf.Pow(bottom ? (-y - target.y) : (target.y - y), 2);
+                var sqrMagnitude = ConfigShape2D.SqrMagnitude(p, out bool inner2d);
+                if (inner2d)
+                {
+                    return sqrH;
+                }
+                else
+                {
+                    return sqrMagnitude + sqrH;
+                }
+            }
+            else
+            {
+                return ConfigShape2D.SqrMagnitude(p, out inner);
+            }
+        }
+        
+        public override int RaycastEntities(Vector3 pos, Quaternion rot,EntityType[] filter,out long[] entities)
+        {
+            //todo:
+            return PhysicsHelper.OverlapBoxNonAllocEntity(pos, new Vector3(Height,Height,Height), rot, filter, out entities);
+        }
     }
 }

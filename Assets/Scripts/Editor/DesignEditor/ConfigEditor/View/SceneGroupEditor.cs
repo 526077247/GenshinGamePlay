@@ -46,47 +46,5 @@ namespace TaoTie
             }
             return false;
         }
-
-        protected override void BeforeSaveData()
-        {
-            base.BeforeSaveData();
-            Dictionary<int, int> defendMonsters = new Dictionary<int, int>();
-            
-            for (int i = 0; i < (data.Actors?.Length ?? 0); i++)
-            {
-                if (data.Actors[i] is ConfigSceneGroupActorMonster configMonster && configMonster.HasDefendArea)
-                {
-                    defendMonsters.Add(configMonster.LocalId, configMonster.DefendAreaZone);
-                }
-            }
-
-            if (defendMonsters.Count == 0) return;
-            HashSet<int> temp = new HashSet<int>();
-            for (int i = 0; i < (data.Suites?.Length ?? 0); i++)
-            {
-                bool change = false;
-                for (int j = 0; j < data.Suites[i].Zones.Length; j++)
-                {
-                    temp.Add(data.Suites[i].Zones[j]);
-                }
-
-                for (int j = 0; j < data.Suites[i].Actors.Length; j++)
-                {
-                    if (defendMonsters.TryGetValue(data.Suites[i].Actors[j], out var zone))
-                    {
-                        change |= temp.Add(zone);
-                        if (change)
-                        {
-                            Debug.Log($"补充Suites {data.Suites[i].LocalId} 未添加的 Defend Monster Zone {zone}");
-                        }
-                    }
-                }
-
-                if (change)
-                {
-                    data.Suites[i].Zones = temp.ToArray();
-                }
-            }
-        }
     }
 }

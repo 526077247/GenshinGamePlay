@@ -27,5 +27,73 @@ namespace TaoTie
                                   && -y <= target.y && target.y <= y
                                   && -z < target.z && target.z < z;
         }
+
+        public override float Distance(Vector3 target)
+        {
+            var distance = Mathf.Sqrt(SqrMagnitude(target, out bool inner));
+            return inner ? -distance : distance;
+        }
+        public override float SqrMagnitude(Vector3 target)
+        {
+            return SqrMagnitude(target, out _);
+        }
+        
+        public override float SqrMagnitude(Vector3 target, out bool inner)
+        {
+            float sqrMagnitude = 0;
+            var x = Size.x / 2;
+            var y = Size.y / 2;
+            var z = Size.z / 2;
+            float minInner = float.MaxValue;
+            if (target.x <= -x)
+            {
+                sqrMagnitude += Mathf.Pow(-x - target.x, 2);
+            }
+            else if (x <= target.x)
+            {
+                sqrMagnitude += Mathf.Pow(target.x - x, 2);
+            }
+            else
+            {
+                var l = Mathf.Pow(-x - target.x, 2);
+                var r = Mathf.Pow(target.x - x, 2);
+                minInner = Mathf.Min(l < r ? l : r, minInner);
+            }
+            if (target.y <= -y)
+            {
+                sqrMagnitude += Mathf.Pow(-y - target.y, 2);
+            }
+            else if (y <= target.y)
+            {
+                sqrMagnitude += Mathf.Pow(target.y - y, 2);
+            }
+            else
+            {
+                var l = Mathf.Pow(-y - target.y, 2);
+                var r = Mathf.Pow(target.y - y, 2);
+                minInner = Mathf.Min(l < r ? l : r, minInner);
+            }
+            if (target.z <= -z)
+            {
+                sqrMagnitude += Mathf.Pow(-z - target.z, 2);
+            }
+            else if (z <= target.z)
+            {
+                sqrMagnitude += Mathf.Pow(target.z - z, 2);
+            }
+            else
+            {
+                var l = Mathf.Pow(-z - target.z, 2);
+                var r = Mathf.Pow(target.z - z, 2);
+                minInner = Mathf.Min(l < r ? l : r, minInner);
+            }
+            inner = sqrMagnitude <= 0;
+            return sqrMagnitude > 0 ? sqrMagnitude : minInner;
+        }
+        
+        public override int RaycastEntities(Vector3 pos, Quaternion rot,EntityType[] filter,out long[] entities)
+        {
+            return PhysicsHelper.OverlapBoxNonAllocEntity(pos, Size * 0.5f, rot, filter, out entities);
+        }
     }
 }
