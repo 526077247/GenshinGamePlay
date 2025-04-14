@@ -39,12 +39,13 @@
 
         private void OnEnter()
         {
-            if (Config.EnterActions!=null && EvaluatePredicate(Config.EnterPredicate))
+            var actions = Config.EnterActions;
+            if (actions!=null && EvaluatePredicate(Config.EnterPredicate))
             {
                 var executer = GetActionExecuter();
-                for (int i = 0; i < Config.EnterActions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.EnterActions[i].DoExecute(executer, actorAbility, actorModifier, executer);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, executer);
                 }
             }
         }
@@ -61,12 +62,13 @@
 
         private void OnExit()
         {
-            if (Config.ExitActions!=null && EvaluatePredicate(Config.ExitPredicate))
+            var actions = Config.ExitActions;
+            if (actions!=null && EvaluatePredicate(Config.ExitPredicate))
             {
                 var executer = GetActionExecuter();
-                for (int i = 0; i < Config.ExitActions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.ExitActions[i].DoExecute(executer, actorAbility, actorModifier, executer);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, executer);
                 }
             }
         }

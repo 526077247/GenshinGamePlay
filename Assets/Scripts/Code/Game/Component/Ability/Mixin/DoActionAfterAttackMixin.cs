@@ -28,13 +28,14 @@
 
         private void Execute(AttackResult attackResult,CombatComponent other)
         {
-            if (Config.Actions != null)
+            var actions = Config.Actions;
+            if (actions != null)
             {
                 var executer = GetActionExecuter();
                 var target = other.GetParent<Entity>();
-                for (int i = 0; i < Config.Actions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.Actions[i].DoExecute(executer, actorAbility, actorModifier, target);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, target);
                 }
             }
         }

@@ -19,23 +19,25 @@ namespace TaoTie
         
         private void ExecuteTriggerEnter(Entity target)
         {
-            if (Config.TriggerEnterActions != null)
+            var actions = Config.TriggerEnterActions;
+            if (actions != null)
             {
                 var executer = GetActionExecuter();
-                for (int i = 0; i < Config.TriggerEnterActions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.TriggerEnterActions[i].DoExecute(executer, actorAbility, actorModifier, target);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, target);
                 }
             }
         }
         private void ExecuteTriggerExit(Entity target)
         {
-            if (Config.TriggerExitActions != null)
+            var actions = Config.TriggerExitActions;
+            if (actions != null)
             {
                 var executer = GetActionExecuter();
-                for (int i = 0; i < Config.TriggerExitActions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.TriggerExitActions[i].DoExecute(executer, actorAbility, actorModifier, target);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, target);
                 }
             }
         }

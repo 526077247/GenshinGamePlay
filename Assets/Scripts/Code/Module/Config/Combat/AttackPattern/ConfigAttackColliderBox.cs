@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoType(false)]
-    public partial class ConfigAttackTriggerBox: ConfigBaseAttackPattern
+    public partial class ConfigAttackColliderBox: ConfigBaseAttackPattern
     {
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target, EntityType[] filter,

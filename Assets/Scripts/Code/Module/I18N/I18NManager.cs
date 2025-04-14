@@ -23,7 +23,9 @@ namespace TaoTie
             var lang = CacheManager.Instance.GetInt(CacheKeys.CurLangType, -1);
             if (lang < 0)
             {
-                this.CurLangType = Application.systemLanguage == SystemLanguage.Chinese
+                this.CurLangType = Application.systemLanguage == SystemLanguage.Chinese ||
+                                   Application.systemLanguage == SystemLanguage.ChineseSimplified ||
+                                   Application.systemLanguage == SystemLanguage.ChineseTraditional
                     ? LangType.Chinese
                     : LangType.English;
             }

@@ -59,7 +59,8 @@ namespace TaoTie
         
         private void ExecuteTriggerEnter(Collider other)
         {
-            if (Config.TriggerEnterActions != null)
+            var actions = Config.TriggerEnterActions;
+            if (actions != null)
             {
                 var executer = GetActionExecuter();
                 if (other == null || other.transform == null) return;
@@ -68,15 +69,16 @@ namespace TaoTie
                 var e = other.transform.GetComponentInParent<EntityComponent>();
                 if (e == null) return;
                 var target = executer.Parent.Get<Entity>(e.Id);
-                for (int i = 0; i < Config.TriggerEnterActions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.TriggerEnterActions[i].DoExecute(executer, actorAbility, actorModifier, target);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, target);
                 }
             }
         }
         private void ExecuteTriggerExit(Collider other)
         {
-            if (Config.TriggerExitActions != null)
+            var actions = Config.TriggerExitActions;
+            if (actions != null)
             {
                 var executer = GetActionExecuter();
                 if (other == null || other.transform == null) return;
@@ -85,16 +87,17 @@ namespace TaoTie
                 var e = other.transform.GetComponentInParent<EntityComponent>();
                 if (e == null) return;
                 var target = executer.Parent.Get<Entity>(e.Id);
-                for (int i = 0; i < Config.TriggerExitActions.Length; i++)
+                for (int i = 0; i < actions.Length; i++)
                 {
-                    Config.TriggerExitActions[i].DoExecute(executer, actorAbility, actorModifier, target);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, target);
                 }
             }
         }
         
         // private void ExecuteTriggerStay(Collider other)
         // {
-        //     if (Config.TriggerStayActions != null)
+        //     var actions = Config.TriggerStayActions;
+        //     if (actions != null)
         //     {
         //         var owner = GetApplier();
         //         if (other == null || other.transform == null) return;
@@ -103,9 +106,9 @@ namespace TaoTie
         //         var e = other.transform.GetComponentInParent<EntityComponent>();
         //         if (e == null) return;
         //         var target = owner.Parent.Get<Entity>(e.Id);
-        //         for (int i = 0; i < Config.TriggerStayActions.Length; i++)
+        //         for (int i = 0; i < actions.Length; i++)
         //         {
-        //             Config.TriggerStayActions[i].DoExecute(owner, actorAbility, actorModifier, target);
+        //             actions[i].DoExecute(owner, actorAbility, actorModifier, target);
         //         }
         //     }
         // }
