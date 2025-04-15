@@ -29,8 +29,15 @@ namespace TaoTie
 
 	    public float GetHorizontalMovementInput()
 	    {
-		    if (MotionDirection == MotionDirection.Forward || MotionDirection == MotionDirection.Backward) return 0;
-		    return Velocity.x;
+		    if (MotionDirection == MotionDirection.Left)
+		    {
+			    return -Velocity.magnitude;
+		    }
+		    else if (MotionDirection == MotionDirection.Right)
+		    {
+			    return Velocity.magnitude;
+		    }
+		    return 0;
 	    }
 
 	    public float GetVerticalMovementInput()

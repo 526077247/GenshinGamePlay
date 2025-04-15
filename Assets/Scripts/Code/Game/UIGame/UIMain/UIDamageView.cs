@@ -47,7 +47,8 @@ namespace TaoTie
             for (int i = showFightTexts.Count - 1; i >= 0; i--)
             {
                 showFightTexts[i].UpdateText();
-                if (showFightTexts[i].ExpireTime < GameTimerManager.Instance.GetTimeNow())
+                if (GameTimerManager.Instance == null || showFightTexts[i] == null || 
+                    showFightTexts[i].ExpireTime < GameTimerManager.Instance.GetTimeNow())
                 {
                     showFightTexts[i].Dispose();
                     showFightTexts.RemoveAt(i);

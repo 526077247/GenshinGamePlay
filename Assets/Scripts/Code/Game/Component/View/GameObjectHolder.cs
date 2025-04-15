@@ -287,7 +287,7 @@ namespace TaoTie
         {
             if(parent.IsDispose) return;
             var collider = this.EntityView.GetComponent<Collider>();
-            collider.isTrigger = !enable;
+            if(collider!=null) collider.isTrigger = !enable;
         }
     }
 }
