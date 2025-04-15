@@ -11,6 +11,8 @@ namespace TaoTie
         public string Key;
         [NinoMember(2)]
         public bool NeedSyncAnimator;
+        [NinoMember(3)]
+        public AnimatorFsmType ParameterType;
 
         public void SetValue(DynDictionary dynDictionary, float val)
         {

@@ -44,10 +44,11 @@ namespace TaoTie
             Animator.SetFloat(key, data);
         }
 
-        private void SetData(string key, bool data)
+        private void SetData(string key, bool data, bool isTrigger)
         {
             if (Animator == null) return;
-            Animator.SetBool(key, data);
+            if(!isTrigger) Animator.SetBool(key, data);
+            else if(data) Animator.SetTrigger(key);
         }
 
         private void CrossFadeInFixedTime(string stateName, float fadeDuration, int layerIndex, float targetTime)

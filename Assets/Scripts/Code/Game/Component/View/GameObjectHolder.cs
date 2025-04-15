@@ -68,7 +68,7 @@ namespace TaoTie
                         var para = item.Value;
                         if (para is ConfigParamBool paramBool)
                         {
-                            SetData(paramBool.Key, fsm.GetBool(paramBool.Key));
+                            SetData(paramBool.Key, fsm.GetBool(paramBool.Key), false);
                         }
                         else if (para is ConfigParamFloat paramFloat)
                         {
@@ -80,7 +80,7 @@ namespace TaoTie
                         }
                         else if (para is ConfigParamTrigger paramTrigger)
                         {
-                            SetData(paramTrigger.Key, fsm.GetBool(paramTrigger.Key));
+                            SetData(paramTrigger.Key, fsm.GetBool(paramTrigger.Key), true);
                         }
                     }
 
@@ -112,7 +112,7 @@ namespace TaoTie
                 CrossFadeInFixedTime);
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
-            Messager.Instance.AddListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.AddListener<string, bool, bool>(Id, MessageId.SetAnimDataBool, SetData);
             UpdateRagDollState();
             if (waitFinishTask != null)
             {
@@ -133,7 +133,7 @@ namespace TaoTie
             Messager.Instance.RemoveListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.RemoveListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
-            Messager.Instance.RemoveListener<string, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.RemoveListener<string, bool, bool>(Id, MessageId.SetAnimDataBool, SetData);
             Messager.Instance.RemoveListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.RemoveListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
@@ -141,6 +141,7 @@ namespace TaoTie
             {
                 var ec = EntityView.GetComponent<EntityComponent>();
                 if (ec != null) GameObject.DestroyImmediate(ec);
+                EnableCollider(false);
                 GameObjectPoolManager.GetInstance().RecycleGameObject(EntityView.gameObject);
                 EntityView = null;
             }
@@ -172,6 +173,10 @@ namespace TaoTie
             {
                 var unit = parent as Unit;
                 if (unit == null) return;
+                
+                //碰撞体
+                EnableCollider(false);
+                
                 //特效
                 if (!string.IsNullOrWhiteSpace(configDie.DieDisappearEffect))
                 {
@@ -197,6 +202,12 @@ namespace TaoTie
                 if (configDie.DieShaderData != ShaderData.None)
                 {
                    
+                }
+                
+                // 力消失
+                if (configDie.DieForceDisappearTime >= 0)
+                {
+                    EnableRigidbody(false, configDie.DieForceDisappearTime).Coroutine();
                 }
             }
         }
@@ -258,6 +269,25 @@ namespace TaoTie
             await this.WaitLoadGameObjectOver();
             if(parent.IsDispose) return;
             this.GetCollectorObj<GameObject>(hitBox)?.SetActive(enable);
+        }
+
+        public async ETTask EnableRigidbody(bool enable,int delay = 0)
+        {
+            if (delay > 0) await GameTimerManager.Instance.WaitAsync(delay);
+            await this.WaitLoadGameObjectOver();
+            if(parent.IsDispose) return;
+            var rigidbodys = this.EntityView.GetComponentsInChildren<Rigidbody>();
+            for (int i = 0; i < rigidbodys.Length; i++)
+            {
+                rigidbodys[i].isKinematic = enable;
+            }
+        }
+        
+        public void EnableCollider(bool enable)
+        {
+            if(parent.IsDispose) return;
+            var collider = this.EntityView.GetComponent<Collider>();
+            collider.isTrigger = !enable;
         }
     }
 }

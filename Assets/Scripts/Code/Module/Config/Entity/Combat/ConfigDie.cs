@@ -23,7 +23,7 @@ namespace TaoTie
 		[NinoMember(4), LabelText("*死亡表现持续时间(ms)"), MinValue(-1),Tooltip("单位ms，-1不消失")]
 		public int DieEndTime;
 
-		[NinoMember(5), LabelText("死亡后，力延迟消失时间(ms)")] //暂不清楚
+		[NinoMember(5), LabelText("死亡后，力延迟消失时间(ms)")] //暂定为Rigidbody消失
 		public int DieForceDisappearTime;
 
 		[NinoMember(6), LabelText("死亡特效")] 

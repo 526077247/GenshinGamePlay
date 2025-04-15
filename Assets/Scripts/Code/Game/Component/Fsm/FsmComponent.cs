@@ -152,7 +152,10 @@ namespace TaoTie
                 param.SetValue(DynDictionary, val);
                 if (param.NeedSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.Key, val);
+                    if(param.ParameterType == AnimatorFsmType.Float)
+                        Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.Key, val);
+                    else if(param.ParameterType == AnimatorFsmType.Int)
+                        Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.Key, (int)val);
                 }
             }
             else
@@ -168,7 +171,11 @@ namespace TaoTie
                 param.SetValue(DynDictionary, val);
                 if (param.NeedSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.Key, val);
+                    if(param.ParameterType == AnimatorFsmType.Int)
+                        Messager.Instance.Broadcast(Id, MessageId.SetAnimDataInt, param.Key, val);
+                    else if(param.ParameterType == AnimatorFsmType.Float)
+                        Messager.Instance.Broadcast(Id, MessageId.SetAnimDataFloat, param.Key, (float)val);
+                    
                 }
             }
             else
@@ -184,7 +191,8 @@ namespace TaoTie
                 param.SetValue(DynDictionary, val);
                 if (param.NeedSyncAnimator)
                 {
-                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.Key, val);
+                    Messager.Instance.Broadcast(Id, MessageId.SetAnimDataBool, param.Key, val, 
+                        param.ParameterType == AnimatorFsmType.Trigger);
                 }
             }
             else

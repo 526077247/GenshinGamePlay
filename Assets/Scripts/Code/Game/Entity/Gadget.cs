@@ -38,7 +38,10 @@ namespace TaoTie
                 var fsm = AddComponent<FsmComponent, ConfigFsmController>(GetFsmConfig(Config.FSM));
                 fsm.SetData(FSMConst.GadgetState,(int)state);
             }
-            AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);
+            if (ConfigActor.Combat != null)
+            {
+                AddComponent<CombatComponent, ConfigCombat>(ConfigActor.Combat);
+            }
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(gadget.Config.AIPath))

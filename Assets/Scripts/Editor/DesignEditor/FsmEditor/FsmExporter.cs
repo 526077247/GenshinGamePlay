@@ -99,6 +99,7 @@ namespace TaoTie
         private bool publish = false;
         private Dictionary<string, ConfigFsmTimeline> fsmTimelineDict;
         private Dictionary<string, ConfigParam> paramDict;
+        private Dictionary<string, AnimatorFsmType> paramTypeDict;
         private bool hasError = false;
         private AnimatorStateMachine baseSm = null;
         private string defaultStateName = null;
@@ -203,6 +204,7 @@ namespace TaoTie
         private Dictionary<string, ConfigParam> ExportParam()
         {
             paramDict = new Dictionary<string, ConfigParam>();
+            paramTypeDict = new Dictionary<string, AnimatorFsmType>();
             foreach (var param in controller.parameters)
             {
                 var paramCfg = GenerateParameters(param);
@@ -224,22 +226,22 @@ namespace TaoTie
                 case AnimatorControllerParameterType.Bool:
                 {
                     return new ConfigParamBool
-                        {Key = param.name, defaultValue = param.defaultBool, NeedSyncAnimator = animUse};
+                        {Key = param.name, defaultValue = param.defaultBool, NeedSyncAnimator = animUse, ParameterType = AnimatorFsmType.Bool};
                 }
                 case AnimatorControllerParameterType.Trigger:
                 {
                     return new ConfigParamTrigger
-                        {Key = param.name, defaultValue = param.defaultBool, NeedSyncAnimator = animUse};
+                        {Key = param.name, defaultValue = param.defaultBool, NeedSyncAnimator = animUse, ParameterType = AnimatorFsmType.Trigger};
                 }
                 case AnimatorControllerParameterType.Int:
                 {
                     return new ConfigParamInt
-                        {Key = param.name, defaultValue = param.defaultInt, NeedSyncAnimator = animUse};
+                        {Key = param.name, defaultValue = param.defaultInt, NeedSyncAnimator = animUse, ParameterType = AnimatorFsmType.Int};
                 }
                 case AnimatorControllerParameterType.Float:
                 {
                     return new ConfigParamFloat
-                        {Key = param.name, defaultValue = param.defaultFloat, NeedSyncAnimator = animUse};
+                        {Key = param.name, defaultValue = param.defaultFloat, NeedSyncAnimator = animUse, ParameterType = AnimatorFsmType.Float};
                 }
                 default:
                     break;

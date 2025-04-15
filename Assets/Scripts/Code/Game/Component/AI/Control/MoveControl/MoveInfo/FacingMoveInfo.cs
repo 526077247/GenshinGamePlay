@@ -132,7 +132,7 @@ namespace TaoTie
         /// <returns></returns>
         private bool CheckLRHitWall(AIKnowledge aiKnowledge, float obstacleDetectRange)
         {
-            return false;
+            return true;
         }
     }
 }

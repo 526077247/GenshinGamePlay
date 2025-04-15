@@ -35,6 +35,14 @@ namespace TaoTie
         
         public void TryMove(Vector3 direction, MotionFlag mFlag = MotionFlag.Run, MotionDirection mDirection = MotionDirection.Forward)
         {
+            if (!canTurn)
+            {
+                if (mDirection == MotionDirection.Left || mDirection == MotionDirection.Right)
+                {
+                    mDirection = MotionDirection.Forward;
+                }
+                direction = new Vector3(0, 0, direction.z);
+            }
             if (direction == Vector3.zero)
             {
                 fsm.SetData(FSMConst.MotionFlag, 0);
@@ -45,10 +53,8 @@ namespace TaoTie
                 fsm.SetData(FSMConst.MotionFlag, (int)mFlag);
                 fsm.SetData(FSMConst.MotionDirection, (int)mDirection);
             }
-            if (!canTurn)
-            {
-                direction = new Vector3(0, 0, direction.z);
-            }
+
+            moveComponent.CharacterInput.MotionDirection = mDirection;
             if (canMove)
                 moveComponent.CharacterInput.Direction = direction.normalized;
             else

@@ -7,6 +7,7 @@ namespace TaoTie
 
     public class MoveInput
     {
+	    public MotionDirection MotionDirection;
 		/// <summary>
 		/// 速度
 		/// </summary>
@@ -28,11 +29,13 @@ namespace TaoTie
 
 	    public float GetHorizontalMovementInput()
 	    {
-		    return 0;
+		    if (MotionDirection == MotionDirection.Forward || MotionDirection == MotionDirection.Backward) return 0;
+		    return Velocity.x;
 	    }
 
 	    public float GetVerticalMovementInput()
 	    {
+		    if (MotionDirection == MotionDirection.Left || MotionDirection == MotionDirection.Right) return 0;
 		    return Velocity.z;
 	    }
 
