@@ -527,6 +527,70 @@ namespace LitJson
             }
             else if (reader.Token == JsonToken.ObjectStart)
             {
+                if (value_type.IsArray)
+                {
+                    var elem_type = value_type.GetElementType();
+                    int[] length = null;
+                    IList list = new ArrayList();
+                    while (true)
+                    {
+                        reader.Read();
+                        if (reader.Token == JsonToken.ObjectEnd)
+                            break;
+                        if ((string)reader.Value == "_Length")
+                        {
+                            length = (int[])ReadValue(typeof(int[]), reader);
+                        }
+                        else if ((string)reader.Value == "_Array")
+                        {
+                            reader.Read();//JsonToken.ArrayStart
+                            if (reader.Token == JsonToken.ArrayStart)
+                            {
+                                while (true)
+                                {
+                                    object item = ReadValue(elem_type, reader);
+                                    if (item == null && reader.Token == JsonToken.ArrayEnd)
+                                        break;
+                    
+                                    list.Add(item);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ReadSkip(reader);
+                        }
+                    }
+                    if (length != null)
+                    {
+                        instance = Array.CreateInstance(elem_type, length);
+                        int[] index = new int[length.Length];
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            ((Array) instance).SetValue(list[i], index);
+                            bool inRange = false;
+                            for (int k = index.Length - 1; k >= 0; k--)
+                            {
+                                index[k]++;
+                                if (index[k] == length[k])
+                                {
+                                    index[k] = 0;
+                                }
+                                else
+                                {
+                                    inRange = true;
+                                    break;
+                                }
+                            }
+
+                            if (!inRange)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    return instance;
+                }
                 ObjectMetadata t_data = default;
                 while (true)
                 {
@@ -948,15 +1012,33 @@ namespace LitJson
                 return;
             }
 
-            if (obj is Array)
+            if (obj is Array array)
             {
-                writer.WriteArrayStart();
+                if (array.Rank > 1)
+                {
+                    writer.WriteObjectStart();
+                    writer.WritePropertyName("_Length");
+                    writer.WriteArrayStart();
+                    for (int i = 0; i < array.Rank; i++)
+                    {
+                        WriteValue(array.GetLength(i), writer, writer_is_private, depth + 1);
+                    }
+                    writer.WriteArrayEnd();
+                    writer.WritePropertyName("_Array");
+                    writer.WriteArrayStart();
+                    foreach (object elem in array)
+                        WriteValue(elem, writer, writer_is_private, depth + 1);
+                    writer.WriteArrayEnd();
+                    writer.WriteObjectEnd();
+                }
+                else
+                {
+                    writer.WriteArrayStart();
+                    foreach (object elem in array)
+                        WriteValue(elem, writer, writer_is_private, depth + 1);
 
-                foreach (object elem in (Array)obj)
-                    WriteValue(elem, writer, writer_is_private, depth + 1);
-
-                writer.WriteArrayEnd();
-
+                    writer.WriteArrayEnd();
+                }
                 return;
             }
 
