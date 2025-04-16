@@ -18,7 +18,7 @@ namespace TaoTie
                     var deltaTime = timeNow - lastAnimatorMoveTime;
                     var oldHitImpulse = CharacterInput.HitImpulse;
                     var newHitImpulse = CharacterInput.HitImpulse - CharacterInput.HitImpulse.normalized * deltaTime / 100f;
-                    if (Vector3.Dot(oldHitImpulse, newHitImpulse) < 0f)
+                    if (Vector3.Dot(oldHitImpulse, newHitImpulse) < 0.5f)
                     {
                         CharacterInput.HitImpulse = Vector3.zero;
                     }
@@ -26,7 +26,7 @@ namespace TaoTie
                     {
                         CharacterInput.HitImpulse = newHitImpulse;
                     }
-                    CharacterInput.Velocity = Quaternion.Inverse(transform.rotation) * CharacterInput.HitImpulse * 10;
+                    CharacterInput.Velocity = Quaternion.Inverse(transform.rotation) * CharacterInput.HitImpulse * 5;
                 }
                 else
                 {
