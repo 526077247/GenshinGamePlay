@@ -129,6 +129,9 @@ namespace LitJson
         private static Type ulongType = typeof(ulong);
         private static Type longType = typeof(long);
         private static Type stringType = typeof(string);
+        #if UNITY_EDITOR
+        private static Type UnityEngineObjectType = typeof(UnityEngine.Object);
+        #endif
         #endregion
         #region Fields
         private static int max_nesting_depth;
@@ -608,6 +611,41 @@ namespace LitJson
                         {
                             hasType = true;
                             string typeName = (string)ReadValue(stringType, reader);
+#if UNITY_EDITOR
+                            if (typeName == "_UnityEngineObject" && UnityEngineObjectType.IsAssignableFrom(value_type))
+                            {
+                                string guid = null;
+                                string uType = null;
+                                while (true)
+                                {
+                                    reader.Read();
+                                    if (reader.Token == JsonToken.ObjectEnd)
+                                        break;
+                                    if ((string) reader.Value == "_ut")
+                                    {
+                                        uType = (string) ReadValue(stringType, reader);
+                                    }
+                                    else if ((string) reader.Value == "_GUID")
+                                    {
+                                        guid = (string) ReadValue(stringType, reader);
+                                    }
+                                    else
+                                    {
+                                        ReadSkip(reader);
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(guid) && !string.IsNullOrEmpty(uType))
+                                {
+                                    var ut = FindType(uType, value_type);
+                                    var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                                    instance = UnityEditor.AssetDatabase.LoadAssetAtPath(path, ut);
+                                }
+
+                                return instance;
+                            }
+                            else 
+#endif
                             if (typeName != value_type.FullName)
                             {
                                 var type = FindType(typeName, value_type);
@@ -1077,6 +1115,21 @@ namespace LitJson
 
                 return;
             }
+#if UNITY_EDITOR
+            if (UnityEngineObjectType.IsAssignableFrom(obj_type) && 
+                UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(obj as UnityEngine.Object, out string guid,out long localId))
+            {
+                writer.WriteObjectStart();
+                writer.WritePropertyName("_t");
+                writer.Write("_UnityEngineObject");
+                writer.WritePropertyName("_ut");
+                writer.Write(obj_type.FullName);
+                writer.WritePropertyName("_GUID");
+                writer.Write(guid);
+                writer.WriteObjectEnd();
+                return;
+            }
+#endif
 
             // See if there's a custom exporter for the object
             if (custom_exporters_table.ContainsKey(obj_type))
