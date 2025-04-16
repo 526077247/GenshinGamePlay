@@ -644,9 +644,14 @@ namespace LitJson
 
                                 return instance;
                             }
-                            else 
+                           
+#else
+                            if (typeName == "_UnityEngineObject")
+                            {
+                                return null;
+                            }
 #endif
-                            if (typeName != value_type.FullName)
+                            else if (typeName != value_type.FullName)
                             {
                                 var type = FindType(typeName, value_type);
                                 if (type != null)

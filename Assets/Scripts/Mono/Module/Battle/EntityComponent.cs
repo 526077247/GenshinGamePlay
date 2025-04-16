@@ -9,5 +9,6 @@ namespace TaoTie
         public EntityType EntityType;
 
         public uint CampId;
+        public int HolderIndex;
     }
 }

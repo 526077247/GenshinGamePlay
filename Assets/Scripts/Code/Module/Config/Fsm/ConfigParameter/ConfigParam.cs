@@ -7,7 +7,7 @@ namespace TaoTie
     [NinoType(false)]
     public abstract partial class ConfigParam
     {
-        [NinoMember(1)]
+        [NinoMember(1)][NotNull]
         public string Key;
         [NinoMember(2)]
         public bool NeedSyncAnimator;

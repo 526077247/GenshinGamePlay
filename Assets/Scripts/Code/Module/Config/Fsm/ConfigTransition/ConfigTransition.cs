@@ -9,14 +9,14 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigTransition
     {
-        [NinoMember(1)]
+        [NinoMember(1)][ReadOnly]
         public string FromState;
-        [NinoMember(2)]
+        [NinoMember(2)][ReadOnly]
         public string ToState;
         [NinoMember(3)]
         public float ToStateTime;
         [NinoMember(4)]
-        public float FadeDuration;
+        public float FadeDuration = 0.5f;
         [NinoMember(5)]
         public bool CanTransitionToSelf;
         [NinoMember(6)]

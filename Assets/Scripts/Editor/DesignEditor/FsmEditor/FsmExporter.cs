@@ -26,7 +26,7 @@ namespace TaoTie
         }
     }
 
-    public class FsmExporter
+    public partial class FsmExporter
     {
         const string EditDirName = "Edit";
         const string PublishDirName = "Animations";
@@ -122,7 +122,7 @@ namespace TaoTie
             ExportController(controllerPath, controllerSavePath);
             ExportParam();
 
-            LoadFsmTimeline();
+            fsmTimelineDict = LoadFsmTimeline(fsmActionsPath);
             List<ConfigFsm> fsmList = new List<ConfigFsm>();
             for (int i = 0; i < controller.layers.Length; ++i)
             {
@@ -172,32 +172,7 @@ namespace TaoTie
 
         #endregion
 
-        #region Fsm Timeline
-
-        private void LoadFsmTimeline()
-        {
-            fsmTimelineDict = new Dictionary<string, ConfigFsmTimeline>();
-            LoadFsmTimelineInPath(fsmActionsPath);
-        }
-
-        private void LoadFsmTimelineInPath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-                return;
-
-            DirectoryInfo dirInfo = new DirectoryInfo(path);
-            if (!dirInfo.Exists)
-                return;
-
-            FileInfo[] fileInfos = dirInfo.GetFiles("*.playable", SearchOption.TopDirectoryOnly);
-            foreach (FileInfo fileInfo in fileInfos)
-            {
-                ConfigFsmTimeline timeline = TimelineSerializer.GetFsmFromTimeline(Path.Combine(path, fileInfo.Name));
-                fsmTimelineDict.Add(fileInfo.Name.Split('.')[0], timeline);
-            }
-        }
-
-        #endregion
+        
 
         #region Fsm Param
 

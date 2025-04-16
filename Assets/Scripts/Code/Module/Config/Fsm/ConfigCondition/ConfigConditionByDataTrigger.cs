@@ -7,7 +7,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
-        [NinoMember(1)]
+        [NinoMember(1)][NotNull]
         public string Key;
 
         public override bool Equals(ConfigCondition other)

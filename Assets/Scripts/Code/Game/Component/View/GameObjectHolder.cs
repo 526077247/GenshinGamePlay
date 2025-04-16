@@ -10,6 +10,8 @@ namespace TaoTie
         protected Entity parent => UnitModelComponent.GetParent<Entity>();
         protected long Id => parent.Id;
 
+        public EntityComponent EntityComponent;
+
         public static GameObjectHolder Create(UnitModelComponent unitModel, Transform tranParent)
         {
             GameObjectHolder res = ObjectPool.Instance.Fetch<GameObjectHolder>();
@@ -101,8 +103,10 @@ namespace TaoTie
             collector = obj.GetComponent<ReferenceCollector>();
             var ec = obj.GetComponent<EntityComponent>();
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
+            EntityComponent = ec;
             ec.Id = this.Id;
             ec.EntityType = parent.Type;
+            ec.HolderIndex = 0;
             if (parent is Actor actor)
             {
                 ec.CampId = actor.CampId;
@@ -137,10 +141,13 @@ namespace TaoTie
             Messager.Instance.RemoveListener<string, float, int, float>(Id, MessageId.CrossFadeInFixedTime,
                 CrossFadeInFixedTime);
             Messager.Instance.RemoveListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
+            if (EntityComponent != null)
+            {
+                GameObject.DestroyImmediate(EntityComponent);
+                EntityComponent = null;
+            }
             if (EntityView != null)
             {
-                var ec = EntityView.GetComponent<EntityComponent>();
-                if (ec != null) GameObject.DestroyImmediate(ec);
                 EnableCollider(false);
                 GameObjectPoolManager.GetInstance().RecycleGameObject(EntityView.gameObject);
                 EntityView = null;

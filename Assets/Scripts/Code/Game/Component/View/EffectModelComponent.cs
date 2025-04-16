@@ -30,6 +30,8 @@ namespace TaoTie
             if (ec == null) ec = obj.AddComponent<EntityComponent>();
             ec.Id = this.Id;
             ec.EntityType = parent.Type;
+            ec.HolderIndex = 0;
+            ec.CampId = CampConst.Default;
             if (parent is Effect effect)
             {
                 EntityView.position = effect.Position;
