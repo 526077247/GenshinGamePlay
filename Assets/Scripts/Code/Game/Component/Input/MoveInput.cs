@@ -27,8 +27,14 @@ namespace TaoTie
 
 		public bool Jump = false;
 
+		public Vector3 HitImpulse;
+
 	    public float GetHorizontalMovementInput()
 	    {
+		    if (HitImpulse.sqrMagnitude > 0)
+		    {
+			    return Velocity.x;
+		    }
 		    if (MotionDirection == MotionDirection.Left)
 		    {
 			    return -Velocity.magnitude;
@@ -42,6 +48,10 @@ namespace TaoTie
 
 	    public float GetVerticalMovementInput()
 	    {
+		    if (HitImpulse.sqrMagnitude > 0)
+		    {
+			    return Velocity.z;
+		    }
 		    if (MotionDirection == MotionDirection.Left || MotionDirection == MotionDirection.Right) return 0;
 		    return Velocity.z;
 	    }

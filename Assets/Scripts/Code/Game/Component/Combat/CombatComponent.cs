@@ -82,6 +82,15 @@ namespace TaoTie
             if (result.HitLevel >= HitLevel.Shake)//todo: 击退击飞
             {
                 fsm.SetData(FSMConst.Shake, true);
+
+                if (result.RetreatDir.sqrMagnitude > 0)
+                {
+                    var p = GetParent<SceneEntity>();
+                    var mc = p.GetComponent<MoveComponent>();
+                    mc.CharacterInput.HitImpulse += Vector3.up * result.HitImpulseY +
+                                                    new Vector3(result.RetreatDir.x, 0, result.RetreatDir.z).normalized *
+                                                    result.HitImpulseX;
+                }
             }
             if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText 
                 && (result.HitPattern == null || !result.HitPattern.MuteHitText))

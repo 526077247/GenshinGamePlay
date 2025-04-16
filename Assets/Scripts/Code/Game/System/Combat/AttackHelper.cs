@@ -150,8 +150,10 @@ namespace TaoTie
             result.HitLevel = result.HitPattern.HitLevel;
             result.HitImpulseX = result.HitPattern.HitImpulseX.Resolve(attacker, ability);
             result.HitImpulseY = result.HitPattern.HitImpulseY.Resolve(attacker, ability);
-            //todo: 冲刺状态、击退方向计算
-
+            
+            //todo: 冲刺状态击退方向计算
+            result.RetreatDir = AbilitySystem.ResolveTarget(attacker, result, defence, result.HitPattern.RetreatType);
+            
             combatA.BeforeAttack(result, combatD);
             if (!result.IsEffective) return; //被取消
             combatD.BeforeBeAttack(result, combatA);

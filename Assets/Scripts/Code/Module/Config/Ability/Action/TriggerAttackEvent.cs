@@ -42,7 +42,6 @@ namespace TaoTie
             }
 
             bool isTimeScale = false;
-            bool isBroadcast = false;
             foreach (var item in temp)
             {
                 var info = item.Value[0];
@@ -81,26 +80,6 @@ namespace TaoTie
                 }
 
                 result.Dispose();
-
-                //相机震动
-                if (!isBroadcast && AttackEvent.AttackInfo.ForceCameraShake &&
-                    !AttackEvent.AttackInfo.CameraShake.BroadcastOnHit &&
-                    AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector)
-                {
-                    Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
-                    {
-                        Source = info.HitPos,
-                        ShakeDir = AttackEvent.AttackInfo.CameraShake.ShakeType == CameraShakeType.Center
-                            ? Vector3.zero
-                            : AttackEvent.AttackInfo.CameraShake.ShakeDir,
-                        ShakeRange = AttackEvent.AttackInfo.CameraShake.ShakeRange,
-                        ShakeFrequency = AttackEvent.AttackInfo.CameraShake.ShakeFrequency,
-                        ShakeTime = AttackEvent.AttackInfo.CameraShake.ShakeTime,
-                        ShakeDistance = AttackEvent.AttackInfo.CameraShake.ShakeDistance,
-                        RangeAttenuation = AttackEvent.AttackInfo.CameraShake.RangeAttenuation
-                    });
-                    isBroadcast = true;
-                }
             }
 
             temp.Clear();

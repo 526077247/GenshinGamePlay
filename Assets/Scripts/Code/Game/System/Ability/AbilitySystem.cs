@@ -204,6 +204,36 @@ namespace TaoTie
             }
             return null;
         }
+
+
+        /// <summary>
+        /// 获取目标
+        /// </summary>
+        /// <param name="attacker"></param>
+        /// <param name="attackResult"></param>
+        /// <param name="retreatType"></param>
+        /// <returns></returns>
+        public static Vector3 ResolveTarget(Entity attacker, AttackResult attackResult,Entity defence, RetreatType retreatType)
+        {
+            switch (retreatType)
+            {
+                case RetreatType.ByAttacker:
+                    if (attacker is SceneEntity sceneEntity1 && defence is SceneEntity sceneEntity2)
+                    {
+                        return (sceneEntity2.Position - sceneEntity1.Position).normalized;
+                    }
+                    break;
+                case RetreatType.ByTangent:
+                    break;
+                case RetreatType.ByHitDirection:
+                    return attackResult.HitInfo.HitDir;
+                case RetreatType.ByOriginOwner:
+                    break;
+                case RetreatType.ByHitDirectionInverse:
+                    return -attackResult.HitInfo.HitDir;
+            }
+            return Vector3.zero;
+        }
                 
         public static bool IsTarget(Actor self, Actor other, TargetType type)
         {

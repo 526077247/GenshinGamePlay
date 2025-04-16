@@ -46,7 +46,6 @@ namespace TaoTie
             }
 
             bool isTimeScale = false;
-            bool isBroadcast = false;
             using (var beAttackers = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target,
                        BeAttackTargetting, OtherBeAttackTargets))
             {
@@ -79,27 +78,6 @@ namespace TaoTie
                     }
 
                     result.Dispose();
-                    if (!isBroadcast)
-                    {
-                        //相机震动
-                        if (AttackInfo.ForceCameraShake && !AttackInfo.CameraShake.BroadcastOnHit &&
-                            AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector)
-                        {
-                            Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
-                            {
-                                Source = info.HitPos,
-                                ShakeDir = AttackInfo.CameraShake.ShakeType == CameraShakeType.Center
-                                    ? Vector3.zero
-                                    : AttackInfo.CameraShake.ShakeDir,
-                                ShakeRange = AttackInfo.CameraShake.ShakeRange,
-                                ShakeFrequency = AttackInfo.CameraShake.ShakeFrequency,
-                                ShakeTime = AttackInfo.CameraShake.ShakeTime,
-                                ShakeDistance = AttackInfo.CameraShake.ShakeDistance,
-                                RangeAttenuation = AttackInfo.CameraShake.RangeAttenuation
-                            });
-                            isBroadcast = true;
-                        }
-                    }
                 }
             }
         }

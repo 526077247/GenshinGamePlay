@@ -78,7 +78,7 @@ namespace TaoTie
 		public void Init()
 		{
 			CharacterInput = new MoveInput();
-
+			lastAnimatorMoveTime = GameTimerManager.Instance.GetTimeNow();
 			InitAsync().Coroutine();
 		}
 
