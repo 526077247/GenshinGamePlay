@@ -5,7 +5,7 @@ namespace TaoTie
 {
     public class ConfigFsmTableLayer
     {
-        public string Name;
+        public string Name = "Base Layer";
         [HideInInspector]
         public ConfigFsmTableState[] FsmStates = Array.Empty<ConfigFsmTableState>();
         [HideInInspector]

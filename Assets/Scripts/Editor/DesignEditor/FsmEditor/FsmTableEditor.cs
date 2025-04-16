@@ -238,16 +238,20 @@ namespace TaoTie
             {
                 var acPath = filePath.Replace("/Edit/", "/Animations/").Replace(".json", ".controller");
                 AnimatorController animatorController = AnimatorController.CreateAnimatorControllerAtPath(acPath);
-                AnimatorControllerLayer layer = animatorController.layers[0];
-                AnimatorStateMachine stateMachine = layer.stateMachine;
-
-                for (int i = 0; i < data.FsmStates.Length; i++)
+                for (int i = 0; i < data.Layers.Length; i++)
                 {
-                    var clip = data.FsmStates[i];
-                    AnimatorState startState = stateMachine.AddState(clip.Name,
-                        new Vector3(stateMachine.entryPosition.x + 230 * i, stateMachine.entryPosition.y + 100, 0));
-                    startState.motion = clip.Clip;
+                    AnimatorControllerLayer layer = animatorController.layers[i];
+                    AnimatorStateMachine stateMachine = layer.stateMachine;
+
+                    for (int j = 0; j < data.Layers[i].FsmStates.Length; j++)
+                    {
+                        var clip = data.Layers[i].FsmStates[j];
+                        AnimatorState startState = stateMachine.AddState(clip.Name,
+                            new Vector3(stateMachine.entryPosition.x + 230 * j, stateMachine.entryPosition.y + 100, 0));
+                        startState.motion = clip.Clip;
+                    }
                 }
+                
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }

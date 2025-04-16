@@ -14,9 +14,9 @@ namespace TaoTie
         [LabelText("层")]
         public ConfigFsmTableLayer[] Layers = Array.Empty<ConfigFsmTableLayer>();
         
-        [PropertySpace(40)][OnValueChanged(nameof(ChangeLayer))]
+        [PropertySpace(40)][OnValueChanged(nameof(ChangeLayer))][JsonIgnore]
         [LabelText("当前层")][ValueDropdown(nameof(GetLayerIndex))]
-        public int CurrentIndex = 0;
+        public int CurrentIndex = -1;
         
         [ShowIf("@"+nameof(FsmStates)+"!=null")]
         [OnCollectionChanged(nameof(RefreshTable))][LabelText("状态")][JsonIgnore]
@@ -33,7 +33,7 @@ namespace TaoTie
 
         public void ChangeLayer()
         {
-            if (CurrentIndex < Layers.Length)
+            if (CurrentIndex >=0 && CurrentIndex < Layers.Length)
             {
                 if (Layers[CurrentIndex].DataTable == null)
                 {
@@ -47,9 +47,13 @@ namespace TaoTie
                     FsmStates = Layers[CurrentIndex].FsmStates;
                     DataTable = Layers[CurrentIndex].DataTable;
                 }
-               
             }
-
+            else
+            {
+                oldTable.Clear();
+                DataTable = null;
+                FsmStates = null;
+            }
             RefreshTable();
         }
         public void RefreshTable()
@@ -61,19 +65,19 @@ namespace TaoTie
                     if (!string.IsNullOrEmpty(item.FromState) && !string.IsNullOrEmpty(item.ToState))
                         oldTable.Add(item.FromState, item.ToState, item.Transitions);
                 }
-            }
-
-            Layers[CurrentIndex].DataTable = DataTable = new ConfigFsmTableItem[FsmStates.Length, FsmStates.Length];
-            for (int i = 0; i < DataTable.GetLength(0); i++)
-            {
-                for (int j = 0; j < DataTable.GetLength(1); j++)
+                Layers[CurrentIndex].FsmStates = FsmStates;
+                Layers[CurrentIndex].DataTable = DataTable = new ConfigFsmTableItem[FsmStates.Length, FsmStates.Length];
+                for (int i = 0; i < DataTable.GetLength(0); i++)
                 {
-                    DataTable[i, j] = new ConfigFsmTableItem()
+                    for (int j = 0; j < DataTable.GetLength(1); j++)
                     {
-                        FromState = FsmStates[j]?.Name,
-                        ToState = FsmStates[i]?.Name,
-                        Transitions = FindItemData(FsmStates[j], FsmStates[i])
-                    };
+                        DataTable[i, j] = new ConfigFsmTableItem()
+                        {
+                            FromState = FsmStates[j]?.Name,
+                            ToState = FsmStates[i]?.Name,
+                            Transitions = FindItemData(FsmStates[j], FsmStates[i])
+                        };
+                    }
                 }
             }
         }
@@ -138,6 +142,7 @@ namespace TaoTie
         public IEnumerable GetLayerIndex()
         {
             ValueDropdownList<int> list = new ValueDropdownList<int>();
+            list.Add($"无", -1);
             if (Layers!=null && Layers.Length > 0)
             {
                 for (int i = 0; i < Layers.Length; i++)
