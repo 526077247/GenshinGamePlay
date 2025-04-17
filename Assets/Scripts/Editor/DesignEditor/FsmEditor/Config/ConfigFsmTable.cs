@@ -31,6 +31,7 @@ namespace TaoTie
         private UnOrderDoubleKeyDictionary<string,string,ConfigTransition[]> oldTable =
             new UnOrderDoubleKeyDictionary<string, string, ConfigTransition[]>();
 
+        //todo: AnyStateTransition
         public void ChangeLayer()
         {
             if (CurrentIndex >=0 && CurrentIndex < Layers.Length)

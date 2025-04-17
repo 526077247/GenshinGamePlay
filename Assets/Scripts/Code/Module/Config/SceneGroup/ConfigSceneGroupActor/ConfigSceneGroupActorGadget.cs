@@ -47,11 +47,20 @@ namespace TaoTie
             entity.Rotation = rotation;
             if (sceneGroup.TryGetRoute(RouteId, out var route))
             {
-                var pmc = entity.AddComponent<PlatformMoveComponent, ConfigRoute, SceneGroup>(route,sceneGroup);
-                if (Delay >= 0)
+                var pmc = entity.GetComponent<PlatformMoveComponent>();
+                if (pmc == null)
                 {
-                    pmc.DelayStart(Delay);
+                    pmc = entity.AddComponent<PlatformMoveComponent, ConfigRoute, SceneGroup>(route,sceneGroup);
+                    if (Delay >= 0)
+                    {
+                        pmc.DelayStart(Delay);
+                    }
                 }
+                else
+                {
+                    pmc.SetRoute(route, Delay);
+                }
+                
             }
 
             return entity;

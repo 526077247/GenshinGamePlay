@@ -23,13 +23,13 @@ namespace TaoTie
             ListComponent<Entity> list = ListComponent<Entity>.Create();
             int result = Range.ResolveEntity(actor, ability, modifier, target, EntityTypes, list);
             if (result == 0) return list;
-            using(var entities = AbilitySystem.ResolveTarget(actor, ability, modifier, target, CampBasedOn))
+            using(var entities = TargetHelper.ResolveTarget(actor, ability, modifier, target, CampBasedOn))
             {
                 if (entities.Count>0 && entities[0] is Actor unit)
                 {
                     for (int i = list.Count-1; i >= 0 ; i--)
                     {
-                        if (!(list[i] is Actor item) || !AbilitySystem.IsTarget(unit, item, CampTargetType))
+                        if (!(list[i] is Actor item) || !TargetHelper.IsTarget(unit, item, CampTargetType))
                         {
                             list.RemoveAt(i);
                         }

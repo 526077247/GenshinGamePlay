@@ -8,6 +8,10 @@ namespace TaoTie
     /// </summary>
     public class Avatar:Actor,IEntity<int>
     {
+        private static readonly ConfigAnimatorMove Default = new ConfigAnimatorMove()
+        {
+            FacingMove = FacingMoveType.ForwardOnly
+        };
         private long thirdCameraId;
         #region IEntity
 
@@ -19,7 +23,7 @@ namespace TaoTie
             var avatar = AddComponent<AvatarComponent,int>(configId);
             ConfigId = avatar.Config.UnitId;
             ConfigActor = GetActorConfig(Config.ActorConfig);
-            if(ConfigActor.Common!=null) LocalScale = Vector3.one * ConfigActor.Common.Scale;
+            if (ConfigActor.Common != null) LocalScale = Vector3.one * ConfigActor.Common.Scale;
             AddComponent<AttachComponent>();
             AddComponent<UnitModelComponent,ConfigModel>(ConfigActor.Model);
             AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigActor.Combat?.DefaultProperty);
@@ -27,7 +31,7 @@ namespace TaoTie
             AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);
             AddComponent<AvatarSkillComponent>();
             AddComponent<LocalInputController>();
-            AddComponent<MoveComponent>();
+            AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(Default);
             AddComponent<ORCAAgentComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);

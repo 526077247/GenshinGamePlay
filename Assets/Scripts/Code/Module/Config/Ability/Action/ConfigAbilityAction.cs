@@ -22,7 +22,7 @@ namespace TaoTie
             if (Predicate == null || Predicate.Evaluate(actionExecuter, ability, modifier, target))
             {
                 using (var entities =
-                       AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, Targetting, OtherTargets))
+                       TargetHelper.ResolveTarget(actionExecuter, ability, modifier, target, Targetting, OtherTargets))
                 {
                     if (entities.Count == 0)
                     {

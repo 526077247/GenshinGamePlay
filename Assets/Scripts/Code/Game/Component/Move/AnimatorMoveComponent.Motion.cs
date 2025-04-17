@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public partial class MoveComponent
+    public partial class AnimatorMoveComponent
     {
         private FsmComponent fsm => GetComponent<FsmComponent>();
         private ORCAAgentComponent orcaAgent => GetComponent<ORCAAgentComponent>();

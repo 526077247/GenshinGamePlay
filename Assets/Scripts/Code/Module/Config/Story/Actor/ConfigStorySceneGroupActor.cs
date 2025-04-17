@@ -19,7 +19,6 @@ namespace TaoTie
                 var model = unit?.GetComponent<UnitModelComponent>();
                 if (model == null) return null;
                 await model.WaitLoadGameObjectOver();
-                if(unit is Character) unit.RemoveComponent<MoveComponent>();
                 return unit.GetComponent<UnitModelComponent>().EntityView.gameObject;
             }
 
@@ -31,7 +30,6 @@ namespace TaoTie
             if (storySystem.SceneGroup.TryGetActorEntity(SceneGroupActorId, out var unitId))
             {
                 var unit = storySystem.Scene.GetManager<EntityManager>()?.Get(unitId);
-                if (unit is Character) unit.AddComponent<MoveComponent>();
             }
             var root = storySystem.Scene?.GetManager<EntityManager>()?.GameObjectRoot;
             if(root!=null) obj.transform.SetParent(root);

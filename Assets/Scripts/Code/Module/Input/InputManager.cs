@@ -20,6 +20,8 @@ namespace TaoTie
             KeyCode.Mouse0,
             KeyCode.F,
             KeyCode.LeftAlt,
+            KeyCode.Q,
+            KeyCode.E,
             KeyCode.Escape,
         };
         

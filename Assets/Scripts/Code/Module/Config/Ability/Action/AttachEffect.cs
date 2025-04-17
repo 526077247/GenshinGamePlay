@@ -35,7 +35,7 @@ namespace TaoTie
             res.Position = pos;
             res.Rotation = rot;
             res.LocalScale = Vector3.one * scale;
-            using (var entities = AbilitySystem.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target))
+            using (var entities = TargetHelper.ResolveTarget(applier, ability, modifier, target, AbilityTargetting.Target))
             {
                 if (entities.Count > 0)
                 {

@@ -5,6 +5,9 @@ namespace TaoTie
 {
     public class PlatformMoveComponent:Component,IComponent<ConfigRoute,SceneGroup>,IUpdate
     {
+        /// <summary>
+        /// 可为空，为空路径表示世界坐标
+        /// </summary>
         private SceneGroup sceneGroup;
         public bool IsStart { get; private set; }
         
@@ -173,7 +176,7 @@ namespace TaoTie
         public void Init(ConfigRoute config,SceneGroup sceneGroup)
         {
             this.sceneGroup = sceneGroup;
-            SetRoute(config);
+            if(config!=null) SetRoute(config);
         }
 
         public void Destroy()
@@ -727,6 +730,7 @@ namespace TaoTie
         /// <param name="delay"></param>
         public void DelayStart(int delay)
         {
+            if (delay < 0) return;
             OnStart();
             if (delay > 0)
             {

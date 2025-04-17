@@ -9,7 +9,7 @@ namespace TaoTie
     public class LocalInputController : Component, IComponent, IUpdate
     {
         private AvatarSkillComponent avatarSkillComponent => parent.GetComponent<AvatarSkillComponent>();
-        private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
+        private AnimatorMoveComponent moveComponent => parent.GetComponent<AnimatorMoveComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
 
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
@@ -38,7 +38,14 @@ namespace TaoTie
             {
                 TryDoSkill(1001);
             }
-
+            if (InputManager.Instance.GetKey(GameKeyCode.Skill1))
+            {
+                TryDoSkill(1002);
+            }
+            if (InputManager.Instance.GetKey(GameKeyCode.Skill2))
+            {
+                TryDoSkill(1003);
+            }
             //移动
             Vector3 direction = Vector3.zero;
             if (InputManager.Instance.GetKey(GameKeyCode.MoveForward))

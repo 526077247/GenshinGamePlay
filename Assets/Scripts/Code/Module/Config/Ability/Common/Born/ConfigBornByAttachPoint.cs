@@ -11,7 +11,7 @@ namespace TaoTie
 
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var entity = TargetHelper.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
             var model = entity?.GetComponent<UnitModelComponent>();
             if (model != null)
             {
@@ -31,7 +31,7 @@ namespace TaoTie
 
         public override Quaternion ResolveRot(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var entity = TargetHelper.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
             var model = entity?.GetComponent<UnitModelComponent>();
             if (model != null)
             {
@@ -74,7 +74,7 @@ namespace TaoTie
 
         private async ETTask<Transform> GetAttachPoint(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var entity = AbilitySystem.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
+            var entity = TargetHelper.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);
             var model = entity?.GetComponent<UnitModelComponent>();
             if (model != null)
             {

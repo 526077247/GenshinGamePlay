@@ -13,4 +13,11 @@
         MAX,
         ALL,
     }
+
+    public enum ActorType: byte
+    {
+        Avatar = EntityType.Avatar,
+        Monster = EntityType.Monster,
+        Gadget = EntityType.Gadget,
+    }
 }

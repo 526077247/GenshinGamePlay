@@ -152,7 +152,7 @@ namespace TaoTie
             result.HitImpulseY = result.HitPattern.HitImpulseY.Resolve(attacker, ability);
             
             //todo: 冲刺状态击退方向计算
-            result.RetreatDir = AbilitySystem.ResolveTarget(attacker, result, defence, result.HitPattern.RetreatType);
+            result.RetreatDir = TargetHelper.ResolveTarget(attacker, result, defence, result.HitPattern.RetreatType);
             
             combatA.BeforeAttack(result, combatD);
             if (!result.IsEffective) return; //被取消

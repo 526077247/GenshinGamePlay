@@ -50,8 +50,9 @@ namespace TaoTie
                 if(config!=null && config.Enable)
                     AddComponent<AIComponent,ConfigAIBeta>(config);
             }
-
-            AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);
+            if(ConfigActor.Billboard != null)
+                AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);
+            CreateMoveComponent();
         }
         public void Destroy()
         {

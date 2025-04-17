@@ -15,7 +15,6 @@ namespace TaoTie
                 if (model == null) return null;
                 await model.WaitLoadGameObjectOver();
                 if (model.IsDispose) return null;
-                avatar.RemoveComponent<MoveComponent>();
                 return avatar.GetComponent<UnitModelComponent>().EntityView.gameObject;
             }
             return null;
@@ -26,7 +25,6 @@ namespace TaoTie
             if (storySystem.Scene is MapScene scene)
             {
                 var avatar = scene.Self as Avatar;
-                avatar?.AddComponent<MoveComponent>();
                 var root = scene.GetManager<EntityManager>()?.GameObjectRoot;
                 if(root!=null) obj.transform.SetParent(root);
             }

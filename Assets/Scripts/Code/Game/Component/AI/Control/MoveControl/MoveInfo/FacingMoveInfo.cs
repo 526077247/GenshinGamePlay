@@ -52,15 +52,19 @@ namespace TaoTie
 
         private void CreateNewTask(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge)
         {
+            FacingMoveType moveType = aiKnowledge.Mover?.Config.FacingMove ?? FacingMoveType.FourDirection;
             MotionDirection dir = MotionDirection.Idle;
             bool needUpdate = false;
             var dis = aiKnowledge.TargetKnowledge.TargetDistance;
-            if (dis < aiKnowledge.FacingMoveTactic.Data.RangeMin)
+            if (dis < aiKnowledge.FacingMoveTactic.Data.RangeMin 
+                && moveType!= FacingMoveType.LeftRight 
+                && moveType!= FacingMoveType.ForwardOnly)
             {
                 dir =  MotionDirection.Backward;
                 needUpdate = true;
             }
-            if (dis > aiKnowledge.FacingMoveTactic.Data.RangeMax)
+            if (dis > aiKnowledge.FacingMoveTactic.Data.RangeMax
+                && moveType!= FacingMoveType.ForwardOnly)
             {
                 dir =  MotionDirection.Forward;
                 needUpdate = true;
@@ -74,7 +78,7 @@ namespace TaoTie
             var during = Random.Range(data.RestTimeMin, data.RestTimeMax);
             nextTickPickDirection = GameTimerManager.Instance.GetTimeNow() + during;
             if(!needUpdate)
-                dir = GetNewMoveDirection(data.FacingMoveWeight);
+                dir = GetNewMoveDirection(data.FacingMoveWeight, moveType);
             if (!canLR && (dir == MotionDirection.Left || dir == MotionDirection.Right))
             {
                 dir = MotionDirection.Idle;
@@ -97,26 +101,47 @@ namespace TaoTie
             taskHandler.CreateFacingMoveTask(param);
             currentMoveDirection = dir;
         }
-        private MotionDirection GetNewMoveDirection(ConfigAIFacingMoveWeight weight)
+        private MotionDirection GetNewMoveDirection(ConfigAIFacingMoveWeight weight, FacingMoveType moveType)
         {
-            float total = weight.Back + weight.Forward + weight.Left + weight.Right + weight.Stop;
+            float back = weight.Back;
+            float forward = weight.Forward;
+            float left = weight.Left;
+            float right = weight.Right;
+            switch (moveType)
+            {
+                case FacingMoveType.LeftRight:
+                    forward = 0;
+                    back = 0;
+                    break;
+                case FacingMoveType.ForwardOnly:
+                    left = 0;
+                    right = 0;
+                    back = 0;
+                    break;
+                case FacingMoveType.ForwardBackward:
+                    left = 0;
+                    right = 0;
+                    break;
+            }
+            
+            float total = back + forward + left + right + weight.Stop;
             var value = Random.Range(0, total * 10) % 10;
-            value -= weight.Back;
+            value -= back;
             if (value <= 0)
             {
                 return MotionDirection.Backward;
             }
-            value -= weight.Forward;
+            value -= forward;
             if (value <= 0)
             {
                 return MotionDirection.Forward;
             }
-            value -= weight.Left;
+            value -= left;
             if (value <= 0)
             {
                 return MotionDirection.Left;
             }
-            value -= weight.Right;
+            value -= right;
             if (value <= 0)
             {
                 return MotionDirection.Right;

@@ -47,7 +47,7 @@ namespace TaoTie
                 AddComponent<PoseFSMComponent,ConfigFsmController>(GetFsmConfig(monster.Config.PoseFSM));
             }
             AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);
-            AddComponent<MoveComponent>();
+            CreateMoveComponent();
         }
         public void Destroy()
         {

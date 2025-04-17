@@ -3,8 +3,9 @@
 namespace TaoTie
 {
 
-	public partial class MoveComponent : Component, IComponent, IFixedUpdate
+	public partial class AnimatorMoveComponent : Component, IComponent<ConfigAnimatorMove>, IFixedUpdate
 	{
+		public ConfigAnimatorMove Config { get; private set; }
 		private Unit unit => parent as Unit;
 
 		public MoveInput CharacterInput;
@@ -75,13 +76,13 @@ namespace TaoTie
 		public Transform cameraTransform;
 
 		//Get references to all necessary components;
-		public void Init()
+		public void Init(ConfigAnimatorMove config)
 		{
+			Config = config;
 			CharacterInput = new MoveInput();
 			lastAnimatorMoveTime = GameTimerManager.Instance.GetTimeNow();
 			InitAsync().Coroutine();
 		}
-
 		private async ETTask InitAsync()
 		{
 			var model = parent.GetComponent<UnitModelComponent>();

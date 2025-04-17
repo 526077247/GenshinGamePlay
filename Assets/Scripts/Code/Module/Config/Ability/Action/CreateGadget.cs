@@ -60,7 +60,7 @@ namespace TaoTie
 
             if (OwnerIsTarget)
             {
-                using (var entities = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, OwnerIs))
+                using (var entities = TargetHelper.ResolveTarget(actionExecuter, ability, modifier, target, OwnerIs))
                 {
                     if (entities.Count > 0)
                     {
@@ -69,7 +69,7 @@ namespace TaoTie
                         owner.GetOrAddComponent<AttachComponent>().AddChild(res, LifeByOwnerIsAlive);
                     }
                 }
-                using (var entities = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, PropOwnerIs))
+                using (var entities = TargetHelper.ResolveTarget(actionExecuter, ability, modifier, target, PropOwnerIs))
                 {
                     if (entities.Count > 0)
                     {

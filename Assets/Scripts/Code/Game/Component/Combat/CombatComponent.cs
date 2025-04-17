@@ -86,10 +86,14 @@ namespace TaoTie
                 if (result.RetreatDir.sqrMagnitude > 0)
                 {
                     var p = GetParent<SceneEntity>();
-                    var mc = p.GetComponent<MoveComponent>();
-                    mc.CharacterInput.HitImpulse += Vector3.up * result.HitImpulseY +
-                                                    new Vector3(result.RetreatDir.x, 0, result.RetreatDir.z).normalized *
-                                                    result.HitImpulseX;
+                    var mc = p.GetComponent<AnimatorMoveComponent>();
+                    if (mc != null)
+                    {
+                        mc.CharacterInput.HitImpulse += Vector3.up * result.HitImpulseY +
+                                                        new Vector3(result.RetreatDir.x, 0, result.RetreatDir.z)
+                                                            .normalized *
+                                                        result.HitImpulseX;
+                    }
                 }
             }
             if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText 

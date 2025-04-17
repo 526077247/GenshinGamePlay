@@ -24,7 +24,7 @@ namespace TaoTie
             if (TargetType == TargetType.None || AttackInfo == null) return;
             Entity attacker;
             using (var attackers =
-                   AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target, AttackTargetting))
+                   TargetHelper.ResolveTarget(actionExecuter, ability, modifier, target, AttackTargetting))
             {
                 if (attackers.Count == 0)
                 {
@@ -46,7 +46,7 @@ namespace TaoTie
             }
 
             bool isTimeScale = false;
-            using (var beAttackers = AbilitySystem.ResolveTarget(actionExecuter, ability, modifier, target,
+            using (var beAttackers = TargetHelper.ResolveTarget(actionExecuter, ability, modifier, target,
                        BeAttackTargetting, OtherBeAttackTargets))
             {
                 for (int i = 0; i < beAttackers.Count; i++)
