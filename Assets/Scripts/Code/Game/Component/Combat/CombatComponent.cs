@@ -86,7 +86,7 @@ namespace TaoTie
                 if (result.RetreatDir.sqrMagnitude > 0)
                 {
                     var p = GetParent<SceneEntity>();
-                    var mc = p.GetComponent<AnimatorMoveComponent>();
+                    var mc = p.GetComponent<MoveComponent>();
                     if (mc != null)
                     {
                         mc.CharacterInput.HitImpulse += Vector3.up * result.HitImpulseY +

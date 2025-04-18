@@ -7,7 +7,6 @@
         public const string Jump = "Jump";
         public const string Land = "Land";
         public const string Shake = "Shake";
-        public const string Speed = "Speed";
         
         public const string MotionFlag = "MotionFlag";
         public const string MotionDirection = "MotionDirection";

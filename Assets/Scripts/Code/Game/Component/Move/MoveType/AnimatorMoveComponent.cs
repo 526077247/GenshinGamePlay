@@ -3,12 +3,8 @@
 namespace TaoTie
 {
 
-	public partial class AnimatorMoveComponent : Component, IComponent<ConfigAnimatorMove>, IFixedUpdate
+	public partial class AnimatorMoveComponent : MoveComponent<ConfigAnimatorMove>, IFixedUpdate
 	{
-		public ConfigAnimatorMove Config { get; private set; }
-		private Unit unit => parent as Unit;
-
-		public MoveInput CharacterInput;
 
 		//References to attached components;
 		protected Transform transform;
@@ -76,10 +72,8 @@ namespace TaoTie
 		public Transform cameraTransform;
 
 		//Get references to all necessary components;
-		public void Init(ConfigAnimatorMove config)
+		protected override void InitInternal()
 		{
-			Config = config;
-			CharacterInput = new MoveInput();
 			lastAnimatorMoveTime = GameTimerManager.Instance.GetTimeNow();
 			InitAsync().Coroutine();
 		}
@@ -99,7 +93,7 @@ namespace TaoTie
 			cameraTransform = CameraManager.Instance.MainCamera().transform;
 		}
 
-		public void Destroy()
+		protected override void DestroyInternal()
 		{
 			if (mover != null)
 			{
@@ -110,7 +104,6 @@ namespace TaoTie
 
 			transform = null;
 			cameraTransform = null;
-			CharacterInput = null;
 
 		}
 
@@ -120,7 +113,7 @@ namespace TaoTie
 			ControllerUpdate();
 			HandlerForward();
 			HandleJumpKeyInput();
-			unit.SyncViewPosition(transform.position);
+			SceneEntity.SyncViewPosition(transform.position);
 		}
 
 		void HandlerForward()
@@ -149,7 +142,7 @@ namespace TaoTie
 					dir = lookDir;
 				}
 
-				unit.Rotation = Quaternion.LookRotation(dir, Vector3.up);
+				SceneEntity.Rotation = Quaternion.LookRotation(dir, Vector3.up);
 			}
 		}
 
@@ -704,16 +697,6 @@ namespace TaoTie
 			else
 				momentum = _newMomentum;
 		}
-
-		/// <summary>
-		/// 强制朝向
-		/// </summary>
-		/// <param name="target"></param>
-		public void ForceLookAt(Vector3 target)
-		{
-			Vector3 dir = target - unit.Position;
-			dir.y = 0;
-			unit.Rotation = Quaternion.LookRotation(dir, Vector3.up);
-		}
+		
 	}
 }

@@ -35,7 +35,7 @@ namespace TaoTie
         public AIManager AIManager;
         public CombatComponent CombatComponent => Entity.GetComponent<CombatComponent>();
         public PoseFSMComponent Pose => Entity.GetComponent<PoseFSMComponent>();
-        public AnimatorMoveComponent Mover => Entity.GetComponent<AnimatorMoveComponent>();
+        public MoveComponent Mover => Entity.GetComponent<MoveComponent>();
         public AIInputController Input => Entity.GetComponent<AIInputController>();
         
         public ORCAAgentComponent OrcaAgent => Entity.GetComponent<ORCAAgentComponent>();

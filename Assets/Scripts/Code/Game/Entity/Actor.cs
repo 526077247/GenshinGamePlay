@@ -13,7 +13,11 @@
         {
             if (ConfigActor.Move is ConfigAnimatorMove am)
             {
-                AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am);
+                AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am, TypeInfo<MoveComponent>.Type);
+            }
+            else if (ConfigActor.Move is ConfigSimpleMove sm)
+            {
+                AddComponent<SimpleMoveComponent>(TypeInfo<MoveComponent>.Type);
             }
             else if (ConfigActor.Move is ConfigPlatformMove pm)
             {

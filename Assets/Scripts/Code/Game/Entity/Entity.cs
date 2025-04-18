@@ -77,8 +77,13 @@ namespace TaoTie
         /// 添加共用其他人的Component，不处理生命周期
         /// </summary>
         protected DictionaryComponent<Type, Component> OtherComponents;
-        public T AddComponent<T>() where T : Component
+        public T AddComponent<T>(Type baseType = null) where T : Component
         {
+            if (baseType != null && Components.ContainsKey(baseType))
+            {
+                Log.Error($"重复添加{baseType.Name}");
+                return default;
+            }
             Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
@@ -89,14 +94,20 @@ namespace TaoTie
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
             Components.Add(type, data);
+            if (baseType != null) Components.Add(baseType, data);
             if (data is IComponent comp)
                 comp.Init();
             data.AfterInit();
             return data;
         }
 
-        public T AddComponent<T, P1>(P1 p1) where T : Component, IComponent<P1>
+        public T AddComponent<T, P1>(P1 p1,Type baseType = null) where T : Component, IComponent<P1>
         {
+            if (baseType != null && Components.ContainsKey(baseType))
+            {
+                Log.Error($"重复添加{baseType.Name}");
+                return default;
+            }
             Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
@@ -107,6 +118,7 @@ namespace TaoTie
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
             Components.Add(type, data);
+            if (baseType != null) Components.Add(baseType, data);
             data.Init(p1);
             data.AfterInit();
             return data;

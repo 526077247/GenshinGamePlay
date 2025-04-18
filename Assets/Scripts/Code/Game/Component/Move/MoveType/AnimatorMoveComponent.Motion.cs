@@ -51,7 +51,6 @@ namespace TaoTie
                     CharacterInput.Velocity = velocity;
                     // animator.ApplyBuiltinRootMotion();
                     CharacterInput.Jump = fsm.DefaultFsm.CurrentState.IsJump;
-                    fsm.SetData(FSMConst.Speed, CharacterInput.GetVerticalMovementInput());
                     fsm.SetData(FSMConst.Land, mover.IsGrounded());
                 }
             }

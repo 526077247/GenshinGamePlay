@@ -32,7 +32,7 @@ namespace TaoTie
         public ConfigModel Model = new ConfigSingletonModel();
         [NinoMember(9)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Avatar))]
         public ConfigTrigger Trigger;
-        [NinoMember(11)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Avatar))]
-        public ConfigMove Move;
+        [NinoMember(11)]
+        public ConfigMove Move = new ConfigAnimatorMove();
     }
 }

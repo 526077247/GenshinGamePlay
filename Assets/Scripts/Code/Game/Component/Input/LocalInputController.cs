@@ -9,7 +9,7 @@ namespace TaoTie
     public class LocalInputController : Component, IComponent, IUpdate
     {
         private AvatarSkillComponent avatarSkillComponent => parent.GetComponent<AvatarSkillComponent>();
-        private AnimatorMoveComponent moveComponent => parent.GetComponent<AnimatorMoveComponent>();
+        private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
 
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();

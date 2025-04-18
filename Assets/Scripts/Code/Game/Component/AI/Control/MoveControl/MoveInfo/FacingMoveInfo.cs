@@ -52,7 +52,7 @@ namespace TaoTie
 
         private void CreateNewTask(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge)
         {
-            FacingMoveType moveType = aiKnowledge.Mover?.Config.FacingMove ?? FacingMoveType.FourDirection;
+            FacingMoveType moveType = (aiKnowledge.Mover?.Config as ConfigAnimatorMove)?.FacingMove ?? FacingMoveType.FourDirection;
             MotionDirection dir = MotionDirection.Idle;
             bool needUpdate = false;
             var dis = aiKnowledge.TargetKnowledge.TargetDistance;

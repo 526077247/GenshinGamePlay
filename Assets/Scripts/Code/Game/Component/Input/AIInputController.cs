@@ -7,7 +7,7 @@ namespace TaoTie
     /// </summary>
     public class AIInputController: Component, IComponent
     {
-        private AnimatorMoveComponent moveComponent => parent.GetComponent<AnimatorMoveComponent>();
+        private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
 
