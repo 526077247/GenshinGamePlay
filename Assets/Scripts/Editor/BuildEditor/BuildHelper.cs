@@ -391,8 +391,8 @@ namespace TaoTie
                 string abPath = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
                 if (Directory.Exists(abPath))
                 {
-                    Directory.Delete(relativeDirPrefix, true);
-                    Directory.CreateDirectory(relativeDirPrefix);
+                    Directory.Delete(abPath, true);
+                    Directory.CreateDirectory(abPath);
                 }
             }
                               
