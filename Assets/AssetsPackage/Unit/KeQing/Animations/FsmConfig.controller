@@ -102,8 +102,8 @@ MonoBehaviour:
         IsDynamic: 0
         Key: 
         PoseID: 0
-        CanMove: 0
-        CanTurn: 0
+        CanMove: 1
+        CanTurn: 1
         CanJump: 0
         IsJump: 0
         ShowWeapon: 0
@@ -237,7 +237,7 @@ MonoBehaviour:
         Key: 
         PoseID: 0
         CanMove: 1
-        CanTurn: 0
+        CanTurn: 1
         CanJump: 0
         IsJump: 1
         ShowWeapon: 0
@@ -446,7 +446,7 @@ AnimatorStateTransition:
     m_ConditionEvent: Land
     m_EventTreshold: 0
   - m_ConditionMode: 4
-    m_ConditionEvent: Speed
+    m_ConditionEvent: MotionFlag
     m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 8228146545435797239}
@@ -877,7 +877,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -4867738824078306946}
   m_Solo: 0
@@ -1014,8 +1017,8 @@ MonoBehaviour:
         IsDynamic: 0
         Key: 
         PoseID: 0
-        CanMove: 0
-        CanTurn: 0
+        CanMove: 1
+        CanTurn: 1
         CanJump: 0
         IsJump: 0
         ShowWeapon: 0
@@ -1118,7 +1121,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.875
   m_HasExitTime: 1
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 3
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &-2018495290745915019
@@ -1199,7 +1202,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -6775511240163178002}
-    m_Position: {x: 150, y: 50, z: 0}
+    m_Position: {x: 130, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7689075664896299677}
     m_Position: {x: 800, y: 390, z: 0}
@@ -1273,7 +1276,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.8125
   m_HasExitTime: 1
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 3
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &-1309869785381547427
@@ -1284,9 +1287,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 4
-    m_ConditionEvent: Speed
-    m_EventTreshold: 0.1
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102059769633159636}
   m_Solo: 0
@@ -1389,9 +1392,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: Speed
-    m_EventTreshold: 0.1
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 171785100232014949}
   m_Solo: 0
@@ -1475,7 +1478,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.82558143
   m_HasExitTime: 1
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 3
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1107 &-99970714858603394
@@ -1984,9 +1987,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: Speed
-    m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: MotionFlag
+    m_EventTreshold: 2
   - m_ConditionMode: 1
     m_ConditionEvent: Land
     m_EventTreshold: 0
@@ -2427,7 +2430,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.875
   m_HasExitTime: 1
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 4
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &6736816241306855373
@@ -2626,9 +2629,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 6
+  - m_ConditionMode: 4
     m_ConditionEvent: MotionFlag
-    m_EventTreshold: 0
+    m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1695075556049512340}
   m_Solo: 0
