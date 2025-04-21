@@ -424,6 +424,45 @@ namespace TaoTie
         }
 
         #endregion
+
+        #region FSM
+
+        /// <summary>
+        /// 过滤类型
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable GetFSMConstKey()
+        {
+            var fields = typeof(FSMConst).GetFields();
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            if (fields.Length > 0)
+            {
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    if (!fields[i].IsStatic)
+                    {
+                        continue;
+                    }
+
+                    var attrs = fields[i].GetCustomAttributes(TypeInfo<LabelTextAttribute>.Type,false);
+                    string val;
+                    if (attrs.Length > 0)
+                    {
+                        val = $"{(attrs[0] as LabelTextAttribute).Text}({fields[i].Name})";
+                    }
+                    else
+                    {
+                        val = fields[i].Name;
+                    }
+                    list.Add(val, val);
+                }
+               
+            }
+            list.Sort(DefaultStringComparer);
+            return list;
+        }
+
+        #endregion
     }
 }
 #endif

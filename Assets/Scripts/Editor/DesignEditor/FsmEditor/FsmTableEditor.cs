@@ -141,6 +141,7 @@ namespace TaoTie
                 fsm.Entry = data.Layers[layerIndex].FsmStates[0].Name;
                 fsm.LayerIndex = layerIndex;
                 fsm.StateDict = new Dictionary<string, ConfigFsmState>();
+                List<ConfigTransition> anyStateTransitions = new List<ConfigTransition>();
                 for (int i = 0; i < data.Layers[layerIndex].DataTable.GetLength(0); i++)
                 {
                     var clip = data.Layers[layerIndex].FsmStates[i];
@@ -163,13 +164,18 @@ namespace TaoTie
                         fsmState.Timeline = tl;
                     }
 
-                    List<ConfigTransition> transitions = new List<ConfigTransition>();
+                    List<ConfigTransition> fsmTransitions = new List<ConfigTransition>();
                     fsm.StateDict.Add(clip.Name, fsmState);
                     for (int j = 0; j < data.Layers[layerIndex].DataTable.GetLength(1); j++)
                     {
                         var trans = data.Layers[layerIndex].DataTable[j, i];
                         if (trans != null && trans.Transitions != null)
                         {
+                            var transitions = fsmTransitions;
+                            if (trans.FromState == trans.ToState)
+                            {
+                                transitions = anyStateTransitions;
+                            }
                             for (int k = 0; k < trans.Transitions.Length; k++)
                             {
                                 transitions.Add(trans.Transitions[k]);
@@ -229,8 +235,10 @@ namespace TaoTie
                         }
                     }
 
-                    fsmState.Transitions = transitions.ToArray();
+                    fsmState.Transitions = fsmTransitions.ToArray();
                 }
+
+                fsm.AnyStateTransitions = anyStateTransitions.ToArray();
             }
             var exportPath = filePath.Replace("/Edit/", "/");
             File.WriteAllText(exportPath, JsonHelper.ToJson(config));
@@ -238,6 +246,11 @@ namespace TaoTie
             {
                 var acPath = filePath.Replace("/Edit/", "/Animations/").Replace(".json", ".controller");
                 AnimatorController animatorController = AnimatorController.CreateAnimatorControllerAtPath(acPath);
+                if (animatorController.layers.Length > 0)
+                {
+                    animatorController.RemoveLayer(0);
+                }
+
                 for (int i = 0; i < data.Layers.Length; i++)
                 {
                     animatorController.AddLayer(data.Layers[i].Name);
@@ -255,7 +268,20 @@ namespace TaoTie
                         startState.motion = clip.Clip;
                     }
                 }
-                
+                foreach (var item in config.ParamDict)
+                {
+                    if (item.Value.NeedSyncAnimator)
+                    {
+                        if (item.Value is ConfigParamBool)
+                            animatorController.AddParameter(item.Value.Key, AnimatorControllerParameterType.Bool);
+                        else if (item.Value is ConfigParamFloat)
+                            animatorController.AddParameter(item.Value.Key, AnimatorControllerParameterType.Float);
+                        else if (item.Value is ConfigParamInt)
+                            animatorController.AddParameter(item.Value.Key, AnimatorControllerParameterType.Int);
+                        else if (item.Value is ConfigParamTrigger)
+                            animatorController.AddParameter(item.Value.Key, AnimatorControllerParameterType.Trigger);
+                    }
+                }
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }

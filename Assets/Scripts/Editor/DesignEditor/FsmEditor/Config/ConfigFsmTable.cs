@@ -100,7 +100,17 @@ namespace TaoTie
             }
             else
             {
-                EditorGUI.DrawRect(rect, new Color(0, 0, 0, 0.5f));
+                bool isEmpty = value.Transitions == null || value.Transitions.Length <= 0;
+                EditorGUI.DrawRect(rect, !isEmpty ? new Color(0,1f,1f) : new Color(0,0.4f,0.4f));
+                EditorGUI.LabelField(rect, (isEmpty? "创建" : "编辑") + "AnyState" +" => "+ value.ToState, MiddleCenter);
+                if (Event.current.type == EventType.MouseDown && rect.Contains(Event.current.mousePosition))
+                {
+                    var itemE = EditorWindow.GetWindow<FsmTableItemEditor>();
+                    itemE.Data = value;
+                    itemE.Show();
+                    GUI.changed = true;
+                    Event.current.Use();
+                }
             }
 
             return value;

@@ -16,6 +16,9 @@ namespace TaoTie
     public abstract partial class ConfigConditionByData:ConfigCondition
     {
         [NinoMember(1)]
+#if UNITY_EDITOR
+        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFSMConstKey)+"()", AppendNextDrawer = true)]
+#endif
         public string Key;
         [NinoMember(3)]
         public CompareMode Mode;

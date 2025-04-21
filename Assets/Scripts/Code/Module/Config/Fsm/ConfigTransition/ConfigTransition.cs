@@ -9,7 +9,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigTransition
     {
-        [NinoMember(1)][ReadOnly]
+        [NinoMember(1)][ReadOnly][ShowIf("@"+nameof(FromState)+"!="+nameof(ToState))]
         public string FromState;
         [NinoMember(2)][ReadOnly]
         public string ToState;

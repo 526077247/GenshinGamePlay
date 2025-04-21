@@ -5,7 +5,7 @@ namespace TaoTie
 {
     public class ConfigFsmTableItem
     {
-        [ReadOnly]
+        [ReadOnly][ShowIf("@"+nameof(FromState)+"!="+nameof(ToState))]
         public string FromState;
         [ReadOnly]
         public string ToState;
