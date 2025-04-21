@@ -17,7 +17,7 @@ namespace TaoTie
         [NinoMember(4)] [LabelText("默认启用")]
         public bool DefaultEnable = true;
 #if UNITY_EDITOR
-        [OnValueChanged(nameof(UpdateIconPath))][JsonIgnore][BoxGroup("Icon")][NinoIgnore]
+        [OnValueChanged(nameof(UpdateIconPath))][BoxGroup("Icon")][NinoIgnore]
         public Sprite Icon;
 
         private void UpdateIconPath()

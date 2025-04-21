@@ -612,8 +612,19 @@ namespace LitJson
                             hasType = true;
                             string typeName = (string)ReadValue(stringType, reader);
 #if UNITY_EDITOR
-                            if (typeName == "_UnityEngineObject" && UnityEngineObjectType.IsAssignableFrom(value_type))
+                            if (typeName == "_UnityEngineObject" &&
+                                UnityEngineObjectType.IsAssignableFrom(value_type))
                             {
+                                if (UnityEditor.EditorApplication.isPlaying)
+                                {
+                                    while (true)
+                                    {
+                                        reader.Read();
+                                        if (reader.Token == JsonToken.ObjectEnd)
+                                            break;
+                                    }
+                                    return null;
+                                }
                                 string guid = null;
                                 string uType = null;
                                 while (true)
@@ -648,6 +659,12 @@ namespace LitJson
 #else
                             if (typeName == "_UnityEngineObject")
                             {
+                                while (true)
+                                {
+                                    reader.Read();
+                                    if (reader.Token == JsonToken.ObjectEnd)
+                                        break;
+                                }
                                 return null;
                             }
 #endif

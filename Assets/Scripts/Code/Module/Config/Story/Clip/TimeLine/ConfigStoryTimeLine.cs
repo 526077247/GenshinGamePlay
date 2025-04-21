@@ -11,7 +11,7 @@ namespace TaoTie
         
 #if UNITY_EDITOR
         
-        [JsonIgnore][Sirenix.OdinInspector.OnValueChanged(nameof(SetPath))][Sirenix.OdinInspector.BoxGroup("TimeLine")]
+        [Sirenix.OdinInspector.OnValueChanged(nameof(SetPath))][Sirenix.OdinInspector.BoxGroup("TimeLine")]
         public TimelineAsset TimeLine;
         
         public void SetPath()

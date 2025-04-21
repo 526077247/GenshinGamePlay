@@ -8,10 +8,11 @@ using UnityEngine;
 
 namespace TaoTie
 {
+    [NinoType(false)]
     public abstract partial class ConfigBillboardPrefabPlugin: ConfigBillboardPlugin
     {
 #if UNITY_EDITOR
-        [OnValueChanged(nameof(UpdatePrefabPath))][JsonIgnore][BoxGroup("Prefab")]
+        [OnValueChanged(nameof(UpdatePrefabPath))][BoxGroup("Prefab")]
         public GameObject Prefab;
 
         private void UpdatePrefabPath()

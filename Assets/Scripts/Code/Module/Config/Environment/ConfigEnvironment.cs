@@ -21,7 +21,7 @@ namespace TaoTie
         [NinoMember(4)]
         public string SkyCubePath;
 #if UNITY_EDITOR
-        [OnValueChanged(nameof(UpdateSkyCubePath))][JsonIgnore][BoxGroup("SkyCube")]
+        [OnValueChanged(nameof(UpdateSkyCubePath))][BoxGroup("SkyCube")]
         public Cubemap SkyCube;
 
         private void UpdateSkyCubePath()
