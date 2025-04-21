@@ -6,6 +6,7 @@ namespace TaoTie
     public class ConfigFsmTableLayer
     {
         public string Name = "Base Layer";
+        public bool IKPass;
         [HideInInspector]
         public ConfigFsmTableState[] FsmStates = Array.Empty<ConfigFsmTableState>();
         [HideInInspector]

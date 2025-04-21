@@ -240,7 +240,11 @@ namespace TaoTie
                 AnimatorController animatorController = AnimatorController.CreateAnimatorControllerAtPath(acPath);
                 for (int i = 0; i < data.Layers.Length; i++)
                 {
+                    animatorController.AddLayer(data.Layers[i].Name);
                     AnimatorControllerLayer layer = animatorController.layers[i];
+                    layer.iKPass = data.Layers[i].IKPass;
+                    layer.blendingMode =
+                        i == 0 ? AnimatorLayerBlendingMode.Override : AnimatorLayerBlendingMode.Additive;
                     AnimatorStateMachine stateMachine = layer.stateMachine;
 
                     for (int j = 0; j < data.Layers[i].FsmStates.Length; j++)
@@ -298,6 +302,55 @@ namespace TaoTie
                 return true;
             }
             return false;
+        }
+        
+        [MenuItem("Assets/工具/Fsm/批量添加状态到当前层")]
+        public static void CreateFsmState()
+        {
+            string[] guids = Selection.assetGUIDs;
+            if(guids.Length<=0) return;
+            var win = GetWindow<FsmTableEditor>();
+            if (win.data.CurrentIndex >= 0 && win.data.CurrentIndex < win.data.Layers.Length)
+            {
+                var layer = win.data.Layers[win.data.CurrentIndex];
+                List<AnimationClip> states = new List<AnimationClip>();
+                for (int i = 0; i < guids.Length; i++)
+                {
+                    string selectPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                    var state = AssetDatabase.LoadAssetAtPath<AnimationClip>(selectPath);
+                    if (state != null)
+                    {
+                        states.Add(state);
+                    }
+                }
+
+                var oldLen = (layer.FsmStates?.Length ?? 0);
+                var newStates = new ConfigFsmTableState[oldLen + states.Count];
+                if (layer.FsmStates != null)
+                {
+                    Array.Copy(layer.FsmStates, newStates, layer.FsmStates.Length);
+                }
+
+                for (int i = oldLen; i < newStates.Length; i++)
+                {
+                    newStates[i] = new ConfigFsmTableState()
+                    {
+                        Clip = states[i - oldLen],
+                        Name = states[i - oldLen].name,
+                        Data = new StateData()
+                    };
+                }
+
+                layer.FsmStates = win.data.FsmStates = newStates;
+                win.data.RefreshTable();
+            }
+           
+        }
+
+        [MenuItem("Assets/工具/Fsm/批量添加状态到当前层", true)]
+        public static bool CanCreateFsmState()
+        {
+            return HasOpenInstances<FsmTableEditor>();
         }
     }
 }
