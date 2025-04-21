@@ -54,8 +54,9 @@ namespace TaoTie
                 fsm.SetData(FSMConst.MotionDirection, (int)mDirection);
             }
 
-            if (moveComponent != null)
+            if (moveComponent?.CharacterInput != null)
             {
+                moveComponent.CharacterInput.RotAngleType = RotAngleType.ROT_ANGLE_Y;
                 moveComponent.CharacterInput.MotionDirection = mDirection;
                 if (canMove)
                     moveComponent.CharacterInput.Direction = direction.normalized;

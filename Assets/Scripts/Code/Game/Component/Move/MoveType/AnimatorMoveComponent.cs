@@ -133,8 +133,8 @@ namespace TaoTie
 					{
 						deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
 					}
-					var temp = (flag.y > 0 ? -1 : 1) * CharacterInput.RolateSpeed * deltaTime;
-					if (Mathf.Abs(temp - angle) < 0) temp = angle;
+					var temp = (flag.y > 0 ? -1 : 1) * CharacterInput.RotateSpeed * deltaTime;
+					if (Mathf.Abs(temp - angle) <= 0.5f) temp = angle;
 					dir = Quaternion.Euler(0, temp, 0) * transform.forward;
 				}
 				else

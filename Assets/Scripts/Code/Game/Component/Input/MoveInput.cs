@@ -13,9 +13,13 @@ namespace TaoTie
 		/// </summary>
 	    public Vector3 Velocity;
 		/// <summary>
-		/// 朝向
+		/// 镜头朝向
 		/// </summary>
 	    public Vector3 Direction;
+		/// <summary>
+		/// 旋转轴
+		/// </summary>
+		public RotAngleType RotAngleType;
 		/// <summary>
 		/// 速度比例
 		/// </summary>
@@ -23,7 +27,7 @@ namespace TaoTie
 		/// <summary>
 		/// 转向速度(°/s)
 		/// </summary>
-		public float RolateSpeed = 360;
+		public float RotateSpeed = 360;
 
 		public bool Jump = false;
 

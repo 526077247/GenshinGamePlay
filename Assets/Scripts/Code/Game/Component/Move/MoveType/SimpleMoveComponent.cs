@@ -7,7 +7,6 @@ namespace TaoTie
     {
         private ORCAAgentComponent orcaAgent => parent.GetComponent<ORCAAgentComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
-        private FsmComponent FsmComponent => parent.GetComponent<FsmComponent>();
         protected override void InitInternal()
         {
             
@@ -21,8 +20,31 @@ namespace TaoTie
         public void Update()
         {
             if(CharacterInput == null) return;
+            float deltaTime = (GameTimerManager.Instance.GetDeltaTime() / 1000f);
+            //doRotate
+            if (CharacterInput.RotateSpeed > 0)
+            {
+                var euler = SceneEntity.Rotation.eulerAngles;
+                switch (CharacterInput.RotAngleType)
+                {
+                    case RotAngleType.ROT_ANGLE_X:
+                        SceneEntity.Rotation = quaternion.Euler(euler.x + CharacterInput.RotateSpeed * deltaTime,
+                            euler.y, euler.z);
+                        break;
+                    case RotAngleType.ROT_ANGLE_Y:
+                        SceneEntity.Rotation = quaternion.Euler(euler.x,
+                            euler.y + CharacterInput.RotateSpeed * deltaTime, euler.z);
+                        break;
+                    case RotAngleType.ROT_ANGLE_Z:
+                        SceneEntity.Rotation = quaternion.Euler(euler.x, euler.y,
+                            euler.z + CharacterInput.RotateSpeed * deltaTime);
+                        break;
+                }
+            }
+            
+            //doMove
             var speed = numericComponent.GetAsFloat(NumericType.Speed);
-            var velocity = CharacterInput.Direction.normalized * speed;
+            var velocity = CharacterInput.Direction.normalized * speed * CharacterInput.SpeedScale;
             orcaAgent?.SetVelocity(velocity, speed);
             if (orcaAgent != null)
             {
@@ -31,23 +53,8 @@ namespace TaoTie
             CharacterInput.Velocity = velocity;
             if (velocity != Vector3.zero)
             {
-                SceneEntity.Position += (GameTimerManager.Instance.GetDeltaTime() / 1000f) * velocity;
-                MoveStart();
+                SceneEntity.Position += deltaTime * velocity;
             }
-            else
-            {
-                MoveStop();
-            }
-        }
-        
-        private void MoveStart()
-        {
-            FsmComponent.SetData(FSMConst.MotionFlag, 1);
-        }
-
-        private void MoveStop()
-        {
-            FsmComponent.SetData(FSMConst.MotionFlag, 0);
         }
     }
 }
