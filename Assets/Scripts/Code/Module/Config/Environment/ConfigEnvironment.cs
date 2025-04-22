@@ -57,5 +57,15 @@ namespace TaoTie
         [NinoMember(5)]
         public Color TintColor;
 
+        [NinoMember(6)][LabelText("使用直接光")]
+        public bool UseDirLight;
+        [NinoMember(7)][LabelText("光照颜色")][ShowIf(nameof(UseDirLight))]
+        public Color LightColor = Color.white;
+        [NinoMember(8)][LabelText("光照强度")][ShowIf(nameof(UseDirLight))][MinValue(0)]
+        public float LightIntensity = 1;
+        [NinoMember(9)] [LabelText("光照方向")] [ShowIf(nameof(UseDirLight))]
+        public Vector3 LightDir = new Vector3(50, -30, 0);
+        [NinoMember(10)] [LabelText("阴影类型")] [ShowIf(nameof(UseDirLight))]
+        public LightShadows LightShadows = LightShadows.None;
     }
 }

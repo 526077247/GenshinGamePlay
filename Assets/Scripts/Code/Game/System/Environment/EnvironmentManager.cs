@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class EnvironmentManager: IManager, IUpdate
+    public partial class EnvironmentManager: IManager, IUpdate
     {
         public static EnvironmentManager Instance { get; private set; }
         //游戏世界一天时间，换算成GameTime的总时长，下同
@@ -58,6 +58,11 @@ namespace TaoTie
             NoonTimeStart = mNoonTimeStart;
             AfterNoonTimeStart = mAfterNoonTimeStart;
             NightTimeStart = mNightTimeStart;
+            GameObject obj = new GameObject("DirLight");
+            dirLight = obj.AddComponent<Light>();
+            dirLight.enabled = false;
+            dirLight.type = LightType.Directional;
+            GameObject.DontDestroyOnLoad(obj);
         }
 
         private async ETTask<ConfigEnvironments> GetConfig(string path = "EditConfig/Others/ConfigEnvironments")
@@ -109,6 +114,11 @@ namespace TaoTie
 
         public void Destroy()
         {
+            if (dirLight != null)
+            {
+                GameObject.Destroy(dirLight.gameObject);
+                dirLight = null;
+            }
             foreach (var item in envInfoMap)
             {
                 item.Value.Dispose();
@@ -235,25 +245,13 @@ namespace TaoTie
             preInfo = curInfo;
             curInfo = info;
             if (preInfo == curInfo && (info == null || !info.Changed)) return;
-            
-            //todo:
-            RenderSettings.skybox = skybox;
-            if (skybox != null)
-            {
-                if (curInfo.IsBlender)
-                {
-                    skybox.SetTexture("_Tex2",curInfo.SkyCube2);
-                    skybox.SetColor("_Tint2",curInfo.TintColor2);
-                    skybox.SetFloat("_BlendCubemaps",curInfo.Progress);
-                }
-                else
-                {
-                    skybox.SetFloat("_BlendCubemaps",0);
-                }
-                skybox.SetColor("_Tint",curInfo.TintColor);
-                skybox.SetTexture("_Tex",curInfo.SkyCube);
-            }
+
+            ApplySkybox(curInfo);
+            ApplyLight(curInfo);
         }
+
+        private partial void ApplySkybox(EnvironmentInfo info);
+        private partial void ApplyLight(EnvironmentInfo info);
 
         private NormalEnvironmentRunner CreateRunner(ConfigEnvironment data, EnvironmentPriorityType type)
         {
