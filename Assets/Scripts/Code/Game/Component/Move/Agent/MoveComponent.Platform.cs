@@ -239,7 +239,7 @@ namespace TaoTie
 
             if (nowtime < delayTillTime)
             {
-                return true;
+                return route != null;
             }
 
             if (this.beginTime > 0)
@@ -298,7 +298,7 @@ namespace TaoTie
                 OnUpdateWithAnim(nowtime);
             }
 
-            return true;
+            return route != null;
         }
 
         /// <summary>

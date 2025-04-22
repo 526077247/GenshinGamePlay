@@ -15,11 +15,12 @@
             MoveComponent moveComponent = null;
             if (ConfigActor.Move.Strategy is ConfigAnimatorMove am)
             {
-                moveComponent = AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am, TypeInfo<MoveComponent>.Type);
+                moveComponent =
+                    AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am, TypeInfo<MoveComponent>.Type);
             }
             else if (ConfigActor.Move.Strategy is ConfigSimpleMove sm)
             {
-                moveComponent = AddComponent<SimpleMoveComponent>(TypeInfo<MoveComponent>.Type);
+                moveComponent = AddComponent<SimpleMoveComponent, ConfigSimpleMove>(sm, TypeInfo<MoveComponent>.Type);
             }
 
             if (moveComponent != null)

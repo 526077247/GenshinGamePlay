@@ -1,5 +1,4 @@
-﻿using Unity.Mathematics;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TaoTie
 {
@@ -21,25 +20,33 @@ namespace TaoTie
         protected override void UpdateInternal()
         {
             if(CharacterInput == null) return;
-            float deltaTime = (GameTimerManager.Instance.GetDeltaTime() / 1000f);
+            float deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
             //doRotate
-            if (CharacterInput.RotateSpeed > 0)
+            if (CharacterInput.RotateSpeed > 0 && CharacterInput.Direction!= Vector3.zero)
             {
                 var euler = SceneEntity.Rotation.eulerAngles;
-                switch (CharacterInput.RotAngleType)
+                var dir = Quaternion.LookRotation(CharacterInput.Direction, SceneEntity.Up);
+                var euler2 = dir.eulerAngles;
+                var angle = euler2.y - euler.y;
+                while (angle < -180)
                 {
-                    case RotAngleType.ROT_ANGLE_X:
-                        SceneEntity.Rotation = quaternion.Euler(euler.x + CharacterInput.RotateSpeed * deltaTime,
-                            euler.y, euler.z);
-                        break;
-                    case RotAngleType.ROT_ANGLE_Y:
-                        SceneEntity.Rotation = quaternion.Euler(euler.x,
-                            euler.y + CharacterInput.RotateSpeed * deltaTime, euler.z);
-                        break;
-                    case RotAngleType.ROT_ANGLE_Z:
-                        SceneEntity.Rotation = quaternion.Euler(euler.x, euler.y,
-                            euler.z + CharacterInput.RotateSpeed * deltaTime);
-                        break;
+                    angle += 360;
+                }
+
+                while (angle > 180)
+                {
+                    angle -= 360;
+                }
+
+                if (Mathf.Abs(angle) > CharacterInput.RotateSpeed * 0.01f)
+                {
+                    var deltaAngle = CharacterInput.RotateSpeed * deltaTime * (angle < 0 ? -1 : 1);
+                    float newY = euler.y + (angle < 0 ? Mathf.Max(deltaAngle, angle) : Mathf.Min(deltaAngle, angle));
+                    SceneEntity.Rotation = Quaternion.Euler(euler.x, newY, euler.z);
+                }
+                else
+                {
+                    SceneEntity.Rotation = Quaternion.Euler(euler.x, euler2.y, euler.z);
                 }
             }
             

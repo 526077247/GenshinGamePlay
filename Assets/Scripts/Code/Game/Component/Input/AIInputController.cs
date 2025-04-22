@@ -56,7 +56,6 @@ namespace TaoTie
 
             if (moveComponent?.CharacterInput != null)
             {
-                moveComponent.CharacterInput.RotAngleType = RotAngleType.ROT_ANGLE_Y;
                 moveComponent.CharacterInput.MotionDirection = mDirection;
                 if (canMove)
                     moveComponent.CharacterInput.Direction = direction.normalized;

@@ -17,10 +17,6 @@ namespace TaoTie
 		/// </summary>
 	    public Vector3 Direction;
 		/// <summary>
-		/// 旋转轴
-		/// </summary>
-		public RotAngleType RotAngleType;
-		/// <summary>
 		/// 速度比例
 		/// </summary>
 		public float SpeedScale = 1;
