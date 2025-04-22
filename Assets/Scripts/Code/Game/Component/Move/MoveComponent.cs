@@ -2,14 +2,14 @@
 
 namespace TaoTie
 {
-    public abstract class MoveComponent: Component,IComponentDestroy
+    public abstract partial class MoveComponent: Component,IComponentDestroy,IUpdate
     {
         protected SceneEntity SceneEntity => parent as SceneEntity;
         
-        public ConfigMove Config { get; private set; }
+        public ConfigMoveStrategy Config { get; private set; }
         public MoveInput CharacterInput{ get; private set; }
         
-        protected void Init(ConfigMove configMove)
+        protected void Init(ConfigMoveStrategy configMove)
         {
             Config = configMove;
             CharacterInput = new MoveInput();
@@ -17,6 +17,8 @@ namespace TaoTie
 
         public virtual void Destroy()
         {
+            FollowMoveDestroy();
+            PlatformMoveDestroy();
             CharacterInput = null;
             Config = null;
         }
@@ -31,9 +33,18 @@ namespace TaoTie
             dir.y = 0;
             SceneEntity.Rotation = Quaternion.LookRotation(dir, Vector3.up);
         }
+
+        public void Update()
+        {
+            if(FollowMoveUpdate()) return;
+            if(PlatformMoveUpdate()) return;
+            UpdateInternal();
+        }
+        
+        protected abstract void UpdateInternal();
     }
 
-    public abstract class MoveComponent<T> : MoveComponent, IComponent<T> where T: ConfigMove
+    public abstract class MoveComponent<T> : MoveComponent, IComponent<T> where T: ConfigMoveStrategy
     {
         public T ConfigMove => Config as T;
         public void Init(T config)

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoType(false)]
-    public class ConfigPlatformMove: ConfigMove
+    public class ConfigPlatformMove: ConfigMoveAgent
     {
         [NinoMember(10)]
         public ConfigRoute Route;

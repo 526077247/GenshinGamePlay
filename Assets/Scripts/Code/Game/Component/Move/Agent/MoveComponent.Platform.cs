@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class PlatformMoveComponent:Component,IComponent<ConfigRoute,SceneGroup>,IUpdate
+    public partial class MoveComponent
     {
         /// <summary>
         /// 可为空，为空路径表示世界坐标
@@ -23,7 +23,7 @@ namespace TaoTie
         /// <summary>
         /// 是否使用动画移动
         /// </summary>
-        private bool useAnimMove;
+        protected abstract bool useAnimMove { get; }
 
         /// <summary>
         /// 下一个或这一个（抵达后等待中）路径点
@@ -179,7 +179,7 @@ namespace TaoTie
             if(config!=null) SetRoute(config);
         }
 
-        public void Destroy()
+        public void PlatformMoveDestroy()
         {
             this.sceneGroup = null;
             sqlAvatarTriggerEventDistance = 0;
@@ -226,7 +226,7 @@ namespace TaoTie
             this.n = -1;
         }
 
-        public void Update()
+        public bool PlatformMoveUpdate()
         {
             var nowtime = GameTimerManager.Instance.GetTimeNow() / 1000f;
             #region 延迟启动
@@ -239,7 +239,7 @@ namespace TaoTie
 
             if (nowtime < delayTillTime)
             {
-                return;
+                return true;
             }
 
             if (this.beginTime > 0)
@@ -297,6 +297,8 @@ namespace TaoTie
             {
                 OnUpdateWithAnim(nowtime);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -422,7 +424,7 @@ namespace TaoTie
         /// 使用动画移动
         /// </summary>
         /// <param name="nowtime"></param>
-        private void OnUpdateWithAnim(float nowtime)
+        protected virtual void OnUpdateWithAnim(float nowtime)
         {
         }
 
@@ -640,7 +642,7 @@ namespace TaoTie
             return targets[n + 1];
         }
 
-        public void OnStop()
+        protected void OnStop()
         {
             IsStart = false;
             IsPause = false;
@@ -649,6 +651,7 @@ namespace TaoTie
             enable = false;
             this.needTime = 0;
             this.waitTime = 0;
+            route = null;
         }
 
         public void Pause()
@@ -673,6 +676,11 @@ namespace TaoTie
                 onMoveStateChange?.Invoke(true);
             }
             enable = true;
+        }
+
+        public void Stop()
+        {
+            SetRoute(null);
         }
 
         /// <summary>

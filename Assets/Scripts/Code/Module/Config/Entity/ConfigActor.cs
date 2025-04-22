@@ -33,6 +33,6 @@ namespace TaoTie
         [NinoMember(9)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Avatar))]
         public ConfigTrigger Trigger;
         [NinoMember(11)]
-        public ConfigMove Move = new ConfigAnimatorMove();
+        public ConfigMove Move;
     }
 }

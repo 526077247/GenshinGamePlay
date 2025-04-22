@@ -11,25 +11,30 @@
 
         protected void CreateMoveComponent()
         {
-            if (ConfigActor.Move is ConfigAnimatorMove am)
+            if(ConfigActor.Move == null) return;
+            MoveComponent moveComponent = null;
+            if (ConfigActor.Move.Strategy is ConfigAnimatorMove am)
             {
-                AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am, TypeInfo<MoveComponent>.Type);
+                moveComponent = AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am, TypeInfo<MoveComponent>.Type);
             }
-            else if (ConfigActor.Move is ConfigSimpleMove sm)
+            else if (ConfigActor.Move.Strategy is ConfigSimpleMove sm)
             {
-                AddComponent<SimpleMoveComponent>(TypeInfo<MoveComponent>.Type);
+                moveComponent = AddComponent<SimpleMoveComponent>(TypeInfo<MoveComponent>.Type);
             }
-            else if (ConfigActor.Move is ConfigPlatformMove pm)
+
+            if (moveComponent != null)
             {
-                var pc = AddComponent<PlatformMoveComponent, ConfigRoute, SceneGroup>(pm.Route, null);
-                if (pm.Route != null && pm.Delay >= 0)
+                if (ConfigActor.Move.DefaultAgent is ConfigPlatformMove pm)
                 {
-                    pc.DelayStart(pm.Delay);
+                    if (pm.Route != null)
+                    {
+                        moveComponent.SetRoute(pm.Route,pm.Delay);
+                    }
                 }
-            }
-            else if (ConfigActor.Move is ConfigFollowMove fm)
-            {
-                AddComponent<FollowMoveComponent, ConfigFollowMove>(fm);
+                else if (ConfigActor.Move.DefaultAgent is ConfigFollowMove fm)
+                {
+                    moveComponent.SetConfigFollowMove(fm);
+                }
             }
         }
     }

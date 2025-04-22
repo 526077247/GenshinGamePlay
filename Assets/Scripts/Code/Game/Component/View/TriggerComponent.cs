@@ -26,8 +26,12 @@ namespace TaoTie
         private ConfigShape shape;
         private TriggerCheckType checkType;
         private int configCheckCount;
+        private uint configTriggerCount;
+        private int configTriggerInterval;
+        private uint configTotalTriggerCount;
         private TargetType triggerFlag;
         private Vector3 offset;
+        private bool applyEachModel;
 
         private long lifeTimerId;
         private long checkTimerId;
@@ -38,6 +42,10 @@ namespace TaoTie
         public ListComponent<Entity> Entities;
         public event Action<Entity> OnTriggerEnterEvt;
         public event Action<Entity> OnTriggerExitEvt;
+
+        private DictionaryComponent<long, long> lastTriggerTime;
+        private DictionaryComponent<long, uint> triggerCount;
+        private uint totalTriggerCount;
         public void Init(ConfigTrigger configTrigger)
         {
             offset = configTrigger.Offset;
@@ -46,10 +54,16 @@ namespace TaoTie
             configCheckCount = configTrigger.CheckCount;
             checkType = configTrigger.CheckType;
             triggerFlag = configTrigger.TriggerFlag;
+            configTriggerInterval = configTrigger.TriggerInterval;
+            configTriggerCount = configTrigger.TriggerCount;
+            configTotalTriggerCount = configTrigger.TotalTriggerCount;
+            applyEachModel = configTrigger.ApplyEachModel;
             
             map = SceneManager.Instance.GetCurrentScene<MapScene>();
             Entities = ListComponent<Entity>.Create();
-
+            lastTriggerTime = DictionaryComponent<long, long>.Create();
+            triggerCount = DictionaryComponent<long, uint>.Create();
+            totalTriggerCount = 0;
             if (configTrigger.StartCheckTime > 0)
             {
                 StartCheckAsync(configTrigger.StartCheckTime,configTrigger.CheckInterval,configTrigger.LifeTime).Coroutine();
@@ -68,10 +82,16 @@ namespace TaoTie
             configCheckCount = -1;
             checkType = TriggerCheckType.Point;
             triggerFlag = TargetType.All;
+            configTriggerInterval = 0;
+            configTriggerCount = uint.MaxValue;
+            configTotalTriggerCount = uint.MaxValue;
+            totalTriggerCount = 0;
+            applyEachModel = false;
             
             map = SceneManager.Instance.GetCurrentScene<MapScene>();
             Entities = ListComponent<Entity>.Create();
-
+            lastTriggerTime = DictionaryComponent<long, long>.Create();
+            triggerCount = DictionaryComponent<long, uint>.Create();
             StartCheck(checkInterval, -1);
         }
 
@@ -111,6 +131,17 @@ namespace TaoTie
                 Entities = null;
             }
 
+            if (lastTriggerTime != null)
+            {
+                lastTriggerTime.Dispose();
+                lastTriggerTime = null;
+            }
+
+            if (triggerCount != null)
+            {
+                triggerCount.Dispose();
+                triggerCount = null;
+            }
             shape = null;
         }
 
@@ -195,6 +226,32 @@ namespace TaoTie
             {
                 if (!Entities.Contains(sceneEntity))
                 {
+                    var timeNow = GameTimerManager.Instance.GetTimeNow();
+                    if (lastTriggerTime.TryGetValue(sceneEntity.Id, out var lastTime))
+                    {
+                        if (lastTime + configTriggerInterval > timeNow)
+                        {
+                            return;
+                        }
+                    }
+
+                    if (!triggerCount.TryGetValue(sceneEntity.Id, out var count))
+                    {
+                        triggerCount[sceneEntity.Id] = count = 0;
+                    }
+               
+                    if (count >= configTriggerCount)
+                    {
+                        return;
+                    }
+                    triggerCount[sceneEntity.Id]++;
+                
+                    if (totalTriggerCount >= configTotalTriggerCount)
+                    {
+                        return;
+                    }
+                    totalTriggerCount++;
+                    lastTriggerTime[sceneEntity.Id] = timeNow;
                     Entities.Add(sceneEntity);
                     OnTriggerEnterEvt?.Invoke(sceneEntity);
                 }
@@ -208,9 +265,33 @@ namespace TaoTie
                 }
             }
         }
+
         private bool InRange(SceneEntity sceneEntity)
         {
-            var targetPos = PhysicsHelper.Transformation(pSceneEntity.Position + offset, pSceneEntity.Rotation, sceneEntity.Position);
+            if (applyEachModel)
+            {
+                var umc = parent.GetComponent<UnitModelComponent>();
+                if (umc?.EntityView == null) return false;
+                for (var node = umc.Holders.First; node.Next != null; node = node.Next)
+                {
+                    if (node.Value != null && node.Value.EntityView != null)
+                    {
+                        if (InRange(sceneEntity, node.Value.EntityView.position, node.Value.EntityView.rotation))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            return InRange(sceneEntity, pSceneEntity.Position, pSceneEntity.Rotation);
+        }
+
+        private bool InRange(SceneEntity sceneEntity, Vector3 position, Quaternion rotation)
+        {
+            var targetPos = PhysicsHelper.Transformation(position + offset,  rotation, sceneEntity.Position);
             if (checkType == TriggerCheckType.Point)
             {
                 return shape.Contains(targetPos);

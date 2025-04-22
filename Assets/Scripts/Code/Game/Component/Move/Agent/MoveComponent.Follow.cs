@@ -2,26 +2,26 @@
 
 namespace TaoTie
 {
-    public class FollowMoveComponent: Component, IComponent<ConfigFollowMove>, IUpdate
+    public partial class MoveComponent
     {
         private SceneEntity target;
         private ConfigFollowMove configFollowMove;
         private NumericComponent nc => parent.GetComponent<NumericComponent>();
         private SceneEntity current => GetParent<SceneEntity>();
-        public void Init(ConfigFollowMove config)
-        {
-            configFollowMove = config;
-        }
 
-        public void Destroy()
+        public void SetConfigFollowMove(ConfigFollowMove configFollowMove)
+        {
+            this.configFollowMove = configFollowMove;
+        }
+        protected void FollowMoveDestroy()
         {
             configFollowMove = null;
             target = null;
         }
 
-        public void Update()
+        protected bool FollowMoveUpdate()
         {
-            if (target == null || configFollowMove == null) return;
+            if (target == null || configFollowMove == null) return false;
             if (target.IsDispose)
             {
                 target = null;
@@ -29,7 +29,7 @@ namespace TaoTie
                 {
                     parent.Dispose();
                 }
-                return;
+                return false;
             }
             var speed = nc.GetAsFloat(NumericType.Speed);
             var dir = (target.Position + target.Rotation * configFollowMove.Offset - current.Position).normalized;
@@ -42,6 +42,8 @@ namespace TaoTie
             {
                 current.Rotation = Quaternion.Euler(dir);
             }
+
+            return true;
         }
 
         public void SetTarget(SceneEntity sceneEntity)

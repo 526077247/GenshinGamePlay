@@ -27,7 +27,7 @@ namespace TaoTie
                 if(aimSceneGroup.TryGetRoute(RouteId,out var route))
                 {
                     var gadget = aimSceneGroup.Parent.Get<Entity>(entityId).GetComponent<GadgetComponent>();
-                    var pmc = gadget?.GetComponent<PlatformMoveComponent>();
+                    var pmc = gadget?.GetComponent<MoveComponent>();
                     pmc?.SetRoute(route,0);
                 }
               

@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class SimpleMoveComponent: MoveComponent<ConfigSimpleMove>, IUpdate
+    public class SimpleMoveComponent: MoveComponent<ConfigSimpleMove>
     {
+        protected override bool useAnimMove => false;
         private ORCAAgentComponent orcaAgent => parent.GetComponent<ORCAAgentComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
         protected override void InitInternal()
@@ -17,7 +18,7 @@ namespace TaoTie
             
         }
 
-        public void Update()
+        protected override void UpdateInternal()
         {
             if(CharacterInput == null) return;
             float deltaTime = (GameTimerManager.Instance.GetDeltaTime() / 1000f);

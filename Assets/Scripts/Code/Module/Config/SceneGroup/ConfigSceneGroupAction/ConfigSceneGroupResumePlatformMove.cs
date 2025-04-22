@@ -19,7 +19,7 @@ namespace TaoTie
             if (aimSceneGroup.TryGetActorEntity(ActorId, out var entityId))
             {
                 var gadget = aimSceneGroup.Parent.Get<Entity>(entityId).GetComponent<GadgetComponent>();
-                var pmc = gadget?.GetComponent<PlatformMoveComponent>();
+                var pmc = gadget?.GetComponent<MoveComponent>();
                 pmc?.Resume();
             }
         }

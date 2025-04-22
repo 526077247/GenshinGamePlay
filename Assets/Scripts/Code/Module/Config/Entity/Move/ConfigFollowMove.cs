@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoType(false)]
-    public class ConfigFollowMove: ConfigMove
+    public class ConfigFollowMove: ConfigMoveAgent
     {
         [NinoMember(11)]
         public bool FollowRotation;
