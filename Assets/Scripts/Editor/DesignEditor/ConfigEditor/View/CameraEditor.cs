@@ -8,7 +8,7 @@ namespace TaoTie
 {
     public class CameraEditor: BaseEditorWindow<ConfigCameras>
     {
-        protected override string folderPath => base.folderPath + "/EditConfig";
+        protected override string folderPath => base.folderPath + "/EditConfig/OthersBuildIn";
 #if RoslynAnalyzer
         protected override byte[] Serialize(ConfigCameras data)
         {

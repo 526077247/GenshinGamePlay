@@ -61,7 +61,38 @@ namespace TaoTie
                 keySetMap[i] = Default[i];
             }
         }
-
+        private async ETTask<ConfigInput> GetConfig(string path = "EditConfig/OthersBuildIn/ConfigInput")
+        {
+            if (Define.ConfigType == 0)
+            {
+                var jStr = await ResourcesManager.Instance.LoadConfigJsonAsync(path);
+                return JsonHelper.FromJson<ConfigInput>(jStr);
+            }
+#if RoslynAnalyzer
+            else
+            {
+                var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
+                Deserializer.Deserialize(bytes,out ConfigInput res);
+                return res;
+            }
+#endif
+            Log.Error($"GetConfig 失败，ConfigType = {Define.ConfigType} 未处理");
+            return null;
+        }
+        public async ETTask LoadAsync()
+        {
+            var config = await GetConfig("EditConfig/OthersBuildIn/ConfigInput");
+            if (config?.Config != null)
+            {
+                for (int i = 0; i < keySetMap.Length; i++)
+                {
+                    if (config.Config.TryGetValue((GameKeyCode) i, out var key))
+                    {
+                        keySetMap[i] = key;
+                    }
+                }
+            }
+        }
         public void Destroy()
         {
             Instance = null;

@@ -28,7 +28,7 @@ namespace TaoTie
         public int CursorVisibleState { get; private set; }= 0;
         public int CursorLockState { get; private set; }= 0;
 
-        private async ETTask<ConfigCameras> GetConfig(string path = "EditConfig/Others/ConfigCameras")
+        private async ETTask<ConfigCameras> GetConfig(string path = "EditConfig/OthersBuildIn/ConfigCameras")
         {
             if (Define.ConfigType == 0)
             {
@@ -49,7 +49,7 @@ namespace TaoTie
         public async partial ETTask LoadAsync()
         {
             #region Config
-            var config = await GetConfig("EditConfig/Others/ConfigCameras");
+            var config = await GetConfig("EditConfig/OthersBuildIn/ConfigCameras");
             DefaultBlend = config.DefaultBlend;
             defaultCameraId = config.DefaultCamera.Id;
             configs = new Dictionary<int, ConfigCamera>();
