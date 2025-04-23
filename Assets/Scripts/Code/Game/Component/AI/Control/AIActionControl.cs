@@ -155,7 +155,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    knowledge.CombatComponent.UseSkillImmediately(actionState.Skill.SkillId);
+                    knowledge.SkillComponent.TryDoSkill(actionState.Skill.SkillId);
                 }
             }
 
@@ -248,13 +248,13 @@ namespace TaoTie
         private void CastSkill()
         {
             var now = GameTimerManager.Instance.GetTimeNow();
-            var maic = knowledge.CombatComponent;
+
             var skillInfo = actionState.Skill;
             var skillKnowledge = knowledge.SkillKnowledge;
             
             actionState.QuerySkillDiscardTick = now + skillInfo.Config.SkillQueryingTime;
             
-            maic.UseSkillImmediately(skillInfo.SkillId);
+            knowledge.SkillComponent.TryDoSkill(skillInfo.SkillId);
 
             if (skillInfo.Config.TriggerCDOnStart)
             {

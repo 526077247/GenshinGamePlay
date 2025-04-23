@@ -8,7 +8,6 @@ namespace TaoTie
     /// </summary>
     public class LocalInputController : Component, IComponent, IUpdate
     {
-        private AvatarSkillComponent avatarSkillComponent => parent.GetComponent<AvatarSkillComponent>();
         private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
 
@@ -34,18 +33,6 @@ namespace TaoTie
 
         public void Update()
         {
-            if (InputManager.Instance.GetKey(GameKeyCode.NormalAttack))
-            {
-                TryDoSkill(1001);
-            }
-            if (InputManager.Instance.GetKey(GameKeyCode.Skill1))
-            {
-                TryDoSkill(1002);
-            }
-            if (InputManager.Instance.GetKey(GameKeyCode.Skill2))
-            {
-                TryDoSkill(1003);
-            }
             //移动
             Vector3 direction = Vector3.zero;
             if (InputManager.Instance.GetKey(GameKeyCode.MoveForward))
@@ -80,11 +67,6 @@ namespace TaoTie
         }
 
         #endregion
-
-        public void TryDoSkill(int skillID)
-        {
-            avatarSkillComponent.TryDoSkill(skillID);
-        }
 
         public void TryMove(Vector3 direction, MotionFlag mFlag = MotionFlag.Run, MotionDirection mDirection = MotionDirection.Forward)
         {

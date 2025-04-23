@@ -16,12 +16,13 @@ namespace TaoTie
 
         private Dictionary<string, ConfigAbility> _dict;
         private List<ConfigAbility> _list;
-
+        private List<ConfigAbility> defaultAvatarAbilities;
         public void Init()
         {
             Instance = this;
             _list = new List<ConfigAbility>();
             _dict = new Dictionary<string, ConfigAbility>();
+            defaultAvatarAbilities = new List<ConfigAbility>();
         }
 
         public async ETTask LoadAsync()
@@ -52,6 +53,10 @@ namespace TaoTie
                                 {
                                     _list.Add(item);
                                     _dict[item.AbilityName] = item;
+                                    if (item.DefaultAvatar)
+                                    {
+                                        defaultAvatarAbilities.Add(item);
+                                    }
                                 }
                                 else
                                 {
@@ -73,6 +78,10 @@ namespace TaoTie
                                 {
                                     _list.Add(item);
                                     _dict[item.AbilityName] = item;
+                                    if (item.DefaultAvatar)
+                                    {
+                                        defaultAvatarAbilities.Add(item);
+                                    }
                                 }
                                 else
                                 {
@@ -126,5 +135,7 @@ namespace TaoTie
 
             return res;
         }
+
+        public List<ConfigAbility> GetDefaultAvatarAbilities() => defaultAvatarAbilities;
     }
 }

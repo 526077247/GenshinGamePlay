@@ -688,7 +688,7 @@ AnimatorTransition:
   m_Conditions:
   - m_ConditionMode: 6
     m_ConditionEvent: SkillId
-    m_EventTreshold: 1001
+    m_EventTreshold: 2001
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 891590355873701889}
   m_Solo: 0
@@ -839,7 +839,7 @@ AnimatorTransition:
   m_Conditions:
   - m_ConditionMode: 6
     m_ConditionEvent: SkillId
-    m_EventTreshold: 101
+    m_EventTreshold: 2004
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7231820449393647785}
   m_Solo: 0
@@ -910,7 +910,7 @@ AnimatorTransition:
   m_Conditions:
   - m_ConditionMode: 6
     m_ConditionEvent: SkillId
-    m_EventTreshold: 1003
+    m_EventTreshold: 2003
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3573532505272882320}
   m_Solo: 0
@@ -1365,7 +1365,7 @@ AnimatorTransition:
   m_Conditions:
   - m_ConditionMode: 6
     m_ConditionEvent: SkillId
-    m_EventTreshold: 1002
+    m_EventTreshold: 2002
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 3772879453226685972}
   m_Solo: 0

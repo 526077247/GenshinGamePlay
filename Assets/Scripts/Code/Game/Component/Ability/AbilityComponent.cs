@@ -59,6 +59,13 @@ namespace TaoTie
             ability.AfterAdd();
             return ability;
         }
+        public void AddAbilities(List<ConfigAbility> configs)
+        {
+            for (int i = 0; i < configs.Count; i++)
+            {
+                AddAbility(configs[i]);
+            }
+        }
 
         public ActorModifier ApplyModifier(long applierID, ActorAbility ability, string modifierName)
         {

@@ -8,6 +8,9 @@ namespace TaoTie
     public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
         [NinoMember(1)][NotNull]
+#if UNITY_EDITOR
+        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFSMConstKey)+"()", AppendNextDrawer = true)]
+#endif
         public string Key;
 
         public override bool Equals(ConfigCondition other)

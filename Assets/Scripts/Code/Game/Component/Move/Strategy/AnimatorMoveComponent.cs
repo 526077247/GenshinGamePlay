@@ -418,7 +418,7 @@ namespace TaoTie
 		{
 			if (CurrentControllerState == ControllerState.Grounded)
 			{
-				if ((jumpKeyIsPressed == true || jumpKeyWasPressed) && !jumpInputIsLocked)
+				if ((jumpKeyIsPressed || jumpKeyWasPressed) && !jumpInputIsLocked)
 				{
 					//Call events;
 					OnGroundContactLost();

@@ -116,12 +116,22 @@ namespace TaoTie
         [ShowIf("@data!=null")]
         public void ExportWithAnimator()
         {
+            if (Application.isPlaying)
+            {
+                Debug.LogError("运行中不支持导出");
+                return;
+            }
             Export(true);
         }
         [Button("导出(不包括Animator)")]
         [ShowIf("@data!=null")]
         public void ExportWithoutAnimator()
         {
+            if (Application.isPlaying)
+            {
+                Debug.LogError("运行中不支持导出");
+                return;
+            }
             Export(false);
         }
 

@@ -22,6 +22,8 @@ namespace TaoTie
         public ConfigActorCommon Common = new ConfigActorCommon();
         [NinoMember(3)]
         public ConfigCombat Combat;
+        [NinoMember(12)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Gadget))]
+        public ConfigSkill Skill;
         [NinoMember(4)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Gadget))]
         public ConfigEquipController EquipController;
         [NinoMember(5)]

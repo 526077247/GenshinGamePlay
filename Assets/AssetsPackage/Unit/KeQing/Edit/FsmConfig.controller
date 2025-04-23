@@ -1074,7 +1074,7 @@ MonoBehaviour:
         CanMove: 1
         CanTurn: 1
         CanJump: 0
-        IsJump: 1
+        IsJump: 0
         ShowWeapon: 0
         UseRagDoll: 0
         EffectBySpeed: 0

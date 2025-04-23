@@ -193,6 +193,9 @@ namespace TaoTie
         
         public AIDecision GetDecision() => decision;
         public AIDecision GetDecisionOld() => decisionOld;
+
+        public AISkillKnowledge GetSkillKnowledge() => knowledge.SkillKnowledge;
+
         #endregion
     }
 }

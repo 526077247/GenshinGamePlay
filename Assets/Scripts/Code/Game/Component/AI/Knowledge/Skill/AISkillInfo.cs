@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public int SkillId => Config.SkillID;
         public ConfigAISkill Config { get; private set; }
-
+        public SkillConfig SkillConfig => SkillConfigCategory.Instance.Get(SkillId);
         public int CD => Config.CD;
         
         /// <summary>

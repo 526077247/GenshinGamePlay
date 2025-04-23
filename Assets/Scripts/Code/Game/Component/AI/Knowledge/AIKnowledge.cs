@@ -40,6 +40,7 @@ namespace TaoTie
         
         public ORCAAgentComponent OrcaAgent => Entity.GetComponent<ORCAAgentComponent>();
         public NumericComponent Numeric => Entity.GetComponent<NumericComponent>();
+        public SkillComponent SkillComponent => Entity.GetComponent<SkillComponent>();
         
         public AISkillKnowledge SkillKnowledge;
         public AIMoveKnowledge MoveKnowledge;
@@ -63,6 +64,7 @@ namespace TaoTie
             CampID = Entity.CampId;
             DecisionArchetype = config.DecisionArchetype;
 
+            SkillKnowledge = AISkillKnowledge.Create(config);
             MoveControlState = AIMoveControlState.Create();
             ActionControlState = AIActionControlState.Create();
 
@@ -70,7 +72,6 @@ namespace TaoTie
             ThreatKnowledge = AIThreatKnowledge.Create(config);
             TargetKnowledge = AITargetKnowledge.Create();
             DefendAreaKnowledge = AIDefendAreaKnowledge.Create(config, BornPos, defendArea);
-            SkillKnowledge = AISkillKnowledge.Create(config);
             MoveKnowledge = AIMoveKnowledge.Create(config);
 
             PathFindingKnowledge = AIPathFindingKnowledge.Create(config);
