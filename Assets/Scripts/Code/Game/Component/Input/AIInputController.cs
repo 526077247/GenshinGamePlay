@@ -61,6 +61,7 @@ namespace TaoTie
                     moveComponent.CharacterInput.Direction = direction.normalized;
                 else
                     moveComponent.CharacterInput.Direction = Vector3.zero;
+                moveComponent.CharacterInput.FaceDirection = Vector3.zero;//todo:
                 //因为是动画驱动移动，所以这里速度指的是速度比例
                 moveComponent.CharacterInput.SpeedScale = numericComponent.GetAsFloat(NumericType.Speed);
             }

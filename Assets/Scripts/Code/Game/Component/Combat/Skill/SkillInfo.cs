@@ -7,7 +7,8 @@ namespace TaoTie
     {
         public int SkillID { get; private set; }
         public SkillConfig SkillConfig => SkillConfigCategory.Instance.Get(SkillID);
-
+        public FormulaStringFx CD => FormulaStringFx.Get(SkillConfig.CD);
+        public long LastSpellTime;
         public static SkillInfo Create(int skillId)
         {
             var res = ObjectPool.Instance.Fetch<SkillInfo>();

@@ -97,6 +97,10 @@ namespace TaoTie
                     moveComponent.CharacterInput.Direction = direction.normalized;
                 else
                     moveComponent.CharacterInput.Direction = Vector3.zero;
+                if (CameraManager.Instance.MainCamera() != null)
+                {
+                    moveComponent.CharacterInput.FaceDirection = CameraManager.Instance.MainCamera().transform.forward;
+                }
                 //因为是动画驱动移动，所以这里速度指的是速度比例
                 moveComponent.CharacterInput.SpeedScale = numericComponent.GetAsFloat(NumericType.Speed);
             }

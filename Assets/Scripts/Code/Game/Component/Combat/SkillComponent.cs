@@ -6,6 +6,7 @@ namespace TaoTie
 {
     public class SkillComponent:Component,IComponent,IComponent<int[]>,IUpdate
     {
+        private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
         private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
         private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         public Dictionary<int, SkillInfo> SkillInfoMap;
@@ -47,14 +48,14 @@ namespace TaoTie
         public void TryDoSkill(int skillId)
         {
             if (combatComponent == null) return;
-            //todo: 冷却消耗等判断
             if(!IsSkillInCD(skillId))
             {
+                SkillInfoMap[skillId].LastSpellTime = GameTimerManager.Instance.GetTimeNow();
                 combatComponent.SelectAttackTarget(true);
                 var target = combatComponent.GetAttackTarget();
-                if (target is Unit unit)
+                if (target is SceneEntity se)
                 {
-                    moveComponent.ForceLookAt(unit.Position);
+                    moveComponent.CharacterInput.FaceDirection = se.Position - GetParent<SceneEntity>().Position;
                 }
                 OnDoSkillEvt?.Invoke(skillId);
                 combatComponent.UseSkillImmediately(skillId);
@@ -65,10 +66,9 @@ namespace TaoTie
         {
             if (SkillInfoMap.TryGetValue(skillId, out var data))
             {
-                //todo:
-                return false;
+                var timeNow =  GameTimerManager.Instance.GetTimeNow();
+                return timeNow < data.LastSpellTime + data.CD.GetData(numericComponent);
             }
-
             return true;
         }
 

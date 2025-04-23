@@ -22,10 +22,10 @@ namespace TaoTie
             if(CharacterInput == null) return;
             float deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
             //doRotate
-            if (CharacterInput.RotateSpeed > 0 && CharacterInput.Direction!= Vector3.zero)
+            if (CharacterInput.RotateSpeed > 0 && CharacterInput.FaceDirection!= Vector3.zero)
             {
                 var euler = SceneEntity.Rotation.eulerAngles;
-                var dir = Quaternion.LookRotation(CharacterInput.Direction, SceneEntity.Up);
+                var dir = Quaternion.LookRotation(CharacterInput.FaceDirection, SceneEntity.Up);
                 var euler2 = dir.eulerAngles;
                 var angle = euler2.y - euler.y;
                 while (angle < -180)

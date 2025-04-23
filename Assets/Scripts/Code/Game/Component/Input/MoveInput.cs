@@ -13,9 +13,13 @@ namespace TaoTie
 		/// </summary>
 	    public Vector3 Velocity;
 		/// <summary>
-		/// 镜头朝向
+		/// 移动方向
 		/// </summary>
 	    public Vector3 Direction;
+		/// <summary>
+		/// 期望移动时的头朝向
+		/// </summary>
+		public Vector3 FaceDirection;
 		/// <summary>
 		/// 速度比例
 		/// </summary>
@@ -24,9 +28,13 @@ namespace TaoTie
 		/// 转向速度(°/s)
 		/// </summary>
 		public float RotateSpeed = 360;
-
+		/// <summary>
+		/// 跳跃
+		/// </summary>
 		public bool Jump = false;
-
+		/// <summary>
+		/// 被击退力大小和方向
+		/// </summary>
 		public Vector3 HitImpulse;
 
 	    public float GetHorizontalMovementInput()
