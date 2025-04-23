@@ -16,16 +16,30 @@ namespace TaoTie
         {
             
         }
+        protected Vector3 CalculateLookDirection()
+        {
+            if (CharacterInput == null || CharacterInput.FaceDirection == Vector3.zero)
+                return Vector3.zero;
 
+            Vector3 v = Vector3.zero;
+			
+            var faceRight = Quaternion.Euler(0, 90, 0) * CharacterInput.FaceDirection;
+            v += Vector3.ProjectOnPlane(faceRight, SceneEntity.Up).normalized * CharacterInput.Direction.x;
+            v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, SceneEntity.Up).normalized * CharacterInput.Direction.z;
+
+            v.Normalize();
+            return v;
+        }
         protected override void UpdateInternal()
         {
             if(CharacterInput == null) return;
             float deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
+            var lookDir = CalculateLookDirection();
             //doRotate
-            if (CharacterInput.RotateSpeed > 0 && CharacterInput.FaceDirection!= Vector3.zero)
+            if (CharacterInput.RotateSpeed > 0 && lookDir != Vector3.zero)
             {
                 var euler = SceneEntity.Rotation.eulerAngles;
-                var dir = Quaternion.LookRotation(CharacterInput.FaceDirection, SceneEntity.Up);
+                var dir = Quaternion.LookRotation(lookDir, SceneEntity.Up);
                 var euler2 = dir.eulerAngles;
                 var angle = euler2.y - euler.y;
                 while (angle < -180)

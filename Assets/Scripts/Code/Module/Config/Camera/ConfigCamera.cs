@@ -41,5 +41,8 @@ namespace TaoTie
 
         [NinoMember(12)] [LabelText("显示光标")] [BoxGroup("光标")]
         public bool VisibleCursor = true;
+
+        [NinoMember(13)] [LabelText("用于角色面向")]
+        public bool AvatarFaceDirection;
     }
 }

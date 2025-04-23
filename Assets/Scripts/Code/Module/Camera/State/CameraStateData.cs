@@ -20,6 +20,8 @@ namespace TaoTie
         public Vector3 LookAt;
         public Vector3 TargetForward;
         public Vector3 TargetUp;
+
+        public bool AvatarFaceDirection;
         public static CameraStateData Create()
         {
             return ObjectPool.Instance.Fetch<CameraStateData>();
@@ -36,7 +38,7 @@ namespace TaoTie
             res.Orientation = other.Orientation;
             res.LookAt = other.LookAt;
             res.TargetForward = other.TargetForward;
-           
+            res.AvatarFaceDirection = other.AvatarFaceDirection;
             return res;
         }
         public void Dispose()
@@ -49,7 +51,7 @@ namespace TaoTie
             Orientation = default;
             LookAt = default;
             TargetForward = default;
-           
+            AvatarFaceDirection = false;
             ObjectPool.Instance.Recycle(this);
         }
 
@@ -69,6 +71,8 @@ namespace TaoTie
             {
                 Orientation = Quaternion.Lerp(from.Orientation, to.Orientation, lerpVal);
             }
+
+            AvatarFaceDirection = to.AvatarFaceDirection;
             // LookAt = default;
             // TargetForward = default;
         }

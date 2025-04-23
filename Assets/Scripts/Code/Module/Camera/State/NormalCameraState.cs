@@ -25,6 +25,7 @@ namespace TaoTie
             res.Data = CameraStateData.Create();
             res.Data.Fov = res.Config.Fov;
             res.Data.NearClipPlane = res.Config.NearClipPlane;
+            res.Data.AvatarFaceDirection = config.AvatarFaceDirection;
             res.IsOver = false;
             res.CreateRunner();
             return res;

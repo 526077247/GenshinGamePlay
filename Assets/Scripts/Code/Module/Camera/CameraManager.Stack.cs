@@ -23,8 +23,8 @@ namespace TaoTie
 
         private CameraState curCameraState;
 
-        public ConfigBlender DefaultBlend { get; private set; } 
-
+        public ConfigBlender DefaultBlend { get; private set; }
+        public CameraState CurrentCameraState => curCameraState;
         public int CursorVisibleState { get; private set; }= 0;
         public int CursorLockState { get; private set; }= 0;
 
