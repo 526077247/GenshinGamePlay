@@ -22,7 +22,10 @@
             {
                 moveComponent = AddComponent<SimpleMoveComponent, ConfigSimpleMove>(sm, TypeInfo<MoveComponent>.Type);
             }
-
+            else if (ConfigActor.Move.Strategy is ConfigRigidbodyMove rm)
+            {
+                moveComponent = AddComponent<RigidbodyMoveComponent, ConfigRigidbodyMove>(rm, TypeInfo<MoveComponent>.Type);
+            }
             if (moveComponent != null)
             {
                 if (ConfigActor.Move.DefaultAgent is ConfigPlatformMove pm)
