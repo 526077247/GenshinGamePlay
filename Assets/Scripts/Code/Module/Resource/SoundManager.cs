@@ -11,22 +11,20 @@ namespace TaoTie
     public class SoundManager : IManager
     {
         public const int DEFAULTVALUE = 5;
+        public readonly ArrayList ValueList = new ArrayList() {-80, -30, -20, -10, -5, 0, 1, 2, 4, 6, 10};
+        private const int INITSOUNDCOUNT = 3;
+        
         public static SoundManager Instance;
+        
         private List<AudioSource> soundsPool = new List<AudioSource>();
-
         private List<AudioSource> httpAudioPool = new List<AudioSource>();
-
-        //背景音乐默认音量
-        private float initMusicVolume = 1f;
-        private int initSoundsCount = 3;
+        
         private Dictionary<string, AudioClip> sounds = new Dictionary<string, AudioClip>();
 
         public int MusicVolume;
         public int SoundVolume;
 
         public string CurMusic;
-        public ArrayList ValueList = new ArrayList() {-80, -30, -20, -10, -5, 0, 1, 2, 4, 6, 10};
-
 
         private AudioSource bgm;
 
@@ -37,8 +35,7 @@ namespace TaoTie
 
         private AudioMixer BGM;
         private AudioMixer Sound;
-
-
+        
         #region IManager
 
         public void Init()
@@ -55,9 +52,9 @@ namespace TaoTie
             var go = GameObject.Instantiate(bgmClipClone);
             bgm = go.GetComponent<AudioSource>();
             bgm.transform.SetParent(soundsRoot);
-            initMusicVolume = bgm.volume;
+
             soundsClipClone = await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab");
-            for (int i = 0; i < initSoundsCount; i++)
+            for (int i = 0; i < INITSOUNDCOUNT; i++)
             {
                 var item = CreateClipSource();
                 item.gameObject.SetActive(false);

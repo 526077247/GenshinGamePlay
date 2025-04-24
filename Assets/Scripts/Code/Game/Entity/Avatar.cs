@@ -33,6 +33,8 @@ namespace TaoTie
             var ac = AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             ac.AddAbilities(ConfigAbilityCategory.Instance.GetDefaultAvatarAbilities());
             AddComponent<EquipHoldComponent>();
+            if (ConfigActor.Billboard != null)
+                AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);
             InitAsync().Coroutine();
         }
 
