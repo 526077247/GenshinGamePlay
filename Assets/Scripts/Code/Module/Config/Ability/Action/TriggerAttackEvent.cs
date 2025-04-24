@@ -36,11 +36,12 @@ namespace TaoTie
             {
                 var info = infos[i];
                 var hitEntity = entityManager.Get<Entity>(info.EntityId);
-                if (!AttackHelper.CheckIsTarget(target,hitEntity,TargetType))
+                if (!AttackHelper.CheckIsTarget(target, hitEntity, TargetType))
                     continue;
-                temp.Add(info.EntityId,info);
+                temp.Add(info.EntityId, info);
             }
 
+            long attackInfoId = IdGenerater.Instance.GenerateId();
             bool isTimeScale = false;
             foreach (var item in temp)
             {
@@ -62,7 +63,7 @@ namespace TaoTie
 
                 var hitEntity = entityManager.Get<Entity>(info.EntityId);
                 AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo,
-                    isBullet, startTime);
+                    isBullet, startTime,attackInfoId);
                 AttackHelper.DamageClose(ability, modifier, result);
                 //时停
                 if (!isTimeScale && result.HitPattern != null)
@@ -83,6 +84,24 @@ namespace TaoTie
             }
 
             temp.Clear();
+            //非击中广播的相机震动
+            if (AttackEvent.AttackInfo.ForceCameraShake && !AttackEvent.AttackInfo.CameraShake.BroadcastOnHit
+                && AttackEvent.AttackInfo.CameraShake.ShakeType != CameraShakeType.HitVector)
+            {
+                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
+                {
+                    Id = attackInfoId,
+                    Source = (target as SceneEntity).Position,
+                    ShakeDir = AttackEvent.AttackInfo.CameraShake.ShakeType == CameraShakeType.Center
+                        ? CameraManager.Instance.MainCamera().transform.forward
+                        : AttackEvent.AttackInfo.CameraShake.ShakeDir,
+                    ShakeRange = AttackEvent.AttackInfo.CameraShake.ShakeRange,
+                    ShakeFrequency = AttackEvent.AttackInfo.CameraShake.ShakeFrequency,
+                    ShakeTime = AttackEvent.AttackInfo.CameraShake.ShakeTime,
+                    ShakeDistance = AttackEvent.AttackInfo.CameraShake.ShakeDistance,
+                    RangeAttenuation = AttackEvent.AttackInfo.CameraShake.RangeAttenuation
+                });
+            }
             ObjectPool.Instance.Recycle(temp);
         }
     }

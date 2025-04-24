@@ -101,20 +101,33 @@ namespace TaoTie
             {
                 Messager.Instance.Broadcast(0, MessageId.ShowDamageText, result);
             }
-            //相机震动
-            if (result.ConfigAttackInfo.ForceCameraShake && (result.ConfigAttackInfo.CameraShake.BroadcastOnHit ||
-                result.ConfigAttackInfo.CameraShake.ShakeType == CameraShakeType.HitVector))
+            //击中相机震动
+            if (result.ConfigAttackInfo.ForceCameraShake && (result.ConfigAttackInfo.CameraShake.BroadcastOnHit
+                ||result.ConfigAttackInfo.CameraShake.ShakeType == CameraShakeType.HitVector))
             {
-                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, new CameraShakeParam
-                    {
-                        Source = result.HitInfo.HitPos,
-                        ShakeDir = result.HitInfo.HitDir,
-                        ShakeRange = result.ConfigAttackInfo.CameraShake.ShakeRange,
-                        ShakeFrequency = result.ConfigAttackInfo.CameraShake.ShakeFrequency,
-                        ShakeTime = result.ConfigAttackInfo.CameraShake.ShakeTime,
-                        ShakeDistance = result.ConfigAttackInfo.CameraShake.ShakeDistance,
-                        RangeAttenuation = result.ConfigAttackInfo.CameraShake.RangeAttenuation
-                    });
+                var para = new CameraShakeParam
+                {
+                    Id  = result.Id,
+                    Source = result.HitInfo.HitPos,
+                    ShakeRange = result.ConfigAttackInfo.CameraShake.ShakeRange,
+                    ShakeFrequency = result.ConfigAttackInfo.CameraShake.ShakeFrequency,
+                    ShakeTime = result.ConfigAttackInfo.CameraShake.ShakeTime,
+                    ShakeDistance = result.ConfigAttackInfo.CameraShake.ShakeDistance,
+                    RangeAttenuation = result.ConfigAttackInfo.CameraShake.RangeAttenuation
+                };
+                switch (result.ConfigAttackInfo.CameraShake.ShakeType)
+                {
+                    case CameraShakeType.HitVector:
+                        para.ShakeDir = result.HitInfo.HitDir;
+                        break;
+                    case CameraShakeType.CustomVector:
+                        para.ShakeDir = result.ConfigAttackInfo.CameraShake.ShakeDir;
+                        break;
+                    case CameraShakeType.Center:
+                        para.ShakeDir = CameraManager.Instance.MainCamera().transform.forward;
+                        break;
+                }
+                Messager.Instance.Broadcast(0, MessageId.ShakeCamera, para);
             }
         }
 

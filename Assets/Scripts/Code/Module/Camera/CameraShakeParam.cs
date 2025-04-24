@@ -4,6 +4,7 @@ namespace TaoTie
 {
     public class CameraShakeParam
     {
+        public long Id;
         /// <summary>
         /// 振动源
         /// </summary>

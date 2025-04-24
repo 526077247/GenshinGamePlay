@@ -8,6 +8,7 @@ namespace TaoTie
     /// </summary>
     public class AttackResult: IDisposable
     {
+        public long Id;
         public bool IsBullet;
         public long AttackerId;
         public long DefenseId;
@@ -90,9 +91,10 @@ namespace TaoTie
         /// </summary>
         public Vector3 RetreatDir;
         #endregion
-        public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config,bool isBullet = false,long startTime = 0)
+        public static AttackResult Create(long attackerId,long defenseId, HitInfo info,ConfigAttackInfo config,bool isBullet = false,long startTime = 0,long attackInfoId = 0)
         {
             AttackResult res = new AttackResult();
+            res.Id = attackInfoId;//攻击Id
             res.AttackerId = attackerId;
             res.DefenseId = defenseId;
             res.HitInfo = info;

@@ -7,10 +7,10 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigCameraShake
     {
-        [NinoMember(1)][LabelText("击中才广播")][ShowIf("@"+nameof(ShakeType)+"!="+nameof(CameraShakeType)+"."+nameof(CameraShakeType.CustomVector))]
-        public bool BroadcastOnHit;
         [NinoMember(2)][LabelText("震动方向类型")]
         public CameraShakeType ShakeType; 
+        [NinoMember(1)][LabelText("击中才广播")][ShowIf("@"+nameof(ShakeType)+"!="+nameof(CameraShakeType)+"."+nameof(CameraShakeType.HitVector))]
+        public bool BroadcastOnHit;
         [NinoMember(3)][LabelText("震动幅度")]
         public float ShakeRange;
         [NinoMember(4)][LabelText("震动时间")]

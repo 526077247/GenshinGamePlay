@@ -44,7 +44,7 @@ namespace TaoTie
                 isBullet = true;
                 startTime = bullet.CreateTime;
             }
-
+            long attackInfoId = IdGenerater.Instance.GenerateId();
             bool isTimeScale = false;
             using (var beAttackers = TargetHelper.ResolveTarget(actionExecuter, ability, modifier, target,
                        BeAttackTargetting, OtherBeAttackTargets))
@@ -59,7 +59,7 @@ namespace TaoTie
                     var info = infos[0];
                     var hitEntity = entityManager.Get<Entity>(info.EntityId);
                     AttackResult result = AttackResult.Create(attacker.Id, hitEntity.Id, info, AttackInfo,
-                        isBullet, startTime);
+                        isBullet, startTime,attackInfoId);
                     AttackHelper.DamageClose(ability, modifier, result);
 
                     //时停

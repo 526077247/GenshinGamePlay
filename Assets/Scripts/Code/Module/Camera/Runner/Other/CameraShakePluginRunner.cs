@@ -60,6 +60,10 @@ namespace TaoTie
 
         private void OnShakeCamera(CameraShakeParam param)
         {
+            for (int i = 0; i < paramList.Count; i++)
+            {
+                if(paramList[i].Id == param.Id) return;
+            }
             var dis = Vector3.Distance(param.Source, data.Position);
             if (dis > param.ShakeDistance) return;
             if (dis > param.ShakeDistance - param.RangeAttenuation)
