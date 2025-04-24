@@ -2,38 +2,35 @@
 
 namespace TaoTie
 {
-    public class SceneGroupManager: IManager<List<ConfigSceneGroup>,SceneManagerProvider>
+    public class SceneGroupManager: IManager<ulong[],SceneManagerProvider>
     {
         #region IManager
 
-        public void Init(List<ConfigSceneGroup> sceneGroups,SceneManagerProvider scene)
+        public void Init(ulong[] ids,SceneManagerProvider scene)
         {
             this.Parent = scene;
             EntityManager em = scene.GetManager<EntityManager>();
             configIdMapSceneGroup = new Dictionary<ulong, long>();
-            if (sceneGroups != null)
+            for (int i = 0; i < (ids?.Length ?? 0); i++)
             {
-                for (int i = 0; i < sceneGroups.Count; i++)
+                var sceneGroupConf = ConfigSceneGroupCategory.Instance.Get(ids[i]);
+                if (sceneGroupConf == null)
                 {
-                    var sceneGroupConf = sceneGroups[i];
-                    if (sceneGroupConf == null)
-                    {
-                        Log.Error("配置为空！请策划检查");
-                        continue;
-                    }
-
-
-                    if (configIdMapSceneGroup.ContainsKey(sceneGroupConf.Id))
-                    {
-                        Log.Error("SceneGroupConfigId重复 " + sceneGroupConf.Id + "！请策划检查");
-                        continue;
-                    }
-
-                    var sceneGroup = em.CreateEntity<SceneGroup, ConfigSceneGroup, SceneGroupManager>(sceneGroupConf,this);
-                    configIdMapSceneGroup.Add(sceneGroupConf.Id, sceneGroup.Id);
-                    Log.Info("<color=red>创建SceneGroup</color>"+sceneGroupConf.Id);
+                    Log.Error("配置为空！请策划检查");
+                    continue;
                 }
-            } 
+
+
+                if (configIdMapSceneGroup.ContainsKey(sceneGroupConf.Id))
+                {
+                    Log.Error("SceneGroupConfigId重复 " + sceneGroupConf.Id + "！请策划检查");
+                    continue;
+                }
+
+                var sceneGroup = em.CreateEntity<SceneGroup, ConfigSceneGroup, SceneGroupManager>(sceneGroupConf, this);
+                configIdMapSceneGroup.Add(sceneGroupConf.Id, sceneGroup.Id);
+                Log.Info("<color=red>创建SceneGroup</color>" + sceneGroupConf.Id);
+            }
         }
 
         public void Destroy()

@@ -91,25 +91,26 @@ namespace TaoTie
             RegisterManager<GameTimerManager>();
             var envm = RegisterManager<EnvironmentManager>();
             await envm.LoadAsync();
-            if (config.DayNight == 1 && config.EnvIds.Length==4)
+            if (config.DayNight == 1 && config.EnvIds.Length == 4)
             {
-                envm.CreateDayNight(config.EnvIds[0],config.EnvIds[1],config.EnvIds[2],config.EnvIds[3]);
+                envm.CreateDayNight(config.EnvIds[0], config.EnvIds[1], config.EnvIds[2], config.EnvIds[3]);
             }
-            else if (config.DayNight == 0 && config.EnvIds.Length>0)
+            else if (config.DayNight == 0 && config.EnvIds.Length > 0)
             {
                 envm.Create(config.EnvIds[0], EnvironmentPriorityType.Scene);
             }
+
             RegisterManager<ORCAManager>();
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();
-            RegisterManager<AIManager,MapScene>(this);
+            RegisterManager<AIManager, MapScene>(this);
 
-            RegisterManager<SceneGroupManager,List<ConfigSceneGroup>,SceneManagerProvider>(ConfigSceneGroupCategory.Instance.GetAllList(),this);
-            RegisterManager<StorySystem,SceneManagerProvider>(this);
-            await UIManager.Instance.OpenWindow<UIDamageView>(UIDamageView.PrefabPath,UILayerNames.GameLayer);
+            RegisterManager<SceneGroupManager, ulong[], SceneManagerProvider>(config.SceneGroupIds, this);
+            RegisterManager<StorySystem, SceneManagerProvider>(this);
+            await UIManager.Instance.OpenWindow<UIDamageView>(UIDamageView.PrefabPath, UILayerNames.GameLayer);
             await UIManager.Instance.OpenWindow<UIOpView>(UIOpView.PrefabPath, UILayerNames.GameLayer);
-            if(PlatformUtil.IsMobile()) 
+            if (PlatformUtil.IsMobile())
                 await UIManager.Instance.OpenWindow<UIMobileMainView>(UIMobileMainView.PrefabPath);
             var model = Self.GetComponent<UnitModelComponent>();
             await model.WaitLoadGameObjectOver();

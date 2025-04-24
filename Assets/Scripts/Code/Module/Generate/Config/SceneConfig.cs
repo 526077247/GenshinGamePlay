@@ -92,9 +92,12 @@ namespace TaoTie
 		/// <summary>是否日夜循环环境类型</summary>
 		[NinoMember(5)]
 		public int DayNight { get; set; }
-		/// <summary>环境配置参数</summary>
+		/// <summary>环境配置参数（日夜循环填4个否则填1个）</summary>
 		[NinoMember(6)]
 		public int[] EnvIds { get; set; }
+		/// <summary>初始生成SceneGroup</summary>
+		[NinoMember(7)]
+		public ulong[] SceneGroupIds { get; set; }
 
 	}
 }

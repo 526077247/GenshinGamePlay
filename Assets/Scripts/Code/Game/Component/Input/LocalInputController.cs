@@ -106,7 +106,7 @@ namespace TaoTie
                 {
                     moveComponent.CharacterInput.FaceDirection = Vector3.forward;
                 }
-                //因为是动画驱动移动，所以这里速度指的是速度比例
+                //因为是动画驱动移动，所以这里速度指的是动画速度缩放比例
                 moveComponent.CharacterInput.SpeedScale = numericComponent.GetAsFloat(NumericType.Speed);
             }
         }

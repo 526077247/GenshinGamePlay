@@ -644,6 +644,7 @@ namespace TaoTie
                 case "int[]":
                 case "int32[]":
                 case "long[]":
+                case "ulong[]":
                 case "float[]":
                     {
                         value = value.Replace("{", "").Replace("}", "");
@@ -686,7 +687,8 @@ namespace TaoTie
                     string[] ss = value.Split(':');
                     return "{\"_t\":\"AttrConfig\"," + "\"Ks\":" + ss[0] + ",\"Vs\":" + ss[1] + "}";
                 default:
-                    throw new Exception($"不支持此类型: {type}");
+                    Console.WriteLine($"不支持此类型: {type}");
+                    return $"\"{value}\"";
             }
         }
 
