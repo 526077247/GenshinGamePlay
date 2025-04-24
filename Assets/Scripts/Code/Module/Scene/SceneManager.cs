@@ -105,6 +105,10 @@ namespace TaoTie
                             gos.Add(go);
                         }
                     }
+                    using (var temp = SoundManager.Instance.GetSceneChangeIgnoreClear())
+                    {
+                        gos.AddRange(temp);
+                    }
                     Log.Info("InnerSwitchScene ResourcesManager ClearAssetsCache excludeAssetLen = " + gos.Count);
                     ResourcesManager.Instance.ClearAssetsCache(gos);
                 }
