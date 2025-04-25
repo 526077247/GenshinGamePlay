@@ -43,7 +43,7 @@ namespace TaoTie
                 ManagerProvider.RegisterManager<SceneManager>();
                 
                 ManagerProvider.RegisterManager<ServerConfigManager>();
-                ManagerProvider.RegisterManager<NavmeshSystem>();
+               
                 
                 ManagerProvider.RegisterManager<InputManager>();
                 await InputManager.Instance.LoadAsync();
@@ -64,6 +64,7 @@ namespace TaoTie
 
         static async ETTask StartGameAsync()
         {
+            ManagerProvider.RegisterManager<NavmeshSystem>();
             ManagerProvider.RegisterManager<SoundManager>();
             ManagerProvider.RegisterManager<AbilitySystem>();
             ManagerProvider.RegisterManager<ModelSystem>();

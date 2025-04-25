@@ -58,8 +58,26 @@ namespace TaoTie
         {
             if (this.transform == null)
             {
-                var pui = this.parent;
-                this.transform = this.GetParentTransform()?.Find(path);
+                var pTrans = this.GetParentTransform();
+                if (pTrans != null)
+                {
+                    var rc = pTrans.GetComponent<ReferenceCollector>();
+                    if (rc != null)
+                    {
+                        transform = rc.Get<Transform>(path);
+                    }
+
+                    if (this.transform == null)
+                    {
+                        this.transform = pTrans.Find(path);
+#if UNITY_EDITOR
+                        if (transform != null && !string.IsNullOrEmpty(path) && rc != null)
+                        {
+                            rc.Add(path, transform);
+                        }
+#endif
+                    }
+                }
                 if (this.transform == null)
                 {
                     Log.Error(this.parent.GetType().Name + "路径错误:" + path);
@@ -189,6 +207,12 @@ namespace TaoTie
             }
 
             this.components.Add(name, componentClass, component);
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                component.ActivatingComponent();
+            }
+#endif
         }
 
         /// <summary>
@@ -222,7 +246,7 @@ namespace TaoTie
             if (componentInst is IOnCreate a)
                 a.OnCreate();
             if (componentInst is II18N i18n)
-                I18NManager.Instance.RegisterI18NEntity(i18n);
+                I18NManager.Instance?.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, componentInst);
             length++;
             return componentInst;
@@ -242,7 +266,7 @@ namespace TaoTie
             componentInst.parent = this;
             componentInst.OnCreate(a);
             if (componentInst is II18N i18n)
-                I18NManager.Instance.RegisterI18NEntity(i18n);
+                I18NManager.Instance?.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, componentInst);
             length++;
             return componentInst;
@@ -262,7 +286,7 @@ namespace TaoTie
             componentInst.parent = this;
             componentInst.OnCreate(a, b);
             if (componentInst is II18N i18n)
-                I18NManager.Instance.RegisterI18NEntity(i18n);
+                I18NManager.Instance?.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, componentInst);
             length++;
             return componentInst;
@@ -282,7 +306,7 @@ namespace TaoTie
             componentInst.parent = this;
             componentInst.OnCreate(a, b, c);
             if (componentInst is II18N i18n)
-                I18NManager.Instance.RegisterI18NEntity(i18n);
+                I18NManager.Instance?.RegisterI18NEntity(i18n);
             this.RecordUIComponent(path, type, componentInst);
             length++;
             return componentInst;
@@ -407,7 +431,7 @@ namespace TaoTie
                 (component as IOnDisable)?.OnDisable();
                 component.BeforeOnDestroy();
                 if (component is II18N i18n)
-                    I18NManager.Instance.RemoveI18NEntity(i18n);
+                    I18NManager.Instance?.RemoveI18NEntity(i18n);
                 (component as IOnDestroy)?.OnDestroy();
                 this.components.Remove(path, TypeInfo<T>.Type);
             }

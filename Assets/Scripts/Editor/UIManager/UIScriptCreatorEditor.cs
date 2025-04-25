@@ -104,6 +104,66 @@ namespace TaoTie
             AssetDatabase.SaveAssetIfDirty(go);
         }
 
+        [MenuItem("GameObject/生成UI代码/绑定节点", false, 25)]
+        static void Generate()
+        {
+            GameObject go = rootGo;
+
+            if (go == null || go.GetComponent<UIScriptCreator>() == null)
+            {
+                Debug.LogError("未标记根节点");
+                return;
+            }
+            
+            var rcPrefab = go.GetComponent<ReferenceCollector>();
+            if (rcPrefab == null)
+            {
+                rcPrefab = go.AddComponent<ReferenceCollector>();
+            }
+            else
+            {
+                rcPrefab.Clear();
+            }
+
+            GenerateChildCode(go.transform, "", rcPrefab);
+            AssetDatabase.SaveAssetIfDirty(go);
+            AssetDatabase.Refresh();
+            if (IsMarking)
+            {
+                IsMarking = false;
+                EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
+                return;
+            }
+
+            Debug.Log("生成完成");
+        }
+
+        static void GenerateChildCode(Transform trans, string strPath, ReferenceCollector rcPrefab)
+        {
+            if (null == trans)
+            {
+                return;
+            }
+            if (!string.IsNullOrEmpty(strPath))
+            {
+                strPath += "/";
+            }
+            for (int nIndex = 0; nIndex < trans.childCount; ++nIndex)
+            {
+                Transform child = trans.GetChild(nIndex);
+                string strTemp = strPath + child.name;
+                var uisc = child.GetComponent<UIScriptCreator>();
+                if (uisc != null && uisc.isMarked)
+                {
+                    if (!string.IsNullOrEmpty(strTemp))
+                    {
+                        rcPrefab.Add(strTemp, trans);
+                    }
+                }
+                GenerateChildCode(child, strTemp, rcPrefab);
+            }
+        }
+        
         // 绘制icon方法
         static void DrawHierarchyIcon(int instanceID, Rect selectionRect)
         {
