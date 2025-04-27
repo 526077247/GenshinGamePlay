@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 224438795553994780}
   - component: {fileID: 7887646650339310160}
   - component: {fileID: 166101657567911910}
+  - component: {fileID: -1953605526500354536}
   m_Layer: 5
   m_Name: UILobbyView
   m_TagString: Untagged
@@ -62,6 +63,21 @@ MonoBehaviour:
   moduleName: UILobbyView
   isListItem: 0
   isMarked: 1
+--- !u!114 &-1953605526500354536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386170326414932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8a4ae2fbad43488cfdddcf6e992414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+  - key: root/Image/btn_start
+    gameObject: {fileID: 4791801140662987848}
 --- !u!1 &3290284465351630487
 GameObject:
   m_ObjectHideFlags: 0

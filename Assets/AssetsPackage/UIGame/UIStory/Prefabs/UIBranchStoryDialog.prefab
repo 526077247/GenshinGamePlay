@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5296216462975698380}
   - component: {fileID: 5296216462975698371}
+  - component: {fileID: -2764389077997011439}
   m_Layer: 5
   m_Name: UIBranchStoryDialog
   m_TagString: Untagged
@@ -31,7 +32,6 @@ RectTransform:
   m_Children:
   - {fileID: 824081015403924120}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -46,6 +46,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5296216462975698383}
   m_CullTransparentMesh: 1
+--- !u!114 &-2764389077997011439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296216462975698383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8a4ae2fbad43488cfdddcf6e992414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+  - key: Panel
+    gameObject: {fileID: 824081015403924120}
 --- !u!1 &6041915359108123745
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,7 +94,6 @@ RectTransform:
   m_Children:
   - {fileID: 2883945010597030448}
   m_Father: {fileID: 5296216462975698380}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -144,6 +158,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 824081015403924120}
     m_Modifications:
     - target: {fileID: 3165564072940336525, guid: eaf89ceef396de647aabf8a5d6ba84e0, type: 3}
@@ -235,6 +250,9 @@ PrefabInstance:
       value: ChoiceItem
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eaf89ceef396de647aabf8a5d6ba84e0, type: 3}
 --- !u!224 &2883945010597030448 stripped
 RectTransform:

@@ -232,6 +232,7 @@ GameObject:
   - component: {fileID: 5296216462975698380}
   - component: {fileID: 5296216462975698371}
   - component: {fileID: 6220417513261683601}
+  - component: {fileID: 4966116252310528219}
   m_Layer: 5
   m_Name: UIMobileMainView
   m_TagString: Untagged
@@ -283,6 +284,19 @@ MonoBehaviour:
   moduleName: UIMobileMainView
   isListItem: 0
   isMarked: 1
+--- !u!114 &4966116252310528219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296216462975698383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8a4ae2fbad43488cfdddcf6e992414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: []
 --- !u!1 &6834910631447304835
 GameObject:
   m_ObjectHideFlags: 0
