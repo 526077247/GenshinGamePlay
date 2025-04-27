@@ -39,7 +39,7 @@ namespace TaoTie
                 {
                     if (timeline.Clips[i].StartTime > StateTime)
                     {
-                        FsmClip clip = timeline.Clips[i].CreateClip(this);
+                        FsmClip clip = FsmSystem.Instance.CreateFsmClip(timeline.Clips[i],this);
                         clip.Break(StateTime);
                         clip.Dispose();
                     }
@@ -92,7 +92,7 @@ namespace TaoTie
             while (StateTime >= nextClipTime)
             {
                 ConfigFsmClip clipConfig = timeline.Clips[clipIndex];
-                FsmClip clip = clipConfig.CreateClip(this);
+                FsmClip clip = FsmSystem.Instance.CreateFsmClip(clipConfig,this);
                 if (clip != null)
                 {
                     clip.Start(StateTime);

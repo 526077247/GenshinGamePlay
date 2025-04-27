@@ -1,21 +1,17 @@
 ﻿namespace TaoTie
 {
-    public class AttachAbilityAction:FsmClip<ConfigAttachAbility>
+    public class AttachAbilityClip:FsmClip<ConfigAttachAbilityClip>
     {
-        public static AttachAbilityAction Create()
-        {
-            return ObjectPool.Instance.Fetch<AttachAbilityAction>();
-        }
         protected override void OnStart()
         {
             var conf = ConfigAbilityCategory.Instance.Get(config.AbilityName);
-            actor.GetComponent<AbilityComponent>().AddAbility(conf);
+            actor.GetComponent<AbilityComponent>()?.AddAbility(conf);
         }
 
         protected override void OnStop()
         {
             if (config.RemoveOnOver)
-                actor.GetComponent<AbilityComponent>().RemoveAbility(config.AbilityName);
+                actor.GetComponent<AbilityComponent>()?.RemoveAbility(config.AbilityName);
         }
 
         protected override void OnUpdate(float nowtime, float elapsetime)

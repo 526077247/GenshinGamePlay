@@ -83,18 +83,21 @@ namespace TaoTie
 		/// <summary>技能名</summary>
 		[NinoMember(2)]
 		public string Name { get; set; }
-		/// <summary>ability名</summary>
-		[NinoMember(3)]
-		public string AbilityName { get; set; }
 		/// <summary>简介</summary>
-		[NinoMember(4)]
+		[NinoMember(3)]
 		public string Desc { get; set; }
 		/// <summary>图标</summary>
-		[NinoMember(5)]
+		[NinoMember(4)]
 		public string Icon { get; set; }
+		/// <summary>触发冷却时机</summary>
+		[NinoMember(5)]
+		public int TriggerCDType { get; set; }
 		/// <summary>冷却时间公式</summary>
 		[NinoMember(6)]
 		public string CD { get; set; }
+		/// <summary>进入cd的ability名</summary>
+		[NinoMember(7)]
+		public string AbilityName { get; set; }
 
 	}
 }

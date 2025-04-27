@@ -5,9 +5,9 @@ namespace TaoTie
 {
     public class AISkillInfo: IDisposable
     {
-        public int SkillId => Config.SkillID;
+        public int ConfigId => Config.ConfigId;
         public ConfigAISkill Config { get; private set; }
-        public SkillConfig SkillConfig => SkillConfigCategory.Instance.Get(SkillId);
+        public SkillConfig SkillConfig => SkillConfigCategory.Instance.Get(ConfigId);
         public int CD => Config.CD;
         
         /// <summary>

@@ -1,14 +1,10 @@
 ﻿namespace TaoTie
 {
-    public class ExecuteAbilityAction:FsmClip<ConfigExecuteAbility>
+    public class TriggerClip:FsmClip<ConfigTriggerClip>
     {
-        public static ExecuteAbilityAction Create()
-        {
-            return ObjectPool.Instance.Fetch<ExecuteAbilityAction>();
-        }
         protected override void OnStart()
         {
-            actor.GetComponent<AbilityComponent>().ExecuteAbility(config.AbilityName);
+            actor.GetComponent<FsmComponent>()?.OnFsmTimelineTrigger(config.TriggerId);
         }
 
         protected override void OnStop()
@@ -29,12 +25,12 @@
 
         private async ETTask OnBreakAsync(float nowtime)
         {
-            if (config.ExecuteOnBreak)
+            if (config.TriggerOnBreak)
             {
-                var name = config.AbilityName;
                 var entity = actor;
                 await TimerManager.Instance.WaitAsync((int) ((config.StartTime - nowtime) * 1000));
-                entity.GetComponent<AbilityComponent>().ExecuteAbility(name);
+                if (entity == null || entity.IsDispose) return;
+                actor.GetComponent<FsmComponent>()?.OnFsmTimelineTrigger(config.TriggerId);
             }
         }
     }

@@ -7,8 +7,8 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigAISkill
     {
-        [NinoMember(1)]
-        public int SkillID;
+        [NinoMember(1)][LabelText("配置表Id")]
+        public int ConfigId;
         [NinoMember(20)]
         public bool Enable = true;
         [NinoMember(2)]

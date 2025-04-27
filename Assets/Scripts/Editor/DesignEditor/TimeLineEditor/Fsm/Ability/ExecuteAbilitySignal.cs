@@ -14,7 +14,7 @@ namespace TaoTie
         public bool ExecuteOnBreak;
         public void DoSerialize(List<ConfigFsmClip> clips)
         {
-            clips.Add(new ConfigExecuteAbility
+            clips.Add(new ConfigExecuteAbilityClip
             {
                 Length = 0,
                 StartTime = (float)this.time,

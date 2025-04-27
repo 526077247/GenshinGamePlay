@@ -69,6 +69,7 @@ namespace TaoTie
             ManagerProvider.RegisterManager<AbilitySystem>();
             ManagerProvider.RegisterManager<ModelSystem>();
             ManagerProvider.RegisterManager<BillboardSystem>();
+            ManagerProvider.RegisterManager<FsmSystem>();
             ManagerProvider.RegisterManager<ConfigSceneGroupCategory>();
             ManagerProvider.RegisterManager<ConfigAIDecisionTreeCategory>();
             ManagerProvider.RegisterManager<ConfigAbilityCategory>();

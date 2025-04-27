@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 namespace TaoTie
 {
     [NinoType(false)]
-    public partial class ConfigAttachAbility:ConfigFsmClip
+    public partial class ConfigAttachAbilityClip:ConfigFsmClip
     {
         [NinoMember(10)]
 #if UNITY_EDITOR
@@ -15,11 +15,5 @@ namespace TaoTie
         public bool AddOnBreak;
         [NinoMember(12)][LabelText("结束时是否移除")]
         public bool RemoveOnOver;
-        public override FsmClip CreateClip(FsmState state)
-        {
-            var res = AttachAbilityAction.Create();
-            res.OnInit(state,this);
-            return res;
-        }
     }
 }

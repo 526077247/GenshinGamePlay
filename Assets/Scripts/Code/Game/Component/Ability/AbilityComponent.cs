@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TaoTie
 {
@@ -199,6 +200,7 @@ namespace TaoTie
             {
                 if (item.Config.AbilityName == ability)
                 {
+                    Messager.Instance.Broadcast(Id,MessageId.ExecuteAbility,ability);
                     item.Execute();
                 }
             }

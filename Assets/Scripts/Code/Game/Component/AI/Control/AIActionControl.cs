@@ -155,7 +155,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    knowledge.SkillComponent.TryDoSkill(actionState.Skill.SkillId);
+                    knowledge.SkillComponent.TryDoSkill(actionState.Skill.ConfigId);
                 }
             }
 
@@ -254,7 +254,7 @@ namespace TaoTie
             
             actionState.QuerySkillDiscardTick = now + skillInfo.Config.SkillQueryingTime;
             
-            knowledge.SkillComponent.TryDoSkill(skillInfo.SkillId);
+            knowledge.SkillComponent.TryDoSkill(skillInfo.ConfigId);
 
             if (skillInfo.Config.TriggerCDOnStart)
             {

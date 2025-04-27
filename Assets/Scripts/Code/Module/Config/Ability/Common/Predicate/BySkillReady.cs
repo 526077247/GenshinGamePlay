@@ -25,7 +25,7 @@ namespace TaoTie
                         var skills = ai.GetSkillKnowledge().SkillsOnNerve.AvailableSkills;
                         for (int i = 0; i < skills.Count; i++)
                         {
-                            if(skills[i].SkillId == SkillId) return true;
+                            if(skills[i].ConfigId == SkillId) return true;
                         }
                     }
                 }

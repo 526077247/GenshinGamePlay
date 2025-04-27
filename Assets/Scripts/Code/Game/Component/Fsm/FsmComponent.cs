@@ -16,6 +16,7 @@ namespace TaoTie
         public DynDictionary DynDictionary => dynDictionary;
         public Fsm DefaultFsm => fsms?.Length > 0 ? fsms[0] : null;
 
+        public event Action<string> OnFsmTimelineTriggerEvt; 
         public Fsm GetFsm(string name)
         {
             if (fsms == null || string.IsNullOrEmpty(name))
@@ -250,6 +251,15 @@ namespace TaoTie
         {
             Log.Warning($"Id:{Id}\r\n" + str);
         }
+        #endregion
+
+        #region Trigger
+
+        public void OnFsmTimelineTrigger(string triggerId)
+        {
+            OnFsmTimelineTriggerEvt?.Invoke(triggerId);
+        }
+
         #endregion
     }
 }

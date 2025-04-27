@@ -13,7 +13,7 @@ namespace TaoTie
             {
                 if (clip.asset is AttachAbilityClip abilityClip)
                 {
-                    clips.Add(new ConfigAttachAbility
+                    clips.Add(new ConfigAttachAbilityClip
                     {
                         Length = (float)clip.duration,
                         StartTime = (float)clip.start,

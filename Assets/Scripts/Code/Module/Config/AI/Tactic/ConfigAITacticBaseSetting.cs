@@ -11,8 +11,8 @@ namespace TaoTie
         public bool Enable = true;
         [NinoMember(2)]
         public ConfigAITacticCondition Condition;
-        [NinoMember(3)][Tooltip("能使用的技能")]
-        public int[] SkillId;
+        [NinoMember(3)][Tooltip("能使用的技能的配置表Id")]
+        public int[] ConfigId;
         [NinoMember(4)][Tooltip("重写每个Pose能使用的技能")]
         public Dictionary<int, int[]> OverwriteByPose = new Dictionary<int, int[]>();
     }
