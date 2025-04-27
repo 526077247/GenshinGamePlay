@@ -9,7 +9,6 @@ namespace TaoTie
     public class AIActionControl : AIBaseControl
     {
         private AIActionControlState actionState;
-        private List<AISkillInfo> validCandidates;
         private FsmComponent fsm;
 
         protected override void InitInternal()

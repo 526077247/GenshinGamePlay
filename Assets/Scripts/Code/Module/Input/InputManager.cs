@@ -42,8 +42,9 @@ namespace TaoTie
         /// </summary>
         private readonly int[] keyStatus = new int[(int)GameKeyCode.Max];
 
-        private int touchCount = 0;
+
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+        private int touchCount = 0;
         private Vector2 mousePosition;
 #endif
         #region IManager

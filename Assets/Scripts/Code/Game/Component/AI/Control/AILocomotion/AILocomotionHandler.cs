@@ -7,7 +7,7 @@ namespace TaoTie
     {
         private AIKnowledge knowledge;
         private LocoBaseTask currentTask;
-        private float? originalYawSpeed;
+        // private float? originalYawSpeed;
         
         public LocoTaskState CurrentState;
         public struct ParamGoTo

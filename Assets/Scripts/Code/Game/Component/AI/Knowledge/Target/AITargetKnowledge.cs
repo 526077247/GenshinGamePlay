@@ -21,11 +21,7 @@ namespace TaoTie
         /// 目标实体
         /// </summary>
         public Unit TargetEntity;
-        
-        private CombatComponent targetAvatarCombat;
-        
-        private AbilityComponent targetAbilityPlugin;
-        
+
         /// <summary>
         /// 目标位置
         /// </summary>

@@ -7,7 +7,7 @@ namespace TaoTie
     {
         private List<CameraShakeParam> paramList;
         private CameraShakeParam current;
-        private long curTime;
+        
         private Vector3 curDir;
         protected override void InitInternal()
         {
@@ -40,11 +40,7 @@ namespace TaoTie
                 }
             }
     
-            if (maxRange != current)
-            {
-                curTime = 0;
-                current = maxRange;
-            }
+            current = maxRange;
 
             if (current == null)
             {

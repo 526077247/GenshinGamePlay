@@ -6,8 +6,8 @@ namespace TaoTie
     public class FacingMoveInfo : MoveInfoBase
     {
         private long nextTickPickDirection;
-        private long nextTickBackRaycast;
-        private long nextTickMoveDirObstacleCheck;
+        // private long nextTickBackRaycast;
+        // private long nextTickMoveDirObstacleCheck;
         private bool isBackClear;
         private MotionDirection currentMoveDirection;
 
@@ -20,8 +20,8 @@ namespace TaoTie
         {
             currentMoveDirection = MotionDirection.Idle;
             nextTickPickDirection = 0;
-            nextTickBackRaycast = 0;
-            nextTickMoveDirObstacleCheck = 0;
+            // nextTickBackRaycast = 0;
+            // nextTickMoveDirObstacleCheck = 0;
             isBackClear = false;
             ObjectPool.Instance.Recycle(this);
         }
@@ -31,8 +31,8 @@ namespace TaoTie
             isBackClear = true;
             currentMoveDirection = MotionDirection.Idle;
             nextTickPickDirection = 0;
-            nextTickBackRaycast = 0;
-            nextTickMoveDirObstacleCheck = 0;
+            // nextTickBackRaycast = 0;
+            // nextTickMoveDirObstacleCheck = 0;
             CreateNewTask(taskHandler, aiKnowledge);
         }
 
@@ -88,18 +88,16 @@ namespace TaoTie
             {
                 dir = MotionDirection.Idle;
             }
-            
-            MotionFlag speedLevel = dir == MotionDirection.Idle?MotionFlag.Idle:data.SpeedLevel;
+            currentMoveDirection = dir;
+            MotionFlag speedLevel = dir == MotionDirection.Idle ? MotionFlag.Idle : data.SpeedLevel;
             AILocomotionHandler.ParamFacingMove param = new AILocomotionHandler.ParamFacingMove
             {
                 Anchor = aiKnowledge.TargetKnowledge.TargetEntity,
                 SpeedLevel = speedLevel,
                 Duration = during,
-                MovingDirection = dir
+                MovingDirection = currentMoveDirection
             };
-
             taskHandler.CreateFacingMoveTask(param);
-            currentMoveDirection = dir;
         }
         private MotionDirection GetNewMoveDirection(ConfigAIFacingMoveWeight weight, FacingMoveType moveType)
         {

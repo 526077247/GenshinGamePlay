@@ -13,7 +13,7 @@ namespace TaoTie
         
         public ChargeStatus Status; 
         public Vector3 CurDestination;
-        private int retryTimes;
+        // private int retryTimes;
         public static MeleeChargeInfo Create()
         {
             return ObjectPool.Instance.Fetch<MeleeChargeInfo>();
@@ -80,7 +80,7 @@ namespace TaoTie
         public override void Dispose()
         {
             Status = ChargeStatus.Inactive;
-            retryTimes = 0;
+            // retryTimes = 0;
             ObjectPool.Instance.Recycle(this);
         }
     }

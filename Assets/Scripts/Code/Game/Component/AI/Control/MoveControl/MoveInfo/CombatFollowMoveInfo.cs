@@ -11,7 +11,7 @@ namespace TaoTie
         }
         
         public CombatFollowMoveStatus Status;
-        private int retryTimes;
+        // private int retryTimes;
         public static CombatFollowMoveInfo Create()
         {
             return ObjectPool.Instance.Fetch<CombatFollowMoveInfo>();
