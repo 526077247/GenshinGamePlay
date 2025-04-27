@@ -35,6 +35,7 @@ namespace TaoTie
             allAIUnit = new LinkedList<AIComponent>();
             localAvatarAlertEnemies = new List<AIComponent>();
             localAvatarAwareEnemies = new List<AIComponent>();
+            publicCDs = new Dictionary<string, long>();
             
             campIdEntityTable.Add(localAvatar.CampId,localAvatar);
             Messager.Instance.AddListener<Actor>(0,MessageId.OnBeKill,Remove);
@@ -47,6 +48,12 @@ namespace TaoTie
             localAvatarAlertEnemies = null;
             allAIUnit = null;
             unitIdUnits = null;
+            campIdEntityTable = null;
+            campIdCampIdEntityTable = null;
+            publicCDs = null;
+            avatarInputController = null;
+            localAvatar = null;
+            scene = null;
         }
 
         public void Update()

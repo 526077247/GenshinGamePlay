@@ -35,16 +35,16 @@ namespace TaoTie
                 var know = pathFindingKnowledge;
                 pathFindingKnowledge = null;
                 know.ReleasePathQueryTask(Id);
+                Id = 0;
+                Corners?.Dispose();
+                Corners = null;
+                Start = default;
+                Destination = default;
+                Status = QueryStatus.Inactive;
+                Type = NavMeshUseType.Auto;
+                TargetId = 0;
+                ObjectPool.Instance.Recycle(this);
             }
-            Id = 0;
-            Corners?.Dispose();
-            Corners = null;
-            Start = default;
-            Destination = default;
-            Status = QueryStatus.Inactive;
-            Type = NavMeshUseType.Auto;
-            TargetId = 0;
-            ObjectPool.Instance.Recycle(this);
         }
     }
 }

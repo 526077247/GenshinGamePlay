@@ -44,8 +44,8 @@ namespace TaoTie
         {
             if (QueryTasks.TryGetValue(id, out var res))
             {
-                res.Dispose();
                 QueryTasks.Remove(res.Id);
+                res.Dispose();
             }
         }
     }

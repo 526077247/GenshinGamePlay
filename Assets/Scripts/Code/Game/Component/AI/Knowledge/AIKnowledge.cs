@@ -119,7 +119,12 @@ namespace TaoTie
             ActionControlState = null;
             MoveControlState.Dispose();
             MoveControlState = null;
-            
+
+            ThreatLevel = default;
+            ThreatLevelOld = default;
+            DecisionArchetype = default;
+            CurrentTactic = default;
+            TacticChanged = false;
             AIManager = null;
             Entity = null;
             BornPos = default;

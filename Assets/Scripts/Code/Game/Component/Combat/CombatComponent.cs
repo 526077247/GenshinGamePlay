@@ -6,7 +6,7 @@ namespace TaoTie
     public class CombatComponent : Component, IComponent<ConfigCombat>
     {
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
-        protected AttackTarget attackTarget;
+        protected AttackTarget attackTarget = new AttackTarget();
         public DieStateFlag DieStateFlag;
         private ConfigCombat config;
 
@@ -15,10 +15,11 @@ namespace TaoTie
 
         public void Init(ConfigCombat config)
         {
+            IsInCombat = false;
             this.config = config;
             if(config!=null && config.BeHit!=null)
                 CanHeHit = !config.BeHit.MuteAllHit;
-            attackTarget = new AttackTarget();
+            attackTarget.Reset();
         }
 
         public void Destroy()
@@ -27,6 +28,9 @@ namespace TaoTie
             beforeBeAttack = null;
             afterAttack = null;
             afterBeAttack = null;
+            IsInCombat = false;
+            config = null;
+            CanHeHit = false;
         }
 
         /// <summary>

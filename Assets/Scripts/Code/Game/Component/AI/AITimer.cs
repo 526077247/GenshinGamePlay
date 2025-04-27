@@ -1,7 +1,21 @@
-﻿namespace TaoTie
+﻿using System;
+
+namespace TaoTie
 {
-    public class AITimer
+    public class AITimer : IDisposable
     {
+        public static AITimer Create()
+        {
+            var res = ObjectPool.Instance.Fetch<AITimer>();
+            return res;
+        }
+
+        public void Dispose()
+        {
+            startTick = 0;
+            started = false;
+            ObjectPool.Instance.Recycle(this);
+        }
         //开始时间
         private long startTick;
         private bool started;

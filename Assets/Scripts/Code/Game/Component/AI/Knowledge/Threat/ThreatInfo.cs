@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace TaoTie
 {
-    public class ThreatInfo
+    public class ThreatInfo: IDisposable
     {
         public const float TEMPEVAL_MIN = 0f;
         public const float TEMPERVAL_MAX = 100f;
@@ -31,15 +32,24 @@ namespace TaoTie
 
         public float CaredGlobalValue;
 
-        public AITimer LctByFarDistance = new AITimer();
-        public AITimer LctByEntityDisappear = new AITimer();
-        public AITimer LctByOutOfZone = new AITimer();
+        public AITimer LctByFarDistance;
+        public AITimer LctByEntityDisappear;
+        public AITimer LctByOutOfZone;
 
-        public ThreatInfo(long id, Vector3 position, ThreatAddReason reason)
+        public static ThreatInfo Create(long id, Vector3 position, ThreatAddReason reason)
+        {
+            ThreatInfo res = ObjectPool.Instance.Fetch<ThreatInfo>();
+            res.Init(id, position, reason);
+            return res;
+        }
+        private void Init(long id, Vector3 position, ThreatAddReason reason)
         {
             this.Id = id;
             this.ThreatPos = position;
             this.AddReason = reason;
+            LctByFarDistance = AITimer.Create();
+            LctByEntityDisappear = AITimer.Create();
+            LctByOutOfZone = AITimer.Create();
         }
 
         public void DecreaseTemper(float amount)
@@ -67,6 +77,20 @@ namespace TaoTie
             ThreatValue -= amount;
             if (ThreatValue < THREATVAL_MIN)
                 ThreatValue = THREATVAL_MIN;
+        }
+
+        public void Dispose()
+        {
+            this.Id = 0;
+            this.ThreatPos = default;
+            this.AddReason = default;
+            LctByFarDistance?.Dispose();
+            LctByEntityDisappear?.Dispose();
+            LctByOutOfZone?.Dispose();
+            LctByFarDistance = null;
+            LctByEntityDisappear = null;
+            LctByOutOfZone = null;
+            ObjectPool.Instance.Recycle(this);
         }
     }
 }

@@ -22,9 +22,6 @@ namespace TaoTie
 
         //强制离开战斗
         private bool forceLeaveCombat = false;
-        
-        private readonly List<ThreatInfo> disqualifiedCandidates = new List<ThreatInfo>();
-        private readonly List<ThreatInfo> disqualifiedThreats = new List<ThreatInfo>();
 
         protected override void InitInternal()
         {
@@ -38,10 +35,12 @@ namespace TaoTie
             if (knowledge.CombatComponent != null)
                 knowledge.CombatComponent.afterBeAttack -= AfterBeAttack;
             base.ClearInternal();
+            foreach (var item in candidateList)
+            {
+                item.Value.Dispose();
+            }
             candidateList.Clear();
             threatList.Clear();
-            disqualifiedCandidates.Clear();
-            disqualifiedThreats.Clear();
             aiComponent = null;
         }
 
@@ -93,7 +92,7 @@ namespace TaoTie
             }
             else
             {
-                ThreatInfo info = new ThreatInfo(targetID, pos, reason);
+                ThreatInfo info = ThreatInfo.Create(targetID, pos, reason);
                 info.IncreaseThreat(threatIncrementAmount);
                 threatList.Add(info.Id, info);
             }
@@ -109,7 +108,7 @@ namespace TaoTie
             }
             else
             {
-                ThreatInfo info = new ThreatInfo(targetID, pos, reason);
+                ThreatInfo info = ThreatInfo.Create(targetID, pos, reason);
                 info.IncreaseTemper(temperatureIncrementAmount);
                 candidateList.Add(info.Id, info);
             }
@@ -120,6 +119,17 @@ namespace TaoTie
         /// </summary>
         private void UpdateCandidateList()
         {
+            if (forceLeaveCombat)
+            {
+                forceLeaveCombat = false;
+                foreach (var item in candidateList)
+                {
+                    item.Value.Dispose();
+                }
+                candidateList.Clear();
+                threatList.Clear();
+                return;
+            }
             UpdateCandidateFromSensibles();
             var timeNow = GameTimerManager.Instance.GetTimeNow();
             var deltaTime = GameTimerManager.Instance.GetDeltaTime();
@@ -187,7 +197,8 @@ namespace TaoTie
                         var key = temp[i];
                         var candidate = candidateList[key];
                         candidateList.Remove(key);
-                        disqualifiedCandidates.Add(candidate);
+                        threatList.Remove(key);
+                        candidate.Dispose();
                     }
                 }
             }
@@ -280,7 +291,7 @@ namespace TaoTie
         {
             if (!candidateList.ContainsKey(sensible.SensibleID))
             {
-                ThreatInfo threatInfo = new ThreatInfo(sensible.SensibleID, sensible.Position, sourceType);
+                ThreatInfo threatInfo = ThreatInfo.Create(sensible.SensibleID, sensible.Position, sourceType);
                 threatInfo.ThreatPos = sensible.Position;
                 candidateList.TryAdd(threatInfo.Id, threatInfo);
             }
@@ -464,7 +475,7 @@ namespace TaoTie
                     }
                 threatList.Remove(id);
                 candidateList.Remove(id);
-                disqualifiedThreats.Add(threatInfo);
+                threatInfo.Dispose();
             }
             else
             {
