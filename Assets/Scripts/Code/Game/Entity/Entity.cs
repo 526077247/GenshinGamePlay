@@ -47,6 +47,8 @@ namespace TaoTie
             Components = null;
             OtherComponents.Dispose();
             OtherComponents = null;
+            BaseType.Dispose();
+            BaseType = null;
             (this as IEntityDestroy)?.Destroy();
             Parent?.Remove(this);
             Parent = null;
@@ -61,6 +63,7 @@ namespace TaoTie
             IsDispose = false;
             Components = DictionaryComponent<Type, Component>.Create();
             OtherComponents = DictionaryComponent<Type, Component>.Create();
+            BaseType = DictionaryComponent<Component,Type>.Create();
             CreateTime = GameTimerManager.Instance.GetTimeNow();
         }
 
@@ -78,6 +81,10 @@ namespace TaoTie
         /// 添加共用其他人的Component，不处理生命周期
         /// </summary>
         protected DictionaryComponent<Type, Component> OtherComponents;
+        /// <summary>
+        /// 有基类对应的Components
+        /// </summary>
+        protected DictionaryComponent<Component, Type> BaseType;
         public T AddComponent<T>(Type baseType = null) where T : Component
         {
             if (baseType != null && Components.ContainsKey(baseType))
@@ -95,7 +102,11 @@ namespace TaoTie
             T data = ObjectPool.Instance.Fetch(type) as T;
             data.BeforeInit(this);
             Components.Add(type, data);
-            if (baseType != null) Components.Add(baseType, data);
+            if (baseType != null)
+            {
+                Components.Add(baseType, data);
+                BaseType.Add(data, baseType);
+            }
             if (data is IComponent comp)
                 comp.Init();
             data.AfterInit();
@@ -214,8 +225,12 @@ namespace TaoTie
         {
             if (Components.TryGetValue(type, out var res))
             {
+                if (BaseType.TryGetValue(res, out var baseType))
+                {
+                    Components.Remove(baseType);
+                }
                 Components.Remove(type);
-                (res as Component)?.Dispose();
+                res.Dispose();
             }
         }
 
