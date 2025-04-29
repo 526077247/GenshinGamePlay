@@ -1234,6 +1234,16 @@ namespace TaoTie
             rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.bottom) * (1 - rectTrans.anchorMin.y) * ScreenSizeFlag);
         }
 
+        private readonly Vector2 hidePos = new Vector2(9999, 9999);
+        public Vector2 ScreenPointToUILocalPoint(RectTransform parentRT, Vector2 screenPoint)
+        {
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRT, screenPoint, UICamera,
+                    out Vector2 localPos))
+            {
+                return localPos;
+            }
+            return hidePos;
+        }
         #endregion
 
         #region Layer

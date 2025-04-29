@@ -74,7 +74,8 @@ namespace TaoTie
                 var mainCamera = CameraManager.Instance.MainCamera();
                 if (mainCamera != null)
                 {
-                    Vector2 pt = mainCamera.WorldToScreenPoint(showPos) * UIManager.Instance.ScreenSizeFlag;
+                    Vector2 pt = UIManager.Instance.ScreenPointToUILocalPoint(uiDamageView.GetRectTransform(),
+                        mainCamera.WorldToScreenPoint(showPos));
                     rect.anchoredPosition = pt;
                 }
             }
