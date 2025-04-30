@@ -48,8 +48,22 @@ namespace TaoTie
                 rectTransform.sizeDelta = new Vector2(flag2 * texture.width * signFlag, screenH * signFlag);
             else
                 rectTransform.sizeDelta = new Vector2(screenW * signFlag, flag1 * texture.height * signFlag);
-            rectTransform.localPosition = Vector3.zero;
-            rectTransform.anchoredPosition = Vector2.zero;
+            var canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                var parent = transform.parent;
+                var siblingIndex = transform.GetSiblingIndex();
+                transform.SetParent(canvas.transform);
+                rectTransform.localPosition = Vector3.zero;
+                rectTransform.anchoredPosition = Vector2.zero;
+                transform.SetParent(parent, true);
+                transform.SetSiblingIndex(siblingIndex);
+            }
+            else
+            {
+                rectTransform.localPosition = Vector3.zero;
+                rectTransform.anchoredPosition = Vector2.zero;
+            }
         }
 
         public void SetSprite(Texture newBgSprite)

@@ -149,7 +149,7 @@ namespace TaoTie
 
         public void SetNativeSize()
         {
-            this.image.SetNativeSize();
+            this.image?.SetNativeSize();
         }
 
         public string GetSpritePath()

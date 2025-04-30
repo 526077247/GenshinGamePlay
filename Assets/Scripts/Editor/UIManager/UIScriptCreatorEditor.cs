@@ -196,7 +196,7 @@ namespace TaoTie
                 m = go.GetComponent<UIScriptCreator>();
                 if (m == null) return;
                 m.Mark(false);
-                m.SetModuleName(go.name);
+                m.SetModuleName(go.name.Replace(" ",""));
             }
 
             m = go.GetComponent<UIScriptCreator>();

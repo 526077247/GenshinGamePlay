@@ -61,7 +61,7 @@ namespace TaoTie
                 return;
             }
             this.DisableI18Component();
-            this.textKey = default;
+            this.textKey = key;
             this.SetI18NText(null);
         }
         public void SetI18NKey(I18NKey key, params object[] paras)

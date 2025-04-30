@@ -69,6 +69,7 @@ namespace TaoTie
                 else if (i < totalCount)
                 {
                     var item = GameObject.Instantiate(this.item, transform);
+                    item.name += i;
                     this.itemViewList.Add(item);
                     if (this.startSiblingIndex != null)
                     {

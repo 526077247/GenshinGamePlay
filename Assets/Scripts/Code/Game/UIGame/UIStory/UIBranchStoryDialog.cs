@@ -35,7 +35,6 @@ namespace TaoTie
 			var item = Panel.GetUIItemView<StoryChoiceItem>(obj);
 			if (item == null)
 			{
-				obj.name = obj.name + index;
 				item = Panel.AddItemViewComponent<StoryChoiceItem>(obj);
 			}
 			item.SetData(data.Branchs[index],index,OnClickChoice);

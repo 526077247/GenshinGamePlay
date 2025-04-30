@@ -36,7 +36,6 @@ namespace TaoTie
 			var para = Paras[index];
 			if (Space.GetUIItemView<UIMenuItem>(go) == null)
 			{
-				go.name += index;
 				Space.AddItemViewComponent<UIMenuItem>(go);
 			}
 			var item = Space.GetUIItemView<UIMenuItem>(go);
