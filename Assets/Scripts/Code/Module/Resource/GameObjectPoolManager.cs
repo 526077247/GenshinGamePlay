@@ -31,14 +31,14 @@ namespace TaoTie
 
 
         private LruCache<string, GameObject> goPool;
-        private Dictionary<string, int> goInstCountCache;//go: inst_count 用于记录go产生了多少个实例
+        private Dictionary<string, int> goInstCountCache;//go: inst count 用于记录go产生了多少个实例
 
-        private Dictionary<string, int> goChildsCountPool;//path: child_count 用于在editor模式下检测回收的go是否被污染 path:num
+        private Dictionary<string, int> goChildrenCountPool;//path: child count 用于在editor模式下检测回收的go是否被污染 path:num
 
-        private Dictionary<string, List<GameObject>> instCache; //path: inst_array
-        private Dictionary<GameObject, string> instPathCache;// inst : prefab_path 用于销毁和回收时反向找到inst对应的prefab TODO:这里有优化空间path太占内存
-        private Dictionary<string, bool> persistentPathCache;//需要持久化的资源
-        private Dictionary<string, Dictionary<string, int>> detailGoChildsCount;//记录go子控件具体数量信息
+        private Dictionary<string, List<GameObject>> instCache; //path: inst array
+        private Dictionary<GameObject, string> instPathCache;// inst : prefab path 用于销毁和回收时反向找到inst对应的prefab TODO:这里有优化空间path太占内存
+        private HashSet<string> persistentPathCache;//需要持久化的资源
+        private Dictionary<string, Dictionary<string, int>> detailGoChildrenCount;//记录go子控件具体数量信息
 
         public static GameObjectPoolManager GetInstance(string package = null)
         {
@@ -62,13 +62,13 @@ namespace TaoTie
         public void Init()
         {
 	        PackageName = Define.DefaultName;
-	        this.goPool = new LruCache<string, GameObject>();
-            this.goInstCountCache = new Dictionary<string, int>();
-            this.goChildsCountPool = new Dictionary<string, int>();
-            this.instCache = new Dictionary<string, List<GameObject>>();
-            this.instPathCache = new Dictionary<GameObject, string>();
-            this.persistentPathCache = new Dictionary<string, bool>();
-            this.detailGoChildsCount = new Dictionary<string, Dictionary<string, int>>();
+	        goPool = new LruCache<string, GameObject>();
+            goInstCountCache = new Dictionary<string, int>();
+            goChildrenCountPool = new Dictionary<string, int>();
+            instCache = new Dictionary<string, List<GameObject>>();
+            instPathCache = new Dictionary<GameObject, string>();
+            persistentPathCache = new HashSet<string>();
+            detailGoChildrenCount = new Dictionary<string, Dictionary<string, int>>();
 
             var go = GameObject.Find("GameObjectCacheRoot");
             if (go == null)
@@ -76,25 +76,25 @@ namespace TaoTie
                 go = new GameObject("GameObjectCacheRoot");
             }
             GameObject.DontDestroyOnLoad(go);
-            this.cacheTransRoot = go.transform;
+            cacheTransRoot = go.transform;
 
-            this.goPool.SetPopCallback((path, pooledGo) =>
+            goPool.SetPopCallback((path, pooledGo) =>
             {
-                this.ReleaseAsset(path);
+                ReleaseAsset(path);
             });
-            this.goPool.SetCheckCanPopCallback((path, pooledGo) =>
+            goPool.SetCheckCanPopCallback((path, pooledGo) =>
             {
-                var cnt = this.goInstCountCache[path] - (this.instCache.ContainsKey(path) ? this.instCache[path].Count : 0);
+                var cnt = goInstCountCache[path] - (instCache.ContainsKey(path) ? instCache[path].Count : 0);
                 if (cnt > 0)
-                    Log.Info(string.Format("path={0} goInstCountCache={1} instCache={2}", path, this.goInstCountCache[path], 
-                        (this.instCache[path] != null ? this.instCache[path].Count : 0)));
-                return cnt == 0 && !this.persistentPathCache.ContainsKey(path);
+	                Log.Info(
+		                $"path={path} goInstCountCache={goInstCountCache[path]} instCache={(instCache[path] != null ? instCache[path].Count : 0)}");
+                return cnt == 0 && !persistentPathCache.Contains(path);
             });
         }
 
         public void Destroy()
         {
-	        this.Cleanup();
+	        Cleanup();
 	        if (PackageName != null)
 	        {
 		        if (instances != null && instances.ContainsKey(PackageName))
@@ -116,13 +116,13 @@ namespace TaoTie
 		public async ETTask LoadDependency(List<string> res)
 		{
 			if (res.Count <= 0) return;
-			using (ListComponent<ETTask> TaskScheduler = ListComponent<ETTask>.Create())
+			using (ListComponent<ETTask> tasks = ListComponent<ETTask>.Create())
 			{
 				for (int i = 0; i < res.Count; i++)
 				{
-					TaskScheduler.Add(this.PreLoadGameObjectAsync(res[i], 1));
+					tasks.Add(PreLoadGameObjectAsync(res[i], 1));
 				}
-				await ETTaskHelper.WaitAll(TaskScheduler);
+				await ETTaskHelper.WaitAll(tasks);
 			}
 		}
 		/// <summary>
@@ -134,8 +134,8 @@ namespace TaoTie
 		public bool TryGetFromCache(string path, out GameObject go)
 		{
 			go = null;
-			if (!this.CheckHasCached(path)) return false;
-			if (this.instCache.TryGetValue(path, out var cachedInst))
+			if (!CheckHasCached(path)) return false;
+			if (instCache.TryGetValue(path, out var cachedInst))
 			{
 				if (cachedInst.Count > 0)
 				{
@@ -150,16 +150,16 @@ namespace TaoTie
 					return true;
 				}
 			}
-			if (this.goPool.TryGet(path, out var pooledGo))
+			if (goPool.TryGet(path, out var pooledGo))
 			{
 				if (pooledGo != null)
 				{
 					var inst = GameObject.Instantiate(pooledGo);
-					if(this.goInstCountCache.ContainsKey(path))
-                        this.goInstCountCache[path]++;
+					if(goInstCountCache.ContainsKey(path))
+                        goInstCountCache[path]++;
                     else 
-                        this.goInstCountCache[path] = 1;
-					this.instPathCache[inst] = path;
+                        goInstCountCache[path] = 1;
+					instPathCache[inst] = path;
 					go = inst;
 					return true;
 				}
@@ -179,7 +179,7 @@ namespace TaoTie
 			try
 			{
 				coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, path.GetHashCode());
-				if (this.CheckHasCached(path))
+				if (CheckHasCached(path))
 				{
 					callback?.Invoke();
 				}
@@ -188,7 +188,7 @@ namespace TaoTie
 					var go = await ResourcesManager.Instance.LoadAsync<GameObject>(path,package: PackageName);
 					if (go != null)
 					{
-						this.CacheAndInstGameObject(path, go as GameObject, instCount);
+						CacheAndInstGameObject(path, go, instCount);
 					}
 					callback?.Invoke();
 				}
@@ -207,7 +207,7 @@ namespace TaoTie
 		public ETTask GetGameObjectTask( string path, Action<GameObject> callback = null)
 		{
 			ETTask task = ETTask.Create();
-			this.GetGameObjectAsync(path, (data) =>
+			GetGameObjectAsync(path, (data) =>
 			{
 				callback?.Invoke(data);
 				task.SetResult();
@@ -223,16 +223,16 @@ namespace TaoTie
 		/// <returns></returns>
 		public async ETTask<GameObject> GetGameObjectAsync(string path,Action<GameObject> callback = null)
 		{
-			if (this.TryGetFromCache(path, out var inst))
+			if (TryGetFromCache(path, out var inst))
 			{
-				this.InitInst(inst);
+				InitInst(inst);
 				callback?.Invoke(inst);
 				return inst;
 			}
-			await this.PreLoadGameObjectAsync(path, 1);
-			if (this.TryGetFromCache(path, out inst))
+			await PreLoadGameObjectAsync(path, 1);
+			if (TryGetFromCache(path, out inst))
 			{
-				this.InitInst(inst);
+				InitInst(inst);
 				callback?.Invoke(inst);
 				return inst;
 			}
@@ -247,9 +247,9 @@ namespace TaoTie
 		/// <returns></returns>
 		public GameObject GetGameObjectFromPool(string path)
 		{
-			if (this.TryGetFromCache(path, out var inst))
+			if (TryGetFromCache(path, out var inst))
 			{
-				this.InitInst(inst);
+				InitInst(inst);
 				return inst;
 			}
 			return null;
@@ -261,30 +261,30 @@ namespace TaoTie
 		/// <param name="isClear">是否忽略污染检查</param>
 		public void RecycleGameObject(GameObject inst, bool isClear = false)
 		{
-			if (!this.instPathCache.ContainsKey(inst))
+			if (!instPathCache.ContainsKey(inst))
 			{
 				Log.Error("RecycleGameObject inst not found from instPathCache");
 				GameObject.Destroy(inst);
 				return;
 			}
-			var path = this.instPathCache[inst];
+			var path = instPathCache[inst];
 			if (!isClear)
 			{
-				this.CheckRecycleInstIsDirty(path, inst, null);
-				inst.transform.SetParent(this.cacheTransRoot, false);
+				CheckRecycleInstIsDirty(path, inst, null);
+				inst.transform.SetParent(cacheTransRoot, false);
 				inst.SetActive(false);
-				if (!this.instCache.ContainsKey(path))
+				if (!instCache.ContainsKey(path))
 				{
-					this.instCache[path] = new List<GameObject>();
+					instCache[path] = new List<GameObject>();
 				}
-				this.instCache[path].Add(inst);
+				instCache[path].Add(inst);
 			}
 			else
 			{
-				this.DestroyGameObject(inst);
+				DestroyGameObject(inst);
 			}
 
-			//this.CheckCleanRes(path);
+			//CheckCleanRes(path);
 		}
 
 		/// <summary>
@@ -294,9 +294,9 @@ namespace TaoTie
 		/// <param name="path"></param>
 		public void CheckCleanRes(string path)
 		{
-			var cnt = this.goInstCountCache[path] - (this.instCache.ContainsKey(path) ? this.instCache[path].Count : 0);
-			if (cnt == 0 && !this.persistentPathCache.ContainsKey(path))
-				this.ReleaseAsset(path);
+			var cnt = goInstCountCache[path] - (instCache.ContainsKey(path) ? instCache[path].Count : 0);
+			if (cnt == 0 && !persistentPathCache.Contains(path))
+				ReleaseAsset(path);
 		}
 
 		/// <summary>
@@ -305,7 +305,7 @@ namespace TaoTie
 		/// <param name="path"></param>
 		public void AddPersistentPrefabPath(string path)
 		{
-			this.persistentPathCache[path] = true;
+			persistentPathCache.Add(path);
 
 		}
 		
@@ -313,93 +313,33 @@ namespace TaoTie
 		/// <para>清理缓存</para>
 		/// </summary>
 		/// <param name="includePooledGo">是否需要将预设也释放</param>
-		/// <param name="excludePathArray">忽略的</param>
-		public void Cleanup(bool includePooledGo = true, List<string> excludePathArray = null)
+		/// <param name="ignorePathArray">忽略的</param>
+		public void Cleanup(bool includePooledGo = true, List<string> ignorePathArray = null)
 		{
 			Log.Info("GameObjectPool Cleanup "+PackageName);
-			foreach (var item in this.instCache)
+			HashSetComponent<string> ignorePath = null;
+			if (ignorePathArray != null)
 			{
+				ignorePath = HashSetComponent<string>.Create();
+				for (int i = 0; i < ignorePathArray.Count; i++)
+				{
+					ignorePath.Add(ignorePathArray[i]);
+				}
+			}
+			foreach (var item in instCache)
+			{
+				if (ignorePath != null && ignorePath.Contains(item.Key)) continue;
 				for (int i = 0; i < item.Value.Count; i++)
 				{
 					var inst = item.Value[i];
 					if (inst != null)
 					{
 						GameObject.Destroy(inst);
-						this.goInstCountCache[item.Key]--;
+						goInstCountCache[item.Key]--;
 					}
-					this.instPathCache.Remove(inst);
+					instPathCache.Remove(inst);
 				}
-			}
-			this.instCache = new Dictionary<string, List<GameObject>>();
-
-			if (includePooledGo)
-			{
-				Dictionary<string, bool> dictExcludePath = null;
-				if (excludePathArray != null)
-				{
-					dictExcludePath = new Dictionary<string, bool>();
-					for (int i = 0; i < excludePathArray.Count; i++)
-					{
-						dictExcludePath[excludePathArray[i]] = true;
-					}
-				}
-
-				List<string> keys = this.goPool.Keys.ToList();
-				for (int i = keys.Count - 1; i >= 0; i--)
-				{
-					var path = keys[i];
-					if ((dictExcludePath == null || !dictExcludePath.ContainsKey(path))
-					 && this.goPool.TryOnlyGet(path, out var pooledGo))
-					{
-						if (pooledGo != null && this.CheckNeedUnload(path))
-						{
-							ResourcesManager.Instance.ReleaseAsset(pooledGo);
-							this.goPool.Remove(path);
-						}
-					}
-				}
-			}
-			Log.Info("GameObjectPool Cleanup Over"+PackageName);
-		}
-
-		/// <summary>
-		/// <para>释放asset</para>
-		/// <para>注意这里需要保证外面没有引用这些path的inst了，不然会出现材质丢失的问题</para>
-		/// <para>不要轻易调用，除非你对内部的资源的生命周期有了清晰的了解</para>
-		/// </summary>
-		/// <param name="includePooledGo">是否需要将预设也释放</param>
-		/// <param name="releasePathArray">需要释放的资源路径数组</param>
-		public void CleanupWithPathArray(bool includePooledGo = true, List<string> releasePathArray = null)
-		{
-			Debug.Log("GameObjectPool Cleanup ");
-			Dictionary<string, bool> dictPath = null;
-			if (releasePathArray != null)
-			{
-				dictPath = new Dictionary<string, bool>();
-				for (int i = 0; i < releasePathArray.Count; i++)
-				{
-					dictPath[releasePathArray[i]] = true;
-				}
-				foreach (var item in this.instCache)
-				{
-					if (dictPath.ContainsKey(item.Key))
-					{
-						for (int i = 0; i < item.Value.Count; i++)
-						{
-							var inst = item.Value[i];
-							if (inst != null)
-							{
-								GameObject.Destroy(inst);
-								this.goInstCountCache[item.Key]-- ;
-							}
-							this.instPathCache.Remove(inst);
-						}
-					}
-				}
-				for (int i = 0; i < releasePathArray.Count; i++)
-				{
-					this.instCache.Remove(releasePathArray[i]);
-				}
+				item.Value.Clear();
 			}
 
 			if (includePooledGo)
@@ -408,18 +348,81 @@ namespace TaoTie
 				for (int i = keys.Count - 1; i >= 0; i--)
 				{
 					var path = keys[i];
-					if (releasePathArray != null && dictPath.ContainsKey(path) && goPool.TryOnlyGet(path, out var pooledGo))
+					if (ignorePath != null && ignorePath.Contains(path)) continue;
+					if (goPool.TryOnlyGet(path, out var pooledGo) 
+					    && !persistentPathCache.Contains(path) &&
+					    pooledGo != null && CheckNeedUnload(path))
 					{
-						if (pooledGo != null && CheckNeedUnload(path))
+						ResourcesManager.Instance.ReleaseAsset(pooledGo);
+						goPool.Remove(path);
+					}
+
+				}
+			}
+			ignorePath?.Dispose();
+			Log.Info("GameObjectPool Cleanup Over"+PackageName);
+		}
+
+		/// <summary>
+		/// <para>释放asset(包括指定为持久化的资源)</para>
+		/// <para>注意这里需要保证外面没有引用这些path的inst了，不然会出现材质丢失的问题</para>
+		/// <para>不要轻易调用，除非你对内部的资源的生命周期有了清晰的了解</para>
+		/// </summary>
+		/// <param name="releasePathArray">需要释放的资源路径数组</param>
+		/// <param name="includePooledGo">是否需要将预设也释放</param>
+		public void CleanupWithPathArray(List<string> releasePathArray, bool includePooledGo = true)
+		{
+			if (releasePathArray == null || releasePathArray.Count == 0) return;
+			Log.Info("GameObjectPool Cleanup ");
+			using (HashSetComponent<string> dictPath = HashSetComponent<string>.Create())
+			{
+				for (int i = 0; i < releasePathArray.Count; i++)
+				{
+					dictPath.Add(releasePathArray[i]);
+				}
+
+				foreach (var item in instCache)
+				{
+					if (dictPath.Contains(item.Key))
+					{
+						for (int i = 0; i < item.Value.Count; i++)
+						{
+							var inst = item.Value[i];
+							if (inst != null)
+							{
+								GameObject.Destroy(inst);
+								goInstCountCache[item.Key]--;
+							}
+
+							instPathCache.Remove(inst);
+						}
+					}
+				}
+
+				for (int i = 0; i < releasePathArray.Count; i++)
+				{
+					instCache.Remove(releasePathArray[i]);
+				}
+
+				if (includePooledGo)
+				{
+					List<string> keys = goPool.Keys.ToList();
+					for (int i = keys.Count - 1; i >= 0; i--)
+					{
+						var path = keys[i];
+						if (dictPath.Contains(path)
+						    && goPool.TryOnlyGet(path, out var pooledGo)
+						    && pooledGo != null && CheckNeedUnload(path))
 						{
 							ResourcesManager.Instance.ReleaseAsset(pooledGo);
 							goPool.Remove(path);
+							persistentPathCache.Remove(path);
 						}
 					}
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// 获取已经缓存的预制
 		/// </summary>
@@ -427,7 +430,7 @@ namespace TaoTie
 		/// <returns></returns>
 		public GameObject GetCachedGoWithPath(string path)
 		{
-			if (this.goPool.TryOnlyGet(path, out var res))
+			if (goPool.TryOnlyGet(path, out var res))
 			{
 				return res;
 			}
@@ -466,11 +469,11 @@ namespace TaoTie
 				return false;
 			}
 
-			if (this.instCache.ContainsKey(path) && this.instCache[path].Count > 0)
+			if (instCache.ContainsKey(path) && instCache[path].Count > 0)
 			{
 				return true;
 			}
-			return this.goPool.ContainsKey(path);
+			return goPool.ContainsKey(path);
 		}
 
 		/// <summary>
@@ -481,30 +484,30 @@ namespace TaoTie
 		/// <param name="instCount"></param>
 		void CacheAndInstGameObject(string path, GameObject go, int instCount)
 		{
-			this.goPool.Set(path, go);
-			this.InitGoChildCount(path, go);
+			goPool.Set(path, go);
+			InitGoChildCount(path, go);
 			if (instCount > 0)
 			{
-				if (!this.instCache.TryGetValue(path, out var cachedInst))
+				if (!instCache.TryGetValue(path, out var cachedInst))
 				{
-					this.instCache[path] = cachedInst = new List<GameObject>();
+					instCache[path] = cachedInst = new List<GameObject>();
 				}
 				for (int i = 0; i < instCount; i++)
 				{
 					var inst = GameObject.Instantiate(go);
-					inst.transform.SetParent(this.cacheTransRoot);
+					inst.transform.SetParent(cacheTransRoot);
 					inst.SetActive(false);
 					cachedInst.Add(inst);
-					this.instPathCache[inst] = path;
+					instPathCache[inst] = path;
 				}
 
-				if (!this.goInstCountCache.ContainsKey(path))
+				if (!goInstCountCache.ContainsKey(path))
 				{
-					this.goInstCountCache[path] = instCount;
+					goInstCountCache[path] = instCount;
 				}
 				else
 				{
-					this.goInstCountCache[path] += instCount;
+					goInstCountCache[path] += instCount;
 				}
 			}
 		}
@@ -514,9 +517,9 @@ namespace TaoTie
 		/// <param name="inst"></param>
 		void DestroyGameObject(GameObject inst)
 		{
-			if (this.instPathCache.TryGetValue(inst, out string path))
+			if (instPathCache.TryGetValue(inst, out string path))
 			{
-				if (this.goInstCountCache.TryGetValue(path, out int count))
+				if (goInstCountCache.TryGetValue(path, out int count))
 				{
 					if (count <= 0)
 					{
@@ -524,10 +527,10 @@ namespace TaoTie
 					}
 					else
 					{
-						this.CheckRecycleInstIsDirty(path, inst, () =>
+						CheckRecycleInstIsDirty(path, inst, () =>
 						{
 							GameObject.Destroy(inst);
-							this.goInstCountCache[path] --;
+							goInstCountCache[path] --;
 						});
 						instPathCache.Remove(inst);
 					}
@@ -546,13 +549,13 @@ namespace TaoTie
 		/// <param name="callback"></param>
 		void CheckRecycleInstIsDirty(string path, GameObject inst, Action callback)
 		{
-			if (!this.IsOpenCheck())
+			if (!IsOpenCheck())
 			{
 				callback?.Invoke();
 				return;
 			}
 			inst.SetActive(false);
-			this.CheckAfter(path, inst).Coroutine();
+			CheckAfter(path, inst).Coroutine();
 			callback?.Invoke();
 		}
 	    /// <summary>
@@ -564,22 +567,22 @@ namespace TaoTie
 	    async ETTask CheckAfter(string path, GameObject inst)
 		{
 			await TimerManager.Instance.WaitAsync(2000);
-			if (inst != null && inst.transform != null && this.CheckInstIsInPool(path, inst))
+			if (inst != null && inst.transform != null && CheckInstIsInPool(path, inst))
 			{
-				var goChildCount = this.goChildsCountPool[path];
+				var goChildCount = goChildrenCountPool[path];
 				Dictionary<string, int> childsCountMap = new Dictionary<string, int>();
-				int instChildCount = this.RecursiveGetChildCount(inst.transform, "", ref childsCountMap);
+				int instChildCount = RecursiveGetChildCount(inst.transform, "", ref childsCountMap);
 				if (goChildCount != instChildCount)
 				{
-					Log.Error($"go_child_count({ goChildCount }) must equip inst_child_count({instChildCount}) path = {path} ");
+					Log.Error($"go child count({ goChildCount }) must equip inst child count({instChildCount}) path = {path} ");
 					foreach (var item in childsCountMap)
 					{
 						var k = item.Key;
 						var v = item.Value;
 						var unfair = false;
-						if (!this.detailGoChildsCount[path].ContainsKey(k))
+						if (!detailGoChildrenCount[path].ContainsKey(k))
 							unfair = true;
-						else if (this.detailGoChildsCount[path][k] != v)
+						else if (detailGoChildrenCount[path][k] != v)
 							unfair = true;
 						if (unfair)
 							Log.Error($"not match path on checkrecycle = { k}, count = {v}");
@@ -595,7 +598,7 @@ namespace TaoTie
 		/// <returns></returns>
 		bool CheckInstIsInPool(string path, GameObject inst)
 		{
-			if (this.instCache.TryGetValue(path, out var instArray))
+			if (instCache.TryGetValue(path, out var instArray))
 			{
 				for (int i = 0; i < instArray.Count; i++)
 				{
@@ -611,13 +614,13 @@ namespace TaoTie
 		/// <param name="go"></param>
 		void InitGoChildCount(string path, GameObject go)
 		{
-			if (!this.IsOpenCheck()) return;
-			if (!this.goChildsCountPool.ContainsKey(path))
+			if (!IsOpenCheck()) return;
+			if (!goChildrenCountPool.ContainsKey(path))
 			{
 				Dictionary<string, int> childsCountMap = new Dictionary<string, int>();
-				int totalChildCount = this.RecursiveGetChildCount(go.transform, "", ref childsCountMap);
-				this.goChildsCountPool[path] = totalChildCount;
-				this.detailGoChildsCount[path] = childsCountMap;
+				int totalChildCount = RecursiveGetChildCount(go.transform, "", ref childsCountMap);
+				goChildrenCountPool[path] = totalChildCount;
+				detailGoChildrenCount[path] = childsCountMap;
 			}
 		}
 
@@ -627,21 +630,21 @@ namespace TaoTie
 		/// <param name="path"></param>
 		public void ReleaseAsset(string path)
 		{
-			if (this.instCache.ContainsKey(path))
+			if (instCache.ContainsKey(path))
 			{
-				for (int i = this.instCache[path].Count - 1; i >= 0; i--)
+				for (int i = instCache[path].Count - 1; i >= 0; i--)
 				{
-					this.instPathCache.Remove(this.instCache[path][i]);
-					GameObject.Destroy(this.instCache[path][i]);
-					this.instCache[path].RemoveAt(i);
+					instPathCache.Remove(instCache[path][i]);
+					GameObject.Destroy(instCache[path][i]);
+					instCache[path].RemoveAt(i);
 				}
-				this.instCache.Remove(path);
-				this.goInstCountCache.Remove(path);
+				instCache.Remove(path);
+				goInstCountCache.Remove(path);
 			}
-			if (this.goPool.TryOnlyGet(path, out var pooledGo) && this.CheckNeedUnload(path))
+			if (goPool.TryOnlyGet(path, out var pooledGo) && CheckNeedUnload(path))
 			{
 				ResourcesManager.Instance.ReleaseAsset(pooledGo);
-				this.goPool.Remove(path);
+				goPool.Remove(path);
 			}
 		}
 		/// <summary>
@@ -685,7 +688,7 @@ namespace TaoTie
 					{
 						record[cpath] = 1;
 					}
-					totalChildCount += this.RecursiveGetChildCount(child, cpath, ref record);
+					totalChildCount += RecursiveGetChildCount(child, cpath, ref record);
 				}
 			}
 			return totalChildCount;
@@ -697,7 +700,7 @@ namespace TaoTie
 		/// <param name="path"></param>
 		private bool CheckNeedUnload(string path)
 		{
-			return !this.instPathCache.ContainsValue(path);
+			return !instPathCache.ContainsValue(path);
 		}
 		
 		#endregion

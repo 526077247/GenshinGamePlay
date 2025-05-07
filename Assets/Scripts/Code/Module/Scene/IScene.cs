@@ -13,6 +13,10 @@ namespace TaoTie
         public void GetProgressPercent(out float cleanup, out float loadScene, out float prepare);
         public string[] GetDontDestroyWindow();
 
+        /// <summary>
+        /// 场景切换中不释放，切换完毕后释放的资源列表
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetScenesChangeIgnoreClean();
         /// <summary>
         /// 创建：初始化一些需要全局保存的状态

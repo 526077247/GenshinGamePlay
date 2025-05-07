@@ -10,21 +10,266 @@ namespace TaoTie
 {
     public class SoundManager : IManager
     {
-        public const int DEFAULTVALUE = 5;
+        private class SoundItem : IDisposable
+        {
+            public bool IsHttp;
+            public long Id;
+            public AudioSource AudioSource;
+            public AudioClip Clip;
+            public string Path;
+            public ETCancellationToken Token;
+
+            private bool isLoading;
+
+            public static SoundItem Create(string path, bool isHttp, AudioSource audioSource,
+                ETCancellationToken cancel = null)
+            {
+                SoundItem res = ObjectPool.Instance.Fetch<SoundItem>();
+                res.Id = IdGenerater.Instance.GenerateId();
+                res.Path = path;
+                res.IsHttp = isHttp;
+                res.AudioSource = audioSource;
+                if (cancel == null)
+                    res.Token = new ETCancellationToken();
+                else
+                    res.Token = cancel;
+                return res;
+            }
+
+            public async ETTask LoadClip()
+            {
+                if (Clip == null)
+                {
+                    isLoading = true;
+                    if (IsHttp)
+                    {
+                        var clip = await GetOnlineClip(Path);
+                        isLoading = false;
+                        if (Id == 0)
+                        {
+                            GameObject.Destroy(clip);
+                            ObjectPool.Instance.Recycle(this);
+                            return;
+                        }
+                        if(clip == null) return;
+                        Clip = clip;
+                    }
+                    else
+                    {
+                        var clip = await ResourcesManager.Instance.LoadAsync<AudioClip>(Path);
+                        isLoading = false;
+                        if (Id == 0)
+                        {
+                            ResourcesManager.Instance.ReleaseAsset(clip);
+                            ObjectPool.Instance.Recycle(this);
+                            return;
+                        }
+                        if(clip == null) return;
+                        Clip = clip;
+                    }
+                    AudioSource.clip = Clip;
+                }
+            }
+
+            #region 在线音频
+
+            private async ETTask<AudioClip> GetOnlineClip(string url, int tryCount = 3,
+                ETCancellationToken cancel = null)
+            {
+                if (string.IsNullOrWhiteSpace(url)) return null;
+                CoroutineLock coroutineLock = null;
+                try
+                {
+                    coroutineLock =
+                        await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, url.GetHashCode());
+
+                    var clip = await HttpManager.Instance.HttpGetSoundOnline(url, true, cancelToken: cancel);
+                    if (clip != null) //本地已经存在
+                    {
+                        return clip;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tryCount; i++)
+                        {
+                            clip = await HttpManager.Instance.HttpGetSoundOnline(url, false, cancelToken: cancel);
+                            if (clip != null) break;
+                        }
+
+                        if (clip != null)
+                        {
+                            var bytes = GetRealAudio(clip);
+                            int hz = clip.frequency;
+                            int channels = clip.channels;
+                            int samples = clip.samples;
+                            ThreadPool.QueueUserWorkItem(_ =>
+                            {
+                                var path = HttpManager.Instance.LocalFile(url, "downloadSound", ".wav");
+                                using (FileStream fs = CreateEmpty(path))
+                                {
+                                    fs.Write(bytes, 0, bytes.Length);
+                                    WriteHeader(fs, hz, channels, samples);
+                                }
+                            });
+                            return clip;
+                        }
+                        else
+                        {
+                            Log.Error("网络无资源 " + url);
+                        }
+                    }
+                }
+                finally
+                {
+                    coroutineLock?.Dispose();
+                }
+
+                return null;
+            }
+
+            /// <summary>
+            /// 创建wav格式文件头
+            /// </summary>
+            /// <param name="filepath"></param>
+            /// <returns></returns>
+            private FileStream CreateEmpty(string filepath)
+            {
+                FileStream fileStream = new FileStream(filepath, FileMode.Create);
+                byte emptyByte = new byte();
+
+                for (int i = 0; i < 44; i++) //为wav文件头留出空间
+                {
+                    fileStream.WriteByte(emptyByte);
+                }
+
+                return fileStream;
+            }
+
+            /// <summary>
+            /// 写文件头
+            /// </summary>
+            /// <param name="stream"></param>
+            /// <param name="hz"></param>
+            /// <param name="channels"></param>
+            /// <param name="samples"></param>
+            private void WriteHeader(FileStream stream, int hz, int channels, int samples)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+
+                Byte[] riff = System.Text.Encoding.UTF8.GetBytes("RIFF");
+                stream.Write(riff, 0, 4);
+
+                Byte[] chunkSize = BitConverter.GetBytes(stream.Length - 8);
+                stream.Write(chunkSize, 0, 4);
+
+                Byte[] wave = System.Text.Encoding.UTF8.GetBytes("WAVE");
+                stream.Write(wave, 0, 4);
+
+                Byte[] fmt = System.Text.Encoding.UTF8.GetBytes("fmt ");
+                stream.Write(fmt, 0, 4);
+
+                Byte[] subChunk1 = BitConverter.GetBytes(16);
+                stream.Write(subChunk1, 0, 4);
+
+                UInt16 one = 1;
+
+                Byte[] audioFormat = BitConverter.GetBytes(one);
+                stream.Write(audioFormat, 0, 2);
+
+                Byte[] numChannels = BitConverter.GetBytes(channels);
+                stream.Write(numChannels, 0, 2);
+
+                Byte[] sampleRate = BitConverter.GetBytes(hz);
+                stream.Write(sampleRate, 0, 4);
+
+                Byte[] byteRate = BitConverter.GetBytes(hz * channels * 2);
+                stream.Write(byteRate, 0, 4);
+
+                UInt16 blockAlign = (ushort) (channels * 2);
+                stream.Write(BitConverter.GetBytes(blockAlign), 0, 2);
+
+                UInt16 bps = 16;
+                Byte[] bitsPerSample = BitConverter.GetBytes(bps);
+                stream.Write(bitsPerSample, 0, 2);
+
+                Byte[] datastring = System.Text.Encoding.UTF8.GetBytes("data");
+                stream.Write(datastring, 0, 4);
+
+                Byte[] subChunk2 = BitConverter.GetBytes(samples * channels * 2);
+                stream.Write(subChunk2, 0, 4);
+            }
+
+            /// <summary>
+            /// 获取真正大小的录音
+            /// </summary>
+            /// <param name="recordedClip"></param>
+            /// <returns></returns>
+            private byte[] GetRealAudio(AudioClip recordedClip)
+            {
+                var position = recordedClip.samples;
+                float[] soundata = new float[position * recordedClip.channels];
+                recordedClip.GetData(soundata, 0);
+                int rescaleFactor = 32767;
+                byte[] outData = new byte[soundata.Length * 2];
+                for (int i = 0; i < soundata.Length; i++)
+                {
+                    short temshort = (short) (soundata[i] * rescaleFactor);
+                    byte[] temdata = BitConverter.GetBytes(temshort);
+                    outData[i * 2] = temdata[0];
+                    outData[i * 2 + 1] = temdata[1];
+                }
+
+                //Debug.Log("position=" + position + "  outData.leng=" + outData.Length);
+                return outData;
+            }
+
+            #endregion
+
+            public void Dispose()
+            {
+                if (Token != null)
+                {
+                    Token?.Cancel();
+                    Token = null;
+                    Id = 0;
+                    if (Clip != null)
+                    {
+                        if (!IsHttp)
+                        {
+                            ResourcesManager.Instance.ReleaseAsset(Clip);
+                        }
+                        else
+                        {
+                            GameObject.Destroy(Clip);
+                        }
+
+                        Clip = null;
+                    }
+
+                    if (AudioSource != null)
+                    {
+                        Instance?.soundsPool.AddLast(AudioSource);
+                        AudioSource = null;
+                    }
+                    if(!isLoading) ObjectPool.Instance?.Recycle(this);
+                }
+            }
+        }
+
         public readonly ArrayList ValueList = new ArrayList() {-80, -30, -20, -10, -5, 0, 1, 2, 4, 6, 10};
+        public const int DEFAULTVALUE = 5;
         private const int INITSOUNDCOUNT = 3;
-        
-        public static SoundManager Instance;
-        
-        private List<AudioSource> soundsPool = new List<AudioSource>();
-        private List<AudioSource> httpAudioPool = new List<AudioSource>();
-        
-        private Dictionary<string, AudioClip> sounds = new Dictionary<string, AudioClip>();
 
-        public int MusicVolume;
-        public int SoundVolume;
+        public static SoundManager Instance { get; private set; }
 
-        public string CurMusic;
+        private LinkedList<AudioSource> soundsPool = new LinkedList<AudioSource>();
+
+        private Dictionary<long, SoundItem> sounds = new Dictionary<long, SoundItem>();
+
+        public int MusicVolume { get; private set; }
+        public int SoundVolume { get; private set; }
+
+        private SoundItem curMusic;
 
         private AudioSource bgm;
 
@@ -35,7 +280,7 @@ namespace TaoTie
 
         private AudioMixer BGM;
         private AudioMixer Sound;
-        
+
         #region IManager
 
         public void Init()
@@ -48,17 +293,19 @@ namespace TaoTie
         {
             soundsRoot = new GameObject("SoundsRoot").transform;
             GameObject.DontDestroyOnLoad(soundsRoot);
-            bgmClipClone = await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/BGMManager.prefab");
+            bgmClipClone =
+                await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/BGMManager.prefab",
+                    isPersistent: true);
             var go = GameObject.Instantiate(bgmClipClone);
             bgm = go.GetComponent<AudioSource>();
             bgm.transform.SetParent(soundsRoot);
 
-            soundsClipClone = await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab");
+            soundsClipClone =
+                await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab", isPersistent: true);
             for (int i = 0; i < INITSOUNDCOUNT; i++)
             {
                 var item = CreateClipSource();
-                item.gameObject.SetActive(false);
-                soundsPool.Add(item);
+                soundsPool.AddLast(item);
             }
 
             BGM = bgm.outputAudioMixerGroup.audioMixer;
@@ -77,13 +324,13 @@ namespace TaoTie
             StopAllSound();
             foreach (var item in sounds)
             {
-                ResourcesManager.Instance.ReleaseAsset(item.Value);
+                item.Value.Dispose();
             }
 
             sounds = null;
-            for (int i = soundsPool.Count - 1; i >= 0; i--)
+            foreach (var item in soundsPool)
             {
-                GameObject.Destroy(soundsPool[i]);
+                GameObject.Destroy(item);
             }
 
             soundsPool = null;
@@ -104,19 +351,19 @@ namespace TaoTie
 
         public void SetSoundVolume(int value)
         {
-            if (this.SoundVolume != value)
+            if (SoundVolume != value)
             {
-                this.SoundVolume = value;
-                this.Sound.SetFloat("Sound", (int) this.ValueList[value]);
+                SoundVolume = value;
+                Sound.SetFloat("Sound", (int) ValueList[value]);
             }
         }
 
         public void SetMusicVolume(int value)
         {
-            if (this.MusicVolume != value)
+            if (MusicVolume != value)
             {
-                this.MusicVolume = value;
-                this.BGM.SetFloat("BGM", (int) this.ValueList[value]);
+                MusicVolume = value;
+                BGM.SetFloat("BGM", (int) ValueList[value]);
             }
         }
 
@@ -124,247 +371,159 @@ namespace TaoTie
 
         #region Music
 
-        public void PlayMusic(string name, bool force = false)
+        public long PlayMusic(string path, bool force = false)
         {
-            string package = ResourcesManager.Instance.packageFinder.GetPackageName(name);
-            this.PlayMusicAsync(name, package, force).Coroutine();
+            SoundItem res = SoundItem.Create(path, false, bgm);
+            PlayMusicAsync(res, force).Coroutine();
+            return res.Id;
         }
 
         public void PauseMusic(bool pause)
         {
-            if (this.bgm == null) return;
+            if (bgm == null) return;
             if (pause)
-                this.bgm.Pause();
+                bgm.Pause();
             else
-                this.bgm.UnPause();
+                bgm.UnPause();
         }
 
-        public void StopMusic(string path = null, bool clear = false)
+        public void StopMusic(long id = 0)
         {
-            if (path == null || path == this.CurMusic)
+            if (curMusic == null) return;
+            if (id == 0 || id == curMusic.Id)
             {
-                if (this.bgm.clip != null)
+                if (bgm.clip != null)
                 {
-                    this.bgm.Stop();
-                    var clip = Get(CurMusic);
-                    if (clip != null)
-                    {
-                        sounds.Remove(CurMusic);
-                        ResourcesManager.Instance.ReleaseAsset(clip);
-                    }
+                    bgm.Stop();
+                    curMusic.Dispose();
 
-                    this.bgm.clip = null;
-                    if (clear)
-                    {
-                        var old = this.Get(CurMusic);
-                        if (old != null)
-                        {
-                            ResourcesManager.Instance.ReleaseAsset(old);
-                            this.sounds.Remove(CurMusic);
-                            var package = ResourcesManager.Instance.packageFinder.GetPackageName(path);
-                            PackageManager.Instance.UnloadUnusedAssets(package).Coroutine();
-                        }
-
-                        ClearMemory();
-                    }
-
-                    this.CurMusic = null;
+                    bgm.clip = null;
+                    ClearMemory();
+                    curMusic = null;
                 }
 
             }
         }
 
-        private async ETTask PlayMusicAsync(string name, string package, bool force)
+        private async ETTask PlayMusicAsync(SoundItem soundItem, bool force)
         {
             Log.Info("CoPlayMusic");
-            if (!force && this.CurMusic == name) return;
-            this.bgm.loop = true;
-            AudioClip ac = this.Get(name);
-            if (ac == null)
+            if (!force && curMusic?.Path == soundItem.Path) return;
+            await soundItem.LoadClip();
+            if (soundItem.Clip != null)
             {
-                ac = await ResourcesManager.Instance.LoadAsync<AudioClip>(name, package: package);
-                if (ac != null)
-                {
-                    var old = this.Get(CurMusic);
-                    if (old != null)
-                    {
-                        ResourcesManager.Instance.ReleaseAsset(old);
-                        this.sounds.Remove(CurMusic);
-                    }
-
-                    this.Add(name, ac);
-                }
-                else
-                {
-                    Log.Info("ac is null");
-                    return;
-                }
+                curMusic?.Dispose();
             }
-
-            if (this.CurMusic != null)
+            else
             {
-                var clip = Get(CurMusic);
-                if (clip != null)
-                {
-                    sounds.Remove(CurMusic);
-                    ResourcesManager.Instance.ReleaseAsset(clip);
-                }
+                soundItem.Dispose();
+                Log.Info("ac is null");
+                return;
             }
-
-            this.bgm.clip = ac;
-            this.bgm.Play();
-            this.CurMusic = name;
+            soundItem.AudioSource.loop = true;
+            soundItem.AudioSource.Play();
+            curMusic = soundItem;
         }
 
         #endregion
 
         #region Sound
 
-        public void PlaySound(string name, ETCancellationToken token = null, bool clear = false)
+        public long PlaySound(string path, ETCancellationToken token = null)
         {
-            PlaySoundAsync(name, token, clear).Coroutine();
-        }
-
-        public async ETTask PlaySoundAsync(string name, ETCancellationToken token = null, bool clear = true)
-        {
-            if (string.IsNullOrEmpty(name)) return;
-            string package = ResourcesManager.Instance.packageFinder.GetPackageName(name);
-            await this.PoolPlay(name, package, token, clear);
-        }
-
-        public void StopSound(string path, bool clear = false)
-        {
-            if (!string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path)) return 0;
+            AudioSource source = GetClipSource();
+            if (source == null)
             {
-                var old = this.Get(path);
-                if (old != null)
-                {
-                    for (int i = 0; i < this.soundsPool.Count; i++)
-                    {
-                        if (this.soundsPool[i].gameObject.activeSelf && this.soundsPool[i].clip == old)
-                        {
-                            this.soundsPool[i].Stop();
-                            this.soundsPool[i].clip = null;
-                        }
-                    }
-
-                    if (clear)
-                    {
-                        ResourcesManager.Instance.ReleaseAsset(old);
-                        this.sounds.Remove(path);
-                        var package = ResourcesManager.Instance.packageFinder.GetPackageName(path);
-                        PackageManager.Instance.UnloadUnusedAssets(package).Coroutine();
-                        ClearMemory();
-                    }
-                }
+                Log.Error("GetClipSource fail");
+                return 0;
             }
+            source.loop = false;
+            SoundItem res = SoundItem.Create(path, false, source, token);
+            PoolPlay(res, token).Coroutine();
+            return res.Id;
         }
 
-        public void StopAllSound()
+        public async ETTask PlaySoundAsync(string path, ETCancellationToken token = null)
         {
-            for (int i = 0; i < this.soundsPool.Count; i++)
-            {
-                if (this.soundsPool[i].gameObject.activeSelf)
-                {
-                    this.soundsPool[i].Stop();
-                    this.soundsPool[i].clip = null;
-                    // this.soundsPool[i].gameObject.SetActive(false);//不用设置SetActive,等WaitAsync
-                }
-            }
-        }
-
-        private async ETTask RecycleClipSource(AudioClip clip, AudioSource source, bool clear)
-        {
-            await TimerManager.Instance.WaitAsync((long) (clip.length * 1000) + 100);
-            if (source.clip != clip) return;
-            source.Stop();
-            source.clip = null;
-            source.gameObject.SetActive(false);
-            if (clear)
-            {
-                ResourcesManager.Instance.ReleaseAsset(clip);
-                ClearMemory();
-            }
-        }
-
-        private async ETTask<AudioSource> PoolPlayAndReturnSource(string name, string package,
-            ETCancellationToken token = null, bool clear = false)
-        {
-            AudioClip clip = this.Get(name);
-            bool isCancel = false;
-            token?.Add(() => { isCancel = true; });
-
-            if (clip == null)
-            {
-                clip = await ResourcesManager.Instance.LoadAsync<AudioClip>(name, package: package);
-                if (clip == null)
-                {
-                    // Debug.Log("clip is null");
-                    return null;
-                }
-
-                if (isCancel)
-                {
-                    ResourcesManager.Instance.ReleaseAsset(clip);
-                    return null;
-                }
-
-                if (!clear) this.Add(name, clip);
-            }
-
-            AudioSource source = this.GetClipSource();
-            if (source == null) return source;
-            source.clip = clip;
-            source.Play();
-            RecycleClipSource(clip, source, clear).Coroutine();
-            return source;
-        }
-
-        private async ETTask PoolPlay(string name, string package, ETCancellationToken token = null, bool clear = false)
-        {
-            bool isCancel = false;
-
-            token?.Add(() => { isCancel = true; });
-            AudioClip clip = this.Get(name);
-            if (clip == null)
-            {
-                clip = await ResourcesManager.Instance.LoadAsync<AudioClip>(name, package: package);
-                if (clip == null)
-                {
-                    // Debug.Log("clip is null");
-                    return;
-                }
-
-                if (isCancel)
-                {
-                    ResourcesManager.Instance.ReleaseAsset(clip);
-                    return;
-                }
-
-                if (!clear)
-                {
-                    this.Add(name, clip);
-                }
-            }
-
-            AudioSource source = this.GetClipSource();
+            if (string.IsNullOrEmpty(path)) return;
+            AudioSource source = GetClipSource();
             if (source == null)
             {
                 Log.Error("GetClipSource fail");
                 return;
             }
 
-            source.clip = clip;
-            source.Play();
-            bool res = await TimerManager.Instance.WaitAsync((long) (clip.length * 1000) + 100, token);
-            if (source != null)
+            source.loop = false;
+            SoundItem res = SoundItem.Create(path, false, source, token);
+            await PoolPlay(res, token);
+        }
+        public long PlayHttpAudio(string url, bool loop = false, ETCancellationToken cancel = null)
+        {
+            if (string.IsNullOrEmpty(url)) return 0;
+            AudioSource source = GetClipSource();
+            if (source == null)
             {
-                source.Stop();
-                source.clip = null;
-                source.gameObject.SetActive(false);
+                Log.Error("GetClipSource fail");
+                return 0;
             }
+            source.loop = loop;
+            SoundItem res = SoundItem.Create(url, true, source, cancel);
+            PoolPlay(res, cancel).Coroutine();
+            return res.Id;
+        }
+        public async ETTask PlayHttpAudioAsync(string url, bool loop = false, ETCancellationToken cancel = null)
+        {
+            if (string.IsNullOrEmpty(url)) return;
+            AudioSource source = GetClipSource();
+            if (source == null)
+            {
+                Log.Error("GetClipSource fail");
+                return;
+            }
+            source.loop = loop;
+            SoundItem res = SoundItem.Create(url, true, source, cancel);
+            await PoolPlay(res, cancel);
+        }
 
-            if (clear) ResourcesManager.Instance.ReleaseAsset(clip);
+        public void StopSound(long id)
+        {
+            var old = Get(id);
+            if (old != null)
+            {
+                old.Dispose();
+                sounds.Remove(id);
+                ClearMemory();
+            }
+        }
+
+        public void StopAllSound()
+        {
+            foreach (var item in sounds)
+            {
+                item.Value.Dispose();
+            }
+            sounds.Clear();
+        }
+
+        private async ETTask PoolPlay(SoundItem soundItem, ETCancellationToken token)
+        {
+            Add(soundItem.Id, soundItem);
+            await soundItem.LoadClip();
+            if (soundItem.Clip == null)
+            {
+                return;
+            }
+            if (token.IsCancel())
+            {
+                soundItem.Dispose();
+                return;
+            }
+            soundItem.AudioSource.loop = false;
+            soundItem.AudioSource.Play();
+            await TimerManager.Instance.WaitAsync((long) (soundItem.Clip.length * 1000) + 100, token);
+            //回来可能被其他提前终止了
+            soundItem.Dispose();
         }
 
         #endregion
@@ -373,55 +532,44 @@ namespace TaoTie
 
         private AudioSource CreateClipSource()
         {
-            if (this.soundsClipClone == null || this.soundsRoot == null)
+            if (soundsClipClone == null || soundsRoot == null)
             {
-                Log.Error("this.soundsRoot == null");
+                Log.Error("soundsRoot == null");
                 return null;
             }
 
-            var obj = GameObject.Instantiate(this.soundsClipClone);
-            obj.transform.SetParent(this.soundsRoot, false);
+            var obj = GameObject.Instantiate(soundsClipClone);
+            obj.transform.SetParent(soundsRoot, false);
             return obj.GetComponent<AudioSource>();
         }
 
         private AudioSource GetClipSource()
         {
             AudioSource clipSource = null;
-            for (int i = 0; i < this.soundsPool.Count; i++)
+            if (soundsPool.Count > 0)
             {
-                if (this.soundsPool[i].gameObject.activeSelf == false)
-                {
-                    clipSource = this.soundsPool[i];
-                    break;
-                }
+                clipSource = soundsPool.First.Value;
+                soundsPool.RemoveFirst();
             }
 
             if (clipSource == null)
             {
-                clipSource = this.CreateClipSource();
+                clipSource = CreateClipSource();
                 if (clipSource == null) return null;
-                this.soundsPool.Add(clipSource);
             }
-
-            clipSource.gameObject.SetActive(true);
+            
             return clipSource;
         }
 
-        void Add(string key, AudioClip value)
+        void Add(long id, SoundItem value)
         {
             if (value == null) return;
-            if (this.sounds.TryGetValue(key, out var clip) && clip != null && clip != value)
-            {
-                Log.Error("相同路径不同AudioClip资源");
-                return;
-            }
-
-            this.sounds[key] = value;
+            sounds[id] = value;
         }
 
-        AudioClip Get(string key)
+        SoundItem Get(long id)
         {
-            if (string.IsNullOrEmpty(key) || !this.sounds.TryGetValue(key, out var res) || res == null) return null;
+            if (!sounds.TryGetValue(id, out var res) || res == null) return null;
             return res;
         }
 
@@ -429,244 +577,10 @@ namespace TaoTie
 
         #region Clear
 
-        public ListComponent<GameObject> GetSceneChangeIgnoreClear()
-        {
-            ListComponent<GameObject> res = ListComponent<GameObject>.Create();
-            res.Add(bgmClipClone);
-            res.Add(soundsClipClone);
-            return res;
-        }
-
         private void ClearMemory()
         {
             GC.Collect();
             Resources.UnloadUnusedAssets();
-        }
-
-        #endregion
-
-
-        #region 播放在线音频
-
-        private async ETTask<AudioClip> GetOnlineClip(string url, int tryCount = 3, ETCancellationToken cancel = null)
-        {
-            if (string.IsNullOrWhiteSpace(url)) return null;
-            CoroutineLock coroutineLock = null;
-            try
-            {
-                coroutineLock =
-                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, url.GetHashCode());
-
-                var clip = await HttpManager.Instance.HttpGetSoundOnline(url, true, cancelToken: cancel);
-                if (clip != null) //本地已经存在
-                {
-                    return clip;
-                }
-                else
-                {
-                    for (int i = 0; i < tryCount; i++)
-                    {
-                        clip = await HttpManager.Instance.HttpGetSoundOnline(url, false, cancelToken: cancel);
-                        if (clip != null) break;
-                    }
-
-                    if (clip != null)
-                    {
-                        var bytes = GetRealAudio(clip);
-                        int hz = clip.frequency;
-                        int channels = clip.channels;
-                        int samples = clip.samples;
-                        ThreadPool.QueueUserWorkItem(_ =>
-                        {
-                            var path = HttpManager.Instance.LocalFile(url, "downloadSound", ".wav");
-                            using (FileStream fs = CreateEmpty(path))
-                            {
-                                fs.Write(bytes, 0, bytes.Length);
-                                WriteHeader(fs, hz, channels, samples);
-                            }
-                        });
-                        return clip;
-                    }
-                    else
-                    {
-                        Log.Error("网络无资源 " + url);
-                    }
-                }
-            }
-            finally
-            {
-                coroutineLock?.Dispose();
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// 创建wav格式文件头
-        /// </summary>
-        /// <param name="filepath"></param>
-        /// <returns></returns>
-        private FileStream CreateEmpty(string filepath)
-        {
-            FileStream fileStream = new FileStream(filepath, FileMode.Create);
-            byte emptyByte = new byte();
-
-            for (int i = 0; i < 44; i++) //为wav文件头留出空间
-            {
-                fileStream.WriteByte(emptyByte);
-            }
-
-            return fileStream;
-        }
-
-        /// <summary>
-        /// 写文件头
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="hz"></param>
-        /// <param name="channels"></param>
-        /// <param name="samples"></param>
-        private void WriteHeader(FileStream stream, int hz, int channels, int samples)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-
-            Byte[] riff = System.Text.Encoding.UTF8.GetBytes("RIFF");
-            stream.Write(riff, 0, 4);
-
-            Byte[] chunkSize = BitConverter.GetBytes(stream.Length - 8);
-            stream.Write(chunkSize, 0, 4);
-
-            Byte[] wave = System.Text.Encoding.UTF8.GetBytes("WAVE");
-            stream.Write(wave, 0, 4);
-
-            Byte[] fmt = System.Text.Encoding.UTF8.GetBytes("fmt ");
-            stream.Write(fmt, 0, 4);
-
-            Byte[] subChunk1 = BitConverter.GetBytes(16);
-            stream.Write(subChunk1, 0, 4);
-
-            UInt16 one = 1;
-
-            Byte[] audioFormat = BitConverter.GetBytes(one);
-            stream.Write(audioFormat, 0, 2);
-
-            Byte[] numChannels = BitConverter.GetBytes(channels);
-            stream.Write(numChannels, 0, 2);
-
-            Byte[] sampleRate = BitConverter.GetBytes(hz);
-            stream.Write(sampleRate, 0, 4);
-
-            Byte[] byteRate = BitConverter.GetBytes(hz * channels * 2);
-            stream.Write(byteRate, 0, 4);
-
-            UInt16 blockAlign = (ushort) (channels * 2);
-            stream.Write(BitConverter.GetBytes(blockAlign), 0, 2);
-
-            UInt16 bps = 16;
-            Byte[] bitsPerSample = BitConverter.GetBytes(bps);
-            stream.Write(bitsPerSample, 0, 2);
-
-            Byte[] datastring = System.Text.Encoding.UTF8.GetBytes("data");
-            stream.Write(datastring, 0, 4);
-
-            Byte[] subChunk2 = BitConverter.GetBytes(samples * channels * 2);
-            stream.Write(subChunk2, 0, 4);
-        }
-
-        /// <summary>
-        /// 获取真正大小的录音
-        /// </summary>
-        /// <param name="recordedClip"></param>
-        /// <returns></returns>
-        private byte[] GetRealAudio(AudioClip recordedClip)
-        {
-            var position = recordedClip.samples;
-            float[] soundata = new float[position * recordedClip.channels];
-            recordedClip.GetData(soundata, 0);
-            int rescaleFactor = 32767;
-            byte[] outData = new byte[soundata.Length * 2];
-            for (int i = 0; i < soundata.Length; i++)
-            {
-                short temshort = (short) (soundata[i] * rescaleFactor);
-                byte[] temdata = BitConverter.GetBytes(temshort);
-                outData[i * 2] = temdata[0];
-                outData[i * 2 + 1] = temdata[1];
-            }
-
-            //Debug.Log("position=" + position + "  outData.leng=" + outData.Length);
-            return outData;
-        }
-
-        public async ETTask PlayHttpAudio(string url, bool loop = false, ETCancellationToken cancel = null)
-        {
-            AudioClip clip = await GetOnlineClip(url, cancel: cancel);
-            if (clip == null)
-            {
-                Log.Error("Failed to load audio clip from URL: " + url);
-                return;
-            }
-
-            AudioSource source = GetClipSource();
-            if (source == null)
-            {
-                Log.Error("Failed to get audio source.");
-                return;
-            }
-
-            source.clip = clip;
-            source.loop = loop;
-            source.Play();
-            if (!httpAudioPool.Contains(source))
-            {
-                httpAudioPool.Add(source);
-            }
-
-            if (loop) return;
-            // Wait for the clip to finish playing
-            await TimerManager.Instance.WaitAsync((long) (clip.length * 1000) + 100, cancel);
-            if (source != null)
-            {
-                source.Stop();
-                if (source.clip != null)
-                    GameObject.Destroy(source.clip);
-                source.clip = null;
-                source.gameObject.SetActive(false);
-                httpAudioPool.Remove(source);
-            }
-        }
-
-        public bool IsHttpAudioPlaying()
-        {
-            return httpAudioPool.Count > 0;
-        }
-
-        public float GetHttpAudioCurrentTime()
-        {
-            if (!IsHttpAudioPlaying()) return 0f;
-            foreach (var source in httpAudioPool)
-            {
-                if (source.clip != null && source.isPlaying)
-                {
-                    return source.time;
-                }
-            }
-
-            return 0f;
-        }
-
-        public void StopHttpAudio()
-        {
-            foreach (var source in httpAudioPool)
-            {
-                if (source == null) continue;
-                source.Stop();
-                if (source.clip != null)
-                    GameObject.Destroy(source.clip);
-                source.clip = null;
-                source.gameObject.SetActive(false);
-            }
-
-            httpAudioPool.Clear();
         }
 
         #endregion

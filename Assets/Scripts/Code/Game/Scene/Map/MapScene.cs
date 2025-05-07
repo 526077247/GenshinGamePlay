@@ -34,8 +34,7 @@ namespace TaoTie
         #endregion
         private UILoadingView win;
         private string[] dontDestroyWindow = {"UILoadingView"};
-        private List<string> scenesChangeIgnoreClean;
-        
+
         public string[] GetDontDestroyWindow()
         {
             return dontDestroyWindow;
@@ -43,12 +42,12 @@ namespace TaoTie
 
         public List<string> GetScenesChangeIgnoreClean()
         {
-            return scenesChangeIgnoreClean;
+            var res = new List<string>();
+            res.Add(UILoadingView.PrefabPath); 
+            return res;
         }
         public async ETTask OnCreate()
         {
-            scenesChangeIgnoreClean = new List<string>();
-            scenesChangeIgnoreClean.Add(UILoadingView.PrefabPath);
             await ETTask.CompletedTask;
         }
 

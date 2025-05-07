@@ -18,6 +18,7 @@ namespace TaoTie
         public static ResourcesManager Instance { get; private set; }
         private Dictionary<object, AssetHandle> temp;
         private List<AssetHandle> cachedAssetOperationHandles;
+        private List<AssetHandle> persistentAssetOperationHandles;
         public IPackageFinder packageFinder { get; private set; }
         private HashSet<AssetHandle> loadingOp;
 
@@ -27,8 +28,9 @@ namespace TaoTie
         {
             Instance = this;
             if(packageFinder==null)packageFinder = new DefaultPackageFinder();
-            this.temp = new Dictionary<object, AssetHandle>(1024);
-            this.cachedAssetOperationHandles = new List<AssetHandle>(1024);
+            temp = new Dictionary<object, AssetHandle>(512);
+            cachedAssetOperationHandles = new List<AssetHandle>(512);
+            persistentAssetOperationHandles = new List<AssetHandle>(4);
             loadingOp = new HashSet<AssetHandle>();
         }
 
@@ -52,7 +54,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool IsProcessRunning()
         {
-            return this.loadingOp.Count > 0;
+            return loadingOp.Count > 0;
         }
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace TaoTie
         /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null, string package = null)
+        public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null, string package = null, bool isPersistent = false)
             where T : UnityEngine.Object
         {
             ETTask<T> res = ETTask<T>.Create(true);
@@ -87,22 +89,25 @@ namespace TaoTie
                 return default;
             }
 
-            this.loadingOp.Add(op);
+            loadingOp.Add(op);
             op.Completed += (op) =>
             {
                 var obj = op.AssetObject as T;
-                this.loadingOp.Remove(op);
-                callback?.Invoke(obj);
-                res.SetResult(obj);
-                if (obj != null && !this.temp.ContainsKey(obj))
+                loadingOp.Remove(op);
+                if (obj != null && !temp.ContainsKey(obj))
                 {
-                    this.temp.Add(op.AssetObject, op);
-                    cachedAssetOperationHandles.Add(op);
+                    temp.Add(op.AssetObject, op);
+                    if(isPersistent)
+                        persistentAssetOperationHandles.Add(op);
+                    else
+                        cachedAssetOperationHandles.Add(op);
                 }
                 else
                 {
                     op.Release();
                 }
+                callback?.Invoke(obj);
+                res.SetResult(obj);
             };
             return res;
 
@@ -125,7 +130,7 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
-            this.LoadAsync<T>(path, (data) =>
+            LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
                 task.SetResult();
@@ -166,33 +171,51 @@ namespace TaoTie
             return res;
         }
 
-
         /// <summary>
-        /// 清理资源：切换场景时调用
+        /// 清理所有load出来的非持久资源
         /// </summary>
-        /// <param name="excludeClearAssets">不需要清除的</param>
-        public void ClearAssetsCache(List<UnityEngine.Object> excludeClearAssets = null)
+        /// <param name="ignoreClearAssets">不需要清除的</param>
+        public void CleanUp(List<UnityEngine.Object> ignoreClearAssets = null)
         {
-            HashSetComponent<AssetHandle> temp = null;
-            if (excludeClearAssets != null)
+            HashSetComponent<AssetHandle> ignore = null;
+            if (ignoreClearAssets != null)
             {
-                temp = HashSetComponent<AssetHandle>.Create();
-                for (int i = 0; i < excludeClearAssets.Count; i++)
+                ignore = HashSetComponent<AssetHandle>.Create();
+                for (int i = 0; i < ignoreClearAssets.Count; i++)
                 {
-                    temp.Add(this.temp[excludeClearAssets[i]]);
+                    ignore.Add(temp[ignoreClearAssets[i]]);
                 }
             }
 
-            for (int i = this.cachedAssetOperationHandles.Count - 1; i >= 0; i--)
+            for (int i = cachedAssetOperationHandles.Count - 1; i >= 0; i--)
             {
-                if (temp == null || !temp.Contains(this.cachedAssetOperationHandles[i]))
+                if (ignore == null || !ignore.Contains(cachedAssetOperationHandles[i]))
                 {
-                    this.temp.Remove(this.cachedAssetOperationHandles[i].AssetObject);
-                    this.cachedAssetOperationHandles[i].Release();
-                    this.cachedAssetOperationHandles.RemoveAt(i);
+                    temp.Remove(cachedAssetOperationHandles[i].AssetObject);
+                    cachedAssetOperationHandles[i].Release();
+                    cachedAssetOperationHandles.RemoveAt(i);
                 }
             }
-            temp?.Dispose();
+            ignore?.Dispose();
+        }
+        /// <summary>
+        /// 清理所有load出来的资源
+        /// </summary>
+        public void ClearAssetsCache()
+        {
+            for (int i = cachedAssetOperationHandles.Count - 1; i >= 0; i--)
+            {
+                temp.Remove(cachedAssetOperationHandles[i].AssetObject);
+                cachedAssetOperationHandles[i].Release();
+                cachedAssetOperationHandles.RemoveAt(i);
+            }
+            
+            for (int i = persistentAssetOperationHandles.Count - 1; i >= 0; i--)
+            {
+                temp.Remove(persistentAssetOperationHandles[i].AssetObject);
+                persistentAssetOperationHandles[i].Release();
+                persistentAssetOperationHandles.RemoveAt(i);
+            }
         }
 
         /// <summary>
@@ -201,11 +224,12 @@ namespace TaoTie
         /// <param name="pooledGo"></param>
         public void ReleaseAsset(UnityEngine.Object pooledGo)
         {
-            if (this.temp.TryGetValue(pooledGo, out var op))
+            if (temp.TryGetValue(pooledGo, out var op))
             {
                 op.Release();
-                this.temp.Remove(pooledGo);
-                this.cachedAssetOperationHandles.Remove(op);
+                temp.Remove(pooledGo);
+                cachedAssetOperationHandles.Remove(op);
+                persistentAssetOperationHandles.Remove(op);
             }
         }
 
