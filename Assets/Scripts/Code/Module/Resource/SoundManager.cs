@@ -246,11 +246,11 @@ namespace TaoTie
                         Clip = null;
                     }
 
-                    if (AudioSource != null)
+                    if (AudioSource != null && AudioSource !=Instance.bgm)
                     {
                         Instance?.soundsPool.AddLast(AudioSource);
-                        AudioSource = null;
                     }
+                    AudioSource = null;
                     if(!isLoading) ObjectPool.Instance?.Recycle(this);
                 }
             }
