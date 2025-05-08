@@ -13,7 +13,7 @@
         public const int ChangeRotationEvt = 3;
         /// <summary> 缩放变化 </summary>
         public const int ChangeScaleEvt = 4;
-        /// <summary> SceneGroupEvent </summary>
+        /// <summary> 关卡事件，所有关卡监听的事件都要用这个Id发出 </summary>
         public const int SceneGroupEvent = 5;
         /// <summary> PoseChange </summary>
         public const int PoseChange = 6;
@@ -37,8 +37,8 @@
         public const int SetCanTurn = 14;
         /// <summary> FSM设置武器显示隐藏 </summary>
         public const int SetShowWeapon = 15;
-        /// <summary> 游戏时间计时 </summary>
-        public const int GameTimeEventTrigger = 16;
+        ///// <summary> 游戏时间计时 </summary>
+        // public const int GameTimeEventTrigger = 16;
         /// <summary> 伤害飘字 </summary>
         public const int ShowDamageText = 17;
         /// <summary> 交互面板 </summary>

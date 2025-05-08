@@ -2,6 +2,7 @@
 using Nino.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace TaoTie
 {
@@ -17,7 +18,7 @@ namespace TaoTie
         [NinoMember(11)][LabelText("防御区域")]
         public ConfigShape DefendArea;
 
-        public override Entity CreateActor(SceneGroup sceneGroup)
+        public override Entity CreateActor(SceneGroup sceneGroup,float range)
         {
             Vector3 position;
             Quaternion rotation;
@@ -30,6 +31,11 @@ namespace TaoTie
             {
                 position = Position;
                 rotation = Quaternion.Euler(Rotation);
+            }
+
+            if (range > 0)
+            {
+                position += Quaternion.Euler(0, Random.Range(0, 360), 0) * Vector3.forward * Random.Range(0, range);
             }
 
             Monster entity = null;

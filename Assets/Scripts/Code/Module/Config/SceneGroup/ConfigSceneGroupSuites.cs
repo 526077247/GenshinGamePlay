@@ -27,12 +27,12 @@ namespace TaoTie
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
 #endif
         public int[] Actors;
-        [NinoMember(3)]
+        [NinoMember(3)][LabelText("触发区域")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()",AppendNextDrawer = true)]
 #endif
         public int[] Zones;
-        [NinoMember(4)]
+        [NinoMember(4)][LabelText("事件监听器")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupTriggerIds)+"()",AppendNextDrawer = true)]
 #endif

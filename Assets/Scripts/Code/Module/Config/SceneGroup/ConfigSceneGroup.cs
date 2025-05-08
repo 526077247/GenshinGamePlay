@@ -23,7 +23,7 @@ namespace TaoTie
         [NinoMember(3)]
         public Vector3 Rotation;
         [NinoMember(4)]
-        [LabelText("Actors,实体")]
+        [LabelText("*Actors,实体")][Tooltip("单个模板可支持使用\"通过ActorId创建实体\"Action创建实体的多个实例")]
         public ConfigSceneGroupActor[] Actors;
         [NinoMember(5)]
         [LabelText("Zones,触发区域")]

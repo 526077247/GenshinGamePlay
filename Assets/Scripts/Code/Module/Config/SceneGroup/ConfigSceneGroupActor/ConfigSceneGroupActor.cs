@@ -29,6 +29,6 @@ namespace TaoTie
 #endif
         public uint CampId;
         
-        public abstract Entity CreateActor(SceneGroup sceneGroup);
+        public abstract Entity CreateActor(SceneGroup sceneGroup, float range);
     }
 }

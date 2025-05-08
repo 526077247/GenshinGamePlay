@@ -225,10 +225,10 @@ namespace TaoTie
         public static List<int> GetEnvironmentConfigIds()
         {
             List<int> res = new List<int>();
-            var textAssets = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/EditConfig/ConfigEnvironments.json");
+            var textAssets = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/EditConfig/Others/ConfigEnvironments.json");
             if(textAssets!=null)
             {
-                ConfigEnvironments envs = ProtobufHelper.FromBytes<ConfigEnvironments>(textAssets.bytes);
+                ConfigEnvironments envs = JsonHelper.FromJson<ConfigEnvironments>(textAssets.text);
                 if(envs?.DefaultEnvironment!=null)
                     res.Add(envs.DefaultEnvironment.Id);
                 if (envs?.Environments != null)

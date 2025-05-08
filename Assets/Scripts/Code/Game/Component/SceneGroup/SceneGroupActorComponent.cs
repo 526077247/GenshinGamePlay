@@ -18,7 +18,7 @@
         public void Destroy()
         {
             Messager.Instance.RemoveListener<ConfigDie, DieStateFlag>(Id, MessageId.OnBeKill, OnBeKill);
-            SceneGroup?.OnActorRelease(LocalId);
+            SceneGroup?.OnActorRelease(LocalId,Id);
             sceneGroupId = 0;
             LocalId = 0;
         }
@@ -30,7 +30,7 @@
         /// </summary>
         public void RemoveFromSceneGroup()
         {
-            SceneGroup?.OnActorRelease(LocalId);
+            SceneGroup?.OnActorRelease(LocalId,Id);
         }
 
         private void OnBeKill(ConfigDie configDie, DieStateFlag flag)

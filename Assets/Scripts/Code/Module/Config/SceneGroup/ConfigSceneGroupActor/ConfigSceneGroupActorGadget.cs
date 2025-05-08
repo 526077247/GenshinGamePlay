@@ -26,7 +26,7 @@ namespace TaoTie
 #endif
         public GadgetState DefaultState;
 
-        public override Entity CreateActor(SceneGroup sceneGroup)
+        public override Entity CreateActor(SceneGroup sceneGroup, float range)
         {
             Vector3 position;
             Quaternion rotation;
@@ -40,7 +40,10 @@ namespace TaoTie
                 position = Position;
                 rotation = Quaternion.Euler(Rotation);
             }
-
+            if (range > 0)
+            {
+                position += Quaternion.Euler(0, Random.Range(0, 360), 0) * Vector3.forward * Random.Range(0, range);
+            }
             var entity = sceneGroup.Parent.CreateEntity<Gadget, int, GadgetState, uint>(ConfigID, DefaultState, CampId);
             entity.AddComponent<SceneGroupActorComponent, int, long>(LocalId, sceneGroup.Id);
             entity.Position = position;

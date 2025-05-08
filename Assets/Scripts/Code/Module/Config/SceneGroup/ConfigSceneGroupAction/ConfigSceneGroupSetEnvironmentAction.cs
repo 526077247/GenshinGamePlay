@@ -10,15 +10,15 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigSceneGroupSetEnvironmentAction : ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [NinoMember(10)][LabelText("当前关卡该环境标识(用于移除)")][NotNull]
         public string Key;
         
-        [NinoMember(11)]
+        [NinoMember(11)][LabelText("进入环境还是移除")]
         public bool IsEnter;
         
         [NinoMember(12)][ShowIf(nameof(IsEnter))]
 #if UNITY_EDITOR
-        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetEnvironmentConfigIds)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetEnvironmentConfigIds)+"()",AppendNextDrawer = true)]
 #endif
         public int EnvId;
         

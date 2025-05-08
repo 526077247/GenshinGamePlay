@@ -5,19 +5,20 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [LabelText("移除附加group")]
+    [LabelText("移除附加Suite")]
     [NinoType(false)]
-    public partial class ConfigSceneGroupRemoveExtraGroupAction : ConfigSceneGroupAction
+    public partial class ConfigSceneGroupRemoveExtraSuiteAction : ConfigSceneGroupAction
     {
         [NinoMember(10)]
+        [LabelText("要移除的阶段id")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+ nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
 #endif
-        public int GroupId;
+        public int SuiteId;
         
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {
-            aimSceneGroup.RemoveExtraGroup(GroupId);
+            aimSceneGroup.RemoveExtraSuite(SuiteId);
         }
     }
 }

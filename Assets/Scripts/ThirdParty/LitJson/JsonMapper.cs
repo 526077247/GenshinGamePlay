@@ -675,9 +675,13 @@ namespace LitJson
                                 {
                                     if (!value_type.IsAssignableFrom(type))
                                     {
-                                        throw new Exception($"类型不匹配！jsontype = {type} valuetype = {value_type}");
+                                        throw new Exception($"类型不匹配！jsonType = {type} valueType = {value_type}");
                                     }
                                     value_type = type;
+                                }
+                                else
+                                {
+                                    throw new Exception($"丢失类型！{value_type.FullName}");
                                 }
                             }
                         }

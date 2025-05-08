@@ -14,7 +14,7 @@ namespace TaoTie
             {
                 try
                 {
-                    Messager.Instance.Broadcast(t.Id, MessageId.GameTimeEventTrigger, new GameTimeChange()
+                    Messager.Instance.Broadcast(t.Id, MessageId.SceneGroupEvent, new GameTimeChange()
                     {
                         GameTimeNow = GameTimerManager.Instance.GetTimeNow()
                     });
@@ -38,7 +38,7 @@ namespace TaoTie
             this.Manager = manager;
             configId = p1.Id;
             Variable = DynDictionary.Create();
-            actorEntities = new Dictionary<int, long>();
+            actorEntities = new UnOrderMultiMap<int, long>();
             zoneEntities = new Dictionary<int, long>();
             timerTrigger = new Dictionary<int, long>();
             activeHandlers = new LinkedList<int>();
@@ -102,7 +102,10 @@ namespace TaoTie
 
             foreach (var item in this.actorEntities)
             {
-                Parent.Remove(item.Value);
+                for (int i = 0; i < item.Value.Count; i++)
+                {
+                    Parent.Remove(item.Value[i]);
+                }
             }
 
             this.actorEntities = null;
@@ -132,7 +135,7 @@ namespace TaoTie
         public DynDictionary Variable { get; set; }
         private ulong configId;
 
-        private Dictionary<int, long> actorEntities; // [localid: entityid]
+        private UnOrderMultiMap<int, long> actorEntities; // [localid: entityid]
 
         private Dictionary<int, long> zoneEntities; // [localid: entityid]
         private Dictionary<int, long> timerTrigger; // [localid: entityid]
@@ -241,7 +244,7 @@ namespace TaoTie
             {
                 foreach (var item in this.addOnSuiteConfig)
                 {
-                    this.RemoveExtraGroup(item);
+                    this.RemoveExtraSuite(item);
                 }
             }
 
@@ -307,15 +310,18 @@ namespace TaoTie
                 {
                     if (!this.actorEntities.ContainsKey(item.Key) && this.actors.TryGetValue(item.Key, out var actor))
                     {
-                        var unit = actor.CreateActor(this);
+                        var unit = actor.CreateActor(this, 0);
                         this.actorEntities.Add(item.Key, unit.Id);
                     }
                 }
                 else if (item.Value < 0) //消失actor
                 {
-                    if (this.actorEntities.TryGetValue(item.Key, out long entityId))
+                    if (this.actorEntities.TryGetValue(item.Key, out var entityIds))
                     {
-                        Parent.Remove(entityId);
+                        for (int i = 0; i < entityIds.Count; i++)
+                        {
+                            Parent.Remove(entityIds[i]);
+                        }
                     }
                 }
             }
@@ -389,7 +395,7 @@ namespace TaoTie
         /// 附加group
         /// </summary>
         /// <param name="suiteId"></param>
-        public void AddExtraGroup(int suiteId)
+        public void AddExtraSuite(int suiteId)
         {
             if (this.CurGroupSuitesConfig == null) return;
 
@@ -423,7 +429,7 @@ namespace TaoTie
                 if (!this.actorEntities.ContainsKey(config.Actors[i]) &&
                     this.actors.TryGetValue(config.Actors[i], out var actor))
                 {
-                    var unit = actor.CreateActor(this);
+                    var unit = actor.CreateActor(this, 0);
                     this.actorEntities.Add(actor.LocalId, unit.Id);
                 }
             }
@@ -460,10 +466,10 @@ namespace TaoTie
         /// <summary>
         /// 移除附加group
         /// </summary>
-        /// <param name="group"></param>
-        public void RemoveExtraGroup(int group)
+        /// <param name="suiteId"></param>
+        public void RemoveExtraSuite(int suiteId)
         {
-            if (this.suite.TryGetValue(group, out var config) && this.addOnSuiteConfig != null &&
+            if (this.suite.TryGetValue(suiteId, out var config) && this.addOnSuiteConfig != null &&
                 this.addOnSuiteConfig.Contains(config.LocalId))
             {
                 this.RemoveAddonActors(config);
@@ -530,9 +536,12 @@ namespace TaoTie
             {
                 if (item.Value <= 0) //消失actor
                 {
-                    if (this.actorEntities.TryGetValue(item.Key, out long entityId))
+                    if (this.actorEntities.TryGetValue(item.Key, out var entityIds))
                     {
-                        Parent.Remove(entityId);
+                        for (int i = 0; i < entityIds.Count; i++)
+                        {
+                            Parent.Remove(entityIds[i]);
+                        }
                     }
                 }
             }
@@ -595,9 +604,24 @@ namespace TaoTie
             return this.routes.TryGetValue(routeId, out route);
         }
 
+        /// <summary>
+        /// 根据actorId取，默认取第一个
+        /// </summary>
+        /// <param name="actorId"></param>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
         public bool TryGetActorEntity(int actorId, out long entityId)
         {
-            return this.actorEntities.TryGetValue(actorId, out entityId);
+            if (this.actorEntities.TryGetValue(actorId, out var entityIds))
+            {
+                if (entityIds.Count > 0)
+                {
+                    entityId = entityIds[0];
+                    return true;
+                }
+            }
+            entityId = 0;
+            return false;
         }
         public bool TryGetZoneEntity(int actorId, out long entityId)
         {
@@ -607,11 +631,16 @@ namespace TaoTie
         /// 从SceneGroup的管理中移除，不会销毁Entity
         /// </summary>
         /// <param name="actorId"></param>
-        public void OnActorRelease(int actorId)
+        /// <param name="unitId"></param>
+        public void OnActorRelease(int actorId, long unitId)
         {
-            if (this.TryGetActorEntity(actorId, out var entityId))
+            if (this.actorEntities.TryGetValue(actorId, out var entityIds))
             {
-                this.actorEntities.Remove(actorId);
+                entityIds.Remove(unitId);
+                if (entityIds.Count <= 0)
+                {
+                    this.actorEntities.Remove(actorId);
+                }
             }
         }
 
@@ -619,11 +648,12 @@ namespace TaoTie
         /// 创建Actor
         /// </summary>
         /// <param name="actorId"></param>
-        public void CreateActor(int actorId)
+        /// <param name="range"></param>
+        public void CreateActor(int actorId, float range = 0)
         {
-            if (!this.actorEntities.ContainsKey(actorId) && this.actors.TryGetValue(actorId, out var actor))
+            if (this.actors.TryGetValue(actorId, out var actor))
             {
-                var unit = actor.CreateActor(this);
+                var unit = actor.CreateActor(this, range);
                 this.actorEntities.Add(actor.LocalId, unit.Id);
             }
         }
@@ -642,7 +672,7 @@ namespace TaoTie
                     if (this.Config.Actors[i] is ConfigSceneGroupActorMonster monster &&
                         this.actorEntities.TryGetValue(monster.LocalId, out var eid))
                     {
-                        res++;
+                        res += eid.Count;
                     }
                 }
             }
@@ -653,18 +683,18 @@ namespace TaoTie
 
         #region 环境
         
-        public void PushEnvironment(int configId, EnvironmentPriorityType type, string key)
+        public void PushEnvironment(int envId, EnvironmentPriorityType type, string key)
         {
-            if (!activeEnv.ContainsKey(key))
+            if (key != null && !activeEnv.ContainsKey(key))
             {
-                var id = EnvironmentManager.Instance.Create(configId, type);
+                var id = EnvironmentManager.Instance.Create(envId, type);
                 if (id != 0) activeEnv.Add(key, id);
             }
         }
         
         public void RemoveEnvironment(string key)
         {
-            if (activeEnv.TryGetValue(key, out var id))
+            if (key != null && activeEnv.TryGetValue(key, out var id))
             {
                 EnvironmentManager.Instance.Remove(id);
                 activeEnv.Remove(key);
