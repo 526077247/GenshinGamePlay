@@ -384,6 +384,22 @@ namespace TaoTie
             list.Sort(DefaultStringComparer);
             return list;
         }
+
+        public static IEnumerable GetAllView()
+        {
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            var baseView = TypeInfo<UIBaseView>.Type;
+            var types = baseView.Assembly.GetTypes();
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (baseView != types[i] && !types[i].IsAbstract && baseView.IsAssignableFrom(types[i]))
+                {
+                    list.Add(types[i].Name);
+                }
+            }
+            list.Sort(DefaultStringComparer);
+            return list;
+        }
         #endregion
 
         #region AI

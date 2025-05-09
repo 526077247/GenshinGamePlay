@@ -515,10 +515,6 @@ namespace TaoTie
                 sb.Append($"\t\t/// <summary>{headInfo.FieldDesc.Replace("\n", "</summary>\n\t\t/// <summary> ")}</summary>\n");
                 sb.Append($"\t\t[NinoMember({headInfo.FieldIndex})]\n");
                 string fieldType = headInfo.FieldType;
-                if (fieldType == "int[][]")
-                {
-                    fieldType = "string[]";
-                }
 
                 sb.Append($"\t\tpublic {fieldType} {headInfo.FieldName} {{ get; set; }}\n");
             }

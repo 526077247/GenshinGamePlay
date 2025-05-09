@@ -681,7 +681,7 @@ namespace LitJson
                                 }
                                 else
                                 {
-                                    throw new Exception($"丢失类型！{value_type.FullName}");
+                                    throw new Exception($"丢失类型！{typeName}");
                                 }
                             }
                         }

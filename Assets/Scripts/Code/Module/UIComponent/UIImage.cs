@@ -71,7 +71,7 @@ namespace TaoTie
             int thisVersion = version;
             if (spritePath == this.spritePath && !isSetSprite)
             {
-                this.image.enabled = true;
+                if (image != null) this.image.enabled = true;
                 callback?.Invoke();
                 return;
             }
