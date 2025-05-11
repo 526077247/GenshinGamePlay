@@ -512,8 +512,8 @@ namespace TaoTie
                 soundItem.Dispose();
                 return;
             }
-            soundItem.AudioSource.loop = false;
             soundItem.AudioSource.Play();
+            if (soundItem.AudioSource.loop) return;
             await TimerManager.Instance.WaitAsync((long) (soundItem.Clip.length * 1000) + 100, token);
             if (soundItem.Id == id)
             {

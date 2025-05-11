@@ -86,13 +86,6 @@ MonoBehaviour:
         AssetTags: 
         UserData: 
       - CollectPath: Assets/AssetsPackage/Code
-        CollectorGUID: b0873cb317ad3614481ac3ccfd9e4386
-        CollectorType: 0
-        AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAOT
-        AssetTags: 
-        UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/OthersBuildIn
         CollectorGUID: f62dde77561219b4892a97e3a780b254
         CollectorType: 0
