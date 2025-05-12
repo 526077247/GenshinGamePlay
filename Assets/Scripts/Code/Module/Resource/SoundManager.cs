@@ -233,7 +233,7 @@ namespace TaoTie
                     var token = Token;
                     Token = null;
                     token?.Cancel();
-
+                    Instance?.sounds?.Remove(Id);
                     Id = 0;
                     if (Clip != null)
                     {
@@ -386,6 +386,7 @@ namespace TaoTie
             SoundItem res = SoundItem.Create(path, false, source, token);
             PoolPlay(res, res.Token).Coroutine();
             curMusic?.Dispose();
+            curMusic = res;
             return res.Id;
         }
 

@@ -4,7 +4,7 @@ namespace TaoTie
 {
     public static class UnityLifeTimeHelper
     {
-        #region MyRegion
+
         public static readonly Queue<ETTask> UpdateFinishTask = new Queue<ETTask>();
         //等待这一帧所有update结束
         public static ETTask WaitUpdateFinish()
@@ -39,6 +39,6 @@ namespace TaoTie
             FrameFinishTask.Enqueue(task);
             return task;
         }
-        #endregion
+
     }
 }
