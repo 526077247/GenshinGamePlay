@@ -5,7 +5,7 @@ namespace TaoTie
 
 	public partial class AnimatorMoveComponent : MoveComponent<ConfigAnimatorMove>, IFixedUpdate
 	{
-		protected override bool useAnimMove => true;
+		public override bool useAnimMove => true;
 
 		//References to attached components;
 		protected Transform transform;

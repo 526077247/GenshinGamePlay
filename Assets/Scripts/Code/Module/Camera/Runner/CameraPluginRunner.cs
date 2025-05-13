@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
+    [Creatable]
     public abstract class CameraPluginRunner: IDisposable
     {
         public abstract void Init(ConfigCameraPlugin config,NormalCameraState state);

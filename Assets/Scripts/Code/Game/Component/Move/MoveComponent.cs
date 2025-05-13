@@ -6,10 +6,15 @@ namespace TaoTie
     {
         protected SceneEntity SceneEntity => parent as SceneEntity;
         
-        public ConfigMoveStrategy Config { get; private set; }
+        public ConfigMoveAgent Config { get; private set; }
         public MoveInput CharacterInput{ get; private set; }
-        
-        protected void Init(ConfigMoveStrategy configMove)
+        /// <summary>
+        /// 是否使用动画移动
+        /// </summary>
+        public abstract bool useAnimMove { get; }
+
+        private MoveStrategy strategy;
+        protected void Init(ConfigMoveAgent configMove)
         {
             Config = configMove;
             CharacterInput = new MoveInput();
@@ -17,8 +22,8 @@ namespace TaoTie
 
         public virtual void Destroy()
         {
-            FollowMoveDestroy();
-            PlatformMoveDestroy();
+            strategy?.Dispose();
+            strategy = null;
             CharacterInput = null;
             Config = null;
         }
@@ -36,15 +41,41 @@ namespace TaoTie
 
         public void Update()
         {
-            if(FollowMoveUpdate()) return;
-            if(PlatformMoveUpdate()) return;
-            UpdateInternal();
+            if (strategy != null)
+            {
+                strategy?.Update();
+            }
+
+            if (strategy?.OverrideUpdate != true)
+            {
+                UpdateInternal();
+            }
         }
         
         protected abstract void UpdateInternal();
+
+        public void ChangeStrategy(ConfigMoveStrategy configMoveStrategy)
+        {
+            strategy?.Dispose();
+            strategy = null;
+            if (configMoveStrategy != null)
+            {
+                strategy = MoveSystem.Instance.CreateMoveStrategy(this, configMoveStrategy);
+            }
+        }
+        
+        public void ChangeStrategy<P1>(ConfigMoveStrategy configMoveStrategy,P1 p1)
+        {
+            strategy?.Dispose();
+            strategy = null;
+            if (configMoveStrategy != null)
+            {
+                strategy = MoveSystem.Instance.CreateMoveStrategy(this, configMoveStrategy, p1);
+            }
+        }
     }
 
-    public abstract class MoveComponent<T> : MoveComponent, IComponent<T> where T: ConfigMoveStrategy
+    public abstract class MoveComponent<T> : MoveComponent, IComponent<T> where T: ConfigMoveAgent
     {
         public T ConfigMove => Config as T;
         public void Init(T config)

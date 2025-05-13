@@ -13,33 +13,21 @@
         {
             if(ConfigActor.Move == null) return;
             MoveComponent moveComponent = null;
-            if (ConfigActor.Move.Strategy is ConfigAnimatorMove am)
+            if (ConfigActor.Move.Agent is ConfigAnimatorMove am)
             {
                 moveComponent =
                     AddComponent<AnimatorMoveComponent, ConfigAnimatorMove>(am, TypeInfo<MoveComponent>.Type);
             }
-            else if (ConfigActor.Move.Strategy is ConfigSimpleMove sm)
+            else if (ConfigActor.Move.Agent is ConfigSimpleMove sm)
             {
                 moveComponent = AddComponent<SimpleMoveComponent, ConfigSimpleMove>(sm, TypeInfo<MoveComponent>.Type);
             }
-            else if (ConfigActor.Move.Strategy is ConfigRigidbodyMove rm)
+            else if (ConfigActor.Move.Agent is ConfigRigidbodyMove rm)
             {
                 moveComponent = AddComponent<RigidbodyMoveComponent, ConfigRigidbodyMove>(rm, TypeInfo<MoveComponent>.Type);
             }
-            if (moveComponent != null)
-            {
-                if (ConfigActor.Move.DefaultAgent is ConfigPlatformMove pm)
-                {
-                    if (pm.Route != null)
-                    {
-                        moveComponent.SetRoute(pm.Route,pm.Delay);
-                    }
-                }
-                else if (ConfigActor.Move.DefaultAgent is ConfigFollowMove fm)
-                {
-                    moveComponent.SetConfigFollowMove(fm);
-                }
-            }
+            
+            moveComponent?.ChangeStrategy(ConfigActor.Move.DefaultStrategy);
         }
     }
 }

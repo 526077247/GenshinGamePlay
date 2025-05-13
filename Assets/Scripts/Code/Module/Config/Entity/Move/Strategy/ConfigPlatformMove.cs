@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
-    public class ConfigPlatformMove: ConfigMoveAgent
+    [NinoType(false)][LabelText("寻路")]
+    public partial class ConfigPlatformMove: ConfigMoveStrategy
     {
         [NinoMember(10)]
         public ConfigRoute Route;

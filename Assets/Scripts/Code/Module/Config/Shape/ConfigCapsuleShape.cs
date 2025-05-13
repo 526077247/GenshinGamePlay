@@ -27,6 +27,17 @@ namespace TaoTie
             return Vector3.SqrMagnitude(Vector3.up * halfH - target) < Radius * Radius;
         }
 
+        /// <summary>
+        /// 线与形状相交
+        /// </summary>
+        /// <param name="start">转换过坐标系的点</param>
+        /// <param name="end">转换过坐标系的点</param>
+        /// <returns></returns>
+        public override bool ContainsLine(Vector3 start, Vector3 end)
+        {
+            //todo:
+            return false;
+        }
         public override Collider CreateCollider(GameObject obj, bool isTrigger)
         {
             var collider = obj.AddComponent<CapsuleCollider>();

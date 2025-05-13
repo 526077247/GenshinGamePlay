@@ -12,17 +12,7 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
-            configMixinType = new Dictionary<Type, Type>();
-            var allTypes = AssemblyManager.Instance.GetTypes();
-            var runnerType = TypeInfo<AbilityMixin>.Type;
-            foreach (var item in allTypes)
-            {
-                var type = item.Value;
-                if (!type.IsAbstract && runnerType.IsAssignableFrom(type))
-                {
-                    configMixinType.Add(type.BaseType.GenericTypeArguments[0],type);
-                }
-            }
+            configMixinType = AttributeManager.Instance.GetCreateTypeMap(TypeInfo<AbilityMixin>.Type);
         }
 
         public void Destroy()

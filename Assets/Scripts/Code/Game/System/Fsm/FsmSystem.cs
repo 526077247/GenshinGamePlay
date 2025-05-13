@@ -12,17 +12,7 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
-            configClipType = new Dictionary<Type, Type>();
-            var allTypes = AssemblyManager.Instance.GetTypes();
-            var clipType = TypeInfo<FsmClip>.Type;
-            foreach (var item in allTypes)
-            {
-                var type = item.Value;
-                if (!type.IsAbstract && clipType.IsAssignableFrom(type))
-                {
-                    configClipType.Add(type.BaseType.GenericTypeArguments[0],type);
-                }
-            }
+            configClipType = AttributeManager.Instance.GetCreateTypeMap(TypeInfo<FsmClip>.Type);
         }
         public void Destroy()
         {

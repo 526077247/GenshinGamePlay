@@ -27,7 +27,17 @@ namespace TaoTie
                                   && -y <= target.y && target.y <= y
                                   && -z < target.z && target.z < z;
         }
-
+        /// <summary>
+        /// 线与形状相交
+        /// </summary>
+        /// <param name="start">转换过坐标系的点</param>
+        /// <param name="end">转换过坐标系的点</param>
+        /// <returns></returns>
+        public override bool ContainsLine(Vector3 start, Vector3 end)
+        {
+            //todo:
+            return false;
+        }
         public override float Distance(Vector3 target)
         {
             var distance = Mathf.Sqrt(SqrMagnitude(target, out bool inner));

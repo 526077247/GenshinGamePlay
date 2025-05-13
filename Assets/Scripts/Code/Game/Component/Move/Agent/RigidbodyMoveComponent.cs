@@ -2,37 +2,49 @@
 
 namespace TaoTie
 {
-    public class SimpleMoveComponent: MoveComponent<ConfigSimpleMove>
+    public class RigidbodyMoveComponent : MoveComponent<ConfigRigidbodyMove>
     {
-        protected override bool useAnimMove => false;
+        private Rigidbody rigidbody;
+        public override bool useAnimMove => false;
         private ORCAAgentComponent orcaAgent => parent.GetComponent<ORCAAgentComponent>();
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
+
         protected override void InitInternal()
         {
-            
+            InitInternalAsync().Coroutine();
         }
 
         protected override void DestroyInternal()
         {
-            
+            rigidbody = null;
         }
+
+        private async ETTask InitInternalAsync()
+        {
+            var um = parent.GetComponent<UnitModelComponent>();
+            await um.WaitLoadGameObjectOver();
+            rigidbody = um.EntityView.GetComponent<Rigidbody>();
+        }
+
         protected Vector3 CalculateLookDirection()
         {
             if (CharacterInput == null || CharacterInput.FaceDirection == Vector3.zero)
                 return Vector3.zero;
 
             Vector3 v = Vector3.zero;
-			
+
             var faceRight = Quaternion.Euler(0, 90, 0) * CharacterInput.FaceDirection;
             v += Vector3.ProjectOnPlane(faceRight, SceneEntity.Up).normalized * CharacterInput.Direction.x;
-            v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, SceneEntity.Up).normalized * CharacterInput.Direction.z;
+            v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, SceneEntity.Up).normalized *
+                 CharacterInput.Direction.z;
 
             v.Normalize();
             return v;
         }
+
         protected override void UpdateInternal()
         {
-            if(CharacterInput == null) return;
+            if (CharacterInput == null || rigidbody == null) return;
             float deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
             var lookDir = CalculateLookDirection();
             //doRotate
@@ -63,7 +75,7 @@ namespace TaoTie
                     SceneEntity.Rotation = Quaternion.Euler(euler.x, euler2.y, euler.z);
                 }
             }
-            
+
             //doMove
             var speed = numericComponent.GetAsFloat(NumericType.Speed);
             var velocity = CharacterInput.Direction.normalized * speed * CharacterInput.SpeedScale;
@@ -72,11 +84,11 @@ namespace TaoTie
             {
                 velocity = orcaAgent.GetVelocity();
             }
+
             CharacterInput.Velocity = velocity;
-            if (velocity != Vector3.zero)
-            {
-                SceneEntity.Position += deltaTime * velocity;
-            }
+            rigidbody.velocity = velocity;
+            rigidbody.isKinematic = velocity == Vector3.zero;
+            SceneEntity.SyncViewPosition(rigidbody.position);
         }
     }
 }

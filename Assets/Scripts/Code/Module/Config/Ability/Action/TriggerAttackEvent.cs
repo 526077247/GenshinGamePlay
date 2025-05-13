@@ -22,12 +22,12 @@ namespace TaoTie
             var len = AttackEvent.AttackPattern.ResolveHit(actionExecuter, ability, modifier, target,
                 new[] {EntityType.ALL}, out var infos);
             EntityManager entityManager = actionExecuter.Parent;
-            bool isBullet = false;
+            bool executerIsBullet = false;
             long startTime = 0;
             var bullet = actionExecuter.GetComponent<BulletComponent>();
             if (bullet != null)
             {
-                isBullet = true;
+                executerIsBullet = true;
                 startTime = bullet.CreateTime;
             }
 
@@ -63,7 +63,7 @@ namespace TaoTie
 
                 var hitEntity = entityManager.Get<Entity>(info.EntityId);
                 AttackResult result = AttackResult.Create(target.Id, hitEntity.Id, info, AttackEvent.AttackInfo,
-                    isBullet, startTime,attackInfoId);
+                    executerIsBullet, startTime,attackInfoId);
                 AttackHelper.DamageClose(ability, modifier, result);
                 //时停
                 if (!isTimeScale && result.HitPattern != null)

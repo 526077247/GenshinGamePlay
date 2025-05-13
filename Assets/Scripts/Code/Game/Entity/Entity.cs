@@ -87,6 +87,7 @@ namespace TaoTie
         protected DictionaryComponent<Component, Type> BaseType;
         public T AddComponent<T>(Type baseType = null) where T : Component
         {
+            if (IsDispose) return null;
             if (baseType != null && Components.ContainsKey(baseType))
             {
                 Log.Error($"重复添加{baseType.Name}");
@@ -115,6 +116,7 @@ namespace TaoTie
 
         public T AddComponent<T, P1>(P1 p1,Type baseType = null) where T : Component, IComponent<P1>
         {
+            if (IsDispose) return null;
             if (baseType != null && Components.ContainsKey(baseType))
             {
                 Log.Error($"重复添加{baseType.Name}");
@@ -138,6 +140,7 @@ namespace TaoTie
 
         public T AddComponent<T, P1, P2>(P1 p1, P2 p2) where T : Component, IComponent<P1, P2>
         {
+            if (IsDispose) return null;
             Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
@@ -155,6 +158,7 @@ namespace TaoTie
 
         public T AddComponent<T, P1, P2, P3>(P1 p1, P2 p2, P3 p3) where T : Component, IComponent<P1, P2, P3>
         {
+            if (IsDispose) return null;
             Type type = TypeInfo<T>.Type;
             if (Components.ContainsKey(type))
             {
@@ -178,6 +182,7 @@ namespace TaoTie
         /// <returns></returns>
         public T GetComponent<T>(bool includeOther = true) where T : Component, IComponentDestroy
         {
+            if (IsDispose) return null;
             Type type = TypeInfo<T>.Type;
             if (includeOther && OtherComponents.TryGetValue(type, out var res))
             {
@@ -201,6 +206,7 @@ namespace TaoTie
         
         public T GetOrAddComponent<T>() where T : Component, IComponent
         {
+            if (IsDispose) return null;
             Type type = TypeInfo<T>.Type;
             if (Components.TryGetValue(type, out var res))
             {
@@ -223,6 +229,7 @@ namespace TaoTie
 
         public void RemoveComponent(Type type)
         {
+            if (IsDispose) return ;
             if (Components.TryGetValue(type, out var res))
             {
                 if (BaseType.TryGetValue(res, out var baseType))
@@ -236,13 +243,13 @@ namespace TaoTie
 
         public void AddOtherComponent<T>(T t) where T : Component
         {
-            if (t == null) return;
+            if (IsDispose || t == null) return;
             OtherComponents[t.GetType()] = t;
         }
         
         public void RemoveOtherComponent<T>(T t) where T : Component
         {
-            if (t == null) return;
+            if (IsDispose || t == null) return;
             if (OtherComponents.TryGetValue(t.GetType(), out var res) && res == t)
             {
                 OtherComponents.Remove(t.GetType());

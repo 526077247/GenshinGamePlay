@@ -13,17 +13,7 @@ namespace TaoTie
         {
             Instance = this;
             arrangePlugins = new LinkedList<ArrangePlugin>();
-            configArrangeType = new Dictionary<Type, Type>();
-            var allTypes = AssemblyManager.Instance.GetTypes();
-            var runnerType = TypeInfo<ArrangePlugin>.Type;
-            foreach (var item in allTypes)
-            {
-                var type = item.Value;
-                if (!type.IsAbstract && runnerType.IsAssignableFrom(type))
-                {
-                    configArrangeType.Add(type.BaseType.GenericTypeArguments[0],type);
-                }
-            }
+            configArrangeType = AttributeManager.Instance.GetCreateTypeMap(TypeInfo<ArrangePlugin>.Type);
         }
 
         public void Destroy()

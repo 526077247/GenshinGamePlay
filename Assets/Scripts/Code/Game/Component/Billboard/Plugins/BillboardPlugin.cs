@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
+    [Creatable]
     public abstract class BillboardPlugin : BassBillboardPlugin
     {
         public sealed override void Init(BillboardComponent comp)

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [NinoType(false)]
-    public partial class DynamicVector3
+    public partial class DynamicVector3: BaseVector3
     {
         [NinoMember(1)][NotNull]
         public BaseValue X = new SingleValue();
@@ -13,7 +13,7 @@ namespace TaoTie
         [NinoMember(3)][NotNull]
         public BaseValue Z = new SingleValue();
         
-        public Vector3 Resolve(Entity entity, ActorAbility ability)
+        public override Vector3 Resolve(Entity entity, ActorAbility ability)
         {
             return new Vector3(X.Resolve(entity, ability), Y.Resolve(entity, ability), Z.Resolve(entity, ability));
         }

@@ -1,8 +1,9 @@
 ﻿using Nino.Core;
+using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [NinoType(false)][Tooltip("注意时序，先KillSelf了后面可能执行的Action会影响判断")]
     public partial class KillSelf: ConfigAbilityAction
     {
         [NinoMember(10)]

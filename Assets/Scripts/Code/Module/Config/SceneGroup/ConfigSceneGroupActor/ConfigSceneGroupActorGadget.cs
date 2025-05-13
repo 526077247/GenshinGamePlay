@@ -57,7 +57,11 @@ namespace TaoTie
                 }
                 else
                 {
-                    pmc.SetRoute(route, Delay);
+                    pmc.ChangeStrategy(new ConfigPlatformMove()
+                    {
+                        Route = route,
+                        Delay = Delay
+                    }, sceneGroup);
                 }
                 
             }

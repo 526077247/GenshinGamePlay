@@ -2,6 +2,7 @@
 
 namespace TaoTie
 {
+    [Creatable]
     public abstract class FsmClip : IDisposable
     {
         private FsmState state = null;

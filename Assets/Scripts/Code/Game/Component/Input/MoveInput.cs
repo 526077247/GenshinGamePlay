@@ -7,32 +7,37 @@ namespace TaoTie
 
     public class MoveInput
     {
+	    
+	    #region Input
 	    public MotionDirection MotionDirection;
-		/// <summary>
+	    /// <summary>
+	    /// 速度比例
+	    /// </summary>
+	    public float SpeedScale = 1;
+	    /// <summary>
+	    /// 移动方向
+	    /// </summary>
+	    public Vector3 Direction;
+	    /// <summary>
+	    /// 期望移动时的头朝向
+	    /// </summary>
+	    public Vector3 FaceDirection;
+	    /// <summary>
+	    /// 转向速度(°/s)
+	    /// </summary>
+	    public float RotateSpeed = 360;
+	    /// <summary>
+	    /// 跳跃
+	    /// </summary>
+	    public bool Jump = false;
+
+	    #endregion
+	    
+	    /// <summary>
 		/// 速度
 		/// </summary>
 	    public Vector3 Velocity;
-		/// <summary>
-		/// 移动方向
-		/// </summary>
-	    public Vector3 Direction;
-		/// <summary>
-		/// 期望移动时的头朝向
-		/// </summary>
-		public Vector3 FaceDirection;
-		/// <summary>
-		/// 速度比例
-		/// </summary>
-		public float SpeedScale = 1;
-		/// <summary>
-		/// 转向速度(°/s)
-		/// </summary>
-		public float RotateSpeed = 360;
-		/// <summary>
-		/// 跳跃
-		/// </summary>
-		public bool Jump = false;
-		/// <summary>
+	    /// <summary>
 		/// 被击退力大小和方向
 		/// </summary>
 		public Vector3 HitImpulse;

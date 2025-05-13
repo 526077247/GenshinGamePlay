@@ -11,11 +11,14 @@ namespace TaoTie
         
         private readonly List<Type> Empty = new List<Type>();
         
+        private UnOrderDoubleKeyDictionary<Type, Type, Type> creatableTypeMap;
+        
         #region override
 
         public void Init()
         {
             Instance = this;
+            creatableTypeMap = new UnOrderDoubleKeyDictionary<Type, Type, Type>();
             this.types.Clear();
             HashSet<Type> temp = new HashSet<Type>();
             var allTypes = AssemblyManager.Instance.GetTypes();
@@ -40,12 +43,27 @@ namespace TaoTie
                 }
             }
 
+            var creatableTypes = types.GetAll(TypeInfo<CreatableAttribute>.Type);
+          
+            foreach (var item in allTypes)
+            {
+                var type = item.Value;
+                for (int i = 0; i < creatableTypes.Length; i++)
+                {
+                    var pluginType = creatableTypes[i];
+                    if (!type.IsAbstract && pluginType.IsAssignableFrom(type))
+                    {
+                        creatableTypeMap.Add(pluginType, type.BaseType.GenericTypeArguments[0], type);
+                    }
+                }
+            }
         }
 
         public void Destroy()
         {
             Instance = null;
             types.Clear();
+            creatableTypeMap = null;
         }
 
         #endregion
@@ -56,6 +74,25 @@ namespace TaoTie
                 return res;
             return Empty;
         }
-        
+
+        public Dictionary<Type, Type> GetCreateTypeMap(Type baseType)
+        {
+            if (creatableTypeMap.TryGetDic(baseType, out var res))
+            {
+                return res;
+            }
+            res = new Dictionary<Type, Type>();
+            var allTypes = AssemblyManager.Instance.GetTypes();
+            foreach (var item in allTypes)
+            {
+                var type = item.Value;
+                if (!type.IsAbstract && baseType.IsAssignableFrom(type))
+                {
+                    res.Add(type.BaseType.GenericTypeArguments[0],type);
+                }
+            }
+            creatableTypeMap.Add(baseType, res);
+            return res;
+        }
     }
 }

@@ -3,7 +3,7 @@
 namespace TaoTie
 {
     [NinoType(false)]
-    public abstract class ConfigMoveStrategy
+    public abstract partial class ConfigMoveStrategy
     {
         
     }

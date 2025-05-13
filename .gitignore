@@ -32,6 +32,7 @@
 /Assembly-CSharp-Editor.csproj.user
 /Build-AndroidV8
 Build-Mac
+/HybridCLRData
 /Bundles
 /Tools/FileServer/obj
 /Tools/FileServer/.idea

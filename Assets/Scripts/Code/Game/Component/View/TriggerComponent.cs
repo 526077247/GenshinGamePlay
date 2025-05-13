@@ -36,6 +36,7 @@ namespace TaoTie
         private long lifeTimerId;
         private long checkTimerId;
         private int checkCount = 0;
+        private bool raycastRoute;
         private SceneEntity pSceneEntity => GetParent<SceneEntity>();
         private EntityManager em => parent.Parent;
         private MapScene map;
@@ -58,7 +59,7 @@ namespace TaoTie
             configTriggerCount = configTrigger.TriggerCount;
             configTotalTriggerCount = configTrigger.TotalTriggerCount;
             applyEachModel = configTrigger.ApplyEachModel;
-            
+            raycastRoute = configTrigger.CanOpenRaycastRoute() && configTrigger.RaycastCheck;
             map = SceneManager.Instance.GetCurrentScene<MapScene>();
             Entities = ListComponent<Entity>.Create();
             lastTriggerTime = DictionaryComponent<long, long>.Create();
@@ -81,6 +82,7 @@ namespace TaoTie
             concernType = ConcernType.AllExcludeGWGO;
             configCheckCount = -1;
             checkType = TriggerCheckType.Point;
+            raycastRoute = false;
             triggerFlag = TargetType.All;
             configTriggerInterval = 0;
             configTriggerCount = uint.MaxValue;
@@ -150,31 +152,28 @@ namespace TaoTie
         {
             if (checkType == TriggerCheckType.Collider)
             {
-                if (checkType == TriggerCheckType.Collider)
+                EntityType[] filter = AttackHelper.ActorEntityType;
+                if (concernType == ConcernType.AllAvatars || concernType == ConcernType.LocalAvatar)
                 {
-                    EntityType[] filter = AttackHelper.ActorEntityType;
-                    if (concernType == ConcernType.AllAvatars || concernType == ConcernType.LocalAvatar)
-                    {
-                        filter = AttackHelper.AvatarEntityType;
-                    }
+                    filter = AttackHelper.AvatarEntityType;
+                }
 
-                    var count = shape.RaycastEntities(pSceneEntity.Position, pSceneEntity.Rotation,
-                        filter, out long[] ids);
+                var count = shape.RaycastEntities(pSceneEntity.Position, pSceneEntity.Rotation,
+                    filter, out long[] ids);
 
-                    for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; i++)
+                {
+                    var sceneEntity = em.Get<SceneEntity>(ids[i]);
+                    if (sceneEntity != null)
                     {
-                        var sceneEntity = em.Get<SceneEntity>(ids[i]);
-                        if (sceneEntity != null)
+                        if (concernType == ConcernType.CombatExcludeGWGO)
                         {
-                            if (concernType == ConcernType.CombatExcludeGWGO)
-                            {
-                                if(sceneEntity.GetComponent<CombatComponent>() == null) 
-                                    continue;
-                            }
-                            CheckItem(sceneEntity);
+                            if(sceneEntity.GetComponent<CombatComponent>() == null) 
+                                continue;
                         }
-                        
+                        CheckItem(sceneEntity);
                     }
+                    
                 }
             }
             else
@@ -192,21 +191,30 @@ namespace TaoTie
                         }
                         break;
                     default:
-                        var all = em.GetAllDict();
-                        foreach (var item in all)
+                        //加到列表里遍历，防止遍历中Dict变化报错
+                        using (ListComponent<SceneEntity> targets = ListComponent<SceneEntity>.Create())
                         {
-                            if(!(item.Value is SceneEntity sceneEntity)) continue;
-                            if (concernType == ConcernType.CombatExcludeGWGO)
+                            var all = em.GetAllDict();
+                            foreach (var item in all)
                             {
-                                if(sceneEntity.GetComponent<CombatComponent>() == null) 
-                                    continue;
-                                CheckItem(sceneEntity);
+                                if(!(item.Value is SceneEntity sceneEntity)) continue;
+                                if (concernType == ConcernType.CombatExcludeGWGO)
+                                {
+                                    if(sceneEntity.GetComponent<CombatComponent>() == null) 
+                                        continue;
+                                    targets.Add(sceneEntity);
+                                }
+                                else if (concernType == ConcernType.AllExcludeGWGO)
+                                {
+                                    targets.Add(sceneEntity);
+                                }
                             }
-                            else if (concernType == ConcernType.AllExcludeGWGO)
+                            for (int i = 0; i < targets.Count; i++)
                             {
-                                CheckItem(sceneEntity);
+                                CheckItem(targets[i]);
                             }
                         }
+
                         break;
                     
                 }
@@ -217,10 +225,16 @@ namespace TaoTie
             {
                 GameTimerManager.Instance.Remove(ref checkTimerId);
             }
+
+            if (raycastRoute)
+            {
+                //todo:
+            }
         }
         private void CheckItem(SceneEntity sceneEntity)
         {
-            if (!AttackHelper.CheckIsTarget(parent, sceneEntity, triggerFlag))
+            if (parent == null || parent.IsDispose || sceneEntity== null || sceneEntity.IsDispose ||
+                !AttackHelper.CheckIsTarget(parent, sceneEntity, triggerFlag))
                 return;
             if (InRange(sceneEntity))
             {
@@ -272,7 +286,7 @@ namespace TaoTie
             {
                 var umc = parent.GetComponent<UnitModelComponent>();
                 if (umc?.EntityView == null) return false;
-                for (var node = umc.Holders.First; node.Next != null; node = node.Next)
+                for (var node = umc.Holders.First; node != null; node = node.Next)
                 {
                     if (node.Value != null && node.Value.EntityView != null)
                     {
@@ -304,8 +318,9 @@ namespace TaoTie
                 }
                 if (sceneEntity is Actor actor && actor.ConfigActor?.Common!=null)
                 {
-                    //todo:穿过的情况
-                    return shape.Contains(targetPos + Vector3.up * actor.ConfigActor.Common.ModelHeight);
+                    var headPos = PhysicsHelper.Transformation(position + offset,  rotation,
+                        sceneEntity.Position + Vector3.up * actor.ConfigActor.Common.ModelHeight);
+                    return shape.ContainsLine(targetPos, headPos);
                 }
                 return false;
             }

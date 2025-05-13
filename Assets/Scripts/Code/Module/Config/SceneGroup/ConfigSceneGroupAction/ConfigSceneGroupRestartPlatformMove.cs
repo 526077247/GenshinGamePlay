@@ -28,7 +28,11 @@ namespace TaoTie
                 {
                     var gadget = aimSceneGroup.Parent.Get<Entity>(entityId).GetComponent<GadgetComponent>();
                     var pmc = gadget?.GetComponent<MoveComponent>();
-                    pmc?.SetRoute(route,0);
+                    pmc?.ChangeStrategy(new ConfigPlatformMove()
+                    {
+                        Route = route,
+                        Delay = 0
+                    });
                 }
               
             }

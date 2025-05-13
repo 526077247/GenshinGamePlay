@@ -1,13 +1,14 @@
 ﻿using Nino.Core;
+using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [NinoType(false)]
-    public class ConfigMove
+    public partial class ConfigMove
     {
-        [NinoMember(1)][NotNull]
-        public ConfigMoveStrategy Strategy = new ConfigAnimatorMove();
-        [NinoMember(2)]
-        public ConfigMoveAgent DefaultAgent;
+        [NinoMember(1)][NotNull][LabelText("移动驱动方式")]
+        public ConfigMoveAgent Agent = new ConfigAnimatorMove();
+        [NinoMember(2)][LabelText("初始控制逻辑")]
+        public ConfigMoveStrategy DefaultStrategy;
     }
 }

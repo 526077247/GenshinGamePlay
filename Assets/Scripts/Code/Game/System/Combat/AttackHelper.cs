@@ -19,6 +19,8 @@ namespace TaoTie
         /// <returns></returns>
         public static bool CheckIsTarget(Entity self, Entity target, TargetType type)
         {
+            if(self == null || target == null || self.IsDispose || self.IsDispose)
+                return false;
             if (type == TargetType.Self && self.Id != target.Id)
                 return false;
             if (type == TargetType.AllExceptSelf && self.Id == target.Id)
@@ -39,6 +41,8 @@ namespace TaoTie
         /// <returns></returns>
         public static bool CheckIsEnemy(Entity actor, Entity other)
         {
+            if(actor == null || other == null || actor.IsDispose || other.IsDispose)
+                return false;
             if (actor is Actor a && other is Actor b)
             {
                 return a.CampId != b.CampId;
@@ -57,6 +61,8 @@ namespace TaoTie
         /// <returns></returns>
         public static bool CheckIsCamp(Entity actor, Entity other)
         {
+            if(actor == null || other == null || actor.IsDispose || other.IsDispose)
+                return false;
             if (actor is Actor a && other is Actor b)
             {
                 return a.CampId == b.CampId;
@@ -71,6 +77,8 @@ namespace TaoTie
         /// <returns></returns>
         public static bool CheckIsAlliance(Entity actor, Entity other)
         {
+            if(actor == null || other == null || actor.IsDispose || other.IsDispose)
+                return false;
             //todo:
             return actor.Type == other.Type;
         }

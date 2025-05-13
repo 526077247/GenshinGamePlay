@@ -65,17 +65,7 @@ namespace TaoTie
 
             #region RunnerType
 
-            configRunnerType = new Dictionary<Type, Type>();
-            var allTypes = AssemblyManager.Instance.GetTypes();
-            var runnerType = TypeInfo<CameraPluginRunner>.Type;
-            foreach (var item in allTypes)
-            {
-                var type = item.Value;
-                if (!type.IsAbstract && runnerType.IsAssignableFrom(type))
-                {
-                    configRunnerType.Add(type.BaseType.GenericTypeArguments[0],type);
-                }
-            }
+            configRunnerType =  AttributeManager.Instance.GetCreateTypeMap(TypeInfo<CameraPluginRunner>.Type);
 
             #endregion
             states = new Dictionary<long, CameraState>();

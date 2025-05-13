@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public partial class MoveComponent
+    public class PlatformMove: MoveStrategy<ConfigPlatformMove>,IMoveStrategy<SceneGroup>
     {
+        public override bool OverrideUpdate => true;
         /// <summary>
         /// 可为空，为空路径表示世界坐标
         /// </summary>
@@ -19,11 +20,6 @@ namespace TaoTie
         private ConfigRoute route;
         
         #region 移动相关参数
-
-        /// <summary>
-        /// 是否使用动画移动
-        /// </summary>
-        protected abstract bool useAnimMove { get; }
 
         /// <summary>
         /// 下一个或这一个（抵达后等待中）路径点
@@ -173,13 +169,25 @@ namespace TaoTie
         /// </summary>
         private float delayTillTime;
 
-        public void Init(ConfigRoute config,SceneGroup sceneGroup)
+        public void SetPara(SceneGroup sceneGroup)
         {
             this.sceneGroup = sceneGroup;
-            if(config!=null) SetRoute(config);
+        }
+        protected override void InitInternal()
+        {
+            base.InitInternal();
+            SetRoute(config.Route, config.Delay);
+            Messager.Instance.AddListener(parent.Id, MessageId.ResumePlatformMove, Resume);
+        }
+        
+        protected override void DisposeInternal()
+        {
+            Messager.Instance.RemoveListener(parent.Id, MessageId.ResumePlatformMove, Resume);
+            Clear();
+            base.DisposeInternal();
         }
 
-        public void PlatformMoveDestroy()
+        private void Clear()
         {
             this.sceneGroup = null;
             sqlAvatarTriggerEventDistance = 0;
@@ -226,7 +234,7 @@ namespace TaoTie
             this.n = -1;
         }
 
-        public bool PlatformMoveUpdate()
+        protected override void UpdateInternal()
         {
             var nowtime = GameTimerManager.Instance.GetTimeNow() / 1000f;
             #region 延迟启动
@@ -239,7 +247,7 @@ namespace TaoTie
 
             if (nowtime < delayTillTime)
             {
-                return route != null;
+                return;
             }
 
             if (this.beginTime > 0)
@@ -275,7 +283,7 @@ namespace TaoTie
                 {
                     var avatar = scene.Self;
                     if (avatar != null &&
-                        Vector3.SqrMagnitude(avatar.Position - GetParent<Unit>().Position) <
+                        Vector3.SqrMagnitude(avatar.Position - parent.Position) <
                         sqlAvatarTriggerEventDistance)
                     {
                         Messager.Instance.Broadcast(sceneGroupActor.SceneGroup.Id,MessageId.SceneGroupEvent,new AvatarNearPlatformEvt
@@ -297,8 +305,6 @@ namespace TaoTie
             {
                 OnUpdateWithAnim(nowtime);
             }
-
-            return route != null;
         }
 
         /// <summary>
@@ -404,7 +410,7 @@ namespace TaoTie
 
                 if (routeType == RouteType.OneWay)
                 {
-                    this.Destroy();
+                    this.Clear();
                     return;
                 }
                 else
@@ -613,7 +619,7 @@ namespace TaoTie
         /// <returns></returns>
         private Vector3 GetFaceV()
         {
-            return this.NextTarget.GetPosition(sceneGroup) - GetParent<Unit>().Position;
+            return this.NextTarget.GetPosition(sceneGroup) - parent.Position;
         }
 
         /// <summary>

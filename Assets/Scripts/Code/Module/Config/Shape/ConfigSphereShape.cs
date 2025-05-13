@@ -22,7 +22,17 @@ namespace TaoTie
         {
             return target.sqrMagnitude <= Radius * Radius;
         }
-
+        /// <summary>
+        /// 线与形状相交
+        /// </summary>
+        /// <param name="start">转换过坐标系的点</param>
+        /// <param name="end">转换过坐标系的点</param>
+        /// <returns></returns>
+        public override bool ContainsLine(Vector3 start, Vector3 end)
+        {
+            float dis = MeshHelper.DistanceParallel(start,end, Vector3.zero);
+            return dis <= Radius;
+        }
         public override float Distance(Vector3 target)
         {
             return target.magnitude - Radius;

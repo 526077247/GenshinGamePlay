@@ -43,5 +43,8 @@ namespace TaoTie
         Help_Setting = 37,
         Btn_Enter_Map = 38,
         Intee_Chest = 39,
+        Login_Notice = 40,
+        Net_Error = 41,
+        Global_Fail_ReTry = 42,
     }
 }

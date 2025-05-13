@@ -2,6 +2,7 @@
 
 namespace TaoTie
 {
+    [Creatable]
     public abstract class AbilityMixin:IDisposable
     {
         protected ConfigAbilityMixin baseConfig;

@@ -13,17 +13,7 @@ namespace TaoTie
         public void Init()
         {
             Instance = this;
-            configPluginType = new Dictionary<Type, Type>();
-            var allTypes = AssemblyManager.Instance.GetTypes();
-            var pluginType = TypeInfo<BillboardPlugin>.Type;
-            foreach (var item in allTypes)
-            {
-                var type = item.Value;
-                if (!type.IsAbstract && pluginType.IsAssignableFrom(type))
-                {
-                    configPluginType.Add(type.BaseType.GenericTypeArguments[0],type);
-                }
-            }
+            configPluginType = AttributeManager.Instance.GetCreateTypeMap(TypeInfo<BillboardPlugin>.Type);
         }
         /// <summary>
         /// preload一些常用hud到pool

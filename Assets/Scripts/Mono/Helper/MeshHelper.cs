@@ -6,6 +6,7 @@ namespace TaoTie
 {
     public static class MeshHelper
     {
+        #region 多边形
         private static SortedSet<PointNode> sortedSet = new SortedSet<PointNode>(new PointNodeComparer());
 
         class PointNodeComparer : IComparer<PointNode>
@@ -271,6 +272,38 @@ namespace TaoTie
                 item.Dispose();
             }
             sortedSet.Clear();
+        }
+        
+        #endregion
+
+        /// <summary>
+        /// 已知线段AB点坐标 求P到AB最短距离
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="P"></param>
+        /// <returns></returns>
+        public static float DistanceParallel(Vector3 A, Vector3 B, Vector3 P)
+        {
+            float res;
+            Vector3 AB = new Vector3(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
+            Vector3 AP = new Vector3(A[0] - P[0], A[1] - P[1], A[2] - P[2]);
+            float r = Vector3.Dot(AP, AB) / AB.sqrMagnitude;
+            if (r <= 0)
+            {
+                res = AP.magnitude; //在BA延长线上
+            }
+            else if (r >= 1)
+            {
+                res = new Vector3(B[0] - P[0], B[1] - P[1], B[2] - P[2]).magnitude; //在AB延长线上
+            }
+            else
+            {
+                //在AB上
+                res = Vector3.Cross(AP, AB).magnitude / AB.magnitude;
+            }
+
+            return res;
         }
     }
 }

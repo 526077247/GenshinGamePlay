@@ -1,10 +1,11 @@
 ﻿using Nino.Core;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
-    public class ConfigFollowMove: ConfigMoveAgent
+    [NinoType(false)][LabelText("跟随")]
+    public partial class ConfigFollowMove: ConfigMoveStrategy
     {
         [NinoMember(11)]
         public bool FollowRotation;

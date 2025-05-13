@@ -21,6 +21,10 @@ namespace TaoTie
         public int StartCheckTime;
         [NinoMember(6)][LabelText("每次检查间隔")][MinValue(0)]
         public int CheckInterval;
+        [NinoMember(14)]
+        [LabelText("*启用射线检测")][Tooltip("当每次检查间隔很短(<200ms)时可开启，开启后会在两次检测位置间进行射线检查")]
+        [ShowIf(nameof(CanOpenRaycastRoute))]
+        public bool RaycastCheck = false;
         [NinoMember(7)][LabelText("*检查总次数")][Tooltip("-1：不限次")][MinValue(-1)]
         public int CheckCount = -1;
         [NinoMember(11)][LabelText("单个Entity触发间隔")][MinValue(0)]
@@ -33,5 +37,11 @@ namespace TaoTie
         public int LifeTime = -1;
         [NinoMember(10)] [LabelText("*应用到每一个模型")][Tooltip("当模型不为单实例时有效")]
         public bool ApplyEachModel = true;
+        
+        
+        public bool CanOpenRaycastRoute()
+        {
+            return CheckInterval < Define.MinRepeatedTimerInterval*2;
+        }
     }
 }

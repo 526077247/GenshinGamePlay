@@ -14,7 +14,13 @@ namespace TaoTie
         /// <param name="target">转换过坐标系的点</param>
         /// <returns></returns>
         public abstract bool Contains(Vector3 target);
-        
+        /// <summary>
+        /// 线与形状相交
+        /// </summary>
+        /// <param name="start">转换过坐标系的点</param>
+        /// <param name="end">转换过坐标系的点</param>
+        /// <returns></returns>
+        public abstract bool ContainsLine(Vector3 start, Vector3 end);
         /// <summary>
         /// 距离
         /// </summary>
