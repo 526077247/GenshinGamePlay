@@ -15,7 +15,7 @@ using System.Collections;
 using System.Collections.Specialized;
 
 
-namespace LitJson
+namespace TaoTie.LitJson
 {
     public enum JsonType
     {

@@ -39,39 +39,39 @@ namespace TaoTie
 
         #endregion
 
-        private void OnTriggerEnterEvt(Entity other)
+        private void OnTriggerEnterEvt(long other)
         {
-            if (!innerEntity.Contains(other.Id))
+            if (!innerEntity.Contains(other))
             {
-                innerEntity.Add(other.Id);
+                innerEntity.Add(other);
                 Messager.Instance.Broadcast(sceneGroupId, MessageId.SceneGroupEvent, new EnterZoneEvent()
                 {
                     ZoneLocalId = localId,
                     ZoneEntityId = Id,
-                    EntityId = other.Id
+                    EntityId = other
                 });
             }
             else
             {
-                Log.Error($"重复进入sceneGroupId{sceneGroupId} localId{localId} entityId{other.Id}");
+                Log.Error($"重复进入sceneGroupId{sceneGroupId} localId{localId} entityId{other}");
             }
         }
 
-        private void OnTriggerExitEvt(Entity other)
+        private void OnTriggerExitEvt(long id)
         {
-            if (innerEntity.Contains(other.Id))
+            if (innerEntity.Contains(id))
             {
                 Messager.Instance.Broadcast(sceneGroupId,MessageId.SceneGroupEvent,new ExitZoneEvent()
                 {
                     ZoneLocalId = localId,
                     ZoneEntityId = Id,
-                    EntityId = other.Id
+                    EntityId = id
                 });
-                innerEntity.Remove(other.Id);
+                innerEntity.Remove(id);
             }
             else
             {
-                Log.Error($"重复离开 sceneGroupId{sceneGroupId} localId{localId} entityId{other.Id}");
+                Log.Error($"重复离开 sceneGroupId{sceneGroupId} localId{localId} entityId{id}");
             }
         }
         

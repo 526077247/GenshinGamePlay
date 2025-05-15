@@ -100,10 +100,11 @@ namespace TaoTie
             inner = sqrMagnitude <= 0;
             return sqrMagnitude > 0 ? sqrMagnitude : minInner;
         }
-        
-        public override int RaycastEntities(Vector3 pos, Quaternion rot,EntityType[] filter,out long[] entities)
+
+        public override int RaycastHitInfo(Vector3 pos, Quaternion rot, EntityType[] filter, out HitInfo[] hitInfos)
         {
-            return PhysicsHelper.OverlapBoxNonAllocEntity(pos, Size * 0.5f, rot, filter, out entities);
+            return PhysicsHelper.OverlapBoxNonAllocHitInfo(pos, Size * 0.5f, rot, filter, CheckHitLayerType.OnlyHitBox,
+                out hitInfos);
         }
     }
 }

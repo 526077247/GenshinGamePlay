@@ -13,7 +13,7 @@ namespace TaoTie
         public void Init(ConfigShape shape)
         {
             Config = shape;
-            AddComponent<TriggerComponent, ConfigShape, int>(shape, 200);
+            AddComponent<TriggerComponent, ConfigShape, int>(shape, 1000);
         }
 
         public void Destroy()

@@ -84,7 +84,7 @@ namespace TaoTie
             #endregion
 
             #region 镜头旋转
-            if(Cursor.lockState != CursorLockMode.Locked) return;
+            if(CameraManager.Instance.CursorUnLockState > 0) return;
             var newx = InputManager.Instance.MouseAxisX;
             mx = Mathf.Lerp(mx, newx, 0.6f);
             angleOffsetX += mx * GameTimerManager.Instance.GetDeltaTime()/200f * config.SpeedX;

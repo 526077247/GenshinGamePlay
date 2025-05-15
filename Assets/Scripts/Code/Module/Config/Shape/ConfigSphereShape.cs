@@ -49,9 +49,10 @@ namespace TaoTie
             return (target - target.normalized * Radius).sqrMagnitude;
         }
 
-        public override int RaycastEntities(Vector3 pos, Quaternion rot,EntityType[] filter,out long[] entities)
+        public override int RaycastHitInfo(Vector3 pos, Quaternion rot, EntityType[] filter, out HitInfo[] hitInfos)
         {
-            return PhysicsHelper.OverlapSphereNonAllocEntity(pos, Radius, filter, out entities);
+            return PhysicsHelper.OverlapSphereNonAllocHitInfo(pos, Radius, filter, CheckHitLayerType.OnlyHitBox,
+                out hitInfos);
         }
     }
 }

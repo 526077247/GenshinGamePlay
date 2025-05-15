@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LitJson.Extensions {
+namespace TaoTie.LitJson.Extensions {
 
     /// <summary>
     /// 拓展方法

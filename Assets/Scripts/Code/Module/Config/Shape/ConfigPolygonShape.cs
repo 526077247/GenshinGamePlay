@@ -137,11 +137,12 @@ namespace TaoTie
                 return ConfigShape2D.SqrMagnitude(p, out inner);
             }
         }
-        
-        public override int RaycastEntities(Vector3 pos, Quaternion rot,EntityType[] filter,out long[] entities)
+
+        public override int RaycastHitInfo(Vector3 pos, Quaternion rot, EntityType[] filter, out HitInfo[] hitInfos)
         {
             //todo:
-            return PhysicsHelper.OverlapBoxNonAllocEntity(pos, new Vector3(Height,Height,Height), rot, filter, out entities);
+            return PhysicsHelper.OverlapBoxNonAllocHitInfo(pos, new Vector3(Height, Height, Height), rot, filter,
+                CheckHitLayerType.OnlyHitBox, out hitInfos);
         }
     }
 }

@@ -102,12 +102,13 @@ namespace TaoTie
             return (target - target.normalized * Radius).sqrMagnitude;
         }
 
-        public override int RaycastEntities(Vector3 pos, Quaternion rot, EntityType[] filter, out long[] entities)
+        public override int RaycastHitInfo(Vector3 pos, Quaternion rot, EntityType[] filter, out HitInfo[] hitInfos)
         {
             var halfH = Vector3.up * Height * 0.5f;
             var p1 = rot * (pos + halfH);
             var p2 = rot * (pos - halfH);
-            return PhysicsHelper.OverlapCapsuleNonAlloc(p1, p2, Radius, filter, out entities);
+            return PhysicsHelper.OverlapCapsuleNonAllocHitInfo(p1, p2, Radius, filter, CheckHitLayerType.OnlyHitBox,
+                out hitInfos);
         }
     }
 }

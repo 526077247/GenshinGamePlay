@@ -385,6 +385,10 @@ namespace TaoTie
             return list;
         }
 
+        /// <summary>
+        /// UI界面
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerable GetAllView()
         {
             ValueDropdownList<string> list = new ValueDropdownList<string>();

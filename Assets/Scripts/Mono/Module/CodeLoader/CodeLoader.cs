@@ -98,7 +98,7 @@ namespace TaoTie
 // 		}
 		public async ETTask Start()
 		{
-			if ((Define.Debug || Debug.isDebugBuild) && PlayerPrefs.GetInt("DEBUG_LoadFromUrl", 0) == 1)
+			if ((Define.Debug || Debug.isDebugBuild) && UnityEngine.PlayerPrefs.GetInt("DEBUG_LoadFromUrl", 0) == 1)
 			{
 				CodeMode = CodeMode.LoadFromUrl;
 			}
@@ -171,7 +171,7 @@ namespace TaoTie
 				case CodeMode.LoadFromUrl:
 				{
 					int version = PackageManager.Instance.Config.GetPackageMaxVersion(Define.DefaultName);
-					var path = PlayerPrefs.GetString("DEBUG_LoadFromUrlPath", "http://127.0.0.1:8081/cdn/");
+					var path = UnityEngine.PlayerPrefs.GetString("DEBUG_LoadFromUrlPath", "http://127.0.0.1:8081/cdn/");
 					path += $"Code{version}.dll.bytes";
 
 					UnityWebRequest www = UnityWebRequest.Get(path);

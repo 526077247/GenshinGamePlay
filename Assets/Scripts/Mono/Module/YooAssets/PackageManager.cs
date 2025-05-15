@@ -338,7 +338,7 @@ namespace TaoTie
 
         public int GetPackageVersion(string package = Define.DefaultName)
         {
-            return PlayerPrefs.GetInt("PACKAGE_VERSION_" + package, -1);
+            return UnityEngine.PlayerPrefs.GetInt("PACKAGE_VERSION_" + package, -1);
         }
     }
 }

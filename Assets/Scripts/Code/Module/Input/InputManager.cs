@@ -10,7 +10,8 @@ namespace TaoTie
         public const int KeyDown = 1;
         public const int KeyUp = 2;
         public const int Key = 4;
-        public readonly KeyCode[] Default = new KeyCode[(int) GameKeyCode.Max]
+        //这是默认按键配置，实际上会被配置覆盖
+        public static readonly KeyCode[] Default = new KeyCode[GameKeyCode.Max]
         {
             KeyCode.W,
             KeyCode.S,
@@ -35,18 +36,18 @@ namespace TaoTie
         /// <summary>
         /// 按键绑定
         /// </summary>
-        private readonly KeyCode[] keySetMap = new KeyCode[(int)GameKeyCode.Max];
+        private readonly KeyCode[] keySetMap = new KeyCode[GameKeyCode.Max];
 
         /// <summary>
         /// 按键状态
         /// </summary>
-        private readonly int[] keyStatus = new int[(int)GameKeyCode.Max];
-
-
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-        private int touchCount = 0;
+        private readonly int[] keyStatus = new int[GameKeyCode.Max];
+        
         private Vector2 mousePosition;
-#endif
+        private Touch oldTouch1;
+        private Touch oldTouch2;
+
+        private readonly List<TouchInfo> touchInfos = new List<TouchInfo>();
         #region IManager
 
         public void Init()
@@ -57,7 +58,7 @@ namespace TaoTie
             InputKeyBind.KeyDown.Clear();
             InputKeyBind.KeyUp.Clear();
             //todo:
-            for (int i = 0; i < (int)GameKeyCode.Max; i++)
+            for (int i = 0; i < GameKeyCode.Max; i++)
             {
                 keySetMap[i] = Default[i];
             }
@@ -85,85 +86,220 @@ namespace TaoTie
             var config = await GetConfig("EditConfig/OthersBuildIn/ConfigInput");
             if (config?.Config != null)
             {
-                for (int i = 0; i < keySetMap.Length; i++)
+                for (int i = 0; i < config.Config.Length; i++)
                 {
-                    if (config.Config.TryGetValue((GameKeyCode) i, out var key))
-                    {
-                        keySetMap[i] = key;
-                    }
+                    if (PlatformUtil.IsMobile())
+                        keySetMap[config.Config[i].GameBehavior] = config.Config[i].Mobile;
+                    else
+                        keySetMap[config.Config[i].GameBehavior] = config.Config[i].PC;
+
                 }
             }
         }
         public void Destroy()
         {
             Instance = null;
-            Array.Clear(keySetMap,0,(int)GameKeyCode.Max);
-            Array.Clear(keyStatus,0,(int)GameKeyCode.Max);
+            touchInfos.Clear();
+            Array.Clear(keySetMap,0,GameKeyCode.Max);
+            Array.Clear(keyStatus,0,GameKeyCode.Max);
         }
 
         #endregion
 
         public void Update()
         {
-            Array.Clear(keyStatus,0,(int)GameKeyCode.Max);
+            AddTouch();
+            Array.Clear(keyStatus, 0, GameKeyCode.Max);
             MouseScrollWheel = 0;
             MouseAxisX = 0;
             MouseAxisY = 0;
-            if (IsPause) return;
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-            if (Input.touchCount > 0)
+
+            if (!IsPause)
             {
-                mousePosition = Input.GetTouch(0).position;
-            }
-            int clickValue = 0;
-            if (Input.touchCount > 0|| InputKeyBind.Key[KeyCode.Mouse0].Count > 0)
-            {
-                clickValue |= Key;
-            }
-            if ((Input.touchCount > 0 && touchCount == 0)|| InputKeyBind.KeyDown[KeyCode.Mouse0].Count > 0)
-            {
-                clickValue |= KeyDown;
-            }
-            if ((Input.touchCount == 0 && touchCount > 0)|| InputKeyBind.KeyUp[KeyCode.Mouse0].Count > 0)
-            {
-                clickValue |= KeyUp;
-            }
-            touchCount = Input.touchCount;
-#endif
-            
-            for (int i= 0; i< (int)GameKeyCode.Max; ++i)
-            {
-                KeyCode key = keySetMap[i];
-                int val = 0;
-                if (key >= 0)
+                int clickValue = 0;
+                if (PlatformUtil.IsMobile())
                 {
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-                    if (key == KeyCode.Mouse0)
+                    if (Input.touchCount > 0)
                     {
-                        val |= clickValue;
-                    } else {
-#endif
-                    if (Input.GetKeyDown(key) || InputKeyBind.KeyDown[key].Count > 0)
-                        val |= KeyDown;
-                    if (Input.GetKeyUp(key) || InputKeyBind.KeyUp[key].Count > 0)
-                        val |= KeyUp;
-                    if (Input.GetKey(key) || InputKeyBind.Key[key].Count > 0)
-                        val |= Key;
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+                        mousePosition = Input.GetTouch(0).position;
                     }
-#endif
+
+                    if (Input.touchCount > 0)
+                    {
+                        clickValue |= Key;
+                    }
+
+                    if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Began)
+                    {
+                        clickValue |= KeyDown;
+                    }
+
+                    if (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)
+                    {
+                        clickValue |= KeyUp;
+                    }
                 }
 
-                if (keyStatus[i] != val)
+                for (int i = 0; i < GameKeyCode.Max; ++i)
                 {
-                    keyStatus[i] = val;
-                    Messager.Instance.Broadcast(0, MessageId.OnKeyInput, i, val);
+                    KeyCode key = keySetMap[i];
+                    int val = 0;
+                    if (key >= 0)
+                    {
+                        if (PlatformUtil.IsMobile() && key == KeyCode.Mouse0)
+                        {
+                            val |= clickValue;
+                        }
+                        else
+                        {
+                            if (Input.GetKeyDown(key))
+                                val |= KeyDown;
+                            if (Input.GetKeyUp(key))
+                                val |= KeyUp;
+                            if (Input.GetKey(key))
+                                val |= Key;
+                        }
+
+                        var gameKey = i;
+                        if (InputKeyBind.KeyDown[gameKey].Count > 0)
+                            val |= KeyDown;
+                        if (InputKeyBind.KeyUp[gameKey].Count > 0)
+                            val |= KeyUp;
+                        if (InputKeyBind.Key[gameKey].Count > 0)
+                            val |= Key;
+                    }
+
+                    if (keyStatus[i] != val)
+                    {
+                        keyStatus[i] = val;
+                        Messager.Instance.Broadcast(0, MessageId.OnKeyInput, i, val);
+                    }
+                }
+
+                UpdateMouse();
+            }
+
+            RemoveTouch();
+        }
+
+        private void AddTouch()
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                var touch = Input.GetTouch(i);
+                if (touch.phase == TouchPhase.Began)
+                {
+                    var info = ObjectPool.Instance.Fetch<TouchInfo>();
+                    info.Index = i;
+                    info.isScroll = PlatformUtil.IsSimulator();
+                    info.IsStartOverUI = IsPointerOverUI(info.Touch.position);
+                    touchInfos.Add(info);
+                }
+                else if (touch.phase == TouchPhase.Moved)
+                {
+                    if (PlatformUtil.IsSimulator() && touchInfos[i].isScroll) //模拟器下, 同一次触碰水平方向移动分量为0, 竖直快速移动的可粗略判定为滚轮
+                    {
+                        if (Mathf.Abs(touch.deltaPosition.y) < 5 || touch.deltaPosition.x != 0)
+                        {
+                            touchInfos[i].isScroll = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RemoveTouch()
+        {
+            for (int i = Input.touchCount - 1; i >=0 ; i--)
+            {
+                if (Input.GetTouch(i).phase == TouchPhase.Ended)
+                {
+                    touchInfos[i].Dispose();
+                    touchInfos.RemoveAt(i);
                 }
             }
 
-            MouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
-            MouseAxisX = Input.GetAxis("Mouse X");
-            MouseAxisY = Input.GetAxis("Mouse Y");
+            for (int i = 0; i < touchInfos.Count; i++)
+            {
+                touchInfos[i].Index = i;
+            }
+        }
+
+        /// <summary>
+        /// 获取和UI无关的触碰
+        /// </summary>
+        /// <returns></returns>
+        private ListComponent<TouchInfo> GetNoneUITouch()
+        {
+            ListComponent<TouchInfo> res = ListComponent<TouchInfo>.Create();
+            for (int i = 0; i < touchInfos.Count; i++)
+            {
+                if (!touchInfos[i].IsStartOverUI)
+                {
+                    res.Add(touchInfos[i]);
+                }
+            }
+
+            return res;
+        }
+
+        private void UpdateMouse()
+        {
+            if (PlatformUtil.IsMobile())
+            {
+                using var touchInfos = GetNoneUITouch();
+                if (touchInfos.Count == 1)
+                {
+                    var touch = touchInfos[0].Touch;
+                    if (touch.phase == TouchPhase.Moved)
+                    {
+                        if (touchInfos[0].isScroll)
+                        {
+                            MouseScrollWheel = touch.deltaPosition.y / 100;
+                        }
+                        else
+                        {
+                            //webgl移动端是反的
+#if UNITY_WEBGL
+                            MouseAxisX = -touch.deltaPosition.x / 50;
+                            MouseAxisY = -touch.deltaPosition.y / 50;
+#else
+                            MouseAxisX = touch.deltaPosition.x / 50;
+                            MouseAxisY = touch.deltaPosition.y / 50;    
+#endif
+                        }
+                    }
+
+                }
+                else if (touchInfos.Count == 2)
+                {
+                    var newTouch1 = touchInfos[0].Touch;
+                    var newTouch2 = touchInfos[1].Touch;
+                    if (newTouch2.phase == TouchPhase.Began)
+                    {
+                        oldTouch2 = newTouch2;
+                        oldTouch1 = newTouch1;
+                        return;
+                    }
+
+                    float oldDistance = Vector2.Distance(oldTouch1.position, oldTouch2.position);
+                    float newDistance = Vector2.Distance(newTouch1.position, newTouch2.position);
+                    float offset = newDistance - oldDistance;
+
+                    if (Mathf.Abs(offset) >= 3)
+                    {
+                        MouseScrollWheel = offset / 100;
+                        oldTouch1 = newTouch1;
+                        oldTouch2 = newTouch2;
+                    }
+                }
+            }
+            else
+            {
+                MouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+                MouseAxisX = Input.GetAxis("Mouse X");
+                MouseAxisY = Input.GetAxis("Mouse Y");
+            }
         }
         /// <summary>
         /// 获取按键
@@ -171,13 +307,17 @@ namespace TaoTie
         /// <param name="keyCode"></param>
         /// <param name="ignoreUI"></param>
         /// <returns></returns>
-        public bool GetKey(GameKeyCode keyCode, bool ignoreUI = false)
+        public bool GetKey(int keyCode, bool ignoreUI = false)
         {
-            if ((keyStatus[(int) keyCode] & Key) != 0)
+            if ((keyStatus[keyCode] & Key) != 0)
             {
-                if (ignoreUI)
+                if (ignoreUI && InputKeyBind.Key[keyCode].Count == 0)
                 {
-                    var pos = GetTouchPos();
+                    if (PlatformUtil.IsMobile() && Input.touchCount == 0)
+                    {
+                        return true;
+                    }
+                    var pos = GetLastTouchPos();
                     return !IsPointerOverGameObject(pos);
                 }
                 return true;
@@ -191,13 +331,17 @@ namespace TaoTie
         /// <param name="keyCode"></param>
         /// <param name="ignoreUI"></param>
         /// <returns></returns>
-        public bool GetKeyDown(GameKeyCode keyCode, bool ignoreUI = false)
+        public bool GetKeyDown(int keyCode, bool ignoreUI = false)
         {
-            if ((keyStatus[(int) keyCode] & KeyDown) != 0)
+            if ((keyStatus[keyCode] & KeyDown) != 0)
             {
-                if (ignoreUI)
+                if (ignoreUI && InputKeyBind.KeyDown[keyCode].Count == 0)
                 {
-                    var pos = GetTouchPos();
+                    if (PlatformUtil.IsMobile() && Input.touchCount == 0)
+                    {
+                        return true;
+                    }
+                    var pos = GetLastTouchPos();
                     return !IsPointerOverGameObject(pos);
                 }
                 return true;
@@ -211,13 +355,17 @@ namespace TaoTie
         /// <param name="keyCode"></param>
         /// <param name="ignoreUI"></param>
         /// <returns></returns>
-        public bool GetKeyUp(GameKeyCode keyCode, bool ignoreUI = false)
+        public bool GetKeyUp(int keyCode, bool ignoreUI = false)
         {
-            if ((keyStatus[(int) keyCode] & KeyUp) != 0)
+            if ((keyStatus[keyCode] & KeyUp) != 0)
             {
-                if (ignoreUI)
+                if (ignoreUI && InputKeyBind.KeyUp[keyCode].Count == 0)
                 {
-                    var pos = GetTouchPos();
+                    if (PlatformUtil.IsMobile() && Input.touchCount == 0)
+                    {
+                        return true;
+                    }
+                    var pos = GetLastTouchPos();
                     return !IsPointerOverGameObject(pos);
                 }
                 return true;
@@ -229,11 +377,11 @@ namespace TaoTie
         /// </summary>
         /// <param name="keyCodes"></param>
         /// <returns></returns>
-        public bool GetKey(params GameKeyCode[] keyCodes)
+        public bool GetKey(params int[] keyCodes)
         {
             for (int i = 0; i < keyCodes.Length; i++)
             {
-                if ((keyStatus[(int) keyCodes[i]] & Key) != 0)
+                if ((keyStatus[keyCodes[i]] & Key) != 0)
                 {
                     return true;
                 }
@@ -246,11 +394,11 @@ namespace TaoTie
         /// </summary>
         /// <param name="keyCodes"></param>
         /// <returns></returns>
-        public bool GetKeyDown(params GameKeyCode[] keyCodes)
+        public bool GetKeyDown(params int[] keyCodes)
         {
             for (int i = 0; i < keyCodes.Length; i++)
             {
-                if ((keyStatus[(int) keyCodes[i]] & KeyDown) != 0)
+                if ((keyStatus[keyCodes[i]] & KeyDown) != 0)
                 {
                     return true;
                 }
@@ -263,11 +411,11 @@ namespace TaoTie
         /// </summary>
         /// <param name="keyCodes"></param>
         /// <returns></returns>
-        public bool GetKeyUp(params GameKeyCode[] keyCodes)
+        public bool GetKeyUp(params int[] keyCodes)
         {
             for (int i = 0; i < keyCodes.Length; i++)
             {
-                if ((keyStatus[(int) keyCodes[i]] & KeyUp) != 0)
+                if ((keyStatus[keyCodes[i]] & KeyUp) != 0)
                 {
                     return true;
                 }
@@ -279,13 +427,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="exceptKeyCode">不传为任意</param>
         /// <returns></returns>
-        public bool GetAnyKeyExcept(GameKeyCode exceptKeyCode)
+        public bool GetAnyKeyExcept(int exceptKeyCode)
         {
             for (int i = 0; i < keyStatus.Length; i++)
             {
                 if ((keyStatus[i] & Key) != 0)
                 {
-                    if ((int) exceptKeyCode == i)
+                    if (exceptKeyCode == i)
                     {
                         return false;
                     }
@@ -300,13 +448,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="exceptKeyCode">不传为任意</param>
         /// <returns></returns>
-        public bool GetAnyKeyDownExcept(GameKeyCode exceptKeyCode)
+        public bool GetAnyKeyDownExcept(int exceptKeyCode)
         {
             for (int i = 0; i < keyStatus.Length; i++)
             {
                 if ((keyStatus[i] & KeyDown) != 0)
                 {
-                    if ((int) exceptKeyCode == i)
+                    if (exceptKeyCode == i)
                     {
                         return false;
                     }
@@ -321,13 +469,13 @@ namespace TaoTie
         /// </summary>
         /// <param name="exceptKeyCode">不传为任意</param>
         /// <returns></returns>
-        public bool GetAnyKeyUpExcept(GameKeyCode exceptKeyCode)
+        public bool GetAnyKeyUpExcept(int exceptKeyCode)
         {
             for (int i = 0; i < keyStatus.Length; i++)
             {
                 if ((keyStatus[i] & KeyUp) != 0)
                 {
-                    if ((int) exceptKeyCode == i)
+                    if (exceptKeyCode == i)
                     {
                         return false;
                     }
@@ -341,7 +489,7 @@ namespace TaoTie
         /// </summary>
         /// <param name="exceptKeyCodes">不传为任意</param>
         /// <returns></returns>
-        public bool GetAnyKeyExcept(params GameKeyCode[] exceptKeyCodes)
+        public bool GetAnyKeyExcept(params int[] exceptKeyCodes)
         {
             for (int i = 0; i < keyStatus.Length; i++)
             {
@@ -351,7 +499,7 @@ namespace TaoTie
                     bool has = false;
                     for (int j = 0; j < exceptKeyCodes.Length; j++)
                     {
-                        if ((int) exceptKeyCodes[j] == i)
+                        if (exceptKeyCodes[j] == i)
                         {
                             has = true;
                             break;
@@ -369,7 +517,7 @@ namespace TaoTie
         /// </summary>
         /// <param name="exceptKeyCodes">不传为任意</param>
         /// <returns></returns>
-        public bool GetAnyKeyDownExcept(params GameKeyCode[] exceptKeyCodes)
+        public bool GetAnyKeyDownExcept(params int[] exceptKeyCodes)
         {
             for (int i = 0; i < keyStatus.Length; i++)
             {
@@ -379,7 +527,7 @@ namespace TaoTie
                     bool has = false;
                     for (int j = 0; j < exceptKeyCodes.Length; j++)
                     {
-                        if ((int) exceptKeyCodes[j] == i)
+                        if (exceptKeyCodes[j] == i)
                         {
                             has = true;
                             break;
@@ -397,7 +545,7 @@ namespace TaoTie
         /// </summary>
         /// <param name="exceptKeyCodes">不传为任意</param>
         /// <returns></returns>
-        public bool GetAnyKeyUpExcept(params GameKeyCode[] exceptKeyCodes)
+        public bool GetAnyKeyUpExcept(params int[] exceptKeyCodes)
         {
             for (int i = 0; i < keyStatus.Length; i++)
             {
@@ -407,7 +555,7 @@ namespace TaoTie
                     bool has = false;
                     for (int j = 0; j < exceptKeyCodes.Length; j++)
                     {
-                        if ((int) exceptKeyCodes[j] == i)
+                        if (exceptKeyCodes[j] == i)
                         {
                             has = true;
                             break;
@@ -420,14 +568,15 @@ namespace TaoTie
             return false;
         }
         
-        public Vector2 GetTouchPos()
+        public Vector2 GetLastTouchPos()
         {
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-            return mousePosition;
-#else
+            if (PlatformUtil.IsMobile())
+            {
+                return mousePosition;
+            }
             var data = Input.mousePosition;
             return new Vector2(data.x, data.y);
-#endif
+
         }
 
         /// <summary>
@@ -435,9 +584,9 @@ namespace TaoTie
         /// </summary>
         /// <param name="key"></param>
         /// <param name="keyCode"></param>
-        public void SetInputKeyMap(GameKeyCode key, KeyCode keyCode)
+        public void SetInputKeyMap(int key, KeyCode keyCode)
         {
-            keySetMap[(int) key] = keyCode;
+            keySetMap[key] = keyCode;
         }
         
 

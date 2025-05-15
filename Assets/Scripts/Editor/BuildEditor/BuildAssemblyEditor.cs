@@ -15,14 +15,14 @@ namespace TaoTie
         [MenuItem("Tools/Build/EnableAutoBuildCodeDebug _F1")]
         public static void SetAutoBuildCode()
         {
-            PlayerPrefs.SetInt("AutoBuild", 1);
+            EditorPrefs.SetInt("AutoBuild", 1);
             ShowNotification("AutoBuildCode Enabled");
         }
         
         [MenuItem("Tools/Build/DisableAutoBuildCodeDebug _F2")]
         public static void CancelAutoBuildCode()
         {
-            PlayerPrefs.DeleteKey("AutoBuild");
+            EditorPrefs.DeleteKey("AutoBuild");
             ShowNotification("AutoBuildCode Disabled");
         }
         

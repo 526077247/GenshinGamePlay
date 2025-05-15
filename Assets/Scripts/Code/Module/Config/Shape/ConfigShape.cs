@@ -42,6 +42,6 @@ namespace TaoTie
         /// <returns></returns>
         public abstract float SqrMagnitude(Vector3 target, out bool inner);
 
-        public abstract int RaycastEntities(Vector3 pos, Quaternion rot,EntityType[] filter,out long[] entities);
+        public abstract int RaycastHitInfo(Vector3 pos, Quaternion rot,EntityType[] filter,out HitInfo[] hitInfos);
     }
 }

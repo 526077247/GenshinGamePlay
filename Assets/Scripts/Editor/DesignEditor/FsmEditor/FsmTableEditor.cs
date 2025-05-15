@@ -29,9 +29,7 @@ namespace TaoTie
         {
             return Activator.CreateInstance<ConfigFsmTable>();
         }
-#if RoslynAnalyzer
-        protected abstract byte[] Serialize(T data);
-#endif
+
         [ShowIf("@data!=null")] [ReadOnly] public string filePath;
         [ShowIf("@data!=null")] [HideReferenceObjectPicker] public ConfigFsmTable data;
 

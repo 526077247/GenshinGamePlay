@@ -15,7 +15,7 @@ using System.IO;
 using System.Text;
 
 
-namespace LitJson
+namespace TaoTie.LitJson
 {
     internal class FsmContext
     {

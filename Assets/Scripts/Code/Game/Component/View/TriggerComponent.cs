@@ -31,22 +31,29 @@ namespace TaoTie
         private uint configTotalTriggerCount;
         private TargetType triggerFlag;
         private Vector3 offset;
-        private bool applyEachModel;
 
         private long lifeTimerId;
         private long checkTimerId;
         private int checkCount = 0;
-        private bool raycastRoute;
+        private CheckRangeType checkRangeType;
         private SceneEntity pSceneEntity => GetParent<SceneEntity>();
         private EntityManager em => parent.Parent;
         private MapScene map;
-        public ListComponent<Entity> Entities;
-        public event Action<Entity> OnTriggerEnterEvt;
-        public event Action<Entity> OnTriggerExitEvt;
+        private ListComponent<long> entities;
+        private ListComponent<long> lastEntities;
+
+        public int HitCount { get; private set; } = 0;
+        public readonly HitInfo[] HitInfos = new HitInfo[64];
+        public event Action<long> OnTriggerEnterEvt;
+        public event Action<long> OnTriggerExitEvt;
+        public event Action<long> OnTriggerEvt;
 
         private DictionaryComponent<long, long> lastTriggerTime;
         private DictionaryComponent<long, uint> triggerCount;
+        private ListComponent<(Vector3, Quaternion)> checkLerpValue;
         private uint totalTriggerCount;
+        private Vector3 lastPos;
+        private Quaternion lastRot;
         public void Init(ConfigTrigger configTrigger)
         {
             offset = configTrigger.Offset;
@@ -58,10 +65,9 @@ namespace TaoTie
             configTriggerInterval = configTrigger.TriggerInterval;
             configTriggerCount = configTrigger.TriggerCount;
             configTotalTriggerCount = configTrigger.TotalTriggerCount;
-            applyEachModel = configTrigger.ApplyEachModel;
-            raycastRoute = configTrigger.CanOpenRaycastRoute() && configTrigger.RaycastCheck;
+            checkRangeType = configTrigger.CheckRangeType;
             map = SceneManager.Instance.GetCurrentScene<MapScene>();
-            Entities = ListComponent<Entity>.Create();
+            entities = ListComponent<long>.Create();
             lastTriggerTime = DictionaryComponent<long, long>.Create();
             triggerCount = DictionaryComponent<long, uint>.Create();
             totalTriggerCount = 0;
@@ -82,16 +88,15 @@ namespace TaoTie
             concernType = ConcernType.AllExcludeGWGO;
             configCheckCount = -1;
             checkType = TriggerCheckType.Point;
-            raycastRoute = false;
+            checkRangeType = CheckRangeType.None;
             triggerFlag = TargetType.All;
             configTriggerInterval = 0;
             configTriggerCount = uint.MaxValue;
             configTotalTriggerCount = uint.MaxValue;
             totalTriggerCount = 0;
-            applyEachModel = false;
             
             map = SceneManager.Instance.GetCurrentScene<MapScene>();
-            Entities = ListComponent<Entity>.Create();
+            entities = ListComponent<long>.Create();
             lastTriggerTime = DictionaryComponent<long, long>.Create();
             triggerCount = DictionaryComponent<long, uint>.Create();
             StartCheck(checkInterval, -1);
@@ -120,6 +125,8 @@ namespace TaoTie
                 lifeTimerId = GameTimerManager.Instance.NewOnceTimer(GameTimerManager.Instance.GetTimeNow() + lifeTime,
                     TimerType.RemoveComponent, this);
             }
+            lastPos = pSceneEntity.Position;
+            lastRot = pSceneEntity.Rotation;
         }
         
 
@@ -127,12 +134,13 @@ namespace TaoTie
         {
             GameTimerManager.Instance.Remove(ref checkTimerId);
             GameTimerManager.Instance.Remove(ref lifeTimerId);
-            if (Entities != null)
+            if (entities != null)
             {
-                Entities.Dispose();
-                Entities = null;
+                entities.Dispose();
+                entities = null;
             }
 
+            lastEntities = null;
             if (lastTriggerTime != null)
             {
                 lastTriggerTime.Dispose();
@@ -150,6 +158,9 @@ namespace TaoTie
 
         private void Check()
         {
+            HitCount = 0;
+            lastEntities = entities;
+            entities = ListComponent<long>.Create();
             if (checkType == TriggerCheckType.Collider)
             {
                 EntityType[] filter = AttackHelper.ActorEntityType;
@@ -158,12 +169,12 @@ namespace TaoTie
                     filter = AttackHelper.AvatarEntityType;
                 }
 
-                var count = shape.RaycastEntities(pSceneEntity.Position, pSceneEntity.Rotation,
-                    filter, out long[] ids);
+                var count = shape.RaycastHitInfo(pSceneEntity.Position, pSceneEntity.Rotation,
+                    filter, out HitInfo[] hitInfos);
 
                 for (int i = 0; i < count; i++)
                 {
-                    var sceneEntity = em.Get<SceneEntity>(ids[i]);
+                    var sceneEntity = em.Get<SceneEntity>(hitInfos[i].EntityId);
                     if (sceneEntity != null)
                     {
                         if (concernType == ConcernType.CombatExcludeGWGO)
@@ -171,7 +182,8 @@ namespace TaoTie
                             if(sceneEntity.GetComponent<CombatComponent>() == null) 
                                 continue;
                         }
-                        CheckItem(sceneEntity);
+                        AddHitInfo(hitInfos[i]);
+                        entities.Add(sceneEntity.Id);
                     }
                     
                 }
@@ -226,10 +238,95 @@ namespace TaoTie
                 GameTimerManager.Instance.Remove(ref checkTimerId);
             }
 
-            if (raycastRoute)
+            using (DictionaryComponent<long, int> change = DictionaryComponent<long, int>.Create())
             {
-                //todo:
+                for (int i = 0; i < entities.Count; i++)
+                {
+                    change[entities[i]] = 1;
+                }
+
+                if (lastEntities != null)
+                {
+                    for (int i = 0; i < lastEntities.Count; i++)
+                    {
+                        if (change.ContainsKey(lastEntities[i]))
+                        {
+                            change[lastEntities[i]]--;
+                        }
+                        else
+                        {
+                            change[lastEntities[i]] = -1;
+                        }
+                    }
+                }
+              
+                foreach (var item in change)
+                {
+                    if (item.Value >= 0)
+                    {
+                        var id = item.Key;
+                        if (item.Value > 0) //第一次进度
+                        {
+                            OnTriggerEnterEvt?.Invoke(id);
+                            if (IsDispose)
+                            {
+                                OnTriggerExitEvt?.Invoke(id);
+                                return;
+                            }
+                        }
+                        
+                        var timeNow = GameTimerManager.Instance.GetTimeNow();
+                        if (lastTriggerTime.TryGetValue(id, out var lastTime))
+                        {
+                            if (lastTime + configTriggerInterval > timeNow)
+                            {
+                                continue;
+                            }
+                        }
+                        if (!triggerCount.TryGetValue(id, out var count))
+                        {
+                            triggerCount[id] = count = 0;
+                        }
+                        if (count >= configTriggerCount)
+                        {
+                            continue;
+                        }
+                        triggerCount[id]++;
+                        if (totalTriggerCount >= configTotalTriggerCount)
+                        {
+                            continue;
+                        }
+                        totalTriggerCount++;
+                        lastTriggerTime[id] = timeNow;
+                        OnTriggerEvt?.Invoke(item.Key);
+                        if (IsDispose)
+                        {
+                            OnTriggerExitEvt?.Invoke(id);
+                            return;
+                        }
+                    }
+                    else 
+                    {
+                        OnTriggerExitEvt?.Invoke(item.Key);
+                        if (IsDispose)
+                        {
+                            return;
+                        }
+                    }
+                }
             }
+            
+            
+            lastEntities?.Dispose();
+            lastEntities = null;
+
+            if (checkRangeType != CheckRangeType.None)
+            {
+                lastPos = pSceneEntity.Position;
+                lastRot = pSceneEntity.Rotation;
+            }
+            checkLerpValue?.Dispose();
+            checkLerpValue = null;
         }
         private void CheckItem(SceneEntity sceneEntity)
         {
@@ -238,93 +335,119 @@ namespace TaoTie
                 return;
             if (InRange(sceneEntity))
             {
-                if (!Entities.Contains(sceneEntity))
-                {
-                    var timeNow = GameTimerManager.Instance.GetTimeNow();
-                    if (lastTriggerTime.TryGetValue(sceneEntity.Id, out var lastTime))
-                    {
-                        if (lastTime + configTriggerInterval > timeNow)
-                        {
-                            return;
-                        }
-                    }
-
-                    if (!triggerCount.TryGetValue(sceneEntity.Id, out var count))
-                    {
-                        triggerCount[sceneEntity.Id] = count = 0;
-                    }
-               
-                    if (count >= configTriggerCount)
-                    {
-                        return;
-                    }
-                    triggerCount[sceneEntity.Id]++;
-                
-                    if (totalTriggerCount >= configTotalTriggerCount)
-                    {
-                        return;
-                    }
-                    totalTriggerCount++;
-                    lastTriggerTime[sceneEntity.Id] = timeNow;
-                    Entities.Add(sceneEntity);
-                    OnTriggerEnterEvt?.Invoke(sceneEntity);
-                }
-            }
-            else
-            {
-                if (Entities.Contains(sceneEntity))
-                {
-                    Entities.Remove(sceneEntity);
-                    OnTriggerExitEvt?.Invoke(sceneEntity);
-                }
+                entities.Add(sceneEntity.Id);
             }
         }
 
         private bool InRange(SceneEntity sceneEntity)
         {
-            if (applyEachModel)
+            switch (checkRangeType)
             {
-                var umc = parent.GetComponent<UnitModelComponent>();
-                if (umc?.EntityView == null) return false;
-                for (var node = umc.Holders.First; node != null; node = node.Next)
-                {
-                    if (node.Value != null && node.Value.EntityView != null)
+                case CheckRangeType.EachModel:
+                    var umc = parent.GetComponent<UnitModelComponent>();
+                    if (umc?.EntityView == null) return false;
+                    for (var node = umc.Holders.First; node != null; node = node.Next)
                     {
-                        if (InRange(sceneEntity, node.Value.EntityView.position, node.Value.EntityView.rotation))
+                        if (node.Value != null && node.Value.EntityView != null)
+                        {
+                            if (InRange(sceneEntity, node.Value.EntityView.position, node.Value.EntityView.rotation))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                case CheckRangeType.Raycast:
+                    //todo: 射线检测
+                    return InRange(sceneEntity, pSceneEntity.Position, pSceneEntity.Rotation);
+                case CheckRangeType.Lerp:
+                    if (checkLerpValue == null)
+                    {
+                        checkLerpValue = ListComponent<(Vector3, Quaternion)>.Create();
+                        var dis = (pSceneEntity.Position - lastPos).magnitude;
+                        var count = Mathf.Min(10, dis / 0.1f);
+                        if (count < 1)
+                        {
+                            checkLerpValue.Add((pSceneEntity.Position,pSceneEntity.Rotation));
+                        }
+                        else
+                        {
+                            for (int i = 0; i <= count; i++)
+                            {
+                                var progress = i / Mathf.Ceil(count);
+                                checkLerpValue.Add((Vector3.Lerp(lastPos, pSceneEntity.Position, progress),
+                                    Quaternion.Lerp(lastRot, pSceneEntity.Rotation, progress)));
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < checkLerpValue.Count; i++)
+                    {
+                        if (InRange(sceneEntity, checkLerpValue[i].Item1, checkLerpValue[i].Item2))
                         {
                             return true;
                         }
                     }
-                }
-
-                return false;
+                    return false;
+                case CheckRangeType.None: 
+                default:
+                    return InRange(sceneEntity, pSceneEntity.Position, pSceneEntity.Rotation);
             }
-
-            return InRange(sceneEntity, pSceneEntity.Position, pSceneEntity.Rotation);
         }
 
         private bool InRange(SceneEntity sceneEntity, Vector3 position, Quaternion rotation)
         {
-            var targetPos = PhysicsHelper.Transformation(position + offset,  rotation, sceneEntity.Position);
+            var offsetPos = position + offset;
+            var targetPos = PhysicsHelper.Transformation(offsetPos, rotation, sceneEntity.Position);
             if (checkType == TriggerCheckType.Point)
             {
-                return shape.Contains(targetPos);
+                var res = shape.Contains(targetPos);
+                if (res) AddHitInfo(sceneEntity.Position, sceneEntity.Id);
+                return res;
             }
+
             if (checkType == TriggerCheckType.ModelHeight)
             {
+                if (sceneEntity is Actor actor && actor.ConfigActor?.Common != null)
+                {
+                    var headPos = sceneEntity.Position + Vector3.up * actor.ConfigActor.Common.ModelHeight;
+                    var headTargetPos = PhysicsHelper.Transformation(offsetPos, rotation, headPos);
+                    var res = shape.ContainsLine(targetPos, headTargetPos);
+                    if (res) AddHitInfo(offsetPos, sceneEntity.Id);
+                    return res;
+                }
+
                 if (shape.Contains(targetPos))
                 {
+                    AddHitInfo(sceneEntity.Position, sceneEntity.Id);
                     return true;
                 }
-                if (sceneEntity is Actor actor && actor.ConfigActor?.Common!=null)
-                {
-                    var headPos = PhysicsHelper.Transformation(position + offset,  rotation,
-                        sceneEntity.Position + Vector3.up * actor.ConfigActor.Common.ModelHeight);
-                    return shape.ContainsLine(targetPos, headPos);
-                }
+
                 return false;
             }
+
             return true;
+        }
+
+        private void AddHitInfo(Vector3 hitPos, long id, HitBoxType type = HitBoxType.Normal, Vector3 hitDir = default)
+        {
+            if (HitCount == HitInfos.Length) return;
+            HitInfos[HitCount] = new HitInfo()
+            {
+                EntityId = id,
+                Distance = 0,
+                HitBoxType = type,
+                HitPos = hitPos,
+                HitDir = hitDir,
+            };
+            HitCount++;
+        }
+
+        private void AddHitInfo(HitInfo hitInfo)
+        {
+            if (HitCount == HitInfos.Length) return;
+            HitInfos[HitCount] = hitInfo;
+            HitCount++;
         }
     }
 }

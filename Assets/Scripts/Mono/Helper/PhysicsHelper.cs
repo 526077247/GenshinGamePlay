@@ -123,8 +123,7 @@ namespace TaoTie
         #region HitInfo
 
         public static int OverlapBoxNonAllocHitInfo(Vector3 center, Vector3 halfExtents, Quaternion orientation,
-            EntityType[] filter, CheckHitLayerType type,
-            out HitInfo[] res)
+            EntityType[] filter, CheckHitLayerType type, out HitInfo[] res)
         {
             res = hitInfos;
             if (filter == null) return 0;
@@ -133,12 +132,20 @@ namespace TaoTie
             return FilterHitInfo(filter,len,center);
         }
         public static int OverlapSphereNonAllocHitInfo(Vector3 center, float radius, EntityType[] filter,
-            CheckHitLayerType type,
-            out HitInfo[] res)
+            CheckHitLayerType type, out HitInfo[] res)
         {
             res = hitInfos;
             var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
+        }
+        public static int OverlapCapsuleNonAllocHitInfo(Vector3 p1, Vector3 p2, float radius, 
+            EntityType[] filter,  CheckHitLayerType type, out HitInfo[] res)
+        {
+            res = hitInfos;
+            if (filter == null) return 0;
+            var len = Physics.OverlapCapsuleNonAlloc(p1, p2,radius, colliders, GetHitLayer(type),
+                QueryTriggerInteraction.Collide);
+            return FilterHitInfo(filter, len, (p1 + p2) / 2);
         }
         public static int OverlapColliderNonAllocHitInfo(ColliderBoxComponent colliderBox, EntityType[] filter,
             CheckHitLayerType type, out HitInfo[] res)
@@ -165,8 +172,7 @@ namespace TaoTie
         }
 
         public static int OverlapColliderNonAllocHitInfo(ColliderBoxComponent colliderBox, Collider[] triggers,
-            EntityType[] filter,
-            CheckHitLayerType type, out HitInfo[] res)
+            EntityType[] filter, CheckHitLayerType type, out HitInfo[] res)
         {
             res = hitInfos;
             if (colliderBox == null || triggers == null || triggers.Length == 0) return 0;

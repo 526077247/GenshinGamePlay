@@ -20,10 +20,10 @@ namespace TaoTie
         public AxisType xBindType = AxisType.Horizontal;
         public AxisType yBindType = AxisType.Vertical;
         
-        public static Dictionary<AxisType, float> axisBind = new Dictionary<AxisType, float>();
+        public static Dictionary<AxisType, float> AxisBind = new Dictionary<AxisType, float>();
 
         private Vector2 startPos;
-        private void Awake()
+        private void OnEnable()
         {
             background = transform as RectTransform;
             dragTrans = handle.transform as RectTransform;
@@ -32,7 +32,7 @@ namespace TaoTie
             handle.OnEndDragHandler.AddListener(OnEndDragHandler);
         }
         
-        private void OnDestroy()
+        private void OnDisable()
         {
             handle.OnBeginDragHandler.RemoveListener(OnBeginDragHandler);
             handle.OnDragHandler.RemoveListener(OnDragHandler);
@@ -45,8 +45,8 @@ namespace TaoTie
         }
         private void OnEndDragHandler(PointerEventData eventData)
         {
-            axisBind[xBindType] = 0;
-            axisBind[yBindType] = 0;
+            AxisBind[xBindType] = 0;
+            AxisBind[yBindType] = 0;
             dragTrans.anchoredPosition = Vector2.zero;
         }
         private void OnDragHandler(PointerEventData eventData)
@@ -60,8 +60,8 @@ namespace TaoTie
             // 更新摇杆手柄的位置
             dragTrans.anchoredPosition = new Vector2(touchPosition.x * (background.sizeDelta.x / 2), touchPosition.y * (background.sizeDelta.y / 2));
             // 更新输入方向
-            axisBind[xBindType] = touchPosition.x;
-            axisBind[yBindType] = touchPosition.y;
+            AxisBind[xBindType] = touchPosition.x;
+            AxisBind[yBindType] = touchPosition.y;
         }
 
     }

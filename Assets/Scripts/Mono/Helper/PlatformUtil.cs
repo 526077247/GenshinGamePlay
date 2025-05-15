@@ -10,17 +10,15 @@ namespace TaoTie
 {
     public class PlatformUtil
     {
+#if UNITY_WEBGL
+        [DllImport("__Internal")]
+        private static extern bool IsMobileWebGL();
+#endif
         public static int GetIntPlatform()
         {
             return (int)Application.platform;
         }
-        public static int intPlatform
-        {
-            get
-            {
-                return GetIntPlatform();
-            }
-        }
+
         public static string GetStrPlatformIgnoreEditor()
         {
             if (IsIphone())
@@ -41,22 +39,39 @@ namespace TaoTie
         
         public static bool IsIphone()
         {
-            return intPlatform == (int)RuntimePlatform.IPhonePlayer;
+            return GetIntPlatform() == (int)RuntimePlatform.IPhonePlayer;
         }
 
         public static bool IsAndroid()
         {
-            return intPlatform == (int)RuntimePlatform.Android;
+            return GetIntPlatform() == (int)RuntimePlatform.Android;
         }
 
         public static bool IsWindows()
         {
-            return intPlatform == (int)RuntimePlatform.WindowsPlayer;
+            return GetIntPlatform() == (int)RuntimePlatform.WindowsPlayer;
+        }
+        
+        public static bool IsWebGL()
+        {
+            return GetIntPlatform() == (int)RuntimePlatform.WebGLPlayer;
         }
 
         public static bool IsMobile()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return IsMobileWebGL();
+#else
             return IsAndroid() || IsIphone();
+#endif
+        }
+
+        public static bool IsSimulator()
+        {
+#if UNITY_ANDROID
+            return SystemInfo.graphicsDeviceID == 0 && SystemInfo.graphicsDeviceVendorID == 0;
+#endif
+            return false;
         }
     }
 }

@@ -54,8 +54,8 @@ namespace TaoTie
 
             if (direction == Vector3.zero)
             {
-                if (InputAxisBind.axisBind.TryGetValue(AxisType.Horizontal, out float x)
-                    && InputAxisBind.axisBind.TryGetValue(AxisType.Vertical, out float y))
+                if (InputAxisBind.AxisBind.TryGetValue(AxisType.Horizontal, out float x)
+                    && InputAxisBind.AxisBind.TryGetValue(AxisType.Vertical, out float y))
                 {
                     direction += Vector3.forward * y;
                     direction += Vector3.right * x;

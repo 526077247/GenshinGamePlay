@@ -12,7 +12,7 @@ namespace TaoTie
         {
             await ETTask.CompletedTask;
             var channel = PackageManager.Instance.CdnConfig.Channel;
-            int setVal = PlayerPrefs.GetInt("DEBUG_IsSH", 0);
+            int setVal = UnityEngine.PlayerPrefs.GetInt("DEBUG_IsSH", 0);
             if (setVal == 0)
             {
                 Define.IsSH = !ServerConfigManager.Instance.FindMaxUpdateResVerThisAppVer(channel, task.AppVer,out var maxAppResVer);

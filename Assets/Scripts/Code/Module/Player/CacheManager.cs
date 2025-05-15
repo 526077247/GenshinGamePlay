@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
+    using PlayerPrefs = UnityEngine.PlayerPrefs;
     public class CacheManager: IManager
     {
         public static CacheManager Instance;

@@ -1,7 +1,7 @@
 ﻿using System;
-using LitJson.Extensions;
+using TaoTie.LitJson.Extensions;
 
-namespace LitJson
+namespace TaoTie.LitJson
 {
     /// <summary>
     /// Unity内建类型拓展

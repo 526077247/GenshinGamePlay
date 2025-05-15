@@ -15,9 +15,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using LitJson.Extensions;
+using TaoTie.LitJson.Extensions;
 
-namespace LitJson
+namespace TaoTie.LitJson
 {
     internal struct PropertyMetadata
     {

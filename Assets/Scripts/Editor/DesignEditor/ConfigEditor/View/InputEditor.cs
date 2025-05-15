@@ -10,22 +10,6 @@ namespace TaoTie
 {
     public class InputEditor:BaseEditorWindow<ConfigInput>
     {
-        [HideInInspector]
-        private readonly KeyCode[] Default = new KeyCode[(int) GameKeyCode.Max]
-        {
-            KeyCode.W,
-            KeyCode.S,
-            KeyCode.A,
-            KeyCode.D,
-            KeyCode.Space,
-            KeyCode.Mouse0,
-            KeyCode.F,
-            KeyCode.LeftAlt,
-            KeyCode.Q,
-            KeyCode.E,
-            KeyCode.Escape,
-        };
-        
         protected override string folderPath => base.folderPath + "/EditConfig/OthersBuildIn";
 #if RoslynAnalyzer
         protected override byte[] Serialize(ConfigInput data)
@@ -62,10 +46,15 @@ namespace TaoTie
         public void CreateDefault()
         {
             if(data == null) return;
-            data.Config = new Dictionary<GameKeyCode, KeyCode>();
-            for (int i = 0; i < Default.Length; i++)
+            data.Config = new ConfigInputBinding[InputManager.Default.Length];
+            for (int i = 0; i < InputManager.Default.Length; i++)
             {
-                data.Config.Add((GameKeyCode)i,Default[i]);
+                data.Config[i] = new ConfigInputBinding()
+                {
+                    GameBehavior = i,
+                    PC = InputManager.Default[i],
+                    Mobile = InputManager.Default[i],
+                };
             }
         }
     }

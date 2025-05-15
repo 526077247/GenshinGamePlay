@@ -9,7 +9,7 @@
 #endregion
 
 
-namespace LitJson
+namespace TaoTie.LitJson
 {
     internal enum ParserToken
     {

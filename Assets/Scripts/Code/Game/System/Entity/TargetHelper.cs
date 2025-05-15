@@ -192,6 +192,7 @@ namespace TaoTie
                 
         public static bool IsTarget(Actor self, Actor other, TargetType type)
         {
+            if (self == null || other == null) return false;
             switch (type)
             {
                 case TargetType.All:

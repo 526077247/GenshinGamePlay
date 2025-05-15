@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,10 +12,13 @@ namespace TaoTie
     /// </summary>
     public class InputKeyBind: MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        public KeyCode BindingKey;
-        public static MultiMapSet<KeyCode, InputKeyBind> Key = new MultiMapSet<KeyCode, InputKeyBind>();
-        public static MultiMapSet<KeyCode, InputKeyBind> KeyDown = new MultiMapSet<KeyCode, InputKeyBind>();
-        public static MultiMapSet<KeyCode, InputKeyBind> KeyUp = new MultiMapSet<KeyCode, InputKeyBind>();
+#if UNITY_EDITOR
+        [ValueDropdown("@"+nameof(GameKeyCode)+"."+nameof(GameKeyCode.GetGameKeyCodeList)+"()")]
+#endif
+        public int BindingKey;
+        public static MultiMapSet<int, InputKeyBind> Key = new MultiMapSet<int, InputKeyBind>();
+        public static MultiMapSet<int, InputKeyBind> KeyDown = new MultiMapSet<int, InputKeyBind>();
+        public static MultiMapSet<int, InputKeyBind> KeyUp = new MultiMapSet<int, InputKeyBind>();
         public void LateUpdate()
         {
             KeyDown.Remove(BindingKey,this);

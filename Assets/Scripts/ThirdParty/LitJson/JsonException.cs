@@ -12,7 +12,7 @@
 using System;
 
 
-namespace LitJson
+namespace TaoTie.LitJson
 {
     public class JsonException : ApplicationException
     {

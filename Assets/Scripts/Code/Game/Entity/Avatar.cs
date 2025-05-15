@@ -53,8 +53,11 @@ namespace TaoTie
             var trans = model.EntityView;
             camera.SetFollow(trans);
             camera.SetTarget(trans);
-            CameraManager.Instance.ChangeCursorLock(true, CursorStateType.UserInput);
-            CameraManager.Instance.ChangeCursorVisible(true, CursorStateType.UserInput);
+            if (!PlatformUtil.IsMobile())
+            {
+                CameraManager.Instance.ChangeCursorLock(true, CursorStateType.UserInput);
+                CameraManager.Instance.ChangeCursorVisible(true, CursorStateType.UserInput);
+            }
         }
 
         public void Destroy()

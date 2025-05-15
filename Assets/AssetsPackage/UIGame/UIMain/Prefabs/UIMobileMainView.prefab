@@ -402,7 +402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4dfa8744f24670ab82b74575caf424, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BindingKey: 323
+  BindingKey: 5
 --- !u!114 &4411273789045827490
 MonoBehaviour:
   m_ObjectHideFlags: 0

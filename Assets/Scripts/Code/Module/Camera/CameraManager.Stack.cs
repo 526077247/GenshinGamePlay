@@ -26,7 +26,7 @@ namespace TaoTie
         public ConfigBlender DefaultBlend { get; private set; }
         public CameraState CurrentCameraState => curCameraState;
         public int CursorVisibleState { get; private set; }= 0;
-        public int CursorLockState { get; private set; }= 0;
+        public int CursorUnLockState { get; private set; }= 0;
 
         private async ETTask<ConfigCameras> GetConfig(string path = "EditConfig/OthersBuildIn/ConfigCameras")
         {
@@ -308,26 +308,32 @@ namespace TaoTie
                 CursorVisibleState -= flag;
             }
 
-            Cursor.visible = CursorVisibleState > 0;
+            if (!PlatformUtil.IsMobile())
+            {
+                Cursor.visible = CursorVisibleState > 0;
+            }
         }
         public void ChangeCursorLock(bool isUnLock, CursorStateType type)
         {
             int flag = (int) type;
             if (isUnLock)
             {
-                CursorLockState |= flag;
+                CursorUnLockState |= flag;
             }
-            else if((CursorLockState&flag) != 0)
+            else if((CursorUnLockState&flag) != 0)
             {
-                CursorLockState -= flag;
+                CursorUnLockState -= flag;
             }
-            
-            Cursor.lockState = CursorLockState > 0? CursorLockMode.None: CursorLockMode.Locked;
+
+            if (!PlatformUtil.IsMobile())
+            {
+                Cursor.lockState = CursorUnLockState > 0? CursorLockMode.None: CursorLockMode.Locked;
+            }
         }
         public void ResetCursorState()
         {
             CursorVisibleState = 0;
-            CursorLockState = 0;
+            CursorUnLockState = 0;
             if (curCameraState is BlenderCameraState blender)
             {
                 ChangeCursorLock(blender.To.Config.UnLockCursor, CursorStateType.Camera);

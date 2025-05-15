@@ -95,9 +95,34 @@ namespace TaoTie
             }
         }
 
-        private HitInfo[] defaultHit = new HitInfo[1];
+        private HitInfo[] defaultHit = new HitInfo[8];
         private int ResolveHit(Entity attacker, Entity beAttacker, EntityType[] filter, out HitInfo[] hitInfos)
         {
+            // 先从尝试从TriggerComponent里面去取
+            var tc = attacker.GetComponent<TriggerComponent>();
+            if (tc != null)
+            {
+                int count = 0;
+                for (int i = 0; i < tc.HitCount; i++)
+                {
+                    if (tc.HitInfos[i].EntityId == beAttacker.Id)
+                    {
+                        defaultHit[count] = tc.HitInfos[i];
+                        count++;
+                        if (count >= defaultHit.Length)
+                        {
+                            hitInfos = defaultHit;
+                            return count;
+                        }
+                    }
+                }
+                if (count > 0)
+                {
+                    hitInfos = defaultHit;
+                    return count;
+                }
+            }
+            // 没有找到就创建
             var vcf = attacker.GetComponent<UnitModelComponent>();
             var tbc = vcf?.EntityView?.GetComponentInChildren<ColliderBoxComponent>();
             if (tbc == null && attacker is SceneEntity se)
