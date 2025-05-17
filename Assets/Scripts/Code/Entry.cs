@@ -1,11 +1,14 @@
 using System;
 using System.Threading;
+using Obfuz;
 using YooAsset;
 
 namespace TaoTie
 {
+    [ObfuzIgnore]
     public static class Entry
     {
+        [ObfuzIgnore]
         public static void Start()
         {
             StartAsync().Coroutine();

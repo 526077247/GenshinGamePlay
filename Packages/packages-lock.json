@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.code-philosophy.obfuz": {
+      "version": "file:../Modules/com.code-philosophy.obfuz",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.lifang.dagen": {
       "version": "file:../Modules/com.lifang.dagen",
       "depth": 0,
