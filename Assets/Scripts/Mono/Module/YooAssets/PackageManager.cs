@@ -36,8 +36,8 @@ namespace TaoTie
 
         private void InitBuildInPackageVersion()
         {
-#if !UNITY_EDITOR
             BuildInPackageConfig = Resources.Load<BuildInPackageConfig>("BuildInPackageConfig");
+#if !UNITY_EDITOR
             if (BuildInPackageConfig == null) return;
             for (int i = 0; i < BuildInPackageConfig.PackageName.Count; i++)
             {

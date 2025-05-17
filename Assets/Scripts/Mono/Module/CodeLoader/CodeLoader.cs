@@ -133,6 +133,7 @@ namespace TaoTie
 					if (this.assemblyVer != version) //dll版本不同
 					{
 						assembly = null;
+#if !UNITY_EDITOR
 						//和内置包版本一致，检查是否有可用AOT代码
 						if (PackageManager.Instance.CdnConfig.BuildHotfixAssembliesAOT &&
 						    PackageManager.Instance.BuildInPackageConfig.GetBuildInPackageVersion(Define.DefaultName)
@@ -148,6 +149,7 @@ namespace TaoTie
 								}
 							}
 						}
+#endif
 					}
 
 					//没有内置AOTdll，或者热更完dll版本不同

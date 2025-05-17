@@ -85,7 +85,6 @@ MonoBehaviour:
         FilterRuleName: CollectPrefab
         AssetTags: 
         UserData: 
-      - CollectPath: Assets/AssetsPackage/Code
       - CollectPath: Assets/AssetsPackage/EditConfig/OthersBuildIn
         CollectorGUID: f62dde77561219b4892a97e3a780b254
         CollectorType: 0

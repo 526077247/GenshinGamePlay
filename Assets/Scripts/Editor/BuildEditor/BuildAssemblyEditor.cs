@@ -153,7 +153,8 @@ namespace TaoTie
 
         private static void AfterCompiling(string assemblyName)
         {
-            while (EditorApplication.isCompiling)
+            while (!File.Exists(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"))
+                   && EditorApplication.isCompiling)
             {
                 Debug.Log("Compiling wait1");
                 // 主线程sleep并不影响编译线程
