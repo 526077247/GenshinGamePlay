@@ -62,7 +62,8 @@ namespace TaoTie
         //获取环境更新列表cdn地址
         public string GetUpdateListUrl()
         {
-            return RemoteServices.Instance.whiteMode? PackageManager.Instance.CdnConfig.TestUpdateListUrl:PackageManager.Instance.CdnConfig.UpdateListUrl;
+            return RemoteServices.Instance?.whiteMode == true? 
+                PackageManager.Instance.CdnConfig.TestUpdateListUrl:PackageManager.Instance.CdnConfig.UpdateListUrl;
         }
 
         public int GetEnvId()
@@ -244,6 +245,7 @@ namespace TaoTie
             {
                 return appResVer;
             }
+
             return lastVer;
         }
 

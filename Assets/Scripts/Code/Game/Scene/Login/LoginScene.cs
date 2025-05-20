@@ -5,7 +5,7 @@ namespace TaoTie
     public class LoginScene:IScene
     {
         private UILoadingView win;
-        private string[] dontDestroyWindow = {"UILoadingView"};
+        private string[] dontDestroyWindow = {TypeInfo<UILoadingView>.TypeName};
 
         public string[] GetDontDestroyWindow()
         {

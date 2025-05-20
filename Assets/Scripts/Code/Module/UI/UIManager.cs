@@ -230,27 +230,27 @@ namespace TaoTie
         /// <param name="exceptUINames"></param>
         public async ETTask CloseWindowByLayer(UILayerNames layer, params string[] exceptUINames)
         {
-            Dictionary<string, bool> dictUINames = null;
-            if (exceptUINames != null && exceptUINames.Length > 0)
+            using (HashSetComponent<string> dictUINames = HashSetComponent<string>.Create())
             {
-                dictUINames = new Dictionary<string, bool>();
-                for (int i = 0; i < exceptUINames.Length; i++)
+                if (exceptUINames != null && exceptUINames.Length > 0)
                 {
-                    dictUINames[exceptUINames[i]] = true;
-                }
-            }
-
-            using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
-            {
-                foreach (var item in windows)
-                {
-                    if (item.Value.Layer == layer && (dictUINames == null || !dictUINames.ContainsKey(item.Key)))
+                    for (int i = 0; i < exceptUINames.Length; i++)
                     {
-                        taskScheduler.Add(CloseWindow(item.Key));
+                        dictUINames.Add(exceptUINames[i]);
                     }
                 }
+                using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
+                {
+                    foreach (var item in windows)
+                    {
+                        if (item.Value.Layer == layer && (dictUINames == null || !dictUINames.Contains(item.Key)))
+                        {
+                            taskScheduler.Add(CloseWindow(item.Key));
+                        }
+                    }
 
-                await ETTaskHelper.WaitAll(taskScheduler);
+                    await ETTaskHelper.WaitAll(taskScheduler);
+                }
             }
         }
 
@@ -603,28 +603,30 @@ namespace TaoTie
         /// <param name="typeNames">指定窗口</param>
         public async ETTask DestroyWindowExceptNames(string[] typeNames = null)
         {
-            Dictionary<string, bool> dictUINames = new Dictionary<string, bool>();
-            if (typeNames != null)
+            using (HashSetComponent<string> dictUINames = HashSetComponent<string>.Create())
             {
-                for (int i = 0; i < typeNames.Length; i++)
+                if (typeNames != null)
                 {
-                    dictUINames[typeNames[i]] = true;
-                }
-            }
-
-            var keys = windows.Keys.ToArray();
-            using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
-            {
-                for (int i = windows.Count - 1; i >= 0; i--)
-                {
-                    if (!dictUINames.ContainsKey(keys[i]))
+                    for (int i = 0; i < typeNames.Length; i++)
                     {
-                        taskScheduler.Add(DestroyWindow(keys[i]));
+                        dictUINames.Add(typeNames[i]);
                     }
                 }
+                var keys = windows.Keys.ToArray();
+                using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
+                {
+                    for (int i = windows.Count - 1; i >= 0; i--) 
+                    {
+                        if (!dictUINames.Contains(keys[i]))
+                        {
+                            taskScheduler.Add(DestroyWindow(keys[i]));
+                        }
+                    }
 
-                await ETTaskHelper.WaitAll(taskScheduler);
+                    await ETTaskHelper.WaitAll(taskScheduler);
+                }
             }
+            
         }
 
         /// <summary>
