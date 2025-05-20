@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using Obfuz;
+
 namespace TaoTie
 {
+    [ObfuzIgnore]
     public enum I18NKey
     {
         Global_Unknow = 0,

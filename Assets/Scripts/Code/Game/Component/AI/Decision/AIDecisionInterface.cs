@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Obfuz;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
+	[ObfuzIgnore]
 	public class AIDecisionInterface
 	{
 		public static Dictionary<string, Func<AIKnowledge, bool>> Methods;
@@ -21,21 +23,22 @@ namespace TaoTie
 				Methods.Add(methodInfos[i].Name,func);
 			}
 		}
-
+		[ObfuzIgnore]
 		public static bool IsOnAwareValid(AIKnowledge knowledge)
 		{
 			return knowledge.SkillKnowledge.SkillsOnAware.AvailableSkills.Count > 0;
 		}
-
+		[ObfuzIgnore]
 		public static bool IsOnAlertValid(AIKnowledge knowledge)
 		{
 			return knowledge.SkillKnowledge.SkillsOnAlert.AvailableSkills.Count > 0;
 		}
-
+		[ObfuzIgnore]
 		public static bool IsOnNerveValid(AIKnowledge knowledge)
 		{
 			return knowledge.SkillKnowledge.SkillsOnNerve.AvailableSkills.Count > 0;
 		}
+		[ObfuzIgnore]
 		public static bool IsReturnToBornPosValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -51,13 +54,14 @@ namespace TaoTie
 		// public static bool IsPatrolFollowValid(AIKnowledge knowledge) => default;
 		// public static bool IsFollowServerRouteValid(AIKnowledge knowledge) => default;
 		// public static bool IsCombatFollowMoveValid(AIKnowledge knowledge) => default;
-
+		[ObfuzIgnore]
 		public static bool IsFreeSkillValid(AIKnowledge knowledge)
 		{
 			return knowledge.SkillKnowledge.SkillsFree.AvailableSkills.Count > 0;
 		}
 		// public static bool IsFollowScriptedPathValid(AIKnowledge knowledge) => default;
 		// public static bool IsSpacialProbeValid(AIKnowledge knowledge) => default;
+		[ObfuzIgnore]
 		public static bool IsWanderValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -72,17 +76,17 @@ namespace TaoTie
 
 		// public static bool IsIdleValid(AIKnowledge knowledge) => default;
 		// public static bool IsCombatValid(AIKnowledge knowledge) => default;
-
+		[ObfuzIgnore]
 		public static bool IsCombatBuddySkillValid(AIKnowledge knowledge)
 		{
 			return knowledge.SkillKnowledge.SkillsCombatBuddy.AvailableSkills.Count > 0;
 		}
-
+		[ObfuzIgnore]
 		public static bool IsCombatSkillExecuteValid(AIKnowledge knowledge)
 		{
 			return knowledge.ActionControlState.IsPrepared;
 		}
-
+		[ObfuzIgnore]
 		public static bool IsCombatSkillPrepareValid(AIKnowledge knowledge)
 		{
 			if (knowledge.ActionControlState.Status == SkillStatus.Preparing) return true;
@@ -90,6 +94,7 @@ namespace TaoTie
 			return knowledge.SkillKnowledge.SkillsCombat.AvailableSkills.Count > 0;
 		}
 		// public static bool IsCombatFixedMoveValid(AIKnowledge knowledge) => default;
+		[ObfuzIgnore]
 		public static bool IsCombatMeleeChargeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -108,6 +113,7 @@ namespace TaoTie
 				return false;
 			return true;
 		}
+		[ObfuzIgnore]
 		public static bool IsCombatFacingMoveValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
@@ -126,6 +132,7 @@ namespace TaoTie
 		// public static bool IsScriptedMoveToValid(AIKnowledge knowledge) => default;
 		// public static bool IsLandingValid(AIKnowledge knowledge) => default;
 		// public static bool IsExtractionValid(AIKnowledge knowledge) => default;
+		[ObfuzIgnore]
 		public static bool IsFleeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;

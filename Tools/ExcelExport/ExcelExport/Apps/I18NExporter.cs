@@ -40,9 +40,10 @@ namespace TaoTie
                 ExportExcelI18N(p, i18nconfig);
                 ExportI18NExcelProtobuf(i18nconfig, relativePath);
                 StringBuilder str = new StringBuilder();
-                str.AppendLine("using System.Collections.Generic;");
+                str.AppendLine("using Obfuz;");
                 str.AppendLine("namespace TaoTie");
                 str.AppendLine("{");
+                str.AppendLine("    [ObfuzIgnore]");
                 str.AppendLine("    public enum I18NKey");
                 str.AppendLine("    {");
                 foreach (var item in i18nconfig)
@@ -116,8 +117,10 @@ namespace TaoTie
                 Directory.CreateDirectory(dir);
             }
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine("using Obfuz;");
             sb.AppendLine("namespace TaoTie");
             sb.AppendLine("{");
+            sb.AppendLine("    [ObfuzIgnore]");
             sb.AppendLine("    public enum LangType");
             sb.AppendLine("    {");
             int index = 0;
