@@ -191,17 +191,17 @@ namespace TaoTie
                 {
                     var info = ObjectPool.Instance.Fetch<TouchInfo>();
                     info.Index = i;
-                    info.isScroll = PlatformUtil.IsSimulator();
+                    info.IsScroll = PlatformUtil.IsSimulator();
                     info.IsStartOverUI = IsPointerOverUI(info.Touch.position);
                     touchInfos.Add(info);
                 }
                 else if (touch.phase == TouchPhase.Moved)
                 {
-                    if (PlatformUtil.IsSimulator() && touchInfos[i].isScroll) //模拟器下, 同一次触碰水平方向移动分量为0, 竖直快速移动的可粗略判定为滚轮
+                    if (PlatformUtil.IsSimulator() && touchInfos[i].IsScroll) //模拟器下, 同一次触碰水平方向移动分量为0, 竖直快速移动的可粗略判定为滚轮
                     {
                         if (Mathf.Abs(touch.deltaPosition.y) < 5 || touch.deltaPosition.x != 0)
                         {
-                            touchInfos[i].isScroll = false;
+                            touchInfos[i].IsScroll = false;
                         }
                     }
                 }
@@ -253,7 +253,7 @@ namespace TaoTie
                     var touch = touchInfos[0].Touch;
                     if (touch.phase == TouchPhase.Moved)
                     {
-                        if (touchInfos[0].isScroll)
+                        if (touchInfos[0].IsScroll)
                         {
                             MouseScrollWheel = touch.deltaPosition.y / 100;
                         }

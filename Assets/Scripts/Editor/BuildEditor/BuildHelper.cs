@@ -433,6 +433,16 @@ namespace TaoTie
                 {
                     Directory.Delete(Application.persistentDataPath, true);
                 }
+
+                if (buildTarget == BuildTarget.WebGL)
+                {
+                    var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
+                    if (icons.Length > 0 && icons[0] != null)
+                    {
+                        var path = AssetDatabase.GetAssetPath(icons[0]);
+                        File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png");
+                    }
+                }
             }
             
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");

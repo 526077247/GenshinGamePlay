@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,8 +11,8 @@ namespace TaoTie
     /// </summary>
     public class InputKeyBind: MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-#if UNITY_EDITOR
-        [ValueDropdown("@"+nameof(GameKeyCode)+"."+nameof(GameKeyCode.GetGameKeyCodeList)+"()")]
+#if UNITY_EDITOR && ODIN_INSPECTOR
+        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(GameKeyCode)+"."+nameof(GameKeyCode.GetGameKeyCodeList)+"()")]
 #endif
         public int BindingKey;
         public static MultiMapSet<int, InputKeyBind> Key = new MultiMapSet<int, InputKeyBind>();

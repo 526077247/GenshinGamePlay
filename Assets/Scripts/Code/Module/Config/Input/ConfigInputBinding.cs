@@ -7,7 +7,7 @@ namespace TaoTie
     [NinoType(false)]
     public partial class ConfigInputBinding
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR 
         [ValueDropdown("@"+nameof(GameKeyCode)+"."+nameof(GameKeyCode.GetGameKeyCodeList)+"()")]
 #endif
         [NinoMember(1)]

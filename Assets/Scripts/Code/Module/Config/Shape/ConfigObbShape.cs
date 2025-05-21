@@ -106,5 +106,11 @@ namespace TaoTie
             return PhysicsHelper.OverlapBoxNonAllocHitInfo(pos, Size * 0.5f, rot, filter, CheckHitLayerType.OnlyHitBox,
                 out hitInfos);
         }
+        
+        
+        public override float GetAABBRange()
+        {
+            return Size.magnitude;
+        }
     }
 }

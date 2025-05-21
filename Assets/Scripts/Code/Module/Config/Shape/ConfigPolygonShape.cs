@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("柱体")]
+    [NinoType(false)][LabelText("*柱体")][Tooltip("支持不完善")]
     public partial class ConfigPrismShape: ConfigShape
     {
         [NinoMember(1)] [LabelText("底")][NotNull]
@@ -70,6 +70,7 @@ namespace TaoTie
             var p = new Vector2(target.x, target.z);
             return ConfigShape2D.Contains(p);
         }
+
         /// <summary>
         /// 线与形状相交
         /// </summary>
@@ -78,9 +79,14 @@ namespace TaoTie
         /// <returns></returns>
         public override bool ContainsLine(Vector3 start, Vector3 end)
         {
-            //todo:
-            return false;
+            if (start.y < -Height / 2 && end.y < -Height / 2 || start.y > Height / 2 && end.y > Height / 2)
+                return false;
+            
+            var pS = new Vector2(start.x, start.z);
+            var pE = new Vector2(start.x, start.z);
+            return ConfigShape2D.ContainsLine(pS, pE);
         }
+
         public override float Distance(Vector3 target)
         {
             var distance = Mathf.Sqrt(SqrMagnitude(target, out bool inner));
@@ -140,9 +146,46 @@ namespace TaoTie
 
         public override int RaycastHitInfo(Vector3 pos, Quaternion rot, EntityType[] filter, out HitInfo[] hitInfos)
         {
-            //todo:
-            return PhysicsHelper.OverlapBoxNonAllocHitInfo(pos, new Vector3(Height, Height, Height), rot, filter,
+            var dis = GetAABBRange();
+            var res = PhysicsHelper.OverlapBoxNonAllocHitInfo(pos, new Vector3(dis, Height, dis) * 0.5f, rot, filter,
                 CheckHitLayerType.OnlyHitBox, out hitInfos);
+            //todo: 碰撞判断，此处为粗略计算
+            int count = 0;
+            for (int i = 0; i < res; i++)
+            {
+                var collider = PhysicsHelper.Colliders[i];
+                if (collider != null)
+                {
+                    Vector3[] vertex = new Vector3[8]
+                    {
+                        collider.bounds.min,
+                        new Vector3(collider.bounds.min.x,collider.bounds.min.y,collider.bounds.max.z),
+                        new Vector3(collider.bounds.min.x,collider.bounds.max.y,collider.bounds.min.z),
+                        new Vector3(collider.bounds.max.x,collider.bounds.min.y,collider.bounds.min.z),
+                        new Vector3(collider.bounds.max.x,collider.bounds.max.y,collider.bounds.min.z),
+                        new Vector3(collider.bounds.max.x,collider.bounds.min.y,collider.bounds.max.z),
+                        new Vector3(collider.bounds.min.x,collider.bounds.max.y,collider.bounds.max.z),
+                        collider.bounds.max,
+                    };
+                    for (int j = 0; j < vertex.Length; j++)
+                    {
+                        var targetPos = PhysicsHelper.Transformation(pos, rot, vertex[j]);
+                        if (Contains(targetPos))
+                        {
+                            hitInfos[count] = hitInfos[i];
+                            count++;
+                            break;
+                        }
+                    }
+                }
+            }
+            return count;
+        }
+
+        public override float GetAABBRange()
+        {
+            var d1 = ConfigShape2D.GetAABBRange();
+            return Mathf.Sqrt(Height * Height + d1 * d1);
         }
     }
 }

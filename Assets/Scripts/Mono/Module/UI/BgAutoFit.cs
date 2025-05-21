@@ -50,8 +50,17 @@ namespace TaoTie
                 rectTransform.sizeDelta = new Vector2(screenW * signFlag, flag1 * texture.bounds.size.y * signFlag);
             
             var canvas = GetComponentInParent<Canvas>();
-            if (canvas != null)
+            if (Application.isPlaying && canvas != null)
             {
+#if UNITY_EDITOR
+                var type = UnityEditor.PrefabUtility.GetPrefabAssetType(gameObject);
+                var status = UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject);
+                // 是否为预制体实例判断
+                if (type != UnityEditor.PrefabAssetType.NotAPrefab && status != UnityEditor.PrefabInstanceStatus.NotAPrefab)
+                {
+                    return;
+                }
+#endif
                 var parent = transform.parent;
                 var siblingIndex = transform.GetSiblingIndex();
                 transform.SetParent(canvas.transform);

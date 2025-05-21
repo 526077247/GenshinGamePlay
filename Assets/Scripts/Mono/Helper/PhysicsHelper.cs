@@ -7,7 +7,7 @@ namespace TaoTie
     public static class PhysicsHelper
     {
         private static RaycastHit[] raycastHits = new RaycastHit[8];
-        private static readonly Collider[] colliders = new Collider[64];
+        public static readonly Collider[] Colliders = new Collider[64];
         private static readonly HitInfo[] hitInfos = new HitInfo[64];
         private static readonly long[] entities = new long[64];
         private static readonly int entity = LayerMask.GetMask("Entity");
@@ -68,7 +68,7 @@ namespace TaoTie
             res = entities;
             if (filter == null) return 0;
 
-            var len = Physics.OverlapCapsuleNonAlloc(p1, p2,radius, colliders, entity,
+            var len = Physics.OverlapCapsuleNonAlloc(p1, p2,radius, Colliders, entity,
                 QueryTriggerInteraction.Ignore);
             return FilterEntity(filter,len);
         }
@@ -77,7 +77,7 @@ namespace TaoTie
         {
             res = entities;
             if (filter == null) return 0;
-            var len = Physics.OverlapBoxNonAlloc(center, halfExtents, colliders, orientation, entity,
+            var len = Physics.OverlapBoxNonAlloc(center, halfExtents, Colliders, orientation, entity,
                 QueryTriggerInteraction.Ignore);
             return FilterEntity(filter,len);
         }
@@ -85,7 +85,7 @@ namespace TaoTie
             out long[] res)
         {
             res = entities;
-            var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, entity, QueryTriggerInteraction.Ignore);
+            var len = Physics.OverlapSphereNonAlloc(center, radius, Colliders, entity, QueryTriggerInteraction.Ignore);
             return FilterEntity(filter,len);
         }
         private static int FilterEntity(EntityType[] filter, int len)
@@ -93,7 +93,7 @@ namespace TaoTie
             int count = 0;
             for (int i = 0; i < len; i++)
             {
-                Collider collider = colliders[i];
+                Collider collider = Colliders[i];
                 if (collider == null || collider.transform == null) continue;
                 var e = collider.transform.GetComponentInParent<EntityComponent>();
                 if (e == null) continue;
@@ -108,12 +108,12 @@ namespace TaoTie
                         }
                         idMapIndex[e.Id] = index;
                         entities[index] = e.Id;
+                        Colliders[count] = Colliders[i];
                         count++;
                         break;
                     }
                 }
             }
-            Array.Clear(colliders, 0, len);
             idMapIndex.Clear();
             return count;
         }
@@ -127,7 +127,7 @@ namespace TaoTie
         {
             res = hitInfos;
             if (filter == null) return 0;
-            var len = Physics.OverlapBoxNonAlloc(center, halfExtents, colliders, orientation, GetHitLayer(type),
+            var len = Physics.OverlapBoxNonAlloc(center, halfExtents, Colliders, orientation, GetHitLayer(type),
                 QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
         }
@@ -135,7 +135,7 @@ namespace TaoTie
             CheckHitLayerType type, out HitInfo[] res)
         {
             res = hitInfos;
-            var len = Physics.OverlapSphereNonAlloc(center, radius, colliders, GetHitLayer(type), QueryTriggerInteraction.Collide);
+            var len = Physics.OverlapSphereNonAlloc(center, radius, Colliders, GetHitLayer(type), QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter,len,center);
         }
         public static int OverlapCapsuleNonAllocHitInfo(Vector3 p1, Vector3 p2, float radius, 
@@ -143,7 +143,7 @@ namespace TaoTie
         {
             res = hitInfos;
             if (filter == null) return 0;
-            var len = Physics.OverlapCapsuleNonAlloc(p1, p2,radius, colliders, GetHitLayer(type),
+            var len = Physics.OverlapCapsuleNonAlloc(p1, p2,radius, Colliders, GetHitLayer(type),
                 QueryTriggerInteraction.Collide);
             return FilterHitInfo(filter, len, (p1 + p2) / 2);
         }
@@ -159,9 +159,9 @@ namespace TaoTie
                 var other = colliderBox.TriggerList[i];
                 if ((2<<other.gameObject.layer & hitLayer) != 0)
                 {
-                    colliders[len] = other;
+                    Colliders[len] = other;
                     len++;
-                    if (len == colliders.Length)
+                    if (len == Colliders.Length)
                     {
                         break;
                     }
@@ -183,9 +183,9 @@ namespace TaoTie
                 var other = triggers[i];
                 if ((2<<other.gameObject.layer & hitLayer) != 0)
                 {
-                    colliders[len] = other;
+                    Colliders[len] = other;
                     len++;
-                    if (len == colliders.Length)
+                    if (len == Colliders.Length)
                     {
                         break;
                     }
@@ -216,7 +216,7 @@ namespace TaoTie
             bool isAll = false;
             for (int i = 0; i < len; i++)
             {
-                Collider collider = colliders[i];
+                Collider collider = Colliders[i];
                 if (collider == null || collider.transform == null) continue;
                 var gitBox = collider.GetComponent<HitBoxComponent>();
                 if (gitBox == null) continue;
@@ -256,12 +256,13 @@ namespace TaoTie
                             HitPos = ray.GetPoint(dis),
                             HitBoxType = gitBox.HitBoxType
                         };
+                        Colliders[count] = Colliders[i];
                         count++;
                         break;
                     }
                 }
             }
-            Array.Clear(colliders, 0, len);
+            
             idMapIndex.Clear();
             return count;
         }

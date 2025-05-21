@@ -24,6 +24,7 @@ namespace TaoTie
         
         private ConcernType concernType;
         private ConfigShape shape;
+        private float aabbRange;
         private TriggerCheckType checkType;
         private int configCheckCount;
         private uint configTriggerCount;
@@ -59,6 +60,7 @@ namespace TaoTie
             offset = configTrigger.Offset;
             concernType = configTrigger.ConcernType;
             shape = configTrigger.ConfigShape;
+            aabbRange = Mathf.Max(shape.GetAABBRange(), 0.1f);
             configCheckCount = configTrigger.CheckCount;
             checkType = configTrigger.CheckType;
             triggerFlag = configTrigger.TriggerFlag;
@@ -85,6 +87,7 @@ namespace TaoTie
         {
             offset = Vector3.zero;
             shape = configShape;
+            aabbRange = Mathf.Max(shape.GetAABBRange(), 0.1f);
             concernType = ConcernType.AllExcludeGWGO;
             configCheckCount = -1;
             checkType = TriggerCheckType.Point;
@@ -365,7 +368,7 @@ namespace TaoTie
                     {
                         checkLerpValue = ListComponent<(Vector3, Quaternion)>.Create();
                         var dis = (pSceneEntity.Position - lastPos).magnitude;
-                        var count = Mathf.Min(10, dis / 0.1f);
+                        var count = Mathf.Min(10, dis / aabbRange);
                         if (count < 1)
                         {
                             checkLerpValue.Add((pSceneEntity.Position,pSceneEntity.Rotation));

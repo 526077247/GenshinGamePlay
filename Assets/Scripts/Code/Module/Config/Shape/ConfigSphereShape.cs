@@ -54,5 +54,10 @@ namespace TaoTie
             return PhysicsHelper.OverlapSphereNonAllocHitInfo(pos, Radius, filter, CheckHitLayerType.OnlyHitBox,
                 out hitInfos);
         }
+
+        public override float GetAABBRange()
+        {
+            return Radius * 2;
+        }
     }
 }
