@@ -2,12 +2,14 @@
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace YooAsset
 {
     /// <summary>
     /// 内置文件系统
     /// </summary>
+    [Preserve]
     internal class DefaultBuildinFileSystem : IFileSystem
     {
         public class FileWrapper

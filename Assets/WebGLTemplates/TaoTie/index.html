@@ -19,9 +19,11 @@
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
     <img alt="loading" src="loading.gif" style="position: absolute; left:50%; top: 50%; margin-left: -64px;margin-top: -64px; z-index: -1;" />
     <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1" style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px;"></canvas>
+    <progress id="unity-progress" max="100" value="10" style="position: absolute; width:128px; left:50%; top: 50%; margin-left: -64px;margin-top: 100px; z-index: -1;"></progress>
     <script src="Build/{{{ LOADER_FILENAME }}}"></script>
     <script>
       var canvas = document.querySelector("#unity-canvas");
+      var progress = document.getElementById("unity-progress");
       //窗口尺寸改变响应（修改canvas大小）
       function resizeCanvas() {
         var width = 0;
@@ -75,6 +77,8 @@
         productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
         // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
         // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      },(val)=>{ 
+        progress.value = 10 + val * 100;
       });
     </script>
   </body>

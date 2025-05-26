@@ -440,7 +440,7 @@ namespace TaoTie
                     if (icons.Length > 0 && icons[0] != null)
                     {
                         var path = AssetDatabase.GetAssetPath(icons[0]);
-                        File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png");
+                        File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png", true);
                     }
                 }
             }

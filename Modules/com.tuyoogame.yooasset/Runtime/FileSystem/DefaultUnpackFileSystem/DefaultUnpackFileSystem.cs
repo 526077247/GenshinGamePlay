@@ -1,9 +1,12 @@
 ﻿
+using UnityEngine.Scripting;
+
 namespace YooAsset
 {
     /// <summary>
     /// 解压文件系统
     /// </summary>
+    [Preserve]
     internal class DefaultUnpackFileSystem : DefaultCacheFileSystem
     {
         public DefaultUnpackFileSystem()

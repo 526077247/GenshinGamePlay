@@ -1,5 +1,6 @@
 <linker>
     <assembly fullname="Unity.Mono" preserve="all"/>
+    <assembly fullname="Unity.Code" preserve="all"/>
     <assembly fullname="Unity.ThirdParty" preserve="all"/>
     <assembly fullname="System" preserve="all" />
     <assembly fullname="UnityEngine" preserve="all" />
@@ -7,7 +8,7 @@
     <assembly fullname="Assembly-CSharp" preserve="all" />
     <assembly fullname="mscorlib" preserve="all" />
     <assembly fullname="System.Core" preserve="all" />
-    <assembly fullname="UnityEngine.AnimationModule" preserve="all">
+    <assembly fullname="UnityEngine.AnimationModule">
         <type fullname="UnityEngine.Animation" preserve="all" />
     </assembly>
     <assembly fullname="UnityEngine.AudioModule" preserve="all" />
@@ -17,5 +18,8 @@
         <type fullname="UnityEngine.Rendering.Universal.CameraExtensions" preserve="all" />
         <type fullname="UnityEngine.Rendering.Universal.CameraRenderType" preserve="all" />
         <type fullname="UnityEngine.Rendering.Universal.UniversalAdditionalCameraData" preserve="all" />
+    </assembly>
+    <assembly fullname="Unity.TextMeshPro">
+        <type fullname="TMPro.TextMeshProUGUI" preserve="all" />
     </assembly>
 </linker>

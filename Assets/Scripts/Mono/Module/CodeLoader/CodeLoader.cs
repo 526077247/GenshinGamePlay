@@ -43,7 +43,8 @@ namespace TaoTie
 		{
 			"mscorlib.dll",
 			"System.dll",
-			"System.Core.dll"
+			"System.Core.dll",
+			"UnityEngine.CoreModule.dll"
 		};
 
 		public static string[] UserAotDllList =
