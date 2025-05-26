@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -21,25 +21,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Hair
-  m_Shader: {fileID: 4800000, guid: 0bb4a4d350ca3de41aed86ede804a971, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _ADDRAMPSHADING
-  - _CELLSHADING
-  - _OUTLINE
-  - _RENDERENVSETTING
-  - _SPECULARMASK
-  - _USERAMPMAPCHANNEL
-  m_InvalidKeywords:
-  - _IS_FILTER_LIGHTCOLOR_ON
-  - _USEHALFLAMBERT_ON
-  - _USERADIANCEOCCLUSION_ON
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -129,6 +121,7 @@ Material:
     m_Floats:
     - _AddRampShading: 1
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _AngleRingIntensity: 0
     - _AngleRingSoftness: 0
     - _AngleRingThreshold: 0
@@ -143,6 +136,7 @@ Material:
     - _AnsioSpeularShift: 1
     - _AnsioSpeularStrength: 1
     - _Blend: 0
+    - _BlendModePreserveSpecular: 1
     - _BumpMapKeyword: 0
     - _BumpScale: 1
     - _CELLSmoothing: 0.001
@@ -169,6 +163,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DissolveThreshold: 0
     - _DstBlend: 0
+    - _DstBlendAlpha: 0
     - _EmissionColorAlbedoWeight: 0
     - _EnvironmentReflections: 1
     - _GlossMapScale: 1
@@ -200,6 +195,7 @@ Material:
     - _SpecularHighlights: 1
     - _SpecularMask: 1
     - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
     - _StylizedSpecularAlbedoWeight: 0
     - _StylizedSpecularSize: 0.1
     - _StylizedSpecularSoftness: 0.05
@@ -242,7 +238,7 @@ Material:
     - _AnisoSecondarySpecularColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _AnisoSpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 0.8923144, g: 0.8632076, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.8923144, g: 0.8632076, b: 1, a: 1}
     - _DarkColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

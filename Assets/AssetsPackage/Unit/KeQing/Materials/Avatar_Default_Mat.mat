@@ -8,22 +8,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Default_Mat
-  m_Shader: {fileID: 4800000, guid: 335dcad6d9fdba943a91b0a9295ee10e, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _CELLSHADING
-  - _GGX
-  - _RENDERENVSETTING
-  - _SCREENSPACERIM
-  m_InvalidKeywords:
-  - _IS_FILTER_LIGHTCOLOR_ON
-  - _USEHALFLAMBERT_ON
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -104,7 +99,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
+    - _BlendModePreserveSpecular: 1
     - _BumpMapKeyword: 0
     - _BumpScale: 1
     - _CELLSmoothing: 0.001
@@ -127,6 +124,7 @@ Material:
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _DstBlendAlpha: 0
     - _EmissionColorAlbedoWeight: 0
     - _EnvironmentReflections: 1
     - _GlossMapScale: 1
@@ -157,6 +155,7 @@ Material:
     - _SpecularHighlights: 1
     - _SpecularMask: 0
     - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
     - _StylizedSpecularAlbedoWeight: 0
     - _StylizedSpecularSize: 0.1
     - _StylizedSpecularSoftness: 0.05
@@ -211,4 +210,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7
