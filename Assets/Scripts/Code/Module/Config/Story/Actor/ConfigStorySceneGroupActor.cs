@@ -31,8 +31,13 @@ namespace TaoTie
             {
                 var unit = storySystem.Scene.GetManager<EntityManager>()?.Get(unitId);
             }
-            var root = storySystem.Scene?.GetManager<EntityManager>()?.GameObjectRoot;
-            if(root!=null) obj.transform.SetParent(root);
+
+            if (obj != null)
+            {
+                var root = storySystem.Scene?.GetManager<EntityManager>()?.GameObjectRoot;
+                if (root != null) obj.transform.SetParent(root);
+            }
+
             base.Recycle3dObj(storySystem, obj);
         }
     }
