@@ -6,6 +6,7 @@ namespace TaoTie
 {
     [NinoSerialize]
     [Config]
+    [Obfuz.ObfuzIgnore]
     public partial class AvatarConfigCategory : ProtoObject, IMerge
     {
         public static AvatarConfigCategory Instance;
@@ -35,6 +36,7 @@ namespace TaoTie
                 AvatarConfig config = list[i];
                 config.EndInit();
                 this.dict.Add(config.Id, config);
+                config.AfterEndInit();
             }            
             this.AfterEndInit();
         }

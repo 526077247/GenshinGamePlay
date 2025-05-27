@@ -18,13 +18,15 @@ MonoBehaviour:
     - Unity.Code
     nonObfuscatedButReferencingObfuscatedAssemblies: []
     additionalAssemblySearchPaths: []
+    obfuscateObfuzRuntime: 0
   obfuscationPassSettings:
     enabledPasses: 3330
     ruleFiles: []
   secretSettings:
     defaultStaticSecretKey: Code Philosophy-Static
     defaultDynamicSecretKey: Code Philosophy-Dynamic
-    secretKeyOutputPath: Assets/Resources/Obfuz
+    staticSecretKeyOutputPath: Assets/Resources/Obfuz/defaultStaticSecretKey.bytes
+    dynamicSecretKeyOutputPath: Assets/AssetsPackage/Code/Obfuz/defaultDynamicSecretKey.bytes
     randomSeed: 0
     assembliesUsingDynamicSecretKeys: []
   encryptionVMSettings:
@@ -45,4 +47,5 @@ MonoBehaviour:
     ruleFiles: []
   callObfusSettings:
     obfuscationLevel: 1
+    maxProxyMethodCountPerDispatchMethod: 100
     ruleFiles: []

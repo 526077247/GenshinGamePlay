@@ -211,8 +211,11 @@ namespace TaoTie
         private static void RunObfuscate(string assemblyName)
         {
             ObfuzSettings settings = ObfuzSettings.Instance;
+            if(!settings.enable) return;
             var old = settings.assemblySettings.assembliesToObfuscate;
             settings.assemblySettings.assembliesToObfuscate = new string[] {assemblyName};
+            var oldDyn = settings.secretSettings.assembliesUsingDynamicSecretKeys;
+            settings.secretSettings.assembliesUsingDynamicSecretKeys = settings.assemblySettings.assembliesToObfuscate;
             Debug.Log("Obfuscation begin...");
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             
@@ -224,10 +227,11 @@ namespace TaoTie
                 {
                     Define.BuildOutputDir,
                     "./Library/ScriptAssemblies",
-                    GetStripAssembliesDir2021()
+                    GetStripAssembliesDir2021(),
+                    "./Assets/Scripts/ThirdParty/Nino",
                 };
             obfuscatorBuilder.InsertTopPriorityAssemblySearchPaths(assemblySearchDirs);
-            
+
             bool succ = false;
 
             try
@@ -237,7 +241,7 @@ namespace TaoTie
 
                 foreach (var dllName in obfuscationRelativeAssemblyNames)
                 {
-                    string src = $"{obfuscatorBuilder.ObfuscatedAssemblyOutputPath}/{dllName}.dll";
+                    string src = $"{obfuscatorBuilder.CoreSettingsFacade.obfuscatedAssemblyOutputPath}/{dllName}.dll";
                     string dst = Path.Combine(Define.BuildOutputDir,  $"{dllName}.dll");
   
                     if (!File.Exists(src))
@@ -256,6 +260,7 @@ namespace TaoTie
                 Debug.LogError($"Obfuscation failed.");
             }
 
+            settings.secretSettings.assembliesUsingDynamicSecretKeys = oldDyn;
             settings.assemblySettings.assembliesToObfuscate = old;
             Debug.Log("Obfuscation end.");
         }

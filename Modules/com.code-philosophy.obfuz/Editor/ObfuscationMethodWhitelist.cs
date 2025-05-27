@@ -6,33 +6,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Obfuz
 {
     public class ObfuscationMethodWhitelist
     {
-        private bool ShouldBeIgnoredByCustomAttribute(IHasCustomAttribute obj)
-        {
-            return MetaUtil.HasObfuzIgnoreAttribute(obj);
-        }
 
         public bool IsInWhiteList(ModuleDef module)
         {
             string modName = module.Assembly.Name;
-            if (modName == "Obfuz.Runtime")
+            if (modName == ConstValues.ObfuzRuntimeAssemblyName)
             {
                 return true;
             }
-            if (ShouldBeIgnoredByCustomAttribute(module))
+            //if (MetaUtil.HasObfuzIgnoreScope(module))
+            //{
+            //    return true;
+            //}
+            return false;
+        }
+
+        private bool DoesMethodContainsRuntimeInitializeOnLoadMethodAttributeAndLoadTypeGreaterEqualAfterAssembliesLoaded(MethodDef method)
+        {
+            CustomAttribute ca = method.CustomAttributes.Find("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
+            if (ca != null && ca.ConstructorArguments.Count > 0)
             {
-                return true;
+                RuntimeInitializeLoadType loadType = (RuntimeInitializeLoadType)ca.ConstructorArguments[0].Value;
+                if (loadType >= RuntimeInitializeLoadType.AfterAssembliesLoaded)
+                {
+                    return true;
+                }
             }
             return false;
         }
 
         public bool IsInWhiteList(MethodDef method)
         {
-            if (IsInWhiteList(method.DeclaringType))
+            TypeDef typeDef = method.DeclaringType;
+            if (IsInWhiteList(typeDef))
             {
                 return true;
             }
@@ -40,7 +52,18 @@ namespace Obfuz
             {
                 return true;
             }
-            if (ShouldBeIgnoredByCustomAttribute(method))
+            if (MetaUtil.HasSelfOrInheritObfuzIgnoreScope(method, typeDef, ObfuzScope.MethodBody))
+            {
+                return true;
+            }
+            CustomAttribute ca = method.CustomAttributes.Find("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
+            if (DoesMethodContainsRuntimeInitializeOnLoadMethodAttributeAndLoadTypeGreaterEqualAfterAssembliesLoaded(method))
+            {
+                return true;
+            }
+
+            // don't obfuscate cctor when it has RuntimeInitializeOnLoadMethodAttribute with load type AfterAssembliesLoaded
+            if (method.IsStatic && method.Name == ".cctor" && typeDef.Methods.Any(m => DoesMethodContainsRuntimeInitializeOnLoadMethodAttributeAndLoadTypeGreaterEqualAfterAssembliesLoaded(m)))
             {
                 return true;
             }
@@ -57,14 +80,14 @@ namespace Obfuz
             {
                 return true;
             }
-            if (ShouldBeIgnoredByCustomAttribute(type))
+            if (MetaUtil.HasSelfOrInheritObfuzIgnoreScope(type, type.DeclaringType, ObfuzScope.TypeName))
             {
                 return true;
             }
-            if (type.DeclaringType != null && IsInWhiteList(type.DeclaringType))
-            {
-                return true;
-            }
+            //if (type.DeclaringType != null && IsInWhiteList(type.DeclaringType))
+            //{
+            //    return true;
+            //}
             if (type.FullName == "Obfuz.EncryptionVM.GeneratedEncryptionVirtualMachine")
             {
                 return true;

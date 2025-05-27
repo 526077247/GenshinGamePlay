@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
@@ -7,8 +8,6 @@ using UnityEngine;
 
 namespace Obfuz.Settings
 {
-
-
     public class ObfuzSettings : ScriptableObject
     {
         [Tooltip("enable Obfuz")]
@@ -50,6 +49,11 @@ namespace Obfuz.Settings
             return $"{ObfuzRootDir}/{target}/OriginalAssemblies";
         }
 
+        public string GetObfuscatedAssemblyTempOutputPath(BuildTarget target)
+        {
+            return $"{ObfuzRootDir}/{target}/TempObfuscatedAssemblies";
+        }
+
         private static ObfuzSettings s_Instance;
 
         public static ObfuzSettings Instance
@@ -78,7 +82,7 @@ namespace Obfuz.Settings
             }
             else
             {
-                s_Instance ??= CreateInstance<ObfuzSettings>();
+                s_Instance = s_Instance ?? CreateInstance<ObfuzSettings>();
             }
             return s_Instance;
         }
@@ -87,7 +91,6 @@ namespace Obfuz.Settings
         {
             if (!s_Instance)
             {
-                Debug.LogError("Cannot save ScriptableSingleton: no instance!");
                 return;
             }
 

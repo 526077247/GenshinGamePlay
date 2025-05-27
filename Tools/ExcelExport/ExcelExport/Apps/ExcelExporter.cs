@@ -526,6 +526,10 @@ namespace TaoTie
                 content = content.Replace("[BsonElement]", "");
                 content = content.Replace("using MongoDB.Bson.Serialization.Attributes;", "");
             }
+            else
+            {
+                content = content.Replace("[Obfuz.ObfuzIgnore]", "");
+            }
             sw.Write(content);
         }
 

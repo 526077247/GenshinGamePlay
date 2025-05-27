@@ -85,6 +85,10 @@ namespace Obfuz.Utils
             if (type.IsTypeSpec)
             {
                 GenericInstSig gis = type.TryGetGenericInstSig();
+                if (gis == null)
+                {
+                    return null;
+                }
                 return gis.GenericType.ToTypeDefOrRef().ResolveTypeDefThrow();
             }
             return null;
@@ -102,13 +106,17 @@ namespace Obfuz.Utils
             }
             if (parent is TypeSpec typeSpec)
             {
-                GenericInstSig genericIns = typeSpec.TypeSig.ToGenericInstSig();
-                return genericIns.GenericType.TypeDefOrRef.ResolveTypeDefThrow();
+                GenericInstSig gis = typeSpec.TryGetGenericInstSig();
+                if (gis == null)
+                {
+                    return null;
+                }
+                return gis.GenericType.TypeDefOrRef.ResolveTypeDefThrow();
             }
             return null;
         }
 
-        public static bool IsInheritFromUnityObject(TypeDef typeDef)
+        public static bool IsInheritFromMonoBehaviour(TypeDef typeDef)
         {
             TypeDef cur = typeDef;
             while (true)
@@ -118,7 +126,7 @@ namespace Obfuz.Utils
                 {
                     return false;
                 }
-                if (cur.Name == "Object" && cur.Namespace == "UnityEngine" && cur.Module.Name == "UnityEngine.CoreModule.dll")
+                if (cur.Name == "MonoBehaviour" && cur.Namespace == "UnityEngine" && cur.Module.Name == "UnityEngine.CoreModule.dll")
                 {
                     return true;
                 }
@@ -126,18 +134,8 @@ namespace Obfuz.Utils
         }
 
 
-
-        public static bool IsScriptOrSerializableType(TypeDef type)
+        public static bool IsScriptType(TypeDef type)
         {
-            if (type.ContainsGenericParameter)
-            {
-                return false;
-            }
-            if (type.IsSerializable)
-            {
-                return true;
-            }
-
             for (TypeDef parentType = GetBaseTypeDef(type); parentType != null; parentType = GetBaseTypeDef(parentType))
             {
                 if ((parentType.Name == "MonoBehaviour" || parentType.Name == "ScriptableObject")
@@ -149,6 +147,11 @@ namespace Obfuz.Utils
             }
 
             return false;
+        }
+
+        public static bool IsScriptOrSerializableType(TypeDef type)
+        {
+            return type.IsSerializable || IsScriptType(type);
         }
 
         public static bool IsSerializableTypeSig(TypeSig typeSig)
@@ -258,11 +261,16 @@ namespace Obfuz.Utils
                 case ElementType.Class:
                 {
                     var vts = type as ClassOrValueTypeSig;
-                    TypeDef typeDef = vts.TypeDefOrRef.ResolveTypeDefThrow();
-                    if (typeDef == vts.TypeDefOrRef)
+                    if (vts.TypeDefOrRef is TypeDef typeDef)
                     {
                         return type;
                     }
+                    TypeRef typeRef = (TypeRef)vts.TypeDefOrRef;
+                    if (typeRef.DefinitionAssembly.IsCorLib())
+                    {
+                        return type;
+                    }
+                    typeDef = typeRef.ResolveTypeDefThrow();
                     return type.IsClassSig ? (TypeSig)new ClassSig(typeDef) : new ValueTypeSig(typeDef);
                 }
                 case ElementType.Array:
@@ -291,7 +299,7 @@ namespace Obfuz.Utils
                     foreach (var arg in gis.GenericArguments)
                     {
                         TypeSig newArg = RetargetTypeRefInTypeSig(arg);
-                        anyChange |= newArg != genericType;
+                        anyChange |= newArg != arg;
                         genericArgs.Add(newArg);
                     }
                     if (!anyChange)
@@ -730,6 +738,19 @@ namespace Obfuz.Utils
                     sb.Append("[]");
                     break;
                 }
+                case ElementType.Array:
+                {
+                    var arraySig = (ArraySig)typeSig;
+                    AppendIl2CppStackTraceNameOfTypeSig(sb, arraySig.Next);
+                    sb.Append("[");
+                    for (int i = 0; i < arraySig.Rank - 1; i++)
+                    {
+                        sb.Append(",");
+                    }
+                    sb.Append("]");
+                    break;
+                }
+                case ElementType.TypedByRef: sb.Append("TypedReference"); break;
                 default:
                 throw new NotSupportedException(typeSig.ToString());
             }
@@ -779,23 +800,169 @@ namespace Obfuz.Utils
             return result.ToString();
         }
 
-        public static bool HasObfuzIgnoreAttribute(IHasCustomAttribute obj)
+        public static ObfuzScope? GetObfuzIgnoreScope(IHasCustomAttribute obj)
         {
-            return obj.CustomAttributes.Any(ca =>
-                ca.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute"
-                || ca.AttributeType.FullName == "Nino.Core.NinoMemberAttribute"
-                || ca.AttributeType.FullName == "Nino.Core.NinoTypeAttribute"
-                || ca.AttributeType.FullName == "Nino.Serialization.NinoSerializeAttribute");
+            var nt = obj.CustomAttributes.FirstOrDefault(c => c.AttributeType.FullName == "Nino.Core.NinoTypeAttribute");
+            if (nt != null)
+            {
+                return ObfuzScope.TypeName;
+            }
+            var nm = obj.CustomAttributes.FirstOrDefault(c => c.AttributeType.FullName == "Nino.Core.NinoMemberAttribute");
+            if (nm != null)
+            {
+                return ObfuzScope.Field;
+            }
+            var ca = obj.CustomAttributes.FirstOrDefault(c => c.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute");
+            if (ca == null)
+            {
+                return null;
+            }
+            var scope = (ObfuzScope)ca.ConstructorArguments[0].Value;
+            return scope;
+        }
+
+        public static bool HasObfuzIgnoreScope(IHasCustomAttribute obj, ObfuzScope targetScope)
+        {
+            ObfuzScope? objScope = GetObfuzIgnoreScope(obj);
+            if (objScope == null)
+            {
+                return false;
+            }
+            return objScope != null && (objScope & targetScope) != 0;
+        }
+
+        public static bool HasEnclosingObfuzIgnoreScope(TypeDef typeDef, ObfuzScope targetScope)
+        {
+            TypeDef cur = typeDef;
+            while (cur != null)
+            {
+                var ca = cur.CustomAttributes?.FirstOrDefault(c => c.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute");
+                if (ca != null)
+                {
+                    var scope = (ObfuzScope)ca.ConstructorArguments[0].Value;
+                    CANamedArgument inheritByNestedTypesArg = ca.GetNamedArgument("ApplyToNestedTypes", false);
+                    bool inheritByNestedTypes = inheritByNestedTypesArg == null || (bool)inheritByNestedTypesArg.Value;
+                    return inheritByNestedTypes && (scope & targetScope) != 0;
+                }
+                cur = cur.DeclaringType;
+            }
+            return false;
+        }
+
+        public static bool HasDeclaringOrEnclosingMemberObfuzIgnoreScope(TypeDef typeDef, ObfuzScope targetScope)
+        {
+            TypeDef cur = typeDef;
+            while (cur != null)
+            {
+                var ca = cur.CustomAttributes?.FirstOrDefault(c => c.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute");
+                if (ca != null)
+                {
+                    var scope = (ObfuzScope)ca.ConstructorArguments[0].Value;
+                    if (cur != typeDef)
+                    {
+                        CANamedArgument applyToNestedTypesArg = ca.GetNamedArgument("ApplyToNestedTypes", false);
+                        if (applyToNestedTypesArg != null && !(bool)applyToNestedTypesArg.Value)
+                        {
+                            return false;
+                        }
+                    }
+                    return (scope & targetScope) != 0;
+                }
+                cur = cur.DeclaringType;
+            }
+            return false;
+        }
+
+        //public static bool HasSelfOrInheritObfuzIgnoreScope(TypeDef obj, ObfuzScope targetScope)
+        //{
+        //    ObfuzScope? scope = GetSelfOrInheritObfuzIgnoreScope(obj);
+        //    return scope != null && (scope & targetScope) != 0;
+        //}
+
+        public static bool HasSelfOrInheritObfuzIgnoreScope(IHasCustomAttribute obj, TypeDef declaringType, ObfuzScope targetScope)
+        {
+            return HasObfuzIgnoreScope(obj, targetScope) || HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
+        }
+
+        public static bool HasSelfOrInheritPropertyOrEventOrOrTypeDefObfuzIgnoreScope(MethodDef obj, ObfuzScope targetScope)
+        {
+            if (HasObfuzIgnoreScope(obj, targetScope))
+            {
+                return true;
+            }
+
+            TypeDef declaringType = obj.DeclaringType;
+
+            foreach (var propertyDef in declaringType.Properties)
+            {
+                if (propertyDef.GetMethod == obj || propertyDef.SetMethod == obj)
+                {
+                    return HasObfuzIgnoreScope(propertyDef, targetScope) || HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
+                }
+            }
+
+            foreach (var eventDef in declaringType.Events)
+            {
+                if (eventDef.AddMethod == obj || eventDef.RemoveMethod == obj)
+                {
+                    ObfuzScope? eventScope = GetObfuzIgnoreScope(eventDef);
+                    if (eventScope != null && (eventScope & targetScope) != 0)
+                    {
+                        return true;
+                    }
+                    return HasObfuzIgnoreScope(eventDef, targetScope) || HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
+                }
+            }
+
+            return HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
+        }
+
+        public static bool HasSelfOrInheritPropertyOrEventOrOrTypeDefIgnoreMethodName(MethodDef obj)
+        {
+            if (HasObfuzIgnoreScope(obj, ObfuzScope.MethodName))
+            {
+                return true;
+            }
+
+            TypeDef declaringType = obj.DeclaringType;
+
+            foreach (var propertyDef in declaringType.Properties)
+            {
+                if (propertyDef.GetMethod == obj || propertyDef.SetMethod == obj)
+                {
+                    return HasSelfOrInheritObfuzIgnoreScope(propertyDef, declaringType, ObfuzScope.PropertyGetterSetterName | ObfuzScope.MethodName);
+                }
+            }
+
+            foreach (var eventDef in declaringType.Events)
+            {
+                if (eventDef.AddMethod == obj || eventDef.RemoveMethod == obj)
+                {
+                    return HasSelfOrInheritObfuzIgnoreScope(eventDef, declaringType, ObfuzScope.EventAddRemoveFireName | ObfuzScope.MethodName);
+                }
+            }
+
+            return HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, ObfuzScope.MethodName);
         }
 
         public static bool HasCompilerGeneratedAttribute(IHasCustomAttribute obj)
         {
-            return obj.CustomAttributes.Any(ca => ca.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
+            return obj.CustomAttributes.Find("System.Runtime.CompilerServices.CompilerGeneratedAttribute") != null;
         }
 
         public static bool HasEncryptFieldAttribute(IHasCustomAttribute obj)
         {
-            return obj.CustomAttributes.Any(ca => ca.AttributeType.FullName == "Obfuz.EncryptFieldAttribute");
+            return obj.CustomAttributes.Find("Obfuz.EncryptFieldAttribute") != null;
+        }
+
+        public static bool HasRuntimeInitializeOnLoadMethodAttribute(MethodDef method)
+        {
+            return method.CustomAttributes.Find("UnityEngine.RuntimeInitializeOnLoadMethodAttribute") != null;
+        }
+
+        public static bool HasBlackboardEnumAttribute(TypeDef typeDef)
+        {
+            return typeDef.CustomAttributes.Find("Unity.Behavior.BlackboardEnumAttribute") != null;
         }
     }
 }

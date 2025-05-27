@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Obfuz.Settings;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -421,7 +422,15 @@ namespace TaoTie
             //     if (HybridCLR.Editor.SettingsUtil.Enable)
             //     {
             //         HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
-            //         HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
+            //         ObfuzSettings settings = ObfuzSettings.Instance;
+            //         if(!settings.enable)
+            //         {
+            //             HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
+            //         }
+            //         else
+            //         {
+            //             Obfuz4HybridCLR.PrebuildCommandExt.GenerateAll();
+            //         }
             //     }
             // }
 

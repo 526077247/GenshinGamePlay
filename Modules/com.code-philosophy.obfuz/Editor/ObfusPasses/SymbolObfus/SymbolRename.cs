@@ -42,7 +42,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             public List<CANamedArgument> namedArguments;
         }
 
-        public SymbolRename(SymbolObfuscationSettings settings)
+        public SymbolRename(SymbolObfuscationSettingsFacade settings)
         {
             _useConsistentNamespaceObfuscation = settings.useConsistentNamespaceObfuscation;
             _mappingXmlPath = settings.symbolMappingFile;
@@ -59,7 +59,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             _toObfuscatedModules = ctx.modulesToObfuscate;
             _obfuscatedAndNotObfuscatedModules = ctx.allObfuscationRelativeModules;
             _toObfuscatedModuleSet = new HashSet<ModuleDef>(ctx.modulesToObfuscate);
-            var obfuscateRuleConfig = new ConfigurableRenamePolicy(ctx.assembliesToObfuscate, _obfuscationRuleFiles);
+            var obfuscateRuleConfig = new ConfigurableRenamePolicy(ctx.coreSettings.assembliesToObfuscate, ctx.modulesToObfuscate,  _obfuscationRuleFiles);
             _renamePolicy = new CacheRenamePolicy(new CombineRenamePolicy(new SupportPassPolicy(ctx.passPolicy), new SystemRenamePolicy(), new UnityRenamePolicy(), obfuscateRuleConfig));
             BuildCustomAttributeArguments();
         }
@@ -74,12 +74,8 @@ namespace Obfuz.ObfusPasses.SymbolObfus
                 {
                     arguments = ca.ConstructorArguments.ToList();
                 }
-                List<CANamedArgument> namedArguments = null;
-                if (ca.NamedArguments.Any(a => MetaUtil.MayRenameCustomDataType(a.Type.ElementType)))
-                {
-                    namedArguments = ca.NamedArguments.ToList();
-                }
-                if (arguments != null | namedArguments != null)
+                List<CANamedArgument> namedArguments = ca.NamedArguments.Count > 0 ? ca.NamedArguments.ToList() : null;
+                if (arguments != null || namedArguments != null)
                 {
                     customAttributes.Add(new CustomAttributeInfo
                     {
@@ -263,7 +259,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             }
         }
 
-        private IEnumerable<MemberRef> WalkMemberRefs(ModuleDef mod)
+        private IEnumerable<T> WalkAllMethodInstructionOperand<T>(ModuleDef mod)
         {
             foreach (TypeDef type in mod.GetTypes())
             {
@@ -275,7 +271,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus
                     }
                     foreach (var instr in method.Body.Instructions)
                     {
-                        if (instr.Operand is MemberRef memberRef)
+                        if (instr.Operand is T memberRef)
                         {
                             yield return memberRef;
                         }
@@ -288,13 +284,8 @@ namespace Obfuz.ObfusPasses.SymbolObfus
         {
             foreach (ModuleDef mod in _obfuscatedAndNotObfuscatedModules)
             {
-                foreach (MemberRef memberRef in WalkMemberRefs(mod))
+                foreach (MemberRef memberRef in WalkAllMethodInstructionOperand<MemberRef>(mod))
                 {
-                    if (!memberRef.IsFieldRef)
-                    {
-                        continue;
-                    }
-                     
                     IMemberRefParent parent = memberRef.Class;
                     TypeDef parentTypeDef = MetaUtil.GetMemberRefTypeDefParentOrNull(parent);
                     if (parentTypeDef == null)
@@ -376,34 +367,84 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             public readonly List<MemberRef> memberRefs = new List<MemberRef>();
         }
 
+        private void RenameMethodRef(MemberRef memberRef, Dictionary<MethodDef, RefMethodMetas> refMethodMetasMap)
+        {
+            if (!memberRef.IsMethodRef)
+            {
+                return;
+            }
+
+            IMemberRefParent parent = memberRef.Class;
+            TypeDef parentTypeDef = MetaUtil.GetMemberRefTypeDefParentOrNull(parent);
+            if (parentTypeDef == null)
+            {
+                return;
+            }
+            foreach (MethodDef methodDef in parentTypeDef.Methods)
+            {
+                if (methodDef.Name == memberRef.Name && new SigComparer(default).Equals(methodDef.MethodSig, memberRef.MethodSig))
+                {
+                    if (!refMethodMetasMap.TryGetValue(methodDef, out var refMethodMetas))
+                    {
+                        refMethodMetas = new RefMethodMetas();
+                        refMethodMetasMap.Add(methodDef, refMethodMetas);
+                    }
+                    refMethodMetas.memberRefs.Add(memberRef);
+                    break;
+                }
+            }
+        }
+
+        
+        private void RenameMethodRefOrMethodSpec(IMethod method, Dictionary<MethodDef, RefMethodMetas> refMethodMetasMap)
+        {
+            if (method is MemberRef memberRef)
+            {
+                RenameMethodRef(memberRef, refMethodMetasMap);
+            }
+            else if (method is MethodSpec methodSpec)
+            {
+                if (methodSpec.Method is MemberRef memberRef2)
+                {
+                    RenameMethodRef(memberRef2, refMethodMetasMap);
+                }
+            }
+        }
+
         private void BuildRefMethodMetasMap(Dictionary<MethodDef, RefMethodMetas> refMethodMetasMap)
         {
             foreach (ModuleDef mod in _obfuscatedAndNotObfuscatedModules)
             {
-                foreach (MemberRef memberRef in WalkMemberRefs(mod))
+                foreach (IMethod method in WalkAllMethodInstructionOperand<IMethod>(mod))
                 {
-                    if (!memberRef.IsMethodRef)
+                    RenameMethodRefOrMethodSpec(method, refMethodMetasMap);
+                }
+                
+                foreach (var type in mod.GetTypes())
+                {
+                    foreach (MethodDef method in type.Methods)
                     {
-                        continue;
-                    }
-
-                    IMemberRefParent parent = memberRef.Class;
-                    TypeDef parentTypeDef = MetaUtil.GetMemberRefTypeDefParentOrNull(parent);
-                    if (parentTypeDef == null)
-                    {
-                        continue;
-                    }
-                    foreach (MethodDef method in parentTypeDef.Methods)
-                    {
-                        if (method.Name == memberRef.Name && new SigComparer(default).Equals(method.MethodSig, memberRef.MethodSig))
+                        if (method.HasOverrides)
                         {
-                            if (!refMethodMetasMap.TryGetValue(method, out var refMethodMetas))
+                            foreach (MethodOverride methodOverride in method.Overrides)
                             {
-                                refMethodMetas = new RefMethodMetas();
-                                refMethodMetasMap.Add(method, refMethodMetas);
+                                RenameMethodRefOrMethodSpec(methodOverride.MethodDeclaration, refMethodMetasMap);
+                                RenameMethodRefOrMethodSpec(methodOverride.MethodBody, refMethodMetasMap);
                             }
-                            refMethodMetas.memberRefs.Add(memberRef);
-                            break;
+                        }
+                    }
+                }
+                foreach (var e in _refTypeRefMetasMap)
+                {
+                    TypeDef typeDef = e.Key;
+                    var hierarchyFields = new List<FieldDef>();
+                    BuildHierarchyFields(typeDef, hierarchyFields);
+                    RefTypeDefMetas typeDefMetas = e.Value;
+                    foreach (CustomAttribute ca in typeDefMetas.customAttributes)
+                    {
+                        if (ca.Constructor is IMethod method)
+                        {
+                            RenameMethodRefOrMethodSpec(method, refMethodMetasMap);
                         }
                     }
                 }
@@ -465,11 +506,40 @@ namespace Obfuz.ObfusPasses.SymbolObfus
                 VirtualMethodGroup group = _virtualMethodGroupCalculator.GetMethodGroup(method);
                 if (!groupNeedRenames.TryGetValue(group, out var needRename))
                 {
-                    needRename = group.methods.All(m => _toObfuscatedModuleSet.Contains(m.DeclaringType.Module) && _renamePolicy.NeedRename(m));
+                    if (!group.methods.Any(m => _toObfuscatedModuleSet.Contains(m.DeclaringType.Module)))
+                    {
+                        needRename = false;
+                    }
+                    else
+                    {
+                        needRename = group.methods.All(m => _obfuscatedAndNotObfuscatedModules.Contains(m.Module) && _renamePolicy.NeedRename(m));
+                    }
                     groupNeedRenames.Add(group, needRename);
                     if (needRename)
                     {
-                        _renameRecordMap.InitAndAddRename(group, _renameRecordMap.TryGetExistRenameMapping(method, out var nn) ? nn : _nameMaker.GetNewName(method, method.Name));
+                        bool conflict = false;
+                        string newVirtualMethodName = null;
+                        foreach (MethodDef m in group.methods)
+                        {
+                            if (_renameRecordMap.TryGetExistRenameMapping(m, out var existVirtualMethodName))
+                            {
+                                if (newVirtualMethodName == null)
+                                {
+                                    newVirtualMethodName = existVirtualMethodName;
+                                }
+                                else if(newVirtualMethodName != existVirtualMethodName)
+                                {
+                                    Debug.LogWarning($"Virtual method rename conflict. {m} => {existVirtualMethodName} != {newVirtualMethodName}");
+                                    conflict = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (newVirtualMethodName == null || conflict || _nameMaker.IsNamePreserved(group, newVirtualMethodName))
+                        {
+                            newVirtualMethodName = _nameMaker.GetNewName(group, method.Name);
+                        }
+                        _renameRecordMap.InitAndAddRename(group, newVirtualMethodName);
                     }
                 }
                 if (!needRename)
@@ -577,28 +647,6 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             }
             Debug.Log("Rename events begin");
         }
-
-        //private void Rename(ModuleDef mod)
-        //{
-        //    string oldName = mod.Assembly.Name;
-        //    string newName = _renameRecordMap.TryGetExistRenameMapping(mod, out var n) ? n :  _nameMaker.GetNewName(mod, oldName);
-        //    _renameRecordMap.AddRename(mod, newName);
-        //    mod.Assembly.Name = newName;
-        //    mod.Name = $"{newName}.dll";
-        //    //Debug.Log($"rename module. oldName:{oldName} newName:{newName}");
-        //    foreach (AssemblyReferenceInfo ass in GetReferenceMeAssemblies(mod))
-        //    {
-        //        foreach (AssemblyRef assRef in ass.module.GetAssemblyRefs())
-        //        {
-        //            if (assRef.Name == oldName)
-        //            {
-        //                _renameRecordMap.AddRename(mod, newName);
-        //                assRef.Name = newName;
-        //               // Debug.Log($"rename assembly:{ass.name}  ref oldName:{oldName} newName:{newName}");
-        //            }
-        //        }
-        //    }
-        //}
 
         private void Rename(TypeDef type, RefTypeDefMetas refTypeDefMeta)
         {

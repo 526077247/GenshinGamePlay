@@ -2,6 +2,7 @@
 using Obfuz.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,55 +13,147 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
     public class UnityRenamePolicy : ObfuscationPolicyBase
     {
         private static HashSet<string> s_monoBehaviourEvents = new HashSet<string> {
+
+            // MonoBehaviour events
     "Awake",
-    "OnEnable",
-    "Start",
     "FixedUpdate",
-    "Update",
     "LateUpdate",
-    "OnDisable",
-    "OnDestroy",
-    "OnApplicationQuit",
-    "OnTriggerEnter",
-    "OnTriggerExit",
-    "OnTriggerStay",
-    "OnCollisionEnter",
-    "OnCollisionExit",
-    "OnCollisionStay",
-    "OnMouseDown",
-    "OnMouseUp",
-    "OnMouseEnter",
-    "OnMouseExit",
-    "OnMouseOver",
-    "OnMouseDrag",
-    "OnBecameVisible",
-    "OnBecameInvisible",
-    "OnGUI",
-    "OnPreRender",
-    "OnPostRender",
-    "OnRenderObject",
-    "OnDrawGizmos",
-    "OnDrawGizmosSelected",
-    "OnValidate",
     "OnAnimatorIK",
+
     "OnAnimatorMove",
     "OnApplicationFocus",
     "OnApplicationPause",
+    "OnApplicationQuit",
     "OnAudioFilterRead",
+
+    "OnBecameVisible",
+    "OnBecameInvisible",
+
+    "OnCollisionEnter",
+    "OnCollisionEnter2D",
+    "OnCollisionExit",
+    "OnCollisionExit2D",
+    "OnCollisionStay",
+    "OnCollisionStay2D",
+    "OnConnectedToServer",
+    "OnControllerColliderHit",
+
+    "OnDrawGizmos",
+    "OnDrawGizmosSelected",
+    "OnDestroy",
+    "OnDisable",
+    "OnDisconnectedFromServer",
+
+    "OnEnable",
+
+    "OnFailedToConnect",
+    "OnFailedToConnectToMasterServer",
+
+    "OnGUI",
+
     "OnJointBreak",
-    "OnParticleCollision",
+    "OnJointBreak2D",
+
+    "OnMasterServerEvent",
+    "OnMouseDown",
+    "OnMouseDrag",
+    "OnMouseEnter",
+    "OnMouseExit",
+    "OnMouseOver",
+    "OnMouseUp",
+    "OnMouseUpAsButton",
+
+    "OnNetworkInstantiate",
+
+    "OnParticleSystemStopped",
+    "OnParticleTrigger",
+    "OnParticleUpdateJobScheduled",
+    "OnPlayerConnected",
+    "OnPlayerDisconnected",
+    "OnPostRender",
+    "OnPreCull",
+    "OnPreRender",
+    "OnRenderImage",
+    "OnRenderObject",
+
+    "OnSerializeNetworkView",
+    "OnServerInitialized",
+
     "OnTransformChildrenChanged",
     "OnTransformParentChanged",
-    "OnRectTransformDimensionsChange",
-    "OnWillRenderObject"
+    "OnTriggerEnter",
+    "OnTriggerEnter2D",
+    "OnTriggerExit",
+    "OnTriggerExit2D",
+    "OnTriggerStay",
+    "OnTriggerStay2D",
+
+    "OnValidate",
+    "OnWillRenderObject",
+    "Reset",
+    "Start",
+    "Update",
+
+    // Animator/StateMachineBehaviour
+    "OnStateEnter",
+    "OnStateExit",
+    "OnStateMove",
+    "OnStateUpdate",
+    "OnStateIK",
+    "OnStateMachineEnter",
+    "OnStateMachineExit",
+
+    // ParticleSystem
+    "OnParticleTrigger",
+    "OnParticleCollision",
+    "OnParticleSystemStopped",
+
+    // UGUI/EventSystems
+    "OnPointerClick",
+    "OnPointerDown",
+    "OnPointerUp",
+    "OnPointerEnter",
+    "OnPointerExit",
+    "OnDrag",
+    "OnBeginDrag",
+    "OnEndDrag",
+    "OnDrop",
+    "OnScroll",
+    "OnSelect",
+    "OnDeselect",
+    "OnMove",
+    "OnSubmit",
+    "OnCancel",
 };
+
+        private bool IsUnitySourceGeneratedAssemblyType(TypeDef typeDef)
+        {
+            if (typeDef.Name.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes_"))
+            {
+                return true;
+            }
+            if (typeDef.DeclaringType != null)
+            {
+                return IsUnitySourceGeneratedAssemblyType(typeDef.DeclaringType);
+            }
+            return false;
+        }
+
         public override bool NeedRename(TypeDef typeDef)
         {
-            if (MetaUtil.IsScriptOrSerializableType(typeDef))
+            if (MetaUtil.IsScriptType(typeDef))
             {
                 return false;
             }
-            if (typeDef.FullName.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes_"))
+            if (typeDef.Methods.Any(m => MetaUtil.HasRuntimeInitializeOnLoadMethodAttribute(m)))
+            {
+                return false;
+            }
+            if (typeDef.IsEnum && MetaUtil.HasBlackboardEnumAttribute(typeDef))
+            {
+                return false;
+            }
+            if (IsUnitySourceGeneratedAssemblyType(typeDef))
             {
                 return false;
             }
@@ -69,11 +162,16 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
 
         public override bool NeedRename(MethodDef methodDef)
         {
-            if (MetaUtil.IsInheritFromUnityObject(methodDef.DeclaringType))
+            TypeDef typeDef = methodDef.DeclaringType;
+            if (MetaUtil.IsInheritFromMonoBehaviour(typeDef) && s_monoBehaviourEvents.Contains(methodDef.Name))
             {
-                return !s_monoBehaviourEvents.Contains(methodDef.Name);
+                return false;
             }
-            if (methodDef.DeclaringType.FullName.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes_"))
+            if (MetaUtil.HasRuntimeInitializeOnLoadMethodAttribute(methodDef))
+            {
+                return false;
+            }
+            if (IsUnitySourceGeneratedAssemblyType(typeDef))
             {
                 return false;
             }
@@ -87,7 +185,11 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
             {
                 return !MetaUtil.IsSerializableField(fieldDef);
             }
-            if (fieldDef.DeclaringType.FullName.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes_"))
+            if (typeDef.IsEnum && MetaUtil.HasBlackboardEnumAttribute(typeDef))
+            {
+                return false;
+            }
+            if (IsUnitySourceGeneratedAssemblyType(typeDef))
             {
                 return false;
             }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Obfuz;
+using Obfuz.EncryptionVM;
 using YooAsset;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,6 +34,7 @@ namespace TaoTie
             // 设置该资源包为默认的资源包，可以使用YooAssets相关加载接口加载该资源包内容。
             YooAssets.SetDefaultPackage(package);
             await UpdateConfig();
+            await SetUpDynamicSecret();
         }
 
         private void InitBuildInPackageVersion()
@@ -235,6 +238,23 @@ namespace TaoTie
             }
 
             op.Release();
+        }
+        
+        private async ETTask SetUpDynamicSecret()
+        {
+            Log.Info("SetUpDynamicSecret begin");
+            byte[] dynamicSecretKey;
+            #if UNITY_EDITOR
+            await ETTask.CompletedTask;
+            dynamicSecretKey = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/AssetsPackage/Code/Obfuz/defaultDynamicSecretKey.bytes").bytes;
+            #else
+            var op = LoadAssetAsync<TextAsset>($"Code/Obfuz/defaultDynamicSecretKey.bytes", Define.DefaultName);
+            await op.Task;
+            dynamicSecretKey = (op.AssetObject as TextAsset)?.bytes;
+            op.Release();
+            #endif
+            EncryptionService<DefaultDynamicEncryptionScope>.Encryptor = new GeneratedEncryptionVirtualMachine(dynamicSecretKey);
+            Log.Info("SetUpDynamicSecret end");
         }
 
         public async ETTask UnloadUnusedAssets(string package)

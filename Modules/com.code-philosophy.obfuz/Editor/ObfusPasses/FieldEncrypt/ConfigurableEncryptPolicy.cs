@@ -33,7 +33,7 @@ namespace Obfuz.ObfusPasses.FieldEncrypt
             {
                 return true;
             }
-            if (MetaUtil.HasObfuzIgnoreAttribute(field) || MetaUtil.HasObfuzIgnoreAttribute(field.DeclaringType))
+            if (MetaUtil.HasSelfOrInheritObfuzIgnoreScope(field, field.DeclaringType, ObfuzScope.Field))
             {
                 return false;
             }

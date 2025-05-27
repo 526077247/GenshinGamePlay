@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.Assertions;
 
 namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
 {
@@ -56,6 +57,11 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
             GetNameScope(_namespaceScope).AddPreservedName(name);
         }
 
+        public bool IsNamePreserved(VirtualMethodGroup virtualMethodGroup, string name)
+        {
+            return  virtualMethodGroup.methods.Any(m => GetNameScope(m.DeclaringType).IsNamePreserved(name));
+        }
+
         private string GetDefaultNewName(object scope, string originName)
         {
             return GetNameScope(scope).GetNewName(originName, false);
@@ -77,7 +83,29 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
 
         public string GetNewName(MethodDef methodDef, string originalName)
         {
-            return (methodDef.IsVirtual ? ">" : "") + GetDefaultNewName(methodDef.DeclaringType, originalName);
+            Assert.IsFalse(methodDef.IsVirtual);
+            return GetDefaultNewName(methodDef.DeclaringType, originalName);
+        }
+
+        public string GetNewName(VirtualMethodGroup virtualMethodGroup, string originalName)
+        {
+            var scope = GetNameScope(virtualMethodGroup);
+            while (true)
+            {
+                string newName = scope.GetNewName(originalName, false);
+                if (virtualMethodGroup.methods.Any(m => GetNameScope(m.DeclaringType).IsNamePreserved(newName)))
+                {
+                    continue;
+                }
+                else
+                {
+                    foreach (var method in virtualMethodGroup.methods)
+                    {
+                        GetNameScope(method.DeclaringType).AddPreservedName(newName);
+                    }
+                    return newName;
+                }
+            }
         }
 
         public virtual string GetNewName(ParamDef param, string originalName)
