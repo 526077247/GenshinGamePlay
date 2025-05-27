@@ -59,7 +59,7 @@ namespace TaoTie
                 }
                 else if(Define.ForceUpdate)
                 {
-                    Application.Quit();
+                    BridgeHelper.Quit();
                     return UpdateRes.Quit;
                 }
             }

@@ -14,7 +14,7 @@ namespace TaoTie
         public const string AOTLoadDir = "Code/AOTAndroid/";
 #elif UNITY_IOS
         public const string AOTLoadDir = "Code/AOTiOS/";
-#elif UNITY_IOS
+#elif UNITY_WEBGL
         public const string AOTLoadDir = "Code/AOTWebGL/";
 #else //不同BuildTarget的裁剪AOT dll一般不复用。
         public const string AOTLoadDir = "Code/AOT/";

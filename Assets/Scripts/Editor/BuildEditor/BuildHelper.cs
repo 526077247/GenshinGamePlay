@@ -220,13 +220,14 @@ namespace TaoTie
             Application.OpenURL($"file:///{targetPath}");
 #endif
         }
-        private static void BuildInternal(BuildTarget buildTarget,bool isBuildAll, bool isContainsAb, string channel)
+        private static bool BuildInternal(BuildTarget buildTarget,bool isBuildAll, bool isContainsAb, string channel)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<PackageConfig>(jstr);
             int buildVersion = obj.GetPackageMaxVersion(Define.DefaultName);
             Debug.Log($"开始构建 : {buildTarget}");
-            BuildPackage(buildTarget, isBuildAll, buildVersion, Define.DefaultName, channel);
+            bool res = BuildPackage(buildTarget, isBuildAll, buildVersion, Define.DefaultName, channel);
+            if (!res) return res;
             if (isContainsAb)
             {
                 if (obj.OtherPackageMaxVer != null)
@@ -236,14 +237,16 @@ namespace TaoTie
                         for (int i = 0; i < item.Value.Length; i++)
                         {
                             if(item.Value[i] == Define.DefaultName) continue;
-                            BuildPackage(buildTarget, isBuildAll, item.Key, item.Value[i], channel);
+                            res &= BuildPackage(buildTarget, isBuildAll, item.Key, item.Value[i], channel);
+                            if (!res) return res;
                         }
                     }
                 }
             }
+            return res;
         }
 
-        public static void BuildPackage(BuildTarget buildTarget, bool isBuildAll, int buildVersion,
+        public static bool BuildPackage(BuildTarget buildTarget, bool isBuildAll, int buildVersion,
             string packageName, string channel)
         {
             var buildoutputRoot = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
@@ -289,6 +292,7 @@ namespace TaoTie
                 Debug.Log($"构建成功!");
             else
                 Debug.LogError(buildResult.ErrorInfo);
+            return buildResult.Success;
         }
         /// <summary>
         /// 内置着色器资源包名称
@@ -397,7 +401,10 @@ namespace TaoTie
             }
                               
             //打ab
-            BuildInternal(buildTarget, isBuildAll, isContainsAb, channel);
+            if (!BuildInternal(buildTarget, isBuildAll, isContainsAb, channel))
+            {
+                return;
+            }
 
             if (clearReleaseFolder && Directory.Exists(relativeDirPrefix))
             {
@@ -502,11 +509,13 @@ namespace TaoTie
             }
 
             string platform = "pc";
-            #if UNITY_ANDROID
+#if UNITY_ANDROID
             platform = "android";
-            #elif UNITY_IOS
+#elif UNITY_IOS
             platform = "ios";
-            #endif
+#elif UNITY_WEBGL
+            platform = "webgl";
+#endif
             string targetPath = Path.Combine(relativeDirPrefix, $"{rename}_{platform}");
             DirectoryInfo info = new DirectoryInfo(targetPath);
             if(!info.Exists) return;
@@ -522,14 +531,11 @@ namespace TaoTie
         {
             var bundleVersionCode = int.Parse(Application.version.Split(".")[2]);
             string exeName = programName + "_" + channel;
-            string platform = "";
             KeystoreSetting();
             PlayerSettings.Android.bundleVersionCode = bundleVersionCode;
             EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
             BuildTarget buildTarget  = BuildTarget.Android;
             exeName += Application.version + ".apk";
-            platform = "android";
-
             AssetDatabase.Refresh();
             string[] levels =
             {

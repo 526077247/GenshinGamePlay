@@ -74,7 +74,7 @@ namespace TaoTie
             {
                 if (forceUpdate)
                 {
-                    Application.Quit();
+                    BridgeHelper.Quit();
                     return UpdateRes.Quit;
                 }
 
@@ -134,7 +134,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    Application.Quit();
+                    BridgeHelper.Quit();
                     return UpdateRes.Quit;
                 }
             }
@@ -155,7 +155,7 @@ namespace TaoTie
             }
             else if(this.forceUpdate)
             {
-                Application.Quit();
+                BridgeHelper.Quit();
                 return UpdateRes.Quit;
             }
 

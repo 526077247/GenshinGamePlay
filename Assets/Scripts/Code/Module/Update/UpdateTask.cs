@@ -41,7 +41,7 @@ namespace TaoTie
                     case UpdateRes.Over:
                         break;
                     case UpdateRes.Quit:
-                        Application.Quit();
+                        BridgeHelper.Quit();
                         return UpdateRes.Quit;
                     case UpdateRes.Restart:
                         return UpdateRes.Restart;

@@ -62,7 +62,7 @@ namespace TaoTie
             else if(forceUpdate)
             {
                 Log.Info("CheckAppUpdate Need Force Update And User Choose Exit Game!");
-                Application.Quit();
+                BridgeHelper.Quit();
                 return UpdateRes.Quit;
             }
             else
