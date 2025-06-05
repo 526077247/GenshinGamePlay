@@ -223,7 +223,7 @@ namespace TaoTie
                             }
                             else if (uiComponent.Key == typeof(SuperScrollView.LoopListView2))
                             {
-                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
+                                strBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
                                         .AppendLine();
                                 tempBuilder.AppendFormat("\t\tpublic LoopListViewItem2 Get{0}ItemByIndex(LoopListView2 listView, int index)", uisc.GetModuleName())
                                         .AppendLine();
@@ -233,7 +233,7 @@ namespace TaoTie
                             }
                             else if (uiComponent.Key == typeof(SuperScrollView.LoopGridView))
                             {
-                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitGridView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
+                                strBuilder.AppendFormat("\t\t\tthis.{0}.InitGridView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
                                         .AppendLine();
                                 tempBuilder.AppendFormat("\t\tpublic LoopGridViewItem Get{0}ItemByIndex(LoopGridView gridview, int index, int row, int column)", uisc.GetModuleName())
                                         .AppendLine();
@@ -243,7 +243,7 @@ namespace TaoTie
                             }
                             else if (uiComponent.Key == typeof(CopyGameObject))
                             {
-                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
+                                strBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
                                         .AppendLine();
                                 tempBuilder.AppendFormat("\t\tpublic void Get{0}ItemByIndex(int index, GameObject obj)", uisc.GetModuleName())
                                         .AppendLine();

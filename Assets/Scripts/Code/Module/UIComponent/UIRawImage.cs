@@ -86,7 +86,7 @@ namespace TaoTie
             }
             else
             {
-                var sprite = await ImageLoaderManager.Instance.LoadImageAsync(spritePath);
+                var texture = await ImageLoaderManager.Instance.LoadTextureAsync(spritePath);
                 if (thisVersion != version)
                 {
                     ImageLoaderManager.Instance.ReleaseImage(spritePath);
@@ -94,13 +94,13 @@ namespace TaoTie
                 }
                 this.spritePath = spritePath;
                 this.image.enabled = true;
-                this.image.texture = sprite.texture;
+                this.image.texture = texture;
                 isSetSprite = false;
                 if(setNativeSize)
                     this.SetNativeSize();
                 if (this.bgRawAutoFit != null)
                 {
-                    this.bgRawAutoFit.SetSprite(sprite.texture);
+                    this.bgRawAutoFit.SetSprite(texture);
                     this.bgRawAutoFit.enabled = true;
                 }
             }
@@ -179,7 +179,7 @@ namespace TaoTie
             }
             this.image.material = mt;
         }
-        public void SetSprite(Texture2D texture)
+        public void SetSprite(Texture texture)
         {
             this.ActivatingComponent();
             this.image.texture = texture;
@@ -190,6 +190,12 @@ namespace TaoTie
         {
             this.image?.SetNativeSize();
         }
+                
+        public Texture GetTexture()
+        {
+            ActivatingComponent();
+            return this.image.texture;
+        }
         
         public void SetBase64(string data)
         {
@@ -198,17 +204,12 @@ namespace TaoTie
             base64Str = base64Str.Replace("data:image/png;base64,", "").Replace("data:image/jgp;base64,", "")
                 .Replace("data:image/jpg;base64,", "").Replace("data:image/jpeg;base64,", "");
             byte[] imageBytes = Convert.FromBase64String(base64Str);
-
             // 创建一个新的Texture2D对象
-            base64texture = new Texture2D(2, 2); // 初始大小无所谓，因为后面会重新加载
+            if (base64texture == null) 
+                base64texture = new Texture2D(2, 2); // 初始大小无所谓，因为后面会重新加载
             // 加载图像数据
             base64texture.LoadImage(imageBytes);
             SetSprite(base64texture);
-        }
-        
-        public Texture GetTexture()
-        {
-            return this.image.texture;
         }
 
         private void ClearBase64()

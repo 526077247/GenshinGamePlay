@@ -1,20 +1,76 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace TaoTie
 {
-    public class UIInputTextmesh:UIBaseContainer,IOnDestroy
+    public class UIInputTextmesh:UIBaseContainer,IOnDestroy,IOnCreate
     {
+#if UNITY_WEBGL
+        public bool UseDialog = false;
+#endif
         private TMPro.TMP_InputField input;
         
         private UnityAction<string> onValueChange;
 
         private UnityAction<string> onEndEdit;
+
+        public void OnCreate()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            ActivatingComponent();
+            this.input.onSelect.AddListener(OnSelect);
+#endif
+        }
         public void OnDestroy()
         {
             this.RemoveOnValueChanged();
             this.RemoveOnEndEdit();
+#if UNITY_WEBGL && !UNITY_EDITOR
+            this.input.onSelect.RemoveListener(OnSelect);
+#endif
         }
+#if UNITY_WEBGL && !UNITY_EDITOR
+        private void OnSelect(string text)
+        {
+            if (UseDialog)
+            {
+                this.input.text = BridgeHelper.OpenNativeStringDialog("", this.input.text);
+                DelayInputDeactive().Coroutine();
+            }
+            else
+            {
+                BridgeHelper.SetUpOverlayDialog("", this.input.text,
+                    I18NManager.Instance.I18NGetText(I18NKey.Global_Btn_Confirm),
+                    I18NManager.Instance.I18NGetText(I18NKey.Global_Btn_Cancel));
+                OverlayHtmlCoroutine().Coroutine();
+            }
+        }
+        private async ETTask DelayInputDeactive()
+        {
+            await UnityLifeTimeHelper.WaitFrameFinish();
+            input.DeactivateInputField();
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+        private async ETTask OverlayHtmlCoroutine()
+        {
+            await UnityLifeTimeHelper.WaitFrameFinish();
+            input.DeactivateInputField();
+            EventSystem.current.SetSelectedGameObject(null);
+            WebGLInput.captureAllKeyboardInput = false;
+            while (BridgeHelper.IsOverlayDialogActive())
+            {
+                await TimerManager.Instance.WaitAsync(1);
+            }
+            WebGLInput.captureAllKeyboardInput = true;
+
+            if (!BridgeHelper.IsOverlayDialogCanceled())
+            {
+                input.text = BridgeHelper.GetOverlayDialogValue();
+            }
+        }
+#endif
         void ActivatingComponent()
         {
             if (this.input == null)

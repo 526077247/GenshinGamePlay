@@ -7,16 +7,18 @@ using System.Threading;
 
 namespace TaoTie
 {
-    public class ImageLoaderManager:IManager
+    public class ImageLoaderManager : IManager
     {
         private static class SpriteType
         {
             public static int Sprite = 0;
             public static int SpriteAtlas = 1;
         }
+
         private class SpriteValue
         {
             public Sprite Asset;
+            public Texture Texture;
             public int RefCount;
         }
 
@@ -39,20 +41,21 @@ namespace TaoTie
                 }
             }
         }
-        
+
         private class OnlineImage
         {
-            public OnlineImage(Texture2D texture2D,Sprite sprite,int refCount)
+            public OnlineImage(Texture2D texture2D, Sprite sprite, int refCount)
             {
                 Texture2D = texture2D;
                 Sprite = sprite;
                 RefCount = refCount;
             }
+
             public Texture2D Texture2D;
             public Sprite Sprite;
             public int RefCount;
         }
-        
+
         private const string ATLAS_KEY = "/Atlas/";
         public static ImageLoaderManager Instance { get; private set; }
 
@@ -86,37 +89,43 @@ namespace TaoTie
         }
 
         #endregion
-        
+
         void InitSpriteAtlasCache(LruCache<string, SpriteAtlasValue> cache)
         {
-            cache.SetCheckCanPopCallback((string key, SpriteAtlasValue value) => {
-                return value.RefCount == 0;
-            });
+            cache.SetCheckCanPopCallback((string key, SpriteAtlasValue value) => { return value.RefCount == 0; });
 
-            cache.SetPopCallback((key, value) => {
-                var subasset = value.SubAsset; 
+            cache.SetPopCallback((key, value) =>
+            {
+                var subasset = value.SubAsset;
                 foreach (var item in subasset)
                 {
                     UnityEngine.Object.Destroy(item.Value.Asset);
                     item.Value.Asset = null;
+                    if (item.Value.Texture != null)
+                    {
+                        GameObject.Destroy(item.Value.Texture);
+                        item.Value.Texture = null;
+                    }
+
                     item.Value.RefCount = 0;
                 }
+
                 ResourcesManager.Instance.ReleaseAsset(value.Asset);
                 value.Asset = null;
             });
         }
-        
+
         void InitSingleSpriteCache(LruCache<string, SpriteValue> cache)
         {
-            cache.SetCheckCanPopCallback((string key, SpriteValue value) => {
-                return value.RefCount == 0;
-            });
-            cache.SetPopCallback((key, value) => {
+            cache.SetCheckCanPopCallback((string key, SpriteValue value) => { return value.RefCount == 0; });
+            cache.SetPopCallback((key, value) =>
+            {
                 ResourcesManager.Instance.ReleaseAsset(value.Asset);
                 value.Asset = null;
                 value.RefCount = 0;
             });
         }
+
         /// <summary>
         /// 异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
         /// </summary>
@@ -133,6 +142,7 @@ namespace TaoTie
             }).Coroutine();
             return task;
         }
+
         /// <summary>
         /// 异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
         /// </summary>
@@ -151,11 +161,15 @@ namespace TaoTie
                     out string subAssetName);
                 if (assetType == SpriteType.Sprite)
                 {
-                    res = await this.LoadSingleImageAsyncInternal( assetAddress,callback);
+                    var sv = await this.LoadSingleImageAsyncInternal(assetAddress);
+                    callback?.Invoke(sv.Asset);
+                    return sv.Asset;
                 }
                 else
                 {
-                    res = await this.LoadSpriteImageAsyncInternal(assetAddress, subAssetName, callback);
+                    var sv = await this.LoadSpriteImageAsyncInternal(assetAddress, subAssetName);
+                    callback?.Invoke(sv.Asset);
+                    return sv.Asset;
                 }
             }
             catch (Exception ex)
@@ -166,6 +180,68 @@ namespace TaoTie
             {
                 coroutineLock?.Dispose();
             }
+
+            return res;
+        }
+
+        /// <summary>
+        /// 异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
+        /// </summary>
+        /// <param name="imagePath"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public async ETTask<Texture> LoadTextureAsync(string imagePath, Action<Texture> callback = null)
+        {
+            Texture res = null;
+            CoroutineLock coroutineLock = null;
+            try
+            {
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, imagePath.GetHashCode());
+                this.GetSpriteLoadInfoByPath(imagePath, out int assetType, out string assetAddress,
+                    out string subAssetName);
+                if (assetType == SpriteType.Sprite)
+                {
+                    var sv = await this.LoadSingleImageAsyncInternal(assetAddress);
+                    callback?.Invoke(sv.Texture);
+                    return sv.Texture;
+                }
+                else
+                {
+                    var sv = await this.LoadSpriteImageAsyncInternal(assetAddress, subAssetName);
+                    if (sv.Texture == null)
+                    {
+                        if (!sv.Asset.texture.isReadable)
+                        {
+                            Log.Error("不建议加载图集中的图片, 如果需要这么做, 将对应SpriteAtlas的Read/Write属性打开(运行占用内存翻倍)");
+                            callback?.Invoke(sv.Asset.texture);
+                            return sv.Asset.texture;
+                        }
+
+                        var targetTex = new Texture2D((int) sv.Asset.rect.width, (int) sv.Asset.rect.height);
+                        var pixels = sv.Asset.texture.GetPixels(
+                            (int) sv.Asset.textureRect.x,
+                            (int) sv.Asset.textureRect.y,
+                            (int) sv.Asset.textureRect.width,
+                            (int) sv.Asset.textureRect.height);
+                        targetTex.SetPixels(pixels);
+                        targetTex.Apply();
+                        sv.Texture = targetTex;
+                    }
+
+                    callback?.Invoke(sv.Texture);
+                    return sv.Texture;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+
             return res;
         }
 
@@ -177,7 +253,8 @@ namespace TaoTie
         {
             if (string.IsNullOrEmpty(imagePath))
                 return;
-            this.GetSpriteLoadInfoByPath(imagePath, out int assetType, out string assetAddress, out string subAssetName);
+            this.GetSpriteLoadInfoByPath(imagePath, out int assetType, out string assetAddress,
+                out string subAssetName);
 
             if (assetType == SpriteType.SpriteAtlas)
             {
@@ -188,7 +265,7 @@ namespace TaoTie
                         var subasset = value.SubAsset;
                         if (subasset.ContainsKey(subAssetName))
                         {
-                            subasset[subAssetName].RefCount --;
+                            subasset[subAssetName].RefCount--;
                             if (subasset[subAssetName].RefCount <= 0)
                             {
                                 GameObject.Destroy(subasset[subAssetName].Asset);
@@ -204,7 +281,7 @@ namespace TaoTie
                 {
                     if (value.RefCount > 0)
                     {
-                        value.RefCount --;
+                        value.RefCount--;
                     }
                 }
             }
@@ -224,7 +301,8 @@ namespace TaoTie
             CoroutineLock coroutineLock = null;
             try
             {
-                coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, atlasPath.GetHashCode());
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, atlasPath.GetHashCode());
                 res = await this.LoadAtlasImageAsyncInternal(atlasPath, null, callback);
                 callback?.Invoke(res);
             }
@@ -232,9 +310,10 @@ namespace TaoTie
             {
                 coroutineLock?.Dispose();
             }
+
             return res;
         }
-        
+
         /// <summary>
         /// 异步加载图片： 回调方式，按理除了预加载的时候其余时候是不需要关心图集的
         /// </summary>
@@ -247,8 +326,10 @@ namespace TaoTie
             CoroutineLock coroutineLock = null;
             try
             {
-                coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, atlasPath.GetHashCode());
-                res = await this.LoadSingleImageAsyncInternal(atlasPath, callback);
+                coroutineLock =
+                    await CoroutineLockManager.Instance.Wait(CoroutineLockType.Resources, atlasPath.GetHashCode());
+                var vs = await this.LoadSingleImageAsyncInternal(atlasPath);
+                res = vs.Asset;
                 callback?.Invoke(res);
 
             }
@@ -256,11 +337,14 @@ namespace TaoTie
             {
                 coroutineLock?.Dispose();
             }
+
             return res;
         }
+
         #region private
 
-        async ETTask<Sprite> LoadAtlasImageAsyncInternal(string assetAddress, string subAssetName, Action<Sprite> callback = null)
+        async ETTask<Sprite> LoadAtlasImageAsyncInternal(string assetAddress, string subAssetName,
+            Action<Sprite> callback = null)
         {
             var cacheCls = this.cacheSpriteAtlas;
             if (cacheCls.TryGet(assetAddress, out var valueC))
@@ -273,7 +357,7 @@ namespace TaoTie
                 {
                     if (valueC.SubAsset.TryGetValue(subAssetName, out var result))
                     {
-                        valueC.SubAsset[subAssetName].RefCount ++;
+                        valueC.SubAsset[subAssetName].RefCount++;
                         callback?.Invoke(result.Asset);
                         return result.Asset;
                     }
@@ -286,22 +370,25 @@ namespace TaoTie
                             callback?.Invoke(null);
                             return null;
                         }
+
                         if (valueC.SubAsset == null)
                             valueC.SubAsset = new Dictionary<string, SpriteValue>();
-                        valueC.SubAsset[subAssetName] = new SpriteValue { Asset = sp, RefCount = 1 };
+                        valueC.SubAsset[subAssetName] = new SpriteValue {Asset = sp, RefCount = 1};
                         callback?.Invoke(sp);
                         return sp;
                     }
                 }
             }
+
             var asset = await ResourcesManager.Instance.LoadAsync<SpriteAtlas>(assetAddress);
             if (asset != null)
             {
                 if (!cacheCls.TryGet(assetAddress, out var value))
                 {
-                    value = new SpriteAtlasValue() { Asset = asset };
+                    value = new SpriteAtlasValue() {Asset = asset};
                     cacheCls.Set(assetAddress, value);
                 }
+
                 if (value.SubAsset.TryGetValue(subAssetName, out var result))
                 {
                     value.SubAsset[subAssetName].RefCount++;
@@ -317,17 +404,20 @@ namespace TaoTie
                         callback?.Invoke(null);
                         return null;
                     }
+
                     if (value.SubAsset == null)
                         value.SubAsset = new Dictionary<string, SpriteValue>();
-                    value.SubAsset[subAssetName] = new SpriteValue { Asset = sp, RefCount = 1 };
+                    value.SubAsset[subAssetName] = new SpriteValue {Asset = sp, RefCount = 1};
                     callback?.Invoke(sp);
                     return sp;
                 }
             }
+
             callback?.Invoke(null);
             return null;
         }
-        async ETTask<Sprite> LoadSingleImageAsyncInternal(string assetAddress, Action<Sprite> callback = null)
+
+        async ETTask<SpriteValue> LoadSingleImageAsyncInternal(string assetAddress)
         {
             var cacheCls = this.cacheSingleSprite;
             if (cacheCls.TryGet(assetAddress, out var valueC))
@@ -339,29 +429,30 @@ namespace TaoTie
                 else
                 {
                     valueC.RefCount = valueC.RefCount + 1;
-                    callback?.Invoke(valueC.Asset);
-                    return valueC.Asset;
+                    return valueC;
                 }
             }
+
             var asset = await ResourcesManager.Instance.LoadAsync<Sprite>(assetAddress);
             if (asset != null)
             {
                 if (cacheCls.TryGet(assetAddress, out var value))
                 {
-                    value.RefCount ++;
+                    value.RefCount++;
                 }
                 else
                 {
-                    value = new SpriteValue() { Asset = asset, RefCount = 1 };
+                    value = new SpriteValue() {Asset = asset, Texture = asset.texture, RefCount = 1};
                     cacheCls.Set(assetAddress, value);
-                    callback?.Invoke(value.Asset);
-                    return value.Asset;
+                    return value;
                 }
             }
-            callback?.Invoke(null);
+
             return null;
         }
-        void GetSpriteLoadInfoByPath(string imagePath, out int assetType, out string assetAddress, out string subAssetName)
+
+        void GetSpriteLoadInfoByPath(string imagePath, out int assetType, out string assetAddress,
+            out string subAssetName)
         {
             assetAddress = imagePath;
             subAssetName = "";
@@ -372,8 +463,9 @@ namespace TaoTie
                 assetType = SpriteType.Sprite;
                 return;
             }
+
             assetType = SpriteType.SpriteAtlas;
-            var prefix = imagePath.Substring(0, index+1);
+            var prefix = imagePath.Substring(0, index + 1);
             var substr = imagePath.Substring(index + ATLAS_KEY.Length);
             var subIndex = substr.IndexOf('/');
             string atlasPath;
@@ -385,7 +477,7 @@ namespace TaoTie
                 atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
                 var dotIndex = substr.LastIndexOf(".");
                 var lastSlashIndex = substr.LastIndexOf('/');
-                spriteName = substr.Substring(lastSlashIndex+1, dotIndex - lastSlashIndex-1);
+                spriteName = substr.Substring(lastSlashIndex + 1, dotIndex - lastSlashIndex - 1);
             }
             else
             {
@@ -393,12 +485,12 @@ namespace TaoTie
                 var dotIndex = substr.LastIndexOf(".");
                 spriteName = substr.Substring(0, dotIndex);
             }
+
             assetAddress = atlasPath;
             subAssetName = spriteName;
         }
 
-        async ETTask<Sprite> LoadSpriteImageAsyncInternal(
-             string assetAddress, string subAssetName, Action<Sprite> callback)
+        async ETTask<SpriteValue> LoadSpriteImageAsyncInternal(string assetAddress, string subAssetName)
         {
             LruCache<string, SpriteAtlasValue> cacheCls = this.cacheSpriteAtlas;
             if (cacheCls.TryGet(assetAddress, out SpriteAtlasValue valueC))
@@ -409,79 +501,80 @@ namespace TaoTie
                 }
                 else
                 {
-                    Sprite result;
+                    SpriteValue result;
                     var subassetList = valueC.SubAsset;
                     if (subassetList.ContainsKey(subAssetName))
                     {
-                        result = subassetList[subAssetName].Asset;
-                        subassetList[subAssetName].RefCount ++;
+                        result = subassetList[subAssetName];
+                        subassetList[subAssetName].RefCount++;
                     }
                     else
                     {
-                        result = valueC.Asset.GetSprite(subAssetName);
-                        if (result == null)
+                        var sprite = valueC.Asset.GetSprite(subAssetName);
+                        if (sprite == null)
                         {
                             Log.Error("image not found:" + assetAddress + "" + subAssetName);
-                            callback?.Invoke(null);
                             return null;
                         }
+
                         if (valueC.SubAsset == null)
                             valueC.SubAsset = new Dictionary<string, SpriteValue>();
-                        valueC.SubAsset[subAssetName] = new SpriteValue { Asset = result, RefCount = 1 };
+                        result = valueC.SubAsset[subAssetName] = new SpriteValue {Asset = sprite, RefCount = 1};
                     }
-                    callback?.Invoke(result);
+
                     return result;
                 }
             }
+
             var asset = await ResourcesManager.Instance.LoadAsync<SpriteAtlas>(assetAddress);
             if (asset != null)
             {
-                Sprite result;
+                SpriteValue result;
                 var sa = asset;
                 if (cacheCls.TryGet(assetAddress, out valueC))
                 {
                     var subasset_list = valueC.SubAsset;
                     if (subasset_list.ContainsKey(subAssetName))
                     {
-                        result = subasset_list[subAssetName].Asset;
+                        result = subasset_list[subAssetName];
                         subasset_list[subAssetName].RefCount = subasset_list[subAssetName].RefCount + 1;
                     }
                     else
                     {
-                        result = valueC.Asset.GetSprite(subAssetName);
-                        if (result == null)
+                        var sprite = valueC.Asset.GetSprite(subAssetName);
+                        if (sprite == null)
                         {
                             Log.Error("image not found:" + assetAddress + "" + subAssetName);
-                            callback?.Invoke(null);
                             return null;
                         }
+
                         if (valueC.SubAsset == null)
                             valueC.SubAsset = new Dictionary<string, SpriteValue>();
-                        valueC.SubAsset[subAssetName] = new SpriteValue { Asset = result, RefCount = 1 };
+                        result = valueC.SubAsset[subAssetName] = new SpriteValue {Asset = sprite, RefCount = 1};
                     }
                 }
                 else
                 {
-                    valueC = new SpriteAtlasValue { Asset = sa, SubAsset = new Dictionary<string, SpriteValue>() };
-                    result = valueC.Asset.GetSprite(subAssetName);
-                    if (result == null)
+                    valueC = new SpriteAtlasValue {Asset = sa, SubAsset = new Dictionary<string, SpriteValue>()};
+                    var sprite = valueC.Asset.GetSprite(subAssetName);
+                    if (sprite == null)
                     {
                         Log.Error("image not found:" + assetAddress + "" + subAssetName);
-                        callback?.Invoke(null);
                         return null;
                     }
+
                     if (valueC.SubAsset == null)
                         valueC.SubAsset = new Dictionary<string, SpriteValue>();
-                    valueC.SubAsset[subAssetName] = new SpriteValue { Asset = result, RefCount = 1 };
+                    result = valueC.SubAsset[subAssetName] = new SpriteValue {Asset = sprite, RefCount = 1};
                     cacheCls.Set(assetAddress, valueC);
                 }
-                callback?.Invoke(result);
+
                 return result;
             }
-            callback?.Invoke(null);
+
             return null;
         }
-        
+
         #endregion
 
         public void Cleanup()
@@ -493,17 +586,24 @@ namespace TaoTie
 
         public void Clear()
         {
-            foreach ((string key,var value) in this.cacheSpriteAtlas)
+            foreach ((string key, var value) in this.cacheSpriteAtlas)
             {
                 if (value.SubAsset != null)
                     foreach (var item in value.SubAsset)
                     {
                         GameObject.Destroy(item.Value.Asset);
+                        if (item.Value.Texture != null)
+                        {
+                            GameObject.Destroy(item.Value.Texture);
+                            item.Value.Texture = null;
+                        }
                     }
+
                 ResourcesManager.Instance?.ReleaseAsset(value.Asset);
                 value.Asset = null;
                 value.SubAsset = null;
             }
+
             this.cacheSpriteAtlas.Clear();
 
             foreach ((string key, var value) in this.cacheSingleSprite)
@@ -512,12 +612,14 @@ namespace TaoTie
                 value.Asset = null;
                 value.RefCount = 0;
             }
+
             this.cacheSingleSprite.Clear();
 
             foreach (var item in this.cacheOnlineImage)
             {
                 GameObject.Destroy(item.Value.Texture2D);
             }
+
             this.cacheOnlineImage.Clear();
             Log.Info("ImageLoaderManager Clear");
         }
@@ -525,9 +627,9 @@ namespace TaoTie
 
         #region Online
 
-        public void ReleaseOnlineImage(string url,bool clear = true)
+        public void ReleaseOnlineImage(string url, bool clear = true)
         {
-            if (this.cacheOnlineImage.TryGetValue(url,out var data))
+            if (this.cacheOnlineImage.TryGetValue(url, out var data))
             {
                 data.RefCount--;
                 if (clear && data.RefCount <= 0)
@@ -536,9 +638,11 @@ namespace TaoTie
                     {
                         GameObject.Destroy(data.Sprite);
                     }
+
                     GameObject.Destroy(data.Texture2D);
                     cacheOnlineImage.Remove(url);
                 }
+
                 if (this.cacheOnlineImage.Count > 10)
                 {
                     using (ListComponent<string> temp = ListComponent<string>.Create())
@@ -558,16 +662,17 @@ namespace TaoTie
                             {
                                 GameObject.Destroy(img.Sprite);
                             }
+
                             GameObject.Destroy(img.Texture2D);
                             cacheOnlineImage.Remove(temp[i]);
                         }
-                    } 
-                    
+                    }
+
                 }
             }
         }
 
-        public async ETTask<Sprite> GetOnlineSprite(string url,int tryCount = 3)
+        public async ETTask<Sprite> GetOnlineSprite(string url, int tryCount = 3)
         {
             if (string.IsNullOrWhiteSpace(url)) return null;
             CoroutineLock coroutineLock = null;
@@ -580,9 +685,11 @@ namespace TaoTie
                     data.RefCount++;
                     if (data.Sprite == null)
                     {
-                        data.Sprite = Sprite.Create(data.Texture2D, new Rect(0, 0, data.Texture2D.width, data.Texture2D.height),
+                        data.Sprite = Sprite.Create(data.Texture2D,
+                            new Rect(0, 0, data.Texture2D.width, data.Texture2D.height),
                             new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
                     }
+
                     return data.Sprite;
                 }
 
@@ -607,10 +714,14 @@ namespace TaoTie
                         var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                             new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
                         var bytes = texture.EncodeToPNG();
+#if !UNITY_WEBGL || UNITY_EDITOR
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
                             File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
+#else
+                        File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
+#endif
                         this.cacheOnlineImage.Add(url, new OnlineImage(texture, sprite, 1));
                         return sprite;
                     }
@@ -624,10 +735,11 @@ namespace TaoTie
             {
                 coroutineLock?.Dispose();
             }
+
             return null;
         }
-        
-        public async ETTask<Texture2D> GetOnlineTexture(string url,int tryCount = 3)
+
+        public async ETTask<Texture2D> GetOnlineTexture(string url, int tryCount = 3)
         {
             if (string.IsNullOrWhiteSpace(url)) return null;
             CoroutineLock coroutineLock = null;
@@ -658,10 +770,14 @@ namespace TaoTie
                     if (texture != null)
                     {
                         var bytes = texture.EncodeToPNG();
+#if !UNITY_WEBGL || UNITY_EDITOR
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
                             File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
+#else
+                        File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
+#endif
                         // GameObject.Destroy(texture);
                         this.cacheOnlineImage.Add(url, new OnlineImage(texture, null, 1));
                         return texture;
@@ -676,6 +792,7 @@ namespace TaoTie
             {
                 coroutineLock?.Dispose();
             }
+
             return null;
         }
 

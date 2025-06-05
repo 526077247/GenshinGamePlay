@@ -270,13 +270,14 @@ namespace TaoTie
         /// 设置SpriteAtlas 的配置参数  Uncompressed 目录的图集不压
         /// </summary>
         /// <param name="atlas"></param>
-        /// <param name="_atlasPath"></param>
-        private static void SetSpriteAtlas(SpriteAtlas atlas, string _atlasPath)
+        /// <param name="atlasPath"></param>
+        /// <param name="readWrite"></param>
+        private static void SetSpriteAtlas(SpriteAtlas atlas, string atlasPath, bool readWrite = false)
         {
-            TextureImporterFormat _format = TextureImporterFormat.ASTC_6x6;
-            if (_atlasPath.Contains("Uncompressed"))
+            TextureImporterFormat format = TextureImporterFormat.ASTC_6x6;
+            if (atlasPath.Contains("Uncompressed"))
             {
-                _format = TextureImporterFormat.RGBA32;
+                format = TextureImporterFormat.RGBA32;
             }
 
             // 设置参数 可根据项目具体情况进行设置
@@ -289,9 +290,10 @@ namespace TaoTie
             };
             atlas.SetPackingSettings(packSetting);
 
+            SpriteAtlasTextureSettings oldSetting = atlas.GetTextureSettings();
             SpriteAtlasTextureSettings textureSetting = new SpriteAtlasTextureSettings()
             {
-                readable = false,
+                readable = oldSetting.readable | readWrite,
                 generateMipMaps = false,
                 sRGB = true,
                 filterMode = FilterMode.Bilinear,
@@ -302,7 +304,7 @@ namespace TaoTie
             {
                 name = "Android",
                 maxTextureSize = MaxSize["Android"],
-                format = _format,
+                format = format,
                 overridden = true,
             };
 
@@ -312,7 +314,7 @@ namespace TaoTie
             {
                 name = "iPhone",
                 maxTextureSize = MaxSize["iPhone"],
-                format = _format,
+                format = format,
                 overridden = true,
             };
 
@@ -323,7 +325,7 @@ namespace TaoTie
                 name = "WebGL",
                 maxTextureSize = 2048,
 #if UNITY_2021_3_OR_NEWER
-                format = _format,
+                format = format,
 #else
                 format = TextureImporterFormat.DXT5; //设置格式
 #endif

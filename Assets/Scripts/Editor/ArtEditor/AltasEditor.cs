@@ -17,10 +17,9 @@ namespace TaoTie
             AtlasHelper.SettingPNG();
         }
         
-        [MenuItem("Tools/美术工具/清理和生成图集", false, 32)]
+        [MenuItem("Tools/美术工具/生成图集", false, 32)]
         public static void ClearAllAtlasAndGenerate()
         {
-            AtlasHelper.ClearAllAtlas();
             try
             {
                 AssetDatabase.StartAssetEditing();
@@ -38,7 +37,7 @@ namespace TaoTie
             }
         }
         
-        [MenuItem("Assets/工具/清理和生成图集",false,400)]
+        [MenuItem("Assets/工具/生成图集",false,400)]
         static void ClearSelectionAtlasAndGenerate()
         {
             string[] guids = Selection.assetGUIDs;
