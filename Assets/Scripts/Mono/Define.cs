@@ -33,7 +33,7 @@ namespace TaoTie
                 Screen.width > Screen.height ? Mathf.Max(dWidth, dHeight) : Mathf.Min(dWidth, dHeight);
         public static readonly float DesignScreenHeight =
                 Screen.width > Screen.height ? Mathf.Min(dWidth, dHeight) : Mathf.Max(dWidth, dHeight);
-        public static int LogLevel = 1;
+        public static int LogLevel = Debug ? 1 : 5;
 
         
 #if FORCE_UPDATE // 是否默认强更 该配置项会影响到有无网络对游戏更新流程的改变

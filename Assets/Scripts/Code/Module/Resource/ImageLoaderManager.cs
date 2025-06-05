@@ -713,14 +713,13 @@ namespace TaoTie
                     {
                         var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                             new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
-                        var bytes = texture.EncodeToPNG();
+
 #if !UNITY_WEBGL || UNITY_EDITOR
+                        var bytes = texture.EncodeToPNG();
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
                             File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
-#else
-                        File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
 #endif
                         this.cacheOnlineImage.Add(url, new OnlineImage(texture, sprite, 1));
                         return sprite;
@@ -769,14 +768,12 @@ namespace TaoTie
 
                     if (texture != null)
                     {
-                        var bytes = texture.EncodeToPNG();
 #if !UNITY_WEBGL || UNITY_EDITOR
+                        var bytes = texture.EncodeToPNG();
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
                             File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
-#else
-                        File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
 #endif
                         // GameObject.Destroy(texture);
                         this.cacheOnlineImage.Add(url, new OnlineImage(texture, null, 1));

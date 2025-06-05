@@ -35,7 +35,9 @@ namespace TaoTie
             }
             this.i18nTextKeyDic = new Dictionary<int, string>();
             InitAsync().Coroutine();
+#if !UNITY_WEBGL
             AddSystemFonts();
+#endif
         }
 
         private async ETTask InitAsync()
@@ -212,6 +214,10 @@ namespace TaoTie
 #endif
         public void RemoveSystemFonts()
         {
+#if UNITY_WEBGL
+            Log.Error("WebGL不支持加载系统字体");
+            return;
+#endif
             if(!addFonts) return;
             addFonts = false;
 #if UNITY_EDITOR||UNITY_STANDALONE_WIN

@@ -99,11 +99,11 @@ namespace TaoTie
 
                         if (clip != null)
                         {
+#if !UNITY_WEBGL || UNITY_EDITOR
                             var bytes = GetRealAudio(clip);
                             int hz = clip.frequency;
                             int channels = clip.channels;
                             int samples = clip.samples;
-#if !UNITY_WEBGL || UNITY_EDITOR
                             ThreadPool.QueueUserWorkItem(_ =>
                             {
                                 var path = HttpManager.Instance.LocalFile(url, "downloadSound", ".wav");
@@ -113,13 +113,6 @@ namespace TaoTie
                                     WriteHeader(fs, hz, channels, samples);
                                 }
                             });
-#else
-                            var path = HttpManager.Instance.LocalFile(url, "downloadSound", ".wav");
-                            using (FileStream fs = CreateEmpty(path))
-                            {
-                                fs.Write(bytes, 0, bytes.Length);
-                                WriteHeader(fs, hz, channels, samples);
-                            }
 #endif
                             return clip;
                         }
@@ -162,7 +155,7 @@ namespace TaoTie
             /// <param name="hz"></param>
             /// <param name="channels"></param>
             /// <param name="samples"></param>
-            private void WriteHeader(FileStream stream, int hz, int channels, int samples)
+            private void WriteHeader(Stream stream, int hz, int channels, int samples)
             {
                 stream.Seek(0, SeekOrigin.Begin);
 

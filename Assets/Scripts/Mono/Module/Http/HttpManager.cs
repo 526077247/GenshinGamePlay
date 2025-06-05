@@ -137,12 +137,7 @@ namespace TaoTie
 #if !UNITY_WEBGL || UNITY_EDITOR
                 url = "file://" + LocalFile(url);
 #else
-                url = LocalFile(url);
-                if (!File.Exists(url)) return null;
-                var bytes = File.ReadAllBytes(url);
-                Texture2D texture2D = new Texture2D(2, 2);
-                texture2D.LoadRawTextureData(bytes);
-                return texture2D;
+                return null;
 #endif
             }
             var op = HttpGetImageOnlineInner(url, headers, timeout);
@@ -223,28 +218,16 @@ namespace TaoTie
         public async ETTask<AudioClip> HttpGetSoundOnline(string url, bool local, Dictionary<string, string> headers = null,
             int timeout = DEFAULT_TIMEOUT,ETCancellationToken cancelToken = null)
         {
-            string extension = Path.GetExtension(url).ToLower();
             //本地是否存在图片
             if (local)
             {
 #if !UNITY_WEBGL || UNITY_EDITOR
-                url = "file://"+LocalFile(url,"downloadSound",".wav");
+                url = "file://" + LocalFile(url, "downloadSound", ".wav");
 #else
-                url = LocalFile(url,"downloadSound",".wav");
-                if (!File.Exists(url)) return null;
-                var bytes = File.ReadAllBytes(url);
-                float[] floatArr = new float[bytes.Length / 4];
-                for (int i = 0; i < floatArr.Length; i++)
-                {
-                    if (BitConverter.IsLittleEndian)
-                        Array.Reverse(bytes, i * 4, 4);
-                    floatArr[i] = BitConverter.ToSingle(bytes, i * 4) / 0x80000000;
-                }
-                AudioClip audioClip = AudioClip.Create(url, floatArr.Length, 1, 44100, false);
-                audioClip.SetData(floatArr, 0);
-                return audioClip;
+                return null;
 #endif
             }
+            string extension = Path.GetExtension(url).ToLower();
             var op = HttpGetSoundOnlineInner(url,GetAudioType(local?".wav": extension), headers, timeout);
             while (!op.isDone)
             {
