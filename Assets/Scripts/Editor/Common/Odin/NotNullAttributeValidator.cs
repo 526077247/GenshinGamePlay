@@ -1,4 +1,5 @@
-﻿using Sirenix.OdinInspector.Editor;
+﻿#if ODIN_INSPECTOR
+using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.Validation;
 using TaoTie;
 [assembly: RegisterValidator(typeof(NotNullAttributeValidator))]
@@ -29,3 +30,4 @@ namespace TaoTie
     }
     #endregion
 }
+#endif
