@@ -7,6 +7,16 @@ namespace TaoTie
 {
     public static class Log
     {
+        #if UNITY_EDITOR
+        static Log()
+        {
+            if (!UnityEngine.Application.isPlaying)
+            {
+                ILog = new UnityLogger();
+            }
+        }
+        
+        #endif
         public static ILog ILog { get; set; }
         
         private const int TraceLevel = 1;
