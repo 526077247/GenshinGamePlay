@@ -24,10 +24,12 @@ namespace TaoTie
 
         public static void DoVibrate()
         {
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
             Vibrate();
 #elif UNITY_ANDROID ||UNITY_IOS
             Handheld.Vibrate();
+#else
+            Log.Info("Vibrate Callback");
 #endif
         }
     }

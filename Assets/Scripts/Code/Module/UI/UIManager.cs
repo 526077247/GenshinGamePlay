@@ -1228,12 +1228,30 @@ namespace TaoTie
         {
             var rectTrans = target.GetTransform().GetComponent<RectTransform>();
             var padding = WidthPadding;
-
+            
             var safeArea = Screen.safeArea;
             var height = Screen.height;
-
-            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), safeArea.top * rectTrans.anchorMax.y * ScreenSizeFlag);
-            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -(height - safeArea.bottom) * (1 - rectTrans.anchorMin.y) * ScreenSizeFlag);
+            var width = Screen.width;
+            
+            float top = (float) safeArea.top * ScreenSizeFlag;
+            float bottom = (height - (float)safeArea.bottom) * ScreenSizeFlag;
+#if UNITY_WEBGL
+            //竖屏特殊适配
+            if (width < height)
+            {
+                if (top == 0 && bottom == height)
+                {
+                    float flag = Define.DesignScreenWidth / width;
+                    var dHeight = flag * height;
+                    if (Define.DesignScreenHeight < dHeight)
+                    {
+                        top = bottom = (dHeight - Define.DesignScreenHeight) / 2;
+                    }
+                }
+            }
+#endif
+            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), bottom * rectTrans.anchorMax.y);
+            rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -top * (1 - rectTrans.anchorMin.y));
         }
 
         private readonly Vector2 hidePos = new Vector2(9999, 9999);

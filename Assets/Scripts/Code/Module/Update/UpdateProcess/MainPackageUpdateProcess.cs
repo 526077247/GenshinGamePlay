@@ -15,11 +15,11 @@ namespace TaoTie
 
             int version = PackageManager.Instance.GetPackageVersion();
             forceUpdate = Define.ForceUpdate;
-            var verInfo = ServerConfigManager.Instance.GetResVerInfo(channel, version);
+            var verInfo = ServerConfigManager.Instance.GetResVerInfo(PackageManager.Instance.CdnConfig, version);
             if (verInfo != null && verInfo.ForceUpdate == 1)
                 forceUpdate = true;
             
-            var maxVer = ServerConfigManager.Instance.FindMaxUpdateResVer(channel, "", maxAppResVer);
+            var maxVer = ServerConfigManager.Instance.FindMaxUpdateResVer(PackageManager.Instance.CdnConfig, "", maxAppResVer);
             if (maxVer < 0)
             {
                 Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " ");

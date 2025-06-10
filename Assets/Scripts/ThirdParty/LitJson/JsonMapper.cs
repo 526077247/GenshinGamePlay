@@ -1235,7 +1235,7 @@ namespace TaoTie.LitJson
         #endregion
 
 
-        public static string ToJson<T>(T obj) where T :class
+        public static string ToJson<T>(T obj)
         {
             if (obj == null) return "null";
             lock (static_writer_lock)
@@ -1287,7 +1287,7 @@ namespace TaoTie.LitJson
 
         public static T ToObject<T>(string json)
         {
-            if (json == "null") return default;
+            if (string.IsNullOrWhiteSpace(json) || json.Length == 4 && json.ToLower() == "null") return default;
             JsonReader reader = new JsonReader(json);
 
             return (T)ReadValue(typeof(T), reader);
@@ -1295,7 +1295,7 @@ namespace TaoTie.LitJson
 
         public static object ToObject(Type type, string json)
         {
-            if (json == "null") return null;
+            if (string.IsNullOrWhiteSpace(json) || json.Length == 4 && json.ToLower() == "null") return null;
             JsonReader reader = new JsonReader(json);
             return ReadValue(type, reader);
         }

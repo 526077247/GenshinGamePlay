@@ -79,6 +79,10 @@ namespace TaoTie
 
         private void OnEnable()
         {
+	        string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+	        var config = JsonHelper.FromJson<PackageConfig>(jstr);
+	        config.DefaultPackageVersion = (int)(TimeInfo.Instance.ClientNow()/1000);
+	        File.WriteAllText("Assets/AssetsPackage/config.bytes", JsonHelper.ToJson(config));
 #if UNITY_ANDROID
 			activePlatform = PlatformType.Android;
 #elif UNITY_IOS
@@ -130,7 +134,7 @@ namespace TaoTie
         private void OnGUI() 
 		{
 			channel = EditorGUILayout.TextField("渠道：", channel);
-			
+
 			if (this.config == null)
 			{
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
@@ -160,9 +164,18 @@ namespace TaoTie
             {
 	            this.isContainsAb = EditorGUILayout.Toggle("是否同时打分包资源: ", this.isContainsAb);
             }
+
+            var isil2cpp = PlayerSettings.GetScriptingBackend(BuildHelper.buildGroupmap[activePlatform]) ==
+                           ScriptingImplementation.IL2CPP;
+            if (isil2cpp)
+            {
+	            this.buildHotfixAssembliesAOT = true;
+            }
+            EditorGUI.BeginDisabledGroup(isil2cpp);
             this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle(
 	            new GUIContent("*热更代码是否打AOT:", "可以把热更代码同时打一份到il2cpp使首包代码运行速度达到最快，但是会增加构建代码大小以及代码占用内存大小（未使用热更方案时必须勾选此项, WebGL建议勾选此项）"),
-	            this.buildHotfixAssembliesAOT);
+	            this.buildHotfixAssembliesAOT, new GUILayoutOption[]{});
+            EditorGUI.EndDisabledGroup();
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {

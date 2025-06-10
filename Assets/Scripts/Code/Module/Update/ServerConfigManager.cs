@@ -207,20 +207,9 @@ namespace TaoTie
             return false;
         }
         //找到可以更新的最大资源版本号
-        public int FindMaxUpdateResVer(string configChannel, string resverChannel,int appResVer)
+        public int FindMaxUpdateResVer(CDNConfig config, string resverChannel,int appResVer)
         {
-            var rename = "common";
-            for (int i = 0; i < Define.RenameList.Length; i++)
-            {
-                if (Define.RenameList[i] == configChannel)
-                {
-                    rename = configChannel;
-                    break;
-                }
-            }
-
-            configChannel = rename;
-            
+            var configChannel = config.GetChannel();
             if (string.IsNullOrEmpty(configChannel) || this.resUpdateList == null || 
                 !this.resUpdateList.TryGetValue(configChannel, out var resVerList)) return -1;
             if (resVerList == null) return -1;
@@ -249,19 +238,9 @@ namespace TaoTie
             return lastVer;
         }
 
-        public Resver GetResVerInfo(string configChannel, int version)
+        public Resver GetResVerInfo(CDNConfig config, int version)
         {
-            var rename = "common";
-            for (int i = 0; i < Define.RenameList.Length; i++)
-            {
-                if (Define.RenameList[i] == configChannel)
-                {
-                    rename = configChannel;
-                    break;
-                }
-            }
-
-            configChannel = rename;
+            var configChannel = config.GetChannel();
             if (string.IsNullOrEmpty(configChannel) || this.resUpdateList == null || 
                 !this.resUpdateList.TryGetValue(configChannel, out var resVerList)) return null;
             if (resVerList.TryGetValue(version, out var res))

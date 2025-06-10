@@ -10,7 +10,7 @@ namespace YooAsset
     /// Web文件系统
     /// </summary>
     [Preserve]
-    internal class DefaultWebServerFileSystem : IFileSystem
+    internal class DefaultWebServerFileSystem : IFileSystem,IDefaultWebServerFileSystem
     {
         public class FileWrapper
         {
@@ -177,6 +177,11 @@ namespace YooAsset
         public virtual string ReadBundleFileText(PackageBundle bundle)
         {
             throw new System.NotImplementedException();
+        }
+
+        public bool IsBuildInVersion(string packageVersion)
+        {
+            return BuildInPackageVersion == packageVersion;
         }
 
         #region 内部方法

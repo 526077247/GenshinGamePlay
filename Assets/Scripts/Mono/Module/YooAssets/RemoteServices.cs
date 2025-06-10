@@ -14,15 +14,7 @@ namespace YooAsset
         {
             conf = config;
             Instance = this;
-            rename = "common";
-            for (int i = 0; i < Define.RenameList.Length; i++)
-            {
-                if (Define.RenameList[i] == conf.Channel)
-                {
-                    rename = conf.Channel;
-                    break;
-                }
-            }
+            rename = conf.GetChannel();
         }
         public string GetRemoteMainURL(string fileName)
         {

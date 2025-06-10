@@ -55,22 +55,22 @@ namespace YooAsset
         }
         UpdatePackageManifestOperation IPlayMode.UpdatePackageManifestAsync(string packageVersion, int timeout)
         {
-            if (WebServerFileSystem is DefaultWebServerFileSystem defaultWebServerFileSystem &&
-                packageVersion == defaultWebServerFileSystem.BuildInPackageVersion)
+            if (WebServerFileSystem is IDefaultWebServerFileSystem defaultWebServerFileSystem &&
+                defaultWebServerFileSystem.IsBuildInVersion(packageVersion))
             {
-                var operation = new UpdatePackageManifestImplOperation(this, WebServerFileSystem, packageVersion, timeout); ;
+                var operation = new UpdatePackageManifestImplOperation(this, WebServerFileSystem, packageVersion, timeout);
                 OperationSystem.StartOperation(PackageName, operation);
                 return operation;
             }
             if (WebRemoteFileSystem != null)
             {
-                var operation = new UpdatePackageManifestImplOperation(this, WebRemoteFileSystem, packageVersion, timeout); ;
+                var operation = new UpdatePackageManifestImplOperation(this, WebRemoteFileSystem, packageVersion, timeout);
                 OperationSystem.StartOperation(PackageName, operation);
                 return operation;
             }
             else
             {
-                var operation = new UpdatePackageManifestImplOperation(this, WebServerFileSystem, packageVersion, timeout); ;
+                var operation = new UpdatePackageManifestImplOperation(this, WebServerFileSystem, packageVersion, timeout);
                 OperationSystem.StartOperation(PackageName, operation);
                 return operation;
             }
