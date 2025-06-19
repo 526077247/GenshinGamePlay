@@ -436,7 +436,35 @@ namespace TaoTie
                 this.components.Remove(path, TypeInfo<T>.Type);
             }
         }
-
+        
+        
+        /// <summary>
+        /// 移除组件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        public void RemoveAllComponent(string path = "")
+        {
+            if (components == null) return;
+            if (this.components.TryGetDic(path, out var dic))
+            {
+                var list = dic.Values.ToArray();
+                foreach (var component in list)
+                {
+                    if (component != null)
+                    {
+                        component.BeforeOnDisable();
+                        (component as IOnDisable)?.OnDisable();
+                        component.BeforeOnDestroy();
+                        if (component is II18N i18n)
+                            I18NManager.Instance?.RemoveI18NEntity(i18n);
+                        (component as IOnDestroy)?.OnDestroy();
+                    }
+                }
+            }
+            components.Remove(path);
+        }
+        
         /// <summary>
         /// 移除组件回调方法
         /// </summary>

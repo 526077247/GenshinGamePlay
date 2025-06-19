@@ -336,6 +336,10 @@ namespace TaoTie
 					{
 						GameObject.Destroy(inst);
 						goInstCountCache[item.Key]--;
+						if (goInstCountCache[item.Key] == 0)
+						{
+							goInstCountCache.Remove(item.Key);
+						}
 					}
 					instPathCache.Remove(inst);
 				}
@@ -392,6 +396,10 @@ namespace TaoTie
 							{
 								GameObject.Destroy(inst);
 								goInstCountCache[item.Key]--;
+								if (goInstCountCache[item.Key] == 0)
+								{
+									goInstCountCache.Remove(item.Key);
+								}
 							}
 
 							instPathCache.Remove(inst);
@@ -531,6 +539,10 @@ namespace TaoTie
 						{
 							GameObject.Destroy(inst);
 							goInstCountCache[path] --;
+							if (goInstCountCache[path] == 0)
+							{
+								goInstCountCache.Remove(path);
+							}
 						});
 						instPathCache.Remove(inst);
 					}

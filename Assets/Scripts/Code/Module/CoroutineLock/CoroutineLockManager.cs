@@ -64,7 +64,7 @@ namespace TaoTie
                 return;
             }
 
-            self.timeNow = TimeHelper.ClientFrameTime();
+            self.timeNow = TimeInfo.Instance.ClientFrameTime();
 
             if (self.timeNow < self.minTime)
             {
@@ -152,7 +152,7 @@ namespace TaoTie
             CoroutineLock coroutineLock = CoroutineLock.Create(coroutineLockType, key, level);
             if (time > 0)
             {
-                this.AddTimer(TimeHelper.ClientFrameTime() + time, coroutineLock);
+                this.AddTimer(TimeInfo.Instance.ClientFrameTime() + time, coroutineLock);
             }
 
             return coroutineLock;

@@ -32,6 +32,7 @@ namespace DaGenGraph
         private static Dictionary<Type, List<Type>> subTypes = new Dictionary<Type, List<Type>>();
         private static Dictionary<Type, string[]> fullNames = new Dictionary<Type, string[]>();
         private static Dictionary<string, Type> tempType = new Dictionary<string, Type>();
+        private static HashSet<string> noneFind = new HashSet<string>();
         public static List<Type> GetSubClassList(FieldInfo fieldInfo, Type type, out string[] names)
         {
             if (type == null)
@@ -85,6 +86,10 @@ namespace DaGenGraph
             {
                 return type;
             }
+            if (noneFind.Contains(name))
+            {
+                return null;
+            }
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             for (int i = 0; i < assemblies.Length; i++)
             {
@@ -109,6 +114,10 @@ namespace DaGenGraph
             if (type != null)
             {
                 tempType.Add(name,type);
+            }
+            else
+            {
+                noneFind.Add(name);
             }
             return type;
         }

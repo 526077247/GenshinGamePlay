@@ -341,7 +341,7 @@ namespace TaoTie
 
         public virtual long GetTimeNow()
         {
-            return TimeHelper.ServerNow();
+            return TimeInfo.Instance.ServerNow();
         }
 
         /// <summary>

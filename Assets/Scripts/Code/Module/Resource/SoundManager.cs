@@ -235,7 +235,7 @@ namespace TaoTie
                     var token = Token;
                     Token = null;
                     token?.Cancel();
-                    Instance?.sounds?.Remove(Id);
+
                     Id = 0;
                     if (Clip != null)
                     {
@@ -262,9 +262,8 @@ namespace TaoTie
                 }
             }
         }
-
-        public readonly ArrayList ValueList = new ArrayList() {-80, -30, -20, -10, -5, 0, 1, 2, 4, 6, 10};//此处音频单位：分贝
-        public const int DEFAULTVALUE = 5;
+        
+        public const int DEFAULTVALUE = 10;
         private const int INITSOUNDCOUNT = 3;
 
         public static SoundManager Instance { get; private set; }
@@ -281,10 +280,7 @@ namespace TaoTie
         private Transform soundsRoot;
 
         private GameObject soundsClipClone;
-        private GameObject bgmClipClone;
 
-        private AudioMixerGroup BGM;
-        private AudioMixerGroup Sound;
 
         #region IManager
 
@@ -298,15 +294,9 @@ namespace TaoTie
         {
             soundsRoot = new GameObject("SoundsRoot").transform;
             GameObject.DontDestroyOnLoad(soundsRoot);
-            bgmClipClone =
-                await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/BGMManager.prefab",
-                    isPersistent: true);
             soundsClipClone =
                 await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab", isPersistent: true);
-            
-            BGM = bgmClipClone.GetComponent<AudioSource>().outputAudioMixerGroup;
-            Sound = soundsClipClone.GetComponent<AudioSource>().outputAudioMixerGroup;
-            
+
             for (int i = 0; i < INITSOUNDCOUNT; i++)
             {
                 var item = CreateClipSource();
@@ -339,8 +329,6 @@ namespace TaoTie
             soundsPool = null;
             ResourcesManager.Instance.ReleaseAsset(soundsClipClone);
             soundsClipClone = null;
-            ResourcesManager.Instance.ReleaseAsset(bgmClipClone);
-            bgmClipClone = null;
             if (soundsRoot != null)
             {
                 GameObject.Destroy(soundsRoot.gameObject);
@@ -357,7 +345,13 @@ namespace TaoTie
             if (SoundVolume != value)
             {
                 SoundVolume = value;
-                Sound.audioMixer.SetFloat("Sound", (int) ValueList[value]);
+                foreach (var item in sounds)
+                {
+                    if (item.Value?.AudioSource != null && item.Value!=curMusic)
+                    {
+                        item.Value.AudioSource.volume = SoundVolume / 10f;
+                    }
+                }
             }
         }
 
@@ -366,7 +360,10 @@ namespace TaoTie
             if (MusicVolume != value)
             {
                 MusicVolume = value;
-                BGM.audioMixer.SetFloat("BGM", (int) ValueList[value]);
+                if (curMusic?.AudioSource != null)
+                {
+                    curMusic.AudioSource.volume = MusicVolume / 10f;
+                }
             }
         }
 
@@ -384,7 +381,7 @@ namespace TaoTie
                 return 0;
             }
             source.loop = true;
-            source.outputAudioMixerGroup = BGM;
+            source.volume = MusicVolume / 10f;
             SoundItem res = SoundItem.Create(path, false, source, token);
             PoolPlay(res, res.Token).Coroutine();
             curMusic?.Dispose();
@@ -420,7 +417,7 @@ namespace TaoTie
 
         #region Sound
 
-        public long PlaySound(string path, ETCancellationToken token = null)
+        public long PlaySound(string path, ETCancellationToken token = null, bool isLoop = false)
         {
             if (string.IsNullOrEmpty(path)) return 0;
             AudioSource source = GetClipSource();
@@ -429,8 +426,8 @@ namespace TaoTie
                 Log.Error("GetClipSource fail");
                 return 0;
             }
-            source.loop = false;
-            source.outputAudioMixerGroup = Sound;
+            source.loop = isLoop;
+            source.volume = SoundVolume / 10f;
             SoundItem res = SoundItem.Create(path, false, source, token);
             PoolPlay(res, res.Token).Coroutine();
             return res.Id;
@@ -447,7 +444,7 @@ namespace TaoTie
             }
 
             source.loop = false;
-            source.outputAudioMixerGroup = Sound;
+            source.volume = SoundVolume / 10f;
             SoundItem res = SoundItem.Create(path, false, source, token);
             await PoolPlay(res, res.Token);
         }
@@ -461,7 +458,7 @@ namespace TaoTie
                 return 0;
             }
             source.loop = loop;
-            source.outputAudioMixerGroup = Sound;
+            source.volume = SoundVolume / 10f;
             SoundItem res = SoundItem.Create(url, true, source, cancel);
             PoolPlay(res, res.Token).Coroutine();
             return res.Id;
@@ -476,7 +473,7 @@ namespace TaoTie
                 return;
             }
             source.loop = loop;
-            source.outputAudioMixerGroup = Sound;
+            source.volume = SoundVolume;
             SoundItem res = SoundItem.Create(url, true, source, cancel);
             await PoolPlay(res, res.Token);
         }

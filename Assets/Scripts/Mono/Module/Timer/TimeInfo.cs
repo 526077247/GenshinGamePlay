@@ -4,6 +4,10 @@ namespace TaoTie
 {
     public class TimeInfo: IDisposable
     {
+        public const long OneDay = 86400000;
+        public const long Hour = 3600000;
+        public const long Minute = 60000;
+
         public static TimeInfo Instance = new TimeInfo();
 
         private int timeZone;

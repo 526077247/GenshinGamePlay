@@ -40,16 +40,43 @@ namespace SuperScrollView
             mCurItemIdCount = 0;
             DestroyAllItem();
         }
-        public LoopListViewItem2 GetItem()
+        public void CleanUp(Action<GameObject> beforeDestroy)
+        {
+            int count = mPooledItemList.Count;
+            for (int i = 0; i < count; ++i)
+            {
+                beforeDestroy?.Invoke(mPooledItemList[i].gameObject);
+                GameObject.DestroyImmediate(mPooledItemList[i].gameObject);
+            }
+            mPooledItemList.Clear();
+        }
+        public LoopListViewItem2 GetItem(int? index)
         {
             mCurItemIdCount++;
             LoopListViewItem2 tItem = null;
             if (mTmpPooledItemList.Count > 0)
             {
-                int count = mTmpPooledItemList.Count;
-                tItem = mTmpPooledItemList[count - 1];
-                mTmpPooledItemList.RemoveAt(count - 1);
-                tItem.gameObject.SetActive(true);
+                if (index != null)
+                {
+                    for (int i = 0; i < mTmpPooledItemList.Count; i++)
+                    {
+                        if (mTmpPooledItemList[i].ItemIndex == index)
+                        {
+                            tItem = mTmpPooledItemList[i];
+                            mTmpPooledItemList.RemoveAt(i);
+                            tItem.gameObject.SetActive(true);
+                            break;
+                        }
+                    }
+                }
+
+                if (tItem == null)
+                {
+                    int count = mTmpPooledItemList.Count;
+                    tItem = mTmpPooledItemList[count - 1];
+                    mTmpPooledItemList.RemoveAt(count - 1);
+                    tItem.gameObject.SetActive(true);
+                }
             }
             else
             {

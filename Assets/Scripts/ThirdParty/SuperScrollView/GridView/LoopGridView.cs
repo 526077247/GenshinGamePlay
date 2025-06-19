@@ -327,7 +327,21 @@ namespace SuperScrollView
             mOnGetItemByRowColumn = null;
             mListViewInited = false;
         }
-
+        public void CleanUp(string name = null,Action<GameObject> beforeDestroy = null)
+        {
+            if (name == null)
+            {
+                int count = mItemPoolList.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    mItemPoolList[i].CleanUp(beforeDestroy);
+                }
+            }
+            else if(mItemPoolDict.TryGetValue(name ,out var pool))
+            {
+                pool.CleanUp(beforeDestroy);
+            }
+        }
         /*
         This method may use to set the item total count of the GridView at runtime. 
         this parameter must be set a value >=0 , and the ItemIndex can be from 0 to itemCount -1.  
@@ -365,14 +379,14 @@ namespace SuperScrollView
         }
 
        //fetch or create a new item form the item pool.
-        public LoopGridViewItem NewListViewItem(string itemPrefabName)
+        public LoopGridViewItem NewListViewItem(string itemPrefabName, int? index = null)
         {
             GridItemPool pool = null;
             if (mItemPoolDict.TryGetValue(itemPrefabName, out pool) == false)
             {
                 return null;
             }
-            LoopGridViewItem item = pool.GetItem();
+            LoopGridViewItem item = pool.GetItem(index);
             RectTransform rf = item.GetComponent<RectTransform>();
             rf.SetParent(mContainerTrans);
             rf.localScale = Vector3.one;

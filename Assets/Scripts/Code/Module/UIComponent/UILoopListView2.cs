@@ -144,5 +144,16 @@ namespace TaoTie
             ActivatingComponent();
             return loopListView.ScrollRect;
         }
+
+        public void RemoveUIItemAllComponent(GameObject obj)
+        {
+            RemoveAllComponent(obj.name);
+        }
+                        
+        public void CleanUp(string name)
+        {
+            if(loopListView == null) return;
+            loopListView.CleanUp(name, RemoveUIItemAllComponent);
+        }
     }
 }

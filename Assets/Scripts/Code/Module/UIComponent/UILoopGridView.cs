@@ -115,5 +115,16 @@ namespace TaoTie
             this.ActivatingComponent();
             this.loopGridView.mOnEndDragAction = callback;
         }
+        
+        public void RemoveUIItemAllComponent(GameObject obj)
+        {
+            RemoveAllComponent(obj.name);
+        }
+                        
+        public void CleanUp(string name)
+        {
+            if(loopGridView == null) return;
+            loopGridView.CleanUp(name, RemoveUIItemAllComponent);
+        }
     }
 }

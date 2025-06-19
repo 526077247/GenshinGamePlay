@@ -177,10 +177,31 @@ namespace TaoTie
             {
                 version = "Simulate";
             }
+            else if (mode == EPlayMode.WebPlayMode && Define.Networked)
+            {
+                var buildInVersion = GetPackageVersion(packageName);
+                //webgl直接用远端版本
+                var operation = package.RequestPackageVersionAsync();
+                await operation.Task;
+                if (operation.Status == EOperationStatus.Succeed 
+                    && int.TryParse(operation.PackageVersion,out var upstreamVer)
+                    && upstreamVer > buildInVersion)
+                {
+                    version = operation.PackageVersion;
+                    Log.Info("使用远端版本:"+version);
+                }
+                else
+                {
+                    version = buildInVersion.ToString();
+                    Log.Info("使用内置版本:"+version);
+                }
+            }
             else
             {
+                //先用内置版本，等进去后再热更
                 version = GetPackageVersion(packageName).ToString();
             }
+            
             var manifestOp = package.UpdatePackageManifestAsync(version);
             await manifestOp.Task;
             if (manifestOp.Status != EOperationStatus.Succeed)

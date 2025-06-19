@@ -274,7 +274,21 @@ namespace SuperScrollView
             mOnGetItemByIndex = null;
             mListViewInited = false;
         }
-
+        public void CleanUp(string name = null,Action<GameObject> beforeDestroy = null)
+        {
+            if (name == null)
+            {
+                int count = mItemPoolList.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    mItemPoolList[i].CleanUp(beforeDestroy);
+                }
+            }
+            else if(mItemPoolDict.TryGetValue(name ,out var pool))
+            {
+                pool.CleanUp(beforeDestroy);
+            }
+        }
         /*
         InitListView method is to initiate the LoopListView2 component. There are 3 parameters:
         itemTotalCount: the total item count in the listview. If this parameter is set -1, then means there are infinite items, and scrollbar would not be supported, and the ItemIndex can be from –MaxInt to +MaxInt. If this parameter is set a value >=0 , then the ItemIndex can only be from 0 to itemTotalCount -1.
@@ -604,14 +618,14 @@ namespace SuperScrollView
         }
 
 
-        public LoopListViewItem2 NewListViewItem(string itemPrefabName)
+        public LoopListViewItem2 NewListViewItem(string itemPrefabName, int? index = null)
         {
             ItemPool pool = null;
             if (mItemPoolDict.TryGetValue(itemPrefabName, out pool) == false)
             {
                 return null;
             }
-            LoopListViewItem2 item = pool.GetItem();
+            LoopListViewItem2 item = pool.GetItem(index);
             RectTransform rf = item.GetComponent<RectTransform>();
             rf.SetParent(mContainerTrans);
             rf.localScale = Vector3.one;

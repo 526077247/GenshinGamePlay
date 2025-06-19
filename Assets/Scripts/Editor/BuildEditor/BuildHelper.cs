@@ -20,7 +20,7 @@ namespace TaoTie
 
         const string relativeDirPrefix = "Release";
 
-        private static string[] ignoreFile = new[] {"BuildReport_", ".report", "link.xml", ".json", ".version"};
+        private static string[] ignoreFile = new[] {"BuildReport_", ".report", "link.xml", ".json"};
 
         public static readonly Dictionary<PlatformType, BuildTarget> buildmap =
             new Dictionary<PlatformType, BuildTarget>(PlatformTypeComparer.Instance)
