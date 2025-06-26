@@ -4,6 +4,14 @@ namespace TaoTie
 {
     public class UnityLogger: ILog
     {
+        public void Log(string msg)
+        {
+            Info(msg);
+        }
+        public void Exception(Exception ex)
+        {
+            Error(ex);
+        }
         public void Trace(string msg)
         {
             UnityEngine.Debug.Log(msg);

@@ -27,7 +27,7 @@ namespace TaoTie
             PlayMode = mode;
             // 初始化资源系统
             YooAssets.SetOperationSystemQuickStartMode(true);
-            YooAssets.Initialize();
+            YooAssets.Initialize(Log.ILog);
             // 创建默认的资源包
             var package = await GetPackageAsync(Define.DefaultName);
             DefaultPackage = package;
@@ -177,7 +177,7 @@ namespace TaoTie
             {
                 version = "Simulate";
             }
-            else if (mode == EPlayMode.WebPlayMode && Define.Networked)
+            else if (mode == EPlayMode.WebPlayMode && CodeLoader.Instance.CodeMode != CodeMode.BuildIn && Define.Networked)
             {
                 var buildInVersion = GetPackageVersion(packageName);
                 //webgl直接用远端版本

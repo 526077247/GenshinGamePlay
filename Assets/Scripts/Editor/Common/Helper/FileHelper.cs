@@ -24,6 +24,7 @@ namespace TaoTie
 		
 		public static void CleanDirectory(string dir)
 		{
+			if(!Directory.Exists(dir)) return;
 			foreach (string subdir in Directory.GetDirectories(dir))
 			{
 				Directory.Delete(subdir, true);		
@@ -39,17 +40,17 @@ namespace TaoTie
 		{
 			DirectoryInfo source = new DirectoryInfo(srcDir);
 			DirectoryInfo target = new DirectoryInfo(tgtDir);
-	
-			if (target.FullName.StartsWith(source.FullName, StringComparison.CurrentCultureIgnoreCase))
-			{
-				throw new Exception("父目录不能拷贝到子目录！");
-			}
-	
+		
 			if (!source.Exists)
 			{
 				return;
 			}
-	
+			
+			if (target.FullName.StartsWith(source.FullName, StringComparison.CurrentCultureIgnoreCase))
+			{
+				throw new Exception("父目录不能拷贝到子目录！");
+			}
+
 			if (!target.Exists)
 			{
 				target.Create();
@@ -74,16 +75,16 @@ namespace TaoTie
 			DirectoryInfo source = new DirectoryInfo(srcDir);
 			DirectoryInfo target = new DirectoryInfo(tgtDir);
 	
-			if (target.FullName.StartsWith(source.FullName, StringComparison.CurrentCultureIgnoreCase))
-			{
-				throw new Exception("父目录不能拷贝到子目录！");
-			}
-	
 			if (!source.Exists)
 			{
 				return;
 			}
-	
+
+			if (target.FullName.StartsWith(source.FullName, StringComparison.CurrentCultureIgnoreCase))
+			{
+				throw new Exception("父目录不能拷贝到子目录！");
+			}
+
 			if (!target.Exists)
 			{
 				target.Create();

@@ -10,14 +10,14 @@ namespace TaoTie
 {
     public class UIRawImage : UIBaseContainer,IOnCreate<string>,IOnDestroy
     {
-        string spritePath;
+        string texturePath;
         RawImage image;
         BgRawAutoFit bgRawAutoFit;
 
         bool grayState;
         private int version;
         private string cacheUrl;
-        private bool isSetSprite;
+        private bool isSetTexture;
         
         private Texture2D base64texture;
 
@@ -25,15 +25,15 @@ namespace TaoTie
 
         public void OnCreate(string path)
         {
-            SetSpritePath(path).Coroutine();
+            SetTexturePath(path).Coroutine();
         }
 
         public void OnDestroy()
         {
-            if (!string.IsNullOrEmpty(spritePath))
+            if (!string.IsNullOrEmpty(texturePath))
             {
-                ImageLoaderManager.Instance?.ReleaseImage(spritePath);
-                spritePath = null;
+                ImageLoaderManager.Instance?.ReleaseImage(texturePath);
+                texturePath = null;
             }
             if (!string.IsNullOrEmpty(cacheUrl))
             {
@@ -41,10 +41,10 @@ namespace TaoTie
                 cacheUrl = null;
             }
 
-            if (isSetSprite)
+            if (isSetTexture)
             {
                 this.image.texture = null;
-                isSetSprite = false;
+                isSetTexture = false;
                 ClearBase64();
             }
         }
@@ -62,11 +62,11 @@ namespace TaoTie
                 this.bgRawAutoFit =this.GetGameObject().GetComponent<BgRawAutoFit>();
             }
         }
-        public async ETTask SetSpritePath(string spritePath, bool setNativeSize = false)
+        public async ETTask SetTexturePath(string texturePath, bool setNativeSize = false)
         {
             version++;
             int thisVersion = version;
-            if (spritePath == this.spritePath && !isSetSprite)
+            if (texturePath == this.texturePath && !isSetTexture)
             {
                 if (image != null) this.image.enabled = true;
                 return;
@@ -75,51 +75,51 @@ namespace TaoTie
             this.ActivatingComponent();
             if (this.bgRawAutoFit != null) this.bgRawAutoFit.enabled = false;
             this.image.enabled = false;
-            var baseSpritePath = this.spritePath;
+            var baseTexturePath = this.texturePath;
            
-            if (string.IsNullOrEmpty(spritePath))
+            if (string.IsNullOrEmpty(texturePath))
             {
                 this.image.texture = null;
-                this.spritePath = spritePath;
+                this.texturePath = texturePath;
                 this.image.enabled = true;
-                isSetSprite = false;
+                isSetTexture = false;
             }
             else
             {
-                var texture = await ImageLoaderManager.Instance.LoadTextureAsync(spritePath);
+                var texture = await ImageLoaderManager.Instance.LoadTextureAsync(texturePath);
                 if (thisVersion != version)
                 {
-                    ImageLoaderManager.Instance.ReleaseImage(spritePath);
+                    ImageLoaderManager.Instance.ReleaseImage(texturePath);
                     return;
                 }
-                this.spritePath = spritePath;
+                this.texturePath = texturePath;
                 this.image.enabled = true;
                 this.image.texture = texture;
-                isSetSprite = false;
+                isSetTexture = false;
                 if(setNativeSize)
                     this.SetNativeSize();
                 if (this.bgRawAutoFit != null)
                 {
-                    this.bgRawAutoFit.SetSprite(texture);
+                    this.bgRawAutoFit.SetTexture(texture);
                     this.bgRawAutoFit.enabled = true;
                 }
             }
-            if(!string.IsNullOrEmpty(baseSpritePath))
-                ImageLoaderManager.Instance.ReleaseImage(baseSpritePath);
+            if(!string.IsNullOrEmpty(baseTexturePath))
+                ImageLoaderManager.Instance.ReleaseImage(baseTexturePath);
            
         }
         
         /// <summary>
-        /// 设置网络图片地址（注意尽量不要和SetSpritePath混用
+        /// 设置网络图片地址（注意尽量不要和SetTexturePath混用
         /// </summary>
         /// <param name="url"></param>
-        /// <param name="defaultSpritePath"></param>
-        public async ETTask SetOnlineTexturePath(string url, string defaultSpritePath = null)
+        /// <param name="defaultTexturePath"></param>
+        public async ETTask SetOnlineTexturePath(string url, string defaultTexturePath = null)
         {
             this.ActivatingComponent();
-            if (!string.IsNullOrEmpty(defaultSpritePath))
+            if (!string.IsNullOrEmpty(defaultTexturePath))
             {
-                await SetSpritePath(defaultSpritePath);
+                await SetTexturePath(defaultTexturePath);
             }
             version++;
             int thisVersion = version;
@@ -131,7 +131,7 @@ namespace TaoTie
                     ImageLoaderManager.Instance.ReleaseOnlineImage(url);
                     return;
                 }
-                SetSprite(texture);
+                SetTexture(texture);
                 if (!string.IsNullOrEmpty(cacheUrl))
                 {
                     ImageLoaderManager.Instance.ReleaseOnlineImage(cacheUrl);
@@ -141,9 +141,9 @@ namespace TaoTie
             }
         }
 
-        public string GetSpritePath()
+        public string GetTexturePath()
         {
-            return this.spritePath;
+            return this.texturePath;
         }
 
         public void SetImageColor(Color color)
@@ -179,11 +179,11 @@ namespace TaoTie
             }
             this.image.material = mt;
         }
-        public void SetSprite(Texture texture)
+        public void SetTexture(Texture texture)
         {
             this.ActivatingComponent();
             this.image.texture = texture;
-            isSetSprite = true;
+            isSetTexture = true;
         }
         
         public void SetNativeSize()
@@ -209,7 +209,7 @@ namespace TaoTie
                 base64texture = new Texture2D(2, 2); // 初始大小无所谓，因为后面会重新加载
             // 加载图像数据
             base64texture.LoadImage(imageBytes);
-            SetSprite(base64texture);
+            SetTexture(base64texture);
         }
 
         private void ClearBase64()

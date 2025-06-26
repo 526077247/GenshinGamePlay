@@ -56,6 +56,8 @@ namespace TaoTie
 		private Mode buildMode;
 		private PlatformType activePlatform;
 		private PlatformType platformType;
+
+		private bool clearBuildCache = false;
 		private bool clearReleaseFolder;
 		private bool clearABFolder;
 		private bool isBuildExe;
@@ -110,7 +112,7 @@ namespace TaoTie
 				buildSettings = AssetDatabase.LoadAssetAtPath<BuildSettings>(settingAsset);
 
 				if(buildSettings == null) return;
-				
+				clearBuildCache = buildSettings.clearBuildCache;
 				clearReleaseFolder = buildSettings.clearReleaseFolder;
 				clearABFolder = buildSettings.clearABFolder;
 				isBuildExe = buildSettings.isBuildExe;
@@ -156,6 +158,7 @@ namespace TaoTie
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             
 			EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			this.clearBuildCache = EditorGUILayout.Toggle("清理构建缓存: ", clearBuildCache);
 			this.clearReleaseFolder = EditorGUILayout.Toggle("清理打包输出文件夹: ", clearReleaseFolder);
 			this.clearABFolder = EditorGUILayout.Toggle("清理AB缓存文件夹: ", clearABFolder);
             this.isPackAtlas = EditorGUILayout.Toggle("是否需要重新打图集: ", isPackAtlas);
@@ -231,7 +234,13 @@ namespace TaoTie
 							break;
                     }
                 }
-				
+
+				if (clearBuildCache)
+				{
+					FileHelper.CleanDirectory("Library/Bee");
+					FileHelper.CleanDirectory("Library/BuildCache");
+					FileHelper.CleanDirectory("Library/BeeAssemblyBuilder");
+				}
 				BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
 					isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
 			}
@@ -240,7 +249,7 @@ namespace TaoTie
 		private void SaveSettings()
 		{
 			if (buildSettings == null) return;
-			
+			buildSettings.clearBuildCache = clearBuildCache;
 			buildSettings.clearReleaseFolder = clearReleaseFolder;
 			buildSettings.clearABFolder = clearABFolder;
 			buildSettings.isBuildExe = isBuildExe;

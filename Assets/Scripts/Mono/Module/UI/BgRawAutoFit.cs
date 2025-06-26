@@ -75,7 +75,7 @@ namespace TaoTie
             }
         }
 
-        public void SetSprite(Texture newBgSprite)
+        public void SetTexture(Texture newBgSprite)
         {
             bgSprite = newBgSprite;
             if (bgSprite == null)

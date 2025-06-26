@@ -1,18 +1,9 @@
 ﻿using UnityEngine;
-using System.Runtime.InteropServices;
 
 namespace TaoTie
 {
     public static partial class BridgeHelper
     {
-#if UNITY_WEBGL
-        [DllImport("__Internal")]
-        private static extern void CloseWindow();
-        
-        [DllImport("__Internal")]
-        private static extern bool Vibrate();
-#endif
-
         public static void Quit()
         {
 #if UNITY_WEBGL

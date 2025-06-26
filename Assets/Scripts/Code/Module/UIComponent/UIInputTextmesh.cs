@@ -36,12 +36,12 @@ namespace TaoTie
         {
             if (UseDialog)
             {
-                this.input.text = BridgeHelper.OpenNativeStringDialog("", this.input.text);
+                this.input.text = BridgeHelper.OpenNativeStringDialog((input.placeholder is TMPro.TMP_Text a)?a.text:"", this.input.text);
                 DelayInputDeactive().Coroutine();
             }
             else
             {
-                BridgeHelper.SetUpOverlayDialog("", this.input.text,
+                BridgeHelper.SetUpOverlayDialog((input.placeholder is TMPro.TMP_Text a)?a.text:"", this.input.text,
                     I18NManager.Instance.I18NGetText(I18NKey.Global_Btn_Confirm),
                     I18NManager.Instance.I18NGetText(I18NKey.Global_Btn_Cancel));
                 OverlayHtmlCoroutine().Coroutine();

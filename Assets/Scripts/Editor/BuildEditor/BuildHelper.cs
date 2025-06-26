@@ -311,6 +311,9 @@ namespace TaoTie
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
             string channel, bool buildDll = true)
         {
+            string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+            var obj = JsonHelper.FromJson<PackageConfig>(jstr);
+            
             var vs = Application.version.Split(".");
             var bundleVersionCode = int.Parse(vs[vs.Length-1]);
             string exeName = programName + "_" + channel;
@@ -346,6 +349,8 @@ namespace TaoTie
                 case PlatformType.WebGL:
                     buildTarget = BuildTarget.WebGL;
                     platform = "webgl";
+                    int buildVersion = obj.GetPackageMaxVersion(Define.DefaultName);
+                    exeName += "_" + buildVersion;
                     break;
             }
 
@@ -371,14 +376,10 @@ namespace TaoTie
             
             if (isBuildExe)
             {
-                if (Directory.Exists("Assets/StreamingAssets"))
+                var root = AssetBundleBuilderHelper.GetStreamingAssetsRoot();
+                if (Directory.Exists(root))
                 {
-                    Directory.Delete("Assets/StreamingAssets", true);
-                    Directory.CreateDirectory("Assets/StreamingAssets");
-                }
-                else
-                {
-                    Directory.CreateDirectory("Assets/StreamingAssets");
+                    FileHelper.CleanDirectory(root);
                 }
                 AssetDatabase.Refresh();
             }
@@ -388,8 +389,7 @@ namespace TaoTie
                 string abPath = AssetBundleBuilderHelper.GetDefaultBuildOutputRoot();
                 if (Directory.Exists(abPath))
                 {
-                    Directory.Delete(abPath, true);
-                    Directory.CreateDirectory(abPath);
+                    FileHelper.CleanDirectory(abPath);
                 }
             }
                               
@@ -401,8 +401,7 @@ namespace TaoTie
 
             if (clearReleaseFolder && Directory.Exists(relativeDirPrefix))
             {
-                Directory.Delete(relativeDirPrefix, true);
-                Directory.CreateDirectory(relativeDirPrefix);
+                FileHelper.CleanDirectory(relativeDirPrefix);
             }
             else
             {
@@ -436,7 +435,6 @@ namespace TaoTie
                 BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
                 UnityEngine.Debug.Log("完成exe打包");
                 //清下缓存
-                Debug.Log(Application.persistentDataPath);
                 if (Directory.Exists(Application.persistentDataPath))
                 {
                     Directory.Delete(Application.persistentDataPath, true);
@@ -452,10 +450,7 @@ namespace TaoTie
                     }
                 }
             }
-            
-            string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var obj = JsonHelper.FromJson<PackageConfig>(jstr);
-            
+
             string fold = $"{AssetBundleBuilderHelper.GetDefaultBuildOutputRoot()}/{buildTarget}";
             var config = Resources.Load<CDNConfig>("CDNConfig");
             var rename = config.GetChannel();

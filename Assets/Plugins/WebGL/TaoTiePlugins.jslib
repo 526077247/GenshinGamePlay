@@ -12,6 +12,15 @@ mergeInto(LibraryManager.library, {
             window.close();
         }
     },
+    StringReturnValueFunction: function ()
+    {
+        var returnStr = window.location.href;
+        var title = decodeURI(returnStr);
+        var bufferSize = lengthBytesUTF8(title) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(title, buffer, bufferSize);
+        return buffer;
+    },
     Vibrate: function ()
     {
         if ("vibrate" in navigator)

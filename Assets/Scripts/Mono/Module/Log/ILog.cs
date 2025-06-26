@@ -1,6 +1,6 @@
 ﻿namespace TaoTie
 {
-    public interface ILog
+    public interface ILog: YooAsset.ILogger
     {
         void Trace(string message);
         void Warning(string message);

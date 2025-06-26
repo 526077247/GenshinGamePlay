@@ -41,7 +41,7 @@ namespace TaoTie
         public UnityWebRequest HttpPost(string url, Dictionary<string, string> headers = null,
             Dictionary<string, object> param = null, int timeout = DEFAULT_TIMEOUT)
         {
-            byte[] postBytes = System.Text.Encoding.Default.GetBytes(JsonHelper.ToJson(param));
+            byte[] postBytes = System.Text.Encoding.Default.GetBytes(param==null?string.Empty:JsonHelper.ToJson(param));
             var request = new UnityWebRequest(url, "POST");
             request.certificateHandler = certificateHandler;
             request.uploadHandler = (UploadHandler) new UploadHandlerRaw(postBytes);
