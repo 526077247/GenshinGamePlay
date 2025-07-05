@@ -186,7 +186,7 @@ namespace TaoTie
             }
             else
             {
-                var sprite = await ImageLoaderManager.Instance.LoadImageAsync(spritePath);
+                var sprite = await ImageLoaderManager.Instance.LoadSpriteAsync(spritePath);
                 if (thisVersion != version)
                 {
                     ImageLoaderManager.Instance.ReleaseImage(spritePath);
@@ -210,7 +210,7 @@ namespace TaoTie
             return this.spritePath;
         }
 
-        public void SetImageColor(string colorStr)
+        public void SetColor(string colorStr)
         {
             if(string.IsNullOrEmpty(colorStr)) return;
             if (!colorStr.StartsWith("#")) colorStr = "#" + colorStr;
@@ -224,10 +224,10 @@ namespace TaoTie
                 Log.Error("Set image color error, color is "+colorStr);
             }
         }
-        public void SetImageColor(Color color)
+        public void SetColor(Color color)
         {
             this.ActivatingImageComponent();
-            
+            this.image.color = color;
         }
         public void SetNativeSize()
         {

@@ -10,7 +10,7 @@ namespace TaoTie
 
     public class CoroutineLockQueue:IDisposable
     {
-        public Queue<CoroutineLockInfo> queue = new Queue<CoroutineLockInfo>();
+        private Queue<CoroutineLockInfo> queue = new Queue<CoroutineLockInfo>();
 
         public int Count
         {

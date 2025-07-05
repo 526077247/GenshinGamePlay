@@ -125,49 +125,8 @@ namespace TaoTie
 				await ETTaskHelper.WaitAll(tasks);
 			}
 		}
-		/// <summary>
-		/// 尝试从缓存中获取
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="go"></param>
-		/// <returns></returns>
-		public bool TryGetFromCache(string path, out GameObject go)
-		{
-			go = null;
-			if (!CheckHasCached(path)) return false;
-			if (instCache.TryGetValue(path, out var cachedInst))
-			{
-				if (cachedInst.Count > 0)
-				{
-					var inst = cachedInst[cachedInst.Count - 1];
-					cachedInst.RemoveAt(cachedInst.Count - 1);
-					go = inst;
-					if (inst == null)
-					{
-						Log.Error("Something wrong, there gameObject instance in cache is null!");
-						return false;
-					}
-					return true;
-				}
-			}
-			if (goPool.TryGet(path, out var pooledGo))
-			{
-				if (pooledGo != null)
-				{
-					var inst = GameObject.Instantiate(pooledGo);
-					if(goInstCountCache.ContainsKey(path))
-                        goInstCountCache[path]++;
-                    else 
-                        goInstCountCache[path] = 1;
-					instPathCache[inst] = path;
-					go = inst;
-					return true;
-				}
-			}
-			return false;
-		}
 
-		/// <summary>
+        /// <summary>
 		/// 预加载：可提供初始实例化个数
 		/// </summary>
 		/// <param name="path"></param>
@@ -258,7 +217,7 @@ namespace TaoTie
 		/// 回收
 		/// </summary>
 		/// <param name="inst"></param>
-		/// <param name="isClear">是否忽略污染检查</param>
+		/// <param name="isClear">是否立即销毁</param>
 		public void RecycleGameObject(GameObject inst, bool isClear = false)
 		{
 			if (!instPathCache.ContainsKey(inst))
@@ -300,7 +259,7 @@ namespace TaoTie
 		}
 
 		/// <summary>
-		/// <para>添加需要持久化的资源</para>
+		/// <para></para>
 		/// </summary>
 		/// <param name="path"></param>
 		public void AddPersistentPrefabPath(string path)
@@ -430,24 +389,51 @@ namespace TaoTie
 				}
 			}
 		}
-
-		/// <summary>
-		/// 获取已经缓存的预制
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		public GameObject GetCachedGoWithPath(string path)
-		{
-			if (goPool.TryOnlyGet(path, out var res))
-			{
-				return res;
-			}
-			return null;
-		}
 		
-				
 		#region 私有方法
 		        
+		/// <summary>
+		/// 尝试从缓存中获取
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="go"></param>
+		/// <returns></returns>
+		private bool TryGetFromCache(string path, out GameObject go)
+		{
+			go = null;
+			if (!CheckHasCached(path)) return false;
+			if (instCache.TryGetValue(path, out var cachedInst))
+			{
+				if (cachedInst.Count > 0)
+				{
+					var inst = cachedInst[cachedInst.Count - 1];
+					cachedInst.RemoveAt(cachedInst.Count - 1);
+					go = inst;
+					if (inst == null)
+					{
+						Log.Error("Something wrong, there gameObject instance in cache is null!");
+						return false;
+					}
+					return true;
+				}
+			}
+			if (goPool.TryGet(path, out var pooledGo))
+			{
+				if (pooledGo != null)
+				{
+					var inst = GameObject.Instantiate(pooledGo);
+					if(goInstCountCache.ContainsKey(path))
+						goInstCountCache[path]++;
+					else 
+						goInstCountCache[path] = 1;
+					instPathCache[inst] = path;
+					go = inst;
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		/// <summary>
 		/// 初始化inst
 		/// </summary>
@@ -553,55 +539,7 @@ namespace TaoTie
 				Log.Error("DestroyGameObject inst not found from instPathCache");
 			}
 		}
-		/// <summary>
-		/// 检查回收时是否污染
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="inst"></param>
-		/// <param name="callback"></param>
-		void CheckRecycleInstIsDirty(string path, GameObject inst, Action callback)
-		{
-			if (!IsOpenCheck())
-			{
-				callback?.Invoke();
-				return;
-			}
-			inst.SetActive(false);
-			CheckAfter(path, inst).Coroutine();
-			callback?.Invoke();
-		}
-	    /// <summary>
-	    /// 延迟一段时间检查
-	    /// </summary>
-	    /// <param name="path"></param>
-	    /// <param name="inst"></param>
-	    /// <returns></returns>
-	    async ETTask CheckAfter(string path, GameObject inst)
-		{
-			await TimerManager.Instance.WaitAsync(2000);
-			if (inst != null && inst.transform != null && CheckInstIsInPool(path, inst))
-			{
-				var goChildCount = goChildrenCountPool[path];
-				Dictionary<string, int> childsCountMap = new Dictionary<string, int>();
-				int instChildCount = RecursiveGetChildCount(inst.transform, "", ref childsCountMap);
-				if (goChildCount != instChildCount)
-				{
-					Log.Error($"go child count({ goChildCount }) must equip inst child count({instChildCount}) path = {path} ");
-					foreach (var item in childsCountMap)
-					{
-						var k = item.Key;
-						var v = item.Value;
-						var unfair = false;
-						if (!detailGoChildrenCount[path].ContainsKey(k))
-							unfair = true;
-						else if (detailGoChildrenCount[path][k] != v)
-							unfair = true;
-						if (unfair)
-							Log.Error($"not match path on checkrecycle = { k}, count = {v}");
-					}
-				}
-			}
-		}
+		
 		/// <summary>
 		/// 检查inst是否在池子中
 		/// </summary>
@@ -619,28 +557,12 @@ namespace TaoTie
 			}
 			return false;
 		}
-		/// <summary>
-		/// 获取GameObject的child数量
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="go"></param>
-		void InitGoChildCount(string path, GameObject go)
-		{
-			if (!IsOpenCheck()) return;
-			if (!goChildrenCountPool.ContainsKey(path))
-			{
-				Dictionary<string, int> childsCountMap = new Dictionary<string, int>();
-				int totalChildCount = RecursiveGetChildCount(go.transform, "", ref childsCountMap);
-				goChildrenCountPool[path] = totalChildCount;
-				detailGoChildrenCount[path] = childsCountMap;
-			}
-		}
-
+		
 		/// <summary>
 		/// 释放资源
 		/// </summary>
 		/// <param name="path"></param>
-		public void ReleaseAsset(string path)
+		private void ReleaseAsset(string path)
 		{
 			if (instCache.ContainsKey(path))
 			{
@@ -659,6 +581,16 @@ namespace TaoTie
 				goPool.Remove(path);
 			}
 		}
+
+		/// <summary>
+		/// 检查指定路径是否已经没有未回收的实例
+		/// </summary>
+		/// <param name="path"></param>
+		private bool CheckNeedUnload(string path)
+		{
+			return !instPathCache.ContainsValue(path);
+		}
+
 		/// <summary>
 		/// 是否开启检查污染
 		/// </summary>
@@ -666,6 +598,73 @@ namespace TaoTie
 		bool IsOpenCheck()
 		{
 			return Define.Debug;
+		}
+		
+		/// <summary>
+		/// 获取GameObject的child数量
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="go"></param>
+		void InitGoChildCount(string path, GameObject go)
+		{
+			if (!IsOpenCheck()) return;
+			if (!goChildrenCountPool.ContainsKey(path))
+			{
+				Dictionary<string, int> childsCountMap = new Dictionary<string, int>();
+				int totalChildCount = RecursiveGetChildCount(go.transform, "", childsCountMap);
+				goChildrenCountPool[path] = totalChildCount;
+				detailGoChildrenCount[path] = childsCountMap;
+			}
+		}
+		
+		/// <summary>
+		/// 检查回收时是否污染
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="inst"></param>
+		/// <param name="callback"></param>
+		void CheckRecycleInstIsDirty(string path, GameObject inst, Action callback)
+		{
+			if (!IsOpenCheck())
+			{
+				callback?.Invoke();
+				return;
+			}
+			inst.SetActive(false);
+			CheckAfter(path, inst).Coroutine();
+			callback?.Invoke();
+		}
+		/// <summary>
+		/// 延迟一段时间检查
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="inst"></param>
+		/// <returns></returns>
+		async ETTask CheckAfter(string path, GameObject inst)
+		{
+			await TimerManager.Instance.WaitAsync(2000);
+			if (inst != null && inst.transform != null && CheckInstIsInPool(path, inst))
+			{
+				var goChildCount = goChildrenCountPool[path];
+				Dictionary<string, int> childsCountMap = new Dictionary<string, int>();
+				int instChildCount = RecursiveGetChildCount(inst.transform, "", childsCountMap);
+				if (goChildCount != instChildCount)
+				{
+					Log.Error($"go child count({ goChildCount }) must equip inst child count({instChildCount}) path = {path} ");
+					foreach (var item in childsCountMap)
+					{
+						var k = item.Key;
+						var v = item.Value;
+						var unfair = false;
+						if (!detailGoChildrenCount[path].ContainsKey(k))
+							unfair = true;
+						else if (detailGoChildrenCount[path][k] != v)
+							unfair = true;
+						if (unfair)
+							Log.Error($"not match path on checkrecycle = { k}, count = {v}");
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -675,7 +674,7 @@ namespace TaoTie
 		/// <param name="path"></param>
 		/// <param name="record"></param>
 		/// <returns></returns>
-		int RecursiveGetChildCount(Transform trans, string path, ref Dictionary<string, int> record)
+		int RecursiveGetChildCount(Transform trans, string path, Dictionary<string, int> record)
 		{
 			int totalChildCount = trans.childCount;
 			for (int i = 0; i < trans.childCount; i++)
@@ -700,21 +699,11 @@ namespace TaoTie
 					{
 						record[cpath] = 1;
 					}
-					totalChildCount += RecursiveGetChildCount(child, cpath, ref record);
+					totalChildCount += RecursiveGetChildCount(child, cpath, record);
 				}
 			}
 			return totalChildCount;
 		}
-		
-		/// <summary>
-		/// 检查指定路径是否有未回收的预制体
-		/// </summary>
-		/// <param name="path"></param>
-		private bool CheckNeedUnload(string path)
-		{
-			return !instPathCache.ContainsValue(path);
-		}
-		
 		#endregion
 		
     }

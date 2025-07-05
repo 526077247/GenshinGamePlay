@@ -50,7 +50,6 @@ namespace TaoTie
         {
             Messager.Instance.RemoveListener<int, int>(0, MessageId.OnKeyInput, OnKeyInput);
             Instance = null;
-            DestroyLayer();
             OnDestroyAsync().Coroutine();
         }
 
@@ -61,6 +60,7 @@ namespace TaoTie
             windows = null;
             windowStack.Clear();
             windowStack = null;
+            DestroyLayer();
             Log.Info("UIManagerComponent Destroy");
         }
 
@@ -77,19 +77,51 @@ namespace TaoTie
         }
 
         #endregion
-
+                
+        public Camera GetUICamera()
+        {
+            return UICamera;
+        }
+        
         public void ResetSafeArea()
         {
             var safeArea = Screen.safeArea;
             var temp = safeArea.x;
             SetWidthPadding(temp);
         }
+        
+        /// <summary>
+        /// 判断窗口打开状态
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="active">2打开且loading,1打开,-1关闭,0不做限制</param>
+        /// <returns></returns>
+        public bool IsWindowActive<T>(int active = 0) where T : UIBaseView
+        {
+            string uiName = TypeInfo<T>.TypeName;
+            var target = GetWindow(uiName);
+            if (target == null)
+            {
+                return false;
+            }
+            if (active == 0 || active * (target.Active ? 1 : -1) > 0)
+            {
+                if (active == 2)
+                {
+                    return target.LoadingState == UIWindowLoadingState.LoadOver;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// 获取UI窗口
         /// </summary>
         /// <param name="uiName"></param>
-        /// <param name="active">2打开且loading,1打开，-1关闭,0不做限制</param>
+        /// <param name="active">2打开且loading,1打开,-1关闭,0不做限制</param>
         /// <returns></returns>
         public UIWindow GetWindow(string uiName, int active = 0)
         {
@@ -163,9 +195,9 @@ namespace TaoTie
         /// <summary>
         /// 获取UI窗口
         /// </summary>
-        /// <param name="active">2打开且loading，1打开，-1关闭,0不做限制</param>
+        /// <param name="active">2打开且loading，1打开,-1关闭,0不做限制</param>
         /// <returns></returns>
-        public T GetWindow<T>(int active = 0) where T : UIBaseView
+        public T GetView<T>(int active = 0) where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
             if (windows != null && windows.TryGetValue(uiName, out var target))
@@ -174,7 +206,7 @@ namespace TaoTie
                 {
                     if (active == 2)
                     {
-                        return target.LoadingState == UIWindowLoadingState.LoadOver ? target as T : null;
+                        return target.LoadingState == UIWindowLoadingState.LoadOver ? target.View as T : null;
                     }
 
                     return target.View as T;
@@ -185,120 +217,7 @@ namespace TaoTie
 
             return null;
         }
-
-        /// <summary>
-        /// 关闭窗体
-        /// </summary>
-        /// <param name="window"></param>
-        public async ETTask CloseWindow(UIBaseView window)
-        {
-            string uiName = window.GetType().Name;
-            await CloseWindow(uiName);
-        }
-
-        /// <summary>
-        /// 关闭窗体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public async ETTask CloseWindow<T>()
-        {
-            string uiName = TypeInfo<T>.TypeName;
-            await CloseWindow(uiName);
-        }
-
-        /// <summary>
-        /// 关闭窗体
-        /// </summary>
-        /// <param name="uiName"></param>
-        public async ETTask CloseWindow(string uiName)
-        {
-            var target = GetWindow(uiName, 1);
-            if (target == null) return;
-            while (target.LoadingState != UIWindowLoadingState.LoadOver)
-            {
-                await TimerManager.Instance.WaitAsync(1);
-            }
-
-            RemoveFromStack(target);
-            InnerCloseWindow(target);
-        }
-
-        /// <summary>
-        /// 通过层级关闭
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <param name="exceptUINames"></param>
-        public async ETTask CloseWindowByLayer(UILayerNames layer, params string[] exceptUINames)
-        {
-            using (HashSetComponent<string> dictUINames = HashSetComponent<string>.Create())
-            {
-                if (exceptUINames != null && exceptUINames.Length > 0)
-                {
-                    for (int i = 0; i < exceptUINames.Length; i++)
-                    {
-                        dictUINames.Add(exceptUINames[i]);
-                    }
-                }
-                using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
-                {
-                    foreach (var item in windows)
-                    {
-                        if (item.Value.Layer == layer && (dictUINames == null || !dictUINames.Contains(item.Key)))
-                        {
-                            taskScheduler.Add(CloseWindow(item.Key));
-                        }
-                    }
-
-                    await ETTaskHelper.WaitAll(taskScheduler);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 销毁窗体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public async ETTask DestroyWindow<T>(bool clear = false) where T : UIBaseView
-        {
-            string uiName = TypeInfo<T>.TypeName;
-            await DestroyWindow(uiName, clear);
-        }
-
-        /// <summary>
-        /// 销毁窗体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public async ETTask DestroyWindow(string uiName, bool clear = false)
-        {
-            var target = GetWindow(uiName);
-            if (target != null)
-            {
-                await CloseWindow(uiName);
-                InnerDestroyWindow(target, clear);
-                windows.Remove(target.Name);
-                target.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// 销毁隐藏状态的窗口
-        /// </summary>
-        public async ETTask DestroyUnShowWindow()
-        {
-            using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
-            {
-                foreach (var key in windows.Keys.ToList())
-                {
-                    if (!windows[key].Active)
-                    {
-                        taskScheduler.Add(DestroyWindow(key));
-                    }
-                }
-
-                await ETTaskHelper.WaitAll(taskScheduler);
-            }
-        }
-
+        
         /// <summary>
         /// 打开窗口 对应 <see cref="IOnCreate"/>
         /// </summary>
@@ -598,6 +517,122 @@ namespace TaoTie
         }
 
         /// <summary>
+        /// 关闭窗体
+        /// </summary>
+        /// <param name="window"></param>
+        public async ETTask CloseWindow(UIBaseView window)
+        {
+            string uiName = window.GetType().Name;
+            await CloseWindow(uiName);
+        }
+
+        /// <summary>
+        /// 关闭窗体
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public async ETTask CloseWindow<T>()
+        {
+            string uiName = TypeInfo<T>.TypeName;
+            await CloseWindow(uiName);
+        }
+
+        /// <summary>
+        /// 关闭窗体
+        /// </summary>
+        /// <param name="uiName"></param>
+        public async ETTask CloseWindow(string uiName)
+        {
+            var target = GetWindow(uiName, 1);
+            if (target == null) return;
+            while (target.LoadingState != UIWindowLoadingState.LoadOver)
+            {
+                await TimerManager.Instance.WaitAsync(1);
+            }
+
+            RemoveFromStack(target);
+            InnerCloseWindow(target);
+        }
+
+        /// <summary>
+        /// 通过层级关闭
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="exceptUINames"></param>
+        public async ETTask CloseWindowByLayer(UILayerNames layer, params string[] exceptUINames)
+        {
+            using (HashSetComponent<string> dictUINames = HashSetComponent<string>.Create())
+            {
+                if (exceptUINames != null && exceptUINames.Length > 0)
+                {
+                    for (int i = 0; i < exceptUINames.Length; i++)
+                    {
+                        dictUINames.Add(exceptUINames[i]);
+                    }
+                }
+                using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
+                {
+                    foreach (var item in windows)
+                    {
+                        if (item.Value.Layer == layer && (dictUINames == null || !dictUINames.Contains(item.Key)))
+                        {
+                            taskScheduler.Add(CloseWindow(item.Key));
+                        }
+                    }
+
+                    await ETTaskHelper.WaitAll(taskScheduler);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 销毁窗体
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public async ETTask DestroyWindow<T>(bool clear = false) where T : UIBaseView
+        {
+            string uiName = TypeInfo<T>.TypeName;
+            await DestroyWindow(uiName, clear);
+        }
+
+        /// <summary>
+        /// 销毁窗体
+        /// </summary>
+        /// <param name="uiName"></param>
+        /// <param name="clear"></param>
+        public async ETTask DestroyWindow(string uiName, bool clear = false)
+        {
+            var target = GetWindow(uiName);
+            if (target != null)
+            {
+                await CloseWindow(uiName);
+                InnerDestroyWindow(target, clear);
+                windows.Remove(target.Name);
+                target.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 销毁隐藏状态的窗口
+        /// </summary>
+        public async ETTask DestroyUnShowWindow()
+        {
+            using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
+            {
+                var keys = windows.Keys.ToArray();
+                for (int i = keys.Length - 1; i >= 0; i--)
+                {
+                    var key = keys[i];
+                    if (!windows[key].Active)
+                    {
+                        taskScheduler.Add(DestroyWindow(key));
+                    }
+                }
+
+                await ETTaskHelper.WaitAll(taskScheduler);
+            }
+        }
+        
+        /// <summary>
         /// 销毁除指定窗口外所有窗口
         /// </summary>
         /// <param name="typeNames">指定窗口</param>
@@ -615,7 +650,7 @@ namespace TaoTie
                 var keys = windows.Keys.ToArray();
                 using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
                 {
-                    for (int i = windows.Count - 1; i >= 0; i--) 
+                    for (int i = keys.Length - 1; i >= 0; i--) 
                     {
                         if (!dictUINames.Contains(keys[i]))
                         {
@@ -687,46 +722,31 @@ namespace TaoTie
                 await ETTaskHelper.WaitAll(taskScheduler);
             }
         }
-
+        
         /// <summary>
-        /// 判断窗口是否打开
+        /// 将窗口移到当前层级最上方
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public bool IsActiveWindow<T>() where T : UIBaseView
+        public void MoveWindowToTop<T>() where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
-            var target = GetWindow(uiName);
+            var target = GetWindow(uiName, 1);
             if (target == null)
             {
-                return false;
+                return;
             }
 
-            return target.Active;
+            var layerName = target.Layer;
+            if (windowStack[layerName].Contains(uiName))
+            {
+                windowStack[layerName].Remove(uiName);
+            }
+
+            windowStack[layerName].AddFirst(uiName);
+            InnerAddWindowToStack(target);
         }
 
         #region 私有方法
-
-        void InnerDestroyWindow(UIWindow target, bool clear = false)
-        {
-            var view = target.View;
-            if (view != null)
-            {
-                var obj = view.GetGameObject();
-                if (obj)
-                {
-                    if (GameObjectPoolManager.GetInstance() == null)
-                        GameObject.Destroy(obj);
-                    else
-                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj, clear);
-                }
-
-                if (view is II18N i18n)
-                    I18NManager.Instance?.RemoveI18NEntity(i18n);
-                view.BeforeOnDestroy();
-                (view as IOnDestroy)?.OnDestroy();
-            }
-        }
 
         /// <summary>
         /// 初始化window
@@ -765,29 +785,7 @@ namespace TaoTie
             return window;
         }
 
-        void Deactivate(UIWindow target)
-        {
-            var view = target.View;
-            if (view != null)
-                view.SetActive(false);
-        }
-
         #region 内部加载窗体,依次加载prefab、AwakeSystem、InitializationSystem、OnCreateSystem、OnEnableSystem
-
-        void InnerResetWindowLayer(UIWindow window)
-        {
-            var target = window;
-            var view = target.View;
-            var uiTrans = view.GetTransform();
-            if (uiTrans != null)
-            {
-                var layer = GetLayer(target.Layer);
-                uiTrans.transform.SetParent(layer.RectTransform, false);
-            }
-
-            if (view is IOnWidthPaddingChange)
-                OnWidthPaddingChange(view);
-        }
 
         async ETTask<UIBaseView> InnerOpenWindow(UIWindow target)
         {
@@ -985,9 +983,6 @@ namespace TaoTie
         async ETTask InnerOpenWindowGetGameObject(string path, UIWindow target)
         {
             var view = target.View;
-
-            // await UIWatcherComponent.Instance.OnViewInitializationSystem(view);
-
             var go = await GameObjectPoolManager.GetInstance().GetGameObjectAsync(path);
             if (go == null)
             {
@@ -1007,6 +1002,21 @@ namespace TaoTie
 
         #endregion
 
+        void InnerResetWindowLayer(UIWindow window)
+        {
+            var target = window;
+            var view = target.View;
+            var uiTrans = view.GetTransform();
+            if (uiTrans != null)
+            {
+                var layer = GetLayer(target.Layer);
+                uiTrans.transform.SetParent(layer.RectTransform, false);
+            }
+
+            if (view is IOnWidthPaddingChange)
+                OnWidthPaddingChange(view);
+        }
+        
         /// <summary>
         /// 内部关闭窗体，OnDisableSystem
         /// </summary>
@@ -1019,28 +1029,33 @@ namespace TaoTie
                 target.Active = false;
             }
         }
-
-        /// <summary>
-        /// 将窗口移到当前层级最上方
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void MoveWindowToTop<T>() where T : UIBaseView
+        
+        void Deactivate(UIWindow target)
         {
-            string uiName = TypeInfo<T>.TypeName;
-            var target = GetWindow(uiName, 1);
-            if (target == null)
-            {
-                return;
-            }
+            var view = target.View;
+            if (view != null)
+                view.SetActive(false);
+        }
 
-            var layerName = target.Layer;
-            if (windowStack[layerName].Contains(uiName))
+        void InnerDestroyWindow(UIWindow target, bool clear = false)
+        {
+            var view = target.View;
+            if (view != null)
             {
-                windowStack[layerName].Remove(uiName);
-            }
+                var obj = view.GetGameObject();
+                if (obj)
+                {
+                    if (GameObjectPoolManager.GetInstance() == null)
+                        GameObject.Destroy(obj);
+                    else
+                        GameObjectPoolManager.GetInstance().RecycleGameObject(obj, clear);
+                }
 
-            windowStack[layerName].AddFirst(uiName);
-            InnerAddWindowToStack(target);
+                if (view is II18N i18n)
+                    I18NManager.Instance?.RemoveI18NEntity(i18n);
+                view.BeforeOnDestroy();
+                (view as IOnDestroy)?.OnDestroy();
+            }
         }
 
         async ETTask AddWindowToStack(UIWindow target)
@@ -1264,36 +1279,6 @@ namespace TaoTie
             }
             return hidePos;
         }
-        #endregion
-
-        #region Layer
-
-        public Camera GetUICamera()
-        {
-            return UICamera;
-        }
-
-        public UIBaseView GetView(string uiName)
-        {
-            var res = GetWindow(uiName);
-            if (res != null)
-            {
-                return res.View;
-            }
-
-            return null;
-        }
-
-        public UILayer GetLayer(UILayerNames layer)
-        {
-            if (layers.TryGetValue(layer, out var res))
-            {
-                return res;
-            }
-
-            return null;
-        }
-
         #endregion
     }
 }

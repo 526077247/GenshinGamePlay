@@ -2180,7 +2180,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2197,7 +2197,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2219,7 +2219,7 @@ namespace SuperScrollView
                         {
                             mCurReadyMaxItemIndex = tViewItem1.ItemIndex;
                             mNeedCheckNextMaxItem = false;
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                         }
                         else
                         {
@@ -2231,7 +2231,7 @@ namespace SuperScrollView
                             float y = tViewItem1.CachedRectTransform.anchoredPosition3D.y - tViewItem1.CachedRectTransform.rect.height - tViewItem1.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(newItem.StartPosOffset, y, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
 
                             if (nIndex > mCurReadyMaxItemIndex)
                             {
@@ -2270,7 +2270,7 @@ namespace SuperScrollView
                             float y = tViewItem0.CachedRectTransform.anchoredPosition3D.y + newItem.CachedRectTransform.rect.height + newItem.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(newItem.StartPosOffset, y, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                             if (nIndex < mCurReadyMinItemIndex)
                             {
                                 mCurReadyMinItemIndex = nIndex;
@@ -2329,7 +2329,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2346,7 +2346,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2365,7 +2365,7 @@ namespace SuperScrollView
                         if (newItem == null)
                         {
                             mNeedCheckNextMaxItem = false;
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                         }
                         else
                         {
@@ -2377,7 +2377,7 @@ namespace SuperScrollView
                             float y = tViewItem1.CachedRectTransform.anchoredPosition3D.y + tViewItem1.CachedRectTransform.rect.height + tViewItem1.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(newItem.StartPosOffset, y, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                             if (nIndex > mCurReadyMaxItemIndex)
                             {
                                 mCurReadyMaxItemIndex = nIndex;
@@ -2416,7 +2416,7 @@ namespace SuperScrollView
                             float y = tViewItem0.CachedRectTransform.anchoredPosition3D.y - newItem.CachedRectTransform.rect.height - newItem.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(newItem.StartPosOffset, y, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                             if (nIndex < mCurReadyMinItemIndex)
                             {
                                 mCurReadyMinItemIndex = nIndex;
@@ -2494,7 +2494,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2511,7 +2511,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2533,7 +2533,7 @@ namespace SuperScrollView
                         {
                             mCurReadyMaxItemIndex = tViewItem1.ItemIndex;
                             mNeedCheckNextMaxItem = false;
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                         }
                         else
                         {
@@ -2545,7 +2545,7 @@ namespace SuperScrollView
                             float x = tViewItem1.CachedRectTransform.anchoredPosition3D.x + tViewItem1.CachedRectTransform.rect.width + tViewItem1.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(x, newItem.StartPosOffset, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
 
                             if (nIndex > mCurReadyMaxItemIndex)
                             {
@@ -2584,7 +2584,7 @@ namespace SuperScrollView
                             float x = tViewItem0.CachedRectTransform.anchoredPosition3D.x - newItem.CachedRectTransform.rect.width - newItem.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(x, newItem.StartPosOffset, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                             if (nIndex < mCurReadyMinItemIndex)
                             {
                                 mCurReadyMinItemIndex = nIndex;
@@ -2644,7 +2644,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2661,7 +2661,7 @@ namespace SuperScrollView
                     if (!mSupportScrollBar)
                     {
                         UpdateContentSize();
-                        CheckIfNeedUpdataItemPos();
+                        CheckIfNeedUpdateItemPos();
                     }
                     return true;
                 }
@@ -2683,7 +2683,7 @@ namespace SuperScrollView
                         {
                             mCurReadyMaxItemIndex = tViewItem1.ItemIndex;
                             mNeedCheckNextMaxItem = false;
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                         }
                         else
                         {
@@ -2695,7 +2695,7 @@ namespace SuperScrollView
                             float x = tViewItem1.CachedRectTransform.anchoredPosition3D.x - tViewItem1.CachedRectTransform.rect.width - tViewItem1.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(x, newItem.StartPosOffset, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
 
                             if (nIndex > mCurReadyMaxItemIndex)
                             {
@@ -2734,7 +2734,7 @@ namespace SuperScrollView
                             float x = tViewItem0.CachedRectTransform.anchoredPosition3D.x + newItem.CachedRectTransform.rect.width + newItem.Padding;
                             newItem.CachedRectTransform.anchoredPosition3D = new Vector3(x, newItem.StartPosOffset, 0);
                             UpdateContentSize();
-                            CheckIfNeedUpdataItemPos();
+                            CheckIfNeedUpdateItemPos();
                             if (nIndex < mCurReadyMinItemIndex)
                             {
                                 mCurReadyMinItemIndex = nIndex;
@@ -2791,24 +2791,27 @@ namespace SuperScrollView
         }
 
 
-        void CheckIfNeedUpdataItemPos()
+        void CheckIfNeedUpdateItemPos()
         {
             int count = mItemList.Count;
             if (count == 0)
             {
                 return;
             }
+
+            LoopListViewItem2 firstItem = mItemList[0];
+            LoopListViewItem2 lastItem = mItemList[mItemList.Count - 1];
+            float viewMaxSize = GetContentPanelSize();
             if (mArrangeType == ListItemArrangeType.TopToBottom)
             {
-                LoopListViewItem2 firstItem = mItemList[0];
-                LoopListViewItem2 lastItem = mItemList[mItemList.Count - 1];
-                float viewMaxY = GetContentPanelSize();
                 if (firstItem.TopY > 0 || (firstItem.ItemIndex == mCurReadyMinItemIndex && firstItem.TopY != 0))
                 {
                     UpdateAllShownItemsPos();
                     return;
                 }
-                if ((-lastItem.BottomY) > viewMaxY || (lastItem.ItemIndex == mCurReadyMaxItemIndex && (-lastItem.BottomY) != viewMaxY))
+
+                if ((-lastItem.BottomY) > viewMaxSize ||
+                    (lastItem.ItemIndex == mCurReadyMaxItemIndex && (-lastItem.BottomY) != viewMaxSize))
                 {
                     UpdateAllShownItemsPos();
                     return;
@@ -2817,15 +2820,14 @@ namespace SuperScrollView
             }
             else if (mArrangeType == ListItemArrangeType.BottomToTop)
             {
-                LoopListViewItem2 firstItem = mItemList[0];
-                LoopListViewItem2 lastItem = mItemList[mItemList.Count - 1];
-                float viewMaxY = GetContentPanelSize();
                 if (firstItem.BottomY < 0 || (firstItem.ItemIndex == mCurReadyMinItemIndex && firstItem.BottomY != 0))
                 {
                     UpdateAllShownItemsPos();
                     return;
                 }
-                if (lastItem.TopY > viewMaxY || (lastItem.ItemIndex == mCurReadyMaxItemIndex && lastItem.TopY != viewMaxY))
+
+                if (lastItem.TopY > viewMaxSize ||
+                    (lastItem.ItemIndex == mCurReadyMaxItemIndex && lastItem.TopY != viewMaxSize))
                 {
                     UpdateAllShownItemsPos();
                     return;
@@ -2833,15 +2835,14 @@ namespace SuperScrollView
             }
             else if (mArrangeType == ListItemArrangeType.LeftToRight)
             {
-                LoopListViewItem2 firstItem = mItemList[0];
-                LoopListViewItem2 lastItem = mItemList[mItemList.Count - 1];
-                float viewMaxX = GetContentPanelSize();
                 if (firstItem.LeftX < 0 || (firstItem.ItemIndex == mCurReadyMinItemIndex && firstItem.LeftX != 0))
                 {
                     UpdateAllShownItemsPos();
                     return;
                 }
-                if ((lastItem.RightX) > viewMaxX || (lastItem.ItemIndex == mCurReadyMaxItemIndex && lastItem.RightX != viewMaxX))
+
+                if ((lastItem.RightX) > viewMaxSize ||
+                    (lastItem.ItemIndex == mCurReadyMaxItemIndex && lastItem.RightX != viewMaxSize))
                 {
                     UpdateAllShownItemsPos();
                     return;
@@ -2850,15 +2851,14 @@ namespace SuperScrollView
             }
             else if (mArrangeType == ListItemArrangeType.RightToLeft)
             {
-                LoopListViewItem2 firstItem = mItemList[0];
-                LoopListViewItem2 lastItem = mItemList[mItemList.Count - 1];
-                float viewMaxX = GetContentPanelSize();
                 if (firstItem.RightX > 0 || (firstItem.ItemIndex == mCurReadyMinItemIndex && firstItem.RightX != 0))
                 {
                     UpdateAllShownItemsPos();
                     return;
                 }
-                if ((-lastItem.LeftX) > viewMaxX || (lastItem.ItemIndex == mCurReadyMaxItemIndex && (-lastItem.LeftX) != viewMaxX))
+
+                if ((-lastItem.LeftX) > viewMaxSize ||
+                    (lastItem.ItemIndex == mCurReadyMaxItemIndex && (-lastItem.LeftX) != viewMaxSize))
                 {
                     UpdateAllShownItemsPos();
                     return;

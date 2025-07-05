@@ -5,7 +5,7 @@ namespace TaoTie
 {
     public class UICopyGameObject : UIBaseContainer, IOnDestroy
     {
-        public CopyGameObject comp;
+        private CopyGameObject comp;
 
         #region override
 
@@ -29,14 +29,19 @@ namespace TaoTie
             }
         }
 
-        public void InitListView(int total_count, Action<int, GameObject> ongetitemcallback = null,
-            int? start_sibling_index = null)
+        public void InitListView(int totalCount, Action<int, GameObject> onGetItemCallback = null,
+            int? startSiblingIndex = null)
         {
             this.ActivatingComponent();
-            this.comp.InitListView(total_count, ongetitemcallback, start_sibling_index);
+            this.comp.InitListView(totalCount, onGetItemCallback, startSiblingIndex);
         }
 
-        //item是Unity侧的item对象，在这里创建相应的UI对象
+        /// <summary>
+        /// item是Unity侧的item对象，在这里创建相应的UI对象
+        /// </summary>
+        /// <param name="item"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T AddItemViewComponent<T>(GameObject item) where T : UIBaseContainer
         {
             //保证名字不能相同 不然没法cache
@@ -51,20 +56,25 @@ namespace TaoTie
             return t;
         }
 
-        //根据Unity侧item获取UI侧的item
+        /// <summary>
+        /// 根据Unity侧item获取UI侧的item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetUIItemView<T>(GameObject item) where T : UIBaseContainer
         {
             return this.GetComponent<T>(item.name);
         }
 
-        public void SetListItemCount(int total_count, int? start_sibling_index = null)
+        public void SetListItemCount(int totalCount, int? startSiblingIndex = null)
         {
-            this.comp.SetListItemCount(total_count, start_sibling_index);
+            this.comp.SetListItemCount(totalCount, startSiblingIndex);
         }
 
-        public void RefreshAllShownItem(int? start_sibling_index = null)
+        public void RefreshAllShownItem(int? startSiblingIndex = null)
         {
-            this.comp.RefreshAllShownItem(start_sibling_index);
+            this.comp.RefreshAllShownItem(startSiblingIndex);
         }
 
         public GameObject GetItemByIndex(int index)

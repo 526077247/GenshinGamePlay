@@ -280,7 +280,7 @@ namespace TaoTie
 			if (Directory.Exists(selectPath))
 			{
 				var names = ArtFolderNames;
-				selectPath.Replace("\\", "/");
+				selectPath = selectPath.Replace("\\", "/");
 				if (selectPath.Contains("UI/") || selectPath.Contains("UIHall/") || selectPath.Contains("UIGame/"))
 				{
 					names = UIFolderNames;

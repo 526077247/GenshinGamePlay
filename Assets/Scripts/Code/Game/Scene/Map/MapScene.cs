@@ -7,7 +7,7 @@ namespace TaoTie
     {
         public int ConfigId;
         private SceneConfig config => SceneConfigCategory.Instance.Get(ConfigId);
-        public string GetName()
+        public override string GetName()
         {
             return config.Name;
         }

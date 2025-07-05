@@ -10,13 +10,13 @@ namespace TaoTie
         public Func<string, string> GetValueByKey;
 
         /// <summary>
-        /// 通过中文本获取多语言文本(还没实现,先用根据ID获取的重载)
+        /// 通过I18NKey获取多语言文本
         /// </summary>
-        /// <param name="str">中文文本</param>
+        /// <param name="i18NKey"></param>
         /// <returns></returns>
-        public string GetText(string str)
+        public string GetText(string i18NKey)
         {
-            return GetValueByKey?.Invoke(str);
+            return GetValueByKey?.Invoke(i18NKey);
         }
         
     }

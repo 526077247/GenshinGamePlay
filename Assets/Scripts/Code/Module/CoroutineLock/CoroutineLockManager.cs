@@ -6,13 +6,13 @@ namespace TaoTie
     {
 
         public static CoroutineLockManager Instance { get; private set; }
-        public List<CoroutineLockQueueType> list;
-        public Queue<(int, long, int)> nextFrameRun = new Queue<(int, long, int)>();
-        public MultiMap<long, CoroutineLockTimer> timers = new MultiMap<long, CoroutineLockTimer>();
-        public Queue<long> timeOutIds = new Queue<long>();
-        public Queue<CoroutineLockTimer> timerOutTimer = new Queue<CoroutineLockTimer>();
-        public long minTime;
-        public long timeNow;
+        private List<CoroutineLockQueueType> list;
+        private Queue<(int, long, int)> nextFrameRun = new Queue<(int, long, int)>();
+        private MultiMap<long, CoroutineLockTimer> timers = new MultiMap<long, CoroutineLockTimer>();
+        private Queue<long> timeOutIds = new Queue<long>();
+        private Queue<CoroutineLockTimer> timerOutTimer = new Queue<CoroutineLockTimer>();
+        private long minTime;
+        private long timeNow;
 
         #region override
 
@@ -45,7 +45,7 @@ namespace TaoTie
         public void Update()
         {
             // 检测超时的CoroutineLock
-            TimeoutCheck(this);
+            TimeoutCheck();
 
             // 循环过程中会有对象继续加入队列
             while (this.nextFrameRun.Count > 0)
@@ -56,50 +56,50 @@ namespace TaoTie
         }
         #endregion
         
-        private void TimeoutCheck(CoroutineLockManager self)
+        private void TimeoutCheck()
         {
             // 超时的锁
-            if (self.timers.Count == 0)
+            if (this.timers.Count == 0)
             {
                 return;
             }
 
-            self.timeNow = TimeInfo.Instance.ClientFrameTime();
+            this.timeNow = TimeInfo.Instance.ClientFrameTime();
 
-            if (self.timeNow < self.minTime)
+            if (this.timeNow < this.minTime)
             {
                 return;
             }
 
-            foreach (var item in self.timers)
+            foreach (var item in this.timers)
             {
-                if (item.Key > self.timeNow)
+                if (item.Key > this.timeNow)
                 {
-                    self.minTime = item.Key;
+                    this.minTime = item.Key;
                     break;
                 }
 
-                self.timeOutIds.Enqueue(item.Key);
+                this.timeOutIds.Enqueue(item.Key);
             }
 
-            self.timerOutTimer.Clear();
+            this.timerOutTimer.Clear();
 
-            while (self.timeOutIds.Count > 0)
+            while (this.timeOutIds.Count > 0)
             {
-                long time = self.timeOutIds.Dequeue();
-                var list = self.timers[time];
+                long time = this.timeOutIds.Dequeue();
+                var list = this.timers[time];
                 for (int i = 0; i < list.Count; ++i)
                 {
                     CoroutineLockTimer coroutineLockTimer = list[i];
-                    self.timerOutTimer.Enqueue(coroutineLockTimer);
+                    this.timerOutTimer.Enqueue(coroutineLockTimer);
                 }
 
-                self.timers.Remove(time);
+                this.timers.Remove(time);
             }
 
-            while (self.timerOutTimer.Count > 0)
+            while (this.timerOutTimer.Count > 0)
             {
-                CoroutineLockTimer coroutineLockTimer = self.timerOutTimer.Dequeue();
+                CoroutineLockTimer coroutineLockTimer = this.timerOutTimer.Dequeue();
                 if (coroutineLockTimer.CoroutineLockInstanceId != coroutineLockTimer.CoroutineLock.InstanceId)
                 {
                     continue;
@@ -107,7 +107,7 @@ namespace TaoTie
 
                 CoroutineLock coroutineLock = coroutineLockTimer.CoroutineLock;
                 // 超时直接调用下一个锁
-                self.RunNextCoroutine(coroutineLock.coroutineLockType, coroutineLock.key, coroutineLock.level + 1);
+                this.RunNextCoroutine(coroutineLock.coroutineLockType, coroutineLock.key, coroutineLock.level + 1);
                 coroutineLock.coroutineLockType = CoroutineLockType.None; // 上面调用了下一个, dispose不再调用
             }
         }

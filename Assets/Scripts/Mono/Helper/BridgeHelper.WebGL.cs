@@ -35,6 +35,8 @@ namespace TaoTie
         private static extern void OpenUploader();
         [DllImport("__Internal")]
         private static extern string GetImgData();
+        [DllImport("__Internal")]
+        private static extern void CopyTextToClipboard(string ptr);
 #endif
         
         public static string OpenNativeStringDialog(string title, string defaultValue)

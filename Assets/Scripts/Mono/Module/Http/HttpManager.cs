@@ -366,7 +366,7 @@ namespace TaoTie
             string md5URLString = BitConverter.ToString(output).Replace("-", "");
             string path =  $"{persistentDataPath}/{dir}/";
             CheckDirAndCreateWhenNeeded(path);
-            string savePath = persistentDataPath + $"/{dir}/" + md5URLString + $"{extends}";
+            string savePath = persistentDataPath + $"/{dir}/" + md5URLString + extends;
             //Log.Info("=======savePath:" + savePath);
             return savePath;
         }

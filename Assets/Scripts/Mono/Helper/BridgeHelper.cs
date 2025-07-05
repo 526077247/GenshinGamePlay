@@ -23,5 +23,14 @@ namespace TaoTie
             Log.Info("Vibrate Callback");
 #endif
         }
+        
+        public static void CopyBuffer(string content)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            CopyTextToClipboard(content);
+#else
+            GUIUtility.systemCopyBuffer = content;
+#endif
+        }
     }
 }

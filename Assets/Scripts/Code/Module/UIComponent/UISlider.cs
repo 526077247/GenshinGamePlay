@@ -57,60 +57,20 @@ namespace TaoTie
         {
             this.ActivatingComponent();
             this.slider.wholeNumbers = wholeNumbers;
-            this.isWholeNumbers = true;
+            this.isWholeNumbers = wholeNumbers;
         }
 
-        public void SetMaxValue(float value)
+        public void SetValueList(ArrayList valueList)
         {
-            this.ActivatingComponent();
-            this.slider.maxValue = value;
-        }
-
-        public void SetMinValue(float value)
-        {
-            this.ActivatingComponent();
-            this.slider.minValue = value;
-        }
-
-        public void SetValueList(ArrayList value_list)
-        {
-            this.valueList = value_list;
+            this.valueList = valueList;
             this.SetWholeNumbers(true);
             this.SetMinValue(0);
-            this.SetMaxValue(value_list.Count - 1);
+            this.SetMaxValue(valueList.Count - 1);
         }
    
         public ArrayList GetValueList()
         {
             return this.valueList;
-        }
-
-        public object GetValue()
-        {
-            this.ActivatingComponent();
-            if (this.isWholeNumbers)
-            {
-                var index = (int)this.slider.value;
-                return this.valueList[index];
-            }
-            else
-            {
-                return this.slider.normalizedValue;
-            }
-        }
-        public object GetNormalizedValue()
-        {
-            this.ActivatingComponent();
-            return this.slider.normalizedValue;
-        }
-        /// <summary>
-        /// 设置进度
-        /// </summary>
-        /// <param name="value">wholeNumbers 时value是ui侧的index</param>
-        public void SetValue(int value)
-        {
-            this.ActivatingComponent();
-            this.slider.value = value;
         }
         
         public void SetWholeNumbersValue(object value)
@@ -130,8 +90,47 @@ namespace TaoTie
                     return;
                 }
             }
-            
         }
+        
+        public object GetWholeNumbersValue()
+        {
+            this.ActivatingComponent();
+            if (!this.isWholeNumbers)
+            {
+                Log.Warning("请先设置WholeNumbers为true");
+                return default;
+            }
+            var index = (int)this.slider.value;
+            return this.valueList[index];
+        }
+        
+        /// <summary>
+        /// 设置进度
+        /// </summary>
+        /// <param name="value">wholeNumbers 时value是ui侧的index</param>
+        public void SetValue(float value)
+        {
+            this.ActivatingComponent();
+            if (!this.isWholeNumbers)
+            {
+                this.slider.value = value;
+            }
+            else
+            {
+                this.slider.value = (int)value;
+            }
+        }
+
+        /// <summary>
+        /// 获取进度
+        /// </summary>
+        /// <returns>wholeNumbers 时value是ui侧的index</returns>
+        public float GetValue()
+        {
+            this.ActivatingComponent();
+            return this.slider.value;
+        }
+
         /// <summary>
         /// 设置进度
         /// </summary>
@@ -141,20 +140,23 @@ namespace TaoTie
             this.ActivatingComponent();
             this.slider.normalizedValue = value;
         }
-        /// <summary>
-        /// 设置进度
-        /// </summary>
-        /// <param name="value"></param>
-        public void SetValue(float value)
+        
+        public object GetNormalizedValue()
         {
             this.ActivatingComponent();
-            if (!this.isWholeNumbers)
-                this.slider.value = value;
-            else
-            {
-                Log.Warning("请先设置WholeNumbers为false");
-                this.slider.value = (int)value;
-            }
+            return this.slider.normalizedValue;
+        }
+        
+        public void SetMaxValue(float value)
+        {
+            this.ActivatingComponent();
+            this.slider.maxValue = value;
+        }
+
+        public void SetMinValue(float value)
+        {
+            this.ActivatingComponent();
+            this.slider.minValue = value;
         }
     }
 }

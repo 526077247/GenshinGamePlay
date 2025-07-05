@@ -96,7 +96,6 @@ namespace TaoTie
             var eventSystem = GameObject.Find(EventSystemPath);
             var transform = this.gameObject.transform;
             this.UICamera = GameObject.Find(uiCameraPath).GetComponent<Camera>();
-            GameObject.DontDestroyOnLoad(this.gameObject);
             GameObject.DontDestroyOnLoad(eventSystem);
             this.Resolution = new Vector2(Define.DesignScreenWidth, Define.DesignScreenHeight);//分辨率
             this.layers = new Dictionary<UILayerNames, UILayer>();
@@ -111,7 +110,7 @@ namespace TaoTie
                 };
                 var trans = go.transform;
                 trans.SetParent(transform, false);
-                UILayer newLayer = ManagerProvider.RegisterManager<UILayer,UILayerDefine,GameObject>(layer, go,layer.Name.ToString());
+                UILayer newLayer = ManagerProvider.RegisterManager<UILayer,UILayerDefine,GameObject>(layer, go, layer.Name.ToString());
                 this.layers[layer.Name] = newLayer;
                 windowStack[layer.Name] = new LinkedList<string>();
             }
@@ -139,5 +138,14 @@ namespace TaoTie
             this.layers[UILayerNames.GameBackgroundLayer].SetCanvasScaleEditorPortrait(flag);
         }
 
+        public UILayer GetLayer(UILayerNames layer)
+        {
+            if (layers.TryGetValue(layer, out var res))
+            {
+                return res;
+            }
+
+            return null;
+        }
     }
 }

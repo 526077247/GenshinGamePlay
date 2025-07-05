@@ -13,7 +13,7 @@ namespace TaoTie
 
 		public UILoopGridView LoopGridView;
 		public UILoopListView2 LoopListView2;
-		public UIBaseContainer Welcome;
+		public UIEmptyView Welcome;
 
 		public int CurId;
 		
@@ -67,7 +67,7 @@ namespace TaoTie
 		{
 			if (index < 0 || index >= TotalDay) return null;
 			LoopGridViewItem item;
-			var date = FirstDay.AddDays(index - (int) FirstDay.DayOfWeek);
+			
 			if (index < (int) FirstDay.DayOfWeek)
 			{
 				item = gridView.NewListViewItem("EmptyItem");
@@ -89,6 +89,7 @@ namespace TaoTie
 				{
 					cellItem = this.LoopGridView.GetUIItemView<CellItem>(item);
 				}
+				var date = FirstDay.AddDays(index - (int) FirstDay.DayOfWeek);
 				cellItem.SetData(date);
 			}
 			

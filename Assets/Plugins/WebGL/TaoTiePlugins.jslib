@@ -180,4 +180,12 @@ mergeInto(LibraryManager.library, {
         }
         return null;
     },
+    CopyTextToClipboard: function(ptr){
+        var text = UTF8ToString(ptr);
+        navigator.clipboard.writeText(text).then(function () {
+            console.log('Async: Copying to clipboard was successful!');
+        }, function (err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    },  
 });

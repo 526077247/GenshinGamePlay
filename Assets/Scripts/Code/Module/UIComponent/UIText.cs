@@ -28,8 +28,22 @@ namespace TaoTie
                 this.i18nCompTouched = this.GetGameObject().GetComponent<I18NText>();
             }
         }
+        
+        public void OnLanguageChange()
+        {
+            this.ActivatingComponent();
+            if (this.textKey != default)
+            {
+                if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && this.keyParams != null)
+                    text = string.Format(text, this.keyParams);
+                this.text.text = text;
+            }
+        }
 
-        //当手动修改text的时候，需要将mono的i18textcomponent给禁用掉
+        /// <summary>
+        /// 当手动修改text的时候，需要将mono的i18textcomponent给禁用掉
+        /// </summary>
+        /// <param name="enable"></param>
         void DisableI18Component(bool enable = false)
         {
             this.ActivatingComponent();
@@ -89,19 +103,6 @@ namespace TaoTie
                 if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && paras != null)
                     text = string.Format(text, paras);
                 this.text.text = text;
-            }
-        }
-
-        public void OnLanguageChange()
-        {
-            this.ActivatingComponent();
-            {
-                if (this.textKey != default)
-                {
-                    if (I18NManager.Instance.I18NTryGetText(this.textKey, out var text) && this.keyParams != null)
-                        text = string.Format(text, this.keyParams);
-                    this.text.text = text;
-                }
             }
         }
 

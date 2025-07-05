@@ -89,7 +89,7 @@ namespace TaoTie
             }
             else
             {
-                var sprite = await ImageLoaderManager.Instance.LoadImageAsync(spritePath);
+                var sprite = await ImageLoaderManager.Instance.LoadSpriteAsync(spritePath);
                 if (thisVersion != version)
                 {
                     ImageLoaderManager.Instance.ReleaseImage(spritePath);
@@ -170,13 +170,13 @@ namespace TaoTie
                 Log.Error("Set image color error, color is "+colorStr);
             }
         }
-        public void SetImageColor(Color color)
+        public void SetColor(Color color)
         {
             this.ActivatingComponent();
             this.image.color = color;
         }
 
-        public Color GetImageColor()
+        public Color GetColor()
         {
             this.ActivatingComponent();
             return this.image.color;

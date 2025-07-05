@@ -312,93 +312,6 @@ namespace TaoTie
             return componentInst;
         }
 
-        private void InnerSetActive(bool active)
-        {
-            ActiveSelf = active;
-            if (GetGameObject() != null && gameObject.activeSelf != active)
-                gameObject.SetActive(active);
-        }
-
-        public void SetActive(bool active)
-        {
-            if (active)
-            {
-                (this as IOnEnable)?.OnEnable();
-                this.AfterOnEnable();
-                InnerSetActive(active);
-            }
-            else
-            {
-                InnerSetActive(active);
-                this.BeforeOnDisable();
-                (this as IOnDisable)?.OnDisable();
-            }
-        }
-
-        public void SetActive<T>(bool active, T param1)
-        {
-            if (active)
-            {
-                (this as IOnEnable<T>)?.OnEnable(param1);
-                this.AfterOnEnable();
-                InnerSetActive(active);
-            }
-            else
-            {
-                InnerSetActive(active);
-                this.BeforeOnDisable();
-                (this as IOnDisable<T>)?.OnDisable(param1);
-            }
-        }
-
-        public void SetActive<T, P>(bool active, T param1, P param2)
-        {
-            if (active)
-            {
-                (this as IOnEnable<T, P>)?.OnEnable(param1, param2);
-                this.AfterOnEnable();
-                InnerSetActive(active);
-            }
-            else
-            {
-                InnerSetActive(active);
-                this.BeforeOnDisable();
-                (this as IOnDisable<T, P>)?.OnDisable(param1, param2);
-            }
-        }
-
-        public void SetActive<T, P, K>(bool active, T param1, P param2, K param3)
-        {
-            if (active)
-            {
-                (this as IOnEnable<T, P, K>)?.OnEnable(param1, param2, param3);
-                this.AfterOnEnable();
-                InnerSetActive(active);
-            }
-            else
-            {
-                InnerSetActive(active);
-                this.BeforeOnDisable();
-                (this as IOnDisable<T, P, K>)?.OnDisable(param1, param2, param3);
-            }
-        }
-
-        public void SetActive<T, P, K, V>(bool active, T param1, P param2, K param3, V param4)
-        {
-            if (active)
-            {
-                (this as IOnEnable<T, P, K, V>)?.OnEnable(param1, param2, param3, param4);
-                this.AfterOnEnable();
-                InnerSetActive(active);
-            }
-            else
-            {
-                InnerSetActive(active);
-                this.BeforeOnDisable();
-                (this as IOnDisable<T, P, K, V>)?.OnDisable(param1, param2, param3, param4);
-            }
-        }
-
         /// <summary>
         /// 获取组件
         /// </summary>
@@ -439,7 +352,7 @@ namespace TaoTie
         
         
         /// <summary>
-        /// 移除组件
+        /// 移除所有组件
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
@@ -476,6 +389,94 @@ namespace TaoTie
             {
                 this.components.Remove(path, component.GetType());
                 length--;
+            }
+        }
+        
+        
+        private void InnerSetActive(bool active)
+        {
+            ActiveSelf = active;
+            if (GetGameObject() != null && gameObject.activeSelf != active)
+                gameObject.SetActive(active);
+        }
+
+        public void SetActive(bool active)
+        {
+            if (active)
+            {
+                (this as IOnEnable)?.OnEnable();
+                this.AfterOnEnable();
+                InnerSetActive(active);
+            }
+            else
+            {
+                InnerSetActive(active);
+                this.BeforeOnDisable();
+                (this as IOnDisable)?.OnDisable();
+            }
+        }
+
+        public void SetActive<P1>(bool active, P1 p1)
+        {
+            if (active)
+            {
+                (this as IOnEnable<P1>)?.OnEnable(p1);
+                this.AfterOnEnable();
+                InnerSetActive(active);
+            }
+            else
+            {
+                InnerSetActive(active);
+                this.BeforeOnDisable();
+                (this as IOnDisable<P1>)?.OnDisable(p1);
+            }
+        }
+
+        public void SetActive<P1, P2>(bool active, P1 p1, P2 p2)
+        {
+            if (active)
+            {
+                (this as IOnEnable<P1, P2>)?.OnEnable(p1, p2);
+                this.AfterOnEnable();
+                InnerSetActive(active);
+            }
+            else
+            {
+                InnerSetActive(active);
+                this.BeforeOnDisable();
+                (this as IOnDisable<P1, P2>)?.OnDisable(p1, p2);
+            }
+        }
+
+        public void SetActive<P1, P2, P3>(bool active, P1 p1, P2 p2, P3 p3)
+        {
+            if (active)
+            {
+                (this as IOnEnable<P1, P2, P3>)?.OnEnable(p1, p2, p3);
+                this.AfterOnEnable();
+                InnerSetActive(active);
+            }
+            else
+            {
+                InnerSetActive(active);
+                this.BeforeOnDisable();
+                (this as IOnDisable<P1, P2, P3>)?.OnDisable(p1, p2, p3);
+            }
+        }
+
+        public void SetActive<P1, P2, P3, P4>(bool active, P1 p1, P2 p2, P3 p3, P4 p4)
+        {
+            if (active)
+            {
+                (this as IOnEnable<P1, P2, P3, P4>)?.OnEnable(p1, p2, p3, p4);
+                this.AfterOnEnable();
+                InnerSetActive(active);
+            }
+            else
+            {
+                InnerSetActive(active);
+                this.BeforeOnDisable();
+                (this as IOnDisable<P1, P2, P3, P4>)?.OnDisable(p1, p2, p3, p4);
             }
         }
     }
