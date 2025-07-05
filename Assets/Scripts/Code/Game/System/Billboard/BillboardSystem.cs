@@ -31,7 +31,7 @@ namespace TaoTie
 
         public void Update()
         {
-            var hudView = UIManager.Instance.GetWindow<UIDamageView>(1);
+            var hudView = UIManager.Instance.GetView<UIDamageView>(1);
             if (hudView != null)
             {
                 hudView.Update();

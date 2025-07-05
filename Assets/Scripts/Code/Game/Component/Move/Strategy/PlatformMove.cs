@@ -279,7 +279,7 @@ namespace TaoTie
             if (hasAvatarNearEvent)
             {
                 var sceneGroupActor = parent.GetComponent<SceneGroupActorComponent>();
-                if (sceneGroupActor != null && SceneManager.Instance.GetCurrentScene() is MapScene scene)
+                if (sceneGroupActor != null && SceneManager.Instance.CurrentScene is MapScene scene)
                 {
                     var avatar = scene.Self;
                     if (avatar != null &&
