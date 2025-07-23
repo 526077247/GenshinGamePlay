@@ -247,6 +247,7 @@ namespace TaoTie
                 IsInCombat = inCombat;
                 Messager.Instance.Broadcast(Id, MessageId.CombatStateChange, IsInCombat);
             }
+            fsm.SetData(FSMConst.InCombat, inCombat);
         }
     }
 }

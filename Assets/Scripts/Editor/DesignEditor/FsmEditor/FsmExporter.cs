@@ -241,7 +241,7 @@ namespace TaoTie
             List<AnimatorStateMachine> parentStack = new List<AnimatorStateMachine>();
             baseSm = layer.stateMachine;
             defaultStateName = layer.stateMachine.defaultState.name;
-            ExportStateMachine(parentStack, layer.stateMachine, ref stateList, ref anyStateTransitionList);
+            ExportStateMachine(parentStack, layer.stateMachine, stateList, anyStateTransitionList);
 
             ConfigFsm cfgFsm = new ConfigFsm{Name = layer.name, LayerIndex = layerIndex};
             cfgFsm.Entry = defaultStateName;
@@ -256,25 +256,25 @@ namespace TaoTie
         }
 
         private void ExportStateMachine(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
-            ref List<ConfigFsmState> stateList, ref List<ConfigTransition> anyStateTransitionList)
+            List<ConfigFsmState> stateList, List<ConfigTransition> anyStateTransitionList)
         {
             foreach (var state in sm.states)
             {
                 stateList.Add(ExportState(parentStack, sm, state.state));
             }
 
-            ExportAnyStateTransitions(parentStack, sm, ref anyStateTransitionList);
+            ExportAnyStateTransitions(parentStack, sm, anyStateTransitionList);
             parentStack.Add(sm);
             foreach (var state in sm.stateMachines)
             {
-                ExportStateMachine(parentStack, state.stateMachine, ref stateList, ref anyStateTransitionList);
+                ExportStateMachine(parentStack, state.stateMachine, stateList, anyStateTransitionList);
             }
 
             parentStack.RemoveAt(parentStack.Count - 1);
         }
 
         private void ExportAnyStateTransitions(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
-            ref List<ConfigTransition> anyStateTransitionList)
+            List<ConfigTransition> anyStateTransitionList)
         {
             AnimatorStateTransition[] transitions = sm.anyStateTransitions;
             if (transitions != null)
@@ -288,7 +288,7 @@ namespace TaoTie
                         continue;
                     }
 
-                    ExportStateTransition(parentStack, sm, null, transition, true, ref anyStateTransitionList);
+                    ExportStateTransition(parentStack, sm, null, transition, true, anyStateTransitionList);
                 }
             }
         }
@@ -299,7 +299,7 @@ namespace TaoTie
             List<ConfigTransition> transList = new List<ConfigTransition>();
             foreach (var tran in state.transitions)
             {
-                ExportStateTransition(parentStack, sm, state, tran, false, ref transList);
+                ExportStateTransition(parentStack, sm, state, tran, false, transList);
             }
 
             ConfigFsmTimeline timeline;
@@ -337,7 +337,7 @@ namespace TaoTie
 
         private void ExportStateTransition(List<AnimatorStateMachine> parentStack, AnimatorStateMachine sm,
             AnimatorState state, AnimatorStateTransition tran, bool isAnyStateTransition,
-            ref List<ConfigTransition> ret)
+            List<ConfigTransition> ret)
         {
             List<ConfigCondition> conditionList = new List<ConfigCondition>();
             foreach (var item in tran.conditions)

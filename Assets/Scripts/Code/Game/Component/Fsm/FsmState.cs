@@ -48,7 +48,7 @@ namespace TaoTie
         {
             get
             {
-                if (Config?.Data == null) return true;
+                if (Config?.Data == null) return false;
                 return Config.Data.IsJump;
             }
         }

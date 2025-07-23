@@ -407,9 +407,7 @@ namespace TaoTie
                 {
                     curMusic.Dispose();
                     curMusic = null;
-                    ClearMemory();
                 }
-
             }
         }
 
@@ -473,7 +471,7 @@ namespace TaoTie
                 return;
             }
             source.loop = loop;
-            source.volume = SoundVolume;
+            source.volume = SoundVolume / 10f;
             SoundItem res = SoundItem.Create(url, true, source, cancel);
             await PoolPlay(res, res.Token);
         }
@@ -485,7 +483,6 @@ namespace TaoTie
             {
                 old.Dispose();
                 sounds.Remove(id);
-                ClearMemory();
             }
         }
 
@@ -493,9 +490,16 @@ namespace TaoTie
         {
             foreach (var item in sounds)
             {
-                item.Value.Dispose();
+                if (item.Value != curMusic)
+                {
+                    item.Value.Dispose();
+                }
             }
             sounds.Clear();
+            if (this.curMusic != null) 
+            {
+                this.sounds.Add(this.curMusic.Id, this.curMusic);
+            }
         }
 
         private async ETTask PoolPlay(SoundItem soundItem, ETCancellationToken token)
@@ -567,16 +571,6 @@ namespace TaoTie
         {
             if (!sounds.TryGetValue(id, out var res) || res == null) return null;
             return res;
-        }
-
-        #endregion
-
-        #region Clear
-
-        private void ClearMemory()
-        {
-            GC.Collect();
-            Resources.UnloadUnusedAssets();
         }
 
         #endregion

@@ -29,7 +29,7 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 强制朝向
+        /// 强制朝向目标
         /// </summary>
         /// <param name="target"></param>
         public virtual void ForceLookAt(Vector3 target)
@@ -37,6 +37,15 @@ namespace TaoTie
             Vector3 dir = target - SceneEntity.Position;
             dir.y = 0;
             SceneEntity.Rotation = Quaternion.LookRotation(dir, Vector3.up);
+        }
+        /// <summary>
+        /// 强制朝向方向
+        /// </summary>
+        /// <param name="dir"></param>
+        public virtual void ForceLookTo(Vector3 dir)
+        {
+            if (CameraManager.Instance?.MainCamera() == null) return;
+            SceneEntity.Rotation = Quaternion.LookRotation(CameraManager.Instance.MainCamera().transform.rotation * dir, Vector3.up);
         }
 
         public void Update()

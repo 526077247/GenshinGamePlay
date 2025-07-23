@@ -7,6 +7,10 @@
         public const string Jump = "Jump";
         public const string Land = "Land";
         public const string Shake = "Shake";
+        public const string LeftFoot = "LeftFoot";
+        public const string AngleVF = "AngleVF";
+        public const string SprintBS = "SprintBS";
+        public const string InCombat = "InCombat";
         
         public const string MotionFlag = "MotionFlag";
         public const string MotionDirection = "MotionDirection";

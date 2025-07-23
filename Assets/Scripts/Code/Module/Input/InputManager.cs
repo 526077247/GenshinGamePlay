@@ -24,6 +24,7 @@ namespace TaoTie
             KeyCode.Q,
             KeyCode.E,
             KeyCode.Escape,
+            KeyCode.LeftShift,
         };
         
         public static InputManager Instance { get; private set; }

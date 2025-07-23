@@ -166,6 +166,7 @@ namespace TaoTie
             AfterBuild(assemblyName, obfuscate);
             //反射获取当前Game视图，提示编译完成
             // ShowNotification("Build Code Success");
+            Debug.Log("Build Code Success");
         }
         
         public static void AfterBuild(string assemblyName, bool obfuscate = false)

@@ -150,6 +150,7 @@ namespace TaoTie
         {
             if (config.TryGetParam(key, out var param))
             {
+                if(param.GetFloat(DynDictionary) == val) return;
                 param.SetValue(DynDictionary, val);
                 if (param.NeedSyncAnimator)
                 {
@@ -169,6 +170,7 @@ namespace TaoTie
         {
             if (config.TryGetParam(key, out var param))
             {
+                if(param.GetInt(DynDictionary) == val) return;
                 param.SetValue(DynDictionary, val);
                 if (param.NeedSyncAnimator)
                 {
@@ -189,6 +191,7 @@ namespace TaoTie
         {
             if (config.TryGetParam(key, out var param))
             {
+                if(param.GetBool(DynDictionary) == val) return;
                 param.SetValue(DynDictionary, val);
                 if (param.NeedSyncAnimator)
                 {

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class AltasEditor
+    public class ArtEditor
     {
 
         [MenuItem("Tools/美术工具/设置图片", false, 31)]

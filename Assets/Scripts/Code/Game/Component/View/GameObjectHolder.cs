@@ -117,6 +117,8 @@ namespace TaoTie
             Messager.Instance.AddListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);
             Messager.Instance.AddListener<string, float>(Id, MessageId.SetAnimDataFloat, SetData);
             Messager.Instance.AddListener<string, bool, bool>(Id, MessageId.SetAnimDataBool, SetData);
+            Messager.Instance.AddListener(Id, MessageId.CheckLeftOrRight, CheckLeftOrRightFoot);
+            Messager.Instance.AddListener<Vector3>(Id, MessageId.CheckAngleVF, CheckAngleVF);
             UpdateRagDollState();
             if (waitFinishTask != null)
             {
@@ -133,6 +135,8 @@ namespace TaoTie
 
         private void Destroy()
         {
+            Messager.Instance.RemoveListener(Id, MessageId.CheckLeftOrRight, CheckLeftOrRightFoot);
+            Messager.Instance.RemoveListener<Vector3>(Id, MessageId.CheckAngleVF, CheckAngleVF);
             Messager.Instance.RemoveListener<float>(0,MessageId.TimeScaleChange,ChangeTimeScale);
             Messager.Instance.RemoveListener<bool>(Id,MessageId.SetUseRagDoll,FSMSetUseRagDoll);
             Messager.Instance.RemoveListener<string, int>(Id, MessageId.SetAnimDataInt, SetData);

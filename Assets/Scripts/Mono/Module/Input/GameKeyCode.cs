@@ -53,6 +53,7 @@ namespace TaoTie
         public const int Skill1 = 8;
         public const int Skill2 = 9;
         public const int Back = 10;
-        public const int Max = 11;
+        public const int SprintBS = 11;
+        public const int Max = 12;
     }
 }

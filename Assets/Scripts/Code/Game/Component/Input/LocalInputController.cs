@@ -14,7 +14,8 @@ namespace TaoTie
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         private bool canMove = true;
         private bool canTurn = true;
-        
+        private long lastCheckTime;
+        private Vector3 lastDirection;
         #region IComponent
 
         public void Init()
@@ -61,8 +62,35 @@ namespace TaoTie
                     direction += Vector3.right * x;
                 }
             }
+
+            //断触问题
+            if (direction == Vector3.zero)
+            {
+                if (lastCheckTime + 100 > TimerManager.Instance.GetTimeNow())
+                {
+                    direction = lastDirection;
+                }
+            }
+            else
+            {
+                lastDirection = direction;
+                lastCheckTime = TimerManager.Instance.GetTimeNow();
+            }
             
-            TryJump();
+            if (InputManager.Instance.GetKey(GameKeyCode.SprintBS))
+            {
+                //todo: cd
+                
+                if (direction != Vector3.one)
+                {
+                    moveComponent.ForceLookTo(direction);
+                }
+                fsm.SetData(FSMConst.SprintBS, true);
+            }
+            else
+            {
+                TryJump();
+            }
             this.TryMove(direction);
         }
 
@@ -77,15 +105,27 @@ namespace TaoTie
                 {
                     mDirection = MotionDirection.Forward;
                 }
-                direction = new Vector3(0, 0, direction.z);
+                direction = direction.magnitude * moveComponent.CharacterInput.Direction;
             }
             if (direction == Vector3.zero)
             {
+                if (fsm.GetInt(FSMConst.MotionFlag) != 0)
+                {
+                    Messager.Instance.Broadcast(Id, MessageId.CheckLeftOrRight);
+                }
                 fsm.SetData(FSMConst.MotionFlag, 0);
                 fsm.SetData(FSMConst.MotionDirection, 0);
             }
             else
             {
+                if (fsm.GetInt(FSMConst.MotionFlag) == 0)
+                {
+                    //随机一只脚
+                    int isLeft = Random.Range(0, 2);
+                    fsm.SetData(FSMConst.LeftFoot, isLeft);
+                    
+                    Messager.Instance.Broadcast(Id, MessageId.CheckAngleVF, direction);
+                }
                 fsm.SetData(FSMConst.MotionFlag, (int)mFlag);
                 fsm.SetData(FSMConst.MotionDirection, (int)mDirection);
             }
@@ -127,6 +167,7 @@ namespace TaoTie
         {
             if (InputManager.Instance.GetKey(GameKeyCode.Jump) && fsm.DefaultFsm.CurrentState.CanJump)
             {
+                Messager.Instance.Broadcast(Id, MessageId.CheckLeftOrRight);
                 fsm.SetData(FSMConst.Jump, true);
             }
         }

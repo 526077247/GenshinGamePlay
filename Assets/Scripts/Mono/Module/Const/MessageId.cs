@@ -57,5 +57,10 @@
         public const int OnHolderCountChange = 24;
         /// <summary> 触发执行Ability </summary>
         public const int ExecuteAbility = 25;
+        /// <summary> 检查左右脚 </summary>
+        public const int CheckLeftOrRight = 27;
+        /// <summary> 检查镜头与面向夹角 </summary>
+        public const int CheckAngleVF = 28;
+
     }
 }
