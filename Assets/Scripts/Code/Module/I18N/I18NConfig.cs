@@ -30,7 +30,11 @@ namespace TaoTie
 
             if (item == null)
             {
+#if NOT_UNITY
+                throw new Exception($"配置找不到，配置表名: {nameof (I18NConfig)}，配置id: {id}");
+#else
                 Log.Error($"配置找不到，配置表名: {nameof (I18NConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
