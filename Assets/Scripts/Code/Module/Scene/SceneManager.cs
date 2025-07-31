@@ -127,17 +127,17 @@ namespace TaoTie
             GC.Collect();
 
             var res = Resources.UnloadUnusedAssets();
-            while (!res.isDone)
+            while (!res.isDone && !ResourcesManager.Instance.IsPreloadScene())
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
 
             slidValue += cleanup;
             await scene.SetProgress(slidValue);
-
             Log.Info("异步加载目标场景 Start");
             //异步加载目标场景
             await ResourcesManager.Instance.LoadSceneAsync(scene.GetScenePath(), false);
+            CameraManager.Instance.SetCameraStackAtLoadingDone();
             await scene.OnComplete();
             slidValue += loadScene;
             await scene.SetProgress(slidValue);
@@ -146,7 +146,6 @@ namespace TaoTie
 
             slidValue += prepare;
             await scene.SetProgress(slidValue);
-            CameraManager.Instance.SetCameraStackAtLoadingDone();
 
             slidValue = 1;
             await scene.SetProgress(slidValue);
@@ -158,7 +157,17 @@ namespace TaoTie
             await scene.OnSwitchSceneEnd();
             FinishLoad();
         }
-
+        
+        public async ETTask PreloadScene<T>() where T : class, IScene
+        {
+            var scene = await GetScene<T>();
+            ResourcesManager.Instance.PreLoadScene(scene.GetScenePath(), false);
+        }
+        public void PreloadMapScene(string typeName)
+        {
+            if(!SceneConfigCategory.Instance.TryGetByName(typeName,out var config)) return;
+            ResourcesManager.Instance.PreLoadScene(config.Perfab, false);
+        }
         /// <summary>
         /// 切换场景
         /// </summary>

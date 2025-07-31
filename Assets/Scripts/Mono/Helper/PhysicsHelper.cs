@@ -88,6 +88,13 @@ namespace TaoTie
             var len = Physics.OverlapSphereNonAlloc(center, radius, Colliders, entity, QueryTriggerInteraction.Ignore);
             return FilterEntity(filter,len);
         }
+        public static int RaycastNonAlloc(Vector3 origin, Vector3 direction, float maxDistance, EntityType[] filter,
+            out long[] res)
+        {
+            res = entities;
+            var len = Physics.RaycastNonAlloc(origin, direction, raycastHits, maxDistance, entity, QueryTriggerInteraction.Ignore);
+            return FilterEntity(filter, len);
+        }
         private static int FilterEntity(EntityType[] filter, int len)
         {
             int count = 0;

@@ -169,17 +169,11 @@ namespace TaoTie
                 }
                 if (curRunner is BlenderEnvironmentRunner blender) //正在变换
                 {
-                    return;
                     // 中途改变这种，天空盒插值不了，得等正在变换的变换完
-                    // envInfoStack.Pop();
-                    // while (envInfoStack.Peek().IsOver) //移除已经over的
-                    // {
-                    //     envInfoStack.Pop().Dispose();
-                    // }
-                    //
-                    // var newTop = envInfoStack.Peek();
-                    // blender.ChangeTo(newTop as NormalEnvironmentRunner, false);
-                    // envInfoStack.Push(blender);
+                    if(!blender.IsOver) return;
+                    envInfoStack.Remove(blender);
+                    blender.ChangeTo(top as NormalEnvironmentRunner, false);
+                    envInfoStack.Push(blender);
                 }
                 else//变换到下一个环境
                 {

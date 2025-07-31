@@ -21,7 +21,8 @@ namespace TaoTie
         private List<AssetHandle> persistentAssetOperationHandles;
         public IPackageFinder packageFinder { get; private set; }
         private HashSet<AssetHandle> loadingOp;
-
+        private Dictionary<string, SceneHandle> preloadScene;
+        
         #region override
 
         public void Init()
@@ -32,6 +33,7 @@ namespace TaoTie
             cachedAssetOperationHandles = new List<AssetHandle>(512);
             persistentAssetOperationHandles = new List<AssetHandle>(4);
             loadingOp = new HashSet<AssetHandle>();
+            preloadScene = new Dictionary<string, SceneHandle>();
         }
 
         public void Init(IPackageFinder finder)
@@ -55,6 +57,14 @@ namespace TaoTie
         public bool IsProcessRunning()
         {
             return loadingOp.Count > 0;
+        }
+        /// <summary>
+        /// 是否有预加载场景正在进行
+        /// </summary>
+        /// <returns></returns>
+        public bool IsPreloadScene()
+        {
+            return preloadScene.Count > 0;
         }
 
         /// <summary>
@@ -170,7 +180,38 @@ namespace TaoTie
             op.Completed += (op) => { res.SetResult(); };
             return res;
         }
+        
+        /// <summary>
+        /// 预加载资源
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="isAdditive"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public SceneHandle PreLoadScene(string path, bool isAdditive, string package = null)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                Log.Error("path err : " + path);
+                return null;
+            }
 
+            if (package == null)
+            {
+                package = packageFinder.GetPackageName(path);
+            }
+
+            var op = PackageManager.Instance.LoadSceneAsync(path,
+                isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package, true);
+            if (op == null)
+            {
+                Log.Error(package + "加载资源前未初始化！" + path);
+                return default;
+            }
+            preloadScene.Add(path, op);
+            return op;
+        }
+        
         /// <summary>
         /// 清理所有load出来的非持久资源
         /// </summary>

@@ -338,11 +338,11 @@ namespace TaoTie
             return packageInfo.LoadAssetAsync<T>(path);
         }
 
-        public SceneHandle LoadSceneAsync(string path, LoadSceneMode mode, string package)
+        public SceneHandle LoadSceneAsync(string path, LoadSceneMode mode, string package, bool suspendLoad = false)
         {
             var packageInfo = GetPackageSync(package);
             if (packageInfo == null) return null;
-            return packageInfo.LoadSceneAsync(path, mode);
+            return packageInfo.LoadSceneAsync(path, mode, suspendLoad:suspendLoad);
         }
 
         public ResourceDownloaderOperation CreateResourceDownloader(int downloadingMaxNumber, int failedTryAgain,
