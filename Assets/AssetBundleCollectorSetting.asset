@@ -99,6 +99,12 @@ MonoBehaviour:
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
+      - CollectPath: Assets/AssetsPackage/RenderAssets
+        CollectorGUID: 9d923eae0a9098849bd92b9ceb1c3dcc
+        CollectorType: 1
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackShaderVariants
+        FilterRuleName: CollectShaderVariants
         AssetTags: 
         UserData: 
     - GroupName: Game

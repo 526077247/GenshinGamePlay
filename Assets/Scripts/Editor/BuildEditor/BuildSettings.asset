@@ -21,6 +21,7 @@ MonoBehaviour:
   isContainsAb: 0
   isBuildAll: 1
   isPackAtlas: 0
+  collectShaderVariant: 1
   cdn: 
   buildType: 1
   buildAssetBundleOptions: 0

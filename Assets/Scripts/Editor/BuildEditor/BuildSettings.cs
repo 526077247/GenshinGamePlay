@@ -15,6 +15,7 @@ namespace TaoTie
         public bool isContainsAb = false;
         public bool isBuildAll = false;
         public bool isPackAtlas = false;
+        public bool collectShaderVariant = false;
         public string cdn = "";
         public BuildType buildType = BuildType.Release;
         public BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;

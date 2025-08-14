@@ -2,10 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using Debug = UnityEngine.Debug;
 
 namespace TaoTie
 {
@@ -57,6 +56,7 @@ namespace TaoTie
 		private PlatformType activePlatform;
 		private PlatformType platformType;
 
+		private bool collectShaderVariant = false;
 		private bool clearBuildCache = false;
 		private bool clearReleaseFolder;
 		private bool clearABFolder;
@@ -124,6 +124,7 @@ namespace TaoTie
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
 				channel = buildSettings.channel;
 				buildMode = buildSettings.buildMode;
+				collectShaderVariant = buildSettings.collectShaderVariant;
 				cdn = buildSettings.cdn;
 			}
         }
@@ -161,6 +162,7 @@ namespace TaoTie
 			this.clearBuildCache = EditorGUILayout.Toggle("清理构建缓存: ", clearBuildCache);
 			this.clearReleaseFolder = EditorGUILayout.Toggle("清理打包输出文件夹: ", clearReleaseFolder);
 			this.clearABFolder = EditorGUILayout.Toggle("清理AB缓存文件夹: ", clearABFolder);
+			this.collectShaderVariant = EditorGUILayout.Toggle("是否重新收集shader变体: ", collectShaderVariant);
             this.isPackAtlas = EditorGUILayout.Toggle("是否需要重新打图集: ", isPackAtlas);
             this.isBuildAll = EditorGUILayout.Toggle("全量资源是否打进包:", this.isBuildAll);
             if (!this.isBuildAll)
@@ -213,6 +215,17 @@ namespace TaoTie
 
 			if (GUILayout.Button("开始打包"))
 			{
+				if(isBuildExe)
+				{
+					foreach (var aotDllName in CodeLoader.AllAotDllList)
+					{
+						if (!File.Exists($"{Define.AOTDir}{aotDllName}.bytes"))
+						{
+							UnityEngine.Debug.LogError("没有生成补充元数据dll");
+							return;
+						}
+					}
+				}
 				SaveSettings();
 				BuildHelper.SetCdnConfig(channel, buildHotfixAssembliesAOT, (int) buildMode, cdn);
 				if (this.platformType == PlatformType.None)
@@ -241,8 +254,27 @@ namespace TaoTie
 					FileHelper.CleanDirectory("Library/BuildCache");
 					FileHelper.CleanDirectory("Library/BeeAssemblyBuilder");
 				}
-				BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
-					isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
+
+				if (collectShaderVariant)
+				{
+					BuildHelper.CollectSVC((res) =>
+					{
+						if (!res)
+						{
+							Debug.LogError("Failed to Collect shader Variants.");
+						}
+						else
+						{
+							BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
+								isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
+						}
+					});
+				}
+				else
+				{
+					BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
+						isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
+				}
 			}
 		}
 
@@ -262,6 +294,7 @@ namespace TaoTie
 			buildSettings.channel = channel;
 			buildSettings.cdn = cdn;
 			buildSettings.buildMode = buildMode;
+			buildSettings.collectShaderVariant = collectShaderVariant;
 			EditorUtility.SetDirty(buildSettings);
 			AssetDatabase.SaveAssets();
 		}

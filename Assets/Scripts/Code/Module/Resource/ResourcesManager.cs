@@ -21,7 +21,7 @@ namespace TaoTie
         private List<AssetHandle> persistentAssetOperationHandles;
         public IPackageFinder packageFinder { get; private set; }
         private HashSet<AssetHandle> loadingOp;
-        private Dictionary<string, SceneHandle> preloadScene;
+        private SceneHandle preloadScene;
         
         #region override
 
@@ -33,7 +33,6 @@ namespace TaoTie
             cachedAssetOperationHandles = new List<AssetHandle>(512);
             persistentAssetOperationHandles = new List<AssetHandle>(4);
             loadingOp = new HashSet<AssetHandle>();
-            preloadScene = new Dictionary<string, SceneHandle>();
         }
 
         public void Init(IPackageFinder finder)
@@ -64,7 +63,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool IsPreloadScene()
         {
-            return preloadScene.Count > 0;
+            return preloadScene != null;
         }
 
         /// <summary>
@@ -155,12 +154,20 @@ namespace TaoTie
         /// <param name="isAdditive"></param>
         /// <param name="package"></param>
         /// <returns></returns>
-        public ETTask LoadSceneAsync(string path, bool isAdditive, string package = null)
+        public ETTask<SceneHandle> LoadSceneAsync(string path, bool isAdditive, string package = null)
         {
-            ETTask res = ETTask.Create(true);
+            ETTask<SceneHandle> res = ETTask<SceneHandle>.Create(true);
             if (string.IsNullOrEmpty(path))
             {
                 Log.Error("path err : " + path);
+                res.SetResult(null);
+                return res;
+            }
+            
+            if (preloadScene != null && path == preloadScene.GetAssetInfo().Address)
+            {
+                preloadScene.Completed += (op) => { res.SetResult(op); };
+                preloadScene.UnSuspend();
                 return res;
             }
 
@@ -177,7 +184,7 @@ namespace TaoTie
                 return default;
             }
 
-            op.Completed += (op) => { res.SetResult(); };
+            op.Completed += (op) => { res.SetResult(op); };
             return res;
         }
         
@@ -196,6 +203,12 @@ namespace TaoTie
                 return null;
             }
 
+            if (preloadScene != null)
+            {
+                Log.Error("already preload scene:  " + preloadScene.GetAssetInfo().Address);
+                preloadScene.UnSuspend();
+            }
+
             if (package == null)
             {
                 package = packageFinder.GetPackageName(path);
@@ -208,7 +221,18 @@ namespace TaoTie
                 Log.Error(package + "加载资源前未初始化！" + path);
                 return default;
             }
-            preloadScene.Add(path, op);
+            op.Completed += (op) =>
+            {
+                if (op == preloadScene)
+                {
+                    preloadScene = null;
+                }
+                else
+                {
+                    op.UnloadAsync();
+                }
+            };
+            preloadScene = op;
             return op;
         }
         

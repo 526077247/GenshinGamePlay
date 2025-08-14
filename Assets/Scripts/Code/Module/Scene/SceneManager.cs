@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using YooAsset;
 
 namespace TaoTie
 {
@@ -18,6 +19,7 @@ namespace TaoTie
         /// </summary>
         public IScene CurrentScene { get; private set; }
 
+        private SceneHandle currentSceneOp;
         /// <summary>
         /// 是否正在加载
         /// </summary>
@@ -34,6 +36,8 @@ namespace TaoTie
 
         public void Destroy()
         {
+            currentSceneOp?.UnloadAsync();
+            currentSceneOp = null;
             waitFinishTask.Clear();
             Instance = null;
         }
@@ -76,7 +80,7 @@ namespace TaoTie
 
             //等待资源管理器加载任务结束，否则很多Unity版本在切场景时会有异常，甚至在真机上crash
             Log.Info("InnerSwitchScene ProcessRunning Done ");
-            while (ResourcesManager.Instance.IsProcessRunning())
+            while (ResourcesManager.Instance.IsProcessRunning() && !ResourcesManager.Instance.IsPreloadScene())
             {
                 await TimerManager.Instance.WaitAsync(1);
             }
@@ -93,7 +97,7 @@ namespace TaoTie
             await scene.SetProgress(slidValue);
             //清除ImageLoaderManager里的资源缓存 这里考虑到我们是单场景
             Log.Info("InnerSwitchScene ImageLoaderManager Cleanup");
-            ImageLoaderManager.Instance.Clear();
+            ImageLoaderManager.Instance.Cleanup();
             //清除预设以及其创建出来的gameObject, 这里不能清除loading的资源
             Log.Info("InnerSwitchScene GameObjectPool Cleanup");
             if (needClean)
@@ -118,8 +122,11 @@ namespace TaoTie
             }
 
             var loadingScene = await GetScene<LoadingScene>();
-            await ResourcesManager.Instance.LoadSceneAsync(loadingScene.GetScenePath(), false);
-            Log.Info("LoadSceneAsync Over");
+            var loadingOp = await ResourcesManager.Instance.LoadSceneAsync(loadingScene.GetScenePath(), false);
+            currentSceneOp?.UnloadAsync();
+            currentSceneOp = loadingOp;
+            
+            Log.Info("LoadingScene Over");
             slidValue += 0.01f;
             await scene.SetProgress(slidValue);
             //GC：交替重复2次，清干净一点
@@ -134,9 +141,12 @@ namespace TaoTie
 
             slidValue += cleanup;
             await scene.SetProgress(slidValue);
-            Log.Info("异步加载目标场景 Start");
+
+            Log.Info("异步加载目标场景");
             //异步加载目标场景
-            await ResourcesManager.Instance.LoadSceneAsync(scene.GetScenePath(), false);
+            var op = await ResourcesManager.Instance.LoadSceneAsync(scene.GetScenePath(), false);
+            currentSceneOp?.UnloadAsync();
+            currentSceneOp = op;
             CameraManager.Instance.SetCameraStackAtLoadingDone();
             await scene.OnComplete();
             slidValue += loadScene;
@@ -152,17 +162,26 @@ namespace TaoTie
             Log.Info("等久点，跳的太快");
             //等久点，跳的太快
             await TimerManager.Instance.WaitAsync(500);
-            Log.Info("加载目标场景完成 Start");
+            Log.Info("加载目标场景完成");
             CurrentScene = scene;
             await scene.OnSwitchSceneEnd();
             FinishLoad();
         }
-        
+
+        /// <summary>
+        /// 预加载场景。中途不能加载其他资源，不能取消，只能等场景加载完成
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public async ETTask PreloadScene<T>() where T : class, IScene
         {
             var scene = await GetScene<T>();
             ResourcesManager.Instance.PreLoadScene(scene.GetScenePath(), false);
         }
+
+        /// <summary>
+        /// 预加载场景。中途不能加载其他资源，不能取消，只能等场景加载完成
+        /// </summary>
+        /// <param name="typeName"></param>
         public void PreloadMapScene(string typeName)
         {
             if(!SceneConfigCategory.Instance.TryGetByName(typeName,out var config)) return;

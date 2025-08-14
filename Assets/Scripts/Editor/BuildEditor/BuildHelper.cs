@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Obfuz.Settings;
@@ -525,5 +526,20 @@ namespace TaoTie
             UnityEngine.Debug.Log("完成exe打包");
         }
 
+        public static void CollectSVC(Action<bool> callBack)
+        {
+            string savePath = "Assets/AssetsPackage/RenderAssets/ShaderVariants.shadervariants";
+            ShaderVariantCollector.Run(savePath, Define.DefaultName, 1000, () =>
+            {
+                ShaderVariantCollection collection =
+                    AssetDatabase.LoadAssetAtPath<ShaderVariantCollection>(savePath);
+                if (collection != null)
+                {
+                    Debug.Log($"ShaderCount : {collection.shaderCount}");
+                    Debug.Log($"VariantCount : {collection.variantCount}");
+                }
+                callBack?.Invoke(collection != null);
+            });
+        }
     }
 }
