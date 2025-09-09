@@ -101,8 +101,8 @@ MonoBehaviour:
         FilterRuleName: CollectAll
       - CollectPath: Assets/AssetsPackage/RenderAssets
         CollectorGUID: 9d923eae0a9098849bd92b9ceb1c3dcc
-        CollectorType: 1
-        AddressRuleName: AddressByFileName
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackShaderVariants
         FilterRuleName: CollectShaderVariants
         AssetTags: 

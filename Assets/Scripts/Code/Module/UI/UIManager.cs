@@ -1244,12 +1244,13 @@ namespace TaoTie
             var rectTrans = target.GetTransform().GetComponent<RectTransform>();
             var padding = WidthPadding;
             
-            var safeArea = Screen.safeArea;
+            var screenSafeArea = Screen.safeArea;
+            var safeArea = Rect.MinMaxRect(screenSafeArea.xMin, Screen.height - screenSafeArea.yMax, screenSafeArea.xMax, Screen.height - screenSafeArea.yMin);
             var height = Screen.height;
             var width = Screen.width;
             
-            float top = (float) safeArea.top * ScreenSizeFlag;
-            float bottom = (height - (float)safeArea.bottom) * ScreenSizeFlag;
+            float top = safeArea.yMin * ScreenSizeFlag;
+            float bottom = (height - safeArea.yMax) * ScreenSizeFlag;
 #if UNITY_WEBGL
             //竖屏特殊适配
             if (width < height)

@@ -141,7 +141,7 @@ namespace TaoTie
             this.slider.normalizedValue = value;
         }
         
-        public object GetNormalizedValue()
+        public float GetNormalizedValue()
         {
             this.ActivatingComponent();
             return this.slider.normalizedValue;
