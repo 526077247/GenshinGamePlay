@@ -432,10 +432,17 @@ namespace SuperScrollView
         */
         public void SetListItemCount(int itemCount, bool resetPos = true)
         {
-            if(itemCount == mItemTotalCount)
+            if (itemCount == mItemTotalCount)
             {
+                if (resetPos && itemCount > 0)
+                {
+                    MovePanelToItemIndex(0, 0);
+                    return;
+                }
+
                 return;
             }
+
             mCurSnapData.Clear();
             mItemTotalCount = itemCount;
             if (mItemTotalCount < 0)

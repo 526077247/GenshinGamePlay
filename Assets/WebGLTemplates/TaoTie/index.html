@@ -17,7 +17,7 @@
     }
   </style>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <img id="unity-loading" alt="loading" src="loading.gif" style="position: absolute; left:50%; top: 50%; transform:translate(-50%,0); z-index: -1;" />
+    <img id="unity-loading" alt="loading" src="loading.gif" style="position: absolute; left:50%; top: 50%; transform:translate(-50%,-50px); z-index: -1;" />
     <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1" style="width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px;"></canvas>
     <progress id="unity-progress" max="100" value="10" style="position: absolute; width:128px; left:50%; top: 50%; transform:translate(-50%,100px); z-index: -1;"></progress>
     <div id="unity-timeout" style="display: none; position: absolute;color: white; left:50%; top: 50%; z-index: -1;text-align: center;">network anomaly!</div>
