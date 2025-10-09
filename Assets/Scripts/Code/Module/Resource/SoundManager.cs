@@ -293,6 +293,13 @@ namespace TaoTie
         private async ETTask InitAsync()
         {
             soundsRoot = new GameObject("SoundsRoot").transform;
+            var al = UIManager.Instance.GetUICamera().GetComponent<AudioListener>();
+            if (al != null)
+            {
+                //UI相机上不挂载AudioListener
+                soundsRoot.gameObject.AddComponent<AudioListener>();
+                GameObject.Destroy(al);
+            }
             GameObject.DontDestroyOnLoad(soundsRoot);
             soundsClipClone =
                 await ResourcesManager.Instance.LoadAsync<GameObject>("Audio/Common/Source.prefab", isPersistent: true);
@@ -535,7 +542,7 @@ namespace TaoTie
         {
             if (soundsClipClone == null || soundsRoot == null)
             {
-                Log.Error("soundsRoot == null");
+                Log.Error("soundsClipClone == null, 初始化未完成");
                 return null;
             }
 

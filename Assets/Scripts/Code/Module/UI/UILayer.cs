@@ -36,7 +36,10 @@ namespace TaoTie
             {
                 this.Canvas = canvas;
             }
-            this.Canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            
+
+            this.Canvas.renderMode =
+                PlatformUtil.IsWebGl1() ? RenderMode.ScreenSpaceOverlay : RenderMode.ScreenSpaceCamera;
             this.Canvas.worldCamera = UIManager.Instance.UICamera;
             this.Canvas.planeDistance = layer.PlaneDistance;
             this.Canvas.sortingLayerName = SortingLayerNames.UI;

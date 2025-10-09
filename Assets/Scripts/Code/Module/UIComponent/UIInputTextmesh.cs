@@ -34,6 +34,10 @@ namespace TaoTie
 #if UNITY_WEBGL && !UNITY_EDITOR
         private void OnSelect(string text)
         {
+            if(PlatformUtil.IsHuaWeiGroup())
+            {
+                return;
+            }
             if (UseDialog)
             {
                 this.input.text = BridgeHelper.OpenNativeStringDialog((input.placeholder is TMPro.TMP_Text a)?a.text:"", this.input.text);

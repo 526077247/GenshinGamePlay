@@ -73,5 +73,49 @@ namespace TaoTie
 #endif
             return false;
         }
+
+        public static bool IsHarmony()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return IsOpenHarmony();
+#endif
+            return false;
+        }
+        
+        public static bool IsHuaWeiGroup()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return IsHuaWeiHonor();
+#endif
+            return false;
+        }
+        
+        public static bool IsWebGl1()
+        {
+#if UNITY_EDITOR
+            bool webgl1 = true;
+            if (UnityEditor.PlayerSettings.colorSpace == ColorSpace.Linear || UnityEditor.PlayerSettings.GetUseDefaultGraphicsAPIs(UnityEditor.BuildTarget.WebGL))
+            {
+                webgl1 = false;
+            }
+            else
+            {
+                UnityEngine.Rendering.GraphicsDeviceType[] graphicsAPIs = UnityEditor.PlayerSettings.GetGraphicsAPIs(UnityEditor.BuildTarget.WebGL);
+                for (int i = 0; i < graphicsAPIs.Length; i++)
+                {
+                    if (graphicsAPIs[i] == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES3)
+                    {
+                        webgl1 = false;
+                        break;
+                    }
+                }
+            }
+            return webgl1;
+#elif UNITY_WEBGL_1
+            return true;
+#else
+            return false;
+#endif
+        }
     }
 }

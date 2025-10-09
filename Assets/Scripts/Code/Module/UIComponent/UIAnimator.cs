@@ -7,6 +7,11 @@ namespace TaoTie
     {
         private Animator animator;
         private Dictionary<string,AnimationClip> clips;
+        public void SetEnable(bool enable)
+        {
+            ActivatingComponent();
+            animator.enabled = enable;
+        }
         void ActivatingComponent()
         {
             if (this.animator == null)

@@ -1,6 +1,12 @@
 mergeInto(LibraryManager.library, {
     IsMobileWebGL: function () {
-        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        return /OpenHarmony|iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    },
+    IsOpenHarmony: function () {
+        return /OpenHarmony/i.test(navigator.userAgent);
+    },
+    IsHuaWeiHonor: function () {
+        return /OpenHarmony|HUAWEI|HONOR/i.test(navigator.userAgent);
     },
     CloseWindow:function() {
         if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Chrome") != -1) {

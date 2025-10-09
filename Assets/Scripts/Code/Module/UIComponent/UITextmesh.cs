@@ -164,5 +164,18 @@ namespace TaoTie
             var rect = text.rectTransform.rect;
             return new Vector3(-rect.width / 2, -rect.height / 2, 0);
         }
+        
+        public void SetTextGray(bool isGray)
+        {
+            var uITextColorCtrl = TextColorCtrl.Get(GetGameObject());
+            if (isGray)
+            {
+                uITextColorCtrl.SetTextColor(new Color(89 / 255f, 93 / 255f, 93 / 255f));
+            }
+            else
+            {
+                uITextColorCtrl.ClearTextColor();
+            }
+        }
     }
 }

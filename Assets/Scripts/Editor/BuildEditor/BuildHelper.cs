@@ -6,6 +6,7 @@ using Obfuz.Settings;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using YooAsset.Editor;
 using YooAsset;
 
@@ -429,6 +430,38 @@ namespace TaoTie
             if(isBuildExe)
             {
 #if UNITY_WEBGL
+                bool webgl1 = true;
+                if (PlayerSettings.colorSpace == ColorSpace.Linear || PlayerSettings.GetUseDefaultGraphicsAPIs(BuildTarget.WebGL))
+                {
+                    webgl1 = false;
+                }
+                else
+                {
+                    GraphicsDeviceType[] apis = PlayerSettings.GetGraphicsAPIs(BuildTarget.WebGL);
+                    for (int i = 0; i < apis.Length; i++)
+                    {
+                        if (apis[i] == GraphicsDeviceType.OpenGLES3)
+                        {
+                            webgl1 = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (webgl1)
+                {
+                    var define = "UNITY_WEBGL_1";
+                    var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.WebGL).Trim();
+                    if (!string.IsNullOrEmpty(definesString))
+                    {
+                        definesString += definesString.EndsWith(";") ? define+";" : $";{define};";
+                    }
+                    else
+                    {
+                        definesString = define+";";
+                    }
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.WebGL, definesString);
+                }
                 PlayerSettings.WebGL.template = $"PROJECT:TaoTie";
 #endif
                 AssetDatabase.Refresh();

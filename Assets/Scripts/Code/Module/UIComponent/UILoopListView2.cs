@@ -74,10 +74,12 @@ namespace TaoTie
         }
 
         //获取当前index对应的item 没有显示的话返回null
-        public LoopListViewItem2 GetShownItemByItemIndex(int itemIndex)
+        public T GetShownItemByItemIndex<T>(int itemIndex) where T: UIBaseContainer
         {
             this.ActivatingComponent();
-            return this.loopListView.GetShownItemByItemIndex(itemIndex);
+            var item  = this.loopListView.GetShownItemByItemIndex(itemIndex);
+            if (item == null) return null;
+            return GetUIItemView<T>(item);
         }
 
         public void RefreshAllShownItem()

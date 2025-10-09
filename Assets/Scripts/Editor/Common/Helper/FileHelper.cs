@@ -27,12 +27,27 @@ namespace TaoTie
 			if(!Directory.Exists(dir)) return;
 			foreach (string subdir in Directory.GetDirectories(dir))
 			{
-				Directory.Delete(subdir, true);		
+				try
+				{
+					Directory.Delete(subdir, true);
+				}
+				catch (Exception ex)
+				{
+					Debug.LogError(ex);
+					CleanDirectory(subdir);
+				}
 			}
 
 			foreach (string subFile in Directory.GetFiles(dir))
 			{
-				File.Delete(subFile);
+				try
+				{
+					File.Delete(subFile);
+				}
+				catch (Exception ex)
+				{
+					Debug.LogError(ex);
+				}
 			}
 		}
 

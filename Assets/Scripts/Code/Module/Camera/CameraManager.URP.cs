@@ -15,7 +15,10 @@ namespace TaoTie
         public void SetCameraStackAtLoadingStart()
         {
             var uiCamera = UIManager.Instance.GetUICamera();
-            uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
+            if (PlatformUtil.IsWebGl1())
+                uiCamera.gameObject.SetActive(true);
+            else
+                uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
             this.ResetSceneCamera();
         }
 
@@ -49,8 +52,15 @@ namespace TaoTie
         
         void AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
         {
-            overlayCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
-            baseCamera.GetUniversalAdditionalCameraData().cameraStack.Add(overlayCamera);
+            if (PlatformUtil.IsWebGl1())
+            {
+                overlayCamera.gameObject.SetActive(false);
+            }
+            else
+            {
+                overlayCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
+                baseCamera.GetUniversalAdditionalCameraData().cameraStack.Add(overlayCamera);
+            }
         }
 
         public Camera MainCamera()

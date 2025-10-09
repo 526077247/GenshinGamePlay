@@ -1273,8 +1273,12 @@ namespace TaoTie
         private readonly Vector2 hidePos = new Vector2(9999, 9999);
         public Vector2 ScreenPointToUILocalPoint(RectTransform parentRT, Vector2 screenPoint)
         {
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRT, screenPoint, UICamera,
-                    out Vector2 localPos))
+            var camera = UICamera;
+            if (PlatformUtil.IsWebGl1())
+            {
+                camera = null;
+            }
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRT, screenPoint, camera, out Vector2 localPos))
             {
                 return localPos;
             }
