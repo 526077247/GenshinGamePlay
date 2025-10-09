@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Reflection;
+using UnityEngine;
 using UnityEditor;
 
 namespace TaoTie
@@ -104,17 +106,35 @@ namespace TaoTie
             AssetDatabase.SaveAssetIfDirty(go);
         }
 
+        [MenuItem("Assets/工具/UI/绑定节点",false,423)]
         [MenuItem("GameObject/生成UI代码/绑定节点", false, 25)]
         static void Generate()
         {
-            GameObject go = rootGo;
-
-            if (go == null || go.GetComponent<UIScriptCreator>() == null)
+            string prefabPath;
+            var obj = Selection.activeObject as GameObject;
+            if (obj == null)
             {
-                Debug.LogError("未标记根节点");
                 return;
             }
+            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (!string.IsNullOrEmpty(path))
+            {
+                prefabPath = path;
+            }
+            else
+            {
+                var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+                if (prefabStage != null)
+                {
+                    prefabPath = prefabStage.assetPath;
+                }
+                else
+                {
+                    return;
+                }
+            }
             
+            var go = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
             var rcPrefab = go.GetComponent<ReferenceCollector>();
             if (rcPrefab == null)
             {
@@ -124,46 +144,50 @@ namespace TaoTie
             {
                 rcPrefab.Clear();
             }
+            Assembly assembly = null;
+            foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (item.FullName.Contains("Unity.Code"))
+                {
+                    assembly = item;
+                    Debug.Log("Get AOT Dll Success");
+                    break;
+                }
+            }
 
-            GenerateChildCode(go.transform, "", rcPrefab);
+            if (assembly != null)
+            {
+                GameObject prefab = null;
+                var viewType = typeof(UIBaseContainer);
+                var type = assembly.GetType("TaoTie." + go.name);
+                BindingFlags flag = BindingFlags.Static | BindingFlags.Public;
+
+                if (type != viewType && viewType.IsAssignableFrom(type))
+                {
+                    UIBaseContainer ui = Activator.CreateInstance(type) as UIBaseContainer;
+                    if (ui is IOnCreate onCreate)
+                    {
+                        ui.SetTransform(go.transform);
+                        try
+                        {
+                            onCreate.OnCreate();
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError(ex);
+                        }
+                    }
+                }
+                
+                EditorUtility.SetDirty(go);
+            }
+
             AssetDatabase.SaveAssetIfDirty(go);
             AssetDatabase.Refresh();
-            if (IsMarking)
-            {
-                IsMarking = false;
-                EditorApplication.hierarchyWindowItemOnGUI -= DrawHierarchyIcon;
-                return;
-            }
 
             Debug.Log("生成完成");
         }
 
-        static void GenerateChildCode(Transform trans, string strPath, ReferenceCollector rcPrefab)
-        {
-            if (null == trans)
-            {
-                return;
-            }
-            if (!string.IsNullOrEmpty(strPath))
-            {
-                strPath += "/";
-            }
-            for (int nIndex = 0; nIndex < trans.childCount; ++nIndex)
-            {
-                Transform child = trans.GetChild(nIndex);
-                string strTemp = strPath + child.name;
-                var uisc = child.GetComponent<UIScriptCreator>();
-                if (uisc != null && uisc.isMarked)
-                {
-                    if (!string.IsNullOrEmpty(strTemp))
-                    {
-                        rcPrefab.Add(strTemp, trans);
-                    }
-                }
-                GenerateChildCode(child, strTemp, rcPrefab);
-            }
-        }
-        
         // 绘制icon方法
         static void DrawHierarchyIcon(int instanceID, Rect selectionRect)
         {
@@ -196,7 +220,7 @@ namespace TaoTie
                 m = go.GetComponent<UIScriptCreator>();
                 if (m == null) return;
                 m.Mark(false);
-                m.SetModuleName(go.name.Replace(" ",""));
+                m.SetModuleName(go.name);
             }
 
             m = go.GetComponent<UIScriptCreator>();

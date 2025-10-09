@@ -75,12 +75,12 @@ namespace TaoTie
             void ConfirmBtnFunc(UIBaseView win)
             { 
                 tcs.SetResult(true);
-                UIMsgBoxManager.Instance.CloseMsgBox(win).Coroutine();
+                UIManager.Instance.CloseBox(win).Coroutine();
             }
             void CancelBtnFunc(UIBaseView win)
             {
                 tcs.SetResult(false);
-                UIMsgBoxManager.Instance.CloseMsgBox(win).Coroutine();
+                UIManager.Instance.CloseBox(win).Coroutine();
             }
 
             I18NManager.Instance.I18NTryGetText(content, out this.para.Content);
@@ -88,7 +88,7 @@ namespace TaoTie
             I18NManager.Instance.I18NTryGetText(cancelBtnText, out this.para.CancelText);
             this.para.ConfirmCallback = ConfirmBtnFunc;
             this.para.CancelCallback = CancelBtnFunc;
-            await UIMsgBoxManager.Instance.OpenMsgBox<UIMsgBoxWin>(UIMsgBoxWin.PrefabPath,
+            await UIManager.Instance.OpenBox<UIMsgBoxWin,MsgBoxPara>(UIMsgBoxWin.PrefabPath,
                 this.para,UILayerNames.TipLayer);
             var result = await tcs;
             return result;
@@ -107,12 +107,12 @@ namespace TaoTie
             void ConfirmBtnFunc(UIBaseView win)
             { 
                 tcs.SetResult(true);
-                UIMsgBoxManager.Instance.CloseMsgBox(win).Coroutine();
+                UIManager.Instance.CloseBox(win).Coroutine();
             }
             void CancelBtnFunc(UIBaseView win)
             {
                 tcs.SetResult(false);
-                UIMsgBoxManager.Instance.CloseMsgBox(win).Coroutine();
+                UIManager.Instance.CloseBox(win).Coroutine();
             }
 
             this.para.Content = content;
@@ -120,7 +120,7 @@ namespace TaoTie
             I18NManager.Instance.I18NTryGetText(cancelBtnText, out this.para.CancelText);
             this.para.ConfirmCallback = ConfirmBtnFunc;
             this.para.CancelCallback = CancelBtnFunc;
-            await UIMsgBoxManager.Instance.OpenMsgBox<UIMsgBoxWin>(UIMsgBoxWin.PrefabPath,
+            await UIManager.Instance.OpenBox<UIMsgBoxWin,MsgBoxPara>(UIMsgBoxWin.PrefabPath,
                 this.para,UILayerNames.TipLayer);
             var result = await tcs;
             return result;

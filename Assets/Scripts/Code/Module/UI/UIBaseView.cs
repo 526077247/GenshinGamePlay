@@ -6,9 +6,10 @@
         /// <summary>
         /// 关闭自身
         /// </summary>
-        public async ETTask CloseSelf()
+        public virtual async ETTask CloseSelf()
         {
-            await UIManager.Instance.CloseWindow(this);
+            var close = await UIManager.Instance.CloseBox(this);
+            if(!close) await UIManager.Instance.CloseWindow(this);
         }
 
         public virtual ETTask OnInputKeyBack()

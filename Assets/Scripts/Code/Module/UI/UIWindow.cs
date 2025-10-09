@@ -34,6 +34,11 @@ namespace TaoTie
         /// 窗口类型
         /// </summary>
         public UIBaseView View;
+        
+        /// <summary>
+        /// 是否消息盒子
+        /// </summary>
+        public bool IsBox;
 
         public static UIWindow Create()
         {
@@ -48,6 +53,7 @@ namespace TaoTie
             PrefabPath = null;
             Layer = UILayerNames.BackgroundLayer;
             View = null;
+            IsBox = false;
             ObjectPool.Instance.Recycle(this);
         }
     }

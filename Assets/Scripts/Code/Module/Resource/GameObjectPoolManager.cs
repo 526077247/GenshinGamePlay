@@ -217,8 +217,8 @@ namespace TaoTie
 		/// 回收
 		/// </summary>
 		/// <param name="inst"></param>
-		/// <param name="isClear">是否立即销毁</param>
-		public void RecycleGameObject(GameObject inst, bool isClear = false)
+		/// <param name="clearLimit">现有缓存达到多少开始销毁，-1表示不销毁</param>
+		public void RecycleGameObject(GameObject inst, int clearLimit = -1)
 		{
 			if (!instPathCache.ContainsKey(inst))
 			{
@@ -227,12 +227,17 @@ namespace TaoTie
 				return;
 			}
 			var path = instPathCache[inst];
-			if (!isClear)
+			int count = 0;
+			if (instCache.TryGetValue(path, out var list))
+			{
+				count = list.Count;
+			}
+			if (clearLimit < 0 || clearLimit > count)
 			{
 				CheckRecycleInstIsDirty(path, inst, null);
 				inst.transform.SetParent(cacheTransRoot, false);
 				inst.SetActive(false);
-				if (!instCache.ContainsKey(path))
+				if (list == null)
 				{
 					instCache[path] = new List<GameObject>();
 				}
@@ -680,8 +685,11 @@ namespace TaoTie
 			for (int i = 0; i < trans.childCount; i++)
 			{
 				var child = trans.GetChild(i);
-				if (child.name.Contains("Input Caret") || child.name.Contains("TMP SubMeshUI") || child.name.Contains("TMP UI SubObject") || child.GetComponent<SuperScrollView.LoopListViewItem2>()!=null
-					 || child.GetComponent<SuperScrollView.LoopGridViewItem>() != null || (child.name.Contains("Caret") && child.parent.name.Contains("Text Area")))
+				if (child.name.Contains("Input Caret") || child.name.Contains("TMP SubMeshUI") || child.name.Contains("TMP UI SubObject") 
+				    || child.GetComponent<SuperScrollView.LoopListViewItem2>()!=null
+					 || child.GetComponent<SuperScrollView.LoopGridViewItem>() != null
+				    || child.parent.GetComponent<CopyGameObject>() != null
+				    || (child.name.Contains("Caret") && child.parent.name.Contains("Text Area")))
 				{
 					//Input控件在运行时会自动生成个光标子控件，而prefab中是没有的，所以得过滤掉
 					//TextMesh会生成相应字体子控件

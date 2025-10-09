@@ -68,7 +68,7 @@ namespace TaoTie
         
         void Close()
         {
-            UIMsgBoxManager.Instance.CloseMsgBox(this).Coroutine();
+            UIManager.Instance.CloseBox(this).Coroutine();
         }
 
     }

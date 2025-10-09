@@ -102,15 +102,9 @@ namespace TaoTie
             Log.Info("InnerSwitchScene GameObjectPool Cleanup");
             if (needClean)
             {
-                using (ListComponent<string> ignorePathArray = ListComponent<string>.Create())
-                {
-                    if (ignoreClean != null) ignorePathArray.AddRange(ignoreClean);
-                    ignorePathArray.Add(UIToastManager.PrefabPath);
-                    GameObjectPoolManager.GetInstance().Cleanup(true, ignorePathArray);
-                    slidValue += 0.01f;
-                    await scene.SetProgress(slidValue);
-                }
-
+                GameObjectPoolManager.GetInstance().Cleanup(true, ignoreClean);
+                slidValue += 0.01f;
+                await scene.SetProgress(slidValue);
                 await PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName);
                 slidValue += 0.01f;
                 await scene.SetProgress(slidValue);

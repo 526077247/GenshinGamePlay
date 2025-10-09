@@ -17,7 +17,8 @@ namespace TaoTie
 
         private Dictionary<string, UIWindow> windows; //所有存活的窗体  {uiName:window}
         private Dictionary<UILayerNames, LinkedList<string>> windowStack; //窗口记录队列
-
+        
+        private Dictionary<UIBaseView, UIWindow> boxes; //所有存活的消息盒子  {instance:window}
         public float ScreenSizeFlag
         {
             get
@@ -42,6 +43,7 @@ namespace TaoTie
             Instance = this;
             windows = new Dictionary<string, UIWindow>();
             windowStack = new Dictionary<UILayerNames, LinkedList<string>>();
+            boxes = new Dictionary<UIBaseView, UIWindow>();
             InitLayer();
             Messager.Instance.AddListener<int, int>(0, MessageId.OnKeyInput, OnKeyInput);
         }
@@ -242,14 +244,14 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 打开窗口 对应 <see cref="IOnCreate"/>
+        /// 打开窗口 对应 <see cref="IOnCreate{P1}"/>
         /// </summary>
         /// <param name="fullname">类名</param>
         /// <param name="path">预制体路径</param>
-        /// <param name="para">参数</param>
+        /// <param name="p1">参数1</param>
         /// <param name="layerName">UI层级</param>
         /// <returns></returns>
-        public async ETTask<UIBaseView> OpenWindow(string fullname, string path, object[] para,
+        public async ETTask<UIBaseView> OpenWindow(string fullname, string path, object[] p1,
             UILayerNames layerName = UILayerNames.NormalLayer)
         {
             string uiName = fullname;
@@ -261,7 +263,7 @@ namespace TaoTie
             }
 
             target.Layer = layerName;
-            return await InnerOpenWindow(target, para);
+            return await InnerOpenWindow(target, p1);
 
         }
 
@@ -271,6 +273,7 @@ namespace TaoTie
         /// <param name="fullname">类名</param>
         /// <param name="path">预制体路径</param>
         /// <param name="layerName">UI层级</param>
+        /// <typeparam name="P1">参数1</typeparam>
         /// <returns></returns>
         public async ETTask<UIBaseView> OpenWindow<P1>(string fullname, string path, P1 p1,
             UILayerNames layerName = UILayerNames.NormalLayer)
@@ -517,6 +520,165 @@ namespace TaoTie
         }
 
         /// <summary>
+        /// <para>打开消息盒子 对应 <see cref="IOnCreate"/></para>
+        /// <para>和OpenWindow区别:</para>
+        /// <para>1.Window是单例，MsgBox支持多例</para>
+        /// <para>2.MsgBox关闭后会立即销毁</para>
+        /// </summary>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layerName">UI层级</param>
+        /// <param name="during">持续时间 小于0表示无限</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
+        public async ETTask<T> OpenBox<T>(string path,
+            UILayerNames layerName = UILayerNames.TipLayer, int during = -1) where T : UIBaseView, IOnCreate
+        {
+            var target = InitWindow<T>(path, layerName);
+            target.IsBox = true;
+            target.Layer = layerName;
+            var timeNow = TimerManager.Instance.GetTimeNow(); 
+            var res = await InnerOpenWindow<T>(target);
+            boxes[res] = target;
+            if (during > 0)
+            {
+               await CloseBoxTillTime(res, timeNow + during);
+            }
+            return res;
+        }
+        
+        /// <summary>
+        /// <para>打开消息盒子 对应 <see cref="IOnCreate{P1}"/></para>
+        /// <para>和OpenWindow区别:</para>
+        /// <para>1.Window是单例，MsgBox支持多例</para>
+        /// <para>2.MsgBox关闭后会立即销毁</para>
+        /// </summary>
+        /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="layerName">UI层级</param>
+        /// <param name="during">持续时间 小于0表示无限</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <returns></returns>
+        public async ETTask<T> OpenBox<T, P1>(string path, P1 p1,
+            UILayerNames layerName = UILayerNames.TipLayer, int during = -1)
+            where T : UIBaseView, IOnCreate, IOnEnable<P1>
+        {
+            var target = InitWindow<T>(path, layerName);
+            target.IsBox = true;
+            target.Layer = layerName;
+            var timeNow = TimerManager.Instance.GetTimeNow(); 
+            var res = await InnerOpenWindow<T, P1>(target, p1);
+            boxes[res] = target;
+            if (during > 0)
+            {
+                await CloseBoxTillTime(res, timeNow + during);
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// <para>打开消息盒子 对应 <see cref="IOnCreate{P1,P2}"/></para>
+        /// <para>和OpenWindow区别:</para>
+        /// <para>1.Window是单例，MsgBox支持多例</para>
+        /// <para>2.MsgBox关闭后会立即销毁</para>
+        /// </summary>
+        /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="layerName">UI层级</param>
+        /// <param name="during">持续时间 小于0表示无限</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <returns></returns>
+        public async ETTask<T> OpenBox<T, P1, P2>(string path, P1 p1, P2 p2,
+            UILayerNames layerName = UILayerNames.TipLayer, int during = -1)
+            where T : UIBaseView, IOnCreate, IOnEnable<P1, P2>
+        {
+            var target = InitWindow<T>(path, layerName);
+            target.IsBox = true;
+            target.Layer = layerName;
+            var timeNow = TimerManager.Instance.GetTimeNow(); 
+            var res = await InnerOpenWindow<T, P1, P2>(target, p1, p2);
+            boxes[res] = target;
+            if (during > 0)
+            {
+               await CloseBoxTillTime(res, timeNow + during);
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// <para>打开消息盒子 对应 <see cref="IOnCreate{P1,P2,P3}"/></para>
+        /// <para>和OpenWindow区别:</para>
+        /// <para>1.Window是单例，MsgBox支持多例</para>
+        /// <para>2.MsgBox关闭后会立即销毁</para>
+        /// </summary>
+        /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="p3"></param>
+        /// <param name="layerName">UI层级</param>
+        /// <param name="during">持续时间 小于0表示无限</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <typeparam name="P3"></typeparam>
+        /// <returns></returns>
+        public async ETTask<T> OpenBox<T, P1, P2, P3>(string path, P1 p1, P2 p2, P3 p3,
+            UILayerNames layerName = UILayerNames.TipLayer, int during = -1)
+            where T : UIBaseView, IOnCreate, IOnEnable<P1, P2, P3>
+        {
+            var target = InitWindow<T>(path, layerName);
+            target.IsBox = true;
+            target.Layer = layerName;
+            var timeNow = TimerManager.Instance.GetTimeNow(); 
+            var res = await InnerOpenWindow<T, P1, P2, P3>(target, p1, p2, p3);
+            boxes[res] = target;
+            if (during > 0)
+            {
+               await CloseBoxTillTime(res, timeNow + during);
+            }
+            return res;
+        }
+        
+        /// <summary>
+        /// <para>打开消息盒子 对应 <see cref="IOnCreate{P1,P2,P3,P4}"/></para>
+        /// <para>和OpenWindow区别:</para>
+        /// <para>1.Window是单例，MsgBox支持多例</para>
+        /// <para>2.MsgBox关闭后会立即销毁</para>
+        /// </summary>
+        /// <param name="path">预制体路径</param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="p3"></param>
+        /// <param name="p4"></param>
+        /// <param name="layerName">UI层级</param>'
+        /// <param name="during">持续时间 小于0表示无限</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <typeparam name="P1"></typeparam>
+        /// <typeparam name="P2"></typeparam>
+        /// <typeparam name="P3"></typeparam>
+        /// <typeparam name="P4"></typeparam>
+        /// <returns></returns>
+        public async ETTask<T> OpenBox<T, P1, P2, P3, P4>(string path, P1 p1, P2 p2, P3 p3, P4 p4,
+            UILayerNames layerName = UILayerNames.TipLayer, int during = -1)
+            where T : UIBaseView, IOnCreate, IOnEnable<P1, P2, P3, P4>
+        {
+            var target = InitWindow<T>(path, layerName);
+            target.IsBox = true;
+            target.Layer = layerName;
+            var timeNow = TimerManager.Instance.GetTimeNow(); 
+            var res = await InnerOpenWindow<T, P1, P2, P3, P4>(target, p1, p2, p3, p4);
+            boxes[res] = target;
+            if (during > 0)
+            {
+                await CloseBoxTillTime(res, timeNow + during);
+            }
+            return res;
+        }
+        
+        /// <summary>
         /// 关闭窗体
         /// </summary>
         /// <param name="window"></param>
@@ -554,6 +716,51 @@ namespace TaoTie
         }
 
         /// <summary>
+        /// 关闭消息盒子
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="time"></param>
+        public async ETTask CloseBoxTillTime(UIBaseView view, long time)
+        {
+            if (!boxes.TryGetValue(view, out var target))
+            {
+                return;
+            }
+            while (target.LoadingState != UIWindowLoadingState.LoadOver)
+            {
+                await TimerManager.Instance.WaitAsync(1);
+            }
+
+            await TimerManager.Instance.WaitTillAsync(time);
+            InnerCloseWindow(target);
+            InnerDestroyWindow(target);
+            boxes.Remove(view);
+            target.Dispose();
+        }
+        /// <summary>
+        /// 关闭消息盒子
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="clear">现有缓存达到多少开始销毁，-1表示无限</param>
+        public async ETTask<bool> CloseBox(UIBaseView view, int clear = 1)
+        {
+            if (!boxes.TryGetValue(view, out var target))
+            {
+                return false;
+            }
+            while (target.LoadingState != UIWindowLoadingState.LoadOver)
+            {
+                await TimerManager.Instance.WaitAsync(1);
+            }
+            
+            InnerCloseWindow(target);
+            InnerDestroyWindow(target, clear);
+            boxes.Remove(view);
+            target.Dispose();
+            return true;
+        }
+
+        /// <summary>
         /// 通过层级关闭
         /// </summary>
         /// <param name="layer"></param>
@@ -587,8 +794,9 @@ namespace TaoTie
         /// <summary>
         /// 销毁窗体
         /// </summary>
+        /// <param name="clear">现有缓存达到多少开始销毁，-1表示无限</param>
         /// <typeparam name="T"></typeparam>
-        public async ETTask DestroyWindow<T>(bool clear = false) where T : UIBaseView
+        public async ETTask DestroyWindow<T>(int clear = -1) where T : UIBaseView
         {
             string uiName = TypeInfo<T>.TypeName;
             await DestroyWindow(uiName, clear);
@@ -598,8 +806,8 @@ namespace TaoTie
         /// 销毁窗体
         /// </summary>
         /// <param name="uiName"></param>
-        /// <param name="clear"></param>
-        public async ETTask DestroyWindow(string uiName, bool clear = false)
+        /// <param name="clear">现有缓存达到多少开始销毁，-1表示无限</param>
+        public async ETTask DestroyWindow(string uiName, int clear = -1)
         {
             var target = GetWindow(uiName);
             if (target != null)
@@ -1037,7 +1245,7 @@ namespace TaoTie
                 view.SetActive(false);
         }
 
-        void InnerDestroyWindow(UIWindow target, bool clear = false)
+        void InnerDestroyWindow(UIWindow target, int clear = -1)
         {
             var view = target.View;
             if (view != null)
@@ -1063,17 +1271,17 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (windowStack[layerName].Contains(uiName))
+            if (!target.IsBox && windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
                 windowStack[layerName].Remove(uiName);
             }
 
-            windowStack[layerName].AddFirst(uiName);
+            if (!target.IsBox) windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true);
-            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
+            if (!target.IsBox && isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
                 await CloseWindowByLayer(UILayerNames.NormalLayer);
@@ -1088,17 +1296,17 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (windowStack[layerName].Contains(uiName))
+            if (!target.IsBox && windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
                 windowStack[layerName].Remove(uiName);
             }
 
-            windowStack[layerName].AddFirst(uiName);
+            if (!target.IsBox) windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1);
-            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
+            if (!target.IsBox && isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
                 await CloseWindowByLayer(UILayerNames.NormalLayer);
@@ -1113,17 +1321,17 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (windowStack[layerName].Contains(uiName))
+            if (!target.IsBox && windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
                 windowStack[layerName].Remove(uiName);
             }
 
-            windowStack[layerName].AddFirst(uiName);
+            if (!target.IsBox) windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2);
-            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
+            if (!target.IsBox && isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
                 await CloseWindowByLayer(UILayerNames.NormalLayer);
@@ -1138,17 +1346,17 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (windowStack[layerName].Contains(uiName))
+            if (!target.IsBox && windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
                 windowStack[layerName].Remove(uiName);
             }
 
-            windowStack[layerName].AddFirst(uiName);
+            if (!target.IsBox) windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2, p3);
-            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
+            if (!target.IsBox && isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层|BackgroudLayer
                 await CloseWindowByLayer(UILayerNames.NormalLayer);
@@ -1163,17 +1371,17 @@ namespace TaoTie
             var uiName = target.Name;
             var layerName = target.Layer;
             bool isFirst = true;
-            if (windowStack[layerName].Contains(uiName))
+            if (!target.IsBox && windowStack[layerName].Contains(uiName))
             {
                 isFirst = false;
                 windowStack[layerName].Remove(uiName);
             }
 
-            windowStack[layerName].AddFirst(uiName);
+            if (!target.IsBox) windowStack[layerName].AddFirst(uiName);
             InnerAddWindowToStack(target);
             var view = target.View;
             view.SetActive(true, p1, p2, p3, p4);
-            if (isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
+            if (!target.IsBox && isFirst && (layerName == UILayerNames.BackgroundLayer || layerName == UILayerNames.GameBackgroundLayer))
             {
                 //如果是背景layer，则销毁所有的normal层或BackgroundLayer
                 await CloseWindowByLayer(UILayerNames.NormalLayer);

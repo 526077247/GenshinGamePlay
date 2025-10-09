@@ -21,5 +21,11 @@
             ActivatingComponent();
             component.enabled = enable;
         }
+        
+        public T GetComponent()
+        {
+            ActivatingComponent();
+            return component;
+        }
     }
 }

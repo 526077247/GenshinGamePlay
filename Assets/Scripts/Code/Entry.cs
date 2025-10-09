@@ -38,8 +38,6 @@ namespace TaoTie
                 
                 ManagerProvider.RegisterManager<I18NManager>();
                 ManagerProvider.RegisterManager<UIManager>();
-                ManagerProvider.RegisterManager<UIMsgBoxManager>();
-                ManagerProvider.RegisterManager<UIToastManager>();
 
                 ManagerProvider.RegisterManager<CameraManager>();
                 await CameraManager.Instance.LoadAsync();
@@ -68,7 +66,7 @@ namespace TaoTie
         static async ETTask StartGameAsync()
         {
             ManagerProvider.RegisterManager<NavmeshSystem>();
-            ManagerProvider.RegisterManager<SoundManager>();
+            var sm = ManagerProvider.RegisterManager<SoundManager>();
             ManagerProvider.RegisterManager<AbilitySystem>();
             ManagerProvider.RegisterManager<ModelSystem>();
             ManagerProvider.RegisterManager<BillboardSystem>();
@@ -82,8 +80,11 @@ namespace TaoTie
             ManagerProvider.RegisterManager<ConfigFsmControllerCategory>();
             ManagerProvider.RegisterManager<ConfigAIBetaCategory>();
             ManagerProvider.RegisterManager<ConfigActorCategory>();
+            
+            GameObjectPoolManager.GetInstance().AddPersistentPrefabPath(UIToast.PrefabPath);
             using (ListComponent<ETTask> tasks = ListComponent<ETTask>.Create())
             {
+                tasks.Add(sm.InitAsync());
                 tasks.Add(ConfigSceneGroupCategory.Instance.LoadAsync());
                 tasks.Add(ConfigAIDecisionTreeCategory.Instance.LoadAsync());
                 tasks.Add(ConfigAbilityCategory.Instance.LoadAsync());
@@ -91,6 +92,7 @@ namespace TaoTie
                 tasks.Add(ConfigFsmControllerCategory.Instance.LoadAsync());
                 tasks.Add(ConfigAIBetaCategory.Instance.LoadAsync());
                 tasks.Add(ConfigActorCategory.Instance.LoadAsync());
+                tasks.Add(GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(UIToast.PrefabPath, 1));
                 await ETTaskHelper.WaitAll(tasks);
             }
             await PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName);
