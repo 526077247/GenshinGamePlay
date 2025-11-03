@@ -6,8 +6,6 @@ namespace TMPro
     [ExecuteAlways]
     public class TextMeshProOutLine : MonoBehaviour
     {
-        public TMP_Text text;
-
         public float faceDilate;
         public float outlineWidth;
         public Color32 effectColor = Color.black;
@@ -18,13 +16,13 @@ namespace TMPro
 
         public void Awake()
         {
-            text = GetComponent<TMP_Text>();
             Refresh();
         }
 
         [ContextMenu("Refresh")]
         public void Refresh()
         {
+            var text = GetComponent<TMP_Text>();
             text.faceDilate = faceDilate;
             text.outlineWidth = outlineWidth;
             text.underlayOffsetX = underlayOffsetX;
@@ -34,12 +32,6 @@ namespace TMPro
             text.effectColorFloat = new Vector4(effectColor.r / 255f, effectColor.g / 255f, effectColor.b / 255f,
                 effectColor.a / 255f);
             
-        }
-
-        [ContextMenu("ShowRadio")]
-        public void ShowRadio()
-        {
-            Debug.Log(text.scaleRatioA);
         }
 
         private void OnValidate()

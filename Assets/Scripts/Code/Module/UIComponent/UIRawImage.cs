@@ -108,7 +108,7 @@ namespace TaoTie
                 ImageLoaderManager.Instance.ReleaseImage(baseTexturePath);
            
         }
-        
+
         /// <summary>
         /// 设置网络图片地址（注意尽量不要和SetTexturePath混用
         /// </summary>
@@ -138,6 +138,20 @@ namespace TaoTie
                     cacheUrl = null;
                 }
                 cacheUrl = url;
+            }
+            else
+            {
+                if (thisVersion == version)
+                {
+                    if (!string.IsNullOrEmpty(defaultTexturePath))
+                    {
+                        await SetTexturePath(defaultTexturePath);
+                    }
+                    else
+                    {
+                        image.enabled = true;
+                    }
+                }
             }
         }
 

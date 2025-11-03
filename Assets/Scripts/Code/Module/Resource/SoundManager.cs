@@ -57,11 +57,10 @@ namespace TaoTie
                     }
                     else
                     {
-                        var clip = await ResourcesManager.Instance.LoadAsync<AudioClip>(Path);
+                        var clip = await Instance.GetAudioClip(Path);
                         isLoading = false;
                         if (Id != id)
                         {
-                            ResourcesManager.Instance.ReleaseAsset(clip);
                             ObjectPool.Instance.Recycle(this);
                             return;
                         }
@@ -239,11 +238,7 @@ namespace TaoTie
                     Id = 0;
                     if (Clip != null)
                     {
-                        if (!IsHttp)
-                        {
-                            ResourcesManager.Instance.ReleaseAsset(Clip);
-                        }
-                        else
+                        if (IsHttp)
                         {
                             GameObject.Destroy(Clip);
                         }
@@ -272,6 +267,7 @@ namespace TaoTie
 
         private Dictionary<long, SoundItem> sounds = new Dictionary<long, SoundItem>();
 
+        private Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
         public int MusicVolume { get; private set; }
         public int SoundVolume { get; private set; }
 
@@ -340,6 +336,12 @@ namespace TaoTie
                 GameObject.Destroy(soundsRoot.gameObject);
                 soundsRoot = null;
             }
+
+            foreach (var item in audioClips)
+            {
+                ResourcesManager.Instance.ReleaseAsset(item.Value);
+            }
+            audioClips.Clear();
         }
 
         #endregion
@@ -380,6 +382,11 @@ namespace TaoTie
         public long PlayMusic(string path, ETCancellationToken token = null)
         {
             if (string.IsNullOrEmpty(path)) return 0;
+            if (curMusic != null && curMusic.Path == path)
+            {
+                if (!curMusic.AudioSource.isPlaying) curMusic.AudioSource.Play();
+                return curMusic.Id;
+            }
             AudioSource source = GetClipSource();
             if (source == null)
             {
@@ -537,11 +544,27 @@ namespace TaoTie
 
         #region Clip
 
+        private async ETTask<AudioClip> GetAudioClip(string path)
+        {
+            if (audioClips.TryGetValue(path, out var clip))
+            {
+                return clip;
+            }
+            clip = await ResourcesManager.Instance.LoadAsync<AudioClip>(path);
+            if (audioClips.TryGetValue(path, out var newClip))
+            {
+                ResourcesManager.Instance.ReleaseAsset(clip);
+                return newClip;
+            }
+
+            audioClips[path] = clip;
+            return clip;
+        }
         private AudioSource CreateClipSource()
         {
             if (soundsClipClone == null || soundsRoot == null)
             {
-                Log.Error("soundsClipClone == null, 初始化未完成");
+                Log.Error("soundsRoot == null");
                 return null;
             }
 

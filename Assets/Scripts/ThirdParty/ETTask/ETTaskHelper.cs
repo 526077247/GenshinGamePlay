@@ -107,7 +107,22 @@ namespace TaoTie
 
             await coroutineBlocker.WaitAsync();
         }
+        public static async ETTask WaitAny<T>(List<ETTask<T>> tasks)
+        {
+            if (tasks.Count == 0)
+            {
+                return;
+            }
 
+            CoroutineBlocker coroutineBlocker = new CoroutineBlocker(1);
+
+            foreach (var task in tasks)
+            {
+                coroutineBlocker.RunSubCoroutineAsync(task).Coroutine();
+            }
+
+            await coroutineBlocker.WaitAsync();
+        }
         public static async ETTask WaitAll(ETTask[] tasks)
         {
             if (tasks.Length == 0)

@@ -145,6 +145,20 @@ namespace TaoTie
                 }
                 cacheUrl = url;
             }
+            else
+            {
+                if (thisVersion == version)
+                {
+                    if (!string.IsNullOrEmpty(defaultSpritePath))
+                    {
+                        await SetSpritePath(defaultSpritePath,setNativeSize);
+                    }
+                    else
+                    {
+                        image.enabled = true;
+                    }
+                }
+            }
         }
 
         public void SetNativeSize()

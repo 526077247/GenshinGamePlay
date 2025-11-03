@@ -11,7 +11,7 @@ namespace TaoTie
 {
     public class UIButton : UIBaseContainer,IOnDestroy
     {
-        UnityAction onclick;
+        Action onclick;
         Button button;
         bool grayState;
         Image image;
@@ -22,8 +22,7 @@ namespace TaoTie
 
         public void OnDestroy()
         {
-            if (this.onclick != null)
-                this.button.onClick.RemoveListener(this.onclick);
+            RemoveOnClick();
             if (!string.IsNullOrEmpty(this.spritePath))
             {
                 this.image.sprite = null;
@@ -55,25 +54,28 @@ namespace TaoTie
                 }
             }
         }
+        
+        private void OnClickBtn()
+        {
+            SoundManager.Instance.PlaySound("Audio/Sound/Common_Click.mp3");
+            onclick?.Invoke();
+        }
+        
         public void SetOnClick(Action callback)
         {
             this.ActivatingComponent();
             this.RemoveOnClick();
-            this.onclick = () =>
-            {
-                //SoundComponent.Instance.PlaySound("Audio/Common/Click.mp3");
-                callback?.Invoke();
-            };
-            this.button.onClick.AddListener(this.onclick);
+            this.onclick = callback;
+            this.button.onClick.AddListener(OnClickBtn);
         }
 
         public void RemoveOnClick()
         {
             if (this.onclick != null)
-                this.button.onClick.RemoveListener(this.onclick);
+                this.button.onClick.RemoveListener(OnClickBtn);
             this.onclick = null;
         }
-
+        
         public void SetEnabled(bool flag)
         {
             this.ActivatingComponent();

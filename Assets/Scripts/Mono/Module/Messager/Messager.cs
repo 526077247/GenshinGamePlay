@@ -174,8 +174,8 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 1) return;
-                            if (p1 != null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (param.Length != 1) continue;
+                            if (p1 != null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
                             item.DynamicInvoke(p1);
                         }
                     }
@@ -200,9 +200,9 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 2) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (param.Length != 2) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
                             item.DynamicInvoke(p1, p2);
                         }
                     }
@@ -227,10 +227,10 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 3) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
-                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
+                            if (param.Length != 3) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) continue;
                             item.DynamicInvoke(p1, p2, p3);
                         }
                     }
@@ -255,11 +255,11 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 4) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
-                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
-                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
+                            if (param.Length != 4) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) continue;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) continue;
                             item.DynamicInvoke(p1, p2, p3, p4);
                         }
                     }
@@ -284,12 +284,12 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 5) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
-                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
-                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
-                            if (p5!=null && !param[4].ParameterType.IsInstanceOfType(p5)) return;
+                            if (param.Length != 5) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) continue;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) continue;
+                            if (p5!=null && !param[4].ParameterType.IsInstanceOfType(p5)) continue;
                             item.DynamicInvoke(p1, p2, p3, p4, p5);
                         }
                     }
@@ -337,8 +337,8 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 1) return;
-                            if (p1 != null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
+                            if (param.Length != 1) continue;
+                            if (p1 != null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
                             item.DynamicInvoke(p1);
                         }
                     }
@@ -364,9 +364,9 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 2) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
+                            if (param.Length != 2) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
                             item.DynamicInvoke(p1, p2);
                         }
                     }
@@ -392,10 +392,10 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 3) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
-                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
+                            if (param.Length != 3) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) continue;
                             item.DynamicInvoke(p1, p2, p3);
                         }
                     }
@@ -421,11 +421,11 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 4) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
-                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
-                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
+                            if (param.Length != 4) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) continue;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) continue;
                             item.DynamicInvoke(p1, p2, p3, p4);
                         }
                     }
@@ -451,12 +451,12 @@ namespace TaoTie
                         else //多态支持
                         {
                             var param = item.GetMethodInfo().GetParameters();
-                            if (param.Length != 5) return;
-                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) return;
-                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) return;
-                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) return;
-                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) return;
-                            if (p5!=null && !param[4].ParameterType.IsInstanceOfType(p5)) return;
+                            if (param.Length != 5) continue;
+                            if (p1!=null && !param[0].ParameterType.IsInstanceOfType(p1)) continue;
+                            if (p2!=null && !param[1].ParameterType.IsInstanceOfType(p2)) continue;
+                            if (p3!=null && !param[2].ParameterType.IsInstanceOfType(p3)) continue;
+                            if (p4!=null && !param[3].ParameterType.IsInstanceOfType(p4)) continue;
+                            if (p5!=null && !param[4].ParameterType.IsInstanceOfType(p5)) continue;
                             item.DynamicInvoke(p1, p2, p3, p4, p5);
                         }
                     }

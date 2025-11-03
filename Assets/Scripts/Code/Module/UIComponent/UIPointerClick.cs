@@ -1,10 +1,11 @@
-﻿using UnityEngine.Events;
+﻿using System;
+using UnityEngine.Events;
 
 namespace TaoTie
 {
     public class UIPointerClick:UIBaseContainer,IOnDestroy
     {
-        private UnityAction onClick;
+        private Action onClick;
         private PointerClick pointerClick;
 
         #region override
@@ -28,28 +29,32 @@ namespace TaoTie
                 }
             }
         }
-        //虚拟点击
+        /// <summary>
+        /// 虚拟点击
+        /// </summary>
         public void Click()
         {
-            this.onClick?.Invoke();
+            OnClickPointer();
         }
 
-        public void SetOnClick(UnityAction callback)
+        private void OnClickPointer()
+        {
+            // SoundManager.Instance.PlaySound("Audio/Sound/Common_Click.mp3");
+            onClick?.Invoke();
+        }
+        
+        public void SetOnClick(Action callback)
         {
             this.ActivatingComponent();
             this.RemoveOnClick();
-            this.onClick = () =>
-            {
-                //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
-                callback?.Invoke();
-            };
-            this.pointerClick.onClick.AddListener(this.onClick);
+            this.onClick = callback;
+            this.pointerClick.onClick.AddListener(OnClickPointer);
         }
 
         public void RemoveOnClick()
         {
             if (this.onClick != null)
-                this.pointerClick.onClick.RemoveListener(this.onClick);
+                this.pointerClick.onClick.RemoveListener(OnClickPointer);
             this.onClick = null;
         }
 

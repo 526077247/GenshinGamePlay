@@ -34,7 +34,7 @@ namespace TaoTie
 #if UNITY_WEBGL && !UNITY_EDITOR
         private void OnSelect(string text)
         {
-            if(PlatformUtil.IsHuaWeiGroup())
+            if(PlatformUtil.IsHuaWeiGroup() || !PlatformUtil.IsMobile())
             {
                 return;
             }

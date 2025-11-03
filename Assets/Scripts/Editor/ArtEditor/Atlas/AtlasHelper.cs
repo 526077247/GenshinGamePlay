@@ -155,7 +155,8 @@ namespace TaoTie
                     importer.wrapMode = TextureWrapMode.Clamp;
                     importer.filterMode = FilterMode.Bilinear;
                     importer.alphaIsTransparency = true;
-                    importer.alphaSource = TextureImporterAlphaSource.FromInput;
+                    if(importer.alphaSource == TextureImporterAlphaSource.None) 
+                        importer.alphaSource = TextureImporterAlphaSource.FromInput;
                     importer.sRGBTexture = true;
                     //TextureImporterCompression type = TextureImporterCompression.Compressed;
                     TextureImporterFormat format = TextureImporterFormat.ASTC_6x6;

@@ -13,7 +13,7 @@ namespace TaoTie
         private static extern void CloseWindow();
         
         [DllImport("__Internal")]
-        private static extern bool Vibrate();
+        private static extern bool Vibrate(int during);
         [DllImport("__Internal")]
         private static extern string StringReturnValueFunction();
         [DllImport("__Internal")]

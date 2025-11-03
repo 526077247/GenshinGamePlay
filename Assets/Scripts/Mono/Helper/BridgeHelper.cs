@@ -13,12 +13,12 @@ namespace TaoTie
 #endif
         }
 
-        public static void DoVibrate()
+        public static void DoVibrate(int during = 500)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            Vibrate();
+            Vibrate(during);
 #elif UNITY_ANDROID ||UNITY_IOS
-            Handheld.Vibrate();
+            Handheld.Vibrate();//0.5s
 #else
             Log.Info("Vibrate Callback");
 #endif

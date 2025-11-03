@@ -72,11 +72,18 @@ namespace TaoTie
         /// <param name="path"></param>
         /// <param name="callback"></param>
         /// <param name="package"></param>
+        /// <param name="isPersistent">是否常驻内存</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public ETTask<T> LoadAsync<T>(string path, Action<T> callback = null, string package = null, bool isPersistent = false)
             where T : UnityEngine.Object
         {
+#if UNITY_WEBGL && UNITY_EDITOR
+            if (preloadScene != null)
+            {
+                Log.Error("Webgl平台preloadScene之后直到Scene彻底加载完成，都不能进行加载资源会卡住，PC上会进行检测");
+            }
+#endif
             ETTask<T> res = ETTask<T>.Create(true);
             if (string.IsNullOrEmpty(path))
             {
@@ -133,6 +140,12 @@ namespace TaoTie
         public ETTask LoadTask<T>(string path, Action<T> callback = null, string package = null)
             where T : UnityEngine.Object
         {
+#if UNITY_WEBGL && UNITY_EDITOR
+            if (preloadScene != null)
+            {
+                Log.Error("Webgl 平台preloadScene之后直到Scene彻底加载完成，都不能加载资源，PC上会进行检测");
+            }
+#endif
             ETTask task = ETTask.Create(true);
             if (package == null)
             {
@@ -205,6 +218,7 @@ namespace TaoTie
 
             if (preloadScene != null)
             {
+                if (preloadScene.GetAssetInfo().Address == path) return preloadScene;
                 Log.Error("already preload scene:  " + preloadScene.GetAssetInfo().Address);
                 preloadScene.UnSuspend();
             }

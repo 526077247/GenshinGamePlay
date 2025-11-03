@@ -27,15 +27,15 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(title, buffer, bufferSize);
         return buffer;
     },
-    Vibrate: function ()
+    Vibrate: function (during)
     {
         if ("vibrate" in navigator)
         {
-            return navigator.vibrate(50)
+            return navigator.vibrate(during)
         }
         else if("mozVibrate" in navigator)
         {
-            return navigator.mozVibrate(50)
+            return navigator.mozVibrate(during)
         }
         return false;
     },
