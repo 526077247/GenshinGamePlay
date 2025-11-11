@@ -99,6 +99,8 @@ MonoBehaviour:
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
       - CollectPath: Assets/AssetsPackage/RenderAssets
         CollectorGUID: 9d923eae0a9098849bd92b9ceb1c3dcc
         CollectorType: 0
@@ -213,6 +215,14 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Audio/Sound
+        CollectorGUID: 1f4a08b94995f354d955a0ba4e25dd52
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 

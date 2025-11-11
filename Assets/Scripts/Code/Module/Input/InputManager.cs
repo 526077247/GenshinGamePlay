@@ -187,24 +187,32 @@ namespace TaoTie
         {
             for (int i = 0; i < Input.touchCount; i++)
             {
-                var touch = Input.GetTouch(i);
-                if (touch.phase == TouchPhase.Began)
+                try
                 {
-                    var info = ObjectPool.Instance.Fetch<TouchInfo>();
-                    info.Index = i;
-                    info.IsScroll = PlatformUtil.IsSimulator();
-                    info.IsStartOverUI = IsPointerOverUI(info.Touch.position);
-                    touchInfos.Add(info);
-                }
-                else if (touch.phase == TouchPhase.Moved)
-                {
-                    if (PlatformUtil.IsSimulator() && touchInfos[i].IsScroll) //模拟器下, 同一次触碰水平方向移动分量为0, 竖直快速移动的可粗略判定为滚轮
+                    var touch = Input.GetTouch(i);
+                    if (touch.phase == TouchPhase.Began)
                     {
-                        if (Mathf.Abs(touch.deltaPosition.y) < 5 || touch.deltaPosition.x != 0)
+                        var info = ObjectPool.Instance.Fetch<TouchInfo>();
+                        info.Index = i;
+                        info.IsScroll = PlatformUtil.IsSimulator();
+                        info.IsStartOverUI = IsPointerOverUI(info.Touch.position);
+                        touchInfos.Add(info);
+                    }
+                    else if (touch.phase == TouchPhase.Moved)
+                    {
+                        if (PlatformUtil.IsSimulator() &&
+                            touchInfos[i].IsScroll) //模拟器下, 同一次触碰水平方向移动分量为0, 竖直快速移动的可粗略判定为滚轮
                         {
-                            touchInfos[i].IsScroll = false;
+                            if (Mathf.Abs(touch.deltaPosition.y) < 5 || touch.deltaPosition.x != 0)
+                            {
+                                touchInfos[i].IsScroll = false;
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
                 }
             }
         }
@@ -213,10 +221,19 @@ namespace TaoTie
         {
             for (int i = Input.touchCount - 1; i >=0 ; i--)
             {
-                if (Input.GetTouch(i).phase == TouchPhase.Ended)
+                try
+                {
+                    if (Input.GetTouch(i).phase == TouchPhase.Ended)
+                    {
+                        touchInfos[i].Dispose();
+                        touchInfos.RemoveAt(i);
+                    }
+                }
+                catch (Exception ex)
                 {
                     touchInfos[i].Dispose();
                     touchInfos.RemoveAt(i);
+                    Log.Error(ex);
                 }
             }
 
@@ -590,7 +607,7 @@ namespace TaoTie
             keySetMap[key] = keyCode;
         }
         
-        public bool IsPointerOverUI(Vector2 mousePosition)
+        public bool IsPointerOverUI(Vector2 mousePosition, params RectTransform[] ignore)
         {       
             //创建一个点击事件
             PointerEventData eventData = new PointerEventData(EventSystem.current);
@@ -598,7 +615,25 @@ namespace TaoTie
             List<RaycastResult> raycastResults = new List<RaycastResult>();
             //向点击位置发射一条射线，检测是否点击UI
             EventSystem.current.RaycastAll(eventData, raycastResults);
-            return raycastResults.Count > 0;
+            if (raycastResults.Count > 0)
+            {
+                if (ignore != null && ignore.Length > 0)
+                {
+                    for (int i = 0; i < raycastResults.Count; i++)
+                    {
+                        for (int j = 0; j < ignore.Length; j++)
+                        {
+                            if (raycastResults[i].gameObject != ignore[j].gameObject)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
         
         #region Gyroscope
