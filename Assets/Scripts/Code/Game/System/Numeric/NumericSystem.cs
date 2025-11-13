@@ -4,6 +4,12 @@ namespace TaoTie
 {
     public class NumericSystem:IManager,IUpdate
     {
+        private struct ReUpAttr
+        {
+            public int attr;
+            public int reUp;
+            public int max;
+        }
         /// <summary>
         /// 数值变化检测间隔
         /// </summary>
@@ -16,9 +22,8 @@ namespace TaoTie
         public List<NumericComponent> Data;
         private long Timer;
         
-        private List<int> attrList;
-        private List<int> reUpList;
-        private List<int> maxList;
+        private ReUpAttr[] attrList;
+
         #region override
         
         [Timer(TimerType.NumericUpdate)]
@@ -32,9 +37,7 @@ namespace TaoTie
 
         public void Init()
         {
-            attrList = new List<int>();
-            reUpList = new List<int>();
-            maxList = new List<int>();
+            using ListComponent<ReUpAttr> attrList = ListComponent<ReUpAttr>.Create();
             var attrs = AttributeConfigCategory.Instance.GetAllList();
             for (int i = 0; i < attrs.Count; i++)
             {
@@ -44,12 +47,17 @@ namespace TaoTie
                     var max = NumericType.GetKey(attrs[i].MaxAttr);
                     if (reup >= 0 && max>=0)
                     {
-                        attrList.Add(attrs[i].Id * 10 + 1);
-                        reUpList.Add(reup * 10 + 1);
-                        maxList.Add(max * 10 + 1);
+                        attrList.Add(new ReUpAttr()
+                        {
+                            attr = attrs[i].Id * 10 + 1,
+                            reUp = reup * 10 + 1,
+                            max = max * 10 + 1,
+                        });
                     }
                 }
             }
+
+            this.attrList = attrList.ToArray();
             Data = new List<NumericComponent>();
         }
 
@@ -78,19 +86,19 @@ namespace TaoTie
             for (int i = 0; i < Data.Count; i++)
             {
                 var numc = Data[i];
-                for (int j = 0; j < attrList.Count; j++)
+                for (int j = 0; j < attrList.Length; j++)
                 {
-                    float reUpNum = numc.GetAsFloat(reUpList[j]);
+                    float reUpNum = numc.GetAsFloat(attrList[j].reUp);
                     reUpNum = reUpNum * ATTRCHANGE_CHECKTIME / ATTRCHANGE_DELTATIME;
                     if (reUpNum > 0)
                     {
-                        var maxValue = numc.GetAsInt(maxList[j]);
-                        float nowValue = numc.GetAsInt(attrList[j]);
+                        var maxValue = numc.GetAsInt(attrList[j].max);
+                        float nowValue = numc.GetAsInt(attrList[j].attr);
                         if (nowValue < maxValue)
                         {
                             nowValue += reUpNum;
                             if (nowValue > maxValue) nowValue = maxValue;
-                            numc.Set(attrList[j], nowValue);
+                            numc.Set(attrList[j].attr, nowValue);
                         }
                     }
                 }
