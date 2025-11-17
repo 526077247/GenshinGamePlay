@@ -195,7 +195,7 @@ namespace TaoTie
                         var info = ObjectPool.Instance.Fetch<TouchInfo>();
                         info.Index = i;
                         info.IsScroll = PlatformUtil.IsSimulator();
-                        info.IsStartOverUI = IsPointerOverUI(info.Touch.position);
+                        info.IsStartOverUI = IsPointerOverUI(touch.position);
                         touchInfos.Add(info);
                     }
                     else if (touch.phase == TouchPhase.Moved)
@@ -268,7 +268,9 @@ namespace TaoTie
                 using var touchInfos = GetNoneUITouch();
                 if (touchInfos.Count == 1)
                 {
-                    var touch = touchInfos[0].Touch;
+                    var t = touchInfos[0].Touch;
+                    if(t == null) return;
+                    var touch = (Touch) t;
                     if (touch.phase == TouchPhase.Moved)
                     {
                         if (touchInfos[0].IsScroll)
@@ -291,8 +293,12 @@ namespace TaoTie
                 }
                 else if (touchInfos.Count == 2)
                 {
-                    var newTouch1 = touchInfos[0].Touch;
-                    var newTouch2 = touchInfos[1].Touch;
+                    var t = touchInfos[0].Touch;
+                    if(t == null) return;
+                    var newTouch1 = (Touch) t;
+                    t = touchInfos[1].Touch;
+                    if(t == null) return;
+                    var newTouch2 = (Touch) t;
                     if (newTouch2.phase == TouchPhase.Began)
                     {
                         oldTouch2 = newTouch2;

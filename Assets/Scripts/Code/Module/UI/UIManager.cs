@@ -919,12 +919,31 @@ namespace TaoTie
         /// </summary>
         public async ETTask DestroyAllWindow()
         {
+            if (windows.Count <= 0) return;
             var keys = windows.Keys.ToArray();
             using (ListComponent<ETTask> taskScheduler = ListComponent<ETTask>.Create())
             {
                 for (int i = windows.Count - 1; i >= 0; i--)
                 {
                     taskScheduler.Add(DestroyWindow(windows[keys[i]].Name));
+                }
+
+                await ETTaskHelper.WaitAll(taskScheduler);
+            }
+        }
+        
+        /// <summary>
+        /// 销毁所有消息盒子
+        /// </summary>
+        public async ETTask DestroyAllBox()
+        {
+            if (boxes.Count <= 0) return;
+            var keys = boxes.Keys.ToArray();
+            using (ListComponent<ETTask<bool>> taskScheduler = ListComponent<ETTask<bool>>.Create())
+            {
+                for (int i = boxes.Count - 1; i >= 0; i--)
+                {
+                    taskScheduler.Add(CloseBox(boxes[keys[i]].View));
                 }
 
                 await ETTaskHelper.WaitAll(taskScheduler);

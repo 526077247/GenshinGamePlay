@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,11 +36,18 @@ namespace TaoTie
         private void Start()
         {
             ParticleSimulationBudgetManager.CreateInstanceIfNeeded();
+        }
+
+        private void OnEnable()
+        {
             ParticleSimulationBudgetManager.Instance.RegisterSystem(this);
             _ps.Pause(true);
         }
 
-
+        private void OnDisable()
+        {
+            ParticleSimulationBudgetManager.Instance.UnregisterSystem(this);
+        }
         void Update()
         {
             UpdateVisibility();

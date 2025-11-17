@@ -92,7 +92,7 @@ namespace TaoTie
             //清理UI
             Log.Info("InnerSwitchScene Clean UI");
             await UIManager.Instance.DestroyWindowExceptNames(scene.GetDontDestroyWindow());
-
+            await UIManager.Instance.DestroyAllBox();
             slidValue += 0.01f;
             await scene.SetProgress(slidValue);
             //清除ImageLoaderManager里的资源缓存 这里考虑到我们是单场景

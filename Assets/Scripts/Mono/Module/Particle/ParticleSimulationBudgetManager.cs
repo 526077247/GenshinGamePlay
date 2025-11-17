@@ -12,9 +12,6 @@ namespace TaoTie
         [SerializeField] private float _maxFrameBudgetMS = 2.5f;
 
         private List<ParticleSystemController> _managedSystems = new List<ParticleSystemController>();
-        private Camera _mainCamera;
-
-        public Camera MainCamera => _mainCamera;
 
         public int UpdatedNormalParticles => _updatedNormalParticles;
 
@@ -29,7 +26,6 @@ namespace TaoTie
                 return;
             }
             Instance = this;
-            _mainCamera = Camera.main;
         }
 
         public void RegisterSystem(ParticleSystemController controller)
@@ -47,13 +43,11 @@ namespace TaoTie
 
         void LateUpdate()
         {
-            if (_mainCamera == null) return;
-
             float remainingBudget = _maxFrameBudgetMS; // Convert to seconds
-
+            if (_managedSystems.Count < 0) return;
             // 分离强制更新系统和普通系统
-            var forcedSystems = new List<ParticleSystemController>();
-            var normalSystems = new List<ParticleSystemController>();
+            using var forcedSystems = ListComponent<ParticleSystemController>.Create();
+            using var normalSystems = ListComponent<ParticleSystemController>.Create();
 
             foreach (var controller in _managedSystems)
             {

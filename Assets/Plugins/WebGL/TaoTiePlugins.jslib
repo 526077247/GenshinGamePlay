@@ -1,11 +1,11 @@
 mergeInto(LibraryManager.library, {
-    IsMobileWebGL: function () {
-        return /OpenHarmony|iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    IsiOSWebGL: function () {
+        return /iPhone|iPad|iPod/i.test(navigator.userAgent);
     },
-    IsOpenHarmony: function () {
-        return /OpenHarmony/i.test(navigator.userAgent);
+    IsAndroidWebGL: function () {
+        return /IsAndroid/i.test(navigator.userAgent);
     },
-    IsHuaWeiHonor: function () {
+    IsHuaWeiGroupWebGL: function () {
         return /OpenHarmony|HUAWEI|HONOR/i.test(navigator.userAgent);
     },
     CloseWindow:function() {
@@ -44,7 +44,7 @@ mergeInto(LibraryManager.library, {
         title = UTF8ToString(title);
         var result = window.prompt( title , defaultValue );
         if( !result ){
-        result = defaultValue;
+            result = defaultValue;
         }
         var bufferSize = lengthBytesUTF8(result) + 1;
         var buffer = _malloc(bufferSize);
@@ -67,34 +67,34 @@ mergeInto(LibraryManager.library, {
         }
         if( !document.getElementById("nativeInputDialog" ) ){
             // setup html
-            var html = '<div id="nativeInputDialog" style="background:#000000;opacity:0.9;width:100%;height:100%;position:fixed;top:0%;z-index:2147483647;">' + 
-                    '  <div style="position:relative;top:30%;" align="center" vertical-align="middle">' + 
-                    '    <div id="nativeInputDialogTitle" style="color:#ffffff;">Here is title</div>' + 
-                    '    <div>' + 
-                    '      <input id="nativeInputDialogInput" type="text" size="40" onsubmit="">' + 
-                    '    </div>' + 
-                    '    <div style="margin-top:10px">' + 
-                    '      <input id="nativeInputDialogOkBtn" type="button" value="OK" onclick="" >' + 
-                    '      <input id="nativeInputDialogCancelBtn" type="button" value="Cancel" onclick ="">' + 
-                    '      <input id="nativeInputDialogCheck" type="checkBox" style="display:none;">' + 
-                    '    </div>' + 
-                    '  </div>' + 
-                    '</div>';
+            var html = '<div id="nativeInputDialog" style="background:#000000;opacity:0.9;width:100%;height:100%;position:fixed;top:0%;z-index:2147483647;">' +
+                '  <div style="position:relative;top:30%;" align="center" vertical-align="middle">' +
+                '    <div id="nativeInputDialogTitle" style="color:#ffffff;">Here is title</div>' +
+                '    <div>' +
+                '      <input id="nativeInputDialogInput" type="text" size="40" onsubmit="">' +
+                '    </div>' +
+                '    <div style="margin-top:10px">' +
+                '      <input id="nativeInputDialogOkBtn" type="button" value="OK" onclick="" >' +
+                '      <input id="nativeInputDialogCancelBtn" type="button" value="Cancel" onclick ="">' +
+                '      <input id="nativeInputDialogCheck" type="checkBox" style="display:none;">' +
+                '    </div>' +
+                '  </div>' +
+                '</div>';
             var element = document.createElement('div');
             element.innerHTML = html;
             // write to html
             document.body.appendChild( element );
-    
+
             // set Event
-            var okFunction = 
-                'document.getElementById("nativeInputDialog" ).style.display = "none";' + 
+            var okFunction =
+                'document.getElementById("nativeInputDialog" ).style.display = "none";' +
                 'document.getElementById("nativeInputDialogCheck").checked = false;' +
                 'document.getElementById("unity-canvas").style.display="";';
-            var cancelFunction = 
-                'document.getElementById("nativeInputDialog" ).style.display = "none";'+ 
+            var cancelFunction =
+                'document.getElementById("nativeInputDialog" ).style.display = "none";'+
                 'document.getElementById("nativeInputDialogCheck").checked = true;'+
                 'document.getElementById("unity-canvas").style.display="";';
-    
+
             var inputField = document.getElementById("nativeInputDialogInput");
             inputField.setAttribute( "onsubmit" , okFunction );
             var okBtn = document.getElementById("nativeInputDialogOkBtn");
@@ -153,21 +153,21 @@ mergeInto(LibraryManager.library, {
             // write to html
             document.body.appendChild( element );
             // set Event
-            var onchangeFunction = 
-            '    const file = this.files[0];' +
-            '    if(file) {' +
-            '       const fileSizeInMB = file.size / (1024 * 1024);' +
-            '       if (fileSizeInMB > 5) {' +
-            '           alert("< 5M");return;' +
-            '       }' +
-            '       var reader = new FileReader();' +
-            '       reader.onload = function(e) {' +
-            '            if (reader.readyState === 2) {' +
-            '                window.imgData = e.target.result;' +
-            '           }' +
-            '       };' +
-            '       reader.readAsDataURL(this.files[0]);' +
-            '    }';
+            var onchangeFunction =
+                '    const file = this.files[0];' +
+                '    if(file) {' +
+                '       const fileSizeInMB = file.size / (1024 * 1024);' +
+                '       if (fileSizeInMB > 5) {' +
+                '           alert("< 5M");return;' +
+                '       }' +
+                '       var reader = new FileReader();' +
+                '       reader.onload = function(e) {' +
+                '            if (reader.readyState === 2) {' +
+                '                window.imgData = e.target.result;' +
+                '           }' +
+                '       };' +
+                '       reader.readAsDataURL(this.files[0]);' +
+                '    }';
             uploader = document.getElementById("unity-uploader");
             uploader.setAttribute("onchange" , onchangeFunction );
         }
@@ -193,5 +193,5 @@ mergeInto(LibraryManager.library, {
         }, function (err) {
             console.error('Async: Could not copy text: ', err);
         });
-    },  
+    },
 });

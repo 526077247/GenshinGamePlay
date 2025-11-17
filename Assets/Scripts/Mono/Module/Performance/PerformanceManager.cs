@@ -11,6 +11,7 @@ namespace TaoTie
         public enum DevicePerformanceLevel
         {
             Low,
+            Mid,
             High
         }
         
@@ -70,10 +71,14 @@ namespace TaoTie
         public DevicePerformanceLevel GetDevicePerformanceLevel()
         {
 #if UNITY_WEBGL
-             if(PlatformUtil.IsMobile())
-                return DevicePerformanceLevel.Low;
-             else
+            if (PlatformUtil.IsMobile())
+            {
+                return PlatformUtil.IsIphone() ? DevicePerformanceLevel.Mid : DevicePerformanceLevel.Low;
+            }
+            else
+            {
                 return DevicePerformanceLevel.High;
+            }
 #endif
             if (SystemInfo.graphicsDeviceVendorID == 32902)
             {
@@ -107,17 +112,17 @@ namespace TaoTie
                     if (graphicsMemorySize >= 2000 && systemMemorySize >= 4000)
                         return DevicePerformanceLevel.High;
                     else
-                        return DevicePerformanceLevel.Low;
+                        return DevicePerformanceLevel.Mid;
 #elif UNITY_IOS
                     if(systemMemorySize >= 4000)
                         return DevicePerformanceLevel.High;
                     else
-                        return DevicePerformanceLevel.Low;
+                        return DevicePerformanceLevel.Mid;
 #elif UNITY_STANDALONE_OSX
                     if (graphicsMemorySize >= 2000 && systemMemorySize >= 4000)
                         return DevicePerformanceLevel.High;
                     else
-                        return DevicePerformanceLevel.Low;
+                        return DevicePerformanceLevel.Mid;
 #elif UNITY_ANDROID
                     if (graphicsMemorySize >= 2000 && systemMemorySize >= 4000)
                         return DevicePerformanceLevel.High;

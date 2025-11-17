@@ -11,7 +11,17 @@ namespace TaoTie
         /// </summary>
         public bool IsStartOverUI;
         
-        public Touch Touch => Input.GetTouch(Index);
+        public Touch? Touch
+        {
+            get
+            {
+                if (Index < Input.touchCount)
+                {
+                    return Input.GetTouch(Index);
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// 是否是模拟器下滚轮

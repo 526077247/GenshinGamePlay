@@ -12,21 +12,21 @@ namespace TaoTie
     {
 #if UNITY_WEBGL
         [DllImport("__Internal")]
-        private static extern bool IsMobileWebGL();
+        private static extern bool IsiOSWebGL();
+
+        [DllImport("__Internal")]
+        private static extern bool IsAndroidWebGL();
+
+        [DllImport("__Internal")]
+        private static extern bool IsHuaWeiGroupWebGL();
 #endif
         public static int GetIntPlatform()
         {
-            return (int)Application.platform;
+            return (int) Application.platform;
         }
 
         public static string GetStrPlatformIgnoreEditor()
         {
-            if (IsIphone())
-                return "ios";
-            else if (IsAndroid())
-                return "android";
-            else if (IsWindows())
-                return "pc";
 #if UNITY_ANDROID
             return "android";
 #elif UNITY_IOS
@@ -36,25 +36,39 @@ namespace TaoTie
 #endif
             return "pc";
         }
-        
+
         public static bool IsIphone()
         {
-            return GetIntPlatform() == (int)RuntimePlatform.IPhonePlayer;
+#if UNITY_WEBGL &&! UNITY_EDITOR
+            return IsiOSWebGL();
+#endif
+            return GetIntPlatform() == (int) RuntimePlatform.IPhonePlayer;
         }
 
         public static bool IsAndroid()
         {
-            return GetIntPlatform() == (int)RuntimePlatform.Android;
+#if UNITY_WEBGL &&! UNITY_EDITOR
+            return IsAndroidWebGL();
+#endif
+            return GetIntPlatform() == (int) RuntimePlatform.Android;
         }
 
         public static bool IsWindows()
         {
-            return GetIntPlatform() == (int)RuntimePlatform.WindowsPlayer;
+            return GetIntPlatform() == (int) RuntimePlatform.WindowsPlayer;
         }
-        
+
         public static bool IsWebGL()
         {
-            return GetIntPlatform() == (int)RuntimePlatform.WebGLPlayer;
+            return GetIntPlatform() == (int) RuntimePlatform.WebGLPlayer;
+        }
+
+        public static bool IsMobileWebGL()
+        {
+#if UNITY_WEBGL &&! UNITY_EDITOR
+            return IsiOSWebGL() || IsAndroidWebGL() || IsHuaWeiGroupWebGL();
+#endif
+            return false;
         }
 
         public static bool IsMobile()
@@ -74,22 +88,14 @@ namespace TaoTie
             return false;
         }
 
-        public static bool IsHarmony()
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return IsOpenHarmony();
-#endif
-            return false;
-        }
-        
         public static bool IsHuaWeiGroup()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return IsHuaWeiHonor();
+            return IsHuaWeiGroupWebGL();
 #endif
             return false;
         }
-        
+
         public static bool IsWebGl1()
         {
 #if UNITY_EDITOR
