@@ -2,9 +2,7 @@
 using UnityEditor.Callbacks;
 using UnityEditor;
 using UnityEngine;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 namespace TaoTie
 {
     public class AbilityEditor: BaseEditorWindow<List<ConfigAbility>>
@@ -12,12 +10,8 @@ namespace TaoTie
         protected override string fileName => "Abilities";
 
         protected override string folderPath => base.folderPath + "/EditConfig/Abilities";
-#if RoslynAnalyzer
-        protected override byte[] Serialize(List<ConfigAbility> data)
-        {
-            return Serializer.Serialize(data);
-        }
-#endif
+        
+
         [MenuItem("Tools/配置编辑器/Ability")]
         static void OpenAbility()
         {

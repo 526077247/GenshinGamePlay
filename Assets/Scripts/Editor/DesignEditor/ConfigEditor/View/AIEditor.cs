@@ -1,20 +1,13 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 namespace TaoTie
 {
     public class AIEditor: BaseEditorWindow<ConfigAIBeta>
     {
         protected override string folderPath => base.folderPath + "/Unit";
-#if RoslynAnalyzer
-        protected override byte[] Serialize(ConfigAIBeta data)
-        {
-            return Serializer.Serialize(data);
-        }
-#endif
+
         [MenuItem("Tools/配置编辑器/AI")]
         static void OpenAI()
         {

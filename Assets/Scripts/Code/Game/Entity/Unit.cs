@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
 using UnityEngine;
 
 namespace TaoTie

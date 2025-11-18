@@ -21,7 +21,6 @@ namespace TaoTie
         [NinoMember(6)]
         public StateData Data;
         [JsonIgnore]
-        [NinoIgnore]
         public bool HasTimeline => this.Timeline?.Clips?.Length > 0;
         
 

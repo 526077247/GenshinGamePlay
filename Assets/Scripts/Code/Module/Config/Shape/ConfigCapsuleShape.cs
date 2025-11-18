@@ -5,6 +5,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [LabelText("垂直胶囊体")]
+    [NinoType(false)]
     public partial class ConfigCapsuleShape: ConfigShape
     {
         [NinoMember(1)]

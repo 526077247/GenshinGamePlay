@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 using UnityEngine;
 using YooAsset;
 
@@ -65,12 +63,11 @@ namespace TaoTie
                             }
                         }
                     }
-#if RoslynAnalyzer
                     else if (Define.ConfigType == 1)
                     {
                         try
                         {
-                            Deserializer.Deserialize(textAsset.bytes, out ConfigAbility[] list);
+                            var list = NinoDeserializer.Deserialize<ConfigAbility[]>(textAsset.bytes);
                             for (int j = 0; j < list.Length; j++)
                             {
                                 var item = list[j];
@@ -94,7 +91,6 @@ namespace TaoTie
                             Log.Error(ex);
                         }
                     }
-#endif
                 }
                 op.Release();
             }

@@ -5,9 +5,7 @@ using System.Linq;
 using System.Reflection;
 using DaGenGraph;
 using DaGenGraph.Editor;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -262,9 +260,9 @@ namespace TaoTie
 
                 var obj = Convert(m_Graph);
                 File.WriteAllText(path,JsonHelper.ToJson(obj));
-#if RoslynAnalyzer
-                File.WriteAllBytes(path.Replace("json","bytes"), obj.Serialize());
-#endif
+
+                File.WriteAllBytes(path.Replace("json","bytes"), NinoSerializer.Serialize(obj));
+
                 AssetDatabase.Refresh();
                 Debug.Log("导出成功");
             }

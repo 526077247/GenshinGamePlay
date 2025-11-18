@@ -1,20 +1,15 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
+using Sirenix.OdinInspector;
+
 namespace TaoTie
 {
     public class CameraEditor: BaseEditorWindow<ConfigCameras>
     {
         protected override string folderPath => base.folderPath + "/EditConfig/OthersBuildIn";
-#if RoslynAnalyzer
-        protected override byte[] Serialize(ConfigCameras data)
-        {
-            return Serializer.Serialize(data);
-        }
-#endif
+
         [MenuItem("Tools/配置编辑器/Camera")]
         static void OpenAI()
         {
@@ -38,6 +33,15 @@ namespace TaoTie
                 return true;
             }
             return false;
+        }
+
+        [Button("打开1")]
+        public void Text()
+        {
+            var bytes = NinoSerializer.Serialize(data);
+            Log.Info(JsonHelper.ToJson(data));
+            var camera = NinoDeserializer.Deserialize<ConfigCameras>(bytes);
+            Log.Info(JsonHelper.ToJson(camera));
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 using UnityEngine;
 using YooAsset;
 
@@ -55,12 +53,11 @@ namespace TaoTie
                             Log.Error("ConfigSceneGroup id重复 "+item.Id);
                         }
                     }
-#if RoslynAnalyzer
                     else if (Define.ConfigType == 1)
                     {
                         try
                         {
-                            Deserializer.Deserialize(textAsset.bytes,out ConfigSceneGroup item);
+                            var item = NinoDeserializer.Deserialize<ConfigSceneGroup>(textAsset.bytes);
                             if(item.Disable) continue;
                             if (!dict.ContainsKey(item.Id))
                             {
@@ -77,7 +74,6 @@ namespace TaoTie
                             Log.Error(sceneGroups[i].AssetPath+"\r\n"+ex);
                         }
                     }
-#endif
                 }
                 op.Release();
             }

@@ -19,7 +19,7 @@ namespace TaoTie
 #endif
         [NinoMember(2)]
         [LabelText("排序序号")] public int LocalId;
-        [JsonIgnore][NinoIgnore]
+        [JsonIgnore]
         public virtual bool CanSetOtherSceneGroup { get; } = false;
         [ShowIf(nameof(CanSetOtherSceneGroup))] [LabelText("是否是设置其他SceneGroup的内容")] 
         [NinoMember(3)]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nino.Core;
 
 namespace TaoTie
 {
@@ -45,18 +46,12 @@ namespace TaoTie
             {
                 var jStr = await ResourcesManager.Instance.LoadConfigJsonAsync(path);
                 dict[path] = JsonHelper.FromJson<ConfigActor>(jStr);
-                return;
             }
-#if RoslynAnalyzer
             else
             {
                 var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
-                Unity.Code.NinoGen.Deserializer.Deserialize(bytes,out ConfigActor res);
-                dict[path] =  res;
-                return;
+                dict[path] = NinoDeserializer.Deserialize<ConfigActor>(bytes);
             }
-#endif
-            Log.Error($"GetConfigActor 失败，ConfigType = {Define.ConfigType} 未处理");
         }
 
         public void Destroy()

@@ -1,21 +1,14 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 namespace TaoTie
 {
     public class DecisionTreeEditor: BaseEditorWindow<ConfigAIDecisionTree>
     {
         protected override string fileName => "DecisionTree";
         protected override string folderPath => base.folderPath + "/EditConfig/AITree";
-#if RoslynAnalyzer
-        protected override byte[] Serialize(ConfigAIDecisionTree data)
-        {
-            return Serializer.Serialize(data);
-        }
-#endif
+
         protected override ConfigAIDecisionTree CreateInstance()
         {
             return new ConfigAIDecisionTree();

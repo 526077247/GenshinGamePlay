@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if RoslynAnalyzer
-using Unity.Code.NinoGen;
-#endif
+using Nino.Core;
 using UnityEngine;
 using YooAsset;
 
@@ -55,12 +53,11 @@ namespace TaoTie
                             Log.Error("ConfigStory id重复 "+item.Id);
                         }
                     }
-#if RoslynAnalyzer
                     else if (Define.ConfigType == 1)
                     {
                         try
                         {
-                            Deserializer.Deserialize(textAsset.bytes,out ConfigStory item);
+                            var item = NinoDeserializer.Deserialize<ConfigStory>(textAsset.bytes);
                             if (!dict.ContainsKey(item.Id))
                             {
                                 list.Add(item);
@@ -76,8 +73,7 @@ namespace TaoTie
                             Log.Error(ex);
                         }
                     }
-#endif
-                    
+
                 }
                 op.Release();
             }

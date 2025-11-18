@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nino.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -71,16 +72,11 @@ namespace TaoTie
                 var jStr = await ResourcesManager.Instance.LoadConfigJsonAsync(path);
                 return JsonHelper.FromJson<ConfigInput>(jStr);
             }
-#if RoslynAnalyzer
             else
             {
                 var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
-                Deserializer.Deserialize(bytes,out ConfigInput res);
-                return res;
+                return NinoDeserializer.Deserialize<ConfigInput>(bytes);
             }
-#endif
-            Log.Error($"GetConfig 失败，ConfigType = {Define.ConfigType} 未处理");
-            return null;
         }
         public async ETTask LoadAsync()
         {

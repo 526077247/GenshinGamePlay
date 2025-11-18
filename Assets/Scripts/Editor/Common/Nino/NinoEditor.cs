@@ -16,8 +16,6 @@ namespace TaoTie
             symbolStr = symbolStr.Replace(roslynAnalyzer, "");
             symbolStr = symbolStr.Replace(";;", "");
             PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTarget,symbolStr);
-            var dll = AssetDatabase.LoadAssetAtPath<Object>("Assets/Scripts/ThirdParty/Nino/Nino.Generator.dll");
-            AssetDatabase.ClearLabels(dll);
         }
         [MenuItem("Tools/Build/开启Nino二进制输出")]
         static void OpenExportBytes()
@@ -33,8 +31,6 @@ namespace TaoTie
                 symbolStr += ";" + roslynAnalyzer;
             }
             PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTarget,symbolStr);
-            var dll = AssetDatabase.LoadAssetAtPath<Object>("Assets/Scripts/ThirdParty/Nino/Nino.Generator.dll");
-            AssetDatabase.SetLabels(dll,new []{roslynAnalyzer});
         }
     }
 }

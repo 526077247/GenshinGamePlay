@@ -22,7 +22,7 @@ namespace TaoTie
         [NinoMember(6)][ShowIf(nameof(ClearThreatByLostPath))][LabelText("无法寻路清除威胁值倒计时（ms）")]
         public int ClearThreatTimerByLostPath = 3000;
         
-        [NinoMember(6)][LabelText("离开区域清除威胁值")]
+        [NinoMember(7)][LabelText("离开区域清除威胁值")]
         public bool ClearThreatByTargetOutOfZone;
         [NinoMember(8)][ShowIf(nameof(ClearThreatByTargetOutOfZone))][LabelText("离开区域清除威胁值倒计时（ms）")]
         public int ClearThreatTimerByTargetOutOfZone = 3000;

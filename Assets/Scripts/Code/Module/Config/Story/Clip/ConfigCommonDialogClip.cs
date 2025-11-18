@@ -14,9 +14,9 @@ namespace TaoTie
         public bool BackgroundBlur;
         [NinoMember(13)][LabelText("等待点击再结束")]
         public bool WaitClick = true;
-        [NinoMember(13)][LabelText("等待时间再结束")][ShowIf("@!"+nameof(WaitClick))]
+        [NinoMember(14)][LabelText("等待时间再结束")][ShowIf("@!"+nameof(WaitClick))]
         public int WaitTime = 1000;
-        [NinoMember(14)][LabelText("播完后关闭窗口")] 
+        [NinoMember(15)][LabelText("播完后关闭窗口")] 
         public bool CloseOnOver;
 
         public override async ETTask Process(StorySystem storySystem)

@@ -13,7 +13,7 @@ namespace TaoTie
         public AbilityTargetting AttackTargetting = AbilityTargetting.Owner;
         [NinoMember(11)][LabelText("防御者")]
         public AbilityTargetting BeAttackTargetting = AbilityTargetting.Target;
-        [NinoMember(14)][LabelText("*攻击范围检测者")][Tooltip("用于处理碰撞或触发检测,仅支持指定一个,若选择结果超过1个默认取第一个,没找到则使用攻击者进行检测")]
+        [NinoMember(15)][LabelText("*攻击范围检测者")][Tooltip("用于处理碰撞或触发检测,仅支持指定一个,若选择结果超过1个默认取第一个,没找到则使用攻击者进行检测")]
         public AbilityTargetting AttackCheckTargetting = AbilityTargetting.Self;
         [NinoMember(12)][ShowIf(nameof(BeAttackTargetting), AbilityTargetting.Other)]
         public ConfigSelectTargets OtherBeAttackTargets;

@@ -53,13 +53,8 @@ namespace TaoTie
         /// <summary>
         /// 0:Json 1:Bytes
         /// </summary>
-        public static int ConfigType = 
-#if RoslynAnalyzer
-                1;
-#else
-                0;
-#endif
-        
+        public static int ConfigType = 1;
+
         public static readonly string[] RenameList = {"iOS"};
 
         public const int MinRepeatedTimerInterval = 100;
