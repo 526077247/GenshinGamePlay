@@ -90,7 +90,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectEditorConfig
         AssetTags: 
         UserData: 
       - CollectPath: Assets/AssetsPackage/Code/Obfuz
@@ -151,7 +151,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectEditorConfig
         AssetTags: sceneGroup
         UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/AITree
@@ -159,7 +159,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectEditorConfig
         AssetTags: aiTree
         UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/Abilities
@@ -167,7 +167,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectEditorConfig
         AssetTags: ability
         UserData: 
       - CollectPath: Assets/AssetsPackage/Effect
@@ -183,7 +183,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectEditorConfig
         AssetTags: story
         UserData: 
       - CollectPath: Assets/AssetsPackage/EditConfig/Others
@@ -191,7 +191,7 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByPathLocationServices
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectEditorConfig
         AssetTags: 
         UserData: 
       - CollectPath: Assets/AssetsPackage/SkyBox

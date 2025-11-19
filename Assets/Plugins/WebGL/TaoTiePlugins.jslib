@@ -187,6 +187,7 @@ mergeInto(LibraryManager.library, {
         return null;
     },
     CopyTextToClipboard: function(ptr){
+        if(!navigator || !navigator.clipboard || !navigator.clipboard.writeText) return;
         var text = UTF8ToString(ptr);
         navigator.clipboard.writeText(text).then(function () {
             console.log('Async: Copying to clipboard was successful!');
