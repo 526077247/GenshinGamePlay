@@ -56,7 +56,18 @@ namespace TaoTie
                 return;
             }
             
-            Animator = obj.GetComponentInChildren<Animator>();
+            Animator = obj.GetComponent<Animator>();
+            if (Animator == null)
+            {
+                Animator = obj.GetComponentInChildren<Animator>();
+            }
+
+            EntityView = obj.transform;
+            EntityView.SetParent(tranParent);
+            EntityView.localScale = unit.LocalScale;
+            EntityView.position = unit.Position;
+            EntityView.rotation = unit.Rotation;
+            
             if (Animator != null && !string.IsNullOrEmpty(unit.Config.Controller))
             {
                 Animator.runtimeAnimatorController = await 
@@ -92,13 +103,6 @@ namespace TaoTie
                     }
                 }
             }
-
-            EntityView = obj.transform;
-            
-            EntityView.SetParent(tranParent);
-            EntityView.localScale = unit.LocalScale;
-            EntityView.position = unit.Position;
-            EntityView.rotation = unit.Rotation;
             
             collector = obj.GetComponent<ReferenceCollector>();
             var ec = obj.GetComponent<EntityComponent>();
