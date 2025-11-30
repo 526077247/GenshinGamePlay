@@ -1,14 +1,28 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using Obfuz.Emit;
 using Obfuz.Settings;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Assertions;
 
 namespace Obfuz.ObfusPasses.ConstEncrypt
 {
@@ -29,7 +43,7 @@ namespace Obfuz.ObfusPasses.ConstEncrypt
         {
             var ctx = ObfuscationPassContext.Current;
             _dataObfuscatorPolicy = new ConfigurableEncryptPolicy(ctx.coreSettings.assembliesToObfuscate, _settings.ruleFiles);
-            _dataObfuscator = new DefaultConstEncryptor(ctx.encryptionScopeProvider, ctx.rvaDataAllocator, ctx.constFieldAllocator, ctx.moduleEntityManager, _settings);
+            _dataObfuscator = new DefaultConstEncryptor(ctx.moduleEntityManager, _settings);
         }
 
         public override void Stop()
@@ -113,34 +127,27 @@ namespace Obfuz.ObfusPasses.ConstEncrypt
                 }
                 case Code.Call:
                 {
-                    //if (((IMethod)inst.Operand).FullName == "System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)")
-                    //{
-                    //    Instruction prevInst = globalInstructions[instructionIndex - 1];
-                    //    if (prevInst.OpCode.Code == Code.Ldtoken)
-                    //    {
-                    //        IField rvaField = (IField)prevInst.Operand;
-                    //        FieldDef ravFieldDef = rvaField.ResolveFieldDefThrow();
-                    //        byte[] data = ravFieldDef.InitialValue;
-                    //        if (data != null && _dataObfuscatorPolicy.NeedObfuscateArray(method, currentInLoop, data))
-                    //        {
-                    //            if (_encryptedRvaFields.Add(ravFieldDef))
-                    //            {
-
-                    //            }
-
-                    //            // remove prev ldtoken instruction
-                    //            Assert.AreEqual(Code.Ldtoken, totalFinalInstructions.Last().OpCode.Code);
-                    //            //totalFinalInstructions.RemoveAt(totalFinalInstructions.Count - 1);
-                    //            // dup arr argument for decryption operation
-                    //            totalFinalInstructions.Insert(totalFinalInstructions.Count - 1, Instruction.Create(OpCodes.Dup));
-                    //            totalFinalInstructions.Add(inst.Clone());
-                    //            //bool needCache = currentInLoop ? constCachePolicy.cacheStringInLoop : constCachePolicy.cacheStringNotInLoop;
-                    //            bool needCache = false;
-                    //            _dataObfuscator.ObfuscateBytes(method, needCache, data, outputInstructions);
-                    //            return true;
-                    //        }
-                    //    }
-                    //}
+                    if (((IMethod)inst.Operand).FullName == "System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)")
+                    {
+                        Instruction prevInst = globalInstructions[instructionIndex - 1];
+                        if (prevInst.OpCode.Code == Code.Ldtoken)
+                        {
+                            IField rvaField = (IField)prevInst.Operand;
+                            FieldDef ravFieldDef = rvaField.ResolveFieldDefThrow();
+                            if (ravFieldDef.Module != method.Module)
+                            {
+                                return false;
+                            }
+                            byte[] data = ravFieldDef.InitialValue;
+                            if (data != null && data.Length > 0 && _dataObfuscatorPolicy.NeedObfuscateArray(method, currentInLoop, data))
+                            {
+                                // don't need cache for byte array obfuscation
+                                needCache = false;
+                                _dataObfuscator.ObfuscateBytes(method, needCache, ravFieldDef, data, outputInstructions);
+                                return true;
+                            }
+                        }
+                    }
                     return false;
                 }
                 default: return false;

@@ -1,13 +1,60 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
+using Obfuz.Editor;
 using Obfuz.Utils;
+using System.Collections.Generic;
 
 namespace Obfuz.ObfusPasses.SymbolObfus.Policies
 {
     public class SystemRenamePolicy : ObfuscationPolicyBase
     {
+        private readonly ObfuzIgnoreScopeComputeCache _obfuzIgnoreScopeComputeCache;
+
+        public SystemRenamePolicy(ObfuzIgnoreScopeComputeCache obfuzIgnoreScopeComputeCache)
+        {
+            _obfuzIgnoreScopeComputeCache = obfuzIgnoreScopeComputeCache;
+        }
+
+        private readonly HashSet<string> _fullIgnoreTypeFullNames = new HashSet<string>
+        {
+            ConstValues.ObfuzIgnoreAttributeFullName,
+            ConstValues.ObfuzScopeFullName,
+            ConstValues.EncryptFieldAttributeFullName,
+            ConstValues.EmbeddedAttributeFullName,
+            ConstValues.ZluaLuaInvokeAttributeFullName,
+            ConstValues.ZluaLuaCallbackAttributeFullName,
+            ConstValues.ZluaLuaMarshalAsAttributeFullName,
+            ConstValues.BurstCompileFullName,
+        };
+
+
+        private readonly HashSet<string> _fullIgnoreTypeNames = new HashSet<string>
+        {
+            ConstValues.MonoPInvokeCallbackAttributeName,
+        };
+
         private bool IsFullIgnoreObfuscatedType(TypeDef typeDef)
         {
-            return typeDef.FullName == "Obfuz.ObfuzIgnoreAttribute" || typeDef.FullName == "Obfuz.ObfuzScope" || typeDef.FullName == "Obfuz.EncryptFieldAttribute";
+            return _fullIgnoreTypeFullNames.Contains(typeDef.FullName) || _fullIgnoreTypeNames.Contains(typeDef.Name) || MetaUtil.HasMicrosoftCodeAnalysisEmbeddedAttribute(typeDef);
         }
 
         public override bool NeedRename(TypeDef typeDef)
@@ -22,7 +69,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
                 return false;
             }
 
-            if (MetaUtil.HasObfuzIgnoreScope(typeDef, ObfuzScope.TypeName) || MetaUtil.HasEnclosingObfuzIgnoreScope(typeDef.DeclaringType, ObfuzScope.TypeName))
+            if (_obfuzIgnoreScopeComputeCache.HasSelfOrEnclosingOrInheritObfuzIgnoreScope(typeDef, ObfuzScope.TypeName))
             {
                 return false;
             }
@@ -40,7 +87,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
                 return false;
             }
 
-            if (MetaUtil.HasSelfOrInheritPropertyOrEventOrOrTypeDefIgnoreMethodName(methodDef))
+            if (_obfuzIgnoreScopeComputeCache.HasSelfOrInheritPropertyOrEventOrOrTypeDefIgnoreMethodName(methodDef))
             {
                 return false;
             }
@@ -53,7 +100,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
             {
                 return false;
             }
-            if (MetaUtil.HasSelfOrInheritObfuzIgnoreScope(fieldDef, fieldDef.DeclaringType, ObfuzScope.Field))
+            if (_obfuzIgnoreScopeComputeCache.HasSelfOrDeclaringOrEnclosingOrInheritObfuzIgnoreScope(fieldDef, fieldDef.DeclaringType, ObfuzScope.Field))
             {
                 return false;
             }
@@ -70,7 +117,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
             {
                 return false;
             }
-            if (MetaUtil.HasSelfOrInheritObfuzIgnoreScope(propertyDef, propertyDef.DeclaringType, ObfuzScope.PropertyName))
+            if (_obfuzIgnoreScopeComputeCache.HasSelfOrDeclaringOrEnclosingOrInheritObfuzIgnoreScope(propertyDef, propertyDef.DeclaringType, ObfuzScope.PropertyName))
             {
                 return false;
             }
@@ -83,7 +130,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus.Policies
             {
                 return false;
             }
-            if (MetaUtil.HasSelfOrInheritObfuzIgnoreScope(eventDef, eventDef.DeclaringType, ObfuzScope.EventName))
+            if (_obfuzIgnoreScopeComputeCache.HasSelfOrDeclaringOrEnclosingOrInheritObfuzIgnoreScope(eventDef, eventDef.DeclaringType, ObfuzScope.EventName))
             {
                 return false;
             }

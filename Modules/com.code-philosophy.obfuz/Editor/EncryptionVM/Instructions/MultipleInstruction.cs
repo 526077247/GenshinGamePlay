@@ -1,5 +1,24 @@
-﻿using NUnit.Framework;
-using System;
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using Obfuz.Utils;
 using System.Collections.Generic;
 
 namespace Obfuz.EncryptionVM.Instructions
@@ -14,31 +33,14 @@ namespace Obfuz.EncryptionVM.Instructions
         {
             _multiValue = addValue;
             _opKeyIndex = opKeyIndex;
-            _revertMultiValue = (int)ModInverseOdd((uint)addValue);
+            _revertMultiValue = MathUtil.ModInverse32(addValue);
             Verify();
         }
 
         private void Verify()
         {
             int a = 1122334;
-            Assert.AreEqual(a, a * _multiValue * _revertMultiValue);
-        }
-
-        public static uint ModInverseOdd(uint a)
-        {
-            if (a % 2 == 0)
-                throw new ArgumentException("Input must be an odd number.", nameof(a));
-
-            uint x = 1; // 初始解：x₀ = 1 (mod 2)
-            for (int i = 0; i < 5; i++) // 迭代5次（2^1 → 2^32）
-            {
-                int shift = 2 << i;        // 当前模数为 2^(2^(i+1))
-                ulong mod = 1UL << shift; // 使用 ulong 避免溢出
-                ulong ax = (ulong)a * x;  // 计算 a*x（64位避免截断）
-                ulong term = (2 - ax) % mod;
-                x = (uint)((x * term) % mod); // 更新 x，结果截断为 uint
-            }
-            return x; // 最终解为 x₅ mod 2^32
+            UnityEngine.Assertions.Assert.AreEqual(a, a * _multiValue * _revertMultiValue);
         }
 
         public override int Encrypt(int value, int[] secretKey, int salt)
@@ -53,7 +55,7 @@ namespace Obfuz.EncryptionVM.Instructions
 
         public override void GenerateEncryptCode(List<string> lines, string indent)
         {
-            lines.Add(indent + $"value = value *  {_multiValue} + _secretKey[{_opKeyIndex}] + salt;");
+            lines.Add(indent + $"value = value * {_multiValue} + _secretKey[{_opKeyIndex}] + salt;");
         }
 
         public override void GenerateDecryptCode(List<string> lines, string indent)

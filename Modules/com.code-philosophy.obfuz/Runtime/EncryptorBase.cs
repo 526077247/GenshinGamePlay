@@ -1,5 +1,25 @@
-﻿using JetBrains.Annotations;
-using System;
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Assertions;
@@ -247,23 +267,115 @@ namespace Obfuz
 
         public virtual unsafe void DecryptBlock(byte[] data, int ops, int salt)
         {
-            int length = data.Length;
+            fixed (byte* dataPtr = &data[0])
+            {
+                DecryptBlock(dataPtr, data.Length, ops, salt);
+            }
+        }
+
+        private unsafe void DecryptBlock(byte* data, int length, int ops, int salt)
+        {
             int intArrLength = length >> 2;
 
-            fixed (byte* dstBytePtr = &data[0])
+            int* dstIntPtr = (int*)data;
+            int last = 0;
+            for (int i = 0; i < intArrLength; i++)
             {
-                int* dstIntPtr = (int*)dstBytePtr;
-                int last = 0;
-                for (int i = 0; i < intArrLength; i++)
-                {
-                    int oldLast = last;
-                    last = dstIntPtr[i];
-                    dstIntPtr[i] = Decrypt(oldLast ^ last, ops, salt);
-                }
+                int oldLast = last;
+                last = dstIntPtr[i];
+                dstIntPtr[i] = Decrypt(oldLast ^ last, ops, salt);
             }
             for (int i = intArrLength * 4; i < length; i++)
             {
                 data[i] = (byte)(data[i] ^ salt);
+            }
+        }
+
+        public virtual unsafe void DecryptInitializeArray(System.Array arr, System.RuntimeFieldHandle field, int length, int ops, int salt)
+        {
+            //Assert.AreEqual(Marshal.SizeOf(arr.GetType().GetElementType()), arr.Length);
+            RuntimeHelpers.InitializeArray(arr, field);
+            if (arr is byte[] byteArr)
+            {
+                fixed (byte* dataPtr = &byteArr[0])
+                {
+                    DecryptBlock(dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is int[] intArr)
+            {
+                fixed (int* dataPtr = &intArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is long[] longArr)
+            {
+                fixed (long* dataPtr = &longArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is sbyte[] sbyteArr)
+            {
+                fixed (sbyte* dataPtr = &sbyteArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is short[] shortArr)
+            {
+                fixed (short* dataPtr = &shortArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is ushort[] ushortArr)
+            {
+                fixed (ushort* dataPtr = &ushortArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is uint[] uintArr)
+            {
+                fixed (uint* dataPtr = &uintArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is ulong[] ulongArr)
+            {
+                fixed (ulong* dataPtr = &ulongArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is float[] floatArr)
+            {
+                fixed (float* dataPtr = &floatArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else if (arr is double[] doubleArr)
+            {
+                fixed (double* dataPtr = &doubleArr[0])
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+            }
+            else
+            {
+                void* dataPtr = UnsafeUtility.PinGCArrayAndGetDataAddress(arr, out ulong handle);
+                try
+                {
+                    DecryptBlock((byte*)dataPtr, length, ops, salt);
+                }
+                finally
+                {
+                    UnsafeUtility.ReleaseGCObject(handle);
+                }
             }
         }
     }

@@ -1,11 +1,28 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Obfuz.Emit
 {
@@ -41,13 +58,20 @@ namespace Obfuz.Emit
 
         public IList<BasicBlock> Blocks => _blocks;
 
-        public BasicBlockCollection(MethodDef method)
+        public BasicBlockCollection(MethodDef method, bool computeInLoop)
         {
             _method = method;
             HashSet<Instruction> splitPoints = BuildSplitPoint(method);
             BuildBasicBlocks(method, splitPoints);
             BuildInOutGraph(method);
+            if (computeInLoop)
+            {
+                ComputeBlocksInLoop();
+            }
+        }
 
+        public void ComputeBlocksInLoop()
+        {
             var loopBlocks = FindLoopBlocks(_blocks);
             foreach (var block in loopBlocks)
             {
@@ -100,6 +124,7 @@ namespace Obfuz.Emit
                         {
                             splitPoints.Add(nextInst);
                         }
+                        splitPoints.Add((Instruction)curInst.Operand);
                         break;
                     }
                     case FlowControl.Cond_Branch:
@@ -141,7 +166,7 @@ namespace Obfuz.Emit
             }
             return splitPoints;
         }
-        
+
 
         private void BuildBasicBlocks(MethodDef method, HashSet<Instruction> splitPoints)
         {
@@ -207,11 +232,21 @@ namespace Obfuz.Emit
                         }
                         break;
                     }
+                    case FlowControl.Call:
+                    case FlowControl.Next:
+                    {
+                        if (nextBlock != null)
+                        {
+                            curBlock.AddTargetBasicBlock(nextBlock);
+                        }
+                        break;
+                    }
                     case FlowControl.Return:
                     case FlowControl.Throw:
                     {
                         break;
                     }
+                    default: throw new NotSupportedException($"Unsupported flow control: {lastInst.OpCode.FlowControl} in method {method.FullName}");
                 }
             }
         }

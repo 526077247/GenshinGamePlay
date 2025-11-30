@@ -212,7 +212,11 @@ namespace TaoTie
         private static void RunObfuscate(string assemblyName)
         {
             ObfuzSettings settings = ObfuzSettings.Instance;
-            if(!settings.enable) return;
+            if (!settings.buildPipelineSettings.enable)
+            {
+                Debug.Log("Obfuscation is disabled.");
+                return;
+            }
             var old = settings.assemblySettings.assembliesToObfuscate;
             settings.assemblySettings.assembliesToObfuscate = new string[] {assemblyName};
             var oldDyn = settings.secretSettings.assembliesUsingDynamicSecretKeys;
@@ -222,7 +226,7 @@ namespace TaoTie
             
             var obfuscationRelativeAssemblyNames = new HashSet<string>(settings.assemblySettings.GetObfuscationRelativeAssemblyNames());
 
-            var obfuscatorBuilder = ObfuscatorBuilder.FromObfuzSettings(settings, buildTarget, true);
+            var obfuscatorBuilder = ObfuscatorBuilder.FromObfuzSettings(settings, buildTarget, true, true);
 
             var assemblySearchDirs = new List<string>
                 {
@@ -251,6 +255,7 @@ namespace TaoTie
                         continue;
                     }
                     File.Copy(src, dst, true);
+                    Debug.Log($"obfuscate dll:{dst}");
                 }
                 succ = true;
             }

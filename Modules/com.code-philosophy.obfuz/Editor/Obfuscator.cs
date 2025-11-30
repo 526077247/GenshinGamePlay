@@ -1,9 +1,29 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
 using Obfuz.Data;
 using Obfuz.Emit;
 using Obfuz.EncryptionVM;
-using Obfuz.ObfusPasses;
 using Obfuz.ObfusPasses.CleanUp;
+using Obfuz.ObfusPasses.Instinct;
 using Obfuz.ObfusPasses.SymbolObfus;
 using Obfuz.Unity;
 using Obfuz.Utils;
@@ -11,10 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using IAssemblyResolver = Obfuz.Utils.IAssemblyResolver;
 
 namespace Obfuz
 {
@@ -46,6 +63,7 @@ namespace Obfuz
             _assemblyResolver = new CombinedAssemblyResolver(new PathAssemblyResolver(_coreSettings.assemblySearchPaths.ToArray()), new UnityProjectManagedAssemblyResolver(_coreSettings.buildTarget));
             _passPolicy = new ConfigurablePassPolicy(_coreSettings.assembliesToObfuscate, _coreSettings.enabledObfuscationPasses, _coreSettings.obfuscationPassRuleConfigFiles);
 
+            _pipeline1.AddPass(new InstinctPass());
             foreach (var pass in _coreSettings.obfuscationPasses)
             {
                 if (pass is SymbolObfusPass symbolObfusPass)
@@ -90,14 +108,17 @@ namespace Obfuz
 
         public void Run()
         {
-            Debug.Log($"Obfuscator Run. begin");
+            Debug.Log($"Obfuscator begin");
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
             FileUtil.RecreateDir(_coreSettings.obfuscatedAssemblyOutputPath);
             FileUtil.RecreateDir(_coreSettings.obfuscatedAssemblyTempOutputPath);
             RunPipeline(_pipeline1);
             _assemblyResolver.InsertFirst(new PathAssemblyResolver(_coreSettings.obfuscatedAssemblyTempOutputPath));
             RunPipeline(_pipeline2);
             FileUtil.CopyDir(_coreSettings.obfuscatedAssemblyTempOutputPath, _coreSettings.obfuscatedAssemblyOutputPath, true);
-            Debug.Log($"Obfuscator Run. end");
+            sw.Stop();
+            Debug.Log($"Obfuscator end. cost time: {sw.ElapsedMilliseconds} ms");
         }
 
         private void RunPipeline(Pipeline pipeline)
@@ -128,10 +149,7 @@ namespace Obfuz
             }
             var vms = new VirtualMachineSimulator(vm, secretKey);
 
-            var generatedVmTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .Select(assembly => assembly.GetType("Obfuz.EncryptionVM.GeneratedEncryptionVirtualMachine"))
-                .Where(type => type != null)
-                .ToList();
+            var generatedVmTypes = ReflectionUtil.FindTypesInCurrentAppDomain("Obfuz.EncryptionVM.GeneratedEncryptionVirtualMachine");
             if (generatedVmTypes.Count == 0)
             {
                 throw new Exception($"class Obfuz.EncryptionVM.GeneratedEncryptionVirtualMachine not found in any assembly! Please run `Obfuz/GenerateVm` to generate it!");
@@ -141,7 +159,7 @@ namespace Obfuz
                 throw new Exception($"class Obfuz.EncryptionVM.GeneratedEncryptionVirtualMachine found in multiple assemblies! Please retain only one!");
             }
 
-            var gvmInstance = (IEncryptor)Activator.CreateInstance(generatedVmTypes[0], new object[] { secretKey } );
+            var gvmInstance = (IEncryptor)Activator.CreateInstance(generatedVmTypes[0], new object[] { secretKey });
 
             VerifyVm(vm, vms, gvmInstance);
 
@@ -285,22 +303,25 @@ namespace Obfuz
             LoadAssemblies(assemblyCache, modulesToObfuscate, allObfuscationRelativeModules);
 
             EncryptionScopeProvider encryptionScopeProvider = CreateEncryptionScopeProvider();
-            var moduleEntityManager = new GroupByModuleEntityManager();
-            var rvaDataAllocator = new RvaDataAllocator(encryptionScopeProvider, moduleEntityManager);
-            var constFieldAllocator = new ConstFieldAllocator(encryptionScopeProvider, rvaDataAllocator, moduleEntityManager);
+            var moduleEntityManager = new GroupByModuleEntityManager()
+            {
+                EncryptionScopeProvider = encryptionScopeProvider,
+            };
+            var obfuzIgnoreScopeComputeCache = new ObfuzIgnoreScopeComputeCache();
+            var burstCompileCache = new BurstCompileComputeCache(modulesToObfuscate, allObfuscationRelativeModules);
             _ctx = new ObfuscationPassContext
             {
                 coreSettings = _coreSettings,
                 assemblyCache = assemblyCache,
                 modulesToObfuscate = modulesToObfuscate,
                 allObfuscationRelativeModules = allObfuscationRelativeModules,
+
                 moduleEntityManager = moduleEntityManager,
 
-                encryptionScopeProvider = encryptionScopeProvider,
+                obfuzIgnoreScopeComputeCache = obfuzIgnoreScopeComputeCache,
+                burstCompileComputeCache = burstCompileCache,
 
-                rvaDataAllocator = rvaDataAllocator,
-                constFieldAllocator = constFieldAllocator,
-                whiteList = new ObfuscationMethodWhitelist(),
+                whiteList = new ObfuscationMethodWhitelist(obfuzIgnoreScopeComputeCache, burstCompileCache),
                 passPolicy = _passPolicy,
             };
             ObfuscationPassContext.Current = _ctx;
@@ -345,8 +366,8 @@ namespace Obfuz
         {
             pipeline.Stop();
 
-            _ctx.constFieldAllocator.Done();
-            _ctx.rvaDataAllocator.Done();
+            _ctx.moduleEntityManager.Done<ConstFieldAllocator>();
+            _ctx.moduleEntityManager.Done<RvaDataAllocator>();
             WriteAssemblies();
         }
     }

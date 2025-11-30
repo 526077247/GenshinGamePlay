@@ -1,17 +1,38 @@
-using System;
-using System.Collections.Generic;
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace Obfuz.Settings
 {
+
     public class ObfuzSettings : ScriptableObject
     {
-        [Tooltip("enable Obfuz")]
-        public bool enable = true;
+        [Tooltip("build pipeline settings")]
+        public BuildPipelineSettings buildPipelineSettings;
+
+        [Tooltip("compatibility settings")]
+        public CompatibilitySettings compatibilitySettings;
 
         [Tooltip("assembly settings")]
         public AssemblySettings assemblySettings;
@@ -31,11 +52,32 @@ namespace Obfuz.Settings
         [Tooltip("const encryption settings")]
         public ConstEncryptionSettings constEncryptSettings;
 
+        [Tooltip("remove const field settings")]
+        public RemoveConstFieldSettings removeConstFieldSettings;
+
+        [Tooltip("eval stack obfuscation settings")]
+        public EvalStackObfuscationSettings evalStackObfusSettings;
+
         [Tooltip("field encryption settings")]
         public FieldEncryptionSettings fieldEncryptSettings;
 
         [Tooltip("call obfuscation settings")]
         public CallObfuscationSettings callObfusSettings;
+
+        [Tooltip("expression obfuscation settings")]
+        public ExprObfuscationSettings exprObfusSettings;
+
+        [Tooltip("control flow obfuscation settings")]
+        public ControlFlowObfuscationSettings controlFlowObfusSettings;
+
+        [Tooltip("garbage code generator settings")]
+        public GarbageCodeGenerationSettings garbageCodeGenerationSettings;
+
+        [Tooltip("watermark settings")]
+        public WatermarkSettings watermarkSettings;
+
+        [Tooltip("polymorphic dll settings")]
+        public PolymorphicDllSettings polymorphicDllSettings;
 
         public string ObfuzRootDir => $"Library/Obfuz";
 
@@ -52,6 +94,11 @@ namespace Obfuz.Settings
         public string GetObfuscatedAssemblyTempOutputPath(BuildTarget target)
         {
             return $"{ObfuzRootDir}/{target}/TempObfuscatedAssemblies";
+        }
+
+        public string GetObfuscatedLinkXmlPath(BuildTarget target)
+        {
+            return $"{ObfuzRootDir}/{target}/link.xml";
         }
 
         private static ObfuzSettings s_Instance;

@@ -215,7 +215,7 @@ namespace TaoTie
 
 			if (GUILayout.Button("开始打包"))
 			{
-				if(isBuildExe)
+				if(isBuildExe && !buildHotfixAssembliesAOT)
 				{
 					foreach (var aotDllName in CodeLoader.AllAotDllList)
 					{

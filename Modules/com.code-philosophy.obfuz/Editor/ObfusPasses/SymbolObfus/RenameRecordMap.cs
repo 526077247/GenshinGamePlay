@@ -1,15 +1,32 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 using dnlib.DotNet;
-using NUnit.Framework;
 using Obfuz.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Xml;
-using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Obfuz.ObfusPasses.SymbolObfus
 {
@@ -44,6 +61,8 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             public RenameStatus status;
             public string signature;
             public string newName;
+            public string oldStackTraceSignature;
+            public string newStackTraceSignature;
         }
 
         private class RenameMappingMethodParam
@@ -87,6 +106,8 @@ namespace Obfuz.ObfusPasses.SymbolObfus
         }
 
         private readonly string _mappingFile;
+        private readonly bool _debug;
+        private readonly bool _keepUnknownSymbolInSymbolMappingFile;
         private readonly Dictionary<string, RenameMappingAssembly> _assemblies = new Dictionary<string, RenameMappingAssembly>();
 
 
@@ -99,9 +120,11 @@ namespace Obfuz.ObfusPasses.SymbolObfus
         private readonly Dictionary<VirtualMethodGroup, RenameRecord> _virtualMethodGroups = new Dictionary<VirtualMethodGroup, RenameRecord>();
 
 
-        public RenameRecordMap(string mappingFile)
+        public RenameRecordMap(string mappingFile, bool debug, bool keepUnknownSymbolInSymbolMappingFile)
         {
             _mappingFile = mappingFile;
+            _debug = debug;
+            _keepUnknownSymbolInSymbolMappingFile = keepUnknownSymbolInSymbolMappingFile;
         }
 
         public void Init(List<ModuleDef> assemblies, INameMaker nameMaker)
@@ -227,6 +250,11 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             {
                 return;
             }
+            if (_debug)
+            {
+                Debug.Log($"skip loading debug mapping file: {Path.GetFullPath(mappingFile)}");
+                return;
+            }
             var doc = new XmlDocument();
             doc.Load(mappingFile);
             var root = doc.DocumentElement;
@@ -299,11 +327,15 @@ namespace Obfuz.ObfusPasses.SymbolObfus
         {
             string signature = ele.Attributes["signature"].Value;
             string newName = ele.Attributes["newName"].Value;
+            string oldStackTraceSignature = ele.Attributes["oldStackTraceSignature"].Value;
+            string newStackTraceSignature = ele.Attributes["newStackTraceSignature"].Value;
             var rmm = new RenameMappingMethod
             {
                 signature = signature,
                 newName = newName,
                 status = RenameStatus.Renamed,
+                oldStackTraceSignature = oldStackTraceSignature,
+                newStackTraceSignature = newStackTraceSignature,
             };
             type.methods.Add(signature, rmm);
         }
@@ -364,37 +396,52 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             var root = doc.CreateElement("mapping");
             doc.AppendChild(root);
 
-            var sortedModRenames = _modRenames.ToList();
-            sortedModRenames.Sort((a, b) => a.Value.oldName.CompareTo(b.Value.oldName));
-            foreach (var kvp in sortedModRenames)
+            var totalAssNames = new HashSet<string>(_modRenames.Keys.Select(m => m.Assembly.Name.ToString()).Concat(_assemblies.Keys)).ToList();
+            totalAssNames.Sort((a, b) => a.CompareTo(b));
+            foreach (string assName in totalAssNames)
             {
-                ModuleDef mod = kvp.Key;
-                RenameRecord record = kvp.Value;
+                ModuleDef mod = _modRenames.Keys.FirstOrDefault(m => m.Assembly.Name == assName);
                 var assemblyNode = doc.CreateElement("assembly");
-                assemblyNode.SetAttribute("name", mod.Assembly.Name);
-                foreach (TypeDef type in mod.GetTypes())
-                {
-                    WriteTypeMapping(assemblyNode, type);
-                }
+                assemblyNode.SetAttribute("name", assName);
                 root.AppendChild(assemblyNode);
-            }
-
-            var sortedAsses = GetSortedValueList(_assemblies, (a, b) => a.assName.CompareTo(b.assName));
-            foreach (RenameMappingAssembly ass in sortedAsses)
-            {
-                if (_modRenames.Keys.Any(m => m.Assembly.Name == ass.assName))
+                if (mod != null)
                 {
-                    continue;
+                    var types = mod.GetTypes().ToDictionary(t => _typeRenames.TryGetValue(t, out var rec) ? rec.oldName : t.FullName, t => t);
+                    if (_assemblies.TryGetValue(assName, out var ass))
+                    {
+                        var totalTypeNames = new HashSet<string>(types.Keys.Concat(ass.types.Keys)).ToList();
+                        totalTypeNames.Sort((a, b) => a.CompareTo((b)));
+                        foreach (string typeName in totalTypeNames)
+                        {
+                            if (types.TryGetValue(typeName, out TypeDef typeDef))
+                            {
+                                WriteTypeMapping(assemblyNode, typeDef);
+                            }
+                            else if (_keepUnknownSymbolInSymbolMappingFile)
+                            {
+                                WriteTypeMapping(assemblyNode, typeName, ass.types[typeName]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var sortedTypes = new SortedDictionary<string, TypeDef>(types);
+                        foreach (TypeDef type in sortedTypes.Values)
+                        {
+                            WriteTypeMapping(assemblyNode, type);
+                        }
+                    }
                 }
-                var assemblyNode = doc.CreateElement("assembly");
-                assemblyNode.SetAttribute("name", ass.assName);
-
-                var sortedTypes = GetSortedValueList(ass.types, (a, b) => a.oldFullName.CompareTo(b.oldFullName));
-                foreach (var type in sortedTypes)
+                else
                 {
-                    WriteTypeMapping(assemblyNode, type.oldFullName, type);
+                    RenameMappingAssembly ass = _assemblies[assName];
+
+                    var sortedTypes = GetSortedValueList(ass.types, (a, b) => a.oldFullName.CompareTo(b.oldFullName));
+                    foreach (var type in sortedTypes)
+                    {
+                        WriteTypeMapping(assemblyNode, type.oldFullName, type);
+                    }
                 }
-                root.AppendChild(assemblyNode);
             }
             Directory.CreateDirectory(Path.GetDirectoryName(_mappingFile));
             doc.Save(_mappingFile);
@@ -548,6 +595,8 @@ namespace Obfuz.ObfusPasses.SymbolObfus
             var methodNode = typeEle.OwnerDocument.CreateElement("method");
             methodNode.SetAttribute("signature", signature);
             methodNode.SetAttribute("newName", method.newName);
+            methodNode.SetAttribute("oldStackTraceSignature", method.oldStackTraceSignature);
+            methodNode.SetAttribute("newStackTraceSignature", method.newStackTraceSignature);
             typeEle.AppendChild(methodNode);
         }
 

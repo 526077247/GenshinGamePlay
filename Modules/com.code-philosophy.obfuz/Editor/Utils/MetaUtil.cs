@@ -1,13 +1,31 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
+using Obfuz.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine.Assertions;
-using UnityEngine.UIElements;
 
 namespace Obfuz.Utils
 {
@@ -30,6 +48,10 @@ namespace Obfuz.Utils
             return ("", fullName.Substring(index + 1));
         }
 
+        public static bool IsVoidType(TypeSig type)
+        {
+            return type.RemovePinnedAndModifiers().ElementType == ElementType.Void;
+        }
 
         public static TypeDef GetBaseTypeDef(TypeDef type)
         {
@@ -116,6 +138,64 @@ namespace Obfuz.Utils
             return null;
         }
 
+        public static bool IsAssignableFrom(TypeDef fromType, TypeDef toType)
+        {
+            TypeDef cur = fromType;
+            while (true)
+            {
+                if (cur == toType)
+                {
+                    return true;
+                }
+                if (toType.IsInterface)
+                {
+                    foreach (var interfaceType in cur.Interfaces)
+                    {
+                        TypeDef interfaceTypeDef = interfaceType.Interface.ResolveTypeDef();
+                        if (interfaceTypeDef != null && interfaceTypeDef == toType)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                cur = GetBaseTypeDef(cur);
+                if (cur == null)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static bool IsInheritFromDOTSTypes(TypeDef typeDef)
+        {
+            TypeDef cur = typeDef;
+            while (true)
+            {
+                if (cur.Namespace.StartsWith("Unity.Entities") ||
+                    //cur.Namespace.StartsWith("Unity.Jobs") ||
+                    cur.Namespace.StartsWith("Unity.Burst"))
+                {
+                    return true;
+                }
+                foreach (var interfaceType in cur.Interfaces)
+                {
+                    TypeDef interfaceTypeDef = interfaceType.Interface.ResolveTypeDef();
+                    if (interfaceTypeDef != null && (interfaceTypeDef.Namespace.StartsWith("Unity.Entities") ||
+                        //interfaceTypeDef.Namespace.StartsWith("Unity.Jobs") ||
+                        interfaceTypeDef.Namespace.StartsWith("Unity.Burst")))
+                    {
+                        return true;
+                    }
+                }
+
+                cur = GetBaseTypeDef(cur);
+                if (cur == null)
+                {
+                    return false;
+                }
+            }
+        }
+
         public static bool IsInheritFromMonoBehaviour(TypeDef typeDef)
         {
             TypeDef cur = typeDef;
@@ -147,6 +227,11 @@ namespace Obfuz.Utils
             }
 
             return false;
+        }
+
+        public static bool IsSerializableType(TypeDef type)
+        {
+            return type.IsSerializable;
         }
 
         public static bool IsScriptOrSerializableType(TypeDef type)
@@ -216,6 +301,62 @@ namespace Obfuz.Utils
                 return true;
             }
             return false;
+        }
+        public static bool IsValueType(TypeSig typeSig)
+        {
+            var a = typeSig.RemovePinnedAndModifiers();
+            switch (a.ElementType)
+            {
+                case ElementType.Void: return false;
+                case ElementType.Boolean:
+                case ElementType.Char:
+                case ElementType.I1:
+                case ElementType.U1:
+                case ElementType.I2:
+                case ElementType.U2:
+                case ElementType.I4:
+                case ElementType.U4:
+                case ElementType.I8:
+                case ElementType.U8:
+                case ElementType.R4:
+                case ElementType.R8: return true;
+                case ElementType.String: return true;
+                case ElementType.TypedByRef: return false;
+                case ElementType.I: return true;
+                case ElementType.U: return true;
+                case ElementType.Object: return false;
+                case ElementType.Sentinel: return false;
+                case ElementType.Ptr: return true;
+                case ElementType.ByRef: return true;
+                case ElementType.SZArray: return false;
+                case ElementType.Array: return false;
+                case ElementType.ValueType:
+                {
+                    return true;
+                }
+                case ElementType.Var:
+                case ElementType.MVar: return true;
+                case ElementType.Class: return false;
+                case ElementType.GenericInst:
+                {
+                    var gia = (GenericInstSig)a;
+                    TypeDef typeDef = gia.GenericType.ToTypeDefOrRef().ResolveTypeDef();
+                    if (typeDef == null)
+                    {
+                        throw new Exception($"type:{a} definition could not be found");
+                    }
+                    if (typeDef.IsEnum)
+                    {
+                        return true;
+                    }
+                    return typeDef.IsValueType;
+                }
+                case ElementType.FnPtr: return true;
+                case ElementType.ValueArray: return true;
+                case ElementType.Module: return false;
+                default:
+                throw new NotSupportedException(typeSig.ToString());
+            }
         }
 
         public static bool MayRenameCustomDataType(ElementType type)
@@ -490,11 +631,20 @@ namespace Obfuz.Utils
 
         public static TypeSig Inflate(TypeSig sig, GenericArgumentContext ctx)
         {
-            if (!sig.ContainsGenericParameter)
+            if (ctx == null || !sig.ContainsGenericParameter)
             {
                 return sig;
             }
             return ctx.Resolve(sig);
+        }
+
+        public static IList<TypeSig> TryInflate(IList<TypeSig> sig, GenericArgumentContext ctx)
+        {
+            if (sig == null || ctx == null)
+            {
+                return sig;
+            }
+            return sig.Select(s => Inflate(s, ctx)).ToList() ?? null;
         }
 
 
@@ -536,7 +686,29 @@ namespace Obfuz.Utils
             throw new NotSupportedException($"type:{type}");
         }
 
-        public static MethodSig GetInflatedMethodSig(IMethod method)
+        public static GenericArgumentContext GetInflatedMemberRefGenericArgument(IMemberRefParent type, GenericArgumentContext ctx)
+        {
+            if (type is TypeDef typeDef)
+            {
+                return null;
+            }
+            if (type is TypeRef typeRef)
+            {
+                return null;
+            }
+            if (type is TypeSpec typeSpec)
+            {
+                GenericInstSig genericInstSig = typeSpec.TypeSig.ToGenericInstSig();
+                if (genericInstSig == null)
+                {
+                    return ctx;
+                }
+                return new GenericArgumentContext(TryInflate(genericInstSig.GenericArguments, ctx), null);
+            }
+            throw new NotSupportedException($"type:{type}");
+        }
+
+        public static MethodSig GetInflatedMethodSig(IMethod method, GenericArgumentContext ctx)
         {
             if (method is MethodDef methodDef)
             {
@@ -544,22 +716,38 @@ namespace Obfuz.Utils
             }
             if (method is MemberRef memberRef)
             {
-                return InflateMethodSig(memberRef.MethodSig, new GenericArgumentContext(GetGenericArguments(memberRef.Class), null));
+                return InflateMethodSig(memberRef.MethodSig, GetInflatedMemberRefGenericArgument(memberRef.Class, ctx));
             }
             if (method is MethodSpec methodSpec)
             {
                 var genericInstMethodSig = methodSpec.GenericInstMethodSig;
                 if (methodSpec.Method is MethodDef methodDef2)
                 {
-                    return InflateMethodSig(methodDef2.MethodSig, new GenericArgumentContext(null, genericInstMethodSig.GenericArguments));
+                    return InflateMethodSig(methodDef2.MethodSig, new GenericArgumentContext(null, TryInflate(genericInstMethodSig.GenericArguments, ctx)));
                 }
                 if (methodSpec.Method is MemberRef memberRef2)
                 {
-                    return InflateMethodSig(memberRef2.MethodSig, new GenericArgumentContext(GetGenericArguments(memberRef2.Class), genericInstMethodSig.GenericArguments));
+                    return InflateMethodSig(memberRef2.MethodSig, new GenericArgumentContext(
+                        GetInflatedMemberRefGenericArgument(memberRef2.Class, ctx)?.typeArgsStack,
+                        TryInflate(genericInstMethodSig.GenericArguments, ctx)));
                 }
 
             }
             throw new NotSupportedException($" method: {method}");
+        }
+
+        public static TypeSig InflateFieldSig(IField field, GenericArgumentContext ctx)
+        {
+            if (field is FieldDef fieldDef)
+            {
+                return fieldDef.FieldType;
+            }
+            if (field is MemberRef memberRef)
+            {
+                return Inflate(memberRef.FieldSig.Type, new GenericArgumentContext(TryInflate(GetGenericArguments(memberRef.Class), ctx), null));
+            }
+
+            throw new Exception($"unknown field:{field}");
         }
 
         public static ThisArgType GetThisArgType(IMethod method)
@@ -683,7 +871,7 @@ namespace Obfuz.Utils
         public static void AppendIl2CppStackTraceNameOfTypeSig(StringBuilder sb, TypeSig typeSig)
         {
             typeSig = typeSig.RemovePinnedAndModifiers();
-            
+
             switch (typeSig.ElementType)
             {
                 case ElementType.Void: sb.Append("Void"); break;
@@ -800,169 +988,39 @@ namespace Obfuz.Utils
             return result.ToString();
         }
 
-        public static ObfuzScope? GetObfuzIgnoreScope(IHasCustomAttribute obj)
-        {
-            var nt = obj.CustomAttributes.FirstOrDefault(c => c.AttributeType.FullName == "Nino.Core.NinoTypeAttribute");
-            if (nt != null)
-            {
-                return ObfuzScope.TypeName;
-            }
-            var nm = obj.CustomAttributes.FirstOrDefault(c => c.AttributeType.FullName == "Nino.Core.NinoMemberAttribute");
-            if (nm != null)
-            {
-                return ObfuzScope.Field;
-            }
-            var ca = obj.CustomAttributes.FirstOrDefault(c => c.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute");
-            if (ca == null)
-            {
-                return null;
-            }
-            var scope = (ObfuzScope)ca.ConstructorArguments[0].Value;
-            return scope;
-        }
-
-        public static bool HasObfuzIgnoreScope(IHasCustomAttribute obj, ObfuzScope targetScope)
-        {
-            ObfuzScope? objScope = GetObfuzIgnoreScope(obj);
-            if (objScope == null)
-            {
-                return false;
-            }
-            return objScope != null && (objScope & targetScope) != 0;
-        }
-
-        public static bool HasEnclosingObfuzIgnoreScope(TypeDef typeDef, ObfuzScope targetScope)
-        {
-            TypeDef cur = typeDef;
-            while (cur != null)
-            {
-                var ca = cur.CustomAttributes?.FirstOrDefault(c => c.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute");
-                if (ca != null)
-                {
-                    var scope = (ObfuzScope)ca.ConstructorArguments[0].Value;
-                    CANamedArgument inheritByNestedTypesArg = ca.GetNamedArgument("ApplyToNestedTypes", false);
-                    bool inheritByNestedTypes = inheritByNestedTypesArg == null || (bool)inheritByNestedTypesArg.Value;
-                    return inheritByNestedTypes && (scope & targetScope) != 0;
-                }
-                cur = cur.DeclaringType;
-            }
-            return false;
-        }
-
-        public static bool HasDeclaringOrEnclosingMemberObfuzIgnoreScope(TypeDef typeDef, ObfuzScope targetScope)
-        {
-            TypeDef cur = typeDef;
-            while (cur != null)
-            {
-                var ca = cur.CustomAttributes?.FirstOrDefault(c => c.AttributeType.FullName == "Obfuz.ObfuzIgnoreAttribute");
-                if (ca != null)
-                {
-                    var scope = (ObfuzScope)ca.ConstructorArguments[0].Value;
-                    if (cur != typeDef)
-                    {
-                        CANamedArgument applyToNestedTypesArg = ca.GetNamedArgument("ApplyToNestedTypes", false);
-                        if (applyToNestedTypesArg != null && !(bool)applyToNestedTypesArg.Value)
-                        {
-                            return false;
-                        }
-                    }
-                    return (scope & targetScope) != 0;
-                }
-                cur = cur.DeclaringType;
-            }
-            return false;
-        }
-
-        //public static bool HasSelfOrInheritObfuzIgnoreScope(TypeDef obj, ObfuzScope targetScope)
-        //{
-        //    ObfuzScope? scope = GetSelfOrInheritObfuzIgnoreScope(obj);
-        //    return scope != null && (scope & targetScope) != 0;
-        //}
-
-        public static bool HasSelfOrInheritObfuzIgnoreScope(IHasCustomAttribute obj, TypeDef declaringType, ObfuzScope targetScope)
-        {
-            return HasObfuzIgnoreScope(obj, targetScope) || HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
-        }
-
-        public static bool HasSelfOrInheritPropertyOrEventOrOrTypeDefObfuzIgnoreScope(MethodDef obj, ObfuzScope targetScope)
-        {
-            if (HasObfuzIgnoreScope(obj, targetScope))
-            {
-                return true;
-            }
-
-            TypeDef declaringType = obj.DeclaringType;
-
-            foreach (var propertyDef in declaringType.Properties)
-            {
-                if (propertyDef.GetMethod == obj || propertyDef.SetMethod == obj)
-                {
-                    return HasObfuzIgnoreScope(propertyDef, targetScope) || HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
-                }
-            }
-
-            foreach (var eventDef in declaringType.Events)
-            {
-                if (eventDef.AddMethod == obj || eventDef.RemoveMethod == obj)
-                {
-                    ObfuzScope? eventScope = GetObfuzIgnoreScope(eventDef);
-                    if (eventScope != null && (eventScope & targetScope) != 0)
-                    {
-                        return true;
-                    }
-                    return HasObfuzIgnoreScope(eventDef, targetScope) || HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
-                }
-            }
-
-            return HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, targetScope);
-        }
-
-        public static bool HasSelfOrInheritPropertyOrEventOrOrTypeDefIgnoreMethodName(MethodDef obj)
-        {
-            if (HasObfuzIgnoreScope(obj, ObfuzScope.MethodName))
-            {
-                return true;
-            }
-
-            TypeDef declaringType = obj.DeclaringType;
-
-            foreach (var propertyDef in declaringType.Properties)
-            {
-                if (propertyDef.GetMethod == obj || propertyDef.SetMethod == obj)
-                {
-                    return HasSelfOrInheritObfuzIgnoreScope(propertyDef, declaringType, ObfuzScope.PropertyGetterSetterName | ObfuzScope.MethodName);
-                }
-            }
-
-            foreach (var eventDef in declaringType.Events)
-            {
-                if (eventDef.AddMethod == obj || eventDef.RemoveMethod == obj)
-                {
-                    return HasSelfOrInheritObfuzIgnoreScope(eventDef, declaringType, ObfuzScope.EventAddRemoveFireName | ObfuzScope.MethodName);
-                }
-            }
-
-            return HasDeclaringOrEnclosingMemberObfuzIgnoreScope(declaringType, ObfuzScope.MethodName);
-        }
-
         public static bool HasCompilerGeneratedAttribute(IHasCustomAttribute obj)
         {
-            return obj.CustomAttributes.Find("System.Runtime.CompilerServices.CompilerGeneratedAttribute") != null;
+            return obj.CustomAttributes.Find(ConstValues.CompilerGeneratedAttributeFullName) != null;
         }
 
         public static bool HasEncryptFieldAttribute(IHasCustomAttribute obj)
         {
-            return obj.CustomAttributes.Find("Obfuz.EncryptFieldAttribute") != null;
+            return obj.CustomAttributes.Find(ConstValues.EncryptFieldAttributeFullName) != null;
         }
 
         public static bool HasRuntimeInitializeOnLoadMethodAttribute(MethodDef method)
         {
-            return method.CustomAttributes.Find("UnityEngine.RuntimeInitializeOnLoadMethodAttribute") != null;
+            return method.CustomAttributes.Find(ConstValues.RuntimeInitializedOnLoadMethodAttributeFullName) != null;
         }
 
         public static bool HasBlackboardEnumAttribute(TypeDef typeDef)
         {
-            return typeDef.CustomAttributes.Find("Unity.Behavior.BlackboardEnumAttribute") != null;
+            return typeDef.CustomAttributes.Find(ConstValues.BlackboardEnumAttributeFullName) != null;
+        }
+
+        public static bool HasBurstCompileAttribute(IHasCustomAttribute obj)
+        {
+            return obj.CustomAttributes.Find(ConstValues.BurstCompileFullName) != null;
+        }
+
+        public static bool HasDOTSCompilerGeneratedAttribute(IHasCustomAttribute obj)
+        {
+            return obj.CustomAttributes.Find(ConstValues.DOTSCompilerGeneratedAttributeFullName) != null;
+        }
+
+        public static bool HasMicrosoftCodeAnalysisEmbeddedAttribute(IHasCustomAttribute obj)
+        {
+            return obj.CustomAttributes.Find(ConstValues.EmbeddedAttributeFullName) != null;
         }
     }
 }

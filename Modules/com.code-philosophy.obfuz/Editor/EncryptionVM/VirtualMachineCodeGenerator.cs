@@ -1,11 +1,28 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using Obfuz.Utils;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Obfuz.EncryptionVM
@@ -55,7 +72,6 @@ namespace Obfuz.EncryptionVM
 
             File.WriteAllText(outputFile, code, Encoding.UTF8);
             Debug.Log($"Generate EncryptionVM code to {outputFile}");
-            UnityEditor.AssetDatabase.Refresh();
         }
 
         private string GenerateCode()
@@ -77,17 +93,16 @@ namespace Obfuz.EncryptionVM
             {");
             foreach (var opCode in _vm.opCodes)
             {
-                lines.Add($@"            case {opCode.code}:
-            {{
-                // {opCode.function.GetType().Name}");
+                lines.Add($@"                case {opCode.code}:
+                {{
+                    // {opCode.function.GetType().Name}");
                 AppendEncryptCode(lines, opCode.function);
-                lines.Add(@"                return value;
-            }");
+                lines.Add(@"                    return value;
+                }");
             }
 
             lines.Add(@"
-                default:
-                    throw new System.Exception($""Invalid opCode:{opCode}"");
+                default: throw new System.Exception($""Invalid opCode:{opCode}"");
             }
         }");
         }
@@ -101,17 +116,16 @@ namespace Obfuz.EncryptionVM
             {");
             foreach (var opCode in _vm.opCodes)
             {
-                lines.Add($@"            case {opCode.code}:
-            {{
-                // {opCode.function.GetType().Name}");
+                lines.Add($@"                case {opCode.code}:
+                {{
+                    // {opCode.function.GetType().Name}");
                 AppendDecryptCode(lines, opCode.function);
-                lines.Add(@"                return value;
-            }");
+                lines.Add(@"                    return value;
+                }");
             }
 
             lines.Add(@"
-                default:
-                    throw new System.Exception($""Invalid opCode:{opCode}"");
+                default: throw new System.Exception($""Invalid opCode:{opCode}"");
             }
         }");
         }
@@ -196,12 +210,12 @@ namespace Obfuz.EncryptionVM
 
         private void AppendEncryptCode(List<string> lines, IEncryptionInstruction instruction)
         {
-            instruction.GenerateEncryptCode(lines, "                ");
+            instruction.GenerateEncryptCode(lines, "                    ");
         }
 
         private void AppendDecryptCode(List<string> lines, IEncryptionInstruction instruction)
         {
-            instruction.GenerateDecryptCode(lines, "                ");
+            instruction.GenerateDecryptCode(lines, "                    ");
         }
     }
 }

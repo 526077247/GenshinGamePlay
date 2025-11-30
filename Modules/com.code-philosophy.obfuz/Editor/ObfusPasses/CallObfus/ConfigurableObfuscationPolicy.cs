@@ -1,13 +1,30 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
 using Obfuz.Conf;
+using Obfuz.Settings;
 using Obfuz.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using UnityEngine;
 
 namespace Obfuz.ObfusPasses.CallObfus
 {
@@ -38,29 +55,12 @@ namespace Obfuz.ObfusPasses.CallObfus
 
         class ObfuscationRule : IRule<ObfuscationRule>
         {
-            public bool? disableObfuscation;
-            public bool? obfuscateCallInLoop;
-            public bool? cacheCallIndexInLoop;
-            public bool? cacheCallIndexNotLoop;
+            public ObfuscationLevel? obfuscationLevel;
 
             public void InheritParent(ObfuscationRule parentRule)
             {
-                if (disableObfuscation == null)
-                {
-                    disableObfuscation = parentRule.disableObfuscation;
-                }
-                if (obfuscateCallInLoop == null)
-                {
-                    obfuscateCallInLoop = parentRule.obfuscateCallInLoop;
-                }
-                if (cacheCallIndexInLoop == null)
-                {
-                    cacheCallIndexInLoop = parentRule.cacheCallIndexInLoop;
-                }
-                if (cacheCallIndexNotLoop == null)
-                {
-                    cacheCallIndexNotLoop = parentRule.cacheCallIndexNotLoop;
-                }
+                if (obfuscationLevel == null)
+                    obfuscationLevel = parentRule.obfuscationLevel;
             }
         }
 
@@ -79,10 +79,7 @@ namespace Obfuz.ObfusPasses.CallObfus
 
         private static readonly ObfuscationRule s_default = new ObfuscationRule()
         {
-            disableObfuscation = false,
-            obfuscateCallInLoop = true,
-            cacheCallIndexInLoop = true,
-            cacheCallIndexNotLoop = false,
+            obfuscationLevel = ObfuscationLevel.Basic,
         };
 
         private readonly XmlAssemblyTypeMethodRuleParser<AssemblySpec, TypeSpec, MethodSpec, ObfuscationRule> _configParser;
@@ -90,11 +87,12 @@ namespace Obfuz.ObfusPasses.CallObfus
         private ObfuscationRule _global;
         private readonly List<WhiteListAssembly> _whiteListAssemblies = new List<WhiteListAssembly>();
 
-        private readonly Dictionary<IMethod, bool> _whiteListMethodCache = new Dictionary<IMethod, bool>(MethodEqualityComparer.CompareDeclaringTypes);
+        private readonly CachedDictionary<IMethod, bool> _whiteListMethodCache;
         private readonly Dictionary<MethodDef, ObfuscationRule> _methodRuleCache = new Dictionary<MethodDef, ObfuscationRule>();
 
         public ConfigurableObfuscationPolicy(List<string> toObfuscatedAssemblyNames, List<string> xmlConfigFiles)
         {
+            _whiteListMethodCache = new CachedDictionary<IMethod, bool>(MethodEqualityComparer.CompareDeclaringTypes, this.ComputeIsInWhiteList);
             _configParser = new XmlAssemblyTypeMethodRuleParser<AssemblySpec, TypeSpec, MethodSpec, ObfuscationRule>(toObfuscatedAssemblyNames,
                 ParseObfuscationRule, ParseGlobalElement);
             LoadConfigs(xmlConfigFiles);
@@ -150,21 +148,9 @@ namespace Obfuz.ObfusPasses.CallObfus
         private ObfuscationRule ParseObfuscationRule(string configFile, XmlElement ele)
         {
             var rule = new ObfuscationRule();
-            if (ele.HasAttribute("disableObfuscation"))
+            if (ele.HasAttribute("obfuscationLevel"))
             {
-                rule.disableObfuscation = ConfigUtil.ParseBool(ele.GetAttribute("disableObfuscation"));
-            }
-            if (ele.HasAttribute("obfuscateCallInLoop"))
-            {
-                rule.obfuscateCallInLoop = ConfigUtil.ParseBool(ele.GetAttribute("obfuscateCallInLoop"));
-            }
-            if (ele.HasAttribute("cacheCallIndexInLoop"))
-            {
-                rule.cacheCallIndexInLoop = ConfigUtil.ParseBool(ele.GetAttribute("cacheCallIndexInLoop"));
-            }
-            if (ele.HasAttribute("cacheCallIndexNotLoop"))
-            {
-                rule.cacheCallIndexNotLoop = ConfigUtil.ParseBool(ele.GetAttribute("cacheCallIndexNotLoop"));
+                rule.obfuscationLevel = ConfigUtil.ParseObfuscationLevel(ele.GetAttribute("obfuscationLevel"));
             }
             return rule;
         }
@@ -256,7 +242,7 @@ namespace Obfuz.ObfusPasses.CallObfus
         {
             if (!_methodRuleCache.TryGetValue(method, out var rule))
             {
-                rule = _configParser.GetMethodRule(method, s_default);
+                rule = _configParser.GetMethodRule(method, _global);
                 _methodRuleCache[method] = rule;
             }
             return rule;
@@ -265,44 +251,7 @@ namespace Obfuz.ObfusPasses.CallObfus
         public override bool NeedObfuscateCallInMethod(MethodDef method)
         {
             ObfuscationRule rule = GetMethodObfuscationRule(method);
-            return rule.disableObfuscation != true;
-        }
-
-        public override ObfuscationCachePolicy GetMethodObfuscationCachePolicy(MethodDef method)
-        {
-            ObfuscationRule rule = GetMethodObfuscationRule(method);
-            return new ObfuscationCachePolicy()
-            {
-                cacheInLoop = rule.cacheCallIndexInLoop.Value,
-                cacheNotInLoop = rule.cacheCallIndexNotLoop.Value,
-            };
-        }
-
-
-        private bool IsSpecialNotObfuscatedMethod(TypeDef typeDef, IMethod method)
-        {
-            if (typeDef.IsDelegate || typeDef.IsEnum)
-                return true;
-
-            string methodName = method.Name;
-
-            // doesn't proxy call if the method is a constructor
-            if (methodName == ".ctor")
-            {
-                return true;
-            }
-
-            if (typeDef.Name == "EncryptionService`1")
-            {
-                return true;
-            }
-            // special handle
-            // don't proxy call for List<T>.Enumerator GetEnumerator()
-            if (methodName == "GetEnumerator")
-            {
-                return true;
-            }
-            return false;
+            return rule.obfuscationLevel != null && rule.obfuscationLevel.Value >= ObfuscationLevel.Basic;
         }
 
         private bool ComputeIsInWhiteList(IMethod calledMethod)
@@ -329,11 +278,6 @@ namespace Obfuz.ObfusPasses.CallObfus
             }
 
             TypeDef typeDef = declaringType.ResolveTypeDef();
-
-            if (IsSpecialNotObfuscatedMethod(typeDef, calledMethod))
-            {
-                return true;
-            }
 
             string assName = typeDef.Module.Assembly.Name;
             string typeFullName = typeDef.FullName;
@@ -364,44 +308,9 @@ namespace Obfuz.ObfusPasses.CallObfus
             return false;
         }
 
-        private bool IsInWhiteList(IMethod method)
+        public override bool NeedObfuscateCalledMethod(MethodDef callerMethod, IMethod calledMethod, bool callVir)
         {
-            if (!_whiteListMethodCache.TryGetValue(method, out var isWhiteList))
-            {
-                isWhiteList = ComputeIsInWhiteList(method);
-                _whiteListMethodCache.Add(method, isWhiteList);
-            }
-            return isWhiteList;
-        }
-
-        private bool IsTypeSelfAndParentPublic(TypeDef type)
-        {
-            if (type.DeclaringType != null && !IsTypeSelfAndParentPublic(type.DeclaringType))
-            {
-                return false;
-            }
-
-            return type.IsPublic;
-        }
-
-        public override bool NeedObfuscateCalledMethod(MethodDef callerMethod, IMethod calledMethod, bool callVir, bool currentInLoop)
-        {
-            if (IsInWhiteList(calledMethod))
-            {
-                return false;
-            }
-
-            // mono has more strict access control, calls non-public method will raise exception.
-            if (PlatformUtil.IsMonoBackend())
-            {
-                MethodDef calledMethodDef = calledMethod.ResolveMethodDef();
-                if (calledMethodDef != null && (!calledMethodDef.IsPublic || !IsTypeSelfAndParentPublic(calledMethodDef.DeclaringType)))
-                {
-                    return false;
-                }
-            }
-            ObfuscationRule rule = GetMethodObfuscationRule(callerMethod);
-            if (currentInLoop && rule.obfuscateCallInLoop == false)
+            if (_whiteListMethodCache.GetValue(calledMethod))
             {
                 return false;
             }

@@ -1,54 +1,40 @@
-﻿using dnlib.DotNet.Emit;
-using dnlib.DotNet;
-using System.Collections.Generic;
-using System.Linq;
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 using Obfuz.Emit;
+using System.Collections.Generic;
 
 namespace Obfuz.ObfusPasses
 {
-    public abstract class BasicBlockObfuscationPassBase : ObfuscationPassBase
+    public abstract class BasicBlockObfuscationPassBase : ObfuscationMethodPassBase
     {
-        protected abstract bool NeedObfuscateMethod(MethodDef method);
-
-        public override void Process()
-        {
-            var ctx = ObfuscationPassContext.Current;
-            ObfuscationMethodWhitelist whiteList = ctx.whiteList;
-            ConfigurablePassPolicy passPolicy = ctx.passPolicy;
-            foreach (ModuleDef mod in ctx.modulesToObfuscate)
-            {
-                if (whiteList.IsInWhiteList(mod) || !Support(passPolicy.GetAssemblyObfuscationPasses(mod)))
-                {
-                    continue;
-                }
-                // ToArray to avoid modify list exception
-                foreach (TypeDef type in mod.GetTypes().ToArray())
-                {
-                    if (whiteList.IsInWhiteList(type) || !Support(passPolicy.GetTypeObfuscationPasses(type)))
-                    {
-                        continue;
-                    }
-                    // ToArray to avoid modify list exception
-                    foreach (MethodDef method in type.Methods.ToArray())
-                    {
-                        if (!method.HasBody || ctx.whiteList.IsInWhiteList(method) || !Support(passPolicy.GetMethodObfuscationPasses(method)) || !NeedObfuscateMethod(method))
-                        {
-                            continue;
-                        }
-                        // TODO if isGeneratedBy Obfuscator, continue
-                        ObfuscateData(method);
-                    }
-                }
-            }
-        }
-
+        protected virtual bool ComputeBlockInLoop => true;
 
         protected abstract bool TryObfuscateInstruction(MethodDef callingMethod, Instruction inst, BasicBlock block, int instructionIndex,
             IList<Instruction> globalInstructions, List<Instruction> outputInstructions, List<Instruction> totalFinalInstructions);
 
-        private void ObfuscateData(MethodDef method)
+        protected override void ObfuscateData(MethodDef method)
         {
-            BasicBlockCollection bbc = new BasicBlockCollection(method);
+            BasicBlockCollection bbc = new BasicBlockCollection(method, ComputeBlockInLoop);
 
             IList<Instruction> instructions = method.Body.Instructions;
 

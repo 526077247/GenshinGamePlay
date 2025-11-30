@@ -1,9 +1,25 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine.Assertions;
 
 namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
@@ -14,6 +30,9 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
         private readonly Dictionary<object, INameScope> _nameScopes = new Dictionary<object, INameScope>();
 
         private readonly object _namespaceScope = new object();
+        private readonly object _typeNameScope = new object();
+        private readonly object _methodNameScope = new object();
+        private readonly object _fieldNameScope = new object();
 
         protected abstract INameScope CreateNameScope();
 
@@ -29,17 +48,17 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
 
         public void AddPreservedName(TypeDef typeDef, string name)
         {
-            GetNameScope(typeDef.Module).AddPreservedName(name);
+            GetNameScope(_typeNameScope).AddPreservedName(name);
         }
 
         public void AddPreservedName(MethodDef methodDef, string name)
         {
-            GetNameScope(methodDef.DeclaringType).AddPreservedName(name);
+            GetNameScope(_methodNameScope).AddPreservedName(name);
         }
 
         public void AddPreservedName(FieldDef fieldDef, string name)
         {
-            GetNameScope(fieldDef.DeclaringType).AddPreservedName(name);
+            GetNameScope(_fieldNameScope).AddPreservedName(name);
         }
 
         public void AddPreservedName(PropertyDef propertyDef, string name)
@@ -59,7 +78,8 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
 
         public bool IsNamePreserved(VirtualMethodGroup virtualMethodGroup, string name)
         {
-            return  virtualMethodGroup.methods.Any(m => GetNameScope(m.DeclaringType).IsNamePreserved(name));
+            var scope = GetNameScope(_methodNameScope);
+            return scope.IsNamePreserved(name);
         }
 
         private string GetDefaultNewName(object scope, string originName)
@@ -78,34 +98,19 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
 
         public string GetNewName(TypeDef typeDef, string originalName)
         {
-            return GetDefaultNewName(typeDef.Module, originalName);
+            return GetDefaultNewName(_typeNameScope, originalName);
         }
 
         public string GetNewName(MethodDef methodDef, string originalName)
         {
             Assert.IsFalse(methodDef.IsVirtual);
-            return GetDefaultNewName(methodDef.DeclaringType, originalName);
+            return GetDefaultNewName(_methodNameScope, originalName);
         }
 
         public string GetNewName(VirtualMethodGroup virtualMethodGroup, string originalName)
         {
-            var scope = GetNameScope(virtualMethodGroup);
-            while (true)
-            {
-                string newName = scope.GetNewName(originalName, false);
-                if (virtualMethodGroup.methods.Any(m => GetNameScope(m.DeclaringType).IsNamePreserved(newName)))
-                {
-                    continue;
-                }
-                else
-                {
-                    foreach (var method in virtualMethodGroup.methods)
-                    {
-                        GetNameScope(method.DeclaringType).AddPreservedName(newName);
-                    }
-                    return newName;
-                }
-            }
+            var scope = GetNameScope(_methodNameScope);
+            return scope.GetNewName(originalName, false);
         }
 
         public virtual string GetNewName(ParamDef param, string originalName)
@@ -115,7 +120,7 @@ namespace Obfuz.ObfusPasses.SymbolObfus.NameMakers
 
         public string GetNewName(FieldDef fieldDef, string originalName)
         {
-            return GetDefaultNewName(fieldDef.DeclaringType, originalName);
+            return GetDefaultNewName(_fieldNameScope, originalName);
         }
 
         public string GetNewName(PropertyDef propertyDef, string originalName)

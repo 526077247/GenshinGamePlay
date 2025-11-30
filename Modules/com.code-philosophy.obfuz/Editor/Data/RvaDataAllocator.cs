@@ -1,3 +1,23 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using Obfuz.Emit;
@@ -6,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine.Assertions;
 
 namespace Obfuz.Data
@@ -25,16 +44,13 @@ namespace Obfuz.Data
         }
     }
 
-    public class ModuleRvaDataAllocator : GroupByModuleEntityBase
+    public class RvaDataAllocator : GroupByModuleEntityBase
     {
-        // randomized
-        const int maxRvaDataSize = 0x1000;
+        const int maxRvaDataSize = 2 * 1024;
 
-        private ModuleDef _module;
-        private readonly EncryptionScopeProvider _encryptionScopeProvider;
-        private readonly GroupByModuleEntityManager _moduleEntityManager;
+        // in HybridCLR version below 8.3.0, the max total static field size of a type is 16KB, so we limit the total size of RVA data to 16KB
+        const int maxTotalRvaDataFieldSizeInHybridCLR = 16 * 1024;
 
-        private EncryptionScopeInfo _encryptionScope;
         private IRandom _random;
 
         class RvaField
@@ -64,66 +80,74 @@ namespace Obfuz.Data
             }
         }
 
-        private readonly List<RvaField> _rvaFields = new List<RvaField>();
+        private class RvaTypeDefInfo
+        {
+            public readonly TypeDef typeDef;
+            public readonly int index;
+            public readonly List<RvaField> rvaFields = new List<RvaField>();
+
+            public RvaTypeDefInfo(TypeDef typeDef, int index)
+            {
+                this.typeDef = typeDef;
+                this.index = index;
+            }
+        }
+
         private RvaField _currentField;
 
-
-        private TypeDef _rvaTypeDef;
+        private RvaTypeDefInfo _currentRvaType;
+        private readonly List<RvaTypeDefInfo> _rvaTypeDefs = new List<RvaTypeDefInfo>();
 
         private readonly Dictionary<int, TypeDef> _dataHolderTypeBySizes = new Dictionary<int, TypeDef>();
         private bool _done;
 
-        public ModuleRvaDataAllocator(EncryptionScopeProvider encryptionScopeProvider, GroupByModuleEntityManager moduleEntityManager)
+        public RvaDataAllocator()
         {
-            _encryptionScopeProvider = encryptionScopeProvider;
-            _moduleEntityManager = moduleEntityManager;
         }
 
-        public override void Init(ModuleDef mod)
+        public override void Init()
         {
-            _module = mod;
-            _encryptionScope = _encryptionScopeProvider.GetScope(mod);
-            _random = _encryptionScope.localRandomCreator(HashUtil.ComputeHash(mod.Name));
+            _random = EncryptionScope.localRandomCreator(HashUtil.ComputeHash(Module.Name));
         }
 
         private (FieldDef, FieldDef) CreateDataHolderRvaField(TypeDef dataHolderType)
         {
-            if (_rvaTypeDef == null)
+            if (_currentRvaType == null || _currentRvaType.rvaFields.Count >= maxTotalRvaDataFieldSizeInHybridCLR / maxRvaDataSize - 1)
             {
-                _module.EnableTypeDefFindCache = false;
-                //_rvaTypeDef = _module.Find("$ObfuzRVA$", true);
-                //if (_rvaTypeDef != null)
-                //{
-                //    throw new Exception($"can't obfuscate a obfuscated assembly");
-                //}
-                ITypeDefOrRef objectTypeRef = _module.Import(typeof(object));
-                _rvaTypeDef = new TypeDefUser("$Obfuz$RVA$", objectTypeRef);
-                _module.Types.Add(_rvaTypeDef);
-                _module.EnableTypeDefFindCache = true;
+                using (var scope = new DisableTypeDefFindCacheScope(Module))
+                {
+                    var rvaTypeDef = new TypeDefUser($"$Obfuz$RVA${_rvaTypeDefs.Count}", Module.CorLibTypes.Object.ToTypeDefOrRef());
+                    Module.Types.Add(rvaTypeDef);
+                    _currentRvaType = new RvaTypeDefInfo(rvaTypeDef, _rvaTypeDefs.Count);
+                    _rvaTypeDefs.Add(_currentRvaType);
+                }
             }
 
+            var holderField = new FieldDefUser($"$RVA_Data{_currentRvaType.rvaFields.Count}", new FieldSig(dataHolderType.ToTypeSig()), FieldAttributes.InitOnly | FieldAttributes.Static | FieldAttributes.HasFieldRVA);
+            holderField.DeclaringType = _currentRvaType.typeDef;
 
-            var holderField = new FieldDefUser($"$RVA_Data{_rvaFields.Count}", new FieldSig(dataHolderType.ToTypeSig()), FieldAttributes.InitOnly | FieldAttributes.Static | FieldAttributes.HasFieldRVA);
-            holderField.DeclaringType = _rvaTypeDef;
-
-            var runtimeValueField = new FieldDefUser($"$RVA_Value{_rvaFields.Count}", new FieldSig(new SZArraySig(_module.CorLibTypes.Byte)), FieldAttributes.Static | FieldAttributes.Public);
-            runtimeValueField.DeclaringType = _rvaTypeDef;
+            var runtimeValueField = new FieldDefUser($"$RVA_Value{_currentRvaType.rvaFields.Count}", new FieldSig(new SZArraySig(Module.CorLibTypes.Byte)), FieldAttributes.Static | FieldAttributes.Public);
+            runtimeValueField.DeclaringType = _currentRvaType.typeDef;
             return (holderField, runtimeValueField);
         }
 
         private TypeDef GetDataHolderType(int size)
         {
-            size = (size + 15) & ~15; // align to 6 bytes
+            size = (size + 15) & ~15; // align to 16 bytes
             if (_dataHolderTypeBySizes.TryGetValue(size, out var type))
                 return type;
-            var dataHolderType = new TypeDefUser($"$ObfuzRVA$DataHolder{size}", _module.Import(typeof(ValueType)));
-            dataHolderType.Attributes = TypeAttributes.Public | TypeAttributes.Sealed;
-            dataHolderType.Layout = TypeAttributes.ExplicitLayout;
-            dataHolderType.PackingSize = 1;
-            dataHolderType.ClassSize = (uint)size;
-            _dataHolderTypeBySizes.Add(size, dataHolderType);
-            _module.Types.Add(dataHolderType);
-            return dataHolderType;
+
+            using (var scope = new DisableTypeDefFindCacheScope(Module))
+            {
+                var dataHolderType = new TypeDefUser($"$ObfuzRVA$DataHolder{size}", Module.Import(typeof(ValueType)));
+                dataHolderType.Attributes = TypeAttributes.Public | TypeAttributes.Sealed;
+                dataHolderType.Layout = TypeAttributes.ExplicitLayout;
+                dataHolderType.PackingSize = 1;
+                dataHolderType.ClassSize = (uint)size;
+                _dataHolderTypeBySizes.Add(size, dataHolderType);
+                Module.Types.Add(dataHolderType);
+                return dataHolderType;
+            }
         }
 
         private static int AlignTo(int size, int alignment)
@@ -144,7 +168,7 @@ namespace Obfuz.Data
                 encryptionOps = _random.NextInt(),
                 salt = _random.NextInt(),
             };
-            _rvaFields.Add(newRvaField);
+            _currentRvaType.rvaFields.Add(newRvaField);
             return newRvaField;
         }
 
@@ -232,10 +256,11 @@ namespace Obfuz.Data
         private void AddVerifyCodes(IList<Instruction> insts, DefaultMetadataImporter importer)
         {
             int verifyIntValue = 0x12345678;
-            IRandom verifyRandom = _encryptionScope.localRandomCreator(verifyIntValue);
-            int verifyOps = EncryptionUtil.GenerateEncryptionOpCodes(verifyRandom, _encryptionScope.encryptor, 4);
+            EncryptionScopeInfo encryptionScope = this.EncryptionScope;
+            IRandom verifyRandom = encryptionScope.localRandomCreator(verifyIntValue);
+            int verifyOps = EncryptionUtil.GenerateEncryptionOpCodes(verifyRandom, encryptionScope.encryptor, EncryptionScopeInfo.MaxEncryptionLevel, false);
             int verifySalt = verifyRandom.NextInt();
-            int encryptedVerifyIntValue = _encryptionScope.encryptor.Encrypt(verifyIntValue, verifyOps, verifySalt);
+            int encryptedVerifyIntValue = encryptionScope.encryptor.Encrypt(verifyIntValue, verifyOps, verifySalt);
 
             insts.Add(Instruction.Create(OpCodes.Ldc_I4, verifyIntValue));
             insts.Add(Instruction.CreateLdcI4(encryptedVerifyIntValue));
@@ -248,51 +273,50 @@ namespace Obfuz.Data
 
         private void CreateCCtorOfRvaTypeDef()
         {
-            if (_rvaTypeDef == null)
+            foreach (RvaTypeDefInfo rvaTypeDef in _rvaTypeDefs)
             {
-                return;
+                ModuleDef mod = rvaTypeDef.typeDef.Module;
+                var cctorMethod = new MethodDefUser(".cctor",
+                    MethodSig.CreateStatic(Module.CorLibTypes.Void),
+                    MethodImplAttributes.IL | MethodImplAttributes.Managed,
+                    MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Private);
+                cctorMethod.DeclaringType = rvaTypeDef.typeDef;
+                //_rvaTypeDef.Methods.Add(cctor);
+                var body = new CilBody();
+                cctorMethod.Body = body;
+                var ins = body.Instructions;
+
+                DefaultMetadataImporter importer = this.GetDefaultModuleMetadataImporter();
+                AddVerifyCodes(ins, importer);
+                foreach (var field in rvaTypeDef.rvaFields)
+                {
+                    // ldc
+                    // newarr
+                    // dup
+                    // stsfld
+                    // ldtoken
+                    // RuntimeHelpers.InitializeArray(array, fieldHandle);
+                    ins.Add(Instruction.Create(OpCodes.Ldc_I4, (int)field.size));
+                    ins.Add(Instruction.Create(OpCodes.Newarr, field.runtimeValueField.FieldType.Next.ToTypeDefOrRef()));
+                    ins.Add(Instruction.Create(OpCodes.Dup));
+                    ins.Add(Instruction.Create(OpCodes.Dup));
+                    ins.Add(Instruction.Create(OpCodes.Stsfld, field.runtimeValueField));
+                    ins.Add(Instruction.Create(OpCodes.Ldtoken, field.holderDataField));
+                    ins.Add(Instruction.Create(OpCodes.Call, importer.InitializedArray));
+
+                    // EncryptionService.DecryptBlock(array, field.encryptionOps, field.salt);
+                    ins.Add(Instruction.CreateLdcI4(field.encryptionOps));
+                    ins.Add(Instruction.Create(OpCodes.Ldc_I4, field.salt));
+                    ins.Add(Instruction.Create(OpCodes.Call, importer.DecryptBlock));
+
+                }
+                ins.Add(Instruction.Create(OpCodes.Ret));
             }
-            ModuleDef mod = _rvaTypeDef.Module;
-            var cctorMethod = new MethodDefUser(".cctor",
-                MethodSig.CreateStatic(_module.CorLibTypes.Void),
-                MethodImplAttributes.IL | MethodImplAttributes.Managed,
-                MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Private);
-            cctorMethod.DeclaringType = _rvaTypeDef;
-            //_rvaTypeDef.Methods.Add(cctor);
-            var body = new CilBody();
-            cctorMethod.Body = body;
-            var ins = body.Instructions;
-
-            DefaultMetadataImporter importer = _moduleEntityManager.GetDefaultModuleMetadataImporter(mod, _encryptionScopeProvider);
-            AddVerifyCodes(ins, importer);
-            foreach (var field in _rvaFields)
-            {
-                // ldc
-                // newarr
-                // dup
-                // stsfld
-                // ldtoken
-                // RuntimeHelpers.InitializeArray(array, fieldHandle);
-                ins.Add(Instruction.Create(OpCodes.Ldc_I4, (int)field.size));
-                ins.Add(Instruction.Create(OpCodes.Newarr, field.runtimeValueField.FieldType.Next.ToTypeDefOrRef()));
-                ins.Add(Instruction.Create(OpCodes.Dup));
-                ins.Add(Instruction.Create(OpCodes.Dup));
-                ins.Add(Instruction.Create(OpCodes.Stsfld, field.runtimeValueField));
-                ins.Add(Instruction.Create(OpCodes.Ldtoken, field.holderDataField));
-                ins.Add(Instruction.Create(OpCodes.Call, importer.InitializedArray));
-
-                // EncryptionService.DecryptBlock(array, field.encryptionOps, field.salt);
-                ins.Add(Instruction.CreateLdcI4(field.encryptionOps));
-                ins.Add(Instruction.Create(OpCodes.Ldc_I4, field.salt));
-                ins.Add(Instruction.Create(OpCodes.Call, importer.DecryptBlock));
-
-            }
-            ins.Add(Instruction.Create(OpCodes.Ret));
         }
 
         private void SetFieldsRVA()
         {
-            foreach (var field in _rvaFields)
+            foreach (var field in _rvaTypeDefs.SelectMany(t => t.rvaFields))
             {
                 Assert.IsTrue(field.bytes.Count <= field.size);
                 if (field.bytes.Count < field.size)
@@ -300,12 +324,12 @@ namespace Obfuz.Data
                     field.FillPaddingToEnd();
                 }
                 byte[] data = field.bytes.ToArray();
-                _encryptionScope.encryptor.EncryptBlock(data, field.encryptionOps, field.salt);
+                EncryptionScope.encryptor.EncryptBlock(data, field.encryptionOps, field.salt);
                 field.holderDataField.InitialValue = data;
             }
         }
 
-        public void Done()
+        public override void Done()
         {
             if (_done)
             {
@@ -314,61 +338,6 @@ namespace Obfuz.Data
             _done = true;
             SetFieldsRVA();
             CreateCCtorOfRvaTypeDef();
-        }
-    }
-
-    public class RvaDataAllocator
-    {
-        private readonly EncryptionScopeProvider _encryptionScopeProvider;
-        private readonly GroupByModuleEntityManager _moduleEntityManager;
-
-        public RvaDataAllocator(EncryptionScopeProvider encryptionScopeProvider, GroupByModuleEntityManager moduleEntityManager)
-        {
-            _encryptionScopeProvider = encryptionScopeProvider;
-            _moduleEntityManager = moduleEntityManager;
-        }
-
-        private ModuleRvaDataAllocator GetModuleRvaDataAllocator(ModuleDef mod)
-        {
-            return _moduleEntityManager.GetEntity<ModuleRvaDataAllocator>(mod, () => new ModuleRvaDataAllocator(_encryptionScopeProvider, _moduleEntityManager));
-        }
-
-        public RvaData Allocate(ModuleDef mod, int value)
-        {
-            return GetModuleRvaDataAllocator(mod).Allocate(value);
-        }
-
-        public RvaData Allocate(ModuleDef mod, long value)
-        {
-            return GetModuleRvaDataAllocator(mod).Allocate(value);
-        }
-
-        public RvaData Allocate(ModuleDef mod, float value)
-        {
-            return GetModuleRvaDataAllocator(mod).Allocate(value);
-        }
-
-        public RvaData Allocate(ModuleDef mod, double value)
-        {
-            return GetModuleRvaDataAllocator(mod).Allocate(value);
-        }
-
-        public RvaData Allocate(ModuleDef mod, string value)
-        {
-            return GetModuleRvaDataAllocator(mod).Allocate(value);
-        }
-
-        public RvaData Allocate(ModuleDef mod, byte[] value)
-        {
-            return GetModuleRvaDataAllocator(mod).Allocate(value);
-        }
-
-        public void Done()
-        {
-            foreach (var allocator in _moduleEntityManager.GetEntities<ModuleRvaDataAllocator>())
-            {
-                allocator.Done();
-            }
         }
     }
 }

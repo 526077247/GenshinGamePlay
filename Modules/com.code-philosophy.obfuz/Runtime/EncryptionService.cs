@@ -1,8 +1,24 @@
+// Copyright 2025 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Obfuz
 {
@@ -91,25 +107,25 @@ namespace Obfuz
 
         public static int DecryptFromRvaInt(byte[] data, int offset, int ops, int salt)
         {
-            int encryptedValue = ConstUtility.GetInt(data, offset);
+            int encryptedValue = BitConverter.ToInt32(data, offset);
             return Decrypt(encryptedValue, ops, salt);
         }
 
         public static long DecryptFromRvaLong(byte[] data, int offset, int ops, int salt)
         {
-            long encryptedValue = ConstUtility.GetLong(data, offset);
+            long encryptedValue = BitConverter.ToInt64(data, offset);
             return Decrypt(encryptedValue, ops, salt);
         }
 
         public static float DecryptFromRvaFloat(byte[] data, int offset, int ops, int salt)
         {
-            float encryptedValue = ConstUtility.GetFloat(data, offset);
+            float encryptedValue = BitConverter.ToSingle(data, offset);
             return Decrypt(encryptedValue, ops, salt);
         }
 
         public static double DecryptFromRvaDouble(byte[] data, int offset, int ops, int salt)
         {
-            double encryptedValue = ConstUtility.GetDouble(data, offset);
+            double encryptedValue = BitConverter.ToDouble(data, offset);
             return Decrypt(encryptedValue, ops, salt);
         }
 
@@ -121,6 +137,11 @@ namespace Obfuz
         public static byte[] DecryptFromRvaBytes(byte[] data, int offset, int bytesLength, int ops, int salt)
         {
             return Decrypt(data, offset, bytesLength, ops, salt);
+        }
+
+        public static void DecryptInitializeArray(System.Array arr, System.RuntimeFieldHandle field, int length, int ops, int salt)
+        {
+            _encryptor.DecryptInitializeArray(arr, field, length, ops, salt);
         }
     }
 }
