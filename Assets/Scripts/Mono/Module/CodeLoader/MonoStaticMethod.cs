@@ -8,13 +8,16 @@ namespace TaoTie
         private Action method;
         public MonoStaticAction(Assembly assembly, string typeName, string methodName)
         {
-            var methodInfo = assembly.GetType(typeName).GetMethod(methodName);
-            this.method = (Action)Delegate.CreateDelegate(TypeInfo<Action>.Type, null, methodInfo);
+            var methodInfo = assembly.GetType(typeName)?.GetMethod(methodName);
+            if (methodInfo != null)
+                this.method = (Action) Delegate.CreateDelegate(TypeInfo<Action>.Type, null, methodInfo);
+            else
+                Log.Error($"Not Found {typeName}.{methodName}");
         }
 
         public void Run()
         {
-            this.method();
+            this.method?.Invoke();
         }
     }
     
@@ -23,13 +26,20 @@ namespace TaoTie
         private Func<T> method;
         public MonoStaticFunc(Assembly assembly, string typeName, string methodName)
         {
-            var methodInfo = assembly.GetType(typeName).GetMethod(methodName);
-            this.method = (Func<T>)Delegate.CreateDelegate(TypeInfo<Func<T>>.Type, null, methodInfo);
+            var methodInfo = assembly.GetType(typeName)?.GetMethod(methodName);
+            if (methodInfo != null)
+                this.method = (Func<T>)Delegate.CreateDelegate(TypeInfo<Func<T>>.Type, null, methodInfo);
+            else
+                Log.Error($"Not Found {typeName}.{methodName}");
         }
         
         public T Run()
         {
-            return this.method();
+            if (method != null)
+            {
+                return this.method();
+            }
+            return default;
         }
     }
 }

@@ -7,6 +7,7 @@ using Obfuz;
 using Obfuz.Settings;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Build.Player;
 using UnityEditor.Compilation;
 
 namespace TaoTie
@@ -34,10 +35,7 @@ namespace TaoTie
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<PackageConfig>(jstr);
             string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
-            BuildMuteAssembly(assemblyName, new []
-            {
-                "Assets/Scripts/Code",
-            }, Array.Empty<string>(), CodeOptimization.Debug);
+            BuildMuteAssembly(assemblyName, "Unity.Code", CodeOptimization.Debug);
 
             AfterCompiling(assemblyName);
             
@@ -49,90 +47,24 @@ namespace TaoTie
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<PackageConfig>(jstr);
             string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
-            BuildMuteAssembly(assemblyName, new []
-            {
-                "Assets/Scripts/Code",
-            }, Array.Empty<string>(),CodeOptimization.Release);
+            BuildMuteAssembly(assemblyName, "Unity.Code", CodeOptimization.Release);
 
             AfterCompiling(assemblyName , true);
 
         }
 
-        private static void BuildMuteAssembly(string assemblyName, string[] CodeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization,bool isAuto = false)
+        private static void BuildMuteAssembly(string assemblyName, string asmdefName, CodeOptimization codeOptimization,bool isAuto = false)
         {
-            List<string> scripts = new List<string>();
-            for (int i = 0; i < CodeDirectorys.Length; i++)
-            {
-                DirectoryInfo dti = new DirectoryInfo(CodeDirectorys[i]);
-                FileInfo[] fileInfos = dti.GetFiles("*.cs", System.IO.SearchOption.AllDirectories);
-                for (int j = 0; j < fileInfos.Length; j++)
-                {
-                    scripts.Add(fileInfos[j].FullName);
-                }
-            }
-            if (!Directory.Exists(Define.BuildOutputDir))
-                Directory.CreateDirectory(Define.BuildOutputDir);
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            var group = BuildPipeline.GetBuildTargetGroup(target);
 
-            string dllPath = Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll");
-            string pdbPath = Path.Combine(Define.BuildOutputDir, $"{assemblyName}.pdb");
-            File.Delete(dllPath);
-            File.Delete(pdbPath);
-
-            AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());
+            ScriptCompilationSettings scriptCompilationSettings = new ScriptCompilationSettings();
+            scriptCompilationSettings.group = group;
+            scriptCompilationSettings.target = target;
+            scriptCompilationSettings.options = codeOptimization == CodeOptimization.Release
+                ? ScriptCompilationOptions.None
+                : ScriptCompilationOptions.DevelopmentBuild;
             
-            //启用UnSafe
-            //assemblyBuilder.compilerOptions.AllowUnsafeCode = true;
-
-            BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-
-            assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;
-            assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
-            // assemblyBuilder.compilerOptions.ApiCompatibilityLevel = ApiCompatibilityLevel.NET_4_6;
-
-            assemblyBuilder.additionalReferences = additionalReferences;
-
-            assemblyBuilder.flags = AssemblyBuilderFlags.None;
-            //AssemblyBuilderFlags.None                 正常发布
-            //AssemblyBuilderFlags.DevelopmentBuild     开发模式打包
-            //AssemblyBuilderFlags.EditorAssembly       编辑器状态
-            assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
-
-            assemblyBuilder.buildTarget = EditorUserBuildSettings.activeBuildTarget;
-
-            assemblyBuilder.buildTargetGroup = buildTargetGroup;
-
-            assemblyBuilder.buildStarted += delegate(string assemblyPath) { Debug.LogFormat("build start：" + assemblyPath); };
-
-            assemblyBuilder.buildFinished += delegate(string assemblyPath, CompilerMessage[] compilerMessages)
-            {
-                IsBuildCodeAuto = false;
-                int errorCount = compilerMessages.Count(m => m.type == CompilerMessageType.Error);
-                int warningCount = compilerMessages.Count(m => m.type == CompilerMessageType.Warning&&!m.message.Contains("CS0436"));
-
-                Debug.LogFormat("Warnings: {0} - Errors: {1}", warningCount, errorCount);
-
-                if (warningCount > 0)
-                {
-                    Debug.LogFormat("有{0}个Warning!!!", warningCount);
-                }
-
-                if (errorCount > 0||warningCount > 0)
-                {
-                    for (int i = 0; i < compilerMessages.Length; i++)
-                    {
-                        if (compilerMessages[i].type == CompilerMessageType.Error ||
-                            compilerMessages[i].type == CompilerMessageType.Warning)
-                        {
-                            if (!compilerMessages[i].message.Contains("CS0436")
-                                && !compilerMessages[i].message.Contains("CS0618"))
-                                Debug.LogError(compilerMessages[i].message);
-                            else
-                                Debug.LogWarning(compilerMessages[i].message);
-
-                        }
-                    }
-                }
-            };
             if (isAuto)
             {
                 IsBuildCodeAuto = true;
@@ -145,12 +77,14 @@ namespace TaoTie
                 };
                 EditorApplication.update += Update;
             }
-            //开始构建
-            if (!assemblyBuilder.Build())
-            {
-                Debug.LogErrorFormat("build fail：" + assemblyBuilder.assemblyPath);
-                return;
-            }
+            
+            ScriptCompilationResult scriptCompilationResult = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, Define.BuildOutputDir);
+#if UNITY_2022
+            UnityEditor.EditorUtility.ClearProgressBar();
+#endif
+            File.Move(Path.Combine(Define.BuildOutputDir , $"{asmdefName}.dll"), Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"));
+            File.Move(Path.Combine(Define.BuildOutputDir , $"{asmdefName}.pdb"), Path.Combine(Define.BuildOutputDir, $"{assemblyName}.pdb"));
+            AfterCompiling(assemblyName);
         }
 
         private static void AfterCompiling(string assemblyName, bool obfuscate = false)
