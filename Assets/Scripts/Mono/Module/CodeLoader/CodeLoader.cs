@@ -231,12 +231,8 @@ namespace TaoTie
 #if UNITY_EDITOR
 			else
 			{
-				assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes",
-						TypeInfo<TextAsset>.Type) as TextAsset)
-					.bytes;
-				pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes",
-						TypeInfo<TextAsset>.Type) as TextAsset)
-					.bytes;
+				assBytes = AssetDatabase.LoadAssetAtPath<TextAsset>($"{Define.HotfixDir}Code{version}.dll.bytes")?.bytes;
+				pdbBytes = AssetDatabase.LoadAssetAtPath<TextAsset>($"{Define.HotfixDir}Code{version}.pdb.bytes")?.bytes;
 			}
 #endif
 			return (assBytes, pdbBytes);

@@ -57,7 +57,7 @@ namespace TaoTie
         
         private void OnClickBtn()
         {
-            SoundManager.Instance.PlaySound("Audio/Sound/Common_Click.mp3");
+            SoundManager.Instance?.PlaySound("Audio/Sound/Common_Click.mp3");
             onclick?.Invoke();
         }
         
