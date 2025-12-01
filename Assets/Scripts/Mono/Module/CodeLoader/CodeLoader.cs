@@ -159,12 +159,16 @@ namespace TaoTie
 						if (assBytes != null)
 						{
 							assembly = Assembly.Load(assBytes, pdbBytes);
-							IStaticAction init1 = new MonoStaticAction(assembly, "Unity.Code.NinoGen.NinoBuiltInTypesRegistration", "Init");
-							IStaticAction init2 = new MonoStaticAction(assembly, "Unity.Code.NinoGen.Deserializer", "Init");
-							IStaticAction init3 = new MonoStaticAction(assembly, "Unity.Code.NinoGen.Serializer", "Init");
-							init1.Run();
-							init2.Run();
-							init3.Run();
+							if (Define.ConfigType == 1)
+							{
+								IStaticAction init1 = new MonoStaticAction(assembly, "Unity.Code.NinoGen.NinoBuiltInTypesRegistration", "Init");
+								IStaticAction init2 = new MonoStaticAction(assembly, "Unity.Code.NinoGen.Deserializer", "Init");
+								IStaticAction init3 = new MonoStaticAction(assembly, "Unity.Code.NinoGen.Serializer", "Init");
+								init1.Run();
+								init2.Run();
+								init3.Run();
+							}
+
 							Log.Info("Get Dll Success ! version=" + version);
 						}
 						else

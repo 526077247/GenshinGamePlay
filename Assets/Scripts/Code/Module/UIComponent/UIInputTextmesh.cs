@@ -134,5 +134,11 @@ namespace TaoTie
                 this.input.onEndEdit.RemoveListener(this.onEndEdit);
             this.onEndEdit = null;
         }
+        
+        public void SetInteractable(bool flag)
+        {
+            this.ActivatingComponent();
+            this.input.interactable = flag;
+        }
     }
 }

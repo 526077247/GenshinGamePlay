@@ -30,6 +30,7 @@ namespace TaoTie
 
         public void OnDestroy()
         {
+            version++;
             if (!string.IsNullOrEmpty(texturePath))
             {
                 ImageLoaderManager.Instance?.ReleaseImage(texturePath);

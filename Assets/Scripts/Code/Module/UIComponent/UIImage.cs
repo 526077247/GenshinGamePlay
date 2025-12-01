@@ -26,6 +26,7 @@ namespace TaoTie
 
         public void OnDestroy()
         {
+            version++;
             if (!string.IsNullOrEmpty(spritePath))
             {
                 this.image.sprite = null;

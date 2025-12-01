@@ -416,7 +416,7 @@ namespace TaoTie
             //     {
             //         HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
             //         ObfuzSettings settings = ObfuzSettings.Instance;
-            //         if(!settings.enable)
+            //         if(!settings.buildPipelineSettings.enable)
             //         {
             //             HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
             //         }
