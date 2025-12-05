@@ -17,6 +17,12 @@ namespace TaoTie
 		MacOS,
 		Linux,
 		WebGL,
+#if TUANJIE_1_5_OR_NEWER
+		TikTok,
+		WeChat,
+		KuaiShou,
+		Minihost,
+#endif
 	}
 	
 	public enum BuildType:byte
@@ -83,7 +89,17 @@ namespace TaoTie
 #elif UNITY_STANDALONE_LINUX
 			activePlatform = PlatformType.Linux;
 #elif UNITY_WEBGL
-			activePlatform = PlatformType.WebGL;
+#if MINIGAME_SUBPLATFORM_WEXIN
+	        activePlatform = PlatformType.WeChat;
+#elif MINIGAME_SUBPLATFORM_DOUYIN
+	        activePlatform = PlatformType.TikTok;
+#elif MINIGAME_SUBPLATFORM_KUAISHOU
+	        activePlatform = PlatformType.KuaiShou;
+#elif MINIGAME_SUBPLATFORM_MINIHOST
+	        activePlatform = PlatformType.WeChat;
+#else
+	        activePlatform = PlatformType.WebGL;
+#endif
 #else
 			activePlatform = PlatformType.None;
 #endif
@@ -123,7 +139,15 @@ namespace TaoTie
 
         private void OnGUI() 
 		{
-			channel = EditorGUILayout.TextField("渠道：", channel);
+			if (platformType <= PlatformType.WebGL)
+			{
+				channel = EditorGUILayout.TextField("渠道：", channel);
+			}
+			else
+			{
+				channel = "TJ_" + platformType;
+				EditorGUILayout.LabelField("渠道："+ channel);
+			}
 
 			if (this.config == null)
 			{

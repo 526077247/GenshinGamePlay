@@ -26,6 +26,7 @@ namespace TaoTie
             {"iPhone", 2048},
             {"Android", 2048},
             {"WebGL", 1024},
+            {"MiniGame", 1024},
         };
         public enum ImageType
         {
@@ -42,6 +43,7 @@ namespace TaoTie
             {
                 //将UI目录下的Atlas 打成 图集
                 string uiPath = Path.Combine(Application.dataPath, "AssetsPackage", uipaths[i]);
+                if(!Directory.Exists(uiPath)) continue;
                 DirectoryInfo uiDirInfo = new DirectoryInfo(uiPath);
                 foreach (DirectoryInfo dirInfo in uiDirInfo.GetDirectories())
                 {
@@ -115,7 +117,7 @@ namespace TaoTie
         /// <summary>
         /// 设置图片压缩格式
         /// </summary>
-        private static void SetImagesFormat(DirectoryInfo discreteImagesDirInfo, ImageType type = ImageType.Atlas)
+        public static void SetImagesFormat(DirectoryInfo discreteImagesDirInfo, ImageType type = ImageType.Atlas)
         {
             foreach (FileInfo pngFile in discreteImagesDirInfo.GetFiles("*.*", SearchOption.AllDirectories))
             {
@@ -152,7 +154,7 @@ namespace TaoTie
                     
                     importer.mipmapEnabled = false;
                     importer.isReadable = false;
-                    importer.wrapMode = TextureWrapMode.Clamp;
+                    if(type == ImageType.Atlas) importer.wrapMode = TextureWrapMode.Clamp;
                     importer.filterMode = FilterMode.Bilinear;
                     importer.alphaIsTransparency = true;
                     if(importer.alphaSource == TextureImporterAlphaSource.None) 
@@ -193,6 +195,16 @@ namespace TaoTie
                     platformSetting.format = type == ImageType.Atlas?format:TextureImporterFormat.DXT5;
 #endif
                     importer.SetPlatformTextureSettings(platformSetting);
+                    
+#if TUANJIE_1_5_OR_NEWER
+                    platformSetting = importer.GetPlatformTextureSettings("MiniGame");
+                    platformSetting.maxTextureSize = MaxSize["MiniGame"];
+                    platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
+                    platformSetting.overridden = true;
+                    // platformSetting.textureCompression = type;
+                    platformSetting.format = format;
+                    importer.SetPlatformTextureSettings(platformSetting);
+#endif
 
                     platformSetting = importer.GetPlatformTextureSettings("Standalone");
                     platformSetting.maxTextureSize = MaxSize["Standalone"];
@@ -307,6 +319,7 @@ namespace TaoTie
                 maxTextureSize = MaxSize["Android"],
                 format = format,
                 overridden = true,
+                compressionQuality = 100,
             };
 
             atlas.SetPlatformSettings(platformSetting);
@@ -317,6 +330,7 @@ namespace TaoTie
                 maxTextureSize = MaxSize["iPhone"],
                 format = format,
                 overridden = true,
+                compressionQuality = 100,
             };
 
             atlas.SetPlatformSettings(platformSetting);
@@ -331,15 +345,29 @@ namespace TaoTie
                 format = TextureImporterFormat.DXT5; //设置格式
 #endif
                 overridden = true, 
+                compressionQuality = 100,
             };
 
             atlas.SetPlatformSettings(platformSetting);
+#if TUANJIE_1_5_OR_NEWER
+            platformSetting = new TextureImporterPlatformSettings()
+            {
+                name = "MiniGame",
+                maxTextureSize = MaxSize["MiniGame"],
+                format = format,
+                overridden = true,
+                compressionQuality = 100,
+            };
+
+            atlas.SetPlatformSettings(platformSetting);
+#endif
             platformSetting = new TextureImporterPlatformSettings()
             {
                 name = "Standalone",
                 maxTextureSize = MaxSize["Standalone"],
                 format = TextureImporterFormat.DXT5,
                 overridden = true,
+                compressionQuality = 100,
             };
 
             atlas.SetPlatformSettings(platformSetting);
@@ -568,6 +596,15 @@ namespace TaoTie
 #endif
                         textureImporter.SetPlatformTextureSettings(setting);
 
+#if TUANJIE_1_5_OR_NEWER
+                        setting = textureImporter.GetPlatformTextureSettings("MiniGame");
+                        setting.overridden = true;
+
+                        setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                        setting.maxTextureSize = MaxSize["MiniGame"];
+                        textureImporter.SetPlatformTextureSettings(setting);
+#endif
+                        
                         textureImporter.SaveAndReimport();
                         
                         setting = textureImporter.GetPlatformTextureSettings("Standalone");
@@ -584,6 +621,73 @@ namespace TaoTie
             }
         }
 
+        public static void SetSceneTextures()
+        {
+            var textures = AssetDatabase.FindAssets("t:Texture",
+                new string[] {"Assets/AssetsPackage/Scenes/","Assets/AssetsPackage/SceneObject/"});
+            
+            for (int i = 0; i < textures.Length; i++)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(textures[i]);
+                var textureImporter =
+                    AssetImporter.GetAtPath(path) as TextureImporter;
+                if (textureImporter == null)
+                {
+                    continue;
+                }
+
+                TextureImporterPlatformSettings setting = textureImporter.GetPlatformTextureSettings("Android");
+                setting.overridden = true;
+                setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                setting.maxTextureSize = MaxSize["Android"];
+                textureImporter.SetPlatformTextureSettings(setting);
+
+                setting = textureImporter.GetPlatformTextureSettings("iPhone");
+                setting.overridden = true;
+                setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                setting.maxTextureSize = MaxSize["iPhone"];
+                textureImporter.SetPlatformTextureSettings(setting);
+                textureImporter.SaveAndReimport();
+
+                setting = textureImporter.GetPlatformTextureSettings("WebGL");
+                setting.overridden = true;
+#if UNITY_2021_3_OR_NEWER
+                setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask
+                    ? MaxSize["WebGL"]
+                    : MaxSize["WebGL"] / 2;
+#else
+                setting.format = TextureImporterFormat.DXT5; //设置格式
+                setting.maxTextureSize = AtlasHelper.GetTextureDXT5Size(textureImporter, path, MaxSize["WebGL"]/2);
+#endif
+                textureImporter.SetPlatformTextureSettings(setting);
+
+                textureImporter.SaveAndReimport();
+#if TUANJIE_1_5_OR_NEWER
+                setting = textureImporter.GetPlatformTextureSettings("MiniGame");
+                setting.overridden = true;
+                setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask
+                    ? MaxSize["MiniGame"]
+                    : MaxSize["MiniGame"] / 2;
+                textureImporter.SetPlatformTextureSettings(setting);
+                textureImporter.SaveAndReimport();
+#endif
+
+                setting = textureImporter.GetPlatformTextureSettings("Standalone");
+                setting.overridden = true;
+                setting.format = textureImporter.textureType == TextureImporterType.Shadowmask
+                    ? TextureImporterFormat.R16
+                    : TextureImporterFormat.DXT5; //设置格式
+                setting.maxTextureSize =
+                    GetTextureDXT5Size(textureImporter, path, MaxSize["Standalone"]);
+                textureImporter.SetPlatformTextureSettings(setting);
+
+                textureImporter.SaveAndReimport();
+            }
+
+        }
+                
         private static int GetTextureDXT5Size(TextureImporter textureImporter,string path,int maxSize)
         {
             int width = 0; int height = 0; 

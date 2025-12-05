@@ -34,6 +34,12 @@ namespace TaoTie
                 {PlatformType.MacOS, BuildTarget.StandaloneOSX},
                 {PlatformType.Linux, BuildTarget.StandaloneLinux64},
                 {PlatformType.WebGL, BuildTarget.WebGL},
+#if TUANJIE_1_5_OR_NEWER
+                {PlatformType.WeChat, BuildTarget.MiniGame},
+                {PlatformType.TikTok, BuildTarget.MiniGame},
+                {PlatformType.KuaiShou, BuildTarget.MiniGame},
+                {PlatformType.Minihost, BuildTarget.MiniGame},
+#endif
             };
 
         public static readonly Dictionary<PlatformType, BuildTargetGroup> buildGroupmap =
@@ -45,8 +51,23 @@ namespace TaoTie
                 {PlatformType.MacOS, BuildTargetGroup.Standalone},
                 {PlatformType.Linux, BuildTargetGroup.Standalone},
                 {PlatformType.WebGL, BuildTargetGroup.WebGL},
+#if TUANJIE_1_5_OR_NEWER
+                {PlatformType.WeChat, BuildTargetGroup.MiniGame},
+                {PlatformType.TikTok, BuildTargetGroup.MiniGame},
+                {PlatformType.KuaiShou, BuildTargetGroup.MiniGame},
+                {PlatformType.Minihost, BuildTargetGroup.MiniGame},
+#endif
             };
-
+#if TUANJIE_1_5_OR_NEWER
+        public static readonly Dictionary<PlatformType, string> buildSubGroupmap =
+            new Dictionary<PlatformType, string>()
+            {
+                {PlatformType.WeChat, "WeChat"},
+                {PlatformType.TikTok, "DouYin"},
+                {PlatformType.KuaiShou, "KuaiShou"},
+                {PlatformType.Minihost, "Minihost"},
+            };
+#endif
         public static void KeystoreSetting()
         {
             PlayerSettings.Android.keystoreName = "TaoTie.keystore";
@@ -104,14 +125,39 @@ namespace TaoTie
         }
         public static void Switch(PlatformType type)
         {
-            if (buildGroupmap.TryGetValue(type, out var group))
+            if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
-                EditorUserBuildSettings.SwitchActiveBuildTarget(group, buildmap[type]);
+#if TUANJIE_1_5_OR_NEWER
+                if (buildSubGroupmap.ContainsKey(type) && !PlayerSettings.MiniGame.CheckActiveSubplatform(buildSubGroupmap[type]))
+                {
+                    PlayerSettings.MiniGame.SetActiveSubplatform(buildSubGroupmap[type], true);
+                }
+#endif
             }
             else
             {
-                EditorUserBuildSettings.SwitchActiveBuildTarget(buildmap[type]);
+                EditorUserBuildSettings.activeBuildTargetChanged = delegate()
+                {
+                    if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
+                    {
+#if TUANJIE_1_5_OR_NEWER
+                        if (buildSubGroupmap.ContainsKey(type) && !PlayerSettings.MiniGame.CheckActiveSubplatform(buildSubGroupmap[type]))
+                        {
+                            PlayerSettings.MiniGame.SetActiveSubplatform(buildSubGroupmap[type], true);
+                        }
+#endif
+                    }
+                };
+                if (buildGroupmap.TryGetValue(type, out var group))
+                {
+                    EditorUserBuildSettings.SwitchActiveBuildTarget(group, buildmap[type]);
+                }
+                else
+                {
+                    EditorUserBuildSettings.SwitchActiveBuildTarget(buildmap[type]);
+                }
             }
+            
         }
         public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
@@ -153,6 +199,15 @@ namespace TaoTie
                     buildTarget = BuildTarget.WebGL;
                     platform = "webgl";
                     break;
+#if TUANJIE_1_5_OR_NEWER
+                case PlatformType.WeChat:
+                case PlatformType.TikTok:
+                case PlatformType.KuaiShou:
+                case PlatformType.Minihost:
+                    buildTarget = BuildTarget.MiniGame;
+                    platform = "webgl";
+                    break;
+#endif
             }
 
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
@@ -348,6 +403,17 @@ namespace TaoTie
                     platform = "webgl";
                     exeName += "_" + buildVersion;
                     break;
+#if TUANJIE_1_5_OR_NEWER
+                case PlatformType.WeChat:
+                case PlatformType.TikTok:
+                case PlatformType.KuaiShou:
+                case PlatformType.Minihost:
+                    buildTarget = BuildTarget.MiniGame;
+                    buildTargetGroup = BuildTargetGroup.MiniGame;
+                    platform = "webgl";
+                    exeName += "_" + buildVersion;
+                    break;
+#endif
             }
 
             PackagesManagerEditor.Clear("com.thridparty-moudule.hotreload"); //HotReload存在时打包会报错
@@ -467,6 +533,32 @@ namespace TaoTie
 #endif
                 AssetDatabase.Refresh();
                 UnityEngine.Debug.Log("开始打包");
+#if TUANJIE_MINIGAME
+                if (!buildSubGroupmap.ContainsKey(type))
+                {
+                    UnityEngine.Debug.LogError("不存在指定平台"+type);
+                    return;
+                }
+                string buildProfilePath = $"Assets/Settings/Build Profiles/{buildSubGroupmap[type]} Profile.asset";
+                UnityEditor.Build.Profile.BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath(buildProfilePath ,
+                    typeof(UnityEditor.Build.Profile.BuildProfile)) as UnityEditor.Build.Profile.BuildProfile;
+                if(buildProfile != null)
+                {
+                    buildProfile.buildPath = "./"+relativeDirPrefix;
+                    BuildMiniGameError error = BuildPipeline.BuildMiniGame(buildProfile, buildOptions);
+                    if (error == BuildMiniGameError.Succeeded)
+                    {
+                        UnityEngine.Debug.Log("完成打包");
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogError(type+" 打包失败 "+error);
+                        return;
+                    }
+                }
+                else
+                {
+#endif
                 string[] levels = {
                     "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
                 };
@@ -477,6 +569,9 @@ namespace TaoTie
                 {
                     Directory.Delete(Application.persistentDataPath, true);
                 }
+#if TUANJIE_MINIGAME
+                }
+#endif
                 UnityEngine.Debug.Log("完成打包");
             }
 
@@ -496,6 +591,50 @@ namespace TaoTie
                     File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png", true);
                 }
             }
+#if MINIGAME_SUBPLATFORM_DOUYIN
+            var newPath = relativeDirPrefix + "/tt-minigame/";
+            //新打包格式
+            if (Directory.Exists(newPath))
+            {
+                if (File.Exists(newPath + "game.js"))
+                {
+                    var txt = File.ReadAllText(newPath + "game.js");
+                    txt = txt.Replace("['正在加载资源']","['正在加载资源','正在加载配置','正在生成世界']");
+                    txt = txt.Replace("'编译中'", "'正在编译'");
+                    txt = txt.Replace("'初始化中'", "'正在初始化'");
+                    txt = txt.Replace("textDuration: 1500,", "textDuration: 6000,");
+                    txt = txt.Replace("scaleMode: scaleMode.default,", "scaleMode: scaleMode.noBorder,");
+                    txt = txt.Replace("width: 106,", "width: 64,");
+                    txt = txt.Replace("height: 40,", "height: 64,");
+                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform);
+                    if (!string.IsNullOrEmpty(preload))
+                    {
+                        txt = txt.Replace(
+                            "// 'DATA_CDN/StreamingAssets/WebGL/textures_005b9e6b32e22099edc38cba5b3d11de',",
+                            preload);
+                    }
+
+                    File.WriteAllText(newPath + "game.js", txt);
+                }
+
+                var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
+                if (icons.Length > 0 && icons[0] != null)
+                {
+                    var path = AssetDatabase.GetAssetPath(icons[0]);
+                    File.Copy(path, $"{newPath}/images/unity_logo.png", true);
+                }
+
+                //File.Copy("Assets/background.png", $"{newPath}/images/background.png", true);//背景图
+                if (File.Exists(newPath + "game.json")) //处理json格式报错
+                {
+                    var gamejStr = File.ReadAllText(newPath + "game.json");
+                    gamejStr = gamejStr.Replace("0.1.0", "4.21.0");
+                    var gameInfo = Newtonsoft.Json.JsonConvert.DeserializeObject(gamejStr);
+                    gamejStr = Newtonsoft.Json.JsonConvert.SerializeObject(gameInfo);
+                    File.WriteAllText(newPath + "game.json", gamejStr);
+                }
+            }
+#endif
             string fold = $"{AssetBundleBuilderHelper.GetDefaultBuildOutputRoot()}/{buildTarget}";
             
             var dirs = new DirectoryInfo(fold).GetDirectories();
@@ -556,6 +695,90 @@ namespace TaoTie
                 }
                 callBack?.Invoke(collection != null);
             });
+        }
+
+        public static string GetPreloadFileUrls(List<string> address, BuildTarget buildTarget, CDNConfig config, 
+            string rename, string platform, bool includeBuildins = false)
+        {
+            if (address == null) return null;
+            HashSet<string> hashSet = new HashSet<string>();
+            for (int i = 0; i < address.Count; i++)
+            {
+                hashSet.Add(address[i]);
+            }
+            var files = new List<string>();
+            string fold = $"{AssetBundleBuilderHelper.GetDefaultBuildOutputRoot()}/{buildTarget}";
+            FileHelper.GetAllFiles(files, fold);
+            BuildReport buildReport = null;
+            for (int i = 0; i < files.Count; i++)
+            {
+                if (files[i].EndsWith(".report"))
+                {
+                    string jsonData = FileUtility.ReadAllText(files[i]);
+                    buildReport = BuildReport.Deserialize(jsonData);
+                    break;
+                }
+            }
+
+            if (buildReport != null)
+            {
+                HashSet<string> bundles = new HashSet<string>();
+                for (int j = 0; j < buildReport.AssetInfos.Count; j++)
+                {
+                    if (hashSet.Contains(buildReport.AssetInfos[j].Address))
+                    {
+                        bundles.Add(buildReport.AssetInfos[j].MainBundleName);
+                    }
+                }
+
+                MultiMap<string, string> maps = new MultiMap<string, string>();
+                Dictionary<string, ReportBundleInfo> path = new Dictionary<string, ReportBundleInfo>();
+                hashSet.Clear();
+                for (int j = 0; j < buildReport.BundleInfos.Count; j++)
+                {
+                    maps.Add(buildReport.BundleInfos[j].BundleName, buildReport.BundleInfos[j].DependBundles);
+                    path.Add(buildReport.BundleInfos[j].BundleName, buildReport.BundleInfos[j]);
+                }
+                List<string> allBundles = bundles.ToList();
+                for (int i = 0; i < allBundles.Count; i++)
+                {
+                    if (maps.TryGetValue(allBundles[i], out var list))
+                    {
+                        for (int j = 0; j < list.Count; j++)
+                        {
+                            if (!allBundles.Contains(list[j]))
+                            {
+                                allBundles.Add(list[j]);
+                            }
+                        }
+                    }
+                }
+                
+                StringBuilder preloadList = new StringBuilder();
+                if (includeBuildins)
+                {
+                    var streamingAssets = new List<string>();
+                    FileHelper.GetAllFiles(streamingAssets, Application.streamingAssetsPath);
+                    for (int i = 0; i < streamingAssets.Count; i++)
+                    {
+                        if(streamingAssets[i].EndsWith(".meta")) continue;
+                        preloadList.Append(Path.GetFileName(streamingAssets[i]) + ";");
+                    }
+                }
+                
+                foreach (var item in allBundles)
+                {
+                    if (path.TryGetValue(item, out var p))
+                    {
+                        if(!p.GetTagsString().Contains("buildin") || !includeBuildins) 
+                            preloadList.AppendLine($"'{config.DefaultHostServer}/{rename}_{platform}/{p.FileName}',");
+                    }
+                }
+            
+                return preloadList.ToString();
+            }
+
+            return null;
         }
     }
 }

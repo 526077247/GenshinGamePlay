@@ -69,7 +69,7 @@ namespace TaoTie
 			ETTask.ExceptionHandler += Log.Error;
 
 			Log.ILog = new UnityLogger();
-
+			await InitSDK();
 			await PackageManager.Instance.Init(PlayMode);
 #if !UNITY_EDITOR
 			if(this.CodeMode == CodeMode.BuildIn && !PackageManager.Instance.CdnConfig.BuildHotfixAssembliesAOT)
@@ -82,7 +82,52 @@ namespace TaoTie
 			
 			await CodeLoader.Instance.Start();
 		}
-
+		async ETTask InitSDK()
+		{
+			ETTask task = ETTask.Create(true);
+#if MINIGAME_SUBPLATFORM_DOUYIN
+			//build setting 添加包依赖
+			TTSDK.TT.InitSDK((code, env) =>
+			{
+				task.SetResult();
+				Log.Info("TT.InitSDK " + code);
+			});
+#elif MINIGAME_SUBPLATFORM_WEIXIN
+#if UNITY_EDITOR
+			task.SetResult();
+#else
+			//build setting 添加包依赖
+			WeChatWASM.WX.InitSDK((code) =>
+			{
+				task.SetResult();
+				Log.Info("WX.InitSDK " + code);
+			});
+#endif
+#elif MINIGAME_SUBPLATFORM_KUAISHOU
+#if UNITY_EDITOR
+			task.SetResult();
+#else
+			//build setting 添加包依赖
+			KSWASM.KS.InitSDK((code) =>
+			{
+				task.SetResult();
+				Log.Info("KS.InitSDK " + code);
+			});
+#endif
+#elif MINIGAME_SUBPLATFORM_MINIHOST
+#if UNITY_EDITOR
+			task.SetResult();
+#else
+			//build setting 添加包依赖
+			minihost.TJ.InitSDK((code) =>
+			{
+				task.SetResult();
+				Log.Info("minihost.InitSDK " + code);
+			});
+#endif
+#endif
+			await task;
+		}
 		private void Start()
 		{
 		    var canvasScaler = GameObject.Find("Canvas").GetComponent<CanvasScaler>();

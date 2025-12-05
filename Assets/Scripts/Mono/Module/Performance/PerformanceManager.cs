@@ -27,11 +27,19 @@ namespace TaoTie
             {
                 if (Level == DevicePerformanceLevel.High)
                 {
-                    render.renderScale = 0.85f;
+                    render.renderScale = PlatformUtil.IsMobile() ? 0.85f : 1f;
+                    render.colorGradingMode = ColorGradingMode.HighDynamicRange;
+                    render.colorGradingLutSize = 32;
+                    render.hdrColorBufferPrecision = HDRColorBufferPrecision._64Bits;
+                    render.msaaSampleCount = 4;
                 }
                 else
                 {
-                    render.renderScale = 0.75f;
+                    render.renderScale = Level == DevicePerformanceLevel.Mid ? 0.7f : 0.55f;
+                    render.colorGradingMode = ColorGradingMode.LowDynamicRange;
+                    render.colorGradingLutSize = 16;
+                    render.hdrColorBufferPrecision = HDRColorBufferPrecision._32Bits;
+                    render.msaaSampleCount = 2;
                 }
             }
             SetLowFrame();
@@ -71,9 +79,29 @@ namespace TaoTie
         public DevicePerformanceLevel GetDevicePerformanceLevel()
         {
 #if UNITY_WEBGL
+#if MINIGAME_SUBPLATFORM_DOUYIN
+            //PC 直播伴侣小游戏
+            if (TTSDK.TT.GetSystemInfo().platform == "windows")
+            {
+                return DevicePerformanceLevel.High;
+            }
+#endif
             if (PlatformUtil.IsMobile())
             {
+#if MINIGAME_SUBPLATFORM_DOUYIN && !UNITY_EDITOR
+                return TTSDK.TT.GetSystemInfo().deviceScore.gpu > 10 && TTSDK.TT.GetSystemInfo().deviceScore.cpu > 10
+                    ? DevicePerformanceLevel.Mid
+                    : DevicePerformanceLevel.Low;
+#elif MINIGAME_SUBPLATFORM_WEIXIN && !UNITY_EDITOR
+                var benchmarkLevel = WeChatWASM.WX.GetSystemInfoSync().benchmarkLevel;
+                if (benchmarkLevel >= 1)
+                {
+                    return benchmarkLevel > 30 ? DevicePerformanceLevel.Mid : DevicePerformanceLevel.Low;
+                }
                 return PlatformUtil.IsIphone() ? DevicePerformanceLevel.Mid : DevicePerformanceLevel.Low;
+#else
+                return PlatformUtil.IsIphone() ? DevicePerformanceLevel.Mid : DevicePerformanceLevel.Low;
+#endif
             }
             else
             {

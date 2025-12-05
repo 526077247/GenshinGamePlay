@@ -23,8 +23,8 @@ namespace TaoTie
         {
             get
             {
-                float width = Screen.width;
-                float height = Screen.height;
+                float width = SystemInfoHelper.screenWidth;
+                float height = SystemInfoHelper.screenHeight;
                 var flagx = Define.DesignScreenWidth / width;
                 var flagy = Define.DesignScreenHeight / height;
                 return flagx > flagy ? flagx : flagy;
@@ -87,9 +87,8 @@ namespace TaoTie
         
         public void ResetSafeArea()
         {
-            var safeArea = Screen.safeArea;
-            var temp = safeArea.x;
-            SetWidthPadding(temp);
+            var safeArea = SystemInfoHelper.safeArea;
+            SetWidthPadding(Mathf.Max(safeArea.xMin, SystemInfoHelper.screenWidth - safeArea.xMax));
         }
         
         /// <summary>
@@ -1470,14 +1469,23 @@ namespace TaoTie
         {
             var rectTrans = target.GetTransform().GetComponent<RectTransform>();
             var padding = WidthPadding;
-            
-            var screenSafeArea = Screen.safeArea;
-            var safeArea = Rect.MinMaxRect(screenSafeArea.xMin, Screen.height - screenSafeArea.yMax, screenSafeArea.xMax, Screen.height - screenSafeArea.yMin);
-            var height = Screen.height;
-            var width = Screen.width;
-            
+
+            var safeArea = SystemInfoHelper.safeArea;
+            var height = SystemInfoHelper.screenHeight;
+            var width = SystemInfoHelper.screenWidth;
             float top = safeArea.yMin * ScreenSizeFlag;
             float bottom = (height - safeArea.yMax) * ScreenSizeFlag;
+            if (target is IOnMiniGameWidthPaddingChange)
+            {
+                if (Define.DesignScreenHeight > Define.DesignScreenWidth)
+                {
+                    top += IOnMiniGameWidthPaddingChange.ButtonSpace;
+                }
+                else
+                {
+                    //todo: 横屏看美术设计情况决定
+                }
+            }
 #if UNITY_WEBGL
             //竖屏特殊适配
             if (width < height)
@@ -1493,7 +1501,8 @@ namespace TaoTie
                 }
             }
 #endif
-            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x), bottom * rectTrans.anchorMax.y);
+            rectTrans.offsetMin = new Vector2(padding * (1 - rectTrans.anchorMin.x),
+                target is IOnTopWidthPaddingChange ? 0 : bottom * rectTrans.anchorMax.y);
             rectTrans.offsetMax = new Vector2(-padding * rectTrans.anchorMax.x, -top * (1 - rectTrans.anchorMin.y));
         }
 
