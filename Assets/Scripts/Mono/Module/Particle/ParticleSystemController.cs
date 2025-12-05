@@ -40,13 +40,13 @@ namespace TaoTie
 
         private void OnEnable()
         {
-            ParticleSimulationBudgetManager.Instance.RegisterSystem(this);
+            ParticleSimulationBudgetManager.Instance?.RegisterSystem(this);
             _ps.Pause(true);
         }
 
         private void OnDisable()
         {
-            ParticleSimulationBudgetManager.Instance.UnregisterSystem(this);
+            ParticleSimulationBudgetManager.Instance?.UnregisterSystem(this);
         }
         void Update()
         {
@@ -106,6 +106,7 @@ namespace TaoTie
         void OnDrawGizmosSelected()
         {
             if (!Application.isPlaying) return;
+            if (_renderer?.bounds == null) return;
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireCube(_renderer.bounds.center, _renderer.bounds.size);
             UnityEditor.Handles.Label(transform.position,

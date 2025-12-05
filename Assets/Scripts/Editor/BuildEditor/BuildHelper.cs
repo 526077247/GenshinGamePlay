@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Obfuz.Settings;
 using UnityEditor;
@@ -25,7 +26,7 @@ namespace TaoTie
         private static string[] ignoreFile = new[] {"BuildReport_", ".report", "link.xml", ".json"};
 
         public static readonly Dictionary<PlatformType, BuildTarget> buildmap =
-            new Dictionary<PlatformType, BuildTarget>(PlatformTypeComparer.Instance)
+            new Dictionary<PlatformType, BuildTarget>()
             {
                 {PlatformType.Android, BuildTarget.Android},
                 {PlatformType.Windows, BuildTarget.StandaloneWindows64},
@@ -36,7 +37,7 @@ namespace TaoTie
             };
 
         public static readonly Dictionary<PlatformType, BuildTargetGroup> buildGroupmap =
-            new Dictionary<PlatformType, BuildTargetGroup>(PlatformTypeComparer.Instance)
+            new Dictionary<PlatformType, BuildTargetGroup>()
             {
                 {PlatformType.Android, BuildTargetGroup.Android},
                 {PlatformType.Windows, BuildTargetGroup.Standalone},
@@ -101,38 +102,24 @@ namespace TaoTie
             EditorUtility.SetDirty(cdn);
             AssetDatabase.SaveAssetIfDirty(cdn);
         }
-
+        public static void Switch(PlatformType type)
+        {
+            if (buildGroupmap.TryGetValue(type, out var group))
+            {
+                EditorUserBuildSettings.SwitchActiveBuildTarget(group, buildmap[type]);
+            }
+            else
+            {
+                EditorUserBuildSettings.SwitchActiveBuildTarget(buildmap[type]);
+            }
+        }
         public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
             string channel, bool buildDll = true)
         {
-            if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
-            {
-                //pack
-                BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
-                    isBuildAll, packAtlas, isContainsAb, channel, buildDll);
-            }
-            else
-            {
-                EditorUserBuildSettings.activeBuildTargetChanged = delegate()
-                {
-                    if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
-                    {
-                        //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
-                            isBuildAll, packAtlas, isContainsAb, channel, buildDll);
-                    }
-                };
-                if (buildGroupmap.TryGetValue(type, out var group))
-                {
-                    EditorUserBuildSettings.SwitchActiveBuildTarget(group, buildmap[type]);
-                }
-                else
-                {
-                    EditorUserBuildSettings.SwitchActiveBuildTarget(buildmap[type]);
-                }
-
-            }
+            //pack
+            BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
+                isBuildAll, packAtlas, isContainsAb, channel, buildDll);
         }
         public static void BuildPackage(PlatformType type, string packageName)
         {
@@ -321,37 +308,44 @@ namespace TaoTie
             string exeName = programName + "_" + channel;
             string platform = "";
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
+            BuildTargetGroup buildTargetGroup = BuildTargetGroup.Standalone;
+            int buildVersion = obj.GetPackageMaxVersion(Define.DefaultName);
             switch (type)
             {
                 case PlatformType.Windows:
                     buildTarget = BuildTarget.StandaloneWindows64;
+                    buildTargetGroup = BuildTargetGroup.Standalone;
                     exeName += ".exe";
                     platform = "pc";
                     break;
                 case PlatformType.Android:
                     KeystoreSetting();
-                    PlayerSettings.Android.bundleVersionCode = bundleVersionCode;
+                    PlayerSettings.Android.bundleVersionCode = bundleVersionCode + 1;
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
                     buildTarget = BuildTarget.Android;
+                    buildTargetGroup = BuildTargetGroup.Android;
                     exeName += Application.version + ".apk";
                     platform = "android";
                     break;
                 case PlatformType.IOS:
                     buildTarget = BuildTarget.iOS;
+                    buildTargetGroup = BuildTargetGroup.iOS;
                     platform = "ios";
                     break;
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
+                    buildTargetGroup = BuildTargetGroup.Standalone;
                     platform = "pc";
                     break;
                 case PlatformType.Linux:
                     buildTarget = BuildTarget.StandaloneLinux64;
+                    buildTargetGroup = BuildTargetGroup.Standalone;
                     platform = "pc";
                     break;
                 case PlatformType.WebGL:
                     buildTarget = BuildTarget.WebGL;
+                    buildTargetGroup = BuildTargetGroup.WebGL;
                     platform = "webgl";
-                    int buildVersion = obj.GetPackageMaxVersion(Define.DefaultName);
                     exeName += "_" + buildVersion;
                     break;
             }
@@ -426,12 +420,19 @@ namespace TaoTie
             //         }
             //     }
             // }
+            
+            var config = Resources.Load<CDNConfig>("CDNConfig");
+            var rename = config.GetChannel();
+            string targetPath = Path.Combine(relativeDirPrefix, $"{rename}_{platform}");
+
+            if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
+            FileHelper.CleanDirectory(targetPath);
 
             if(isBuildExe)
             {
 #if UNITY_WEBGL
                 bool webgl1 = true;
-                if (PlayerSettings.colorSpace == ColorSpace.Linear || PlayerSettings.GetUseDefaultGraphicsAPIs(BuildTarget.WebGL))
+                if (PlayerSettings.colorSpace == ColorSpace.Linear || PlayerSettings.GetUseDefaultGraphicsAPIs(buildTarget))
                 {
                     webgl1 = false;
                 }
@@ -451,7 +452,7 @@ namespace TaoTie
                 if (webgl1)
                 {
                     var define = "UNITY_WEBGL_1";
-                    var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.WebGL).Trim();
+                    var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup).Trim();
                     if (!string.IsNullOrEmpty(definesString))
                     {
                         definesString += definesString.EndsWith(";") ? define+";" : $";{define};";
@@ -460,47 +461,49 @@ namespace TaoTie
                     {
                         definesString = define+";";
                     }
-                    PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.WebGL, definesString);
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, definesString);
                 }
                 PlayerSettings.WebGL.template = $"PROJECT:TaoTie";
 #endif
                 AssetDatabase.Refresh();
+                UnityEngine.Debug.Log("开始打包");
                 string[] levels = {
                     "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
                 };
-                UnityEngine.Debug.Log("开始EXE打包");
                 BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
-                UnityEngine.Debug.Log("完成exe打包");
+                
                 //清下缓存
                 if (Directory.Exists(Application.persistentDataPath))
                 {
                     Directory.Delete(Application.persistentDataPath, true);
                 }
-
-                if (buildTarget == BuildTarget.WebGL)
-                {
-                    var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
-                    if (icons.Length > 0 && icons[0] != null)
-                    {
-                        var path = AssetDatabase.GetAssetPath(icons[0]);
-                        File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png", true);
-                    }
-                }
+                UnityEngine.Debug.Log("完成打包");
             }
 
-            string fold = $"{AssetBundleBuilderHelper.GetDefaultBuildOutputRoot()}/{buildTarget}";
-            var config = Resources.Load<CDNConfig>("CDNConfig");
-            var rename = config.GetChannel();
-            string targetPath = Path.Combine(relativeDirPrefix, $"{rename}_{platform}");
+            PostProcess(buildTarget, obj, targetPath, config, rename, platform, exeName);
+            
+        }
 
-            if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-            FileHelper.CleanDirectory(targetPath);
+        static void PostProcess(BuildTarget buildTarget, PackageConfig obj, string targetPath, CDNConfig config,
+            string rename, string platform, string exeName)
+        {
+            if (buildTarget == BuildTarget.WebGL)
+            {
+                var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
+                if (icons.Length > 0 && icons[0] != null)
+                {
+                    var path = AssetDatabase.GetAssetPath(icons[0]);
+                    File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png", true);
+                }
+            }
+            string fold = $"{AssetBundleBuilderHelper.GetDefaultBuildOutputRoot()}/{buildTarget}";
+            
             var dirs = new DirectoryInfo(fold).GetDirectories();
             for (int i = 0; i < dirs.Length; i++)
             {
                 var version = obj.GetPackageMaxVersion(dirs[i].Name);
                 string dir = $"{fold}/{dirs[i].Name}/{version}";
-                if (dir != null)
+                if (Directory.Exists(dir))
                 {
                     FileHelper.CopyFiles(dir, targetPath, ignoreFile);
                 }
@@ -519,30 +522,7 @@ namespace TaoTie
             Application.OpenURL($"file:///{targetPath}");
 #endif
         }
-
-        public static void PrintFile()
-        {
-            var config = Resources.Load<CDNConfig>("CDNConfig");
-            var rename = config.GetChannel();
-            string platform = "pc";
-#if UNITY_ANDROID
-            platform = "android";
-#elif UNITY_IOS
-            platform = "ios";
-#elif UNITY_WEBGL
-            platform = "webgl";
-#endif
-            string targetPath = Path.Combine(relativeDirPrefix, $"{rename}_{platform}");
-            DirectoryInfo info = new DirectoryInfo(targetPath);
-            if(!info.Exists) return;
-            StringBuilder sb = new StringBuilder();
-            var files = info.GetFiles();
-            for (int i = 0; i < files.Length; i++)
-            {
-                sb.AppendLine(files[i].Name);
-            }
-            File.WriteAllText(relativeDirPrefix + "/reslist.txt",sb.ToString());
-        }
+        
         public static void BuildApk(string channel,BuildOptions buildOptions)
         {
             var bundleVersionCode = int.Parse(Application.version.Split(".")[2]);
@@ -557,9 +537,9 @@ namespace TaoTie
             {
                 "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
             };
-            UnityEngine.Debug.Log("开始EXE打包");
+            UnityEngine.Debug.Log("开始打包");
             BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
-            UnityEngine.Debug.Log("完成exe打包");
+            UnityEngine.Debug.Log("完成打包");
         }
 
         public static void CollectSVC(Action<bool> callBack)

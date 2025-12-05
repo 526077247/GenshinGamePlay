@@ -8,19 +8,6 @@ using Debug = UnityEngine.Debug;
 
 namespace TaoTie
 {
-	public class PlatformTypeComparer : IEqualityComparer<PlatformType>
-	{
-		public static PlatformTypeComparer Instance = new PlatformTypeComparer();
-		public bool Equals(PlatformType x, PlatformType y)
-		{
-			return x == y;          //x.Equals(y);  注意这里不要使用Equals方法，因为也会造成封箱操作
-		}
-
-		public int GetHashCode(PlatformType x)
-		{
-			return (int)x;
-		}
-	}
 	public enum PlatformType:byte
 	{
 		None,
@@ -157,7 +144,21 @@ namespace TaoTie
 
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
-            
+            if (platformType != activePlatform)
+            {
+                switch (EditorUtility.DisplayDialogComplex("警告!", $"当前目标平台为{activePlatform}, 如果切换到{platformType}, 可能需要较长加载时间", "切换", "取消", "不切换"))
+                {
+                    case 0:
+	                    activePlatform = platformType;
+	                    BuildHelper.Switch(platformType);
+	                    break;
+                    case 1:
+                        return;
+                    case 2:
+                        platformType = activePlatform;
+                        break;
+                }
+            }
 			EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			this.clearBuildCache = EditorGUILayout.Toggle("清理构建缓存: ", clearBuildCache);
 			this.clearReleaseFolder = EditorGUILayout.Toggle("清理打包输出文件夹: ", clearReleaseFolder);
@@ -233,20 +234,6 @@ namespace TaoTie
 					ShowNotification(new GUIContent("请选择打包平台!"));
 					return;
 				}
-				if (platformType != activePlatform)
-                {
-                    switch (EditorUtility.DisplayDialogComplex("警告!", $"当前目标平台为{activePlatform}, 如果切换到{platformType}, 可能需要较长加载时间", "切换", "取消", "不切换"))
-                    {
-						case 0:
-							activePlatform = platformType;
-							break;
-						case 1:
-							return;
-                        case 2:
-							platformType = activePlatform;
-							break;
-                    }
-                }
 
 				if (clearBuildCache)
 				{

@@ -7,6 +7,7 @@ namespace TaoTie
     {
         public static ParticleSimulationBudgetManager Instance { get; private set; }
 
+        static System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
         [Header("Global Settings")]
         [Tooltip("Maximum simulation time per frame (milliseconds)")]
         [SerializeField] private float _maxFrameBudgetMS = 2.5f;
@@ -65,8 +66,7 @@ namespace TaoTie
             normalSystems.Sort((a, b) => b.CalculatedPriority.CompareTo(a.CalculatedPriority));
 
             // 使用一个Stopwatch，开始计时
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
+            stopwatch.Restart();
 
             UnityEngine.Profiling.Profiler.BeginSample("Forced System"); 
 
