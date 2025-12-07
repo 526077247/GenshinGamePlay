@@ -60,6 +60,7 @@ namespace TaoTie
 		private bool isPackAtlas;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
+		private Texture webGLBackground;
 		private BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
 		private BuildSettings buildSettings;
 		private int package;
@@ -129,6 +130,7 @@ namespace TaoTie
 				buildMode = buildSettings.buildMode;
 				collectShaderVariant = buildSettings.collectShaderVariant;
 				cdn = buildSettings.cdn;
+				webGLBackground = buildSettings.WebGLBackground;
 			}
         }
 
@@ -182,6 +184,25 @@ namespace TaoTie
                         platformType = activePlatform;
                         break;
                 }
+            }
+            
+            if (platformType == PlatformType.WebGL)
+            {
+	            webGLBackground = EditorGUILayout.ObjectField(new GUIContent("*WebGL横向背景填充图:", "PC等平台的竖向游戏会在后面平铺一个横向填充背景，不选会默认填充Flash作为背景"), webGLBackground, typeof(Texture), false) as Texture;
+            }
+            if (platformType > PlatformType.WebGL)
+            {
+	            if (GUILayout.Button("打开转换工具"))
+	            {
+#if MINIGAME_SUBPLATFORM_DOUYIN
+		            Assembly assembly = typeof(TTSDK.Tool.API.BuildManager).Assembly;
+		            var type = assembly.GetType("TTSDK.Tool.StarkSDKToolWindow");
+		            var method = type.GetMethod("ShowWindow", BindingFlags.Static | BindingFlags.NonPublic);
+		            method?.Invoke(null,null);
+#elif MINIGAME_SUBPLATFORM_WEXIN
+					WeChatWASM.WXEditorWin.Open();
+#endif
+	            }
             }
 			EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			this.clearBuildCache = EditorGUILayout.Toggle("清理构建缓存: ", clearBuildCache);
@@ -277,14 +298,14 @@ namespace TaoTie
 						else
 						{
 							BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
-								isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
+								isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel,bgPath:AssetDatabase.GetAssetPath(webGLBackground));
 						}
 					});
 				}
 				else
 				{
 					BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
-						isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
+						isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel,bgPath:AssetDatabase.GetAssetPath(webGLBackground));
 				}
 			}
 		}
@@ -306,6 +327,7 @@ namespace TaoTie
 			buildSettings.cdn = cdn;
 			buildSettings.buildMode = buildMode;
 			buildSettings.collectShaderVariant = collectShaderVariant;
+			buildSettings.WebGLBackground = webGLBackground;
 			EditorUtility.SetDirty(buildSettings);
 			AssetDatabase.SaveAssets();
 		}

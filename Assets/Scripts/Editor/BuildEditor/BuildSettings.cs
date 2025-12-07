@@ -19,5 +19,6 @@ namespace TaoTie
         public string cdn = "";
         public BuildType buildType = BuildType.Release;
         public BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
+        public Texture WebGLBackground;
     }
 }

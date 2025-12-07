@@ -161,11 +161,11 @@ namespace TaoTie
         }
         public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
-            string channel, bool buildDll = true)
+            string channel, bool buildDll = true, string bgPath = null)
         {
             //pack
             BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
-                isBuildAll, packAtlas, isContainsAb, channel, buildDll);
+                isBuildAll, packAtlas, isContainsAb, channel, buildDll, bgPath);
         }
         public static void BuildPackage(PlatformType type, string packageName)
         {
@@ -353,7 +353,7 @@ namespace TaoTie
 
         static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
-            string channel, bool buildDll = true)
+            string channel, bool buildDll = true, string bgPath = null)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<PackageConfig>(jstr);
@@ -529,35 +529,52 @@ namespace TaoTie
                     }
                     PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, definesString);
                 }
-                PlayerSettings.WebGL.template = $"PROJECT:TaoTie";
 #endif
                 AssetDatabase.Refresh();
                 UnityEngine.Debug.Log("开始打包");
-#if TUANJIE_MINIGAME
-                if (!buildSubGroupmap.ContainsKey(type))
+#if MINIGAME_SUBPLATFORM_DOUYIN
+                TTSDK.Tool.StarkBuilderSettings setting = TTSDK.Tool.StarkBuilderSettings.Instance;
+                if (setting != null)
                 {
-                    UnityEngine.Debug.LogError("不存在指定平台"+type);
+                    setting.assetBundleFSEnabled = true;
+                    setting.isOldBuildFormat = false;
+                    setting.webglPackagePath = Path.GetFullPath("Release");
+#if !TUANJIE_1_5_OR_NEWER
+                    setting.isWebGL2 = !webgl1;
+#endif
+                }
+
+                TTSDK.Tool.API.BuildManager.Build(TTSDK.Tool.Framework.Wasm);
+                UnityEngine.Debug.Log("完成打包");
+#elif MINIGAME_SUBPLATFORM_WEXIN
+                WeChatWASM.WXConvertCore.config.ProjectConf.relativeDST = Path.GetFullPath("Release");
+                WeChatWASM.WXConvertCore.config.ProjectConf.DST = Path.GetFullPath("Release");
+                WeChatWASM.WXConvertCore.config.ProjectConf.CDN = $"{config.DefaultHostServer}/{rename}_{platform}/";
+                var fields = typeof(CacheKeys).GetFields();
+                foreach (var item in fields)
+                {
+                    if (item.IsStatic)
+                    {
+                        var val = item.GetValue(null) as string;
+                        if (!string.IsNullOrEmpty(val))
+                        {
+                            if(!WeChatWASM.WXConvertCore.config.PlayerPrefsKeys.Contains(val)) 
+                                WeChatWASM.WXConvertCore.config.PlayerPrefsKeys.Add(val);
+                        }
+                    }
+                }
+#if !TUANJIE_1_5_OR_NEWER
+                WeChatWASM.WXConvertCore.config.CompileOptions.Webgl2 = !webgl1;
+#endif
+                if (WeChatWASM.WXConvertCore.DoExport() != WeChatWASM.WXConvertCore.WXExportError.SUCCEED)
+                {
+                    UnityEngine.Debug.LogError("打包失败");
                     return;
                 }
-                string buildProfilePath = $"Assets/Settings/Build Profiles/{buildSubGroupmap[type]} Profile.asset";
-                UnityEditor.Build.Profile.BuildProfile buildProfile = AssetDatabase.LoadAssetAtPath(buildProfilePath ,
-                    typeof(UnityEditor.Build.Profile.BuildProfile)) as UnityEditor.Build.Profile.BuildProfile;
-                if(buildProfile != null)
-                {
-                    buildProfile.buildPath = "./"+relativeDirPrefix;
-                    BuildMiniGameError error = BuildPipeline.BuildMiniGame(buildProfile, buildOptions);
-                    if (error == BuildMiniGameError.Succeeded)
-                    {
-                        UnityEngine.Debug.Log("完成打包");
-                    }
-                    else
-                    {
-                        UnityEngine.Debug.LogError(type+" 打包失败 "+error);
-                        return;
-                    }
-                }
-                else
-                {
+                UnityEngine.Debug.Log("完成打包");
+#else
+#if UNITY_WEBGL
+                PlayerSettings.WebGL.template = $"PROJECT:TaoTie";
 #endif
                 string[] levels = {
                     "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
@@ -569,18 +586,16 @@ namespace TaoTie
                 {
                     Directory.Delete(Application.persistentDataPath, true);
                 }
-#if TUANJIE_MINIGAME
-                }
-#endif
                 UnityEngine.Debug.Log("完成打包");
+#endif
             }
 
-            PostProcess(buildTarget, obj, targetPath, config, rename, platform, exeName);
+            PostProcess(buildTarget, obj, targetPath, config, rename, platform, exeName, bgPath);
             
         }
 
         static void PostProcess(BuildTarget buildTarget, PackageConfig obj, string targetPath, CDNConfig config,
-            string rename, string platform, string exeName)
+            string rename, string platform, string exeName, string bgPath)
         {
             if (buildTarget == BuildTarget.WebGL)
             {
@@ -589,6 +604,27 @@ namespace TaoTie
                 {
                     var path = AssetDatabase.GetAssetPath(icons[0]);
                     File.Copy(path,$"{relativeDirPrefix}/{exeName}/icon.png", true);
+                }
+
+                if (!string.IsNullOrEmpty(bgPath))
+                {
+                    string path = $"{relativeDirPrefix}/{exeName}/Build/{exeName}.jpg";
+                    if (!File.Exists(path))
+                    {
+                        string h5 = $"{relativeDirPrefix}/{exeName}/index.html";
+                        var lines = File.ReadAllLines(h5);
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            if (lines[i].Contains("background:"))
+                            {
+                                lines[i] =
+                                    $"      background: url('Build/{exeName}.jpg') no-repeat center center;";
+                                break;
+                            }
+                        }
+                        File.WriteAllLines(h5, lines);
+                    }
+                    File.Copy(bgPath, path, true);
                 }
             }
 #if MINIGAME_SUBPLATFORM_DOUYIN
@@ -632,6 +668,31 @@ namespace TaoTie
                     var gameInfo = Newtonsoft.Json.JsonConvert.DeserializeObject(gamejStr);
                     gamejStr = Newtonsoft.Json.JsonConvert.SerializeObject(gameInfo);
                     File.WriteAllText(newPath + "game.json", gamejStr);
+                }
+            }
+#elif MINIGAME_SUBPLATFORM_WEXIN
+            if (WeChatWASM.WXConvertCore.config.ProjectConf.assetLoadType == 0)
+            {
+                string[] fls = Directory.GetFiles(WeChatWASM.WXConvertCore.config.ProjectConf.DST +"/webgl");
+                for (int i = 0; i < fls.Length; i++)
+                {
+                    if (fls[i].EndsWith(".data") || fls[i].EndsWith("data.zip") || fls[i].EndsWith("data.br")|| fls[i].EndsWith("bin.txt"))
+                    {
+                        var name = Path.GetFileName(fls[i]);
+                        File.Copy(fls[i], targetPath + "/" + name);
+                    }
+                }
+            }
+            var newPath = relativeDirPrefix + "/minigame/";
+            if (Directory.Exists(newPath))
+            {
+                if (File.Exists(newPath + "game.js"))
+                {
+                    var txt = File.ReadAllText(newPath + "game.js");
+                    txt = txt.Replace(
+                        $"{YooAssetSettingsData.Setting.DefaultYooFolderName}/{Define.DefaultName}/",
+                        WeChatWASM.WXConvertCore.config.ProjectConf.CDN);
+                    File.WriteAllText(newPath + "game.js", txt);
                 }
             }
 #endif
