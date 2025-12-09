@@ -90,7 +90,7 @@ namespace TaoTie
 #elif UNITY_STANDALONE_LINUX
 			activePlatform = PlatformType.Linux;
 #elif UNITY_WEBGL
-#if MINIGAME_SUBPLATFORM_WEXIN
+#if MINIGAME_SUBPLATFORM_WEIXIN
 	        activePlatform = PlatformType.WeChat;
 #elif MINIGAME_SUBPLATFORM_DOUYIN
 	        activePlatform = PlatformType.TikTok;
@@ -199,7 +199,7 @@ namespace TaoTie
 		            var type = assembly.GetType("TTSDK.Tool.StarkSDKToolWindow");
 		            var method = type.GetMethod("ShowWindow", BindingFlags.Static | BindingFlags.NonPublic);
 		            method?.Invoke(null,null);
-#elif MINIGAME_SUBPLATFORM_WEXIN
+#elif MINIGAME_SUBPLATFORM_WEIXIN
 					WeChatWASM.WXEditorWin.Open();
 #endif
 	            }
