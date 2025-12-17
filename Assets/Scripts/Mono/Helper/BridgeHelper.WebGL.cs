@@ -37,6 +37,8 @@ namespace TaoTie
         private static extern string GetImgData();
         [DllImport("__Internal")]
         private static extern void CopyTextToClipboard(string ptr);
+        [DllImport("__Internal")]
+        private static extern void Reload();
 #endif
         
         public static string OpenNativeStringDialog(string title, string defaultValue)
@@ -157,6 +159,16 @@ namespace TaoTie
             }
 
             return result;
+        }
+        
+        /// <summary>
+        /// 刷新页面
+        /// </summary>
+        public static void RefreshPage()
+        {
+#if UNITY_WEBGL
+            Reload();
+#endif
         }
     }
 }

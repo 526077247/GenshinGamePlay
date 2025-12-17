@@ -195,4 +195,7 @@ mergeInto(LibraryManager.library, {
             console.error('Async: Could not copy text: ', err);
         });
     },
+    Reload: function(){
+        location.reload();
+    },
 });
