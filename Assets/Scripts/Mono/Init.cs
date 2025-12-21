@@ -125,6 +125,8 @@ namespace TaoTie
 				Log.Info("minihost.InitSDK " + code);
 			});
 #endif
+#else
+			task.SetResult();
 #endif
 			await task;
 		}

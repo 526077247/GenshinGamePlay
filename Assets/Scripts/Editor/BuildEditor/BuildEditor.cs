@@ -145,15 +145,6 @@ namespace TaoTie
 			{
 				channel = EditorGUILayout.TextField("渠道：", channel);
 			}
-			else if (platformType == PlatformType.WebGL)
-			{
-#if TUANJIE_1_5_OR_NEWER
-				channel = "U_" + webGLPlatform.ToString();
-#else
-				channel = webGLPlatform;
-#endif
-				EditorGUILayout.LabelField("渠道："+ channel);
-			}
 			else
 			{
 				channel = "TJ_" + platformType;

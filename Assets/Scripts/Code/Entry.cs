@@ -28,45 +28,45 @@ namespace TaoTie
                 
                 ManagerProvider.RegisterManager<CacheManager>();
 
-                var cm = ManagerProvider.RegisterManager<ConfigManager>();
-                await cm.LoadAsync();
+                ManagerProvider.RegisterManager<ConfigManager>();
                 
                 ManagerProvider.RegisterManager<ResourcesManager>();
                 ManagerProvider.RegisterManager<GameObjectPoolManager>();
-                ManagerProvider.RegisterManager<ImageLoaderManager>();
-                ManagerProvider.RegisterManager<MaterialManager>();
                 
                 ManagerProvider.RegisterManager<I18NManager>();
                 ManagerProvider.RegisterManager<UIManager>();
-
-                ManagerProvider.RegisterManager<CameraManager>();
-                await CameraManager.Instance.LoadAsync();
-                ManagerProvider.RegisterManager<SceneManager>();
                 
-                ManagerProvider.RegisterManager<ServerConfigManager>();
-               
-                
-                ManagerProvider.RegisterManager<InputManager>();
-                await InputManager.Instance.LoadAsync();
                 if(PackageManager.Instance.PlayMode == EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))
-                    await UIManager.Instance.OpenWindow<UIUpdateView,Action>(UIUpdateView.PrefabPath,StartGame);//下载热更资源
+                {
+                    await ConfigManager.Instance.LoadAsync();
+                    ManagerProvider.RegisterManager<ServerConfigManager>();
+                    await UIManager.Instance.OpenWindow<UIUpdateView, Action>(UIUpdateView.PrefabPath,
+                        UpdateOverStartGame); //下载热更资源
+                }
                 else
-                    StartGame();
+                {
+                    await StartGameAsync(false);
+                }
             }
             catch (Exception e)
             {
                 Log.Error(e);
             }
         }
-        static void StartGame()
+        static void UpdateOverStartGame()
         {
-            StartGameAsync().Coroutine();
+            StartGameAsync(true).Coroutine();
         }
 
-        static async ETTask StartGameAsync()
+        static async ETTask StartGameAsync(bool configInit)
         {
+            ManagerProvider.RegisterManager<ImageLoaderManager>();
+            ManagerProvider.RegisterManager<MaterialManager>();
+            ManagerProvider.RegisterManager<SceneManager>();
+            ManagerProvider.RegisterManager<CameraManager>();
+            ManagerProvider.RegisterManager<InputManager>();
             ManagerProvider.RegisterManager<NavmeshSystem>();
-            var sm = ManagerProvider.RegisterManager<SoundManager>();
+            ManagerProvider.RegisterManager<SoundManager>();
             ManagerProvider.RegisterManager<AbilitySystem>();
             ManagerProvider.RegisterManager<ModelSystem>();
             ManagerProvider.RegisterManager<BillboardSystem>();
@@ -84,16 +84,35 @@ namespace TaoTie
             GameObjectPoolManager.GetInstance().AddPersistentPrefabPath(UIToast.PrefabPath);
             using (ListComponent<ETTask> tasks = ListComponent<ETTask>.Create())
             {
-                tasks.Add(sm.InitAsync());
+                if (!configInit)
+                {
+                    tasks.Add(ConfigManager.Instance.LoadAsync());
+                }
+                else
+                {
+                    tasks.Add(ConfigFsmControllerCategory.Instance.LoadAsync());
+                    tasks.Add(ConfigAIBetaCategory.Instance.LoadAsync());
+                    tasks.Add(ConfigActorCategory.Instance.LoadAsync());
+                }
+                tasks.Add(SoundManager.Instance.InitAsync());
+                tasks.Add(InputManager.Instance.LoadAsync());
+                tasks.Add(CameraManager.Instance.LoadAsync());
                 tasks.Add(ConfigSceneGroupCategory.Instance.LoadAsync());
                 tasks.Add(ConfigAIDecisionTreeCategory.Instance.LoadAsync());
                 tasks.Add(ConfigAbilityCategory.Instance.LoadAsync());
                 tasks.Add(ConfigStoryCategory.Instance.LoadAsync());
-                tasks.Add(ConfigFsmControllerCategory.Instance.LoadAsync());
-                tasks.Add(ConfigAIBetaCategory.Instance.LoadAsync());
-                tasks.Add(ConfigActorCategory.Instance.LoadAsync());
                 tasks.Add(GameObjectPoolManager.GetInstance().PreLoadGameObjectAsync(UIToast.PrefabPath, 1));
                 await ETTaskHelper.WaitAll(tasks);
+            }
+            if (!configInit)
+            {
+                using (ListComponent<ETTask> tasks = ListComponent<ETTask>.Create())
+                {
+                    tasks.Add(ConfigFsmControllerCategory.Instance.LoadAsync());
+                    tasks.Add(ConfigAIBetaCategory.Instance.LoadAsync());
+                    tasks.Add(ConfigActorCategory.Instance.LoadAsync());
+                    await ETTaskHelper.WaitAll(tasks);
+                }
             }
             await PackageManager.Instance.UnloadUnusedAssets(Define.DefaultName);
             ManagerProvider.RegisterManager<CampManager>();
