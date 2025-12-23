@@ -28,6 +28,8 @@ namespace TaoTie
             {"WebGL", 1024},
             {"MiniGame", 1024},
         };
+
+        private const int WebGLUISize = 2048;
         public enum ImageType
         {
             Atlas,
@@ -131,6 +133,14 @@ namespace TaoTie
                 Object sprite = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
                 if (IsPackable(sprite))
                 {
+                    bool isUI = false;
+                    for (int i = 0; i < uipaths.Length; i++)
+                    {
+                        if (assetPath.Contains("/"+uipaths[i]+"/")||assetPath.Contains("\\"+uipaths[i]+"\\"))
+                        {
+                            isUI = true;
+                        }
+                    }
                     //Logger.LogError("=============" + assetPath);
                     var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
 
@@ -185,24 +195,48 @@ namespace TaoTie
                     importer.SetPlatformTextureSettings(platformSetting);
                     
                     platformSetting = importer.GetPlatformTextureSettings("WebGL");
-                    platformSetting.maxTextureSize = MaxSize["WebGL"];
+                    if (isUI)
+                    {
+                        platformSetting.maxTextureSize = Math.Max(MaxSize["WebGL"], WebGLUISize);
+                    }
+                    else
+                    {
+                        platformSetting.maxTextureSize = importer.textureType == TextureImporterType.Shadowmask
+                            ? MaxSize["WebGL"]
+                            : MaxSize["WebGL"] / 2;
+                    }
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
 #if UNITY_2021_3_OR_NEWER
-                    platformSetting.format = format;
+                    platformSetting.format = format == TextureImporterFormat.ASTC_6x6
+                        ? TextureImporterFormat.ASTC_8x8
+                        : format;
 #else
-                    platformSetting.format = type == ImageType.Atlas?format:TextureImporterFormat.DXT5;
+                    platformSetting.format = format == TextureImporterFormat.ASTC_6x6
+                        ? TextureImporterFormat.DXT5
+                        : format;
 #endif
                     importer.SetPlatformTextureSettings(platformSetting);
                     
 #if TUANJIE_1_5_OR_NEWER
                     platformSetting = importer.GetPlatformTextureSettings("MiniGame");
-                    platformSetting.maxTextureSize = MaxSize["MiniGame"];
+                    if (isUI)
+                    {
+                        platformSetting.maxTextureSize = Math.Max(MaxSize["MiniGame"], WebGLUISize);
+                    }
+                    else
+                    {
+                        platformSetting.maxTextureSize = importer.textureType == TextureImporterType.Shadowmask
+                            ? MaxSize["MiniGame"]
+                            : MaxSize["MiniGame"] / 2;
+                    }
                     platformSetting.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
                     platformSetting.overridden = true;
                     // platformSetting.textureCompression = type;
-                    platformSetting.format = format;
+                    platformSetting.format = format == TextureImporterFormat.ASTC_6x6
+                        ? TextureImporterFormat.ASTC_8x8
+                        : format;
                     importer.SetPlatformTextureSettings(platformSetting);
 #endif
 
@@ -338,9 +372,9 @@ namespace TaoTie
             platformSetting = new TextureImporterPlatformSettings()
             {
                 name = "WebGL",
-                maxTextureSize = 2048,
+                maxTextureSize = Math.Max(MaxSize["WebGL"], WebGLUISize),
 #if UNITY_2021_3_OR_NEWER
-                format = format,
+                format = TextureImporterFormat.ASTC_8x8,
 #else
                 format = TextureImporterFormat.DXT5; //设置格式
 #endif
@@ -353,8 +387,8 @@ namespace TaoTie
             platformSetting = new TextureImporterPlatformSettings()
             {
                 name = "MiniGame",
-                maxTextureSize = MaxSize["MiniGame"],
-                format = format,
+                maxTextureSize = Math.Max(MaxSize["MiniGame"], WebGLUISize),
+                format = TextureImporterFormat.ASTC_8x8,
                 overridden = true,
                 compressionQuality = 100,
             };
@@ -588,8 +622,9 @@ namespace TaoTie
                         setting = textureImporter.GetPlatformTextureSettings("WebGL");
                         setting.overridden = true;
 #if UNITY_2021_3_OR_NEWER
-                        setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
-                        setting.maxTextureSize = MaxSize["WebGL"];
+                        setting.format = TextureImporterFormat.ASTC_8x8; //设置格式
+                        setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask ? 
+                            MaxSize["WebGL"] : MaxSize["WebGL"] / 2;
 #else
                         setting.format = TextureImporterFormat.DXT5; //设置格式
                         setting.maxTextureSize = GetTextureDXT5Size(textureImporter, file, MaxSize["WebGL"]);
@@ -600,7 +635,7 @@ namespace TaoTie
                         setting = textureImporter.GetPlatformTextureSettings("MiniGame");
                         setting.overridden = true;
 
-                        setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                        setting.format = TextureImporterFormat.ASTC_8x8; //设置格式
                         setting.maxTextureSize = MaxSize["MiniGame"];
                         textureImporter.SetPlatformTextureSettings(setting);
 #endif
@@ -647,15 +682,17 @@ namespace TaoTie
                 setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
                 setting.maxTextureSize = MaxSize["iPhone"];
                 textureImporter.SetPlatformTextureSettings(setting);
+
                 textureImporter.SaveAndReimport();
 
                 setting = textureImporter.GetPlatformTextureSettings("WebGL");
                 setting.overridden = true;
 #if UNITY_2021_3_OR_NEWER
-                setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                setting.format = TextureImporterFormat.ASTC_8x8; //设置格式
                 setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask
                     ? MaxSize["WebGL"]
                     : MaxSize["WebGL"] / 2;
+                
 #else
                 setting.format = TextureImporterFormat.DXT5; //设置格式
                 setting.maxTextureSize = AtlasHelper.GetTextureDXT5Size(textureImporter, path, MaxSize["WebGL"]/2);
@@ -666,10 +703,11 @@ namespace TaoTie
 #if TUANJIE_1_5_OR_NEWER
                 setting = textureImporter.GetPlatformTextureSettings("MiniGame");
                 setting.overridden = true;
-                setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
+                setting.format = TextureImporterFormat.ASTC_8x8; //设置格式
                 setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask
                     ? MaxSize["MiniGame"]
                     : MaxSize["MiniGame"] / 2;
+                
                 textureImporter.SetPlatformTextureSettings(setting);
                 textureImporter.SaveAndReimport();
 #endif

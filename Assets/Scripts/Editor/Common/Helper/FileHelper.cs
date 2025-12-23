@@ -50,7 +50,41 @@ namespace TaoTie
 				}
 			}
 		}
+		
+		public static void CleanDirectory(string dir, string[] ignore)
+		{
+			if(!Directory.Exists(dir)) return;
+			foreach (string subdir in Directory.GetDirectories(dir))
+			{
+				CleanDirectory(subdir, ignore);
+			}
 
+			foreach (string subFile in Directory.GetFiles(dir))
+			{
+				try
+				{
+					if (ignore != null)
+					{
+						bool has = false;
+						for (int i = 0; i < ignore.Length; i++)
+						{
+							if (subFile.Contains(ignore[i]))
+							{
+								has = true;
+								break;
+							}
+						}
+						if(has) continue;
+					}
+					File.Delete(subFile);
+				}
+				catch (Exception ex)
+				{
+					Debug.LogError(ex);
+				}
+			}
+		}
+		
 		public static void CopyDirectory(string srcDir, string tgtDir)
 		{
 			DirectoryInfo source = new DirectoryInfo(srcDir);

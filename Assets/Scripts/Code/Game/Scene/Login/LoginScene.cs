@@ -32,7 +32,11 @@ namespace TaoTie
 
         public async ETTask OnEnter()
         {
-            win = await UIManager.Instance.OpenWindow<UILoadingView>(UILoadingView.PrefabPath);
+            win = UIManager.Instance.GetView<UILoadingView>();
+            if (win == null)
+            {
+                win = await UIManager.Instance.OpenWindow<UILoadingView>(UILoadingView.PrefabPath);
+            }
             win.SetProgress(0);
         }
 

@@ -533,6 +533,7 @@ namespace TaoTie
                 TTSDK.Tool.StarkBuilderSettings setting = TTSDK.Tool.StarkBuilderSettings.Instance;
                 if (setting != null)
                 {
+                    setting.CDN = Define.USE_CDN ? $"{config.DefaultHostServer}/{rename}_{platform}/" : "";
                     setting.assetBundleFSEnabled = true;
                     setting.isOldBuildFormat = false;
                     setting.webglPackagePath = Path.GetFullPath("Release");
@@ -625,17 +626,19 @@ namespace TaoTie
             //新打包格式
             if (Directory.Exists(newPath))
             {
+                TTSDK.Tool.StarkBuilderSettings setting = TTSDK.Tool.StarkBuilderSettings.Instance;
+                bool useCdn = !string.IsNullOrEmpty(setting?.CDN);
                 if (File.Exists(newPath + "game.js"))
                 {
                     var txt = File.ReadAllText(newPath + "game.js");
-                    txt = txt.Replace("['正在加载资源']","['正在加载资源','正在加载配置','正在生成世界']");
+                    txt = txt.Replace("['正在加载资源']","['正在加载资源.','正在加载资源..','正在加载资源...']");
                     txt = txt.Replace("'编译中'", "'正在编译'");
                     txt = txt.Replace("'初始化中'", "'正在初始化'");
                     txt = txt.Replace("textDuration: 1500,", "textDuration: 6000,");
                     txt = txt.Replace("scaleMode: scaleMode.default,", "scaleMode: scaleMode.noBorder,");
                     txt = txt.Replace("width: 106,", "width: 64,");
                     txt = txt.Replace("height: 40,", "height: 64,");
-                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform);
+                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform, useCdn);
                     if (!string.IsNullOrEmpty(preload))
                     {
                         txt = txt.Replace(
@@ -645,7 +648,10 @@ namespace TaoTie
 
                     File.WriteAllText(newPath + "game.js", txt);
                 }
-
+                if (useCdn)
+                {
+                    FileHelper.CleanDirectory(newPath + "StreamingAssets", new []{".hash", ".js", ".bytes"});
+                }
                 var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
                 if (icons.Length > 0 && icons[0] != null)
                 {
@@ -692,6 +698,9 @@ namespace TaoTie
                             "// 'DATA_CDN/StreamingAssets/WebGL/textures_8d265a9dfd6cb7669cdb8b726f0afb1e',",
                             preload);
                     }
+                    txt = txt.Replace("'编译中'", "'正在编译'");
+                    txt = txt.Replace("'初始化中'", "'正在初始化'");
+                    txt = txt.Replace("['正在加载资源']","['正在加载资源.','正在加载资源..','正在加载资源...']");
                     File.WriteAllText(newPath + "game.js", txt);
                 }
             }

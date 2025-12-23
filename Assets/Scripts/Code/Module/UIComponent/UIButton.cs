@@ -17,7 +17,7 @@ namespace TaoTie
         Image image;
         string spritePath;
         private int version = 0;
-        
+        private Material defaultMat;
         #region override
 
         public void OnDestroy()
@@ -51,6 +51,10 @@ namespace TaoTie
                 if (this.image == null)
                 {
                     Log.Error($"添加UI侧组件UIButton时，物体{this.GetGameObject().name}上没有找到Image组件");
+                }
+                else
+                {
+                    defaultMat = image.material;
                 }
             }
         }
@@ -98,13 +102,13 @@ namespace TaoTie
             this.grayState = isGray;
             this.ActivatingImageComponent();
             
-            Material mt = null;
+            Material mt = defaultMat;
             if (isGray)
             {
                 mt = await MaterialManager.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
                 if (!this.grayState)
                 {
-                    mt = null;
+                    mt = defaultMat;
                 }
             }
 

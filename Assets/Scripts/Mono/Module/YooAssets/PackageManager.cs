@@ -97,15 +97,37 @@ namespace TaoTie
                     }
 
                     IRemoteServices remoteServices = new RemoteServices(CdnConfig);
-                    var webServerFileSystemParams =
-                        FileSystemParameters.CreateDefaultWebServerFileSystemParameters(new WebDecryption());
+                    var initParameters = new WebPlayModeParameters();
+                    
+#if MINIGAME_SUBPLATFORM_DOUYIN
+                    var webRemoteFileSystemParams =
+                        TiktokFileSystemCreater.CreateFileSystemParameters(CdnConfig.GetChannel() + "_webgl",
+                            remoteServices, new WebDecryption());
+#elif MINIGAME_SUBPLATFORM_WEIXIN
+                    var webRemoteFileSystemParams =
+                        WechatFileSystemCreater.CreateFileSystemParameters(
+                            $"{WeChatWASM.WX.env.USER_DATA_PATH}/__GAME_FILE_CACHE", remoteServices,
+                            new WebDecryption());
+#else
                     var webRemoteFileSystemParams =
                         FileSystemParameters.CreateDefaultWebRemoteFileSystemParameters(remoteServices,
-                            new WebDecryption()); //支持跨域下载
-
-                    var initParameters = new WebPlayModeParameters();
-                    initParameters.WebServerFileSystemParameters = webServerFileSystemParams;
+                            new WebDecryption());
+#endif
                     initParameters.WebRemoteFileSystemParameters = webRemoteFileSystemParams;
+                    
+#if UNITY_WEBGL_TT
+                    if (!Define.USE_CDN)
+                    {
+                        var webServerFileSystemParams =
+                            TiktokFileSystemCreater.CreateFileSystemParameters(CdnConfig.GetChannel() + "_webgl", null,
+                                new WebDecryption());
+                        initParameters.WebServerFileSystemParameters = webServerFileSystemParams;
+                    }
+#elif !MINIGAME_SUBPLATFORM_WEIXIN && !MINIGAME_SUBPLATFORM_KUAISHOU && !MINIGAME_SUBPLATFORM_MINIHOST
+                    var webServerFileSystemParams =
+                        FileSystemParameters.CreateDefaultWebServerFileSystemParameters(new WebDecryption());
+                    initParameters.WebServerFileSystemParameters = webServerFileSystemParams;
+#endif
                     initializeParameters = initParameters;
                 }
                 

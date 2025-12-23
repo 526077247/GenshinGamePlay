@@ -58,5 +58,9 @@ namespace TaoTie
         public static readonly string[] RenameList = {"iOS"};
 
         public const int MinRepeatedTimerInterval = 100;
+        
+#if MINIGAME_SUBPLATFORM_DOUYIN
+        public const bool USE_CDN = true;
+#endif
     }
 }

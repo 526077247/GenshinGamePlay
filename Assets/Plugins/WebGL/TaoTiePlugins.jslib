@@ -1,11 +1,29 @@
 mergeInto(LibraryManager.library, {
     IsiOSWebGL: function () {
+        if(typeof wx !== 'undefined'){
+            return /iPhone|iPad|iPod/i.test(wx.getSystemInfoSync().brand);
+        }
+        if(typeof tt !== 'undefined'){
+            return /iPhone|iPad|iPod/i.test(tt.getSystemInfoSync().brand);
+        }
         return /iPhone|iPad|iPod/i.test(navigator.userAgent);
     },
     IsAndroidWebGL: function () {
-        return /IsAndroid/i.test(navigator.userAgent);
+        if(typeof wx !== 'undefined'){
+            return /Android/i.test(wx.getSystemInfoSync().brand);
+        }
+        if(typeof tt !== 'undefined'){
+            return /Android/i.test(tt.getSystemInfoSync().brand);
+        }
+        return /Android/i.test(navigator.userAgent);
     },
     IsHuaWeiGroupWebGL: function () {
+        if(typeof wx !== 'undefined'){
+            return /OpenHarmony|HUAWEI|HONOR/i.test(wx.getSystemInfoSync().brand);
+        }
+        if(typeof tt !== 'undefined'){
+            return /OpenHarmony|HUAWEI|HONOR/i.test(tt.getSystemInfoSync().brand);
+        }
         return /OpenHarmony|HUAWEI|HONOR/i.test(navigator.userAgent);
     },
     CloseWindow:function() {
