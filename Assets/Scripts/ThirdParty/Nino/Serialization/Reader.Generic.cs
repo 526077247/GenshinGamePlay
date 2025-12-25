@@ -205,8 +205,8 @@ namespace Nino.Serialization
             int i = 0;
             while (i < len)
             {
-                arr[i++] = (T)ReadCommonVal(
-                    TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T));
+                arr[i++] = (T)ReadCommonVal(typeof(T).IsClass &&
+                                            TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T));
             }
 
             return arr;
@@ -228,8 +228,8 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                lst.Add((T)ReadCommonVal(
-                    TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
+                lst.Add((T)ReadCommonVal(typeof(T).IsClass &&
+                                         TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
             }
 
             return lst;
@@ -251,8 +251,8 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                lst.Add((T)ReadCommonVal(
-                    TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
+                lst.Add((T)ReadCommonVal(typeof(T).IsClass &&
+                                         TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
             }
 
             return lst;
@@ -274,8 +274,8 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                lst.Enqueue((T)ReadCommonVal(
-                    TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
+                lst.Enqueue((T)ReadCommonVal(typeof(T).IsClass &&
+                                             TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
             }
 
             return lst;
@@ -317,10 +317,10 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                var key = (TKey)ReadCommonVal(
-                    TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(TKey));
-                var val = (TValue)ReadCommonVal(
-                    TypeModel.AllTypes.TryGetValue(ReadInt32(), out type) ? type : typeof(TValue));
+                var key = (TKey)ReadCommonVal(typeof(TKey).IsClass &&
+                                              TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(TKey));
+                var val = (TValue)ReadCommonVal(typeof(TValue).IsClass &&
+                                                TypeModel.AllTypes.TryGetValue(ReadInt32(), out type) ? type : typeof(TValue));
                 dic.Add(key, val);
             }
 

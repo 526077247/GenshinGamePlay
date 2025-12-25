@@ -48,10 +48,10 @@ namespace TaoTie
                 var ver = GetPackageVersion();
                 if (ver < 0 || ver < BuildInPackageConfig.PackageVer[i])
                 {
-                    PlayerPrefs.SetInt("PACKAGE_VERSION_" + name, BuildInPackageConfig.PackageVer[i]);
+                    UnityEngine.PlayerPrefs.SetInt("PACKAGE_VERSION_" + name, BuildInPackageConfig.PackageVer[i]);
                 }
             }
-            PlayerPrefs.Save();
+            UnityEngine.PlayerPrefs.Save();
 #endif
         }
 
@@ -144,6 +144,10 @@ namespace TaoTie
             {
                 if (initializeParameters == null)
                 {
+                    if (CdnConfig == null)
+                    {
+                        CdnConfig = Resources.Load<CDNConfig>("CDNConfig");
+                    }
                     var buildinFileSystemParams =
                         FileSystemParameters.CreateDefaultBuildinFileSystemParameters(new FileStreamDecryption());
                     if (BuildInPackageConfig != null && BuildInPackageConfig.PackageName.Contains(packageName))

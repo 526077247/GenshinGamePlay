@@ -220,7 +220,7 @@ namespace TaoTie
                     importer.SetPlatformTextureSettings(platformSetting);
                     
 #if TUANJIE_1_5_OR_NEWER
-                    platformSetting = importer.GetPlatformTextureSettings("MiniGame");
+                    platformSetting = importer.GetPlatformTextureSettings("WeixinMiniGame");
                     if (isUI)
                     {
                         platformSetting.maxTextureSize = Math.Max(MaxSize["MiniGame"], WebGLUISize);
@@ -386,7 +386,7 @@ namespace TaoTie
 #if TUANJIE_1_5_OR_NEWER
             platformSetting = new TextureImporterPlatformSettings()
             {
-                name = "MiniGame",
+                name = "WeixinMiniGame",
                 maxTextureSize = Math.Max(MaxSize["MiniGame"], WebGLUISize),
                 format = TextureImporterFormat.ASTC_8x8,
                 overridden = true,
@@ -632,11 +632,12 @@ namespace TaoTie
                         textureImporter.SetPlatformTextureSettings(setting);
 
 #if TUANJIE_1_5_OR_NEWER
-                        setting = textureImporter.GetPlatformTextureSettings("MiniGame");
+                        setting = textureImporter.GetPlatformTextureSettings("WeixinMiniGame");
                         setting.overridden = true;
 
                         setting.format = TextureImporterFormat.ASTC_8x8; //设置格式
-                        setting.maxTextureSize = MaxSize["MiniGame"];
+                        setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask ? 
+                             MaxSize["MiniGame"] : MaxSize["MiniGame"] / 2;
                         textureImporter.SetPlatformTextureSettings(setting);
 #endif
                         
@@ -701,7 +702,7 @@ namespace TaoTie
 
                 textureImporter.SaveAndReimport();
 #if TUANJIE_1_5_OR_NEWER
-                setting = textureImporter.GetPlatformTextureSettings("MiniGame");
+                setting = textureImporter.GetPlatformTextureSettings("WeixinMiniGame");
                 setting.overridden = true;
                 setting.format = TextureImporterFormat.ASTC_8x8; //设置格式
                 setting.maxTextureSize = textureImporter.textureType == TextureImporterType.Shadowmask

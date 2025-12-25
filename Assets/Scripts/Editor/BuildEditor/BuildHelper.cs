@@ -675,7 +675,8 @@ namespace TaoTie
                 string[] fls = Directory.GetFiles(WeChatWASM.WXConvertCore.config.ProjectConf.DST +"/webgl");
                 for (int i = 0; i < fls.Length; i++)
                 {
-                    if (fls[i].EndsWith(".data") || fls[i].EndsWith("data.zip") || fls[i].EndsWith("data.br")|| fls[i].EndsWith("bin.txt"))
+                    if (fls[i].EndsWith(".data") || fls[i].EndsWith("data.zip") || fls[i].EndsWith("data.br")|| fls[i].EndsWith("bin.txt")
+                        || fls[i].EndsWith("bin.br"))
                     {
                         var name = Path.GetFileName(fls[i]);
                         File.Copy(fls[i], targetPath + "/" + name);
