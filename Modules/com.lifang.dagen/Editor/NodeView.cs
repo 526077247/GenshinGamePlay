@@ -290,7 +290,7 @@ namespace DaGenGraph.Editor
             DrawPortsList(node.inputPorts);
             var inspectorArea = new Rect(20, dynamicHeight + 5, width - 40, height);
             GUILayout.BeginArea(inspectorArea);
-            if(graph.showNodeViewDetails) dynamicHeight += DrawInspector();
+            if(graph.showNodeViewDetails && graph.currentZoom > 0.7f) dynamicHeight += DrawInspector();
             GUILayout.EndArea();
             dynamicHeight += 5;
             DrawPortsList(node.outputPorts);
