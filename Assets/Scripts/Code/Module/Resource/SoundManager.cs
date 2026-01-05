@@ -430,6 +430,7 @@ namespace TaoTie
 
         public long PlaySound(string path, ETCancellationToken token = null, bool isLoop = false)
         {
+            if (SoundVolume <= 0) return 0;
             if (string.IsNullOrEmpty(path)) return 0;
             AudioSource source = GetClipSource();
             if (source == null)
@@ -446,6 +447,7 @@ namespace TaoTie
 
         public async ETTask PlaySoundAsync(string path, ETCancellationToken token = null)
         {
+            if (SoundVolume <= 0) return ;
             if (string.IsNullOrEmpty(path)) return;
             AudioSource source = GetClipSource();
             if (source == null)
@@ -461,6 +463,7 @@ namespace TaoTie
         }
         public long PlayHttpAudio(string url, bool loop = false, ETCancellationToken cancel = null)
         {
+            if (SoundVolume <= 0) return 0;
             if (string.IsNullOrEmpty(url)) return 0;
             AudioSource source = GetClipSource();
             if (source == null)
@@ -476,6 +479,7 @@ namespace TaoTie
         }
         public async ETTask PlayHttpAudioAsync(string url, bool loop = false, ETCancellationToken cancel = null)
         {
+            if (SoundVolume <= 0) return ;
             if (string.IsNullOrEmpty(url)) return;
             AudioSource source = GetClipSource();
             if (source == null)

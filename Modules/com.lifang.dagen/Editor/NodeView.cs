@@ -16,6 +16,7 @@ namespace DaGenGraph.Editor
         private GraphBase m_Graph;
         private Vector2 m_DeleteButtonSize;
         private Vector2 m_Offset;
+        private Rect m_graphArea;
         private Rect m_DrawRect;
         public bool isVisible = true;
         public bool zoomedBeyondPortDrawThreshold = false;
@@ -290,7 +291,15 @@ namespace DaGenGraph.Editor
             DrawPortsList(node.inputPorts);
             var inspectorArea = new Rect(20, dynamicHeight + 5, width - 40, height);
             GUILayout.BeginArea(inspectorArea);
-            if(graph.showNodeViewDetails && graph.currentZoom > 0.7f) dynamicHeight += DrawInspector();
+            if (graph.showNodeViewDetails && graph.currentZoom > 0.7f
+                                          && node.x + (graph.currentPanOffset.x + width + 10) / graph.currentZoom > 0
+                                          && node.x + (graph.currentPanOffset.x - m_graphArea.width) / graph.currentZoom < 0
+                                          && node.y + (graph.currentPanOffset.y + m_graphArea.height) / graph.currentZoom > 0
+                                          && node.y + (graph.currentPanOffset.y - m_graphArea.height) / graph.currentZoom < 0
+               )
+            {
+                dynamicHeight += DrawInspector();
+            }
             GUILayout.EndArea();
             dynamicHeight += 5;
             DrawPortsList(node.outputPorts);
@@ -328,6 +337,7 @@ namespace DaGenGraph.Editor
         public void DrawNodeGUI(Rect graphArea, Vector2 panOffset, float zoomLevel)
         {
             m_Offset = panOffset;
+            m_graphArea = graphArea;
             Vector2 windowToGridPosition = m_Node.GetPosition() + m_Offset / zoomLevel;
             var clientRect = new Rect(windowToGridPosition, m_Node.GetSize());
             GUI.Window(m_WindowId, clientRect, DrawNode, string.Empty, nodeArea);
