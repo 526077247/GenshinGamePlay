@@ -11,6 +11,7 @@ namespace TaoTie
     {
         public string GetPackageName(string path)
         {
+            if (path.StartsWith(Define.ResourcesName)) return Define.ResourcesName;
             return Define.DefaultName;
         }
     }

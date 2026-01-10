@@ -144,7 +144,13 @@ namespace TaoTie
 				}
 				else
 				{
-					var go = await ResourcesManager.Instance.LoadAsync<GameObject>(path,package: PackageName);
+					string package = PackageName;
+					//特殊处理，Default和Resources一起管理
+					if (package == Define.DefaultName && path.StartsWith(Define.ResourcesName))
+					{
+						package = Define.ResourcesName;
+					}
+					var go = await ResourcesManager.Instance.LoadAsync<GameObject>(path, package: package);
 					if (go != null)
 					{
 						CacheAndInstGameObject(path, go, instCount);

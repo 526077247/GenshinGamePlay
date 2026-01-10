@@ -65,6 +65,40 @@ namespace TaoTie
         {
             return preloadScene != null;
         }
+        
+        /// <summary>
+        /// 从Resources加载资源
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="callback"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public ETTask<T> LoadAsyncFromResources<T>(string path, Action<T> callback = null)
+            where T : UnityEngine.Object
+        {
+            ETTask<T> res = ETTask<T>.Create(true);
+            if (string.IsNullOrEmpty(path))
+            {
+                Log.Error("path is empty");
+                callback?.Invoke(null);
+                res.SetResult(null);
+                return res;
+            }
+
+            path = path.Replace(Define.ResourcesName + "/","");
+            if (path.Contains("."))
+                path = path.Split(".")[0];
+            var op = Resources.LoadAsync<T>(path);
+            
+            op.completed += (_) =>
+            {
+                var obj = op.asset as T;
+                callback?.Invoke(obj);
+                res.SetResult(obj);
+            };
+            return res;
+
+        }
 
         /// <summary>
         /// 异步加载Asset
@@ -98,15 +132,22 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
-            var op = PackageManager.Instance.LoadAssetAsync<T>(path, package);
-            if (op == null)
+            if (package == Define.ResourcesName)
+            {
+                return LoadAsyncFromResources(path, callback);
+            }
+            
+            var handle = PackageManager.Instance.LoadAssetAsync<T>(path, package);
+            if (handle == null)
             {
                 Log.Error(package + "加载资源前未初始化！" + path);
-                return default;
+                res.SetResult(null);
+                callback?.Invoke(null);
+                return res;
             }
 
-            loadingOp.Add(op);
-            op.Completed += (op) =>
+            loadingOp.Add(handle);
+            handle.Completed += (op) =>
             {
                 var obj = op.AssetObject as T;
                 loadingOp.Remove(op);
@@ -152,6 +193,15 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
+            if (package == Define.ResourcesName)
+            {
+                LoadAsyncFromResources<T>(path, (data) =>
+                {
+                    callback?.Invoke(data);
+                    task.SetResult();
+                }).Coroutine();
+                return task;
+            }
             LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
@@ -189,15 +239,16 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
-            var op = PackageManager.Instance.LoadSceneAsync(path,
+            var handle = PackageManager.Instance.LoadSceneAsync(path,
                 isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package);
-            if (op == null)
+            if (handle == null)
             {
                 Log.Error(package + "加载资源前未初始化！" + path);
-                return default;
+                res.SetResult(null);
+                return res;
             }
 
-            op.Completed += (op) => { res.SetResult(op); };
+            handle.Completed += (op) => { res.SetResult(op); };
             return res;
         }
         
@@ -228,14 +279,14 @@ namespace TaoTie
                 package = packageFinder.GetPackageName(path);
             }
 
-            var op = PackageManager.Instance.LoadSceneAsync(path,
+            var handle = PackageManager.Instance.LoadSceneAsync(path,
                 isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package, true);
-            if (op == null)
+            if (handle == null)
             {
                 Log.Error(package + "加载资源前未初始化！" + path);
-                return default;
+                return null;
             }
-            op.Completed += (op) =>
+            handle.Completed += (op) =>
             {
                 if (op == preloadScene)
                 {
@@ -246,8 +297,8 @@ namespace TaoTie
                     op.UnloadAsync();
                 }
             };
-            preloadScene = op;
-            return op;
+            preloadScene = handle;
+            return handle;
         }
         
         /// <summary>
