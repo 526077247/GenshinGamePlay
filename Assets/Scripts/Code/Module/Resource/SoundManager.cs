@@ -254,6 +254,7 @@ namespace TaoTie
                     }
                     AudioSource = null;
                     if(!isLoading) ObjectPool.Instance?.Recycle(this);
+                    Path = null;
                 }
             }
         }

@@ -512,19 +512,32 @@ namespace TaoTie
                     }
                 }
 
+                var define = "UNITY_WEBGL_1";
                 if (webgl1)
                 {
-                    var define = "UNITY_WEBGL_1";
                     var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup).Trim();
-                    if (!string.IsNullOrEmpty(definesString))
+                    if (!definesString.Contains(define))
                     {
-                        definesString += definesString.EndsWith(";") ? define+";" : $";{define};";
+                        if (!string.IsNullOrEmpty(definesString))
+                        {
+                            definesString += definesString.EndsWith(";") ? define + ";" : $";{define};";
+                        }
+                        else
+                        {
+                            definesString = define + ";";
+                        }
+                        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, definesString);
                     }
-                    else
+                }
+                else
+                {
+                    var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup).Trim();
+                    if (definesString.Contains(define))
                     {
-                        definesString = define+";";
+                        definesString = definesString.Replace(define, "");
+                        definesString = definesString.Replace(";;", ";");
+                        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, definesString);
                     }
-                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, definesString);
                 }
 #endif
                 AssetDatabase.Refresh();
@@ -635,9 +648,19 @@ namespace TaoTie
                     txt = txt.Replace("'编译中'", "'正在编译'");
                     txt = txt.Replace("'初始化中'", "'正在初始化'");
                     txt = txt.Replace("textDuration: 1500,", "textDuration: 6000,");
+                    txt = txt.Replace("designWidth: 0","designWidth: 600");
+                    txt = txt.Replace("designHeight: 0","designHeight: 1280");
                     txt = txt.Replace("scaleMode: scaleMode.default,", "scaleMode: scaleMode.noBorder,");
-                    txt = txt.Replace("width: 106,", "width: 64,");
-                    txt = txt.Replace("height: 40,", "height: 64,");
+                    txt = txt.Replace("width: 106,", "width: 0,");
+                    txt = txt.Replace("height: 40,", "height: 0,");
+                    txt = txt.Replace("bottom: 85,", "bottom: 275,");
+                    txt = txt.Replace("bottom: 69,", "bottom: 275,");
+                    txt = txt.Replace("width: 280,", "width: 400,");
+                    txt = txt.Replace("height: 17,", "height: 30,");
+                    txt = txt.Replace("height: 12,", "height: 30,");
+                    txt = txt.Replace("fontSize: 13,", "fontSize: 16,");
+                    txt = txt.Replace("backgroundColor: '#ffffff',", "backgroundColor: '#3c3c3c',");
+                    txt = txt.Replace("iconImage: 'images/unity_logo.png',", "iconImage: '',");
                     var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform, useCdn);
                     if (!string.IsNullOrEmpty(preload))
                     {
@@ -652,14 +675,15 @@ namespace TaoTie
                 {
                     FileHelper.CleanDirectory(newPath + "StreamingAssets", new []{".hash", ".js", ".bytes"});
                 }
-                var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
-                if (icons.Length > 0 && icons[0] != null)
-                {
-                    var path = AssetDatabase.GetAssetPath(icons[0]);
-                    File.Copy(path, $"{newPath}/images/unity_logo.png", true);
-                }
+                //var icons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown);
+                //if (icons.Length > 0 && icons[0] != null)
+                //{
+                //    var path = AssetDatabase.GetAssetPath(icons[0]);
+                //    File.Copy(path, $"{newPath}/images/unity_logo.png", true);
+                //}
 
-                //File.Copy("Assets/background.png", $"{newPath}/images/background.png", true);//背景图
+                //if (File.Exists($"{newPath}/images/background.png")) 
+                //    File.Copy("Assets/LoadingBG.png", $"{newPath}/images/background.png", true);
                 if (File.Exists(newPath + "game.json")) //处理json格式报错
                 {
                     var gamejStr = File.ReadAllText(newPath + "game.json");
@@ -702,6 +726,17 @@ namespace TaoTie
                     txt = txt.Replace("'编译中'", "'正在编译'");
                     txt = txt.Replace("'初始化中'", "'正在初始化'");
                     txt = txt.Replace("['正在加载资源']","['正在加载资源.','正在加载资源..','正在加载资源...']");
+                    txt = txt.Replace("designWidth: 0","designWidth: 600");
+                    txt = txt.Replace("designHeight: 0","designHeight: 1280");
+                    txt = txt.Replace("scaleMode: scaleMode.default,", "scaleMode: scaleMode.noBorder,");
+                    txt = txt.Replace("height: 23,", "height: 0,");
+                    txt = txt.Replace("width: 64,", "width: 0,");
+                    txt = txt.Replace("bottom: 64,", "bottom: 275,");
+                    txt = txt.Replace("width: 240,", "width: 400,");
+                    txt = txt.Replace("height: 24,", "height: 30,");
+                    txt = txt.Replace("fontSize: 12,", "fontSize: 16,");
+                    txt = txt.Replace("iconImage: 'images/unity_logo.png',", "iconImage: '',");
+                    txt = txt.Replace("backgroundColor: '#07C160',", "backgroundColor: '#3c3c3c',");
                     File.WriteAllText(newPath + "game.js", txt);
                 }
             }
@@ -845,7 +880,7 @@ namespace TaoTie
                     if (path.TryGetValue(item, out var p))
                     {
                         if(!p.GetTagsString().Contains("buildin") || !includeBuildins) 
-                            preloadList.AppendLine($"'{config.DefaultHostServer}/{rename}_{platform}/{p.FileName}',");
+                            preloadList.Append($"'{config.DefaultHostServer}/{rename}_{platform}/{p.FileName}',");
                     }
                 }
             

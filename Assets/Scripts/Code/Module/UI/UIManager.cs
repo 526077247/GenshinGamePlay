@@ -731,6 +731,11 @@ namespace TaoTie
             }
 
             await TimerManager.Instance.WaitTillAsync(time);
+            //回来后已经被销毁了
+            if (!boxes.TryGetValue(view, out target))
+            {
+                return;
+            }
             InnerCloseWindow(target);
             InnerDestroyWindow(target);
             boxes.Remove(view);

@@ -53,6 +53,7 @@ namespace TaoTie
         
         async ETTask InnerSwitchScene<T>(bool needClean = false, int id = 0, List<string> ignoreClean = null) where T : class, IScene
         {
+            var startTime = TimerManager.Instance.GetTimeNow();
             float slidValue = 0;
             Log.Info("InnerSwitchScene start open uiLoading");
             var scene = await GetScene<T>();
@@ -153,9 +154,11 @@ namespace TaoTie
 
             slidValue = 1;
             await scene.SetProgress(slidValue);
-            Log.Info("等久点，跳的太快");
+            var timeNow = TimerManager.Instance.GetTimeNow();
+            var deltaTime = timeNow - startTime;
+            Log.Info("等久点，跳的太快"+deltaTime);
             //等久点，跳的太快
-            await TimerManager.Instance.WaitAsync(500);
+            await TimerManager.Instance.WaitAsync(Math.Max(1, 1000 - deltaTime));
             Log.Info("加载目标场景完成");
             CurrentScene = scene;
             await scene.OnSwitchSceneEnd();
