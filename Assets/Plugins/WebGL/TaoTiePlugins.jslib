@@ -1,28 +1,46 @@
 mergeInto(LibraryManager.library, {
     IsiOSWebGL: function () {
-        if(typeof wx !== 'undefined'){
-            return /iPhone|iPad|iPod/i.test(wx.getSystemInfoSync().brand);
-        }
         if(typeof tt !== 'undefined'){
-            return /iPhone|iPad|iPod/i.test(tt.getSystemInfoSync().brand);
+            return /iPhone|iPad|iPod|Apple/i.test(tt.getSystemInfoSync().brand);
         }
-        return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if(typeof wx !== 'undefined'){
+            return /iPhone|iPad|iPod|Apple/i.test(wx.getSystemInfoSync().brand);
+        }
+        if(typeof tap !== 'undefined'){
+            return /iPhone|iPad|iPod|Apple/i.test(tap.getSystemInfoSync().brand);
+        }
+        if(typeof ks !== 'undefined'){
+            return /iPhone|iPad|iPod|Apple/i.test(ks.getSystemInfoSync().brand);
+        }
+        return /iPhone|iPad|iPod|Apple/i.test(navigator.userAgent);
     },
     IsAndroidWebGL: function () {
-        if(typeof wx !== 'undefined'){
-            return /Android/i.test(wx.getSystemInfoSync().brand);
-        }
         if(typeof tt !== 'undefined'){
-            return /Android/i.test(tt.getSystemInfoSync().brand);
+            return /Android/i.test(tt.getSystemInfoSync().system);
+        }
+        if(typeof wx !== 'undefined'){
+            return /Android/i.test(wx.getSystemInfoSync().system);
+        }
+        if(typeof tap !== 'undefined'){
+            return /Android/i.test(tap.getSystemInfoSync().system);
+        }
+        if(typeof ks !== 'undefined'){
+            return /Android/i.test(ks.getSystemInfoSync().system);
         }
         return /Android/i.test(navigator.userAgent);
     },
     IsHuaWeiGroupWebGL: function () {
+        if(typeof tt !== 'undefined'){
+            return /OpenHarmony|HUAWEI|HONOR/i.test(tt.getSystemInfoSync().brand);
+        }
         if(typeof wx !== 'undefined'){
             return /OpenHarmony|HUAWEI|HONOR/i.test(wx.getSystemInfoSync().brand);
         }
-        if(typeof tt !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR/i.test(tt.getSystemInfoSync().brand);
+        if(typeof tap !== 'undefined'){
+            return /OpenHarmony|HUAWEI|HONOR/i.test(tap.getSystemInfoSync().brand);
+        }
+        if(typeof ks !== 'undefined'){
+            return /OpenHarmony|HUAWEI|HONOR/i.test(ks.getSystemInfoSync().brand);
         }
         return /OpenHarmony|HUAWEI|HONOR/i.test(navigator.userAgent);
     },
