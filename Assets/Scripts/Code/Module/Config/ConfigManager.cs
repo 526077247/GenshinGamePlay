@@ -32,7 +32,7 @@ namespace TaoTie
 		{
 			Type configType = TypeInfo<T>.Type;
 			if (string.IsNullOrEmpty(name))
-				name = configType.FullName;
+				name = configType.Name;
 			byte[] oneConfigBytes = await this.ConfigLoader.GetOneConfigBytes(name);
 
 			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
