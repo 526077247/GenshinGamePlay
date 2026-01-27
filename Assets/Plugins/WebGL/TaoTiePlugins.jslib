@@ -12,7 +12,7 @@ mergeInto(LibraryManager.library, {
         if(typeof ks !== 'undefined'){
             return /iPhone|iPad|iPod|Apple/i.test(ks.getSystemInfoSync().brand);
         }
-        return /iPhone|iPad|iPod|Apple/i.test(navigator.userAgent);
+        return /iPhone|iPad|iPod/i.test(navigator.userAgent);
     },
     IsAndroidWebGL: function () {
         if(typeof tt !== 'undefined'){
@@ -31,18 +31,18 @@ mergeInto(LibraryManager.library, {
     },
     IsHuaWeiGroupWebGL: function () {
         if(typeof tt !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR/i.test(tt.getSystemInfoSync().brand);
+            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(tt.getSystemInfoSync().brand);
         }
         if(typeof wx !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR/i.test(wx.getSystemInfoSync().brand);
+            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(wx.getSystemInfoSync().brand);
         }
         if(typeof tap !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR/i.test(tap.getSystemInfoSync().brand);
+            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(tap.getSystemInfoSync().brand);
         }
         if(typeof ks !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR/i.test(ks.getSystemInfoSync().brand);
+            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(ks.getSystemInfoSync().brand);
         }
-        return /OpenHarmony|HUAWEI|HONOR/i.test(navigator.userAgent);
+        return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(navigator.userAgent);
     },
     CloseWindow:function() {
         if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Chrome") != -1) {
