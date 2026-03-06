@@ -1,48 +1,42 @@
 mergeInto(LibraryManager.library, {
     IsiOSWebGL: function () {
+        const ios = /iPhone|iPad|iPod|Apple/i
         if(typeof tt !== 'undefined'){
-            return /iPhone|iPad|iPod|Apple/i.test(tt.getSystemInfoSync().brand);
+            return ios.test(tt.getSystemInfoSync().brand);
         }
         if(typeof wx !== 'undefined'){
-            return /iPhone|iPad|iPod|Apple/i.test(wx.getSystemInfoSync().brand);
-        }
-        if(typeof tap !== 'undefined'){
-            return /iPhone|iPad|iPod|Apple/i.test(tap.getSystemInfoSync().brand);
+            return ios.test(wx.getSystemInfoSync().brand);
         }
         if(typeof ks !== 'undefined'){
-            return /iPhone|iPad|iPod|Apple/i.test(ks.getSystemInfoSync().brand);
+            return ios.test(ks.getSystemInfoSync().brand);
         }
         return /iPhone|iPad|iPod/i.test(navigator.userAgent);
     },
     IsAndroidWebGL: function () {
+        const android = /Android/i
         if(typeof tt !== 'undefined'){
-            return /Android/i.test(tt.getSystemInfoSync().system);
+            return android.test(tt.getSystemInfoSync().system);
         }
         if(typeof wx !== 'undefined'){
-            return /Android/i.test(wx.getSystemInfoSync().system);
-        }
-        if(typeof tap !== 'undefined'){
-            return /Android/i.test(tap.getSystemInfoSync().system);
+            return android.test(wx.getSystemInfoSync().system);
         }
         if(typeof ks !== 'undefined'){
-            return /Android/i.test(ks.getSystemInfoSync().system);
+            return android.test(ks.getSystemInfoSync().system);
         }
-        return /Android/i.test(navigator.userAgent);
+        return android.test(navigator.userAgent);
     },
     IsHuaWeiGroupWebGL: function () {
+        const brand = /OpenHarmony|HUAWEI/i
         if(typeof tt !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(tt.getSystemInfoSync().brand);
+            return brand.test(tt.getSystemInfoSync().brand);
         }
         if(typeof wx !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(wx.getSystemInfoSync().brand);
-        }
-        if(typeof tap !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(tap.getSystemInfoSync().brand);
+            return brand.test(wx.getSystemInfoSync().brand);
         }
         if(typeof ks !== 'undefined'){
-            return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(ks.getSystemInfoSync().brand);
+            return brand.test(ks.getSystemInfoSync().brand);
         }
-        return /OpenHarmony|HUAWEI|HONOR|VIVO/i.test(navigator.userAgent);
+        return brand.test(navigator.userAgent);
     },
     CloseWindow:function() {
         if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Chrome") != -1) {

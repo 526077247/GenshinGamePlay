@@ -205,7 +205,7 @@ namespace Nino.Serialization
             int i = 0;
             while (i < len)
             {
-                arr[i++] = (T)ReadCommonVal(typeof(T).IsClass &&
+                arr[i++] = (T)ReadCommonVal(typeof(T).IsClass && typeof(T) != typeof(string) &&
                                             TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T));
             }
 
@@ -228,7 +228,7 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                lst.Add((T)ReadCommonVal(typeof(T).IsClass &&
+                lst.Add((T)ReadCommonVal(typeof(T).IsClass && typeof(T) != typeof(string) &&
                                          TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
             }
 
@@ -251,7 +251,7 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                lst.Add((T)ReadCommonVal(typeof(T).IsClass &&
+                lst.Add((T)ReadCommonVal(typeof(T).IsClass && typeof(T) != typeof(string) &&
                                          TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
             }
 
@@ -274,7 +274,7 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                lst.Enqueue((T)ReadCommonVal(typeof(T).IsClass &&
+                lst.Enqueue((T)ReadCommonVal(typeof(T).IsClass && typeof(T) != typeof(string) &&
                                              TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(T)));
             }
 
@@ -317,9 +317,9 @@ namespace Nino.Serialization
             //read item
             while (len-- > 0)
             {
-                var key = (TKey)ReadCommonVal(typeof(TKey).IsClass &&
+                var key = (TKey)ReadCommonVal(typeof(TKey).IsClass && typeof(TKey) != typeof(string) &&
                                               TypeModel.AllTypes.TryGetValue(ReadInt32(), out var type) ? type : typeof(TKey));
-                var val = (TValue)ReadCommonVal(typeof(TValue).IsClass &&
+                var val = (TValue)ReadCommonVal(typeof(TValue).IsClass && typeof(TValue) != typeof(string) &&
                                                 TypeModel.AllTypes.TryGetValue(ReadInt32(), out type) ? type : typeof(TValue));
                 dic.Add(key, val);
             }
