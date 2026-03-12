@@ -229,12 +229,16 @@ namespace TaoTie
         public async ETTask<UIBaseView> OpenWindow(string fullname, string path,
             UILayerNames layerName = UILayerNames.NormalLayer)
         {
-            string uiName = fullname;
-            var target = GetWindow(uiName);
+            if (!fullname.Contains("."))
+            {
+                fullname = GetType().Namespace + "." + fullname;
+            }
+            var type = GetType().Assembly.GetType(fullname);
+            var target = GetWindow(type.Name);
             if (target == null)
             {
-                target = InitWindow(fullname, path, layerName);
-                windows[uiName] = target;
+                target = InitWindow(type, path, layerName);
+                windows[target.Name] = target;
             }
 
             target.Layer = layerName;
@@ -253,12 +257,16 @@ namespace TaoTie
         public async ETTask<UIBaseView> OpenWindow(string fullname, string path, object[] p1,
             UILayerNames layerName = UILayerNames.NormalLayer)
         {
-            string uiName = fullname;
-            var target = GetWindow(uiName);
+            if (!fullname.Contains("."))
+            {
+                fullname = GetType().Namespace + "." + fullname;
+            }
+            var type = GetType().Assembly.GetType(fullname);
+            var target = GetWindow(type.Name);
             if (target == null)
             {
-                target = InitWindow(fullname, path, layerName);
-                windows[uiName] = target;
+                target = InitWindow(type, path, layerName);
+                windows[target.Name] = target;
             }
 
             target.Layer = layerName;
@@ -277,12 +285,16 @@ namespace TaoTie
         public async ETTask<UIBaseView> OpenWindow<P1>(string fullname, string path, P1 p1,
             UILayerNames layerName = UILayerNames.NormalLayer)
         {
-            string uiName = fullname;
-            var target = GetWindow(uiName);
+            if (!fullname.Contains("."))
+            {
+                fullname = GetType().Namespace + "." + fullname;
+            }
+            var type = GetType().Assembly.GetType(fullname);
+            var target = GetWindow(type.Name);
             if (target == null)
             {
-                target = InitWindow(fullname, path, layerName);
-                windows[uiName] = target;
+                target = InitWindow(type, path, layerName);
+                windows[target.Name] = target;
             }
 
             target.Layer = layerName;
@@ -736,6 +748,11 @@ namespace TaoTie
             {
                 return;
             }
+            //回来后已经被销毁了
+            if (!boxes.TryGetValue(view, out target))
+            {
+                return;
+            }
             InnerCloseWindow(target);
             InnerDestroyWindow(target);
             boxes.Remove(view);
@@ -748,7 +765,7 @@ namespace TaoTie
         /// <param name="clear">现有缓存达到多少开始销毁，-1表示无限</param>
         public async ETTask<bool> CloseBox(UIBaseView view, int clear = 1)
         {
-            if (!boxes.TryGetValue(view, out var target))
+            if (view == null || !boxes.TryGetValue(view, out var target))
             {
                 return false;
             }
@@ -982,21 +999,15 @@ namespace TaoTie
         /// <summary>
         /// 初始化window
         /// </summary>
-        UIWindow InitWindow(string name, string path, UILayerNames layerName)
+        UIWindow InitWindow(Type type, string path, UILayerNames layerName)
         {
             UIWindow window = UIWindow.Create();
-            window.Name = name;
+            window.Name = type.Name;
             window.Active = false;
             window.Layer = layerName;
             window.LoadingState = UIWindowLoadingState.NotStart;
             window.PrefabPath = path;
-            var fullName = name;
-            if (!fullName.Contains("."))
-            {
-                fullName = GetType().Namespace + "." + fullName;
-            }
-
-            window.View = Activator.CreateInstance(GetType().Assembly.GetType(fullName)) as UIBaseView;
+            window.View = Activator.CreateInstance(type) as UIBaseView;
             return window;
         }
 
