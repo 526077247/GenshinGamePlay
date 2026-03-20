@@ -188,7 +188,7 @@ SubShader {
 
 			//float x = -(_UnderlayOffsetX * _ScaleRatioC) * _GradientScale / _TextureWidth;
 			//float y = -(_UnderlayOffsetY * _ScaleRatioC) * _GradientScale / _TextureHeight;
-			float x = -(underlayOffsetX * uv2_y.y) * _GradientScale / _TextureWidth;
+			float x = -(underlayOffsetX * uv2_y.x) * _GradientScale / _TextureWidth;
 			float y = -(underlayOffsetY * uv2_y.y) * _GradientScale / _TextureHeight;
 			float2 layerOffset = float2(x, y);
 			#endif
