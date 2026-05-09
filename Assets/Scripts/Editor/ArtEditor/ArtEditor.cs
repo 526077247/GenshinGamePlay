@@ -20,21 +20,9 @@ namespace TaoTie
         [MenuItem("Tools/美术工具/生成图集", false, 32)]
         public static void ClearAllAtlasAndGenerate()
         {
-            try
-            {
-                AssetDatabase.StartAssetEditing();
-                AtlasHelper.GeneratingAtlas();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex);
-            }
-            finally
-            {
-                AssetDatabase.StopAssetEditing();
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-            }
+            AtlasHelper.GeneratingAtlas();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
         
         [MenuItem("Assets/工具/生成图集",false,400)]

@@ -52,8 +52,6 @@ namespace TaoTie
                     GeneratingAtlasByDir(dirInfo);
                 }
             }
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
         }
 
         public static void GeneratingAtlasByDir(DirectoryInfo dirInfo)
@@ -285,6 +283,8 @@ namespace TaoTie
             {
                 AddPackAtlas(sptAtlas, spts.ToArray());
             }
+            EditorUtility.SetDirty(sptAtlas);
+            AssetDatabase.SaveAssetIfDirty(sptAtlas);
         }
 
 
@@ -311,6 +311,8 @@ namespace TaoTie
             {
                 AddPackAtlas(sptAtlas, folders.ToArray());
             }
+            EditorUtility.SetDirty(sptAtlas);
+            AssetDatabase.SaveAssetIfDirty(sptAtlas);
         }
 
         /// <summary>
@@ -453,15 +455,11 @@ namespace TaoTie
             {
                 sa = new SpriteAtlas();
                 AssetDatabase.CreateAsset(sa, atlasPath);
-                EditorUtility.SetDirty(sa);
-                AssetDatabase.SaveAssetIfDirty(sa);
             }
             else
             {
                 var obj = sa.GetPackables();
                 sa.Remove(obj);
-                EditorUtility.SetDirty(sa);
-                AssetDatabase.SaveAssetIfDirty(sa);
             }
             return sa;
             //        string yaml = @"%YAML 1.1
