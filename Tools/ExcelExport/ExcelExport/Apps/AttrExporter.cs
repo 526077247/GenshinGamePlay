@@ -29,7 +29,7 @@ namespace TaoTie
                 {
                     continue;
                 }
-                if (!excelPath.Contains("AttributeConfig")) continue;
+                if (!excelPath.Contains("/AttributeConfig")&&!excelPath.Contains("\\AttributeConfig")) continue;
                 using Stream stream = new FileStream(excelPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using ExcelPackage p = new ExcelPackage(stream);
 

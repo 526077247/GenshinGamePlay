@@ -47,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
+#if !NOT_UNITY
                 Log.Error($"配置找不到，配置表名: {nameof ((ConfigName))}，配置id: {id}");
+#endif
             }
 
             return item;
