@@ -388,7 +388,7 @@ namespace Nino.Shared.IO
 			}
 			// ReSharper restore UnusedMember.Local
 
-			[MonoPInvokeCallback]
+			[MonoPInvokeCallback(typeof(Func<bool>))]
 			protected override bool ReleaseHandle()
 			{
 				try
@@ -422,7 +422,7 @@ namespace Nino.Shared.IO
 		{
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Func<FlexibleStream, CompressionMode,bool, DeflateStreamNative>))]
 		public static DeflateStreamNative Create(FlexibleStream compressedStream, CompressionMode mode, bool gzip)
 		{
 			DeflateStreamNative deflateStreamNative = new DeflateStreamNative();
@@ -438,7 +438,7 @@ namespace Nino.Shared.IO
 			return deflateStreamNative;
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Action))]
 		public void DisposeZStream()
 		{
 			if (zStream != null && !zStream.IsInvalid)
@@ -447,7 +447,7 @@ namespace Nino.Shared.IO
 			}
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Action<CompressionMode, bool>))]
 		public void ResetZStream(CompressionMode mode, bool gzip)
 		{
 			zStream = CreateZStream(mode, gzip, this.feeder, GCHandle.ToIntPtr(this.data));
@@ -458,7 +458,7 @@ namespace Nino.Shared.IO
 			Dispose(false);
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Action<bool>))]
 		public void Dispose(bool disposing)
 		{
 			if (disposing && !disposed)
@@ -481,14 +481,14 @@ namespace Nino.Shared.IO
 			}
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Action))]
 		public void Flush()
 		{
 			int result = Flush(zStream);
 			CheckResult(result, "Flush");
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Func<IntPtr, int, int>))]
 		public int ReadZStream(IntPtr buffer, int length)
 		{
 			int result = ReadZStream(zStream, buffer, length);
@@ -496,14 +496,14 @@ namespace Nino.Shared.IO
 			return result;
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Action<IntPtr, int>))]
 		public void WriteZStream(IntPtr buffer, int length)
 		{
 			int result = WriteZStream(zStream, buffer, length);
 			CheckResult(result, "WriteInternal");
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Func<IntPtr, int, IntPtr, int>))]
 		private static int UnmanagedRead(IntPtr buffer, int length, IntPtr data)
 		{
 			if (!(GCHandle.FromIntPtr(data).Target is DeflateStreamNative deflateStreamNative))
@@ -513,7 +513,7 @@ namespace Nino.Shared.IO
 			return deflateStreamNative.UnmanagedRead(buffer, length);
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Func<IntPtr, int, IntPtr, int>))]
 		private unsafe int UnmanagedRead(IntPtr buffer, int length)
 		{
 			int count = Math.Min(length, BufferSize);
@@ -529,7 +529,7 @@ namespace Nino.Shared.IO
 			return num;
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Func<IntPtr, int, IntPtr, int>))]
 		private static int UnmanagedWrite(IntPtr buffer, int length, IntPtr data)
 		{
 			if (!(GCHandle.FromIntPtr(data).Target is DeflateStreamNative deflateStreamNative))
@@ -539,7 +539,7 @@ namespace Nino.Shared.IO
 			return deflateStreamNative.UnmanagedWrite(buffer, length);
 		}
 
-		[MonoPInvokeCallback]
+		[MonoPInvokeCallback(typeof(Func<IntPtr, int, IntPtr, int>))]
 		private unsafe int UnmanagedWrite(IntPtr buffer, int length)
 		{
 			baseStream.Write((byte*)buffer, 0, length);
