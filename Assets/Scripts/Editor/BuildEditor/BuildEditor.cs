@@ -18,7 +18,7 @@ namespace TaoTie
 		Linux,
 		WebGL,
 #if TUANJIE_1_5_OR_NEWER
-		TikTok,
+		DouYin,
 		WeChat,
 		KuaiShou,
 		Minihost,
@@ -93,7 +93,7 @@ namespace TaoTie
 #if MINIGAME_SUBPLATFORM_WEIXIN
 	        activePlatform = PlatformType.WeChat;
 #elif MINIGAME_SUBPLATFORM_DOUYIN
-	        activePlatform = PlatformType.TikTok;
+	        activePlatform = PlatformType.DouYin;
 #elif MINIGAME_SUBPLATFORM_KUAISHOU
 	        activePlatform = PlatformType.KuaiShou;
 #elif MINIGAME_SUBPLATFORM_MINIHOST

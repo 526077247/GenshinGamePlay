@@ -36,7 +36,7 @@ namespace TaoTie
                 {PlatformType.WebGL, BuildTarget.WebGL},
 #if TUANJIE_1_5_OR_NEWER
                 {PlatformType.WeChat, BuildTarget.MiniGame},
-                {PlatformType.TikTok, BuildTarget.MiniGame},
+                {PlatformType.DouYin, BuildTarget.MiniGame},
                 {PlatformType.KuaiShou, BuildTarget.MiniGame},
                 {PlatformType.Minihost, BuildTarget.MiniGame},
 #endif
@@ -53,7 +53,7 @@ namespace TaoTie
                 {PlatformType.WebGL, BuildTargetGroup.WebGL},
 #if TUANJIE_1_5_OR_NEWER
                 {PlatformType.WeChat, BuildTargetGroup.MiniGame},
-                {PlatformType.TikTok, BuildTargetGroup.MiniGame},
+                {PlatformType.DouYin, BuildTargetGroup.MiniGame},
                 {PlatformType.KuaiShou, BuildTargetGroup.MiniGame},
                 {PlatformType.Minihost, BuildTargetGroup.MiniGame},
 #endif
@@ -63,7 +63,7 @@ namespace TaoTie
             new Dictionary<PlatformType, string>()
             {
                 {PlatformType.WeChat, "WeChat"},
-                {PlatformType.TikTok, "DouYin"},
+                {PlatformType.DouYin, "DouYin"},
                 {PlatformType.KuaiShou, "KuaiShou"},
                 {PlatformType.Minihost, "Minihost"},
             };
@@ -201,7 +201,7 @@ namespace TaoTie
                     break;
 #if TUANJIE_1_5_OR_NEWER
                 case PlatformType.WeChat:
-                case PlatformType.TikTok:
+                case PlatformType.DouYin:
                 case PlatformType.KuaiShou:
                 case PlatformType.Minihost:
                     buildTarget = BuildTarget.MiniGame;
@@ -405,7 +405,7 @@ namespace TaoTie
                     break;
 #if TUANJIE_1_5_OR_NEWER
                 case PlatformType.WeChat:
-                case PlatformType.TikTok:
+                case PlatformType.DouYin:
                 case PlatformType.KuaiShou:
                 case PlatformType.Minihost:
                     buildTarget = BuildTarget.MiniGame;

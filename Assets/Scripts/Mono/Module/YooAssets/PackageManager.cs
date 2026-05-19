@@ -115,7 +115,7 @@ namespace TaoTie
 #endif
                     initParameters.WebRemoteFileSystemParameters = webRemoteFileSystemParams;
                     
-#if UNITY_WEBGL_TT
+#if MINIGAME_SUBPLATFORM_DOUYIN
                     if (!Define.USE_CDN)
                     {
                         var webServerFileSystemParams =
