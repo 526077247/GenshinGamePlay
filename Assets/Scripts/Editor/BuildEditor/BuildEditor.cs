@@ -298,14 +298,14 @@ namespace TaoTie
 						else
 						{
 							BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
-								isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel,bgPath:AssetDatabase.GetAssetPath(webGLBackground));
+								isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel,AssetDatabase.GetAssetPath(webGLBackground));
 						}
 					});
 				}
 				else
 				{
 					BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
-						isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel,bgPath:AssetDatabase.GetAssetPath(webGLBackground));
+						isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel,AssetDatabase.GetAssetPath(webGLBackground));
 				}
 			}
 		}

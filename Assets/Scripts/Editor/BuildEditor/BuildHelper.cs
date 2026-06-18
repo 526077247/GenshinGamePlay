@@ -161,11 +161,11 @@ namespace TaoTie
         }
         public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
-            string channel, bool buildDll = true, string bgPath = null)
+            string channel, string bgPath = null)
         {
             //pack
             BuildHandle(type, buildOptions, isBuildExe, clearReleaseFolder,clearABFolder, buildHotfixAssembliesAOT, 
-                isBuildAll, packAtlas, isContainsAb, channel, buildDll, bgPath);
+                isBuildAll, packAtlas, isContainsAb, channel, bgPath);
         }
         public static void BuildPackage(PlatformType type, string packageName)
         {
@@ -353,7 +353,7 @@ namespace TaoTie
 
         static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearReleaseFolder,
             bool clearABFolder, bool buildHotfixAssembliesAOT, bool isBuildAll, bool packAtlas, bool isContainsAb, 
-            string channel, bool buildDll = true, string bgPath = null)
+            string channel, string bgPath = null)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<PackageConfig>(jstr);
@@ -422,10 +422,10 @@ namespace TaoTie
                 PackagesManagerEditor.Clear("com.thridparty-moudule.srdebugger"); //正式包去掉srdebugger
             }
             AssetDatabase.RefreshSettings();
-            if (buildDll)
+            FileHelper.CleanDirectory(Define.HotfixDir);
+            if (!buildHotfixAssembliesAOT || !isBuildExe)
             {
                 //打程序集
-                FileHelper.CleanDirectory(Define.HotfixDir);
                 if ((buildOptions & BuildOptions.Development) == 0)
                     BuildAssemblyEditor.BuildCodeRelease();
                 else
@@ -549,7 +549,7 @@ namespace TaoTie
                     setting.CDN = Define.USE_CDN ? $"{config.DefaultHostServer}/{rename}_{platform}/" : "";
                     setting.assetBundleFSEnabled = true;
                     setting.isOldBuildFormat = false;
-                    setting.webglPackagePath = Path.GetFullPath("Release");
+                    setting.OutputDir = setting.webglPackagePath = Path.GetFullPath("Release");
                     if (buildTarget == BuildTarget.WebGL) setting.isWebGL2 = !webgl1;
                 }
 
