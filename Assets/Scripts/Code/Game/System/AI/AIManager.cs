@@ -132,6 +132,7 @@ namespace TaoTie
 
         public Unit GetUnit(long id)
         {
+            if (scene == null) return null;
             if (id == scene.MyId)
             {
                 return scene.Self;

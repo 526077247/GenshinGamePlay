@@ -19,7 +19,7 @@ namespace TaoTie
         /// <returns></returns>
         public static bool CheckIsTarget(Entity self, Entity target, TargetType type)
         {
-            if(self == null || target == null || self.IsDispose || self.IsDispose)
+            if(self == null || target == null || self.IsDispose || target.IsDispose)
                 return false;
             if (type == TargetType.Self && self.Id != target.Id)
                 return false;

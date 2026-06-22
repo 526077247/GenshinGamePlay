@@ -27,10 +27,14 @@ namespace TaoTie
 
         public void Destroy()
         {
-            for (int i = entities.Count - 1; i >= 0 && entities.Count>0; i--)
+            using entitiesToDispose = ListComponent<Entity>.Create();
+            entitiesToDispose.AddRange(entities);
+            for (int i = entitiesToDispose.Count - 1; i >= 0; i--)
             {
-                if (i > entities.Count - 1) i = entities.Count - 1;
-                entities[i].Dispose();
+                if (!entitiesToDispose[i].IsDispose)
+                {
+                    entitiesToDispose[i].Dispose();
+                }
             }
 
             entities.Dispose();

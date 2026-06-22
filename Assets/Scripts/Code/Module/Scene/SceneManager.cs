@@ -195,12 +195,17 @@ namespace TaoTie
             if (IsInTargetScene<T>())
                 return;
             Busing = true;
-            var ignoreClean = CurrentScene?.GetScenesChangeIgnoreClean();
-            await InnerSwitchScene<T>(needClean, ignoreClean:ignoreClean);
-
-            //释放loading界面引用的资源
-            GameObjectPoolManager.GetInstance().CleanupWithPathArray(ignoreClean);
-            Busing = false;
+            try
+            {
+                var ignoreClean = CurrentScene?.GetScenesChangeIgnoreClean();
+                await InnerSwitchScene<T>(needClean, ignoreClean:ignoreClean);
+                //释放loading界面引用的资源
+                GameObjectPoolManager.GetInstance().CleanupWithPathArray(ignoreClean);
+            }
+            finally
+            {
+                Busing = false;
+            }
         }
 
         /// <summary>
