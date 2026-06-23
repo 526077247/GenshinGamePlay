@@ -27,7 +27,7 @@ namespace TaoTie
 
         public void Destroy()
         {
-            using entitiesToDispose = ListComponent<Entity>.Create();
+            using var entitiesToDispose = ListComponent<Entity>.Create();
             entitiesToDispose.AddRange(entities);
             for (int i = entitiesToDispose.Count - 1; i >= 0; i--)
             {
