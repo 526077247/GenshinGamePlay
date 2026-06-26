@@ -17,6 +17,8 @@ namespace TaoTie
         {
             UIManager.Instance.OpenBox<UIToast,I18NKey>(PrefabPath, key).Coroutine();
         }
+        private ETCancellationToken fadeToken;
+
         public void OnCreate()
         {
             GameObjectPoolManager.GetInstance().AddPersistentPrefabPath(PrefabPath);
@@ -49,13 +51,18 @@ namespace TaoTie
 
         private async ETTask OnEnableAsync(int time = 1500)
         {
+            fadeToken?.Cancel();
+            fadeToken = new ETCancellationToken();
+            var token = fadeToken;
             var canvas = CanvasGroup.GetComponent();
             canvas.alpha = 1;
-            await TimerManager.Instance.WaitAsync(time);
+            await TimerManager.Instance.WaitAsync(time, token);
+            if (token.IsCancel()) return;
             var startTime = TimerManager.Instance.GetTimeNow();
             while (true)
             {
-                await TimerManager.Instance.WaitAsync(1);
+                await TimerManager.Instance.WaitAsync(1, token);
+                if (token.IsCancel()) return;
                 var timeNow = TimerManager.Instance.GetTimeNow();
                 if (timeNow > startTime + 500)
                 {

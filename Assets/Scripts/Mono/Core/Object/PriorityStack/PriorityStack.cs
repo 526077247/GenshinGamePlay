@@ -67,6 +67,7 @@ namespace TaoTie
         public T Pop(int index = 0)
         {
             var res = this[index];
+            if (res == null) return default;
             if (priorityStacks.Remove(res.Priority, res))
             {
                 if (priorityStacks[res.Priority]==null||priorityStacks[res.Priority].Count == 0)
@@ -85,6 +86,7 @@ namespace TaoTie
 
         public T Remove(T res)
         {
+            if (res == null) return default;
             if (priorityStacks.Remove(res.Priority, res))
             {
                 if (priorityStacks[res.Priority]==null||priorityStacks[res.Priority].Count == 0)

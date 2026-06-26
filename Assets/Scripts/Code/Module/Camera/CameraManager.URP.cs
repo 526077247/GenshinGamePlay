@@ -41,7 +41,8 @@ namespace TaoTie
                 sceneMainCamera = mainCamera;
                 sceneMainCameraGo = sceneMainCamera.gameObject;
             }
-            var render = this.sceneMainCamera.GetUniversalAdditionalCameraData();
+            if (sceneMainCamera == null) return;
+            var render = sceneMainCamera.GetUniversalAdditionalCameraData();
             render.renderPostProcessing = true;
             render.renderType = CameraRenderType.Base;
             render.SetRenderer(1);

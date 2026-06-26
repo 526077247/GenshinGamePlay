@@ -85,14 +85,18 @@ namespace TaoTie
 		
 		private void Start()
 		{
-		    var canvasScaler = GameObject.Find("Canvas").GetComponent<CanvasScaler>();
-            if (canvasScaler != null)
-            {
-                if ((float)Screen.width / Screen.height > Define.DesignScreenWidth / Define.DesignScreenHeight)
-                    canvasScaler.matchWidthOrHeight = 1;
-                else
-                    canvasScaler.matchWidthOrHeight = 0;
-            }
+		    var canvas = GameObject.Find("Canvas");
+		    if (canvas != null)
+		    {
+		        var canvasScaler = canvas.GetComponent<CanvasScaler>();
+                if (canvasScaler != null)
+                {
+                    if ((float)Screen.width / Screen.height > Define.DesignScreenWidth / Define.DesignScreenHeight)
+                        canvasScaler.matchWidthOrHeight = 1;
+                    else
+                        canvasScaler.matchWidthOrHeight = 0;
+                }
+		    }
 			AwakeAsync().Coroutine();
 		}
 

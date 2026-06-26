@@ -82,7 +82,7 @@ namespace TaoTie
 
         private void OnDownloadCallBack(long c, long d)
         {
-            float percent = (float) d / c;
+            float percent = c > 0 ? (float) d / c : 0;
             SetProgress(percent);
             // size.SetText($"{(d / (1024f * 1024f)).ToString("0.00")}MB/{(c / (1024f * 1024f)).ToString("0.00")}MB");
         }

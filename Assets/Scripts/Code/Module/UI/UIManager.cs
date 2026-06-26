@@ -1239,6 +1239,7 @@ namespace TaoTie
             if (go == null)
             {
                 Log.Error($"UIManager InnerOpenWindow {target.PrefabPath} fail");
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return;
             }
 

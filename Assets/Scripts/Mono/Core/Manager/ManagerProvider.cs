@@ -35,6 +35,7 @@ namespace TaoTie
             if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
+                (res as T).Init();
                 if (res is IUpdate u)
                 {
                     Instance.updateManagers.AddLast(u);
@@ -47,7 +48,6 @@ namespace TaoTie
                 {
                     Instance.fixedUpdateManagers.AddLast(fu);
                 }
-                (res as T).Init();
                 Instance.managersDictionary.Add(type,name,res);
                 Instance.allManagers.AddLast(res);
             }
@@ -59,6 +59,7 @@ namespace TaoTie
             if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
+                (res as T).Init(p1);
                 if (res is IUpdate u)
                 {
                     Instance.updateManagers.AddLast(u);
@@ -71,7 +72,6 @@ namespace TaoTie
                 {
                     Instance.fixedUpdateManagers.AddLast(fu);
                 }
-                (res as T).Init(p1);
                 Instance.managersDictionary.Add(type,name,res);
                 Instance.allManagers.AddLast(res);
             }
@@ -83,6 +83,7 @@ namespace TaoTie
             if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
+                (res as T).Init(p1, p2);
                 if (res is IUpdate u)
                 {
                     Instance.updateManagers.AddLast(u);
@@ -95,7 +96,6 @@ namespace TaoTie
                 {
                     Instance.fixedUpdateManagers.AddLast(fu);
                 }
-                (res as T).Init(p1,p2);
                 Instance.managersDictionary.Add(type,name,res);
                 Instance.allManagers.AddLast(res);
             }
@@ -107,6 +107,7 @@ namespace TaoTie
             if (!Instance.managersDictionary.TryGetValue(type, name, out var res))
             {
                 res = Activator.CreateInstance(type) as T;
+                (res as T).Init(p1, p2, p3);
                 if (res is IUpdate u)
                 {
                     Instance.updateManagers.AddLast(u);
@@ -119,7 +120,6 @@ namespace TaoTie
                 {
                     Instance.fixedUpdateManagers.AddLast(fu);
                 }
-                (res as T).Init(p1,p2,p3);
                 Instance.managersDictionary.Add(type,name,res);
                 Instance.allManagers.AddLast(res);
             }
@@ -141,7 +141,7 @@ namespace TaoTie
                 }
                 if (res is IFixedUpdate fu)
                 {
-                    Instance.fixedUpdateManagers.AddLast(fu);
+                    Instance.fixedUpdateManagers.Remove(fu);
                 }
                 Instance.managersDictionary.Remove(type,name);
                 Instance.allManagers.Remove(res);
@@ -151,15 +151,15 @@ namespace TaoTie
 
         public static void Clear()
         {
-            Instance.managersDictionary.Clear();
-            Instance.updateManagers.Clear();
-            Instance.lateUpdateManagers.Clear();
-            Instance.fixedUpdateManagers.Clear();
             foreach (var item in Instance.allManagers)
             {
                 (item as IManagerDestroy)?.Destroy();
             }
             Instance.allManagers.Clear();
+            Instance.managersDictionary.Clear();
+            Instance.updateManagers.Clear();
+            Instance.lateUpdateManagers.Clear();
+            Instance.fixedUpdateManagers.Clear();
         }
         public static void Update()
         {

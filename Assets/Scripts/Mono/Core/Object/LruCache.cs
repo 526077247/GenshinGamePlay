@@ -86,8 +86,13 @@ namespace TaoTie
 
         public bool TryOnlyGet(TKey key, out TValue value)
         {
-            bool b = dictionary.TryGetValue(key, out value);
-            return b;
+            locker.EnterReadLock();
+            try
+            {
+                bool b = dictionary.TryGetValue(key, out value);
+                return b;
+            }
+            finally { locker.ExitReadLock(); }
         }
         public bool TryGet(TKey key, out TValue value)
         {
@@ -203,7 +208,7 @@ namespace TaoTie
             var curCheckFreeTime = 0;
 
 
-            while(linkedList.Count + 1 > DEFAULT_CAPACITY){
+            while(linkedList.Count + 1 > capacity){
                  if (key==null) break;
 
                 var tuple_prev = key.Previous;
@@ -231,27 +236,37 @@ namespace TaoTie
         }
         public void CleanUp() 
         {
-            var key = linkedList.Last;
-            int count = linkedList.Count;
-            while(count > 0)
+            locker.EnterWriteLock();
+            try
             {
-                count--;
-                var tuple_prev = key.Previous;
-                if (checkCanPopFunc == null || checkCanPopFunc(key.Value, dictionary[key.Value]))
+                var key = linkedList.Last;
+                int count = linkedList.Count;
+                while(count > 0)
                 {
-                    //can pop
-                    var value = dictionary[key.Value];
-                    dictionary.Remove(key.Value);
-                    linkedList.Remove(key.Value);
-                    popCb?.Invoke(key.Value, value);
+                    count--;
+                    var tuple_prev = key.Previous;
+                    if (checkCanPopFunc == null || checkCanPopFunc(key.Value, dictionary[key.Value]))
+                    {
+                        //can pop
+                        var value = dictionary[key.Value];
+                        dictionary.Remove(key.Value);
+                        linkedList.Remove(key.Value);
+                        popCb?.Invoke(key.Value, value);
+                    }
+                    key = tuple_prev;
                 }
-                key = tuple_prev;
             }
+            finally { locker.ExitWriteLock(); }
         }
         public void Clear()
         {
-            dictionary.Clear();
-            linkedList.Clear();
+            locker.EnterWriteLock();
+            try
+            {
+                dictionary.Clear();
+                linkedList.Clear();
+            }
+            finally { locker.ExitWriteLock(); }
         }
         
         IEnumerator IEnumerable.GetEnumerator()

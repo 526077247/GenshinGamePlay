@@ -83,9 +83,15 @@ namespace TaoTie
         public void NumericUpdate()
         {
             //遍历回血，回蓝
+            using ListComponent<NumericComponent> toRemove = ListComponent<NumericComponent>.Create();
             for (int i = 0; i < Data.Count; i++)
             {
                 var numc = Data[i];
+                if (numc == null || numc.IsDispose)
+                {
+                    toRemove.Add(numc);
+                    continue;
+                }
                 for (int j = 0; j < attrList.Length; j++)
                 {
                     float reUpNum = numc.GetAsFloat(attrList[j].reUp);
@@ -102,6 +108,10 @@ namespace TaoTie
                         }
                     }
                 }
+            }
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                Data.Remove(toRemove[i]);
             }
 
         }

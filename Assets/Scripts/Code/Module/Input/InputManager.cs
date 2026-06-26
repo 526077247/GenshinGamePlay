@@ -431,7 +431,7 @@ namespace TaoTie
         /// <summary>
         ///  获取其他按键
         /// </summary>
-        /// <param name="exceptKeyCode">不传为任意</param>
+        /// <param name="exceptKeyCode"></param>
         /// <returns></returns>
         public bool GetAnyKeyExcept(int exceptKeyCode)
         {
@@ -441,7 +441,7 @@ namespace TaoTie
                 {
                     if (exceptKeyCode == i)
                     {
-                        return false;
+                        continue;
                     }
                     return true;
                 }
@@ -452,7 +452,7 @@ namespace TaoTie
         /// <summary>
         ///  获取其他按键是否按下
         /// </summary>
-        /// <param name="exceptKeyCode">不传为任意</param>
+        /// <param name="exceptKeyCode"></param>
         /// <returns></returns>
         public bool GetAnyKeyDownExcept(int exceptKeyCode)
         {
@@ -462,7 +462,7 @@ namespace TaoTie
                 {
                     if (exceptKeyCode == i)
                     {
-                        return false;
+                        continue;
                     }
                     return true;
                 }
@@ -473,7 +473,7 @@ namespace TaoTie
         /// <summary>
         ///  获取其他按键是否抬起
         /// </summary>
-        /// <param name="exceptKeyCode">不传为任意</param>
+        /// <param name="exceptKeyCode"></param>
         /// <returns></returns>
         public bool GetAnyKeyUpExcept(int exceptKeyCode)
         {
@@ -483,7 +483,7 @@ namespace TaoTie
                 {
                     if (exceptKeyCode == i)
                     {
-                        return false;
+                        continue;
                     }
                     return true;
                 }
