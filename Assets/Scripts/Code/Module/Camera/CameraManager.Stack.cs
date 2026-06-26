@@ -82,15 +82,17 @@ namespace TaoTie
             }
 
             var top = cameraStack.Peek();
+            if (top == null) return;
             if (curCameraState != top)//栈顶相机机位变更，需要变换
             {
                 if (top is BlenderCameraState blender) //正在变换
                 {
                     cameraStack.Pop();
-                    while (cameraStack.Peek().IsOver) //移除已经over的
+                    while (cameraStack.Count > 0 && cameraStack.Peek().IsOver) //移除已经over的
                     {
                         cameraStack.Pop().Dispose();
                     }
+                    if (cameraStack.Count <= 0) return;
 
                     var newTop = cameraStack.Peek();
                     blender.ChangeTo(newTop as NormalCameraState, false);
@@ -98,10 +100,11 @@ namespace TaoTie
                 }
                 else//变换到下一个相机机位
                 {
-                    while (cameraStack.Peek().IsOver)//移除已经over的
+                    while (cameraStack.Count > 0 && cameraStack.Peek().IsOver)//移除已经over的
                     {
                         cameraStack.Pop().Dispose();
                     }
+                    if (cameraStack.Count <= 0) return;
                     blender = CreateCameraState(curCameraState as NormalCameraState, cameraStack.Peek() as NormalCameraState,
                         true);
                     cameraStack.Push(blender);
@@ -113,10 +116,11 @@ namespace TaoTie
                 if (top is BlenderCameraState blender)//正在变换
                 {
                     cameraStack.Pop();
-                    while (cameraStack.Peek().IsOver)//移除已经over的
+                    while (cameraStack.Count > 0 && cameraStack.Peek().IsOver)//移除已经over的
                     {
                         cameraStack.Pop().Dispose();
                     }
+                    if (cameraStack.Count <= 0) return;
 
                     var newTop = cameraStack.Peek();
                     if (blender.To.Id == newTop.Id)//是变换完成了
@@ -133,10 +137,11 @@ namespace TaoTie
                 else//一般相机被销毁，需要出栈，变换到下一个相机机位
                 {
                     cameraStack.Pop();
-                    while (cameraStack.Peek().IsOver)//移除已经over的
+                    while (cameraStack.Count > 0 && cameraStack.Peek().IsOver)//移除已经over的
                     {
                         cameraStack.Pop().Dispose();
                     }
+                    if (cameraStack.Count <= 0) return;
                     blender = CreateCameraState(top as NormalCameraState, cameraStack.Peek() as NormalCameraState,
                         false);
                     cameraStack.Push(blender);

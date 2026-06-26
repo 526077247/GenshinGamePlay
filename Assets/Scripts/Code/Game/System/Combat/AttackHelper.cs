@@ -106,6 +106,7 @@ namespace TaoTie
         public static float CalcWeightBaseAngle(Entity attacker, HitInfo info,float a,float b)
         {
             var u = attacker as Actor;
+            if (u == null || u.ConfigActor?.Common == null) return 0;
             if (b >= 1)
             {
                 b = 1 - float.Epsilon;

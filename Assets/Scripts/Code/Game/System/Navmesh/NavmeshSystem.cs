@@ -80,6 +80,7 @@ namespace TaoTie
                 query.FindNearestPoly(startPos, extents, filter, out startRef, out startPt, out _);
                 query.FindNearestPoly(endPos, extents, filter, out endRef, out endPt, out _);
             
+                polys.Clear();
                 query.FindPath(startRef, endRef, startPt, endPt, filter, ref polys, new DtFindPathOption(0, float.MaxValue));
 
                 if (0 >= polys.Count)
@@ -98,6 +99,7 @@ namespace TaoTie
                     }
                 }
 
+                straightPath.Clear();
                 query.FindStraightPath(startPt, epos, polys, ref straightPath, MAX_POLYS, DtNavMeshQuery.DT_STRAIGHTPATH_ALL_CROSSINGS);
 
                 for (int i = 0; i < straightPath.Count; ++i)

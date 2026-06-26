@@ -27,7 +27,13 @@ namespace TaoTie
 		private static void SetUpStaticSecret()
 		{
 			Debug.Log("SetUpStaticSecret begin");
-			EncryptionService<DefaultStaticEncryptionScope>.Encryptor = new GeneratedEncryptionVirtualMachine(Resources.Load<TextAsset>("Obfuz/defaultStaticSecretKey").bytes);
+			var secretKey = Resources.Load<TextAsset>("Obfuz/defaultStaticSecretKey");
+			if (secretKey == null)
+			{
+				Debug.LogError("SetUpStaticSecret fail: Obfuz/defaultStaticSecretKey not found");
+				return;
+			}
+			EncryptionService<DefaultStaticEncryptionScope>.Encryptor = new GeneratedEncryptionVirtualMachine(secretKey.bytes);
 			Debug.Log("SetUpStaticSecret end");
 		}
 		public CodeMode CodeMode = CodeMode.LoadDll;

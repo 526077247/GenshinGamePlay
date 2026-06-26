@@ -141,6 +141,8 @@ namespace TaoTie
 					dir = lookDir;
 				}
 
+				dir.y = 0;
+				if (dir.sqrMagnitude < 0.0001f) return;
 				SceneEntity.Rotation = Quaternion.LookRotation(dir, Vector3.up);
 			}
 		}
@@ -153,8 +155,8 @@ namespace TaoTie
 			Vector3 v = Vector3.zero;
 			
 			var faceRight = Quaternion.Euler(0, 90, 0) * CharacterInput.FaceDirection;
-			v += Vector3.ProjectOnPlane(faceRight, transform.up).normalized * CharacterInput.Direction.x;
-			v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, transform.up).normalized * CharacterInput.Direction.z;
+			v += Vector3.ProjectOnPlane(faceRight, Vector3.up).normalized * CharacterInput.Direction.x;
+			v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, Vector3.up).normalized * CharacterInput.Direction.z;
 
 			v.Normalize();
 			return v;

@@ -16,6 +16,7 @@ namespace TaoTie
         private Queue<ETTask> waitFinishTask;
         private ArrangePlugin arrangePlugin;
         private int countKey;
+        private long countKeyOwnerId;
         private Transform attachPoint;
         public void Init(ConfigModel config)
         {
@@ -45,7 +46,10 @@ namespace TaoTie
                 if (aroundModel.Count is NumericValue numericValue)
                 {
                     countKey = numericValue.Key;
-                    Messager.Instance.AddListener<NumericChange>(GetComponent<NumericComponent>().Id, MessageId.NumericChangeEvt, OnNumericChange);
+                    var numericComp = GetComponent<NumericComponent>();
+                    countKeyOwnerId = numericComp != null ? numericComp.Id : 0;
+                    if (countKeyOwnerId != 0)
+                        Messager.Instance.AddListener<NumericChange>(countKeyOwnerId, MessageId.NumericChangeEvt, OnNumericChange);
                 }
 
                 arrangePlugin = ModelSystem.Instance.CreateArrangePlugin(aroundModel.Arrange, this);
@@ -101,9 +105,9 @@ namespace TaoTie
             attachPoint = null;
             arrangePlugin?.Dispose();
             arrangePlugin = null;
-            if (countKey!=0)
+            if (countKey!=0 && countKeyOwnerId != 0)
             {
-                Messager.Instance.RemoveListener<NumericChange>(GetComponent<NumericComponent>().Id, MessageId.NumericChangeEvt, OnNumericChange);
+                Messager.Instance.RemoveListener<NumericChange>(countKeyOwnerId, MessageId.NumericChangeEvt, OnNumericChange);
             }
             Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
             Messager.Instance.RemoveListener<SceneEntity, Quaternion>(Id, MessageId.ChangeRotationEvt, OnChangeRotation);

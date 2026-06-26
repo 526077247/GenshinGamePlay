@@ -30,7 +30,7 @@ namespace TaoTie
 		
 		public void OnClick()
 		{
-			this.onClick.Invoke(this.index);
+			this.onClick?.Invoke(this.index);
 		}
 		#endregion
 

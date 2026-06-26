@@ -46,13 +46,14 @@ namespace TaoTie
             if (showFightTexts.Count == 0) return;
             for (int i = showFightTexts.Count - 1; i >= 0; i--)
             {
-                showFightTexts[i].UpdateText();
                 if (GameTimerManager.Instance == null || showFightTexts[i] == null || 
                     showFightTexts[i].ExpireTime < GameTimerManager.Instance.GetTimeNow())
                 {
-                    showFightTexts[i].Dispose();
+                    showFightTexts[i]?.Dispose();
                     showFightTexts.RemoveAt(i);
+                    continue;
                 }
+                showFightTexts[i].UpdateText();
             }
         }
 

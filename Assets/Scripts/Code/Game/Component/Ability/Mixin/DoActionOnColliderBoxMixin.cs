@@ -11,9 +11,12 @@ namespace TaoTie
             addHolders = ListComponent<GameObjectHolder>.Create();
             owner = actorAbility.Parent.GetParent<Entity>();
             var umv = owner.GetComponent<UnitModelComponent>();
-            for (var node = umv.Holders.First; node!=null; node = node.Next)
+            if (umv != null)
             {
-                OnHolderCountChange(node.Value,true);
+                for (var node = umv.Holders.First; node!=null; node = node.Next)
+                {
+                    OnHolderCountChange(node.Value,true);
+                }
             }
             
             Messager.Instance.AddListener<GameObjectHolder,bool>(owner.Id, MessageId.OnHolderCountChange, OnHolderCountChange);
@@ -22,7 +25,7 @@ namespace TaoTie
         private async ETTask AddAsync(GameObjectHolder holder)
         {
             await holder.WaitLoadGameObjectOver();
-            if (owner == null || addHolders == null) return;
+            if (owner == null || addHolders == null || !addHolders.Contains(holder)) return;
             
             var components = holder.EntityView.GetComponentsInChildren<ColliderBoxComponent>(true);
             for (int i = 0; i < components.Length; i++)

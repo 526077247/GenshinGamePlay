@@ -49,10 +49,14 @@ namespace TaoTie
             }
 
             await TimerManager.Instance.WaitAsync(1);
+            if(model.IsDispose) return;
             var camera = CameraManager.Instance.Get<NormalCameraState>(thirdCameraId);
             var trans = model.EntityView;
-            camera.SetFollow(trans);
-            camera.SetTarget(trans);
+            if (camera != null && trans != null)
+            {
+                camera.SetFollow(trans);
+                camera.SetTarget(trans);
+            }
             if (!PlatformUtil.IsMobile())
             {
                 CameraManager.Instance.ChangeCursorLock(true, CursorStateType.UserInput);

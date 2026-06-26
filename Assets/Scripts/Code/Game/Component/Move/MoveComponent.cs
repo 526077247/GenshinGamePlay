@@ -45,7 +45,10 @@ namespace TaoTie
         public virtual void ForceLookTo(Vector3 dir)
         {
             if (CameraManager.Instance?.MainCamera() == null) return;
-            SceneEntity.Rotation = Quaternion.LookRotation(CameraManager.Instance.MainCamera().transform.rotation * dir, Vector3.up);
+            var lookDir = CameraManager.Instance.MainCamera().transform.rotation * dir;
+            lookDir.y = 0;
+            if (lookDir.sqrMagnitude < 0.0001f) return;
+            SceneEntity.Rotation = Quaternion.LookRotation(lookDir, Vector3.up);
         }
 
         public void Update()

@@ -56,29 +56,29 @@ namespace TaoTie
 				{
 					await TimerManager.Instance.WaitAsync(data.WaitTime);
 				}
-				else
-				{
-					while (data.WaitClick)
-					{
-						await TimerManager.Instance.WaitAsync(1);
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-			            if (Input.touchCount>=1)
-			            {
-			                var pos = Input.GetTouch(0).position;
-			                if (InputManager.Instance.IsPointerOverGameObject(pos))
-			                {
-#else
-						if (Input.GetKeyDown(KeyCode.Mouse0))
-						{
-							if (EventSystem.current.IsPointerOverGameObject())
-							{
-#endif
+								else
+								{
+									while (data.WaitClick)
+									{
+										await TimerManager.Instance.WaitAsync(1);
+				#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+							            if (Input.touchCount>=1)
+							            {
+							                var pos = Input.GetTouch(0).position;
+							                if (InputManager.Instance.IsPointerOverGameObject(pos))
+							            {
+				#else
+										if (Input.GetKeyDown(KeyCode.Mouse0))
+										{
+											if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+								            {
+				#endif
 
-								return;
-							}
-						}
-					}
-				}
+												return;
+											}
+										}
+									}
+								}
 				
 			}
 		}

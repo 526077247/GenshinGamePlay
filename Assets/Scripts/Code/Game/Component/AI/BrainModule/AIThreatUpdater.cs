@@ -371,16 +371,9 @@ namespace TaoTie
 
                 if (mainTarget != topThreat)
                 {
-                    isThreatTargetChanged = true;
-                    oldThreatTargetID = -1;
-                    mainTarget = topThreat;
-                }
-
-                if (topThreat != null)
-                {
-                    if (topThreat.ThreatValue > 1.2f * mainTarget.ThreatValue)
+                    if (mainTarget == null || topThreat.ThreatValue > 1.2f * mainTarget.ThreatValue)
                     {
-                        oldThreatTargetID = mainTarget.Id;
+                        oldThreatTargetID = mainTarget != null ? mainTarget.Id : -1;
                         mainTarget = topThreat;
                         isThreatTargetChanged = true;
                     }

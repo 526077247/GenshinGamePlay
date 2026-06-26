@@ -90,7 +90,7 @@ namespace TaoTie
 
 		private void OnKeyInput(int key, int state)
 		{
-			if (key == (int) GameKeyCode.Opera1 && (state | InputManager.Key) != 0)
+			if (key == (int) GameKeyCode.Opera1 && (state & InputManager.Key) != 0)
 			{
 				if (showList.Count > activeIndex)
 				{

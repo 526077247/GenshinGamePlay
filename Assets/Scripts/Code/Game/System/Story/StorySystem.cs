@@ -50,7 +50,11 @@ namespace TaoTie
             playRot = rot;
             SceneGroup = sceneGroup;
             config = ConfigStoryCategory.Instance.Get(id);
-            if(config == null) return;
+            if(config == null)
+            {
+                IsPlaying = false;
+                return;
+            }
             //preload
             if (config.Actors != null)
             {

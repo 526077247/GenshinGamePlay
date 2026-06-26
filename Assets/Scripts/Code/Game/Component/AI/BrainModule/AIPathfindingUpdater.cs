@@ -49,7 +49,7 @@ namespace TaoTie
                         {
                             task.Status = QueryStatus.Fail;
                             Log.Error($"寻路失败，{this.knowledge.Entity.Id}没找到PathfindingComponent组件");
-                            return;
+                            continue;
                         }
 
                         pc = this.knowledge.Entity.AddComponent<PathfindingComponent, string>(this.knowledge

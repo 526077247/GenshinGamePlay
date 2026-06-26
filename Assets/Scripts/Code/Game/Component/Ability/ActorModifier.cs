@@ -68,13 +68,17 @@ namespace TaoTie
 
             if (Config.Properties != null)
             {
-                var numC = Parent.GetParent<Entity>().GetComponent<NumericComponent>();
-                if (numC != null)
+                var entity = Parent.GetParent<Entity>();
+                if (entity != null)
                 {
-                    for (int i = 0; i < Config.Properties.Length; i++)
+                    var numC = entity.GetComponent<NumericComponent>();
+                    if (numC != null)
                     {
-                        var old = numC.GetAsFloat(Config.Properties[i].NumericType);
-                        numC.Set(Config.Properties[i].NumericType,old + Config.Properties[i].Value);
+                        for (int i = 0; i < Config.Properties.Length; i++)
+                        {
+                            var old = numC.GetAsFloat(Config.Properties[i].NumericType);
+                            numC.Set(Config.Properties[i].NumericType,old + Config.Properties[i].Value);
+                        }
                     }
                 }
             }
@@ -85,13 +89,17 @@ namespace TaoTie
             GameTimerManager.Instance.Remove(ref timerId);
             if (Config.Properties != null)
             {
-                var numC = Parent.GetParent<Entity>().GetComponent<NumericComponent>();
-                if (numC != null)
+                var entity = Parent.GetParent<Entity>();
+                if (entity != null)
                 {
-                    for (int i = 0; i < Config.Properties.Length; i++)
+                    var numC = entity.GetComponent<NumericComponent>();
+                    if (numC != null)
                     {
-                        var old = numC.GetAsFloat(Config.Properties[i].NumericType);
-                        numC.Set(Config.Properties[i].NumericType,old - Config.Properties[i].Value);
+                        for (int i = 0; i < Config.Properties.Length; i++)
+                        {
+                            var old = numC.GetAsFloat(Config.Properties[i].NumericType);
+                            numC.Set(Config.Properties[i].NumericType,old - Config.Properties[i].Value);
+                        }
                     }
                 }
             }

@@ -66,13 +66,21 @@ namespace TaoTie
                     if (taskHandler.CurrentState == LocoTaskState.Finished)
                     {
                         Unit target = aiKnowledge.TargetKnowledge.TargetEntity;
-                        AILocomotionHandler.ParamRotation param = new AILocomotionHandler.ParamRotation
+                        if (target == null)
                         {
-                            TargetPosition = target.Position
-                        };
-                        taskHandler.CreateRotationTask(param);
+                            Status = FleeStatus.Inactive;
+                            TriggerCD(aiKnowledge);
+                        }
+                        else
+                        {
+                            AILocomotionHandler.ParamRotation param = new AILocomotionHandler.ParamRotation
+                            {
+                                TargetPosition = target.Position
+                            };
+                            taskHandler.CreateRotationTask(param);
 
-                        Status = FleeStatus.RotateToTarget;
+                            Status = FleeStatus.RotateToTarget;
+                        }
                     }
                 }
                 else

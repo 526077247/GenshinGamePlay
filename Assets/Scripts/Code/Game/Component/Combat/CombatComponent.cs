@@ -85,7 +85,8 @@ namespace TaoTie
             afterBeAttack?.Invoke(result, other);
             if (result.HitLevel >= HitLevel.Shake)//todo: 击退击飞
             {
-                fsm.SetData(FSMConst.Shake, true);
+                if (fsm != null)
+                    fsm.SetData(FSMConst.Shake, true);
 
                 if (result.RetreatDir.sqrMagnitude > 0)
                 {
@@ -106,7 +107,9 @@ namespace TaoTie
                 Messager.Instance.Broadcast(0, MessageId.ShowDamageText, result);
             }
             //击中相机震动
-            if (result.ConfigAttackInfo.ForceCameraShake && (result.ConfigAttackInfo.CameraShake.BroadcastOnHit
+            if (result.ConfigAttackInfo != null && result.ConfigAttackInfo.ForceCameraShake
+                && result.ConfigAttackInfo.CameraShake != null
+                && (result.ConfigAttackInfo.CameraShake.BroadcastOnHit
                 ||result.ConfigAttackInfo.CameraShake.ShakeType == CameraShakeType.HitVector))
             {
                 var para = new CameraShakeParam
@@ -141,6 +144,7 @@ namespace TaoTie
         /// <param name="skillId"></param>
         public void UseSkillImmediately(int skillId)
         {
+            if (fsm == null) return;
             fsm.SetData(FSMConst.UseSkill, true);
             fsm.SetData(FSMConst.SkillId, skillId);
         }
@@ -149,6 +153,7 @@ namespace TaoTie
         /// </summary>
         public void ReleaseSkillImmediately()
         {
+            if (fsm == null) return;
             fsm.SetData(FSMConst.UseSkill, false);
             fsm.SetData(FSMConst.SkillId, 0);
         }
@@ -183,6 +188,10 @@ namespace TaoTie
                     if (configDie.DieEndTime > 0)
                     {
                         parent.DelayDispose(configDie.DieEndTime);
+                    }
+                    else
+                    {
+                        parent.Dispose();
                     }
                     Dispose();
                 }
@@ -247,7 +256,8 @@ namespace TaoTie
                 IsInCombat = inCombat;
                 Messager.Instance.Broadcast(Id, MessageId.CombatStateChange, IsInCombat);
             }
-            fsm.SetData(FSMConst.InCombat, inCombat);
+            if (fsm != null)
+                fsm.SetData(FSMConst.InCombat, inCombat);
         }
     }
 }

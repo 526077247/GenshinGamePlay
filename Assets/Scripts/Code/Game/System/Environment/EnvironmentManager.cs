@@ -152,6 +152,7 @@ namespace TaoTie
 
         private void Process()
         {
+            if (envInfoStack.Count == 0) return;
             var top = envInfoStack.Peek();
             if (curRunner != top)//栈顶环境变更，需要变换
             {
@@ -174,6 +175,7 @@ namespace TaoTie
                     {
                         envInfoStack.Pop().Dispose();
                     }
+                    if (envInfoStack.Count <= 0) return;
                     top = envInfoStack.Peek();
                     if (top is BlenderEnvironmentRunner) //正在变换
                     {
@@ -195,6 +197,12 @@ namespace TaoTie
                 if (top is BlenderEnvironmentRunner blender) //正在变换
                 {
                     envInfoStack.Pop();
+                    if (envInfoStack.Count <= 0)
+                    {
+                        top.Dispose();
+                        curRunner = null;
+                        return;
+                    }
                     var newTop = envInfoStack.Peek();
                     if (blender.To.Id == newTop.Id) //是变换完成了
                     {
@@ -210,7 +218,7 @@ namespace TaoTie
                 else //一般环境被销毁，需要出栈，变换到下一个环境
                 {
                     envInfoStack.Pop();
-                    while (envInfoStack.Peek().IsOver) //移除已经over的
+                    while (envInfoStack.Count > 0 && envInfoStack.Peek().IsOver) //移除已经over的
                     {
                         envInfoStack.Pop().Dispose();
                     }
@@ -313,7 +321,7 @@ namespace TaoTie
                         info.Dispose();
                     }
                 }
-                else if(curRunner.Id != info.Id)
+                else if(curRunner != null && curRunner.Id != info.Id)
                 {
                     envInfoStack.Remove(info);
                     info.Dispose();
