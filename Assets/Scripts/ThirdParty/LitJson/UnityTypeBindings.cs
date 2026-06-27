@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using TaoTie.LitJson.Extensions;
 
 namespace TaoTie.LitJson
@@ -6,17 +7,16 @@ namespace TaoTie.LitJson
     /// <summary>
     /// Unity内建类型拓展
     /// </summary>
-#if UNITY_EDITOR
-    [UnityEditor.InitializeOnLoad]
-#endif
     public static class UnityTypeBindings
     {
         static UnityTypeBindings()
         {
             Register();
         }
-
-        public static void Register()
+        public static void Init()
+        {
+        }
+        private static void Register()
         {
             // 注册Type类型的Exporter
             JsonMapper.RegisterExporter<Type>((v, w) =>
@@ -136,6 +136,34 @@ namespace TaoTie.LitJson
                 w.WriteProperty("bottom", v.bottom);
                 w.WriteProperty("right", v.right);
                 w.WriteObjectEnd();
+            });
+            
+            JsonMapper.RegisterExporter<BigInteger>((v, w) =>
+            {
+                w.Write(v.ToString());
+            });
+            
+            JsonMapper.RegisterImporter<string, BigInteger>((s) =>
+            {
+                if (string.IsNullOrEmpty(s)) return BigInteger.Zero;
+                // 寻找小数点
+                int dotIndex = s.IndexOf('.');
+                if (dotIndex >= 0)
+                {
+                    s = s.Substring(0, dotIndex);
+                }
+                return BigInteger.Parse(s);
+            });
+            
+            JsonMapper.RegisterImporter<string, long>((string input) =>
+            {
+                if (string.IsNullOrEmpty(input)) return 0L;
+                return long.TryParse(input, out long result) ? result : 0L;
+            });
+            
+            JsonMapper.RegisterImporter<string, int>((string input) => {
+                if (string.IsNullOrEmpty(input)) return 0;
+                return int.TryParse(input, out int result) ? result : 0;
             });
         }
 

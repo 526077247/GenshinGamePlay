@@ -4,7 +4,10 @@ namespace TaoTie
 {
     public static class JsonHelper
     {
-       
+        static JsonHelper()
+        {
+            LitJson.UnityTypeBindings.Init();
+        }
         public static string ToJson<T>(T message)
         {
             return LitJson.JsonMapper.ToJson(message);

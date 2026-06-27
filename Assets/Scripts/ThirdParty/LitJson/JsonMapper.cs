@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using TaoTie.LitJson.Extensions;
 
 namespace TaoTie.LitJson
@@ -195,6 +196,81 @@ namespace TaoTie.LitJson
 
 
         #region Private Methods
+
+        private static void CountReferences(object obj, Dictionary<object, int> refCounts,
+            HashSet<object> visited, int depth)
+        {
+            if (obj == null || depth > max_nesting_depth) return;
+
+            Type obj_type = obj.GetType();
+            if (obj_type.IsValueType || obj is string || obj is Enum) return;
+            if (obj is IJsonWrapper) return;
+            if (custom_exporters_table.ContainsKey(obj_type)) return;
+            if (base_exporters_table.ContainsKey(obj_type)) return;
+#if UNITY_EDITOR
+            if (UnityEngineObjectType.IsAssignableFrom(obj_type)) return;
+#endif
+
+            bool isContainer = obj is Array || obj is IList || obj is IDictionary ||
+                               (obj_type.IsGenericType &&
+                                obj_type.GetInterface("System.Collections.Generic.ISet`1") != null);
+
+            if (!isContainer)
+            {
+                AddTypeProperties(obj_type);
+                IList<PropertyMetadata> props = type_properties[obj_type];
+                // Skip reference tracking for tiny objects (no serializable fields)
+                if (props.Count > 0)
+                {
+                    if (refCounts.ContainsKey(obj))
+                        refCounts[obj]++;
+                    else
+                        refCounts[obj] = 1;
+                }
+            }
+
+            if (!visited.Add(obj)) return;
+
+            if (obj is Array array)
+            {
+                foreach (object elem in array)
+                    CountReferences(elem, refCounts, visited, depth + 1);
+            }
+            else if (obj is IList list)
+            {
+                foreach (object elem in list)
+                    CountReferences(elem, refCounts, visited, depth + 1);
+            }
+            else if (obj is IDictionary dict)
+            {
+                foreach (DictionaryEntry entry in dict)
+                    CountReferences(entry.Value, refCounts, visited, depth + 1);
+            }
+            else if (isContainer)
+            {
+                foreach (object elem in (IEnumerable)obj)
+                    CountReferences(elem, refCounts, visited, depth + 1);
+            }
+            else
+            {
+                AddTypeProperties(obj_type);
+                IList<PropertyMetadata> props = type_properties[obj_type];
+                foreach (PropertyMetadata p_data in props)
+                {
+                    object value;
+                    if (p_data.IsField)
+                        value = ((FieldInfo)p_data.Info).GetValue(obj);
+                    else
+                    {
+                        PropertyInfo p_info = (PropertyInfo)p_data.Info;
+                        if (!p_info.CanRead) continue;
+                        value = p_info.GetValue(obj, null);
+                    }
+                    CountReferences(value, refCounts, visited, depth + 1);
+                }
+            }
+        }
+
         private static void AddArrayMetadata(Type type)
         {
             if (array_metadata.ContainsKey(type))
@@ -388,7 +464,8 @@ namespace TaoTie.LitJson
             return op;
         }
 
-        private static object ReadValue(Type inst_type, JsonReader reader)
+        private static object ReadValue(Type inst_type, JsonReader reader,
+                                        Dictionary<int, object> refMap)
         {
             reader.Read();
 
@@ -494,7 +571,7 @@ namespace TaoTie.LitJson
 
                     while (true)
                     {
-                        object item = ReadValue(elem_type, reader);
+                        object item = ReadValue(elem_type, reader, refMap);
                         if (item == null && reader.Token == JsonToken.ArrayEnd)
                             break;
                     
@@ -520,7 +597,7 @@ namespace TaoTie.LitJson
                     object[] param = new object[1];
                     while (true)
                     {
-                        object item = ReadValue(elem_type, reader);
+                        object item = ReadValue(elem_type, reader, refMap);
                         if (item == null && reader.Token == JsonToken.ArrayEnd)
                             break;
                         param[0] = item;
@@ -542,7 +619,7 @@ namespace TaoTie.LitJson
                             break;
                         if ((string)reader.Value == "_Length")
                         {
-                            length = (int[])ReadValue(typeof(int[]), reader);
+                            length = (int[])ReadValue(typeof(int[]), reader, refMap);
                         }
                         else if ((string)reader.Value == "_Array")
                         {
@@ -551,7 +628,7 @@ namespace TaoTie.LitJson
                             {
                                 while (true)
                                 {
-                                    object item = ReadValue(elem_type, reader);
+                                    object item = ReadValue(elem_type, reader, refMap);
                                     if (item == null && reader.Token == JsonToken.ArrayEnd)
                                         break;
                     
@@ -604,27 +681,27 @@ namespace TaoTie.LitJson
 
                     string property = (string)reader.Value;
 
+                    // Reference preservation: handle $ref
+                    if (property == "$ref")
+                    {
+                        reader.Read();
+                        int refId = Convert.ToInt32(reader.Value);
+                        reader.Read(); // ObjectEnd
+                        if (refMap != null && refMap.TryGetValue(refId, out var refObj))
+                            return refObj;
+                        return null;
+                    }
+
                     if (instance == null)
                     {
                         bool hasType = false;
                         if (property == "_t")
                         {
                             hasType = true;
-                            string typeName = (string)ReadValue(stringType, reader);
+                            string typeName = (string)ReadValue(stringType, reader, refMap);
 #if UNITY_EDITOR
-                            if (typeName == "_UnityEngineObject" &&
-                                UnityEngineObjectType.IsAssignableFrom(value_type))
+                            if (typeName == "_UnityEngineObject" && UnityEngineObjectType.IsAssignableFrom(value_type))
                             {
-                                if (UnityEditor.EditorApplication.isPlaying)
-                                {
-                                    while (true)
-                                    {
-                                        reader.Read();
-                                        if (reader.Token == JsonToken.ObjectEnd)
-                                            break;
-                                    }
-                                    return null;
-                                }
                                 string guid = null;
                                 string uType = null;
                                 while (true)
@@ -634,11 +711,11 @@ namespace TaoTie.LitJson
                                         break;
                                     if ((string) reader.Value == "_ut")
                                     {
-                                        uType = (string) ReadValue(stringType, reader);
+                                        uType = (string) ReadValue(stringType, reader, refMap);
                                     }
                                     else if ((string) reader.Value == "_GUID")
                                     {
-                                        guid = (string) ReadValue(stringType, reader);
+                                        guid = (string) ReadValue(stringType, reader, refMap);
                                     }
                                     else
                                     {
@@ -655,33 +732,19 @@ namespace TaoTie.LitJson
 
                                 return instance;
                             }
-                           
-#else
-                            if (typeName == "_UnityEngineObject")
-                            {
-                                while (true)
-                                {
-                                    reader.Read();
-                                    if (reader.Token == JsonToken.ObjectEnd)
-                                        break;
-                                }
-                                return null;
-                            }
+                            else 
 #endif
-                            else if (typeName != value_type.FullName)
+                            if (typeName != value_type.FullName && typeName != value_type.Name)
                             {
-                                var type = FindType(typeName, value_type);
+                                var fullTypeName = typeName.Contains(".") ? typeName : "TaoTie." + typeName;
+                                var type = FindType(fullTypeName, value_type);
                                 if (type != null)
                                 {
                                     if (!value_type.IsAssignableFrom(type))
                                     {
-                                        throw new Exception($"类型不匹配！jsonType = {type} valueType = {value_type}");
+                                        throw new Exception($"类型不匹配！jsontype = {type} valuetype = {value_type}");
                                     }
                                     value_type = type;
-                                }
-                                else
-                                {
-                                    throw new Exception($"丢失类型！{typeName}");
                                 }
                             }
                         }
@@ -694,8 +757,17 @@ namespace TaoTie.LitJson
                             continue;
                         }
                     }
-                   
-                    
+
+                    // Reference preservation: handle $id
+                    if (property == "$id")
+                    {
+                        reader.Read();
+                        int id = Convert.ToInt32(reader.Value);
+                        if (refMap != null && instance != null)
+                            refMap[id] = instance;
+                        continue;
+                    }
+
                     if (t_data.Properties.ContainsKey(property))
                     {
                         PropertyMetadata prop_data =
@@ -704,7 +776,7 @@ namespace TaoTie.LitJson
                         if (prop_data.IsField)
                         {
                             ((FieldInfo)prop_data.Info).SetValue(
-                                instance, ReadValue(prop_data.Type, reader));
+                                instance, ReadValue(prop_data.Type, reader, refMap));
                         }
                         else
                         {
@@ -714,10 +786,10 @@ namespace TaoTie.LitJson
                             if (p_info.CanWrite)
                                 p_info.SetValue(
                                     instance,
-                                    ReadValue(prop_data.Type, reader),
+                                    ReadValue(prop_data.Type, reader, refMap),
                                     null);
                             else
-                                ReadValue(prop_data.Type, reader);
+                                ReadValue(prop_data.Type, reader, refMap);
                         }
 
                     }
@@ -748,14 +820,14 @@ namespace TaoTie.LitJson
                             {
                                 var temp = converter.ConvertFromString(property);
                                 t_data.ElementType = dicTypes[1];
-                                ((IDictionary)instance).Add(temp, ReadValue(t_data.ElementType, reader));
+                                ((IDictionary)instance).Add(temp, ReadValue(t_data.ElementType, reader, refMap));
                                 continue;
                             }
                         }
                         
                         ((IDictionary)instance).Add(
                             property, ReadValue(
-                                t_data.ElementType, reader));
+                                t_data.ElementType, reader, refMap));
                     }
 
                 }
@@ -1016,7 +1088,10 @@ namespace TaoTie.LitJson
 
         private static void WriteValue(object obj, JsonWriter writer,
                                         bool writer_is_private,
-                                        int depth)
+                                        int depth,
+                                        Dictionary<object, int> refCounts,
+                                        Dictionary<object, int> serialized,
+                                        Type declared_type = null)
         {
             if (depth > max_nesting_depth)
                 throw new JsonException(
@@ -1076,6 +1151,8 @@ namespace TaoTie.LitJson
                 return;
             }
 
+            Type obj_type= obj.GetType();
+
             if (obj is Array array)
             {
                 if (array.Rank > 1)
@@ -1085,21 +1162,23 @@ namespace TaoTie.LitJson
                     writer.WriteArrayStart();
                     for (int i = 0; i < array.Rank; i++)
                     {
-                        WriteValue(array.GetLength(i), writer, writer_is_private, depth + 1);
+                        WriteValue(array.GetLength(i), writer, writer_is_private, depth + 1, refCounts, serialized, null);
                     }
                     writer.WriteArrayEnd();
                     writer.WritePropertyName("_Array");
                     writer.WriteArrayStart();
+                    var arr_elem_type = obj_type.GetElementType();
                     foreach (object elem in array)
-                        WriteValue(elem, writer, writer_is_private, depth + 1);
+                        WriteValue(elem, writer, writer_is_private, depth + 1, refCounts, serialized, arr_elem_type);
                     writer.WriteArrayEnd();
                     writer.WriteObjectEnd();
                 }
                 else
                 {
+                    var arr_elem_type = obj_type.GetElementType();
                     writer.WriteArrayStart();
                     foreach (object elem in array)
-                        WriteValue(elem, writer, writer_is_private, depth + 1);
+                        WriteValue(elem, writer, writer_is_private, depth + 1, refCounts, serialized, arr_elem_type);
 
                     writer.WriteArrayEnd();
                 }
@@ -1108,9 +1187,12 @@ namespace TaoTie.LitJson
 
             if (obj is IList)
             {
+                var list_elem_type = obj_type.GetGenericArguments().Length > 0
+                    ? obj_type.GetGenericArguments()[0]
+                    : typeof(object);
                 writer.WriteArrayStart();
                 foreach (object elem in (IList)obj)
-                    WriteValue(elem, writer, writer_is_private, depth + 1);
+                    WriteValue(elem, writer, writer_is_private, depth + 1, refCounts, serialized, list_elem_type);
                 writer.WriteArrayEnd();
 
                 return;
@@ -1123,20 +1205,19 @@ namespace TaoTie.LitJson
                 {
                     writer.WritePropertyName(Convert.ToString(entry.Key));//(string) entry.Key);
                     WriteValue(entry.Value, writer, writer_is_private,
-                                depth + 1);
+                                depth + 1, refCounts, serialized, null);
                 }
                 writer.WriteObjectEnd();
 
                 return;
             }
 
-            Type obj_type= obj.GetType();
-            
             if (obj_type.IsGenericType && obj_type.GetInterface("System.Collections.Generic.ISet`1") != null)
             {
+                var set_elem_type = obj_type.GetGenericArguments()[0];
                 writer.WriteArrayStart();
                 foreach (object elem in (IEnumerable)obj)
-                    WriteValue(elem, writer, writer_is_private, depth + 1);
+                    WriteValue(elem, writer, writer_is_private, depth + 1, refCounts, serialized, set_elem_type);
                 writer.WriteArrayEnd();
 
                 return;
@@ -1205,9 +1286,42 @@ namespace TaoTie.LitJson
             AddTypeProperties(obj_type);
             IList<PropertyMetadata> props = type_properties[obj_type];
 
+            // Reference preservation: if already serialized, write $ref
+            if (serialized != null && refCounts != null)
+            {
+                if (serialized.TryGetValue(obj, out int existingId))
+                {
+                    writer.WriteObjectStart();
+                    writer.WritePropertyName("$ref");
+                    writer.Write(existingId);
+                    writer.WriteObjectEnd();
+                    return;
+                }
+            }
+
             writer.WriteObjectStart();
-            writer.WritePropertyName("_t");
-            writer.Write(obj_type.FullName);
+
+            // Only write _t when the runtime type differs from the declared type (polymorphism)
+            if (declared_type == null || obj_type != declared_type)
+            {
+                writer.WritePropertyName("_t");
+                var typeName = obj_type.FullName;
+                if (typeName != null && typeName.StartsWith("TaoTie."))
+                    writer.Write(typeName.Substring("TaoTie.".Length));
+                else
+                    writer.Write(typeName);
+            }
+
+            // Reference preservation: assign $id if referenced multiple times
+            if (serialized != null && refCounts != null &&
+                refCounts.TryGetValue(obj, out int refCount) && refCount > 1)
+            {
+                int newId = serialized.Count + 1;
+                serialized[obj] = newId;
+                writer.WritePropertyName("$id");
+                writer.Write(newId);
+            }
+
             foreach (PropertyMetadata p_data in props)
             {
                 if (p_data.IsField)
@@ -1215,7 +1329,7 @@ namespace TaoTie.LitJson
                     var value = ((FieldInfo) p_data.Info).GetValue(obj);
                     if(value == default) continue;
                     writer.WritePropertyName(p_data.Name);
-                    WriteValue(value, writer, writer_is_private, depth + 1);
+                    WriteValue(value, writer, writer_is_private, depth + 1, refCounts, serialized, p_data.Type);
                 }
                 else
                 {
@@ -1226,7 +1340,7 @@ namespace TaoTie.LitJson
                         var value = p_info.GetValue(obj, null);
                         if(value==default) continue;
                         writer.WritePropertyName(p_data.Name);
-                        WriteValue(value, writer, writer_is_private, depth + 1);
+                        WriteValue(value, writer, writer_is_private, depth + 1, refCounts, serialized, p_data.Type);
                     }
                 }
             }
@@ -1242,7 +1356,10 @@ namespace TaoTie.LitJson
             {
                 static_writer.Reset();
 
-                WriteValue(obj, static_writer, true, 0);
+                var refCounts = new Dictionary<object, int>(ReferenceEqualityComparer.Instance);
+                CountReferences(obj, refCounts, new HashSet<object>(ReferenceEqualityComparer.Instance), 0);
+                var serialized = new Dictionary<object, int>(ReferenceEqualityComparer.Instance);
+                WriteValue(obj, static_writer, true, 0, refCounts, serialized, null);
 
                 return static_writer.ToString();
             }
@@ -1250,7 +1367,10 @@ namespace TaoTie.LitJson
 
         public static void ToJson(object obj, JsonWriter writer)
         {
-            WriteValue(obj, writer, false, 0);
+            var refCounts = new Dictionary<object, int>(ReferenceEqualityComparer.Instance);
+            CountReferences(obj, refCounts, new HashSet<object>(ReferenceEqualityComparer.Instance), 0);
+            var serialized = new Dictionary<object, int>(ReferenceEqualityComparer.Instance);
+            WriteValue(obj, writer, false, 0, refCounts, serialized, null);
         }
 
         public static JsonData ToObject(JsonReader reader)
@@ -1275,14 +1395,14 @@ namespace TaoTie.LitJson
 
         public static T ToObject<T>(JsonReader reader)
         {
-            return (T)ReadValue(typeof(T), reader);
+            return (T)ReadValue(typeof(T), reader, new Dictionary<int, object>());
         }
 
         public static T ToObject<T>(TextReader reader)
         {
             JsonReader json_reader = new JsonReader(reader);
 
-            return (T)ReadValue(typeof(T), json_reader);
+            return (T)ReadValue(typeof(T), json_reader, new Dictionary<int, object>());
         }
 
         public static T ToObject<T>(string json)
@@ -1290,14 +1410,14 @@ namespace TaoTie.LitJson
             if (string.IsNullOrWhiteSpace(json) || json.Length == 4 && json.ToLower() == "null") return default;
             JsonReader reader = new JsonReader(json);
 
-            return (T)ReadValue(typeof(T), reader);
+            return (T)ReadValue(typeof(T), reader, new Dictionary<int, object>());
         }
 
         public static object ToObject(Type type, string json)
         {
             if (string.IsNullOrWhiteSpace(json) || json.Length == 4 && json.ToLower() == "null") return null;
             JsonReader reader = new JsonReader(json);
-            return ReadValue(type, reader);
+            return ReadValue(type, reader, new Dictionary<int, object>());
         }
 
         public static IJsonWrapper ToWrapper(WrapperFactory factory,
@@ -1400,5 +1520,20 @@ namespace TaoTie.LitJson
             return _temp;
         }
         #endregion
+    }
+
+    internal class ReferenceEqualityComparer : IEqualityComparer<object>
+    {
+        public static readonly ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
+
+        public bool Equals(object x, object y)
+        {
+            return ReferenceEquals(x, y);
+        }
+
+        public int GetHashCode(object obj)
+        {
+            return RuntimeHelpers.GetHashCode(obj);
+        }
     }
 }
