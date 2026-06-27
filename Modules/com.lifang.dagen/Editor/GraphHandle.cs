@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEngine;
@@ -89,6 +88,7 @@ namespace DaGenGraph.Editor
             currentZoom = (float)Math.Round(currentZoom, 2);
             //use this event
             current.Use();
+            m_Dirty = true;
         }
 
         protected Vector2 WorldToGridPosition(Vector2 worldPosition)
@@ -122,6 +122,15 @@ namespace DaGenGraph.Editor
 
         protected virtual void HandleMouseHover()
         {
+            var evtType = Event.current.type;
+            if (evtType != EventType.MouseMove && evtType != EventType.MouseDrag && evtType != EventType.MouseDown)
+            {
+                // Keep existing hover state during Layout/Repaint
+                if (m_CurrentHoveredPort != null || m_CurrentHoveredNode != null)
+                    Repaint();
+                return;
+            }
+
             switch (m_Mode)
             {
                 case GraphMode.Select:
@@ -263,10 +272,13 @@ namespace DaGenGraph.Editor
 
         private NodeBase GetNodeAtWorldPosition(Vector2 worldPosition)
         {
-            return (from nodeView in m_NodeViews.Values
-                where nodeView.isVisible
-                where GetNodeGridRect(nodeView.node).Contains(worldPosition)
-                select nodeView.node).FirstOrDefault();
+            foreach (var nodeView in m_NodeViews.Values)
+            {
+                if (!nodeView.isVisible) continue;
+                if (GetNodeGridRect(nodeView.node).Contains(worldPosition))
+                    return nodeView.node;
+            }
+            return null;
         }
 
         private Rect GetNodeHeaderGridRect(NodeBase node)
@@ -415,6 +427,7 @@ namespace DaGenGraph.Editor
                 case EventType.MouseDrag:
                     m_Graph.currentPanOffset += current.delta;
                     current.Use();
+                    m_Dirty = true;
                     break;
             }
         }
@@ -541,9 +554,10 @@ namespace DaGenGraph.Editor
                     //mouse is not over anything connectable -> show the connection point color to look for 
                     else
                     {
+                        var uc = UColor.GetColor();
                         m_CreateEdgeLineColor = m_ActivePort.IsInput()
-                            ? UColor.GetColor().edgeInputColor
-                            : UColor.GetColor().edgeOutputColor;
+                            ? uc.edgeInputColor
+                            : uc.edgeOutputColor;
                     }
 
                     current.Use();
@@ -785,6 +799,7 @@ namespace DaGenGraph.Editor
             }
 
             UpdateVirtualPointsIsOccupiedStates();
+            m_Dirty = true;
         }
 
         private void UpdateSelectionBox(Vector2 currentMousePosition)
@@ -859,6 +874,7 @@ namespace DaGenGraph.Editor
             if (outputPort.OverrideConnection()) DisconnectPort(outputPort);
             if (inputPort.OverrideConnection()) DisconnectPort(inputPort);
             ConnectPorts(m_Graph, outputPort, inputPort);
+            m_Dirty = true;
         }
 
         private static void ConnectPorts(GraphBase graph, Port outputPort, Port inputPort)
@@ -905,6 +921,7 @@ namespace DaGenGraph.Editor
                 edgeViews.Remove(edgeId);
                 m_Graph.RemoveEdge(edgeId);
             }
+            m_Dirty = true;
         }
 
         private static Vector2 SnapPositionToGrid(Vector2 position)
@@ -1038,11 +1055,12 @@ namespace DaGenGraph.Editor
             nodeViews.Remove(node.id);
 
             DeselectAll();
+            m_Dirty = true;
             if (startNode == node)
             {
                 if (m_Graph.values.Count > 0)
                 {
-                    m_Graph.startNodeId = m_Graph.values.First().id;
+                    m_Graph.startNodeId = m_Graph.values[0].id;
                 }
                 else
                 {
@@ -1055,7 +1073,10 @@ namespace DaGenGraph.Editor
         {
             if (nodes == null || nodes.Count == 0) return;
             var startNode = m_Graph.GetStartNode();
-            nodes = nodes.Where(n => n != null).ToList();
+            for (int i = nodes.Count - 1; i >= 0; i--)
+            {
+                if (nodes[i] == null) nodes.RemoveAt(i);
+            }
             //disconnect all the nodes that need to be deleted
             foreach (var node in nodes)
             {
@@ -1092,7 +1113,7 @@ namespace DaGenGraph.Editor
             {
                 if (m_Graph.values.Count > 0)
                 {
-                    m_Graph.startNodeId = m_Graph.values.First().id;
+                    m_Graph.startNodeId = m_Graph.values[0].id;
                 }
                 else
                 {
@@ -1119,6 +1140,7 @@ namespace DaGenGraph.Editor
             if (nodeView == null) return null;
             nodeView.Init(++m_Graph.windowID, node, m_Graph, this);
             m_NodeViews.Add(node.id, nodeView);
+            m_Dirty = true;
             return nodeView;
         }
 
@@ -1165,6 +1187,10 @@ namespace DaGenGraph.Editor
             }
             nodeViews.Clear();
             m_Graph = graphBase;
+            m_Points = null;
+            m_Ports = null;
+            m_EdgeViews = null;
+            m_ForceRebuild = true;
             foreach (var item in m_Graph.values)
             {
                 CreateNodeView(item);

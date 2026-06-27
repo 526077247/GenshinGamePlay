@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
@@ -25,6 +24,11 @@ namespace DaGenGraph.Editor
         private Dictionary<string, List<VirtualPoint>> m_Points;
         private Dictionary<string, Port> m_Ports;
         private Dictionary<string, EdgeView> m_EdgeViews;
+        private float m_LastZoom = 1f;
+        private Vector2 m_LastPanOffset = Vector2.zero;
+        private bool m_ForceRebuild;
+        private bool m_Dirty = true;
+        private readonly List<string> m_InvalidKeys = new();
 
         private float m_NodeInspectorWidth = 400;
         private float currentZoom
@@ -192,24 +196,77 @@ namespace DaGenGraph.Editor
             AddButton(new GUIContent("保存"), SaveGraph);
             AddButton(new GUIContent("展示或隐藏节点信息"), ChangeShowNodeViewDetails);
             AddButton(new GUIContent("详情面板"), ChangeDrawInspector, false);
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
+
+        protected virtual void OnDisable()
+        {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+        }
+
+        private void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                OnEnterPlayMode();
+            }
+            else if (state == PlayModeStateChange.EnteredEditMode)
+            {
+                OnExitPlayMode();
+            }
+            Repaint();
+        }
+
+        protected virtual void OnEnterPlayMode()
+        {
+            m_Graph = null;
+            m_NodeViews?.Clear();
+            m_Points = null;
+            m_Ports = null;
+            m_EdgeViews = null;
+        }
+
+        protected virtual void OnExitPlayMode() { }
 
         private void OnGUI()
         {
+            // Lock the editor during Play mode
+            if (EditorApplication.isPlaying)
+            {
+                DrawPlayModeLocked();
+                return;
+            }
+
+            // No graph loaded
+            if (m_Graph == null)
+            {
+                DrawEmptyState();
+                return;
+            }
+
             var evt = Event.current;
             if (evt.type is EventType.DragUpdated or EventType.DragPerform)
             {
-                if (DragAndDrop.objectReferences.ToList().Exists(o => !(o is GameObject)))
+                var refs = DragAndDrop.objectReferences;
+                bool allGameObjects = true;
+                for (int i = 0; i < refs.Length; i++)
                 {
-                    return;
+                    if (!(refs[i] is GameObject))
+                    {
+                        allGameObjects = false;
+                        break;
+                    }
                 }
+                if (!allGameObjects) return;
 
                 DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
                 if (evt.type == EventType.DragPerform)
                 {
                     DragAndDrop.AcceptDrag();
-                    OnGameObjectsDragIn(DragAndDrop.objectReferences.Cast<GameObject>().ToArray(),
-                        evt.mousePosition);
+                    var gameObjects = new GameObject[refs.Length];
+                    for (int i = 0; i < refs.Length; i++)
+                        gameObjects[i] = (GameObject)refs[i];
+                    OnGameObjectsDragIn(gameObjects, evt.mousePosition);
                 }
             }
 
@@ -222,6 +279,45 @@ namespace DaGenGraph.Editor
             m_LastUpdateTime = Mathf.Min(m_LastUpdateTime, curTime); //very important!!!
             m_Timer = curTime - m_LastUpdateTime;
             m_LastUpdateTime = curTime;
+        }
+
+        private void DrawPlayModeLocked()
+        {
+            DrawToolbar();
+            var area = new Rect(0, 20, position.width, position.height - 20);
+            GraphBackground.DrawGrid(area, 1f, Vector2.zero);
+            DrawCenteredMessage(area, "运行模式 — 编辑已锁定");
+        }
+
+        private void DrawEmptyState()
+        {
+            DrawToolbar();
+            var area = new Rect(0, 20, position.width, position.height - 20);
+            GraphBackground.DrawGrid(area, 1f, Vector2.zero);
+            DrawCenteredMessage(area, "未加载图数据\n点击工具栏「新建」或「打开」");
+        }
+
+        private void DrawCenteredMessage(Rect area, string msg)
+        {
+            var style = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 16
+            };
+            var content = new GUIContent(msg);
+            var size = style.CalcSize(content);
+            var rect = new Rect(
+                area.center.x - size.x / 2 - 20,
+                area.center.y - size.y / 2 - 10,
+                size.x + 40,
+                size.y + 20);
+
+            var oldColor = GUI.color;
+            GUI.color = new Color(0f, 0f, 0f, 0.6f);
+            GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+            GUI.color = Color.white;
+            GUI.Label(rect, content, style);
+            GUI.color = oldColor;
         }
 
         private void OnFocus()
@@ -294,58 +390,45 @@ namespace DaGenGraph.Editor
 
             foreach (var selectedNode in m_SelectedNodes) //go through all the selected nodes
             {
-                foreach (var virtualPoints in selectedNode.outputPorts.Select(outputSocket => points[outputSocket.id]))
+                for (int i = 0; i < selectedNode.outputPorts.Count; i++)
                 {
-                    if (virtualPoints == null)
+                    var outputSocket = selectedNode.outputPorts[i];
+                    if (!points.TryGetValue(outputSocket.id, out var virtualPoints) || virtualPoints == null)
                     {
                         validatePointsDatabase = true;
                         continue;
                     }
 
-                    foreach (var virtualPoint in virtualPoints)
+                    for (int j = 0; j < virtualPoints.Count; j++)
                     {
-                        if (virtualPoint == null) //point is null -> trigger validation
+                        var virtualPoint = virtualPoints[j];
+                        if (virtualPoint == null || virtualPoint.node == null)
                         {
                             validatePointsDatabase = true;
                             continue;
                         }
-
-                        if (virtualPoint.node == null) //point parent Node is null -> trigger validation
-                        {
-                            validatePointsDatabase = true;
-                            continue;
-                        }
-
-                        virtualPoint
-                            .CalculateRect(); //recalculate the rect to reflect the new values (the new WorldPosition)
+                        virtualPoint.CalculateRect();
                     }
                 }
 
-                foreach (Port inputSocket in selectedNode.inputPorts) //get the node's input sockets
+                for (int i = 0; i < selectedNode.inputPorts.Count; i++)
                 {
-                    List<VirtualPoint> virtualPoints = points[inputSocket.id]; //get input socket's virtual points list
-                    if (virtualPoints == null) //list is null -> trigger validation
+                    Port inputSocket = selectedNode.inputPorts[i];
+                    if (!points.TryGetValue(inputSocket.id, out var virtualPoints) || virtualPoints == null)
                     {
                         validatePointsDatabase = true;
                         continue;
                     }
 
-                    foreach (VirtualPoint virtualPoint in virtualPoints)
+                    for (int j = 0; j < virtualPoints.Count; j++)
                     {
-                        if (virtualPoint == null) //point is null -> trigger validation
+                        var virtualPoint = virtualPoints[j];
+                        if (virtualPoint == null || virtualPoint.node == null)
                         {
                             validatePointsDatabase = true;
                             continue;
                         }
-
-                        if (virtualPoint.node == null) //point parent Node is null -> trigger validation
-                        {
-                            validatePointsDatabase = true;
-                            continue;
-                        }
-
-                        virtualPoint
-                            .CalculateRect(); //recalculate the rect to reflect the new values (the new WorldPosition)
+                        virtualPoint.CalculateRect();
                     }
                 }
 
@@ -379,12 +462,12 @@ namespace DaGenGraph.Editor
         private void ValidatePointsDatabase()
         {
             if (points == null) return;
-            var invalidKeys = new List<string>(); //temp keys list
+            m_InvalidKeys.Clear();
             foreach (string key in points.Keys)
             {
                 if (points[key] == null)
                 {
-                    invalidKeys.Add(key); //null virtual points list -> remove key
+                    m_InvalidKeys.Add(key);
                     continue;
                 }
 
@@ -394,101 +477,117 @@ namespace DaGenGraph.Editor
                 {
                     if (virtualPoint == null)
                     {
-                        foundInvalidVirtualPoint = true; //null virtual point -> mark virtual point as invalid
+                        foundInvalidVirtualPoint = true;
                         break;
                     }
 
                     if (virtualPoint.node == null)
                     {
-                        foundInvalidVirtualPoint =
-                            true; //null virtual point parent Node -> mark virtual point as invalid
+                        foundInvalidVirtualPoint = true;
                         break;
                     }
 
                     if (virtualPoint.port == null)
                     {
-                        foundInvalidVirtualPoint =
-                            true; //null virtual point parent Socket -> mark virtual point as invalid
+                        foundInvalidVirtualPoint = true;
                         break;
                     }
                 }
 
                 if (foundInvalidVirtualPoint)
-                    invalidKeys.Add(key); //found an invalid virtual point in the virtual points list -> remove key
+                    m_InvalidKeys.Add(key);
             }
 
-            foreach (string invalidKey in invalidKeys)
+            foreach (string invalidKey in m_InvalidKeys)
             {
-                points.Remove(invalidKey); //remove invalid keys
+                points.Remove(invalidKey);
             }
+            m_InvalidKeys.Clear();
         }
 
         private void ValidateConnectionsDatabase()
         {
             if (m_EdgeViews == null) return;
-            var invalidKeys = new List<string>(); //temp keys list
+            m_InvalidKeys.Clear();
             foreach (var key in edgeViews.Keys)
             {
                 if (edgeViews[key] == null)
                 {
-                    invalidKeys.Add(key); //null virtual connection -> remove key
+                    m_InvalidKeys.Add(key);
                     continue;
                 }
 
                 var edgeView = edgeViews[key];
                 if (edgeView.outputNode == null)
                 {
-                    invalidKeys.Add(key); //null output node -> remove key
+                    m_InvalidKeys.Add(key);
                     continue;
                 }
 
                 if (edgeView.inputNode == null)
                 {
-                    invalidKeys.Add(key); //null input node -> remove key
+                    m_InvalidKeys.Add(key);
                     continue;
                 }
 
                 if (edgeView.outputPort == null)
                 {
-                    invalidKeys.Add(key); //null output socket -> remove key
+                    m_InvalidKeys.Add(key);
                     continue;
                 }
 
-                if (edgeView.inputPort == null) invalidKeys.Add(key); //null input socket -> remove key
+                if (edgeView.inputPort == null) m_InvalidKeys.Add(key);
             }
 
-            foreach (string invalidKey in invalidKeys)
+            foreach (string invalidKey in m_InvalidKeys)
             {
-                edgeViews.Remove(invalidKey); //remove invalid keys
+                edgeViews.Remove(invalidKey);
             }
+            m_InvalidKeys.Clear();
         }
 
         private void ConstructGraphGUI()
         {
             if (m_Graph == null) return;
-            if (m_NodeViews!=null && m_NodeViews.Count != m_Graph.values.Count)
+
+            if (m_ForceRebuild)
+            {
+                m_Points = null;
+                m_Ports = null;
+                m_EdgeViews = null;
+                m_ForceRebuild = false;
+                m_Dirty = true;
+            }
+            else if (m_Points != null && (m_LastZoom != currentZoom || m_LastPanOffset != m_Graph.currentPanOffset))
+            {
+                m_Points = null;
+                m_EdgeViews = null;
+                m_Dirty = true;
+            }
+            m_LastZoom = currentZoom;
+            m_LastPanOffset = m_Graph.currentPanOffset;
+
+            if (m_NodeViews != null && m_NodeViews.Count != m_Graph.values.Count)
             {
                 nodeViews.Clear();
                 foreach (var item in m_Graph.values)
                 {
                     CreateNodeView(item);
                 }
+                m_Points = null;
+                m_Ports = null;
+                m_EdgeViews = null;
+                m_Dirty = true;
             }
-            m_Points = null;
-            m_Ports = null;
-            m_EdgeViews = null;
-            m_Points = points;
-            m_Ports = ports;
-            m_EdgeViews = edgeViews;
-            //calculate all the connection points initial values
+            m_Points ??= points;
+            m_Ports ??= ports;
+            m_EdgeViews ??= edgeViews;
+            if (!m_Dirty) return;
             CalculateAllPointRects();
-            //calculate all the connections initial values
-            //we do this here because in normal operation we want to update only the connections that are referencing nodes that are being dragged
             CalculateAllConnectionCurves();
-            //update the visual state of all the connection points
             UpdateVirtualPointsIsOccupiedStates();
-            //check for errors
             CheckAllNodesForErrors();
+            m_Dirty = false;
         }
 
         private void CalculateAllPointRects()
@@ -515,6 +614,7 @@ namespace DaGenGraph.Editor
 
         private void CalculateConnectionCurve(EdgeView ev)
         {
+            ev.bezierPoints = null; // invalidate cached Bezier points so they get recalculated
             //get the lists of all the calculated virtual points for both Ports
             var outputVirtualPoints = points[ev.outputPort.id];
             var inputVirtualPoints = points[ev.inputPort.id];
@@ -628,8 +728,6 @@ namespace DaGenGraph.Editor
             {
                 nodeView.node.CheckForErrors();
             }
-
-            Repaint();
         }
 
         private enum GraphMode

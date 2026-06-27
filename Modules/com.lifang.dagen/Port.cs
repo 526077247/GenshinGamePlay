@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DaGenGraph
@@ -15,6 +14,8 @@ namespace DaGenGraph
 #endif
         [NonSerialized] public Rect hoverRect;
         [NonSerialized] private List<Vector2> edgePoints;
+        [NonSerialized] private PortGroupAttribute[] _cachedPortGroups;
+        [NonSerialized] private bool _portGroupsInitialized;
         
         public EdgeType edgeType;
         public List<string> edges;
@@ -134,10 +135,10 @@ namespace DaGenGraph
             return direction;
         }
         
-        /// <summary> Returns a IEnumerable of all the Edge ids of this Port </summary>
-        public IEnumerable<string> GetEdgeIds()
+        /// <summary> Returns the list of all the Edge ids of this Port </summary>
+        public List<string> GetEdgeIds()
         {
-            return edges.ToList();
+            return edges;
         }
 
         /// <summary> [Editor Only] Sets the height of this port's Rect </summary>
@@ -196,7 +197,7 @@ namespace DaGenGraph
         public void SetRect(float x, float y, float width, float height)
         {
             this.x = x;
-            this.x = y;
+            this.y = y;
             this.width = width;
             this.height = height;
             RefreshPoints();
@@ -240,10 +241,8 @@ namespace DaGenGraph
         /// <summary> [Editor Only] Updates the port hover Rect. This is the 'selection' box that appears when the mouse is over the port </summary>
         public void UpdateHoverRect()
         {
-            hoverRect = new Rect(GetRect().x + 6, 
-                GetRect().y + 2,
-                GetRect().width - 12,
-                GetRect().height - 3);
+            var rect = GetRect();
+            hoverRect = new Rect(rect.x + 6, rect.y + 2, rect.width - 12, rect.height - 3);
         }
         /// <summary> Returns TRUE if this port can connect to another port </summary>
         /// <param name="other"> The other port we are trying to determine if this port can connect to </param>
@@ -258,8 +257,8 @@ namespace DaGenGraph
             if (IsOutput() && other.IsOutput()) return false; //check that the sockets are not both output sockets
             if (!ignoreValueType)
             {
-                var attributes1 = GetType().GetCustomAttributes(typeof(PortGroupAttribute), true);
-                var attributes2 = other.GetType().GetCustomAttributes(typeof(PortGroupAttribute), true);
+                var attributes1 = GetCachedPortGroups();
+                var attributes2 = other.GetCachedPortGroups();
                 if (attributes1.Length > 0 || attributes2.Length > 0)
                 {
                     HashSet<int> temp = new HashSet<int>();
@@ -301,7 +300,12 @@ namespace DaGenGraph
         /// <param name="edgeId"> The edge id to search for </param>
         public bool ContainsEdge(string edgeId)
         {
-            return edges.Any(edge => edge == edgeId);
+            if (edges == null) return false;
+            for (int i = 0; i < edges.Count; i++)
+            {
+                if (edges[i] == edgeId) return true;
+            }
+            return false;
         }
 
         /// <summary> [Editor Only] Returns the closest own Edge point to the closest Edge point on the other Port </summary>
@@ -316,23 +320,24 @@ namespace DaGenGraph
                 return GetRightEdgePointPosition();
             }
 
-            var edgePoints = GetLeftAndRightEdgePoints();
-            //arbitrary value that will surely be greater than any other possible distance
-            float minDistance = 100000; 
-            //set the closest point as the first connection point
-            var closestPoint = edgePoints[0];
-            //iterate through this port's own connection points list
-            foreach (var ownPoint in edgePoints)
+            var ownPoints = GetLeftAndRightEdgePoints();
+            var otherPoints = other.GetEdgePoints();
+            float minDistance = 100000;
+            var closestPoint = ownPoints[0];
+            for (int i = 0; i < ownPoints.Count; i++)
             {
-                foreach (var distance in other.GetEdgePoints().Select(otherPoint => Vector2.Distance(ownPoint, otherPoint)).Where(distance => !(distance > minDistance)))
+                var ownPoint = ownPoints[i];
+                for (int j = 0; j < otherPoints.Count; j++)
                 {
-                    //the distance is smaller than the current minimum distance -> update the selected connection point
-                    closestPoint =ownPoint; 
-                    //update the current minimum distance
-                    minDistance = distance;
+                    var distance = Vector2.Distance(ownPoint, otherPoints[j]);
+                    if (distance <= minDistance)
+                    {
+                        closestPoint = ownPoint;
+                        minDistance = distance;
+                    }
                 }
             }
-            return closestPoint; //return the closest Edge point
+            return closestPoint;
         }
 
         /// <summary> Remove ALL the Edges this Port has, by clearing the Edges list </summary>
@@ -358,6 +363,20 @@ namespace DaGenGraph
 
         #region private Methods
 
+        /// <summary> Returns cached PortGroupAttributes for this port's type, avoiding repeated reflection </summary>
+        private PortGroupAttribute[] GetCachedPortGroups()
+        {
+            if (!_portGroupsInitialized)
+            {
+                var attrs = GetType().GetCustomAttributes(typeof(PortGroupAttribute), true);
+                _cachedPortGroups = new PortGroupAttribute[attrs.Length];
+                for (int i = 0; i < attrs.Length; i++)
+                    _cachedPortGroups[i] = (PortGroupAttribute)attrs[i];
+                _portGroupsInitialized = true;
+            }
+            return _cachedPortGroups;
+        }
+
         /// <summary> Returns TRUE if this port is connected to the given port id </summary>
         /// <param name="portId"> The port id to search for and determine if this port is connected to or not </param>
         private bool IsConnectedToPort(string portId, GraphBase graphBase)
@@ -381,6 +400,7 @@ namespace DaGenGraph
         /// <summary> Returns a list of two Edge points positions to the left of and the right of the Port </summary>
         private List<Vector2> GetLeftAndRightEdgePoints()
         {
+            if (edgePoints != null && edgePoints.Count == 2) return edgePoints;
             return new List<Vector2> { GetLeftEdgePointPosition(), GetRightEdgePointPosition() };
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DaGenGraph
@@ -196,7 +195,7 @@ namespace DaGenGraph
         public void SetRect(float x, float y, float width, float height)
         {
             this.x = x;
-            this.x = y;
+            this.y = y;
             this.width = width;
             this.height = height;
         }
@@ -386,38 +385,30 @@ namespace DaGenGraph
             bool canBeDeleted, bool canBeReordered , EdgeType edgeType = EdgeType.Both)where T:Port
         {
             string baseName = portName;
-            var portNames = new List<string>();
             int counter = 1;
             switch (direction)
             {
                 case PortDirection.Input:
-                    foreach (Port port in inputPorts)
-                        portNames.Add(port.portName);
                     if (string.IsNullOrEmpty(baseName))
                     {
                         baseName = "InputPort_";
                         portName = baseName + counter++;
                     }
-
-                    while (portNames.Contains(portName))
+                    while (ContainsPortName(inputPorts, portName))
                     {
                         portName = baseName + counter++;
                     }
-
                     var inputPort = CreatePortBase<T>();
                     inputPort.Init(this, portName, direction, edgeMode, edgeType, canBeDeleted, canBeReordered);
                     inputPorts.Add(inputPort);
                     return inputPort;
                 case PortDirection.Output:
-                    foreach (Port port in outputPorts)
-                        portNames.Add(port.portName);
                     if (string.IsNullOrEmpty(baseName))
                     {
                         baseName = "OutputPort_";
                         portName = baseName + counter++;
                     }
-
-                    while (portNames.Contains(portName))
+                    while (ContainsPortName(outputPorts, portName))
                     {
                         portName = baseName + counter++;
                     }
@@ -428,6 +419,15 @@ namespace DaGenGraph
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
+        }
+
+        private static bool ContainsPortName(List<Port> ports, string name)
+        {
+            for (int i = 0; i < ports.Count; i++)
+            {
+                if (ports[i].portName == name) return true;
+            }
+            return false;
         }
 
         /// <summary> Generates a new unique node id for this node and returns the newly generated id value </summary>

@@ -48,8 +48,8 @@ namespace TaoTie
             {
                 var win = instance;
                 win.Show();
-                win.SetGraph(aiJson);
                 win.path = path;
+                win.SetGraph(aiJson);
                 return true;
             }
             return false;
@@ -59,7 +59,35 @@ namespace TaoTie
             base.OnEnable();
             AddButton(new GUIContent("导出"),Export);
         }
-        
+
+        protected override void OnEnterPlayMode()
+        {
+            if (!string.IsNullOrEmpty(path))
+                SessionState.SetString(k_CachedPathKey + GetInstanceID(), path);
+            base.OnEnterPlayMode();
+        }
+
+        protected override void OnExitPlayMode()
+        {
+            var key = k_CachedPathKey + GetInstanceID();
+            var cachedPath = SessionState.GetString(key, null);
+            if (!string.IsNullOrEmpty(cachedPath))
+            {
+                SessionState.EraseString(key);
+                if (File.Exists(cachedPath))
+                {
+                    var jStr = File.ReadAllText(cachedPath);
+                    if (JsonHelper.TryFromJson<AIGraph>(jStr, out var graph) && graph != null)
+                    {
+                        path = cachedPath;
+                        SetGraph(graph);
+                    }
+                }
+            }
+        }
+
+        private const string k_CachedPathKey = "DaGenGraph_CachedPath_";
+
         protected override void InitGraph()
         {
             path = null;
@@ -185,16 +213,16 @@ namespace TaoTie
         {
             if (!string.IsNullOrEmpty(path))
             {
-                var name = Path.GetFileNameWithoutExtension(this.path);
-                var path = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "json");
-                if (string.IsNullOrEmpty(path))
+                var name = Path.GetFileNameWithoutExtension(path);
+                var exportPath = EditorUtility.SaveFilePanel($"新建AIGraph配置文件", "Assets/AssetsPackage/EditConfig/AITree/", name, "json");
+                if (string.IsNullOrEmpty(exportPath))
                 {
                     return;
                 }
                 var obj = Convert(m_Graph);
-                File.WriteAllText(path,JsonHelper.ToJson(obj));
+                File.WriteAllText(exportPath,JsonHelper.ToJson(obj));
 
-                File.WriteAllBytes(path.Replace("json","bytes"),NinoSerializer.Serialize(obj));
+                File.WriteAllBytes(exportPath.Replace("json","bytes"),NinoSerializer.Serialize(obj));
 
                 AssetDatabase.Refresh();
                 Debug.Log("导出成功");   

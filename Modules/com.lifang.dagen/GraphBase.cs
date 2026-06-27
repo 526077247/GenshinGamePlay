@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DaGenGraph
@@ -75,7 +74,7 @@ namespace DaGenGraph
             values.Add(node);
             if ((isRoot || string.IsNullOrEmpty(startNodeId)) && values.Count>0)
             {
-                startNodeId = values.First().id;
+                startNodeId = values[values.Count - 1].id;
             }
             node.AddDefaultPorts();
             return node;

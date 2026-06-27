@@ -27,6 +27,21 @@ namespace DaGenGraph.Editor
         private static Type objectType = typeof(UnityEngine.Object);
 
         private static Dictionary<Type, ISort[]> sortsMap = new();
+        private static Dictionary<MemberInfo, Attribute[]> memberAttrCache = new();
+
+        private static T GetCachedAttr<T>(MemberInfo member) where T : Attribute
+        {
+            if (!memberAttrCache.TryGetValue(member, out var attrs))
+            {
+                attrs = (Attribute[])member.GetCustomAttributes(typeof(Attribute), true);
+                memberAttrCache[member] = attrs;
+            }
+            for (int i = 0; i < attrs.Length; i++)
+            {
+                if (attrs[i] is T t) return t;
+            }
+            return null;
+        }
 
 
         private HashSet<FieldInfo> foldoutState = new();
@@ -94,27 +109,27 @@ namespace DaGenGraph.Editor
             float height = 0;
             if (!NeedShowInspector(member, obj, isDetails)) return 0;
 
-            if (isDetails && member.GetCustomAttribute(typeof(InfoBoxAttribute)) is InfoBoxAttribute infoBox)
+            if (isDetails && GetCachedAttr<InfoBoxAttribute>(member) is InfoBoxAttribute infoBox)
             {
                 EditorGUILayout.HelpBox(infoBox.Message, (MessageType) (int) infoBox.InfoMessageType);
                 height += 40;
             }
 
-            if (member.GetCustomAttribute(typeof(HeaderAttribute)) is HeaderAttribute header)
+            if (GetCachedAttr<HeaderAttribute>(member) is HeaderAttribute header)
             {
                 EditorGUILayout.LabelField(header.header);
                 height += 20;
             }
 
-            if (member.GetCustomAttribute(typeof(SpaceAttribute)) is SpaceAttribute space)
+            if (GetCachedAttr<SpaceAttribute>(member) is SpaceAttribute space)
             {
                 EditorGUILayout.Space(space.height);
                 height += space.height;
             }
 
             bool disable = false;
-            if (member.GetCustomAttribute(typeof(ReadOnlyAttribute)) is ReadOnlyAttribute ||
-                member.GetCustomAttribute(typeof(DisableInEditorModeAttribute)) is DisableInEditorModeAttribute)
+            if (GetCachedAttr<ReadOnlyAttribute>(member) is ReadOnlyAttribute ||
+                GetCachedAttr<DisableInEditorModeAttribute>(member) is DisableInEditorModeAttribute)
             {
                 disable = true;
                 EditorGUI.BeginDisabledGroup(true);
@@ -124,7 +139,7 @@ namespace DaGenGraph.Editor
             {
                 OnValueChangedAttribute attribute = null;
                 object value = null;
-                if (field.GetCustomAttribute(typeof(OnValueChangedAttribute)) is OnValueChangedAttribute
+                if (GetCachedAttr<OnValueChangedAttribute>(field) is OnValueChangedAttribute
                     valueChangedAttribute)
                 {
                     value = field.GetValue(obj);
@@ -159,7 +174,7 @@ namespace DaGenGraph.Editor
             }
             else
             {
-                if (member.GetCustomAttribute(typeof(OnStateUpdateAttribute)) is OnStateUpdateAttribute
+                if (GetCachedAttr<OnStateUpdateAttribute>(member) is OnStateUpdateAttribute
                     stateUpdateAttribute)
                 {
                     var method = member.DeclaringType.GetMethod(stateUpdateAttribute.Action,
@@ -178,13 +193,13 @@ namespace DaGenGraph.Editor
         protected virtual bool NeedShowInspector(MemberInfo member, object obj, bool isDetails)
         {
             if (!SelectMemberInfo(member, obj, isDetails)) return false;
-            if (member.GetCustomAttribute(typeof(DrawIgnoreAttribute)) is DrawIgnoreAttribute ignoreAttribute)
+            if (GetCachedAttr<DrawIgnoreAttribute>(member) is DrawIgnoreAttribute ignoreAttribute)
             {
                 if (ignoreAttribute.Ignore == Ignore.All) return false;
                 if (ignoreAttribute.Ignore == Ignore.Details == isDetails) return false;
             }
 
-            if (member.GetCustomAttribute(typeof(ShowIfAttribute)) is ShowIfAttribute showIfAttribute)
+            if (GetCachedAttr<ShowIfAttribute>(member) is ShowIfAttribute showIfAttribute)
             {
                 if (!CheckShowIf(member, obj, showIfAttribute)) return false;
             }
@@ -1412,7 +1427,7 @@ namespace DaGenGraph.Editor
         {
             //仅支持无参方法
             if (method.GetParameters().Length != 0) return 0;
-            if (method.GetCustomAttribute(typeof(ButtonAttribute)) is ButtonAttribute buttonAttribute)
+            if (GetCachedAttr<ButtonAttribute>(method) is ButtonAttribute buttonAttribute)
             {
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button(buttonAttribute.Name))
@@ -1535,9 +1550,9 @@ namespace DaGenGraph.Editor
         protected virtual bool SelectMemberInfo(MemberInfo member, object obj, bool isDetails)
         {
             if (member is PropertyInfo prop && !prop.CanWrite) return false;
-            if (member is MethodInfo && member.GetCustomAttribute(typeof(ButtonAttribute)) == null) return false;
+            if (member is MethodInfo && GetCachedAttr<ButtonAttribute>(member) == null) return false;
 
-            if (member.GetCustomAttribute(typeof(HideInInspector)) is HideInInspector)
+            if (GetCachedAttr<HideInInspector>(member) is HideInInspector)
             {
                 return false;
             }
@@ -1562,12 +1577,12 @@ namespace DaGenGraph.Editor
             {
                 if (!SelectMemberInfo(member, obj, true)) continue;
                 float sort = 0;
-                if (member.GetCustomAttribute(typeof(PropertyOrderAttribute)) is PropertyOrderAttribute orderAttribute)
+                if (GetCachedAttr<PropertyOrderAttribute>(member) is PropertyOrderAttribute orderAttribute)
                 {
                     sort = orderAttribute.Order;
                 }
 
-                if (member.GetCustomAttribute(typeof(BoxGroupAttribute)) is BoxGroupAttribute boxGroupAttribute)
+                if (GetCachedAttr<BoxGroupAttribute>(member) is BoxGroupAttribute boxGroupAttribute)
                 {
                     if (!groupsTemp.TryGetValue(boxGroupAttribute.GroupID, out var groupItem))
                     {
@@ -1581,7 +1596,7 @@ namespace DaGenGraph.Editor
                         groupsTemp.Add(groupItem.GroupId, groupItem);
                     }
 
-                    groupItem.Members.Add(new MemberItem() {Member = member, MinSort = sort});
+                    groupItem.Members.Add(new MemberItem() {Member = member, MinSort = sort, cachedAttributes = (Attribute[])member.GetCustomAttributes(typeof(Attribute), true)});
                     if (sort < groupItem.MinSort)
                     {
                         groupItem.MinSort = sort;
@@ -1589,7 +1604,7 @@ namespace DaGenGraph.Editor
                 }
                 else
                 {
-                    sortTemp.Add(new MemberItem() {Member = member, MinSort = sort});
+                    sortTemp.Add(new MemberItem() {Member = member, MinSort = sort, cachedAttributes = (Attribute[])member.GetCustomAttributes(typeof(Attribute), true)});
                 }
             }
 

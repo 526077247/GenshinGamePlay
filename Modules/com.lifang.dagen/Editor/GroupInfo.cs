@@ -14,11 +14,12 @@ namespace DaGenGraph.Editor
         public string GroupId;
         public List<MemberItem> Members = new ();
     }
-    
+
     public class MemberItem:ISort
     {
         public float MinSort{ get; set; }
         public MemberInfo Member;
+        public Attribute[] cachedAttributes;
     }
-    
+
 }

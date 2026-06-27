@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
@@ -101,6 +99,12 @@ namespace DaGenGraph.Editor
                 m_AniTime = 0;
             }
 
+            var visibleGridRect = new Rect(
+                -m_Graph.currentPanOffset.x / currentZoom,
+                -m_Graph.currentPanOffset.y / currentZoom,
+                m_ScaledGraphArea.width,
+                m_ScaledGraphArea.height);
+
             foreach (var edgeView in edgeViews.Values)
             {
                 if (edgeView.outputNode == null || edgeView.inputNode == null)
@@ -109,7 +113,7 @@ namespace DaGenGraph.Editor
                 }
 
                 //if both nodes are not visible -> do not draw the edge
-                if (!m_NodeViews[edgeView.inputNode.id].isVisible && !m_NodeViews[edgeView.inputNode.id].isVisible)
+                if (!m_NodeViews[edgeView.inputNode.id].isVisible && !m_NodeViews[edgeView.outputNode.id].isVisible)
                 {
                     continue;
                 }
@@ -118,6 +122,14 @@ namespace DaGenGraph.Editor
                 {
                     continue;
                 }
+
+                // viewport culling: only skip edges when both endpoints are to the same side of the visible area
+                var outNodeRect = edgeView.outputNode.GetRect();
+                var inNodeRect = edgeView.inputNode.GetRect();
+                if (outNodeRect.xMax < visibleGridRect.xMin && inNodeRect.xMax < visibleGridRect.xMin) continue;
+                if (outNodeRect.xMin > visibleGridRect.xMax && inNodeRect.xMin > visibleGridRect.xMax) continue;
+                if (outNodeRect.yMax < visibleGridRect.yMin && inNodeRect.yMax < visibleGridRect.yMin) continue;
+                if (outNodeRect.yMin > visibleGridRect.yMax && inNodeRect.yMin > visibleGridRect.yMax) continue;
 
                 DrawEdgeCurve(edgeView);
             }
@@ -129,9 +141,10 @@ namespace DaGenGraph.Editor
             m_ConnectionAlpha = 1f;
             if (m_Mode == GraphMode.Connect) m_ConnectionAlpha = 0.5f;
 
-            m_NormalColor = UColor.GetColor().edgeNormalColor;
-            m_OutputColor = UColor.GetColor().edgeOutputColor;
-            m_InputColor = UColor.GetColor().edgeInputColor;
+            var uc = UColor.GetColor();
+            m_NormalColor = uc.edgeNormalColor;
+            m_OutputColor = uc.edgeOutputColor;
+            m_InputColor = uc.edgeInputColor;
             m_NormalColor.a = m_ConnectionAlpha;
             m_OutputColor.a = m_ConnectionAlpha;
             m_InputColor.a = m_ConnectionAlpha;
@@ -163,34 +176,34 @@ namespace DaGenGraph.Editor
             }
 
             float currentCurveWidth = 3;
+            var edgeData = m_Graph.GetEdge(edge.edgeId);
+            if (edgeData == null) return;
             if (EditorApplication.isPlaying)
             {
-                if (m_Graph.GetEdge(edge.edgeId).ping)
+                if (edgeData.ping)
                 {
                     m_EdgeColor = m_OutputColor;
                     m_AnimateOutput = true;
-                    if (m_Graph.GetEdge(edge.edgeId).reSetTime)
+                    if (edgeData.reSetTime)
                     {
                         m_AniTime = 0;
-                        m_Graph.GetEdge(edge.edgeId).reSetTime = false;
+                        edgeData.reSetTime = false;
                     }
                 }
-                else if (m_Graph.GetEdge(edge.edgeId).ping)
+                else if (edgeData.ping)
                 {
                     m_EdgeColor = m_InputColor;
                     m_AnimateInput = true;
-                    if (m_Graph.GetEdge(edge.edgeId).reSetTime)
+                    if (edgeData.reSetTime)
                     {
                         m_AniTime = 0;
-                        m_Graph.GetEdge(edge.edgeId).reSetTime = false;
+                        edgeData.reSetTime = false;
                     }
                 }
             }
-            else if (m_Graph.GetEdge(edge.edgeId).ping ||
-                     m_Graph.GetEdge(edge.edgeId).ping)
+            else if (edgeData.ping)
             {
-                m_Graph.GetEdge(edge.edgeId).ping = false;
-                m_Graph.GetEdge(edge.edgeId).ping = false;
+                edgeData.ping = false;
             }
 
             m_DotColor = m_EdgeColor;
@@ -243,11 +256,15 @@ namespace DaGenGraph.Editor
                 (int)(Vector2.Distance(edge.outputVirtualPoint.rect.position, edge.inputVirtualPoint.rect.position) *
                       3);
             if (m_NumberOfPoints <= 0) return;
-            m_BezierPoints = Handles.MakeBezierPoints(edge.outputVirtualPoint.rect.position,
-                edge.inputVirtualPoint.rect.position,
-                edge.outputTangent,
-                edge.inputTangent,
-                m_NumberOfPoints);
+            if (edge.bezierPoints == null || edge.bezierPoints.Length != m_NumberOfPoints)
+            {
+                edge.bezierPoints = Handles.MakeBezierPoints(edge.outputVirtualPoint.rect.position,
+                    edge.inputVirtualPoint.rect.position,
+                    edge.outputTangent,
+                    edge.inputTangent,
+                    m_NumberOfPoints);
+            }
+            m_BezierPoints = edge.bezierPoints;
             m_DotPointIndex = 0;
             //we set the number of points as the bezierPoints length - 1
             m_NumberOfPoints--;
@@ -262,9 +279,9 @@ namespace DaGenGraph.Editor
 
             m_DotPointIndex = Mathf.Clamp(m_DotPointIndex, 0, m_NumberOfPoints);
             //reset edge's ping
-            if (m_Graph.GetEdge(edge.edgeId).ping && m_DotPointIndex >= m_NumberOfPoints)
+            if (edgeData.ping && m_DotPointIndex >= m_NumberOfPoints)
             {
-                m_Graph.GetEdge(edge.edgeId).ping = false;
+                edgeData.ping = false;
             }
 
             m_DotPoint = m_BezierPoints[m_DotPointIndex];
@@ -285,8 +302,15 @@ namespace DaGenGraph.Editor
         private void DrawNodes(Rect graphArea)
         {
             BeginWindows();
+            var visibleGridRect = new Rect(
+                -m_Graph.currentPanOffset.x / currentZoom,
+                -m_Graph.currentPanOffset.y / currentZoom,
+                m_ScaledGraphArea.width,
+                m_ScaledGraphArea.height);
             foreach (var nodeView in m_NodeViews.Values)
             {
+                if (nodeView?.node == null) continue;
+                if (!nodeView.node.GetRect().Overlaps(visibleGridRect)) continue;
                 nodeView.zoomedBeyondPortDrawThreshold = currentZoom <= 0.4f;
                 nodeView.DrawNodeGUI(graphArea, m_Graph.currentPanOffset, currentZoom);
             }
@@ -301,27 +325,37 @@ namespace DaGenGraph.Editor
         private void DrawPortsEdgePoints()
         {
             if (currentZoom <= 0.4f) return;
+            var visibleGridRect = new Rect(
+                -m_Graph.currentPanOffset.x / currentZoom,
+                -m_Graph.currentPanOffset.y / currentZoom,
+                m_ScaledGraphArea.width,
+                m_ScaledGraphArea.height);
             foreach (var port in ports.Values)
             {
-                DrawPortEdgePoints(port); //draw the edge points
+                if (!nodeViews.TryGetValue(port.nodeId, out var nv) || nv?.node == null) continue;
+                var node = nv.node;
+                var portGridRect = new Rect(node.GetX(), node.GetY() + port.GetY(), port.GetWidth(), port.GetHeight());
+                if (!portGridRect.Overlaps(visibleGridRect)) continue;
+                DrawPortEdgePoints(port);
             }
         }
 
         private void DrawPortEdgePoints(Port port)
         {
+            var uc = UColor.GetColor();
+            var inputColor = uc.portInputColor;
+            var outputColor = uc.portOutputColor;
+            var minusStyle = edgePointMinus;
             foreach (var virtualPoint in points[port.id])
             {
                 var mouseIsOverThisPoint = virtualPoint == m_CurrentHoveredVirtualPoint;
                 if (m_AltKeyPressedAnimBool.faded > 0.5f && virtualPoint.isConnected)
                 {
-                    //set the virtualPoint delete color to RED
-                    //set the virtualPoint style to show to the dev that he can disconnect the socket (it's a minus sign)
-                    DrawEdgePoint(virtualPoint, mouseIsOverThisPoint, Styles.GetStyle("ConnectionPointMinus"),
-                        Color.red);
+                    DrawEdgePoint(virtualPoint, mouseIsOverThisPoint, minusStyle, Color.red);
                     continue;
                 }
 
-                var pointColor = port.IsInput() ? UColor.GetColor().portInputColor : UColor.GetColor().portOutputColor;
+                var pointColor = port.IsInput() ? inputColor : outputColor;
                 GUIStyle pointStyle;
                 switch (port.GetConnectionMode())
                 {
@@ -385,39 +419,24 @@ namespace DaGenGraph.Editor
         {
             var parentNode = nodeViews[port.nodeId].node;
             if (parentNode == null) return Vector2.zero;
-            var pointsInWorldSpace = GetPortEdgePointsInWorldSpace(port, parentNode);
             float minDistance = 100000;
             var worldPosition = parentNode.GetPosition();
-            foreach (Vector2 edgePointWorldPosition in pointsInWorldSpace)
+            var edgePoints = port.GetEdgePoints();
+            var socketWorldRect = new Rect(parentNode.GetX(),
+                parentNode.GetY() + port.GetY(),
+                port.GetWidth(),
+                port.GetHeight());
+            socketWorldRect.position += m_Graph.currentPanOffset / currentZoom;
+            for (int i = 0; i < edgePoints.Count; i++)
             {
-                float currentDistance = Vector2.Distance(edgePointWorldPosition, mousePosition);
+                var edgePoint = edgePoints[i];
+                var pt = new Vector2(socketWorldRect.x + edgePoint.x + 8, socketWorldRect.y + edgePoint.y + 8);
+                float currentDistance = Vector2.Distance(pt, mousePosition);
                 if (currentDistance > minDistance) continue;
-                worldPosition = edgePointWorldPosition;
+                worldPosition = pt;
                 minDistance = currentDistance;
             }
-
             return worldPosition;
-        }
-
-        private IEnumerable<Vector2> GetPortEdgePointsInWorldSpace(Port port, NodeBase parentNode)
-        {
-            var pointsInWorldSpace = new List<Vector2>();
-            if (port == null) return pointsInWorldSpace;
-            if (parentNode == null) return pointsInWorldSpace;
-            foreach (Vector2 edgePoint in port.GetEdgePoints())
-            {
-                var socketWorldRect = new Rect(parentNode.GetX(),
-                    parentNode.GetY() + port.GetY(),
-                    port.GetWidth(),
-                    port.GetHeight());
-
-                socketWorldRect.position +=
-                    m_Graph.currentPanOffset / currentZoom; //this is the calculated socketGridRect
-                pointsInWorldSpace.Add(new Vector2(socketWorldRect.x + edgePoint.x + 8,
-                    socketWorldRect.y + edgePoint.y + 8));
-            }
-
-            return pointsInWorldSpace;
         }
 
         #endregion

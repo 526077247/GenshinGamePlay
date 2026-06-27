@@ -32,6 +32,7 @@ namespace DaGenGraph
         private static Dictionary<Type, List<Type>> subTypes = new Dictionary<Type, List<Type>>();
         private static Dictionary<Type, string[]> fullNames = new Dictionary<Type, string[]>();
         private static Dictionary<string, Type> tempType = new Dictionary<string, Type>();
+
         private static HashSet<string> noneFind = new HashSet<string>();
         public static List<Type> GetSubClassList(FieldInfo fieldInfo, Type type, out string[] names)
         {
