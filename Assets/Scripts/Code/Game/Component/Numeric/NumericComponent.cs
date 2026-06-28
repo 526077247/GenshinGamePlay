@@ -61,7 +61,7 @@ namespace TaoTie
 		public int GetAsInt(int numericType)
 		{
 			if(this.IsFloat(numericType))
-				return (int)this.GetByKey(numericType)/10000;
+				return (int)(this.GetByKey(numericType)/10000);
 			else
 				return (int)this.GetByKey(numericType);
 		}

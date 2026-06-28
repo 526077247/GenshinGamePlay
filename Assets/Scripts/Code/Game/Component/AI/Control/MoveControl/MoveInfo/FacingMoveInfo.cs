@@ -150,12 +150,15 @@ namespace TaoTie
         /// <summary>
         /// 检测左右靠墙
         /// </summary>
-        /// <param name="aiKnowledge"></param>
-        /// <param name="obstacleDetectRange"></param>
-        /// <returns></returns>
         private bool CheckLRHitWall(AIKnowledge aiKnowledge, float obstacleDetectRange)
         {
-            return true;
+            if (obstacleDetectRange <= 0) return true;
+            var pos = aiKnowledge.CurrentPos;
+            var forward = aiKnowledge.CurrentForward;
+            var right = new Vector3(forward.z, 0, -forward.x);
+            bool leftBlocked = Physics.Raycast(pos, -right, obstacleDetectRange);
+            bool rightBlocked = Physics.Raycast(pos, right, obstacleDetectRange);
+            return !leftBlocked && !rightBlocked;
         }
     }
 }

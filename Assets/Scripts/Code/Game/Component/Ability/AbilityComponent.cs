@@ -159,9 +159,18 @@ namespace TaoTie
         public void RemoveModifier(string ability, string modifier)
         {
             string key = ability + "_" + modifier;
-            for (int i = modifierDictionary[key].Count - 1; i >= 0; i--)
+            var list = modifierDictionary[key];
+            if (list == null || list.Count == 0) return;
+            if (list.Count == 1)
             {
-                modifierDictionary[key][i].Dispose();
+                RemoveModifier(list[0]);
+                return;
+            }
+
+            var snapshot = list.ToArray();
+            for (int i = 0; i < snapshot.Length; i++)
+            {
+                RemoveModifier(snapshot[i]);
             }
         }
 
@@ -184,6 +193,7 @@ namespace TaoTie
                 if (item.Config.AbilityName == abilityName)
                 {
                     ability = item;
+                    break;
                 }
             }
             if(ability==null) return;

@@ -128,10 +128,6 @@ namespace TaoTie
 				{
 					var flag = Vector3.Cross(lookDir, transform.forward);
 					var deltaTime = Time.fixedDeltaTime;
-					if (this is IUpdate)
-					{
-						deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
-					}
 					var temp = (flag.y > 0 ? -1 : 1) * CharacterInput.RotateSpeed * deltaTime;
 					if (Mathf.Abs(temp - angle) <= 0.5f) temp = angle;
 					dir = Quaternion.Euler(0, temp, 0) * transform.forward;
@@ -145,21 +141,6 @@ namespace TaoTie
 				if (dir.sqrMagnitude < 0.0001f) return;
 				SceneEntity.Rotation = Quaternion.LookRotation(dir, Vector3.up);
 			}
-		}
-
-		protected Vector3 CalculateLookDirection()
-		{
-			if (CharacterInput == null || CharacterInput.FaceDirection == Vector3.zero)
-				return Vector3.zero;
-
-			Vector3 v = Vector3.zero;
-			
-			var faceRight = Quaternion.Euler(0, 90, 0) * CharacterInput.FaceDirection;
-			v += Vector3.ProjectOnPlane(faceRight, Vector3.up).normalized * CharacterInput.Direction.x;
-			v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, Vector3.up).normalized * CharacterInput.Direction.z;
-
-			v.Normalize();
-			return v;
 		}
 
 		//Handle jump booleans for later use in FixedUpdate;
@@ -663,12 +644,12 @@ namespace TaoTie
 		}
 
 		//Add momentum to controller;
-		public void AddMomentum(Vector3 momentum)
+		public void AddMomentum(Vector3 additionalMomentum)
 		{
 			if (useLocalMomentum)
-				momentum = transform.localToWorldMatrix * momentum;
+				additionalMomentum = transform.localToWorldMatrix * additionalMomentum;
 
-			momentum += momentum;
+			momentum += additionalMomentum;
 
 			if (useLocalMomentum)
 				momentum = transform.worldToLocalMatrix * momentum;

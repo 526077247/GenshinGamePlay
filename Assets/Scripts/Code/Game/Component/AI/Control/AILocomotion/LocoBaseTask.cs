@@ -4,36 +4,14 @@ namespace TaoTie
 {
     public abstract class LocoBaseTask
     {
-        protected const float CHECKFAIL_PRE_TIME = 1.5f;
-        
         protected Vector3 destination;
         protected MotionFlag speedLevel;
         protected long startTick;
         protected AIKnowledge knowledge;
-        protected Vector3? prevPos;
-        protected AITimer moveFailTimer;
-        protected float distanceMoved;
-        protected Vector3? moveFailStartPos;
-        protected DirectionLock directionLock;
 
         public bool Stopped { get; protected set; }
 
-        public struct DirectionLock
-        {
-
-            public bool lockX;
-            public bool lockY;
-            public bool lockZ;
-
-
-            public Vector3 Apply(Vector3 origin)
-            {
-                return new Vector3(lockX ? 0 : origin.x, lockY ? 0 : origin.y, lockZ ? 0 : origin.z);
-            }
-        }
-
         public abstract void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state);
-
 
         public virtual void UpdateLocoSpeed(MotionFlag speed)
         {
@@ -45,18 +23,13 @@ namespace TaoTie
         public virtual void OnCloseTask(AILocomotionHandler handler)
         {
             Stopped = true;
-            handler.UpdateMotionFlag(0);
+            handler.UpdateMotionFlag(MotionFlag.Idle);
         }
         
         protected void Init(AIKnowledge knowledge)
         {
             this.knowledge = knowledge;
             this.startTick = GameTimerManager.Instance.GetTimeNow();
-        }
-
-        public virtual void SetDirectionLock(DirectionLock dl)
-        {
-            directionLock = dl;
         }
 
         public virtual void RefreshTask(AILocomotionHandler handler, Vector3 positoin)

@@ -45,7 +45,22 @@ namespace TaoTie
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai,
             AIManager aiManager)
         {
-            
+            if (Status == CombatFollowMoveStatus.CloseTo)
+            {
+                if (aiKnowledge.TargetKnowledge.TargetEntity == null)
+                {
+                    Status = CombatFollowMoveStatus.Inactive;
+                    return;
+                }
+                float distance = Vector3.Distance(aiKnowledge.CurrentPos,
+                    aiKnowledge.TargetKnowledge.TargetEntity.Position);
+                if (distance < 2f)
+                {
+                    if (taskHandler.CurrentState == LocoTaskState.Running)
+                        taskHandler.CurrentState = LocoTaskState.Interrupted;
+                    Status = CombatFollowMoveStatus.Inactive;
+                }
+            }
         }
 
         public override void Leave(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)

@@ -81,7 +81,7 @@ namespace TaoTie
             {
                 //todo: cd
                 
-                if (direction != Vector3.one)
+                if (direction != Vector3.zero)
                 {
                     moveComponent.ForceLookTo(direction);
                 }

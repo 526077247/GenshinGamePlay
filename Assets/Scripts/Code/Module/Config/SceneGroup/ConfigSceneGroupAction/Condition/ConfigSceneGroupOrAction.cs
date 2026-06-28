@@ -16,7 +16,7 @@ namespace TaoTie
             bool isSuc = false;
             if (Conditions == null || Conditions.Length == 0)
             {
-                isSuc = true;
+                isSuc = false;
             }
             else
             {

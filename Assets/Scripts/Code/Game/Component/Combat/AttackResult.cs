@@ -115,6 +115,7 @@ namespace TaoTie
 
         public void Dispose()
         {
+            Id = default;
             AttackerId = default;
             DefenseId = default;
             HitInfo = default;
@@ -130,7 +131,12 @@ namespace TaoTie
             IgnoreLevelDiff = default;
             TrueDamage = default;
             IsEffective = default;
+            IsCritical = default;
             FinalRealDamage = default;
+            HitLevel = default;
+            HitImpulseX = default;
+            HitImpulseY = default;
+            RetreatDir = default;
             HitPattern = default;
             IsBullet = default;
             StartTime = default;

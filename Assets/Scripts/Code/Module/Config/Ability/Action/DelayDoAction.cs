@@ -20,6 +20,8 @@ namespace TaoTie
         private async ETTask ExecuteAsync(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             await GameTimerManager.Instance.WaitAsync(Delay);
+            if (ability.IsDispose || (modifier != null && modifier.IsDispose) ||
+                actionExecuter.IsDispose || target.IsDispose) return;
             for (int i = 0; i < Actions.Length; i++)
             {
                 Actions[i].DoExecute(actionExecuter, ability, modifier, target);

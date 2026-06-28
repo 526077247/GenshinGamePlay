@@ -11,14 +11,14 @@ namespace TaoTie
         private ConfigCombat config;
 
         public bool IsInCombat { get; private set; }
-        public bool CanHeHit;
+        public bool CanBeHit;
 
         public void Init(ConfigCombat config)
         {
             IsInCombat = false;
             this.config = config;
             if(config!=null && config.BeHit!=null)
-                CanHeHit = !config.BeHit.MuteAllHit;
+                CanBeHit = !config.BeHit.MuteAllHit;
             attackTarget.Reset();
         }
 
@@ -30,7 +30,7 @@ namespace TaoTie
             afterBeAttack = null;
             IsInCombat = false;
             config = null;
-            CanHeHit = false;
+            CanBeHit = false;
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace TaoTie
 
         public void OnBeKill()
         {
-            CanHeHit = false;
+            CanBeHit = false;
             var configDie = config?.Die;
             if (configDie != null)
             {
@@ -222,7 +222,7 @@ namespace TaoTie
         }
         public void SelectAttackTarget(bool force)
         {
-            if(config.CombatLock == null) return;
+            if(config == null || config.CombatLock == null) return;
             if (attackTarget.RuntimeID == 0 || force)
             {
                 var unit = GetParent<Unit>();

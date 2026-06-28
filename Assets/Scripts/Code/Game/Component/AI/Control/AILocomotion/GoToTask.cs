@@ -11,13 +11,13 @@ namespace TaoTie
             Moving = 2
         }
         
-        private GoToTaskState innerState;
+        protected GoToTaskState innerState;
 
-        private float getCloseDistance;
-        private float turnSpeed;
-        private PathQueryTask pathQuery;
-        private int index;
-        private NavMeshUseType useNavMesh;
+        protected float getCloseDistance;
+        protected float turnSpeed;
+        protected PathQueryTask pathQuery;
+        protected int index;
+        protected NavMeshUseType useNavMesh;
         public void Init(AIKnowledge knowledge, AILocomotionHandler.ParamGoTo param)
         {
             base.Init(knowledge);
@@ -53,7 +53,7 @@ namespace TaoTie
                     {
                         Stopped = true;
                         state = LocoTaskState.Finished;
-                        handler.UpdateMotionFlag(0);
+                        handler.UpdateMotionFlag(MotionFlag.Idle);
                     }
                 }
                 else
@@ -79,7 +79,7 @@ namespace TaoTie
                         {
                             Stopped = true;
                             state = LocoTaskState.Finished;
-                            handler.UpdateMotionFlag(0);
+                            handler.UpdateMotionFlag(MotionFlag.Idle);
                         }
                         else
                         {
@@ -94,18 +94,26 @@ namespace TaoTie
                     }
                     else
                     {
-                        handler.UpdateMotionFlag(speedLevel);
-                        if (turnSpeed != 0)
-                        {
-                            handler.UpdateTurnSpeed(turnSpeed);
-                        }
+                        OnMovingToDestination(handler, transfomPos, target);
                     }
                 }
                 else
                 {
                     state = LocoTaskState.Finished;
-                    handler.UpdateMotionFlag(0);
+                    handler.UpdateMotionFlag(MotionFlag.Idle);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 朝路径点移动时的处理，子类可重写以实现特殊移动模式
+        /// </summary>
+        protected virtual void OnMovingToDestination(AILocomotionHandler handler, Vector3 currentPos, Vector3 target)
+        {
+            handler.UpdateMotionFlag(speedLevel);
+            if (turnSpeed != 0)
+            {
+                handler.UpdateTurnSpeed(turnSpeed);
             }
         }
         public override void RefreshTask(AILocomotionHandler handler, Vector3 positoin)

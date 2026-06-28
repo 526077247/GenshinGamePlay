@@ -85,6 +85,66 @@ namespace TaoTie
                 strategy = MoveSystem.Instance.CreateMoveStrategy(this, configMoveStrategy, p1);
             }
         }
+
+        /// <summary>
+        /// 根据输入计算期望朝向
+        /// </summary>
+        protected Vector3 CalculateLookDirection()
+        {
+            if (CharacterInput == null || CharacterInput.FaceDirection == Vector3.zero)
+                return Vector3.zero;
+
+            Vector3 v = Vector3.zero;
+            var up = SceneEntity.Up;
+            var faceRight = Quaternion.Euler(0, 90, 0) * CharacterInput.FaceDirection;
+            v += Vector3.ProjectOnPlane(faceRight, up).normalized * CharacterInput.Direction.x;
+            v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, up).normalized * CharacterInput.Direction.z;
+
+            v.Normalize();
+            return v;
+        }
+
+        /// <summary>
+        /// 根据输入和转向速度执行旋转
+        /// </summary>
+        protected void HandleRotation(float deltaTime)
+        {
+            if (CharacterInput == null || CharacterInput.RotateSpeed <= 0) return;
+            var lookDir = CalculateLookDirection();
+            if (lookDir == Vector3.zero) return;
+
+            var euler = SceneEntity.Rotation.eulerAngles;
+            var dir = Quaternion.LookRotation(lookDir, SceneEntity.Up);
+            var euler2 = dir.eulerAngles;
+            var angle = euler2.y - euler.y;
+            while (angle < -180) angle += 360;
+            while (angle > 180) angle -= 360;
+
+            if (Mathf.Abs(angle) > CharacterInput.RotateSpeed * 0.01f)
+            {
+                var deltaAngle = CharacterInput.RotateSpeed * deltaTime * (angle < 0 ? -1 : 1);
+                float newY = euler.y + (angle < 0 ? Mathf.Max(deltaAngle, angle) : Mathf.Min(deltaAngle, angle));
+                SceneEntity.Rotation = Quaternion.Euler(euler.x, newY, euler.z);
+            }
+            else
+            {
+                SceneEntity.Rotation = Quaternion.Euler(euler.x, euler2.y, euler.z);
+            }
+        }
+
+        /// <summary>
+        /// 应用 ORCA 避障，返回处理后的速度
+        /// </summary>
+        protected Vector3 ApplyORCA(Vector3 velocity, float speed)
+        {
+            var orcaAgent = parent.GetComponent<ORCAAgentComponent>();
+            orcaAgent?.SetVelocity(velocity, speed);
+            if (orcaAgent != null)
+            {
+                velocity = orcaAgent.GetVelocity();
+            }
+            return velocity;
+        }
     }
 
     public abstract class MoveComponent<T> : MoveComponent, IComponent<T> where T: ConfigMoveAgent

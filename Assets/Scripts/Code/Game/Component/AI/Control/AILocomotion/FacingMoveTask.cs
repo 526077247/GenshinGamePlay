@@ -13,7 +13,7 @@ namespace TaoTie
         private Unit anchor;
         private MotionDirection movingDirection;
         private float duration;
-        private float finishTick;
+        private long finishTick;
         public override void UpdateLoco(AILocomotionHandler handler, AITransform currentTransform, ref LocoTaskState state)
         {
             if(anchor!=null)
@@ -21,7 +21,7 @@ namespace TaoTie
             if (innerState == FacingMoveTaskState.Start)
             {
                 handler.UpdateMotionFlag(speedLevel, movingDirection);
-                finishTick = GameTimerManager.Instance.GetTimeNow() + duration;
+                finishTick = GameTimerManager.Instance.GetTimeNow() + (long)(duration * 1000);
                 innerState = FacingMoveTaskState.Moving;
             }
 
@@ -37,7 +37,7 @@ namespace TaoTie
             if (Stopped)
             {
                 state = LocoTaskState.Finished;
-                handler.UpdateMotionFlag(0);
+                handler.UpdateMotionFlag(MotionFlag.Idle);
             }
         }
         

@@ -120,7 +120,9 @@ namespace TaoTie
 
         public void CreateSurroundDashTask(ParamSurroundDash param)
         {
-            
+            SurroundDashTask surroundDashTask = new SurroundDashTask();
+            surroundDashTask.Init(knowledge, param);
+            CreateTask_Internal(surroundDashTask);
         }
 
         public void CreateRotationTask(ParamRotation param)
@@ -132,9 +134,11 @@ namespace TaoTie
             CreateTask_Internal(rotationTask);
         }
 
-        public void CreateSnakelickMove(ParamGoTo param)
+        public void CreateSnakelikeMove(ParamGoTo param)
         {
-            
+            SnakelikeMoveTask snakelikeMoveTask = new SnakelikeMoveTask();
+            snakelikeMoveTask.Init(knowledge, param);
+            CreateTask_Internal(snakelikeMoveTask);
         } 
         public void CreateFollowMoveTask(ParamFollowMove param)
         {
@@ -163,8 +167,7 @@ namespace TaoTie
                 currentTask.OnCloseTask(this);
                 currentTask = null;
             }
-            knowledge.Input.TryMove(Vector3.zero, MotionFlag.Idle);
-        }
+            knowledge.Input.TryMove(Vector3.zero, MotionFlag.Idle);        }
         
         public void UpdateMotionFlag(MotionFlag newSpeed, MotionDirection direction = MotionDirection.Forward)
         {
@@ -184,7 +187,8 @@ namespace TaoTie
         }
         public void UpdateTurnSpeed(float speed)
         {
-            // knowledge.Mover.RotateSpeed = speed;
+            if (knowledge.Mover?.CharacterInput != null)
+                knowledge.Mover.CharacterInput.RotateSpeed = speed;
         }
 
         public void ForceLookAt()

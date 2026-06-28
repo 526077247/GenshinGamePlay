@@ -61,21 +61,29 @@ namespace TaoTie
                 }
 
                 var flag = Random.Range(0, total * 10) % total;
+                int selectedSuite = -1;
                 foreach (var item in this.temp)
                 {
                     if (item.Value > 0)
                     {
                         flag -= item.Value;
-                        if (flag <= 0)
+                        if (flag < 0)
                         {
-                            this.ChangeSuite(item.Key);
+                            selectedSuite = item.Key;
                             break;
                         }
                     }
                 }
 
-                Log.Error("随机suite失败 sceneGroupId=" + Config.Id);
-                this.ChangeSuite(Config.Suites[0].LocalId);
+                if (selectedSuite >= 0)
+                {
+                    this.ChangeSuite(selectedSuite);
+                }
+                else
+                {
+                    Log.Error("随机suite失败 sceneGroupId=" + Config.Id);
+                    this.ChangeSuite(Config.Suites[0].LocalId);
+                }
             }
             else
             {
@@ -85,6 +93,14 @@ namespace TaoTie
 
         public void Destroy()
         {
+            foreach (var item in this.timerTrigger)
+            {
+                var timerId = item.Value;
+                GameTimerManager.Instance.Remove(ref timerId);
+            }
+            this.timerTrigger.Clear();
+            this.timerTrigger = null;
+
             this.Manager = null;
             this.triggers = null;
             this.actors = null;
@@ -242,9 +258,11 @@ namespace TaoTie
             //先把附加的移除
             if (this.addOnSuiteConfig != null)
             {
-                foreach (var item in this.addOnSuiteConfig)
+                using var list = ListComponent<int>.Create();
+                list.AddRange(this.addOnSuiteConfig);
+                for (int i = 0; i < list.Count; i++)
                 {
-                    this.RemoveExtraSuite(item);
+                    this.RemoveExtraSuite(list[i]);
                 }
             }
 
@@ -318,7 +336,7 @@ namespace TaoTie
                 {
                     if (this.actorEntities.TryGetValue(item.Key, out var entityIds))
                     {
-                        for (int i = 0; i < entityIds.Count; i++)
+                        for (int i = entityIds.Count - 1; i >= 0; i--)
                         {
                             Parent.Remove(entityIds[i]);
                         }
@@ -381,6 +399,7 @@ namespace TaoTie
                 {
                     if (this.zoneEntities.TryGetValue(item.Key, out var zone))
                     {
+                        this.zoneEntities.Remove(item.Key);
                         Parent.Remove(zone);
                     }
                 }
@@ -415,7 +434,7 @@ namespace TaoTie
                 this.addOnSuiteConfig.Add(config.LocalId);
                 Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteLoadEvent()
                 {
-                    SuiteId = curSuiteId,
+                    SuiteId = config.LocalId,
                     IsAddOn = true,
                 });
             }
@@ -522,7 +541,7 @@ namespace TaoTie
 
         private void RemoveAddonActors(ConfigSceneGroupSuites config)
         {
-            List<int[]> pre = new List<int[]>();
+            using ListComponent<int[]> pre = ListComponent<int[]>.Create();
             if (this.CurGroupSuitesConfig != null)
                 pre.Add(this.CurGroupSuitesConfig.Actors);
             foreach (var item in this.addOnSuiteConfig)
@@ -538,7 +557,7 @@ namespace TaoTie
                 {
                     if (this.actorEntities.TryGetValue(item.Key, out var entityIds))
                     {
-                        for (int i = 0; i < entityIds.Count; i++)
+                        for (int i = entityIds.Count - 1; i >= 0; i--)
                         {
                             Parent.Remove(entityIds[i]);
                         }
@@ -549,7 +568,7 @@ namespace TaoTie
 
         private void RemoveAddonTriggers(ConfigSceneGroupSuites config)
         {
-            List<int[]> pre = new List<int[]>();
+            using ListComponent<int[]> pre = ListComponent<int[]>.Create();
             if (this.CurGroupSuitesConfig != null)
                 pre.Add(this.CurGroupSuitesConfig.Triggers);
             foreach (var item in this.addOnSuiteConfig)
@@ -566,6 +585,12 @@ namespace TaoTie
                     if (this.triggers.TryGetValue(item.Key, out var trigger))
                     {
                         this.activeHandlers.Remove(trigger.LocalId);
+                        if (trigger is ConfigGameTimeChangeTrigger &&
+                            this.timerTrigger.TryGetValue(trigger.LocalId, out var timerId))
+                        {
+                            GameTimerManager.Instance.Remove(ref timerId);
+                            this.timerTrigger.Remove(trigger.LocalId);
+                        }
                     }
                 }
             }
@@ -573,7 +598,7 @@ namespace TaoTie
 
         private void RemoveAddonZones(ConfigSceneGroupSuites config)
         {
-            List<int[]> pre = new List<int[]>();
+            using ListComponent<int[]> pre = ListComponent<int[]>.Create();
             if (this.CurGroupSuitesConfig != null)
                 pre.Add(this.CurGroupSuitesConfig.Zones);
             foreach (var item in this.addOnSuiteConfig)
@@ -589,6 +614,7 @@ namespace TaoTie
                 {
                     if (this.zoneEntities.TryGetValue(item.Key, out var zone))
                     {
+                        this.zoneEntities.Remove(item.Key);
                         Parent.Remove(zone);
                     }
                 }

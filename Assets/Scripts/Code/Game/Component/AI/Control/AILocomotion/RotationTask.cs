@@ -20,6 +20,7 @@ namespace TaoTie
         {
             if (GameTimerManager.Instance.GetTimeNow() >= timeoutTick)
             {
+                Stopped = true;
                 state = LocoTaskState.Finished;
             }
         }

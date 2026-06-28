@@ -18,6 +18,7 @@ namespace TaoTie
         {
             AIMoveControlState res = ObjectPool.Instance.Fetch<AIMoveControlState>();
             res.moveInfoGroup = new MoveInfoBase[(int) MoveDecision.Max];
+            // 已有
             res.moveInfoGroup[(int) MoveDecision.FacingMove] = FacingMoveInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.Flee] = FleeInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.Wander] = WanderInfo.Create();
@@ -25,6 +26,31 @@ namespace TaoTie
             res.moveInfoGroup[(int) MoveDecision.CombatFollowMove] = CombatFollowMoveInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.SkillPrepare] = SkillPrepareInfo.Create();
             res.moveInfoGroup[(int) MoveDecision.StandStill] = StandStillInfo.Create();
+            // 非战斗移动
+            res.moveInfoGroup[(int) MoveDecision.ReturnToBorn] = ReturnToBornInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.Investigate] = InvestigateInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.ScriptedMoveTo] = ScriptedMoveToInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.Extraction] = ExtractionInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.Landing] = LandingInfo.Create();
+            // 战斗环绕
+            res.moveInfoGroup[(int) MoveDecision.Surround] = SurroundInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.BirdCircling] = BirdCirclingInfo.Create();
+            // 战术移动
+            res.moveInfoGroup[(int) MoveDecision.FindBack] = FindBackInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.CrabMove] = CrabMoveInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.CombatFixedMove] = CombatFixedMoveInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.SpacialChase] = SpacialChaseInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.SpacialProbe] = SpacialProbeInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.SpacialAdjust] = SpacialAdjustInfo.Create();
+            // 巡逻与行动点
+            res.moveInfoGroup[(int) MoveDecision.PatrolFollow] = PatrolFollowInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.ReactActionPoint] = ReactActionPointInfo.Create();
+            // 复用同类型
+            res.moveInfoGroup[(int) MoveDecision.FollowScriptedPath] = PatrolFollowInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.FollowServerRoute] = PatrolFollowInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.BrownianMove] = WanderInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.AutoPlayerSkillPrepare] = SkillPrepareInfo.Create();
+            res.moveInfoGroup[(int) MoveDecision.AutoPlayerFollowTarget] = CombatFollowMoveInfo.Create();
             return res;
         }
 

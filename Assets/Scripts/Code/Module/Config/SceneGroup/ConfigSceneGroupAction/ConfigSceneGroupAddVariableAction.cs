@@ -39,7 +39,7 @@ namespace TaoTie
                 val += flag;
                 if (Limit)
                 {
-                    val = (int) Mathf.Clamp(val, MinValue, MaxValue);
+                    val = Mathf.Clamp(val, MinValue, MaxValue);
                 }
 
                 aimSceneGroup.Variable.Set(Key, val);

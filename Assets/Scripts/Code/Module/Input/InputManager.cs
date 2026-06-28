@@ -600,7 +600,7 @@ namespace TaoTie
             //创建一个点击事件
             PointerEventData eventData = new PointerEventData(EventSystem.current);
             eventData.position = mousePosition;
-            List<RaycastResult> raycastResults = new List<RaycastResult>();
+            using ListComponent<RaycastResult> raycastResults = ListComponent<RaycastResult>.Create();
             //向点击位置发射一条射线，检测是否点击UI
             EventSystem.current.RaycastAll(eventData, raycastResults);
             if (raycastResults.Count > 0)
@@ -629,7 +629,7 @@ namespace TaoTie
             //创建一个点击事件
             PointerEventData eventData = new PointerEventData(EventSystem.current);
             eventData.position = mousePosition;
-            List<RaycastResult> raycastResults = new List<RaycastResult>();
+            using ListComponent<RaycastResult> raycastResults = ListComponent<RaycastResult>.Create();
             //向点击位置发射一条射线，检测是否点击UI
             EventSystem.current.RaycastAll(eventData, raycastResults);
             if (raycastResults.Count > 0)

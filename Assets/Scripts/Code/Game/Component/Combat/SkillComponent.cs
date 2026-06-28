@@ -40,6 +40,7 @@ namespace TaoTie
             }
 
             SkillInfoMap = null;
+            SkillInfoMapLocalId = null;
         }
         
 
@@ -66,7 +67,7 @@ namespace TaoTie
                     TriggerSkillCD(configId);
                 combatComponent.SelectAttackTarget(true);
                 var target = combatComponent.GetAttackTarget();
-                if (target is SceneEntity se)
+                if (target is SceneEntity se && moveComponent != null)
                 {
                     moveComponent.CharacterInput.FaceDirection = se.Position - GetParent<SceneEntity>().Position;
                 }
@@ -86,7 +87,7 @@ namespace TaoTie
                         TriggerSkillCD(configId);
                     combatComponent.SelectAttackTarget(true);
                     var target = combatComponent.GetAttackTarget();
-                    if (target is SceneEntity se)
+                    if (target is SceneEntity se && moveComponent != null)
                     {
                         moveComponent.CharacterInput.FaceDirection = se.Position - GetParent<SceneEntity>().Position;
                     }

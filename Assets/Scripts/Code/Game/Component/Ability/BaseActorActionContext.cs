@@ -5,6 +5,7 @@ namespace TaoTie
     public abstract class BaseActorActionContext: IDisposable
     {
         protected bool isDispose = true;
+        public bool IsDispose => isDispose;
         public AbilityComponent Parent{ get; private set; }
         protected ListComponent<AbilityMixin> mixins { get; private set; }
         protected BaseActorActionContext parentContext;

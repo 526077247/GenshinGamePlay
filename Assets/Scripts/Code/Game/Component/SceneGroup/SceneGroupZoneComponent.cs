@@ -28,8 +28,8 @@ namespace TaoTie
         {
             if (colliderComponent != null)
             {
-                colliderComponent.OnTriggerExitEvt -= OnTriggerEnterEvt;
-                colliderComponent.OnTriggerEnterEvt -= OnTriggerExitEvt;
+                colliderComponent.OnTriggerEnterEvt -= OnTriggerEnterEvt;
+                colliderComponent.OnTriggerExitEvt -= OnTriggerExitEvt;
                 colliderComponent = null;
             }
             sceneGroupId = 0;
