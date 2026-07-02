@@ -28,7 +28,12 @@ namespace DaGenGraph.Editor
         private Vector2 m_LastPanOffset = Vector2.zero;
         private bool m_ForceRebuild;
         private bool m_Dirty = true;
+        private bool m_PointsDirty = true;
+        private double m_LastShortcutTime;
         private readonly List<string> m_InvalidKeys = new();
+        private readonly Stack<string> m_UndoStack = new();
+        private readonly Stack<string> m_RedoStack = new();
+        private const int k_MaxUndoDepth = 50;
 
         private float m_NodeInspectorWidth = 400;
         private float currentZoom
@@ -228,8 +233,136 @@ namespace DaGenGraph.Editor
 
         protected virtual void OnExitPlayMode() { }
 
+        #region Undo/Redo
+
+        protected void PushUndoSnapshot()
+        {
+            if (m_Graph == null) return;
+            var json = SerializeGraph();
+            if (string.IsNullOrEmpty(json)) return;
+            m_UndoStack.Push(json);
+            if (m_UndoStack.Count > k_MaxUndoDepth)
+            {
+                var arr = m_UndoStack.ToArray();
+                m_UndoStack.Clear();
+                for (int i = arr.Length - 1; i >= 1; i--)
+                    m_UndoStack.Push(arr[i]);
+            }
+            m_RedoStack.Clear();
+        }
+
+        protected void PerformUndo()
+        {
+            if (m_UndoStack.Count == 0) { ShowNotification(new GUIContent("无可撤销操作"), 1f); return; }
+            var current = SerializeGraph();
+            if (!string.IsNullOrEmpty(current))
+                m_RedoStack.Push(current);
+            var json = m_UndoStack.Pop();
+            RestoreGraph(json);
+            Repaint();
+        }
+
+        protected void PerformRedo()
+        {
+            if (m_RedoStack.Count == 0) { ShowNotification(new GUIContent("无可重做操作"), 1f); return; }
+            var current = SerializeGraph();
+            if (!string.IsNullOrEmpty(current))
+                m_UndoStack.Push(current);
+            var json = m_RedoStack.Pop();
+            RestoreGraph(json);
+            Repaint();
+        }
+
+        private void RestoreGraph(string json)
+        {
+            var graph = DeserializeGraph(json);
+            if (graph != null)
+            {
+                // Clear stale references from previous graph state
+                nodeViews.Clear();
+                m_SelectedNodes.Clear();
+                m_SelectedGroup = null;
+                m_DraggingGroup = null;
+                m_DragUndoPushed = false;
+                m_Graph = graph;
+                m_Points = null;
+                m_Ports = null;
+                m_EdgeViews = null;
+                m_PointsDirty = true;
+                m_ForceRebuild = true;
+                m_Dirty = true;
+                foreach (var item in m_Graph.values)
+                {
+                    CreateNodeView(item);
+                }
+            }
+        }
+
+        protected abstract string SerializeGraph();
+        protected abstract GraphBase DeserializeGraph(string json);
+
+        #endregion
+
         private void OnGUI()
         {
+            // Only handle on KeyUp — fires exactly once per press, not repeatedly while held
+            var evt = Event.current;
+            if (evt.type == EventType.KeyUp && (evt.control || evt.command))
+            {
+                if (!evt.shift && evt.keyCode == KeyCode.Z)
+                {
+                    if (m_Graph != null && !EditorApplication.isPlaying) PerformUndo();
+                    evt.Use();
+                    return;
+                }
+                if (!evt.shift && evt.keyCode == KeyCode.Y)
+                {
+                    if (m_Graph != null && !EditorApplication.isPlaying) PerformRedo();
+                    evt.Use();
+                    return;
+                }
+                if (!evt.shift && evt.keyCode == KeyCode.C)
+                {
+                    if (m_Graph != null && !EditorApplication.isPlaying)
+                        ExecuteGraphAction(GraphAction.Copy);
+                    evt.Use();
+                    return;
+                }
+                if (!evt.shift && evt.keyCode == KeyCode.V)
+                {
+                    if (m_Graph != null && !EditorApplication.isPlaying)
+                        ExecuteGraphAction(GraphAction.Paste);
+                    evt.Use();
+                    return;
+                }
+                if (evt.shift && evt.keyCode == KeyCode.Z)
+                {
+                    if (m_Graph != null && !EditorApplication.isPlaying) PerformRedo();
+                    evt.Use();
+                    return;
+                }
+            }
+            // Consume KeyDown to prevent Unity from generating ExecuteCommand events
+            if (evt.type == EventType.KeyDown && (evt.control || evt.command))
+            {
+                if (evt.keyCode == KeyCode.Z || evt.keyCode == KeyCode.Y ||
+                    evt.keyCode == KeyCode.C || evt.keyCode == KeyCode.V)
+                {
+                    evt.Use();
+                    return;
+                }
+            }
+            // Also consume any ExecuteCommand that slipped through
+            if (evt.type == EventType.ExecuteCommand || evt.type == EventType.ValidateCommand)
+            {
+                if (evt.commandName == "Undo" || evt.commandName == "Redo" ||
+                    evt.commandName == "Copy" || evt.commandName == "Paste")
+                {
+                    evt.Use();
+                    return;
+                }
+            }
+
             // Lock the editor during Play mode
             if (EditorApplication.isPlaying)
             {
@@ -244,7 +377,6 @@ namespace DaGenGraph.Editor
                 return;
             }
 
-            var evt = Event.current;
             if (evt.type is EventType.DragUpdated or EventType.DragPerform)
             {
                 var refs = DragAndDrop.objectReferences;
@@ -360,8 +492,10 @@ namespace DaGenGraph.Editor
             {
                 GUI.matrix = translation * scale * translation.inverse;
                 {
+                    DrawGroups();
                     DrawEdges();
                     DrawNodes(graphViewArea);
+                    RebuildPointsAfterDraw();
                     DrawPortsEdgePoints();
                     DrawLineFromPortToPosition(m_ActivePort, Event.current.mousePosition);
                     DrawSelectionBox();
@@ -577,16 +711,35 @@ namespace DaGenGraph.Editor
                 m_Points = null;
                 m_Ports = null;
                 m_EdgeViews = null;
+                m_PointsDirty = true;
                 m_Dirty = true;
             }
-            m_Points ??= points;
             m_Ports ??= ports;
             m_EdgeViews ??= edgeViews;
+            if (!m_PointsDirty)
+            {
+                m_Points ??= points;
+            }
             if (!m_Dirty) return;
+            if (!m_PointsDirty)
+            {
+                CalculateAllPointRects();
+                CalculateAllConnectionCurves();
+                UpdateVirtualPointsIsOccupiedStates();
+                CheckAllNodesForErrors();
+            }
+            m_Dirty = false;
+        }
+
+        private void RebuildPointsAfterDraw()
+        {
+            if (!m_PointsDirty) return;
+            m_Points = null;
+            m_Points = points;
             CalculateAllPointRects();
             CalculateAllConnectionCurves();
             UpdateVirtualPointsIsOccupiedStates();
-            CheckAllNodesForErrors();
+            m_PointsDirty = false;
             m_Dirty = false;
         }
 
@@ -783,5 +936,16 @@ namespace DaGenGraph.Editor
         }
 
         protected abstract T LoadGraph();
+
+        protected override string SerializeGraph()
+        {
+            return m_Graph != null ? JsonUtility.ToJson(m_Graph) : null;
+        }
+
+        protected override GraphBase DeserializeGraph(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            return JsonUtility.FromJson<T>(json);
+        }
     }
 }

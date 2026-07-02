@@ -59,6 +59,18 @@ namespace TaoTie
             base.OnEnable();
             AddButton(new GUIContent("导出"),Export);
         }
+        protected override string SerializeGraph()
+        {
+            return m_Graph != null ? JsonHelper.ToJson(m_Graph) : null;
+        }
+
+        protected override DaGenGraph.GraphBase DeserializeGraph(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            if (JsonHelper.TryFromJson<AIGraph>(json, out var graph))
+                return graph;
+            return null;
+        }
 
         protected override void OnEnterPlayMode()
         {
@@ -141,14 +153,14 @@ namespace TaoTie
             if (m_Graph.startNodeId == null)
             {
                 menu.AddItem(new GUIContent("Create/AiRootNode"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<AIRootNode>(current.mousePosition,"Root",true)); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<AIRootNode>(current.mousePosition,"Root",true)); });
             }
             else
             {
                 menu.AddItem(new GUIContent("Create/AiActionNode"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action")); });
                 menu.AddItem(new GUIContent("Create/AiConditionNode"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition")); });
             }
         }
 
@@ -165,12 +177,14 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent($"{port.portName}Connect/AiActionNode"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent($"{port.portName}Connect/AiConditionNode"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -180,28 +194,19 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent($"{port.portName}Connect/AiActionNode"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<AIActionNode>(current.mousePosition, "Action");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent($"{port.portName}Connect/AiConditionNode"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<AIConditionNode>(current.mousePosition, "Condition");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                 }
-            }
-        }
-
-        protected override void AddNodeMenuItems(GenericMenu menu, NodeBase nodeBase)
-        {
-            if (nodeBase.canBeDeleted)
-            {
-                menu.AddItem(new GUIContent("Delete"), false, () =>
-                {
-                    DeleteNode(nodeBase);
-                });
             }
         }
 

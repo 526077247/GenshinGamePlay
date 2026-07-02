@@ -68,6 +68,19 @@ namespace TaoTie
             AddButton(new GUIContent("导出"), Export);
         }
 
+        protected override string SerializeGraph()
+        {
+            return m_Graph != null ? JsonHelper.ToJson(m_Graph) : null;
+        }
+
+        protected override DaGenGraph.GraphBase DeserializeGraph(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            if (JsonHelper.TryFromJson<SceneGroupGraph>(json, out var graph))
+                return graph;
+            return null;
+        }
+
         protected override void OnEnterPlayMode()
         {
             if (!string.IsNullOrEmpty(path))
@@ -153,25 +166,25 @@ namespace TaoTie
             if (m_Graph == null) InitGraph();
             
             menu.AddItem(new GUIContent("Create/新建阶段"), false,
-                () => { CreateNodeView(m_Graph.CreateNode<SceneGroupSuitesNode>(current.mousePosition, "阶段")); });
+                () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupSuitesNode>(current.mousePosition, "阶段")); });
             if (!string.IsNullOrEmpty(m_Graph.startNodeId))
             {
                 menu.AddItem(new GUIContent("Create/路径/新建路径"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<RouteNode>(current.mousePosition, "路径")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<RouteNode>(current.mousePosition, "路径")); });
                 menu.AddItem(new GUIContent("Create/路径/路径点"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<WaypointNode>(current.mousePosition, "路径点")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<WaypointNode>(current.mousePosition, "路径点")); });
                 menu.AddItem(new GUIContent("Create/监听/事件"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<SceneGroupTriggerNode>(current.mousePosition, "监听事件")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupTriggerNode>(current.mousePosition, "监听事件")); });
                 menu.AddItem(new GUIContent("Create/事件/执行项"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<SceneGroupTriggerActionNode>(current.mousePosition, "执行项")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupTriggerActionNode>(current.mousePosition, "执行项")); });
                 menu.AddItem(new GUIContent("Create/事件/判断项"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<SceneGroupTriggerConditionNode>(current.mousePosition, "判断项")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupTriggerConditionNode>(current.mousePosition, "判断项")); });
                 menu.AddItem(new GUIContent("Create/事件/逻辑判断项"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<SceneGroupTriggerLogicConditionNode>(current.mousePosition, "逻辑判断项")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupTriggerLogicConditionNode>(current.mousePosition, "逻辑判断项")); });
                 menu.AddItem(new GUIContent("Create/事件/重设寻路路径"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<SceneGroupRestartPlatformMoveNode>(current.mousePosition, "重设寻路路径")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupRestartPlatformMoveNode>(current.mousePosition, "重设寻路路径")); });
                 menu.AddItem(new GUIContent("Create/事件/等待执行"), false,
-                    () => { CreateNodeView(m_Graph.CreateNode<SceneGroupTriggerWaitNode>(current.mousePosition, "等待执行")); });
+                    () => { CreateNodeWithUndo(() => m_Graph.CreateNode<SceneGroupTriggerWaitNode>(current.mousePosition, "等待执行")); });
             }
         }
 
@@ -193,6 +206,7 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent("下一路径点"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<WaypointNode>(current.mousePosition, "路径点");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -202,6 +216,7 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent("寻路路径"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<RouteNode>(current.mousePosition, "路径");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -211,6 +226,7 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent("监听"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<SceneGroupTriggerNode>(current.mousePosition, "监听事件");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -220,30 +236,35 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent("执行"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<SceneGroupTriggerActionNode>(current.mousePosition, "执行项");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent("判断"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<SceneGroupTriggerConditionNode>(current.mousePosition, "判断项");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent("逻辑判断"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<SceneGroupTriggerLogicConditionNode>(current.mousePosition, "逻辑判断项");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent("重设寻路路径"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<SceneGroupRestartPlatformMoveNode>(current.mousePosition, "重设寻路路径");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent("等待执行"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<SceneGroupTriggerWaitNode>(current.mousePosition, "等待执行");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -251,14 +272,7 @@ namespace TaoTie
                 }
             }
         }
-
-        protected override void AddNodeMenuItems(GenericMenu menu, NodeBase nodeBase)
-        {
-            if (nodeBase.canBeDeleted)
-            {
-                menu.AddItem(new GUIContent("Delete"), false, () => { DeleteNode(nodeBase); });
-            }
-        }
+        
 
         protected override void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
         {

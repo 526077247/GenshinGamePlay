@@ -23,6 +23,8 @@ namespace DaGenGraph
         public List<NodeBase> values = new();
         [HideInInspector]
         public List<Edge> edges = new();
+        [HideInInspector]
+        public List<NodeGroup> groups = new();
         protected virtual T CreateNodeBase<T>() where T: NodeBase
         {
             var node = CreateInstance<T>() ;

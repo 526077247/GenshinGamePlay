@@ -21,6 +21,7 @@ namespace DaGenGraph.Editor
         public bool isVisible = true;
         public bool zoomedBeyondPortDrawThreshold = false;
         public bool isSelected;
+        public bool isInGroup;
         private Rect m_GlowRect;
         private Rect m_HeaderRect;
         private Rect m_HeaderHoverRect;
@@ -241,6 +242,11 @@ namespace DaGenGraph.Editor
         protected void DrawNodeBody()
         {
             var initialColor = GUI.color;
+            // Tint nodes inside a group for visual differentiation
+            if (isInGroup)
+            {
+                GUI.color = new Color(0.75f, 0.85f, 1.0f, 1f);
+            }
             dynamicHeight = 0;
             m_DrawRect = new Rect(0, 0, width, height); //get node draw rect
 

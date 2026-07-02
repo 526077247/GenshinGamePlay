@@ -138,7 +138,8 @@ namespace DaGenGraph
         /// <summary> Returns the list of all the Edge ids of this Port </summary>
         public List<string> GetEdgeIds()
         {
-            return edges;
+            if (edges == null) return new List<string>();
+            return new List<string>(edges);
         }
 
         /// <summary> [Editor Only] Sets the height of this port's Rect </summary>

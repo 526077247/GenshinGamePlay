@@ -110,7 +110,7 @@ namespace DaGenGraph.Example
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
-                CreateNodeView(m_Graph.CreateNode<ExampleNode>(current.mousePosition));
+                CreateNodeWithUndo(() => m_Graph.CreateNode<ExampleNode>(current.mousePosition));
             });
         }
 

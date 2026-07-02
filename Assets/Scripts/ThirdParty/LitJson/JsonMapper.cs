@@ -354,6 +354,7 @@ namespace TaoTie.LitJson
 
             foreach (FieldInfo f_info in type.GetFields())
             {
+                if (f_info.IsLiteral) continue;
                 PropertyMetadata p_data = new PropertyMetadata();
                 p_data.Info = f_info;
                 p_data.IsField = true;
@@ -407,6 +408,7 @@ namespace TaoTie.LitJson
 
             foreach (FieldInfo f_info in type.GetFields())
             {
+                if (f_info.IsLiteral) continue;
                 var attr = f_info.GetCustomAttributes(JsonIgnore.Type,false);
                 if(attr.Length>0)continue;
                 attr = f_info.GetCustomAttributes(typeof(NonSerializedAttribute),false);

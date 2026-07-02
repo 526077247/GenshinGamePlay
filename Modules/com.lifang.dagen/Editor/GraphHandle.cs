@@ -23,6 +23,9 @@ namespace DaGenGraph.Editor
         private Vector2 m_LastMousePosition = Vector2.zero;
         private Vector2 m_DragNodesDistance = Vector2.zero;
         private readonly Dictionary<NodeBase, Vector2> m_InitialDragNodePositions = new Dictionary<NodeBase, Vector2>();
+        private NodeGroup m_DraggingGroup;
+        private NodeGroup m_SelectedGroup;
+        private Vector2 m_DragGroupStartPos;
         private Rect m_SelectionRect;
         private SelectPoint m_StartSelectPoint;
         private List<NodeBase> m_TempNodesList;
@@ -123,7 +126,7 @@ namespace DaGenGraph.Editor
         protected virtual void HandleMouseHover()
         {
             var evtType = Event.current.type;
-            if (evtType != EventType.MouseMove && evtType != EventType.MouseDrag && evtType != EventType.MouseDown)
+            if (evtType != EventType.MouseMove && evtType != EventType.MouseDrag && evtType != EventType.MouseDown && evtType != EventType.MouseUp)
             {
                 // Keep existing hover state during Layout/Repaint
                 if (m_CurrentHoveredPort != null || m_CurrentHoveredNode != null)
@@ -219,7 +222,7 @@ namespace DaGenGraph.Editor
             {
                 foreach (var point in points[key])
                 {
-                    if (!m_NodeViews[point.node.id].isVisible)
+                    if (!nodeViews.TryGetValue(point.node.id, out var nv) || nv == null || !nv.isVisible)
                         continue; //the node, that his point belongs to, is not visible -> do not process it
                     var pointGridRect = new Rect(point.rect.position * currentZoom,
                         point.rect.size * currentZoom);
@@ -243,8 +246,7 @@ namespace DaGenGraph.Editor
 
             foreach (var port in ports.Values)
             {
-                var node = m_NodeViews[port.nodeId];
-                if (node == null) continue;
+                if (!nodeViews.TryGetValue(port.nodeId, out var node) || node == null) continue;
                 if (!node.isVisible)
                 {
                     continue; //the node, that the socket belongs to, is not visible -> do not process it
@@ -316,14 +318,50 @@ namespace DaGenGraph.Editor
 
             if (m_CurrentHoveredPort != null)
             {
-                ShowPortContextMenu(m_CurrentHoveredPort);
+                if (m_Graph == null || m_CurrentHoveredPort.nodeId == null || !nodeViews.ContainsKey(m_CurrentHoveredPort.nodeId))
+                {
+                    m_CurrentHoveredPort = null;
+                }
+                else
+                {
+                    ShowPortContextMenu(m_CurrentHoveredPort);
+                    return;
+                }
+            }
+
+            // Check collapsed group port right-click
+            var collapsedPort = GetCollapsedGroupPortAtPosition(current.mousePosition);
+            if (collapsedPort != null)
+            {
+                var portGroup = GetCollapsedGroupOfNode(collapsedPort.nodeId);
+                if (portGroup != null)
+                {
+                    ShowCollapsedPortContextMenu(collapsedPort, portGroup);
+                    current.Use();
+                    return;
+                }
+            }
+
+            // Check group right-click (title bar or body)
+            var clickedGroup = GetGroupAtWorldPosition(current.mousePosition);
+            if (clickedGroup != null)
+            {
+                ShowGroupContextMenu(clickedGroup);
+                current.Use();
                 return;
             }
 
             if (m_CurrentHoveredNode != null)
             {
-                ShowNodeContextMenu(m_CurrentHoveredNode);
-                return;
+                if (m_Graph == null || !nodeViews.ContainsKey(m_CurrentHoveredNode.id))
+                {
+                    m_CurrentHoveredNode = null;
+                }
+                else
+                {
+                    ShowNodeContextMenu(m_CurrentHoveredNode);
+                    return;
+                }
             }
 
             ShowGraphContextMenu();
@@ -339,7 +377,10 @@ namespace DaGenGraph.Editor
 
         protected virtual void AddGraphMenuItems(GenericMenu menu)
         {
-            
+            if (s_Clipboard != null && s_Clipboard.nodes.Count > 0)
+            {
+                menu.AddItem(new GUIContent("Paste"), false, () => { ExecuteGraphAction(GraphAction.Paste); });
+            }
         }
         
         protected virtual void ShowNodeContextMenu(NodeBase nodeBase)
@@ -361,6 +402,52 @@ namespace DaGenGraph.Editor
                 m_SelectedNodes.Clear();
                 m_Graph.startNodeId = nodeBase.id;
             });
+
+            if (m_SelectedNodes.Count >= 1)
+            {
+                menu.AddItem(new GUIContent("Copy"), false, () => { ExecuteGraphAction(GraphAction.Copy); });
+            }
+
+            if (s_Clipboard != null && s_Clipboard.nodes.Count > 0)
+            {
+                menu.AddItem(new GUIContent("Paste"), false, () => { ExecuteGraphAction(GraphAction.Paste); });
+            }
+
+            if (m_SelectedNodes.Count >= 2)
+            {
+                menu.AddItem(new GUIContent("Group Selected Nodes"), false, () => { CreateGroupFromSelection(); });
+            }
+
+            // If node is inside a group, show "Remove from Group" options
+            if (m_Graph?.groups != null)
+            {
+                foreach (var group in m_Graph.groups)
+                {
+                    if (group == null || group.isCollapsed) continue;
+                    if (group.nodeIds.Contains(nodeBase.id))
+                    {
+                        var groupName = group.title;
+                        menu.AddItem(new GUIContent($"Remove from Group/{groupName}"), false,
+                            () => { RemoveNodeFromGroup(nodeBase.id, group); });
+                    }
+                }
+
+                // If node is NOT inside a group but is within a group's expanded rect, show "Add to Group"
+                var gridPos = WorldToGridPosition(Event.current.mousePosition);
+                foreach (var group in m_Graph.groups)
+                {
+                    if (group == null || group.isCollapsed) continue;
+                    if (group.nodeIds.Contains(nodeBase.id)) continue;
+                    var nodes = GetGroupNodes(group);
+                    var rect = group.GetExpandedRect(nodes);
+                    if (rect.Contains(gridPos))
+                    {
+                        var groupName = group.title;
+                        menu.AddItem(new GUIContent($"Add to Group/{groupName}"), false,
+                            () => { AddNodeToGroup(nodeBase.id, group); });
+                    }
+                }
+            }
         }
         
         protected virtual void ShowPortContextMenu(Port port, bool isLine = false)
@@ -368,7 +455,7 @@ namespace DaGenGraph.Editor
             if (isLine && port.edges.Count == 1 && port.IsConnected())
             {
                 var res = EditorUtility.DisplayDialog("提示", "确认断开连线？", "是", "否");
-                if(res) DisconnectPort(port);
+                if(res) { PushUndoSnapshot(); DisconnectPort(port); }
                 return;
             }
             var menu = new GenericMenu();
@@ -384,14 +471,542 @@ namespace DaGenGraph.Editor
                 {
                     menu.AddItem(new GUIContent("DisConnectAll"), false, () =>
                     {
+                        PushUndoSnapshot();
                         DisconnectPort(port);
                     });
+                }
+            }
+
+            // If port's node is in an expanded group, offer to rename the collapsed port label
+            if (m_Graph?.groups != null)
+            {
+                foreach (var group in m_Graph.groups)
+                {
+                    if (group == null || group.isCollapsed) continue;
+                    if (group.nodeIds.Contains(port.nodeId))
+                    {
+                        menu.AddItem(new GUIContent($"Rename in Collapsed View/{group.title}"), false, () =>
+                        {
+                            s_PortRenameId = port.id;
+                            s_PortRenameBuffer = group.collapsedPortLabels.TryGetValue(port.id, out var lbl) ? lbl : port.portName;
+                            m_Dirty = true;
+                            Repaint();
+                        });
+                    }
                 }
             }
         }
         #endregion
 
-        #region HandleMouseMiddleClicks
+        #region CopyPaste
+
+        private class ClipboardPort
+        {
+            public string portName;
+            public int direction; // 0=Input, 1=Output
+            public int edgeMode;
+            public int edgeType;
+            public bool canBeDeleted;
+            public bool canBeReordered;
+        }
+
+        private class ClipboardNode
+        {
+            public System.Type nodeType;
+            public float x, y, width, height;
+            public string name;
+            public List<ClipboardPort> inputPorts = new();
+            public List<ClipboardPort> outputPorts = new();
+            public Dictionary<string, object> fieldData = new();
+        }
+
+        private class ClipboardEdge
+        {
+            public int outputNodeIndex, outputPortIndex;
+            public int inputNodeIndex, inputPortIndex;
+        }
+
+        private class ClipboardGroupInfo
+        {
+            public string title;
+            public Dictionary<string, string> collapsedPortLabels = new(); // oldPortId -> label
+            public List<int> memberIndices = new();
+            public float x, y;
+            public bool isCollapsed;
+            public Dictionary<string, string> oldPortIdMap = new(); // oldPortId -> "nodeIdx:portIdx"
+        }
+
+        private class Clipboard
+        {
+            public List<ClipboardNode> nodes = new();
+            public List<ClipboardEdge> edges = new();
+            public List<ClipboardGroupInfo> groups = new();
+            public int pasteCount = 0;
+        }
+
+        private static Clipboard s_Clipboard;
+
+        private void DoCopy()
+        {
+            if (m_SelectedNodes == null || m_SelectedNodes.Count == 0) return;
+            var clipboard = new Clipboard();
+            var selectedIds = new HashSet<string>();
+            foreach (var node in m_SelectedNodes)
+            {
+                if (node != null) selectedIds.Add(node.id);
+            }
+
+            // Snapshot nodes
+            var nodeIndexMap = new Dictionary<string, int>();
+            for (int i = 0; i < m_SelectedNodes.Count; i++)
+            {
+                var src = m_SelectedNodes[i];
+                if (src == null) continue;
+                nodeIndexMap[src.id] = i;
+                var cn = new ClipboardNode
+                {
+                    nodeType = src.GetType(),
+                    x = src.GetX(),
+                    y = src.GetY(),
+                    width = src.GetWidth(),
+                    height = src.GetHeight(),
+                    name = src.name
+                };
+                foreach (var port in src.inputPorts)
+                {
+                    if (port == null) continue;
+                    cn.inputPorts.Add(new ClipboardPort
+                    {
+                        portName = port.portName, direction = 0,
+                        edgeMode = (int)port.edgeMode, edgeType = (int)port.edgeType,
+                        canBeDeleted = port.canBeDeleted, canBeReordered = port.canBeReordered
+                    });
+                }
+                foreach (var port in src.outputPorts)
+                {
+                    if (port == null) continue;
+                    cn.outputPorts.Add(new ClipboardPort
+                    {
+                        portName = port.portName, direction = 1,
+                        edgeMode = (int)port.edgeMode, edgeType = (int)port.edgeType,
+                        canBeDeleted = port.canBeDeleted, canBeReordered = port.canBeReordered
+                    });
+                }
+                // Copy data fields via reflection (skip id, ports, system fields)
+                var fields = src.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                foreach (var f in fields)
+                {
+                    if (f.Name == "id" || f.Name == "inputPorts" || f.Name == "outputPorts" ||
+                        f.Name == "x" || f.Name == "y" || f.Name == "width" || f.Name == "height" ||
+                        f.Name == "isHovered" || f.Name == "ping" || f.Name == "name" ||
+                        f.Name == "canBeDeleted" || f.Name == "errorNodeNameIsEmpty" || f.Name == "errorDuplicateNameFoundInGraph" ||
+                        f.Name == "minimumInputPortsCount" || f.Name == "minimumOutputPortsCount" ||
+                        f.Name == "allowDuplicateNodeName" || f.Name == "allowEmptyNodeName")
+                        continue;
+                    cn.fieldData[f.Name] = f.GetValue(src);
+                }
+                clipboard.nodes.Add(cn);
+            }
+
+            // Snapshot internal edges (both endpoints in selection)
+            for (int i = 0; i < m_Graph.edges.Count; i++)
+            {
+                var edge = m_Graph.edges[i];
+                if (edge == null) continue;
+                if (!nodeIndexMap.ContainsKey(edge.outputNodeId) || !nodeIndexMap.ContainsKey(edge.inputNodeId))
+                    continue;
+                var outNode = m_Graph.FindNode(edge.outputNodeId);
+                var inNode = m_Graph.FindNode(edge.inputNodeId);
+                if (outNode == null || inNode == null) continue;
+                int outPortIdx = outNode.outputPorts.FindIndex(p => p != null && p.id == edge.outputPortId);
+                int inPortIdx = inNode.inputPorts.FindIndex(p => p != null && p.id == edge.inputPortId);
+                if (outPortIdx < 0 || inPortIdx < 0) continue;
+                clipboard.edges.Add(new ClipboardEdge
+                {
+                    outputNodeIndex = nodeIndexMap[edge.outputNodeId],
+                    outputPortIndex = outPortIdx,
+                    inputNodeIndex = nodeIndexMap[edge.inputNodeId],
+                    inputPortIndex = inPortIdx
+                });
+            }
+
+            // Snapshot groups whose members are all selected
+            if (m_Graph.groups != null)
+            {
+                foreach (var group in m_Graph.groups)
+                {
+                    if (group == null) continue;
+                    bool allSelected = true;
+                    foreach (var nid in group.nodeIds)
+                    {
+                        if (!selectedIds.Contains(nid)) { allSelected = false; break; }
+                    }
+                    if (!allSelected) continue;
+                    var cg = new ClipboardGroupInfo
+                    {
+                        title = group.title,
+                        x = group.x, y = group.y,
+                        isCollapsed = group.isCollapsed
+                    };
+                    foreach (var nid in group.nodeIds)
+                    {
+                        if (nodeIndexMap.TryGetValue(nid, out var idx))
+                            cg.memberIndices.Add(idx);
+                    }
+                    // Build oldPortId -> "nodeIdx:portIdx" for remapping collapsedPortLabels
+                    foreach (var nid in group.nodeIds)
+                    {
+                        if (!nodeIndexMap.TryGetValue(nid, out var nIdx)) continue;
+                        var node = m_Graph.FindNode(nid);
+                        if (node == null) continue;
+                        for (int p = 0; p < node.inputPorts.Count; p++)
+                            if (node.inputPorts[p] != null)
+                                cg.oldPortIdMap[node.inputPorts[p].id] = $"{nIdx}:i{p}";
+                        for (int p = 0; p < node.outputPorts.Count; p++)
+                            if (node.outputPorts[p] != null)
+                                cg.oldPortIdMap[node.outputPorts[p].id] = $"{nIdx}:o{p}";
+                    }
+                    // Copy collapsedPortLabels
+                    foreach (var kvp in group.collapsedPortLabels)
+                        cg.collapsedPortLabels[kvp.Key] = kvp.Value;
+                    clipboard.groups.Add(cg);
+                }
+            }
+
+            clipboard.pasteCount = 0;
+            s_Clipboard = clipboard;
+            ShowNotification(new GUIContent($"Copied {clipboard.nodes.Count} node(s), {clipboard.edges.Count} edge(s), {clipboard.groups.Count} group(s)"), 1f);
+        }
+
+        private void DoPaste()
+        {
+            if (s_Clipboard == null || s_Clipboard.nodes.Count == 0) return;
+            PushUndoSnapshot();
+            s_Clipboard.pasteCount++;
+            float offset = 50f * s_Clipboard.pasteCount;
+            var newNodes = new List<NodeBase>();
+            // oldPortKey "nodeIdx:i/o portIdx" -> new Port
+            var portMap = new Dictionary<string, Port>();
+
+            // Create nodes
+            for (int i = 0; i < s_Clipboard.nodes.Count; i++)
+            {
+                var cn = s_Clipboard.nodes[i];
+                // Create via reflection: m_Graph.CreateNode<T>(pos, name, false)
+                var createMethod = m_Graph.GetType().GetMethod("CreateNode");
+                var genericMethod = createMethod.MakeGenericMethod(cn.nodeType);
+                var pos = new Vector2(cn.x + offset, cn.y + offset);
+                var newNode = (NodeBase)genericMethod.Invoke(m_Graph, new object[] { pos, cn.name, false });
+                // CreateNode applies WorldToGridPosition internally — correct to desired grid position
+                newNode.SetPosition(new Vector2(cn.x + offset, cn.y + offset));
+
+                // Clear default ports
+                newNode.inputPorts.Clear();
+                newNode.outputPorts.Clear();
+
+                // Set size
+                newNode.SetSize(cn.width, cn.height);
+
+                // Rebuild input ports
+                for (int p = 0; p < cn.inputPorts.Count; p++)
+                {
+                    var cp = cn.inputPorts[p];
+                    var port = newNode.AddInputPort(cp.portName, (EdgeMode)cp.edgeMode, cp.canBeDeleted,
+                        (EdgeType)cp.edgeType, cp.canBeReordered);
+                    portMap[$"{i}:i{p}"] = port;
+                }
+                // Rebuild output ports
+                for (int p = 0; p < cn.outputPorts.Count; p++)
+                {
+                    var cp = cn.outputPorts[p];
+                    var port = newNode.AddOutputPort(cp.portName, (EdgeMode)cp.edgeMode, cp.canBeDeleted,
+                        (EdgeType)cp.edgeType, cp.canBeReordered);
+                    portMap[$"{i}:o{p}"] = port;
+                }
+
+                // Copy data fields
+                var fields = newNode.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                foreach (var f in fields)
+                {
+                    if (cn.fieldData.TryGetValue(f.Name, out var val))
+                        f.SetValue(newNode, val);
+                }
+
+                CreateNodeView(newNode);
+                newNodes.Add(newNode);
+            }
+
+            // Recreate internal edges
+            foreach (var ce in s_Clipboard.edges)
+            {
+                var outKey = $"{ce.outputNodeIndex}:o{ce.outputPortIndex}";
+                var inKey = $"{ce.inputNodeIndex}:i{ce.inputPortIndex}";
+                if (portMap.TryGetValue(outKey, out var outPort) && portMap.TryGetValue(inKey, out var inPort))
+                {
+                    m_Graph.CreateEdge(outPort, inPort);
+                }
+            }
+
+            // Recreate groups
+            foreach (var cg in s_Clipboard.groups)
+            {
+                var newGroup = new NodeGroup();
+                newGroup.GenerateNewId();
+                newGroup.title = s_Clipboard.pasteCount > 1
+                    ? $"{cg.title} ({s_Clipboard.pasteCount})"
+                    : cg.title;
+                newGroup.isCollapsed = cg.isCollapsed;
+                newGroup.x = cg.x + offset;
+                newGroup.y = cg.y + offset;
+                foreach (var idx in cg.memberIndices)
+                {
+                    if (idx < newNodes.Count)
+                        newGroup.nodeIds.Add(newNodes[idx].id);
+                }
+                // Remap collapsedPortLabels using oldPortIdMap -> new port id
+                foreach (var kvp in cg.collapsedPortLabels)
+                {
+                    if (cg.oldPortIdMap.TryGetValue(kvp.Key, out var portKey))
+                    {
+                        if (portMap.TryGetValue(portKey, out var newPort))
+                            newGroup.collapsedPortLabels[newPort.id] = kvp.Value;
+                    }
+                }
+                m_Graph.groups.Add(newGroup);
+            }
+
+            // Select new nodes
+            DeselectAll();
+            SelectNodes(newNodes, false);
+
+            // Invalidate caches
+            m_Ports = null;
+            m_EdgeViews = null;
+            m_PointsDirty = true;
+            m_Dirty = true;
+            Repaint();
+            ShowNotification(new GUIContent($"Pasted {newNodes.Count} node(s)"), 1f);
+        }
+
+        #endregion
+
+        #region NodeGroups
+
+        private NodeGroup m_CurrentHoveredGroup;
+
+        protected void CreateGroupFromSelection()
+        {
+            if (m_SelectedNodes == null || m_SelectedNodes.Count < 2) return;
+            PushUndoSnapshot();
+            var group = new NodeGroup();
+            group.GenerateNewId();
+            group.title = "Node Group";
+            foreach (var node in m_SelectedNodes)
+            {
+                if (node != null) group.nodeIds.Add(node.id);
+            }
+            var nodes = new List<NodeBase>(m_SelectedNodes);
+            var expandedRect = group.GetExpandedRect(nodes);
+            group.x = expandedRect.x;
+            group.y = expandedRect.y;
+            m_Graph.groups.Add(group);
+            DeselectAll();
+            m_Dirty = true;
+            Repaint();
+        }
+
+        protected void DeleteGroup(NodeGroup group)
+        {
+            if (group == null) return;
+            PushUndoSnapshot();
+            m_Graph.groups.Remove(group);
+            m_Dirty = true;
+            Repaint();
+        }
+
+        protected void DeleteGroupWithNodes(NodeGroup group)
+        {
+            if (group == null) return;
+            PushUndoSnapshot();
+            if (group.nodeIds != null)
+            {
+                var memberNodes = new List<NodeBase>();
+                foreach (var nodeId in group.nodeIds)
+                {
+                    var node = m_Graph.FindNode(nodeId);
+                    if (node != null) memberNodes.Add(node);
+                }
+                foreach (var node in memberNodes)
+                {
+                    if (node == null) continue;
+                    // Disconnect edges
+                    foreach (EdgeView edgeView in edgeViews.Values)
+                    {
+                        if (edgeView == null) continue;
+                        if (edgeView.inputNode == node && edgeView.outputPort != null)
+                            edgeView.outputPort.DisconnectFromNode(node.id, m_Graph);
+                        if (edgeView.outputNode == node && edgeView.inputPort != null)
+                            edgeView.inputPort.DisconnectFromNode(node.id, m_Graph);
+                    }
+                    // Remove ports without calling PushUndoSnapshot (already done above)
+                    for (int i = node.inputPorts.Count - 1; i >= 0; i--)
+                    {
+                        var port = node.inputPorts[i];
+                        if (port != null) { DisconnectPort(port); }
+                    }
+                    for (int i = node.outputPorts.Count - 1; i >= 0; i--)
+                    {
+                        var port = node.outputPorts[i];
+                        if (port != null) { DisconnectPort(port); }
+                    }
+                    m_Graph.RemoveNode(node.id);
+                    nodeViews.Remove(node.id);
+                }
+            }
+            m_Graph.groups.Remove(group);
+            m_Ports = null;
+            m_EdgeViews = null;
+            m_PointsDirty = true;
+            m_Dirty = true;
+            Repaint();
+        }
+
+        protected void RemoveNodeFromGroup(string nodeId, NodeGroup group)
+        {
+            if (group == null || !group.nodeIds.Contains(nodeId)) return;
+            PushUndoSnapshot();
+            group.nodeIds.Remove(nodeId);
+            if (group.nodeIds.Count == 0)
+                m_Graph.groups.Remove(group);
+            m_Dirty = true;
+            Repaint();
+        }
+
+        protected void AddNodeToGroup(string nodeId, NodeGroup group)
+        {
+            if (group == null || group.nodeIds.Contains(nodeId)) return;
+            PushUndoSnapshot();
+            group.nodeIds.Add(nodeId);
+            m_Dirty = true;
+            Repaint();
+        }
+
+        protected void ToggleGroupCollapse(NodeGroup group)
+        {
+            if (group == null) return;
+            if (group.isCollapsed) ExpandGroup(group);
+            else
+            {
+                var nodes = GetGroupNodes(group);
+                var rect = group.GetExpandedRect(nodes);
+                CollapseGroup(group, rect);
+            }
+        }
+
+        protected void StartGroupTitleEdit(NodeGroup group)
+        {
+            if (group == null) return;
+            group.isTitleEditing = true;
+            group.titleEditBuffer = group.title;
+            m_Dirty = true;
+            Repaint();
+        }
+
+        protected NodeGroup GetGroupAtWorldPosition(Vector2 worldPosition)
+        {
+            if (m_Graph?.groups == null) return null;
+            // Port/group positions are in node-GUI space (grid + panOffset/zoom) = worldPos / zoom
+            var nodeGUISpacePos = worldPosition / currentZoom;
+            for (int i = m_Graph.groups.Count - 1; i >= 0; i--)
+            {
+                var group = m_Graph.groups[i];
+                if (group == null) continue;
+                var nodes = GetGroupNodes(group);
+                var rect = group.GetCurrentRect(nodes);
+                rect.position += m_Graph.currentPanOffset / currentZoom;
+                if (rect.Contains(nodeGUISpacePos))
+                    return group;
+            }
+            return null;
+        }
+
+        protected void ShowGroupContextMenu(NodeGroup group)
+        {
+            var menu = new GenericMenu();
+            if (group.isCollapsed)
+            {
+                menu.AddItem(new GUIContent("Expand"), false, () => ExpandGroup(group));
+            }
+            else
+            {
+                menu.AddItem(new GUIContent("Collapse"), false, () =>
+                {
+                    var nodes = GetGroupNodes(group);
+                    var rect = group.GetExpandedRect(nodes);
+                    CollapseGroup(group, rect);
+                });
+            }
+            menu.AddItem(new GUIContent("Rename"), false, () => StartGroupTitleEdit(group));
+            menu.AddItem(new GUIContent("Ungroup"), false, () => DeleteGroup(group));
+            menu.AddItem(new GUIContent("Delete Group and Nodes"), false, () => DeleteGroupWithNodes(group));
+            menu.ShowAsContext();
+        }
+
+        [NonSerialized] internal static string s_PortRenameId;
+        [NonSerialized] internal static string s_PortRenameBuffer;
+
+        protected Port GetCollapsedGroupPortAtPosition(Vector2 worldPosition)
+        {
+            if (m_Graph?.groups == null) return null;
+            // Port positions are in node-GUI space = worldPos / zoom
+            var nodeGUISpacePos = worldPosition / currentZoom;
+            foreach (var group in m_Graph.groups)
+            {
+                if (group == null || !group.isCollapsed) continue;
+                if (group.collapsedPorts == null) continue;
+                foreach (var kvp in group.collapsedPorts)
+                {
+                    if (group.collapsedPortScreenPos.TryGetValue(kvp.Key, out var pos))
+                    {
+                        // Check dot rect
+                        var portRect = new Rect(pos.x - 8, pos.y - 8, 16, 16);
+                        if (portRect.Contains(nodeGUISpacePos))
+                            return kvp.Value;
+                    }
+                    // Check label rect
+                    var labelKey = "label_" + kvp.Key;
+                    var labelSizeKey = "labelSize_" + kvp.Key;
+                    if (group.collapsedPortScreenPos.TryGetValue(labelKey, out var labelPos) &&
+                        group.collapsedPortScreenPos.TryGetValue(labelSizeKey, out var labelSize))
+                    {
+                        var labelRect = new Rect(labelPos.x, labelPos.y, labelSize.x, labelSize.y);
+                        if (labelRect.Contains(nodeGUISpacePos))
+                            return kvp.Value;
+                    }
+                }
+            }
+            return null;
+        }
+
+        protected void ShowCollapsedPortContextMenu(Port port, NodeGroup group)
+        {
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Rename Port"), false, () =>
+            {
+                s_PortRenameId = port.id;
+                s_PortRenameBuffer = group.collapsedPortLabels.TryGetValue(port.id, out var lbl) ? lbl : port.portName;
+                m_Dirty = true;
+                Repaint();
+            });
+            menu.AddItem(new GUIContent("Reset Name"), false, () =>
+            {
+                PushUndoSnapshot();
+                group.collapsedPortLabels.Remove(port.id);
+                m_Dirty = true;
+                Repaint();
+            });
+            menu.ShowAsContext();
+        }
 
         protected virtual void HandleMouseMiddleClicks()
         {
@@ -471,6 +1086,40 @@ namespace DaGenGraph.Editor
                         current.Use();
                         return;
                     }
+                }
+
+                // Check collapsed group drag
+                var clickedGroup = GetGroupAtWorldPosition(current.mousePosition);
+                if (clickedGroup != null && clickedGroup.isCollapsed)
+                {
+                    m_DraggingGroup = clickedGroup;
+                    m_SelectedGroup = clickedGroup;
+                    m_DragGroupStartPos = new Vector2(clickedGroup.x, clickedGroup.y);
+                    // Also prepare to drag member nodes
+                    var groupNodes = GetGroupNodes(clickedGroup);
+                    m_SelectedNodes.Clear();
+                    foreach (var n in groupNodes)
+                        m_SelectedNodes.Add(n);
+                    UpdateNodesSelectedState(m_SelectedNodes);
+                    PrepareToDragSelectedNodes(current.mousePosition);
+                    m_Mode = GraphMode.Drag;
+                    current.Use();
+                    return;
+                }
+
+                // Check expanded group drag (click on group background/title, not on a node)
+                if (clickedGroup != null && !clickedGroup.isCollapsed && m_CurrentHoveredNode == null)
+                {
+                    m_SelectedGroup = clickedGroup;
+                    var groupNodes = GetGroupNodes(clickedGroup);
+                    m_SelectedNodes.Clear();
+                    foreach (var n in groupNodes)
+                        m_SelectedNodes.Add(n);
+                    UpdateNodesSelectedState(m_SelectedNodes);
+                    PrepareToDragSelectedNodes(current.mousePosition);
+                    m_Mode = GraphMode.Drag;
+                    current.Use();
+                    return;
                 }
 
                 //pressed left mouse button over a node -> check to see if it's inside the header (if no node is currently selected) or it just over a node (if at least 2 nodes are selected)
@@ -621,6 +1270,7 @@ namespace DaGenGraph.Editor
                 if (m_Mode == GraphMode.Drag)
                 {
                     m_InitialDragNodePositions.Clear();
+                    m_DraggingGroup = null;
                     m_Mode = GraphMode.None;
                     current.Use();
                     return;
@@ -719,6 +1369,7 @@ namespace DaGenGraph.Editor
         {
             if (!virtualPoint.port.IsConnected()) return;
             if (!virtualPoint.isConnected) return;
+            PushUndoSnapshot();
 
             var edgeViewList = new List<EdgeView>();
             foreach (var edgeView in edgeViews.Values)
@@ -763,8 +1414,11 @@ namespace DaGenGraph.Editor
             UpdateNodesSelectedState(m_SelectedNodes);
         }
 
+        private bool m_DragUndoPushed;
+
         private void PrepareToDragSelectedNodes(Vector2 mousePosition)
         {
+            m_DragUndoPushed = false;
             m_LastMousePosition = mousePosition;
             m_DragNodesDistance = Vector2.zero;
             m_InitialDragNodePositions.Clear();
@@ -786,6 +1440,12 @@ namespace DaGenGraph.Editor
 
         private void UpdateSelectedNodesWhileDragging()
         {
+            // Push undo snapshot on first actual drag movement
+            if (!m_DragUndoPushed)
+            {
+                PushUndoSnapshot();
+                m_DragUndoPushed = true;
+            }
             m_DragNodesDistance += Event.current.mousePosition - m_LastMousePosition;
             m_LastMousePosition = Event.current.mousePosition;
 
@@ -796,6 +1456,13 @@ namespace DaGenGraph.Editor
                 newPosition.x = initialPosition.x + m_DragNodesDistance.x / currentZoom;
                 newPosition.y = initialPosition.y + m_DragNodesDistance.y / currentZoom;
                 node.SetPosition(SnapPositionToGrid(newPosition));
+            }
+
+            // Move collapsed group box alongside member nodes
+            if (m_DraggingGroup != null)
+            {
+                m_DraggingGroup.x = m_DragGroupStartPos.x + m_DragNodesDistance.x / currentZoom;
+                m_DraggingGroup.y = m_DragGroupStartPos.y + m_DragNodesDistance.y / currentZoom;
             }
 
             UpdateVirtualPointsIsOccupiedStates();
@@ -871,9 +1538,11 @@ namespace DaGenGraph.Editor
 
         protected void ConnectPorts(Port outputPort, Port inputPort)
         {
+            PushUndoSnapshot();
             if (outputPort.OverrideConnection()) DisconnectPort(outputPort);
             if (inputPort.OverrideConnection()) DisconnectPort(inputPort);
             ConnectPorts(m_Graph, outputPort, inputPort);
+            m_EdgeViews = null;
             m_Dirty = true;
         }
 
@@ -986,6 +1655,7 @@ namespace DaGenGraph.Editor
                     DeselectAll();
                     break;
                 case GraphAction.Copy:
+                    DoCopy();
                     break;
                 case GraphAction.Connect:
                     break;
@@ -995,6 +1665,7 @@ namespace DaGenGraph.Editor
                 case GraphAction.Disconnect:
                     break;
                 case GraphAction.Paste:
+                    DoPaste();
                     break;
                 case GraphAction.SelectAll:
                     SelectAll();
@@ -1023,6 +1694,7 @@ namespace DaGenGraph.Editor
         protected virtual void DeleteNode(NodeBase node)
         {
             if (node == null || !node.canBeDeleted) return;
+            PushUndoSnapshot();
             var startNode = m_Graph.GetStartNode();
             //disconnect all the nodes that need to be deleted
 
@@ -1055,7 +1727,11 @@ namespace DaGenGraph.Editor
             nodeViews.Remove(node.id);
 
             DeselectAll();
+            m_Ports = null;
+            m_EdgeViews = null;
+            m_PointsDirty = true;
             m_Dirty = true;
+            Repaint();
             if (startNode == node)
             {
                 if (m_Graph.values.Count > 0)
@@ -1072,6 +1748,7 @@ namespace DaGenGraph.Editor
         protected virtual void DeleteNodes(List<NodeBase> nodes)
         {
             if (nodes == null || nodes.Count == 0) return;
+            PushUndoSnapshot();
             var startNode = m_Graph.GetStartNode();
             for (int i = nodes.Count - 1; i >= 0; i--)
             {
@@ -1109,6 +1786,11 @@ namespace DaGenGraph.Editor
             }
 
             DeselectAll();
+            m_Ports = null;
+            m_EdgeViews = null;
+            m_PointsDirty = true;
+            m_Dirty = true;
+            Repaint();
             if (nodes.Contains(startNode))
             {
                 if (m_Graph.values.Count > 0)
@@ -1120,6 +1802,13 @@ namespace DaGenGraph.Editor
                     m_Graph.startNodeId = null;
                 }
             }
+        }
+
+        protected NodeView CreateNodeWithUndo<T>(System.Func<T> createNodeFunc) where T : NodeBase
+        {
+            PushUndoSnapshot();
+            var node = createNodeFunc();
+            return CreateNodeView(node);
         }
 
         protected virtual NodeView CreateNodeView(NodeBase node)
@@ -1140,6 +1829,9 @@ namespace DaGenGraph.Editor
             if (nodeView == null) return null;
             nodeView.Init(++m_Graph.windowID, node, m_Graph, this);
             m_NodeViews.Add(node.id, nodeView);
+            m_Ports = null;
+            m_EdgeViews = null;
+            m_PointsDirty = true;
             m_Dirty = true;
             return nodeView;
         }
@@ -1152,6 +1844,7 @@ namespace DaGenGraph.Editor
         protected virtual void RemovePort(Port port,bool force = false)
         {
             if (!force && !m_Graph.FindNode(port.nodeId).CanDeletePort(port)) return;
+            PushUndoSnapshot();
             DisconnectPort(port);
             points.Remove(port.id);
             edgeViews.Remove(port.id);
@@ -1191,6 +1884,8 @@ namespace DaGenGraph.Editor
             m_Ports = null;
             m_EdgeViews = null;
             m_ForceRebuild = true;
+            m_UndoStack.Clear();
+            m_RedoStack.Clear();
             foreach (var item in m_Graph.values)
             {
                 CreateNodeView(item);
@@ -1212,6 +1907,25 @@ namespace DaGenGraph.Editor
                 UpdateNodesSelectedState(m_SelectedNodes);
             altKeyPressed = e.alt && m_HasFocus;
             m_AltKeyPressedAnimBool.target = altKeyPressed;
+
+            // Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z via KeyUp as fallback
+            if (e.type == EventType.KeyUp && (e.control || e.command))
+            {
+                if (e.keyCode == KeyCode.Z)
+                {
+                    if (e.shift) PerformRedo();
+                    else PerformUndo();
+                    e.Use();
+                    return;
+                }
+                if (e.keyCode == KeyCode.Y)
+                {
+                    PerformRedo();
+                    e.Use();
+                    return;
+                }
+            }
+
             if (e.type != EventType.KeyUp) return;
             switch (e.keyCode)
             {
@@ -1238,18 +1952,30 @@ namespace DaGenGraph.Editor
                     m_Mode = GraphMode.None;
                     break;
 
-                case KeyCode.C: //Copy
-                    if (e.control) ExecuteGraphAction(GraphAction.Copy);
-                    break;
-
-                case KeyCode.V: //Paste
-                    if (e.control) ExecuteGraphAction(GraphAction.Paste);
+                default:
                     break;
 
                 case KeyCode.Delete: //Delete
                     if (Event.current.mousePosition.x < position.width - m_NodeInspectorWidth)
                     {
-                        ExecuteGraphAction(GraphAction.DeleteNodes);
+                        if (m_SelectedGroup != null)
+                        {
+                            var g = m_SelectedGroup;
+                            m_SelectedGroup = null;
+                            m_DraggingGroup = null;
+                            m_Mode = GraphMode.None;
+                            // If a drag snapshot was pushed (mouse moved after click), remove it
+                            // to avoid an extra undo step between selection and delete
+                            if (m_DragUndoPushed && m_UndoStack.Count > 0)
+                                m_UndoStack.Pop();
+                            m_DragUndoPushed = false;
+                            DeselectAll();
+                            DeleteGroupWithNodes(g);
+                        }
+                        else
+                        {
+                            ExecuteGraphAction(GraphAction.DeleteNodes);
+                        }
                     }
                     break;
                 case KeyCode.A: //Select All

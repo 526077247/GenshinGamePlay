@@ -113,10 +113,16 @@ namespace DaGenGraph.Editor
                 }
 
                 //if both nodes are not visible -> do not draw the edge
-                if (!m_NodeViews[edgeView.inputNode.id].isVisible && !m_NodeViews[edgeView.outputNode.id].isVisible)
+                if (!nodeViews.TryGetValue(edgeView.inputNode.id, out var inNv) || !nodeViews.TryGetValue(edgeView.outputNode.id, out var outNv))
+                    continue;
+                if (!inNv.isVisible && !outNv.isVisible)
                 {
                     continue;
                 }
+
+                // Skip edges where both endpoints are inside the same collapsed group
+                if (IsEdgeWithinCollapsedGroup(edgeView))
+                    continue;
 
                 if (edgeView.outputVirtualPoint == null || edgeView.inputVirtualPoint == null)
                 {
@@ -226,18 +232,45 @@ namespace DaGenGraph.Editor
                 m_EdgeColor.b * 0.2f,
                 m_ConnectionAlpha - 0.2f);
 
+            // Determine actual start/end positions, redirecting to collapsed group port if needed
+            var outputCollapsedGroup = GetCollapsedGroupOfNode(edge.outputNode.id);
+            var inputCollapsedGroup = GetCollapsedGroupOfNode(edge.inputNode.id);
+            Vector2 outputPos, inputPos;
+            Vector2 outputTan, inputTan;
+
+            if (outputCollapsedGroup != null && outputCollapsedGroup.collapsedPortScreenPos.TryGetValue(edge.outputPort.id, out var outPortPos))
+            {
+                outputPos = outPortPos;
+                outputTan = outputPos + Vector2.right * 50f;
+            }
+            else
+            {
+                outputPos = edge.outputVirtualPoint.rect.position;
+                outputTan = edge.outputTangent;
+            }
+            if (inputCollapsedGroup != null && inputCollapsedGroup.collapsedPortScreenPos.TryGetValue(edge.inputPort.id, out var inPortPos))
+            {
+                inputPos = inPortPos;
+                inputTan = inputPos + Vector2.left * 50f;
+            }
+            else
+            {
+                inputPos = edge.inputVirtualPoint.rect.position;
+                inputTan = edge.inputTangent;
+            }
+
             //HandleUtility.handleMaterial.SetPass(0);
-            Handles.DrawBezier(edge.outputVirtualPoint.rect.position,
-                edge.inputVirtualPoint.rect.position,
-                edge.outputTangent,
-                edge.inputTangent,
+            Handles.DrawBezier(outputPos,
+                inputPos,
+                outputTan,
+                inputTan,
                 m_ConnectionBackgroundColor,
                 null,
                 currentCurveWidth + 2);
-            Handles.DrawBezier(edge.outputVirtualPoint.rect.position,
-                edge.inputVirtualPoint.rect.position,
-                edge.outputTangent,
-                edge.inputTangent,
+            Handles.DrawBezier(outputPos,
+                inputPos,
+                outputTan,
+                inputTan,
                 m_EdgeColor,
                 null,
                 currentCurveWidth);
@@ -253,15 +286,14 @@ namespace DaGenGraph.Editor
 
             //points multiplier - useful for a smooth dot travel - smaller means fewer travel point (makes the point 'jumpy') and higher means more travel points (make the point move smoothly)
             m_NumberOfPoints =
-                (int)(Vector2.Distance(edge.outputVirtualPoint.rect.position, edge.inputVirtualPoint.rect.position) *
-                      3);
+                (int)(Vector2.Distance(outputPos, inputPos) * 3);
             if (m_NumberOfPoints <= 0) return;
             if (edge.bezierPoints == null || edge.bezierPoints.Length != m_NumberOfPoints)
             {
-                edge.bezierPoints = Handles.MakeBezierPoints(edge.outputVirtualPoint.rect.position,
-                    edge.inputVirtualPoint.rect.position,
-                    edge.outputTangent,
-                    edge.inputTangent,
+                edge.bezierPoints = Handles.MakeBezierPoints(outputPos,
+                    inputPos,
+                    outputTan,
+                    inputTan,
                     m_NumberOfPoints);
             }
             m_BezierPoints = edge.bezierPoints;
@@ -297,6 +329,385 @@ namespace DaGenGraph.Editor
 
         #endregion
 
+        #region DrawGroups
+
+        private static readonly Color s_GroupBgExpanded = new Color(0.3f, 0.6f, 1.0f, 0.12f);
+        private static readonly Color s_GroupBorderExpanded = new Color(0.3f, 0.6f, 1.0f, 0.6f);
+        private static readonly Color s_GroupTitleBarExpanded = new Color(0.3f, 0.6f, 1.0f, 0.35f);
+        private static readonly Color s_GroupBgCollapsed = new Color(0.2f, 0.45f, 0.85f, 0.9f);
+        private static readonly Color s_GroupBorderCollapsed = new Color(0.15f, 0.35f, 0.7f, 1f);
+        private static readonly Color s_GroupTitleBarCollapsed = new Color(0.15f, 0.35f, 0.7f, 1f);
+
+        private void DrawGroups()
+        {
+            if (m_Graph?.groups == null || m_Graph.groups.Count == 0) return;
+
+            foreach (var group in m_Graph.groups)
+            {
+                if (group == null) continue;
+                DrawGroup(group);
+            }
+        }
+
+        private void DrawGroup(NodeGroup group)
+        {
+            var nodes = GetGroupNodes(group);
+            var rect = group.GetCurrentRect(nodes);
+            // Match node coordinate convention: grid + panOffset/zoom (GUI.Window does this internally)
+            rect.position += m_Graph.currentPanOffset / currentZoom;
+
+            if (group.isCollapsed)
+            {
+                DrawCollapsedGroup(group, rect);
+            }
+            else
+            {
+                DrawExpandedGroup(group, rect);
+            }
+        }
+
+        private void DrawExpandedGroup(NodeGroup group, Rect rect)
+        {
+            // Background
+            var oldColor = GUI.color;
+            GUI.color = s_GroupBgExpanded;
+            GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+
+            // Border
+            DrawGroupBorder(rect, s_GroupBorderExpanded);
+
+            // Title bar
+            var titleRect = new Rect(rect.x, rect.y, rect.width, NodeGroup.k_TitleBarHeight);
+            GUI.color = s_GroupTitleBarExpanded;
+            GUI.DrawTexture(titleRect, EditorGUIUtility.whiteTexture);
+            GUI.color = oldColor;
+
+            // Title text (click to edit)
+            var titleLabelRect = new Rect(titleRect.x + 8, titleRect.y + 4, titleRect.width - 50, titleRect.height - 8);
+            if (group.isTitleEditing)
+            {
+                GUI.SetNextControlName("GroupTitleEdit_" + group.id);
+                group.titleEditBuffer = EditorGUI.TextField(titleLabelRect, group.titleEditBuffer ?? group.title);
+                var e = Event.current;
+                if (e is { type: EventType.KeyUp, keyCode: KeyCode.Return })
+                {
+                    group.title = group.titleEditBuffer;
+                    group.isTitleEditing = false;
+                    GUI.FocusControl(null);
+                }
+            }
+            else
+            {
+                GUI.Label(titleLabelRect, group.title, new GUIStyle(EditorStyles.boldLabel) { alignment = TextAnchor.MiddleLeft });
+            }
+
+            // Collapse button "−"
+            var btnRect = new Rect(titleRect.x + titleRect.width - 28, titleRect.y + 3, 22, 22);
+            if (GUI.Button(btnRect, "−", EditorStyles.miniButton))
+            {
+                CollapseGroup(group, rect);
+            }
+
+            GUI.color = oldColor;
+        }
+
+        private void DrawCollapsedGroup(NodeGroup group, Rect rect)
+        {
+            var oldColor = GUI.color;
+
+            // Collect external ports and compute positions
+            var externalPorts = GetExternalPorts(group);
+            var inputPorts = new List<Port>();
+            var outputPorts = new List<Port>();
+            foreach (var p in externalPorts)
+            {
+                if (p.IsInput()) inputPorts.Add(p);
+                else outputPorts.Add(p);
+            }
+            int maxPortsPerSide = Mathf.Max(inputPorts.Count, outputPorts.Count);
+            float portRowHeight = 20f;
+            float neededHeight = NodeGroup.k_TitleBarHeight + 16f + maxPortsPerSide * portRowHeight + 8f;
+            if (neededHeight > rect.height)
+                rect.height = neededHeight;
+
+            group.collapsedPortScreenPos.Clear();
+            group.collapsedPorts.Clear();
+
+            // Background (solid)
+            GUI.color = s_GroupBgCollapsed;
+            GUI.DrawTexture(rect, EditorGUIUtility.whiteTexture);
+
+            // Border
+            DrawGroupBorder(rect, s_GroupBorderCollapsed);
+
+            // Title bar
+            var titleRect = new Rect(rect.x, rect.y, rect.width, NodeGroup.k_TitleBarHeight);
+            GUI.color = s_GroupTitleBarCollapsed;
+            GUI.DrawTexture(titleRect, EditorGUIUtility.whiteTexture);
+            GUI.color = oldColor;
+
+            // Title text
+            var titleTextRect = new Rect(titleRect.x + 8, titleRect.y + 2, titleRect.width - 50, titleRect.height - 4);
+            if (group.isTitleEditing)
+            {
+                GUI.SetNextControlName("GroupTitleEdit_" + group.id);
+                group.titleEditBuffer = EditorGUI.TextField(titleTextRect, group.titleEditBuffer ?? group.title);
+                var e = Event.current;
+                if (e is { type: EventType.KeyUp, keyCode: KeyCode.Return })
+                {
+                    group.title = group.titleEditBuffer;
+                    group.isTitleEditing = false;
+                    GUI.FocusControl(null);
+                }
+            }
+            else
+            {
+                var collapsedTitleStyle = new GUIStyle(EditorStyles.boldLabel)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    normal = { textColor = Color.white }
+                };
+                GUI.Label(titleTextRect, group.title, collapsedTitleStyle);
+            }
+
+            // Expand button "+"
+            var btnRect = new Rect(titleRect.x + titleRect.width - 28, titleRect.y + 3, 22, 22);
+            if (GUI.Button(btnRect, "+", EditorStyles.miniButton))
+            {
+                ExpandGroup(group);
+            }
+
+            // Subtitle showing member count
+            var subRect = new Rect(rect.x + 8, rect.y + NodeGroup.k_TitleBarHeight + 4, rect.width - 16, 20);
+            var subStyle = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.MiddleLeft, normal = { textColor = new Color(1, 1, 1, 0.7f) } };
+            GUI.Label(subRect, $"{group.nodeIds.Count} node(s) collapsed", subStyle);
+
+            // Draw input ports on the left side
+            float dotSize = 12f;
+            float inputStartY = rect.y + NodeGroup.k_TitleBarHeight + 28f;
+            for (int i = 0; i < inputPorts.Count; i++)
+            {
+                var port = inputPorts[i];
+                float portY = inputStartY + i * portRowHeight;
+                DrawCollapsedPort(group, port, rect, portY, dotSize, isInput: true);
+            }
+
+            // Draw output ports on the right side
+            float outputStartY = rect.y + NodeGroup.k_TitleBarHeight + 28f;
+            for (int i = 0; i < outputPorts.Count; i++)
+            {
+                var port = outputPorts[i];
+                float portY = outputStartY + i * portRowHeight;
+                DrawCollapsedPort(group, port, rect, portY, dotSize, isInput: false);
+            }
+
+            GUI.color = oldColor;
+        }
+
+        private void DrawCollapsedPort(NodeGroup group, Port port, Rect rect, float portY, float dotSize, bool isInput)
+        {
+            if (port == null || group == null) return;
+            var oldColor = GUI.color;
+            float xPos = isInput ? rect.x : rect.x + rect.width;
+            Vector2 portScreenPos = new Vector2(xPos, portY);
+            group.collapsedPortScreenPos ??= new Dictionary<string, Vector2>();
+            group.collapsedPorts ??= new Dictionary<string, Port>();
+            group.collapsedPortScreenPos[port.id] = portScreenPos;
+            group.collapsedPorts[port.id] = port;
+
+            // Port dot
+            var dotRect = new Rect(portScreenPos.x - dotSize / 2f, portScreenPos.y - dotSize / 2f, dotSize, dotSize);
+            var portColor = isInput ? UColor.GetColor().portInputColor : UColor.GetColor().portOutputColor;
+            portColor.a = 1f;
+            GUI.color = portColor;
+            GUI.Box(dotRect, GUIContent.none, dotStyle);
+            GUI.color = oldColor;
+
+            // Port label — default includes node id for disambiguation
+            string label = port.portName ?? "Port";
+            var ownerNode = m_Graph.FindNode(port.nodeId);
+            if (ownerNode != null && ownerNode.id != null && ownerNode.id.Length >= 6)
+                label = $"{label} [{ownerNode.id.Substring(0, 6)}]";
+            if (group.collapsedPortLabels != null && group.collapsedPortLabels.TryGetValue(port.id, out var customLabel))
+                label = customLabel;
+            var labelStyle = new GUIStyle(EditorStyles.miniLabel) { normal = { textColor = new Color(1, 1, 1, 0.9f) } };
+            var labelRect = isInput
+                ? new Rect(portScreenPos.x + dotSize / 2f + 4, portScreenPos.y - 8, rect.width / 2 - 20, 16)
+                : new Rect(portScreenPos.x - rect.width / 2 + dotSize, portScreenPos.y - 8, rect.width / 2 - 20, 16);
+            labelStyle.alignment = isInput ? TextAnchor.MiddleLeft : TextAnchor.MiddleRight;
+
+            // Store the label rect for right-click hit testing
+            group.collapsedPortScreenPos["label_" + port.id] = labelRect.position;
+            group.collapsedPortScreenPos["labelSize_" + port.id] = new Vector2(labelRect.width, labelRect.height);
+
+            // Inline rename
+            if (s_PortRenameId == port.id)
+                {
+                    s_PortRenameBuffer = EditorGUI.TextField(labelRect, s_PortRenameBuffer);
+                    var ev = Event.current;
+                    if (ev is { type: EventType.KeyUp, keyCode: KeyCode.Return })
+                    {
+                        if (!string.IsNullOrEmpty(s_PortRenameBuffer))
+                        {
+                            PushUndoSnapshot();
+                            group.collapsedPortLabels[port.id] = s_PortRenameBuffer;
+                        }
+                        s_PortRenameId = null;
+                        m_Dirty = true;
+                        GUI.FocusControl(null);
+                    }
+                    if (ev is { type: EventType.KeyUp, keyCode: KeyCode.Escape })
+                    {
+                        s_PortRenameId = null;
+                        GUI.FocusControl(null);
+                    }
+                }
+                else
+                {
+                    GUI.Label(labelRect, label, labelStyle);
+                }
+
+            GUI.color = oldColor;
+        }
+
+        private void DrawGroupBorder(Rect rect, Color color)
+        {
+            var oldColor = GUI.color;
+            GUI.color = color;
+            float borderWidth = 2f;
+            // Top
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, borderWidth), EditorGUIUtility.whiteTexture);
+            // Bottom
+            GUI.DrawTexture(new Rect(rect.x, rect.y + rect.height - borderWidth, rect.width, borderWidth), EditorGUIUtility.whiteTexture);
+            // Left
+            GUI.DrawTexture(new Rect(rect.x, rect.y, borderWidth, rect.height), EditorGUIUtility.whiteTexture);
+            // Right
+            GUI.DrawTexture(new Rect(rect.x + rect.width - borderWidth, rect.y, borderWidth, rect.height), EditorGUIUtility.whiteTexture);
+            GUI.color = oldColor;
+        }
+
+        #endregion
+
+        #region Group Helpers
+
+        private List<NodeBase> GetGroupNodes(NodeGroup group)
+        {
+            var result = new List<NodeBase>();
+            if (group?.nodeIds == null) return result;
+            foreach (var nodeId in group.nodeIds)
+            {
+                var node = m_Graph.FindNode(nodeId);
+                if (node != null) result.Add(node);
+            }
+            return result;
+        }
+
+        private bool IsNodeInCollapsedGroup(string nodeId)
+        {
+            if (m_Graph?.groups == null) return false;
+            for (int i = 0; i < m_Graph.groups.Count; i++)
+            {
+                var g = m_Graph.groups[i];
+                if (g != null && g.isCollapsed && g.nodeIds.Contains(nodeId))
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsNodeInAnyGroup(string nodeId)
+        {
+            if (m_Graph?.groups == null) return false;
+            for (int i = 0; i < m_Graph.groups.Count; i++)
+            {
+                var g = m_Graph.groups[i];
+                if (g != null && !g.isCollapsed && g.nodeIds.Contains(nodeId))
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsEdgeWithinCollapsedGroup(EdgeView ev)
+        {
+            if (ev.inputNode == null || ev.outputNode == null) return false;
+            return IsNodeInCollapsedGroup(ev.inputNode.id) && IsNodeInCollapsedGroup(ev.outputNode.id);
+        }
+
+        private NodeGroup GetCollapsedGroupOfNode(string nodeId)
+        {
+            if (m_Graph?.groups == null) return null;
+            for (int i = 0; i < m_Graph.groups.Count; i++)
+            {
+                var g = m_Graph.groups[i];
+                if (g != null && g.isCollapsed && g.nodeIds.Contains(nodeId))
+                    return g;
+            }
+            return null;
+        }
+
+        /// <summary> Collect ports of member nodes that have edges to non-member nodes </summary>
+        private List<Port> GetExternalPorts(NodeGroup group)
+        {
+            var result = new List<Port>();
+            if (group?.nodeIds == null) return result;
+            var nodeIdSet = new HashSet<string>(group.nodeIds);
+            foreach (var nodeId in group.nodeIds)
+            {
+                var node = m_Graph.FindNode(nodeId);
+                if (node == null) continue;
+                foreach (var port in node.inputPorts)
+                {
+                    if (port == null || !port.IsConnected()) continue;
+                    for (int i = 0; i < port.edges.Count; i++)
+                    {
+                        var edge = m_Graph.GetEdge(port.edges[i]);
+                        if (edge != null && !nodeIdSet.Contains(edge.outputNodeId))
+                        {
+                            result.Add(port);
+                            break;
+                        }
+                    }
+                }
+                foreach (var port in node.outputPorts)
+                {
+                    if (port == null || !port.IsConnected()) continue;
+                    for (int i = 0; i < port.edges.Count; i++)
+                    {
+                        var edge = m_Graph.GetEdge(port.edges[i]);
+                        if (edge != null && !nodeIdSet.Contains(edge.inputNodeId))
+                        {
+                            result.Add(port);
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void CollapseGroup(NodeGroup group, Rect expandedRect)
+        {
+            PushUndoSnapshot();
+            // expandedRect is in node-GUI space (grid + panOffset/zoom) — convert to grid for storage
+            var panOffset = m_Graph.currentPanOffset / currentZoom;
+            group.x = expandedRect.center.x - group.collapsedWidth / 2f - panOffset.x;
+            group.y = expandedRect.center.y - group.collapsedHeight / 2f - panOffset.y;
+            group.isCollapsed = true;
+            m_EdgeViews = null;
+            m_Dirty = true;
+            Repaint();
+        }
+
+        private void ExpandGroup(NodeGroup group)
+        {
+            PushUndoSnapshot();
+            group.isCollapsed = false;
+            m_EdgeViews = null;
+            m_Dirty = true;
+            Repaint();
+        }
+
+        #endregion
+
         #region DrawNodes
 
         private void DrawNodes(Rect graphArea)
@@ -310,7 +721,9 @@ namespace DaGenGraph.Editor
             foreach (var nodeView in m_NodeViews.Values)
             {
                 if (nodeView?.node == null) continue;
+                if (IsNodeInCollapsedGroup(nodeView.node.id)) continue;
                 if (!nodeView.node.GetRect().Overlaps(visibleGridRect)) continue;
+                nodeView.isInGroup = IsNodeInAnyGroup(nodeView.node.id);
                 nodeView.zoomedBeyondPortDrawThreshold = currentZoom <= 0.4f;
                 nodeView.DrawNodeGUI(graphArea, m_Graph.currentPanOffset, currentZoom);
             }
@@ -332,6 +745,7 @@ namespace DaGenGraph.Editor
                 m_ScaledGraphArea.height);
             foreach (var port in ports.Values)
             {
+                if (IsNodeInCollapsedGroup(port.nodeId)) continue;
                 if (!nodeViews.TryGetValue(port.nodeId, out var nv) || nv?.node == null) continue;
                 var node = nv.node;
                 var portGridRect = new Rect(node.GetX(), node.GetY() + port.GetY(), port.GetWidth(), port.GetHeight());

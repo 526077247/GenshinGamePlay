@@ -61,6 +61,19 @@ namespace TaoTie
             AddButton(new GUIContent("导出"),Export);
         }
 
+        protected override string SerializeGraph()
+        {
+            return m_Graph != null ? JsonHelper.ToJson(m_Graph) : null;
+        }
+
+        protected override DaGenGraph.GraphBase DeserializeGraph(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            if (JsonHelper.TryFromJson<StoryGraph>(json, out var graph))
+                return graph;
+            return null;
+        }
+
         protected override void OnEnterPlayMode()
         {
             if (!string.IsNullOrEmpty(path))
@@ -139,13 +152,13 @@ namespace TaoTie
             var current = Event.current;
             if (m_Graph == null) InitGraph();
             menu.AddItem(new GUIContent("Create/普通节点"), false,
-                () => { CreateNodeView(m_Graph.CreateNode<StoryClipNode>(current.mousePosition,"节点")); });
+                () => { CreateNodeWithUndo(() => m_Graph.CreateNode<StoryClipNode>(current.mousePosition,"节点")); });
             menu.AddItem(new GUIContent("Create/选择节点"), false,
-                () => { CreateNodeView(m_Graph.CreateNode<StoryBranchClipNode>(current.mousePosition,"选择节点")); });
+                () => { CreateNodeWithUndo(() => m_Graph.CreateNode<StoryBranchClipNode>(current.mousePosition,"选择节点")); });
             menu.AddItem(new GUIContent("Create/并行节点"), false,
-                () => { CreateNodeView(m_Graph.CreateNode<StoryParallelClipNode>(current.mousePosition,"并行节点")); });
+                () => { CreateNodeWithUndo(() => m_Graph.CreateNode<StoryParallelClipNode>(current.mousePosition,"并行节点")); });
             menu.AddItem(new GUIContent("Create/选项"), false,
-                () => { CreateNodeView(m_Graph.CreateNode<StoryBranchClipItemNode>(current.mousePosition,"选项")); });
+                () => { CreateNodeWithUndo(() => m_Graph.CreateNode<StoryBranchClipItemNode>(current.mousePosition,"选项")); });
         }
 
         protected override void AddPortMenuItems(GenericMenu menu, Port port, bool isLine = false)
@@ -165,6 +178,7 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent($"{port.portName}Connect/选项"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<StoryBranchClipItemNode>(current.mousePosition, "选项");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -174,18 +188,21 @@ namespace TaoTie
                 {
                     menu.AddItem(new GUIContent($"{port.portName}Connect/普通节点"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<StoryClipNode>(current.mousePosition, "节点");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent($"{port.portName}Connect/选择节点"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<StoryBranchClipNode>(current.mousePosition, "选择节点");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
                     });
                     menu.AddItem(new GUIContent($"{port.portName}Connect/并行节点"), false, () =>
                     {
+                        PushUndoSnapshot();
                         var node = m_Graph.CreateNode<StoryParallelClipNode>(current.mousePosition, "并行节点");
                         CreateNodeView(node);
                         ConnectPorts(port, node.GetFirstInputPort());
@@ -196,31 +213,24 @@ namespace TaoTie
 
         protected override void AddNodeMenuItems(GenericMenu menu, NodeBase nodeBase)
         {
-            if (nodeBase.canBeDeleted)
-            {
-                menu.AddItem(new GUIContent("Delete"), false, () =>
-                {
-                    DeleteNode(nodeBase);
-                });
-            }
-
+            base.AddNodeMenuItems(menu, nodeBase);
             if (nodeBase is StoryClipNode clipNode)
             {
                 if (clipNode.outputPorts.Count <= 0)
                 {
                     menu.AddItem(new GUIContent("添加下一步"), false,
-                        () => { nodeBase.AddOutputPort("下一步", EdgeMode.Override, true, true); });
+                        () => { PushUndoSnapshot(); nodeBase.AddOutputPort("下一步", EdgeMode.Override, true, true); });
                 }
             }
             else if (nodeBase is StoryBranchClipNode)
             {
                 menu.AddItem(new GUIContent("添加选项"), false,
-                    () => { nodeBase.AddOutputPort<StoryBranchPort>("选项", EdgeMode.Override, true,EdgeType.Both, true); });
+                    () => { PushUndoSnapshot(); nodeBase.AddOutputPort<StoryBranchPort>("选项", EdgeMode.Override, true,EdgeType.Both, true); });
             }
             else if (nodeBase is StoryParallelClipNode)
             {
                 menu.AddItem(new GUIContent("添加并行项"), false,
-                    () => { nodeBase.AddOutputPort("并行项", EdgeMode.Override, true, true); });
+                    () => { PushUndoSnapshot(); nodeBase.AddOutputPort("并行项", EdgeMode.Override, true, true); });
             }
         }
 
