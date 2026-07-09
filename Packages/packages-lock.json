@@ -41,6 +41,16 @@
         "com.unity.mathematics": "1.3.1"
       }
     },
+    "com.taotie.render-pipelines": {
+      "version": "https://github.com/526077247/TaoTieRP.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.render-pipelines.core": "14.0.10",
+        "com.unity.mathematics": "1.2.6"
+      },
+      "hash": "23943bbd067077629cc8f86b7863c7cfb953f31d"
+    },
     "com.thridparty.odin": {
       "version": "file:com.thridparty.odin",
       "depth": 0,
@@ -179,36 +189,9 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       }
     },
-    "com.unity.render-pipelines.universal": {
-      "version": "14.0.11",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.mathematics": "1.2.1",
-        "com.unity.burst": "1.8.9",
-        "com.unity.render-pipelines.core": "14.0.11",
-        "com.unity.shadergraph": "14.0.11",
-        "com.unity.render-pipelines.universal-config": "14.0.9"
-      }
-    },
-    "com.unity.render-pipelines.universal-config": {
-      "version": "14.0.10",
-      "depth": 1,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.render-pipelines.core": "14.0.10"
-      }
-    },
     "com.unity.scriptablebuildpipeline": {
       "version": "1.21.25",
       "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.cn"
-    },
-    "com.unity.searcher": {
-      "version": "4.9.2",
-      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.cn"
@@ -219,15 +202,6 @@
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.cn"
-    },
-    "com.unity.shadergraph": {
-      "version": "14.0.11",
-      "depth": 1,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.render-pipelines.core": "14.0.11",
-        "com.unity.searcher": "4.9.2"
-      }
     },
     "com.unity.test-framework": {
       "version": "1.1.33",

@@ -111,7 +111,7 @@ GenshinGamePlay/
 
 ### 环境要求
 
-- Unity 2021.3+ (URP)
+- Unity 2021.3+
 - Odin Inspector（付费插件）
 
 ### 运行项目
@@ -184,7 +184,7 @@ GenshinGamePlay/
 | **ORCA** | 动态避障寻路 |
 | **DaGenGraph** | 节点编辑器框架 |
 | **LitJson** | JSON 序列化 |
-| **URP** | 通用渲染管线 |
+| **TaoTie RP** | 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径 |
 
 ## 引用或参考
 

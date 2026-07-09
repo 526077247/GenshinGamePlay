@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TaoTie.RenderPipelines;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 namespace TaoTie
 {
@@ -22,24 +22,20 @@ namespace TaoTie
         {
             Instance = this;
             Level = GetDevicePerformanceLevel();
-            var render = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            var render = GraphicsSettings.renderPipelineAsset as TaoTieRenderPipelineAsset;
             if (render!= null)
             {
                 if (Level == DevicePerformanceLevel.High)
                 {
-                    render.renderScale = PlatformUtil.IsMobile() ? 0.85f : 1f;
-                    render.colorGradingMode = ColorGradingMode.HighDynamicRange;
-                    render.colorGradingLutSize = 32;
-                    render.hdrColorBufferPrecision = HDRColorBufferPrecision._64Bits;
-                    render.msaaSampleCount = 4;
+                    render.settings.cameraBuffer.renderScale = PlatformUtil.IsMobile() ? 0.85f : 1f;
+                    render.settings.cameraBuffer.allowHDR = true;
+                    render.settings.colorLUTResolution = TaoTieRenderPipelineSettings.ColorLUTResolution._32;
                 }
                 else
                 {
-                    render.renderScale = Level == DevicePerformanceLevel.Mid ? 0.7f : 0.55f;
-                    render.colorGradingMode = ColorGradingMode.LowDynamicRange;
-                    render.colorGradingLutSize = 16;
-                    render.hdrColorBufferPrecision = HDRColorBufferPrecision._32Bits;
-                    render.msaaSampleCount = 2;
+                    render.settings.cameraBuffer.renderScale = Level == DevicePerformanceLevel.Mid ? 0.7f : 0.55f;
+                    render.settings.cameraBuffer.allowHDR = false;
+                    render.settings.colorLUTResolution = TaoTieRenderPipelineSettings.ColorLUTResolution._16;
                 }
             }
             SetLowFrame();

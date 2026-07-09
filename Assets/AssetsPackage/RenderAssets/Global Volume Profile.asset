@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8833170345865123042
+--- !u!114 &-6744192530410151601
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,85 +9,116 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86519968f231433194e9b8e2cd13bfdc, type: 3}
-  m_Name: DepthFog
+  m_Script: {fileID: 11500000, guid: e555b77888f1c9c41b595573d5d7ab56, type: 3}
+  m_Name: BloomVolume
   m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  FogColor:
-    m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  FogDensity:
-    m_OverrideState: 1
-    m_Value: 0.5
-    min: 0
-    max: 1
-  EnableFarFog:
-    m_OverrideState: 1
+  active: 0
+  maxIterations:
+    m_OverrideState: 0
+    m_Value: 16
+  ignoreRenderScale:
+    m_OverrideState: 0
     m_Value: 0
-  FogStart:
-    m_OverrideState: 1
-    m_Value: 0.5
-    min: 0
-    max: 1
-  FogEnd:
-    m_OverrideState: 1
-    m_Value: 0.5
-    min: 0
-    max: 1
-  EnableDeepFog:
-    m_OverrideState: 1
+  downscaleLimit:
+    m_OverrideState: 0
+    m_Value: 2
+  bicubicUpsampling:
+    m_OverrideState: 0
     m_Value: 1
-  FogDeepStart:
-    m_OverrideState: 1
-    m_Value: 0
-  FogDeepEnd:
-    m_OverrideState: 1
-    m_Value: 1
---- !u!114 &-1146616878980986816
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
-  m_Name: Bloom
-  m_EditorClassIdentifier: 
-  active: 1
   threshold:
-    m_OverrideState: 1
-    m_Value: 1.1
+    m_OverrideState: 0
+    m_Value: 1
+  thresholdKnee:
+    m_OverrideState: 0
+    m_Value: 0.5
   intensity:
-    m_OverrideState: 1
-    m_Value: 5
+    m_OverrideState: 0
+    m_Value: 0.2
+  fadeFireflies:
+    m_OverrideState: 0
+    m_Value: 1
+  mode:
+    m_OverrideState: 0
+    m_Value: 1
   scatter:
     m_OverrideState: 0
     m_Value: 0.7
-  clamp:
+--- !u!114 &-2477251315906421449
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 366044cbbb0b26f4e9d4edd000aed28b, type: 3}
+  m_Name: ColorGradingVolume
+  m_EditorClassIdentifier: 
+  active: 1
+  toneMappingMode:
+    m_OverrideState: 1
+    m_Value: 1
+  postExposure:
+    m_OverrideState: 1
+    m_Value: 1
+  contrast:
+    m_OverrideState: 1
+    m_Value: 0
+  colorFilter:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  hueShift:
+    m_OverrideState: 1
+    m_Value: 4
+  saturation:
+    m_OverrideState: 1
+    m_Value: 28
+  temperature:
     m_OverrideState: 0
-    m_Value: 65472
+    m_Value: 0
   tint:
     m_OverrideState: 0
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
-  highQualityFiltering:
+    m_Value: 0
+  splitToningShadows:
+    m_OverrideState: 0
+    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  splitToningHighlights:
+    m_OverrideState: 0
+    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  splitToningBalance:
     m_OverrideState: 0
     m_Value: 0
-  skipIterations:
+  channelMixerRed:
+    m_OverrideState: 0
+    m_Value: {x: 1, y: 0, z: 0}
+  channelMixerGreen:
+    m_OverrideState: 0
+    m_Value: {x: 0, y: 1, z: 0}
+  channelMixerBlue:
+    m_OverrideState: 0
+    m_Value: {x: 0, y: 0, z: 1}
+  smhShadows:
+    m_OverrideState: 0
+    m_Value: {r: 0.7490196, g: 0.6156863, b: 1, a: 1}
+  smhMidtones:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 0.8509804, b: 0.8509804, a: 1}
+  smhHighlights:
+    m_OverrideState: 0
+    m_Value: {r: 1, g: 0.89411765, b: 0.7921569, a: 1}
+  smhShadowsStart:
+    m_OverrideState: 0
+    m_Value: 0
+  smhShadowsEnd:
+    m_OverrideState: 0
+    m_Value: 0.3
+  smhHighlightsStart:
+    m_OverrideState: 0
+    m_Value: 0.55
+  smhHighlightsEnd:
     m_OverrideState: 0
     m_Value: 1
-  dirtTexture:
-    m_OverrideState: 0
-    m_Value: {fileID: 0}
-    dimension: 1
-  dirtIntensity:
-    m_OverrideState: 0
-    m_Value: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,33 +132,5 @@ MonoBehaviour:
   m_Name: Global Volume Profile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -1146616878980986816}
---- !u!114 &3635894383472215021
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7a26d2fa1bf0ea44b1a0eb10d5e5c8b, type: 3}
-  m_Name: BrightnessSaturationContrast
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  brightness:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 3
-  saturation:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 3
-  contrast:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 3
+  - {fileID: -6744192530410151601}
+  - {fileID: -2477251315906421449}

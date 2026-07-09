@@ -21,17 +21,18 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Girl_Sword_Keqing_Mat_Face
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Shader: {fileID: 4800000, guid: fe17be7efff344feb317f2eab5baf08f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - ON
+  - _RECEIVE_SHADOWS
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -83,6 +84,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 67ee738a0a8907d498e7252df1bd8c8e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -140,6 +145,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _ClearCoatTexSource: 0
     - _ClearShading: 0
+    - _Clipping: 0
     - _Cull: 2
     - _Cutoff: 0.5
     - _DepthOffsetRimReverseX: 0
@@ -151,12 +157,17 @@ Material:
     - _DepthShadowSoftness: 0.806
     - _DepthShadowThresoldOffset: 0.59
     - _DetailAlbedoMapScale: 1
+    - _DetailAlbedoScale: 1
+    - _DetailMapToggle: 0
     - _DetailNormalMapScale: 1
+    - _DetailNormalScale: 1
+    - _DetailSmoothness: 1
     - _DissolveThreshold: 0
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionColorAlbedoWeight: 0
     - _EnvironmentReflections: 1
+    - _Fresnel: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.31622776
     - _GlossyReflections: 1
@@ -164,12 +175,15 @@ Material:
     - _Is_SDInPaint: 0
     - _LightDirectionObliqueWeight: 0.5
     - _LightIntensityClamp: 1
+    - _MaskMapToggle: 0
     - _Metallic: 0
     - _Mode: 0
+    - _NormalMapToggle: 0
     - _OcclusionStrength: 0.652
     - _Outline: 1
     - _OutlineWidth: 0.25
     - _Parallax: 0.02
+    - _PremulAlpha: 0
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
     - _RampMapUOffset: 0
@@ -184,6 +198,7 @@ Material:
     - _ScreenSpaceRimSoftness: 0.01
     - _ScreenSpaceRimThreshold: 0.01
     - _ScreenSpaceRimWidth: 0.01
+    - _Shadows: 0
     - _Shininess: 1
     - _Smoothness: 0.1
     - _SmoothnessTextureChannel: 0
@@ -219,14 +234,18 @@ Material:
     - _group1: 1
     - _groupAdditionLight: 1
     - _groupClearCoat: 1
+    - _groupClipping: 0
+    - _groupDetails: 0
     - _groupDissolveSetting: 0
     - _groupEmission: 0
     - _groupEnvironment: 1
     - _groupLightDirectionOffset: 0
+    - _groupNormalMap: 0
     - _groupOutline: 1
     - _groupRim: 1
     - _groupShadingMask: 0
     - _groupShadowSetting: 1
+    - _groupShadows: 0
     - _groupSpecular: 1
     - _groupSurface: 1
     m_Colors:
@@ -234,7 +253,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkColor: {r: 1, g: 0.71082854, b: 0.6462264, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 0, a: 1}
-    - _EmissionColor: {r: 0.2627451, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighColor: {r: 1, g: 0.9346648, b: 0.9009434, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _PBRMetallicChannel: {r: 0, g: 0, b: 0, a: 0}

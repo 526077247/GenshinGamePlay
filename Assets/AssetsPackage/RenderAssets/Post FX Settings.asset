@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d806ccc08daa44b98227c93abf1e6c12, type: 3}
+  m_Name: Post FX Settings
+  m_EditorClassIdentifier: 
+  effects:
+  - rid: 7624620720440475648
+  - rid: 7624620720440475649
+  - rid: 7624620720440475658
+  shader: {fileID: 4800000, guid: e7c8f9b201fa45348f2112e1c3cb6fff, type: 3}
+  references:
+    version: 2
+    RefIds:
+    - rid: 7624620720440475648
+      type: {class: BloomEffect, ns: TaoTie.RenderPipelines, asm: TaoTie.RenderPipelines.Runtime}
+      data:
+        enabled: 1
+        settings:
+          maxIterations: 16
+          ignoreRenderScale: 0
+          downscaleLimit: 2
+          bicubicUpsampling: 1
+          threshold: 1
+          thresholdKnee: 0.5
+          intensity: 0.2
+          fadeFireflies: 1
+          mode: 1
+          scatter: 0.7
+    - rid: 7624620720440475649
+      type: {class: ColorGradingEffect, ns: TaoTie.RenderPipelines, asm: TaoTie.RenderPipelines.Runtime}
+      data:
+        enabled: 1
+        toneMapping:
+          mode: 1
+        colorAdjustments:
+          postExposure: 0.8
+          contrast: 0
+          colorFilter: {r: 1, g: 1, b: 1, a: 1}
+          hueShift: 0
+          saturation: 28
+        whiteBalance:
+          temperature: 0
+          tint: 0
+        splitToning:
+          shadows: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+          highlights: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+          balance: 0
+        channelMixer:
+          red: {x: 1, y: 0, z: 0}
+          green: {x: 0, y: 1, z: 0}
+          blue: {x: 0, y: 0, z: 1}
+        shadowsMidtonesHighlights:
+          shadows: {r: 0.7490196, g: 0.6156863, b: 1, a: 1}
+          midtones: {r: 1, g: 0.8509804, b: 0.8509804, a: 1}
+          highlights: {r: 1, g: 0.89411765, b: 0.7921569, a: 1}
+          shadowsStart: 0
+          shadowsEnd: 0.3
+          highlightsStart: 0.55
+          highLightsEnd: 1
+    - rid: 7624620720440475658
+      type: {class: OutlineEffect, ns: TaoTie.RenderPipelines, asm: TaoTie.RenderPipelines.Runtime}
+      data:
+        enabled: 0
+        outlineShader: {fileID: 4800000, guid: 7f162498d0699e1438cac40976973519, type: 3}
+        settings:
+          color: {r: 0, g: 0, b: 0, a: 1}
+          depthSensitivity: 0.1
+          normalSensitivity: 0.1
+          width: 1

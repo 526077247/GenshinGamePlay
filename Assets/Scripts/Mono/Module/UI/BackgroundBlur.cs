@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 namespace TaoTie
@@ -36,12 +35,9 @@ namespace TaoTie
             if (rImage == null)
             {
                 Log.Warning("Background Blur is warring !!!");
-                yield return null;
+                yield break;
             }
-            else
-            {
-                yield return ReadPixels();
-            }
+            yield return ReadPixels();
             
         }
 
@@ -57,17 +53,18 @@ namespace TaoTie
             RefCount++;
             if (screenShotTemp == null)
             {
-                GameObject uiCamera = null;
-                var cd = mainCamera.GetUniversalAdditionalCameraData();
-                for (int i = 0; i < cd.cameraStack.Count; i++)
+                var uiLayer = LayerMask.NameToLayer("UI");
+                var cameras = Camera.allCameras;
+                GameObject uiCameraGo = null;
+                for (int i = 0; i < cameras.Length; i++)
                 {
-                    if (cd.cameraStack[i].gameObject.layer == LayerMask.NameToLayer("UI"))
+                    if (cameras[i].gameObject.layer == uiLayer)
                     {
-                        uiCamera = cd.cameraStack[i].gameObject;
+                        uiCameraGo = cameras[i].gameObject;
                         break;
                     }
                 }
-                uiCamera?.SetActive(false);
+                uiCameraGo?.SetActive(false);
                 yield return new WaitForEndOfFrame();
                 if (RefCount > 0)//防止等一帧回来已经被关了
                 {
@@ -84,12 +81,15 @@ namespace TaoTie
                         blurMaterial.SetTexture("_MainTex",screenShotTemp);
                         Graphics.Blit(null, destination, blurMaterial);
 
+                        var prevRT = RenderTexture.active;
+                        RenderTexture.active = destination;
                         screenShotTemp.ReadPixels(rect, 0, 0);
                         screenShotTemp.Apply();
+                        RenderTexture.active = prevRT;
                         destination.Release();
                     }
                 }
-                uiCamera?.SetActive(true);
+                uiCameraGo?.SetActive(true);
             }
             
             rImage.enabled = true;
@@ -101,8 +101,12 @@ namespace TaoTie
             RefCount--;
             if (RefCount <= 0)
             {
+                RefCount = 0;
                 if (screenShotTemp != null)
+                {
                     Destroy(screenShotTemp);
+                    screenShotTemp = null;
+                }
             }
         }
     }

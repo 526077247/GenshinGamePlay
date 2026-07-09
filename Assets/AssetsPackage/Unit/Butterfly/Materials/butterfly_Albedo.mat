@@ -21,18 +21,19 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: butterfly_Albedo
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Shader: {fileID: 4800000, guid: fe17be7efff344feb317f2eab5baf08f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - ON
+  - _RECEIVE_SHADOWS
   - _SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses:
   - DepthOnly
   - SHADOWCASTER
@@ -78,6 +79,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: b6770c0aba9109643a635e2509c82636, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -128,6 +133,7 @@ Material:
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _ClearCoatTexSource: 0
+    - _Clipping: 0
     - _Cull: 2
     - _Cutoff: 0.5
     - _DepthOffsetRimReverseX: 0
@@ -138,21 +144,29 @@ Material:
     - _DepthShadowSoftness: 0
     - _DepthShadowThresoldOffset: 0
     - _DetailAlbedoMapScale: 1
+    - _DetailAlbedoScale: 1
+    - _DetailMapToggle: 0
     - _DetailNormalMapScale: 1
+    - _DetailNormalScale: 1
+    - _DetailSmoothness: 1
     - _DstBlend: 10
     - _DstBlendAlpha: 10
     - _EmissionColorAlbedoWeight: 0
     - _EnvironmentReflections: 1
+    - _Fresnel: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Is_Filter_LightColor: 1
     - _LightIntensityClamp: 1
+    - _MaskMapToggle: 0
     - _Metallic: 0
+    - _NormalMapToggle: 0
     - _OcclusionStrength: 1
     - _Outline: 1
     - _OutlineWidth: 0.25
     - _Parallax: 0.005
+    - _PremulAlpha: 0
     - _QueueOffset: 0
     - _RECEIVE_SHADOWS_OFF: 1
     - _RampMapUOffset: 0
@@ -161,6 +175,7 @@ Material:
     - _RimDirectionLightContribution: 1
     - _RimSoftness: 0.01
     - _RimThreshold: 0.2
+    - _Shadows: 0
     - _Shininess: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -189,12 +204,16 @@ Material:
     - _group1: 1
     - _groupAdditionLight: 1
     - _groupClearCoat: 1
+    - _groupClipping: 0
+    - _groupDetails: 0
     - _groupEmission: 0
     - _groupEnvironment: 1
+    - _groupNormalMap: 0
     - _groupOutline: 1
     - _groupRim: 1
     - _groupShadingMask: 0
     - _groupShadowSetting: 1
+    - _groupShadows: 0
     - _groupSpecular: 1
     m_Colors:
     - _BaseColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
