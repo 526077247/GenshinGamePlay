@@ -30,28 +30,29 @@ MonoBehaviour:
         baseBlendFactor: 0.9
         varianceClampScale: 0.9
       postProcessAA: 0
-      stripSMAAWhenUnused: 0
+      stripSMAAWhenUnused: 1
     shadows:
       maxDistance: 30
       distanceFade: 0.1
       filterQuality: 1
       directional:
-        maxLightCount: 1
+        maxLightCount: 2
         atlasSize: 4096
-        cascadeCount: 2
+        cascadeCount: 4
         cascadeRatio1: 0.3
         cascadeRatio2: 0.4
         cascadeRatio3: 0.5
         cascadeFade: 0.1
         softCascadeBlend: 0
-      useForwardPlus: 1
-      other:
-        maxLightsPerTile: 128
-        tileSize: 0
-        atlasSize: 1024
+      forwardPlus: 1
       maxOtherLights: 64
+      other:
+        maxLightsPerTile: 64
+        tileSize: 8
+        atlasSize: 1024
+        zBinCount: 32
       ssao:
-        enabled: 1
+        enabled: 0
         sampleCount: 12
         radius: 0.5
         intensity: 1
@@ -65,3 +66,5 @@ MonoBehaviour:
     taaShader: {fileID: 4800000, guid: 35b666756a5c8544a827c538a9e5dfe2, type: 3}
     forwardPlusDebuggerShader: {fileID: 4800000, guid: 93996d35ad3144619c54bbc42c8f223b, type: 3}
     depthDebuggerShader: {fileID: 4800000, guid: 16ef56564a8e4dd449a275d13b5212f5, type: 3}
+    overdrawResolveShader: {fileID: 4800000, guid: 7df2327a021603a42afe187e38e72489, type: 3}
+    forwardPlusCullCompute: {fileID: 7200000, guid: 8cdde420f6cbe894b9ca45e0e7751f86, type: 3}

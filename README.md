@@ -177,6 +177,7 @@ GenshinGamePlay/
 | 技术 | 用途 |
 |------|------|
 | **TaoTie** | 轻量级 Unity 框架（Entity/Component 生命周期、Manager 系统） |
+| **TaoTie RP** | 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径 |
 | **YooAsset** | 资源管理系统 |
 | **Nino** | 高性能二进制序列化（配置加载） |
 | **ETTask** | 单线程异步任务系统 |
@@ -184,19 +185,19 @@ GenshinGamePlay/
 | **ORCA** | 动态避障寻路 |
 | **DaGenGraph** | 节点编辑器框架 |
 | **LitJson** | JSON 序列化 |
-| **TaoTie RP** | 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径 |
 
 ## 引用或参考
 
 1. [WorldReverse](https://github.com/fengjixuchui/WorldReverse)
 2. [TaoTie](https://github.com/526077247/TaoTie) — 轻量级 Unity 框架
-3. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
-4. [Nino](https://github.com/JasonXuDeveloper/Nino) — 高性能 C# 序列化模块
-5. [obfuz](https://github.com/focus-creative-games/obfuz.git) — 代码混淆、内存加密
-6. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) — 节点编辑器
-7. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
-8. [UnityScriptHotReload](https://github.com/Misaka-Mikoto-Tech/UnityScriptHotReload) — 运行中无感重载 C# 代码
-9. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
+3. [TaoTieRP](https://github.com/526077247/TaoTieRP) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
+4. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
+5. [Nino](https://github.com/JasonXuDeveloper/Nino) — 高性能 C# 序列化模块
+6. [obfuz](https://github.com/focus-creative-games/obfuz.git) — 代码混淆、内存加密
+7. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) — 节点编辑器
+8. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
+9. [UnityScriptHotReload](https://github.com/Misaka-Mikoto-Tech/UnityScriptHotReload) — 运行中无感重载 C# 代码
+10. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
 
 ## 付费插件
 
