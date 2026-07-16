@@ -47,8 +47,8 @@ namespace TaoTie
         public T AddItemViewComponent<T>(LoopGridViewItem item) where T : UIBaseContainer
         {
             //保证名字不能相同 不然没法cache
-            item.gameObject.name = item.gameObject.name + item.ItemId;
-            T t = this.AddComponentNotCreate<T>(item.gameObject.name);
+            item.UserStringData2 = item.gameObject.name = item.gameObject.name + item.ItemId;
+            T t = this.AddComponentNotCreate<T>(item.UserStringData2);
             t.SetTransform(item.transform);
             if (t is IOnCreate a)
                 a.OnCreate();
@@ -62,7 +62,7 @@ namespace TaoTie
         //根据Unity侧item获取UI侧的item
         public T GetUIItemView<T>(LoopGridViewItem item) where T : UIBaseContainer
         {
-            return this.GetComponent<T>(item.gameObject.name);
+            return this.GetComponent<T>(item.UserStringData2);
         }
 
         //itemCount重设item的数量，resetPos是否刷新当前显示的位置
