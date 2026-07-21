@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using Obfuz;
-using Obfuz.EncryptionVM;
 using YooAsset;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,22 +18,6 @@ namespace TaoTie
 
 	public class Init : MonoBehaviour
 	{
-		// 需要初始化Obfuz加密虚拟机后被混淆的代码才能正常运行。
-		// 尽可能地早地初始化这个加密虚拟机。
-		[ObfuzIgnore]
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-		private static void SetUpStaticSecret()
-		{
-			Debug.Log("SetUpStaticSecret begin");
-			var secretKey = Resources.Load<TextAsset>("Obfuz/defaultStaticSecretKey");
-			if (secretKey == null)
-			{
-				Debug.LogError("SetUpStaticSecret fail: Obfuz/defaultStaticSecretKey not found");
-				return;
-			}
-			EncryptionService<DefaultStaticEncryptionScope>.Encryptor = new GeneratedEncryptionVirtualMachine(secretKey.bytes);
-			Debug.Log("SetUpStaticSecret end");
-		}
 		public CodeMode CodeMode = CodeMode.LoadDll;
 
 		public EPlayMode PlayMode = EPlayMode.EditorSimulateMode;

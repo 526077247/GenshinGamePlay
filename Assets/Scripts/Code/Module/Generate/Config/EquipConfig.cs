@@ -6,7 +6,6 @@ namespace TaoTie
 {
     [NinoSerialize]
     [Config]
-    [Obfuz.ObfuzIgnore]
     public partial class EquipConfigCategory : ProtoObject, IMerge
     {
         public static EquipConfigCategory Instance;

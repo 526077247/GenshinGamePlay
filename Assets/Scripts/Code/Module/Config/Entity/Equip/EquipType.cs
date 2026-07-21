@@ -1,8 +1,5 @@
-﻿using Obfuz;
-
-namespace TaoTie
+﻿namespace TaoTie
 {
-    [ObfuzIgnore]
     public enum EquipType
     {
         Equip01,

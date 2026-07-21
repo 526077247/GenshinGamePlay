@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "com.lifang.dagen": "file:../Modules/com.lifang.dagen",
+    "com.taotie.render-pipelines": "https://github.com/526077247/TaoTieRP.git",
     "com.thridparty.odin": "file:../Modules/com.thridparty.odin",
     "com.tuyoogame.yooasset": "file:../Modules/com.tuyoogame.yooasset",
-    "com.taotie.render-pipelines": "https://github.com/526077247/TaoTieRP.git",
     "com.unity.ai.navigation": "1.1.5",
     "com.unity.collab-proxy": "2.5.2",
     "com.unity.feature.development": "1.0.1",
@@ -47,7 +47,6 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "com.code-philosophy.obfuz": "file:../Modules/com.code-philosophy.obfuz"
+    "com.unity.modules.xr": "1.0.0"
   }
 }

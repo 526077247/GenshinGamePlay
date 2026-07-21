@@ -6,7 +6,6 @@ namespace TaoTie
 {
     [NinoSerialize]
     [Config]
-    [Obfuz.ObfuzIgnore]
     public partial class GadgetConfigCategory : ProtoObject, IMerge
     {
         public static GadgetConfigCategory Instance;

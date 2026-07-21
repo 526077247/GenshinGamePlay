@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Obfuz.Settings;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -415,12 +414,7 @@ namespace TaoTie
                     break;
 #endif
             }
-
-            PackagesManagerEditor.Clear("com.thridparty-moudule.hotreload"); //HotReload存在时打包会报错
-            if ((buildOptions & BuildOptions.Development) == 0)
-            {
-                PackagesManagerEditor.Clear("com.thridparty-moudule.srdebugger"); //正式包去掉srdebugger
-            }
+            
             AssetDatabase.RefreshSettings();
             FileHelper.CleanDirectory(Define.HotfixDir);
             if (!buildHotfixAssembliesAOT || !isBuildExe)

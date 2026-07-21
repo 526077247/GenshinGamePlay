@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Obfuz;
-using Obfuz.Settings;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Player;
@@ -79,8 +77,7 @@ namespace TaoTie
                     "Assets/Scripts/Code",
                 }, Array.Empty<string>(), CodeOptimization.Release);
             }
-            AfterCompiling(assemblyName, true);
-
+            AfterCompiling(assemblyName);
         }
 
         private static void BuildMuteAssembly(string assemblyName, string[] CodeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization,bool isAuto = false)
@@ -212,7 +209,7 @@ namespace TaoTie
             AfterCompiling(assemblyName);
         }
 
-        private static void AfterCompiling(string assemblyName, bool obfuscate = false)
+        private static void AfterCompiling(string assemblyName)
         {
             while (!File.Exists(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"))
                    && EditorApplication.isCompiling)
@@ -222,21 +219,17 @@ namespace TaoTie
                 Thread.Sleep(1000);
                 Debug.Log("Compiling wait2");
             }
-            AfterBuild(assemblyName, obfuscate);
+            AfterBuild(assemblyName);
             //反射获取当前Game视图，提示编译完成
             // ShowNotification("Build Code Success");
             Debug.Log("Build Code Success");
         }
         
-        public static void AfterBuild(string assemblyName, bool obfuscate = false)
+        public static void AfterBuild(string assemblyName)
         {
             Debug.Log("Compiling finish");
             Directory.CreateDirectory(Define.HotfixDir);
             FileHelper.CleanDirectory(Define.HotfixDir);
-            if (obfuscate)
-            {
-                RunObfuscate(assemblyName);
-            }
             File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"), Path.Combine(Define.HotfixDir, $"{assemblyName}.dll.bytes"), true);
             File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.pdb"), Path.Combine(Define.HotfixDir, $"{assemblyName}.pdb.bytes"), true);
             AssetDatabase.Refresh();
@@ -267,69 +260,6 @@ namespace TaoTie
             throw new NotSupportedException("GetOriginBuildStripAssembliesDir");
 #endif
         }
-
-        private static void RunObfuscate(string assemblyName)
-        {
-            ObfuzSettings settings = ObfuzSettings.Instance;
-            if (!settings.buildPipelineSettings.enable)
-            {
-                Debug.Log("Obfuscation is disabled.");
-                return;
-            }
-            var old = settings.assemblySettings.assembliesToObfuscate;
-            settings.assemblySettings.assembliesToObfuscate = new string[] {assemblyName};
-            var oldDyn = settings.secretSettings.assembliesUsingDynamicSecretKeys;
-            settings.secretSettings.assembliesUsingDynamicSecretKeys = settings.assemblySettings.assembliesToObfuscate;
-            Debug.Log("Obfuscation begin...");
-            var buildTarget = EditorUserBuildSettings.activeBuildTarget;
-            
-            var obfuscationRelativeAssemblyNames = new HashSet<string>(settings.assemblySettings.GetObfuscationRelativeAssemblyNames());
-
-            var obfuscatorBuilder = ObfuscatorBuilder.FromObfuzSettings(settings, buildTarget, true, true);
-
-            var assemblySearchDirs = new List<string>
-                {
-                    Define.BuildOutputDir,
-                    "./Library/ScriptAssemblies",
-                    GetStripAssembliesDir2021(),
-                    "./Assets/Scripts/ThirdParty/Nino",
-                };
-            obfuscatorBuilder.InsertTopPriorityAssemblySearchPaths(assemblySearchDirs);
-
-            bool succ = false;
-
-            try
-            {
-                Obfuscator obfuz = obfuscatorBuilder.Build();
-                obfuz.Run();
-
-                foreach (var dllName in obfuscationRelativeAssemblyNames)
-                {
-                    string src = $"{obfuscatorBuilder.CoreSettingsFacade.obfuscatedAssemblyOutputPath}/{dllName}.dll";
-                    string dst = Path.Combine(Define.BuildOutputDir,  $"{dllName}.dll");
-  
-                    if (!File.Exists(src))
-                    {
-                        Debug.LogWarning($"obfuscation assembly not found! skip copy. path:{src}");
-                        continue;
-                    }
-                    File.Copy(src, dst, true);
-                    Debug.Log($"obfuscate dll:{dst}");
-                }
-                succ = true;
-            }
-            catch (Exception e)
-            {
-                succ = false;
-                Debug.LogException(e);
-                Debug.LogError($"Obfuscation failed.");
-            }
-
-            settings.secretSettings.assembliesUsingDynamicSecretKeys = oldDyn;
-            settings.assemblySettings.assembliesToObfuscate = old;
-            Debug.Log("Obfuscation end.");
-        }
-        
     }
     
 }
