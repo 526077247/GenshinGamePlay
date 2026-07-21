@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 
 namespace TaoTie
@@ -93,6 +94,65 @@ namespace TaoTie
 
             return result;
         }
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(I18NKey key, object para)
+        {
+            if (!this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + key);
+                return key.ToString();
+            }
+
+            if (para == null) para = string.Empty;
+            return string.Format(value, para);
+        }
+
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="para1"></param>
+        /// <param name="para2"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(I18NKey key, object para1, object para2)
+        {
+            if (!this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + key);
+                return key.ToString();
+            }
+
+            if (para1 == null) para1 = string.Empty;
+            if (para2 == null) para2 = string.Empty;
+            return string.Format(value, para1, para2);
+        }
+        
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="para1"></param>
+        /// <param name="para2"></param>
+        /// <param name="para3"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(I18NKey key, object para1, object para2, object para3)
+        {
+            if (!this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + key);
+                return key.ToString();
+            }
+
+            if (para1 == null) para1 = string.Empty;
+            if (para2 == null) para2 = string.Empty;
+            if (para3 == null) para3 = string.Empty;
+            return string.Format(value, para1, para2, para3);
+        }
 
         /// <summary>
         /// 根据key取多语言取不到返回key
@@ -113,7 +173,83 @@ namespace TaoTie
             else
                 return value;
         }
-        
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(string str, object para)
+        {
+            if (!Enum.TryParse(str, out I18NKey key) || !this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + str);
+                return key.ToString();
+            }
+
+            if (para == null) para = string.Empty;
+            return string.Format(value, para);
+        }
+
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="para1"></param>
+        /// <param name="para2"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(string str, object para1, object para2)
+        {
+            if (!Enum.TryParse(str, out I18NKey key) || !this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + str);
+                return key.ToString();
+            }
+
+            if (para1 == null) para1 = string.Empty;
+            if (para2 == null) para2 = string.Empty;
+            return string.Format(value, para1, para2);
+        }
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="para1"></param>
+        /// <param name="para2"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(string str, object para1, object para2, object para3)
+        {
+            if (!Enum.TryParse(str, out I18NKey key) || !this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + str);
+                return key.ToString();
+            }
+
+            if (para1 == null) para1 = string.Empty;
+            if (para2 == null) para2 = string.Empty;
+            if (para3 == null) para3 = string.Empty;
+            return string.Format(value, para1, para2, para3);
+        }
+        /// <summary>
+        /// 根据key取多语言取不到返回key
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="paras"></param>
+        /// <returns></returns>
+        public string I18NGetParamText(string str, params object[] paras)
+        {
+            if (!Enum.TryParse(str, out I18NKey key) || !this.i18nTextKeyDic.TryGetValue((int) key, out var value))
+            {
+                Log.Error("多语言key未添加！ " + str);
+                return key.ToString();
+            }
+
+            if (paras != null)
+                return string.Format(value, paras);
+            else
+                return value;
+        }
+
         /// <summary>
         /// 取配置多语言
         /// </summary>
@@ -142,7 +278,7 @@ namespace TaoTie
         /// <returns></returns>
         public bool I18NTryGetText(I18NKey key, out string result)
         {
-            if (!this.i18nTextKeyDic.TryGetValue((int)key, out result))
+            if (!this.i18nTextKeyDic.TryGetValue((int) key, out result))
             {
                 Log.Info("多语言key未添加！ " + key);
                 result = key.ToString();
@@ -160,10 +296,10 @@ namespace TaoTie
         {
             //修改当前语言
             CacheManager.Instance.SetInt(CacheKeys.CurLangType, langType);
-            this.CurLangType = (LangType)langType;
+            this.CurLangType = (LangType) langType;
             var res = await ConfigManager.Instance.LoadOneConfig<I18NConfigCategory>(this.CurLangType.ToString());
             this.i18nTextKeyDic.Clear();
-            for (int i = 0; i <res.GetAllList().Count; i++)
+            for (int i = 0; i < res.GetAllList().Count; i++)
             {
                 var item = res.GetAllList()[i];
                 this.i18nTextKeyDic.Add(item.Id, item.Value);

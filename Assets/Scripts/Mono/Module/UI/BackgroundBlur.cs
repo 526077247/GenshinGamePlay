@@ -54,17 +54,17 @@ namespace TaoTie
             if (screenShotTemp == null)
             {
                 var uiLayer = LayerMask.NameToLayer("UI");
-                var cameras = Camera.allCameras;
-                GameObject uiCameraGo = null;
+                var cameras = FindObjectsOfType<Camera>(true);
+                Camera uiCamera = null;
                 for (int i = 0; i < cameras.Length; i++)
                 {
                     if (cameras[i].gameObject.layer == uiLayer)
                     {
-                        uiCameraGo = cameras[i].gameObject;
+                        uiCamera = cameras[i];
                         break;
                     }
                 }
-                uiCameraGo?.SetActive(false);
+                if(uiCamera!=null) uiCamera.enabled = false;
                 yield return new WaitForEndOfFrame();
                 if (RefCount > 0)//防止等一帧回来已经被关了
                 {
@@ -89,7 +89,7 @@ namespace TaoTie
                         destination.Release();
                     }
                 }
-                uiCameraGo?.SetActive(true);
+                if(uiCamera!=null) uiCamera.enabled = true;
             }
             
             rImage.enabled = true;

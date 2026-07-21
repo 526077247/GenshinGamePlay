@@ -524,6 +524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings:
+    renderingMode: 1
     copyColor: 0
     copyDepth: 0
     maskLights: 0

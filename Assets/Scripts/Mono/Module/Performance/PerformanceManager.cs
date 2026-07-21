@@ -33,7 +33,7 @@ namespace TaoTie
                 }
                 else
                 {
-                    render.settings.cameraBuffer.renderScale = Level == DevicePerformanceLevel.Mid ? 0.7f : 0.55f;
+                    render.settings.cameraBuffer.renderScale = Level == DevicePerformanceLevel.Mid ? 0.75f : 0.65f;
                     render.settings.cameraBuffer.allowHDR = false;
                     render.settings.colorLUTResolution = TaoTieRenderPipelineSettings.ColorLUTResolution._16;
                 }

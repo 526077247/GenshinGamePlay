@@ -58,6 +58,7 @@ MonoBehaviour:
         intensity: 1
         falloff: 3
         downsample: 0.5
+      screenSpaceShadows: 0
     postFXSettings: {fileID: 11400000, guid: d78384e16e845f340a75fe167b39b86d, type: 2}
     colorLUTResolution: 32
     defaultMaterial: {fileID: 2100000, guid: 154398cb26997bf4ebf4af5ff1db036e, type: 2}
