@@ -62,6 +62,7 @@ SubShader {
 	#pragma surface PixShader Lambert alpha:blend vertex:VertShader noforwardadd nolightmap nodirlightmap
 	#pragma target 3.0
 	#pragma shader_feature __ GLOW_ON
+	#pragma shader_feature __ OUTLINE_SHELL_ON
 
 	#include "TMPro_Properties.cginc"
 	#include "TMPro.cginc"

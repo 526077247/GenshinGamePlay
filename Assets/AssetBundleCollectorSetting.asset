@@ -93,14 +93,6 @@ MonoBehaviour:
         FilterRuleName: CollectEditorConfig
         AssetTags: 
         UserData: 
-      - CollectPath: Assets/AssetsPackage/Code/Obfuz
-        CollectorGUID: 83647726993f4cb47b8358f66f70ba82
-        CollectorType: 0
-        AddressRuleName: AddressByPathLocationServices
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
       - CollectPath: Assets/AssetsPackage/RenderAssets
         CollectorGUID: 9d923eae0a9098849bd92b9ceb1c3dcc
         CollectorType: 0

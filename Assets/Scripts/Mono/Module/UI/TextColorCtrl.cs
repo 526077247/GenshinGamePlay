@@ -32,7 +32,7 @@ public class TextColorCtrl : MonoBehaviour
         m_outline2 = GetComponent<TMPro.TextMeshProOutLine>();
         if (m_outline2 != null)
         {
-            m_originOutlineColor = m_outline2.effectColor;
+            m_originOutlineColor = m_outline2.outlineColor;
             m_originOutlineWidth = m_outline2.outlineWidth;
         }
         else
@@ -82,7 +82,7 @@ public class TextColorCtrl : MonoBehaviour
             }
             else
             {
-                m_outline2.effectColor = color;
+                m_outline2.outlineColor = color;
             }
             m_outline2.Refresh();
         }
@@ -93,7 +93,7 @@ public class TextColorCtrl : MonoBehaviour
         if (m_outline != null) m_outline.effectColor = m_originOutlineColor;
         if (m_outline2 != null)
         {
-            m_outline2.effectColor = m_originOutlineColor;
+            m_outline2.outlineColor = m_originOutlineColor;
             m_outline2.outlineWidth = m_originOutlineWidth;
             m_outline2.Refresh();
         }

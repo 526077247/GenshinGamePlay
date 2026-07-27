@@ -95,6 +95,7 @@ namespace TMPro
         public static string Keyword_MASK_HARD = "MASK_HARD";
         public static string Keyword_MASK_TEX = "MASK_TEX";
         public static string Keyword_Outline = "OUTLINE_ON";
+        public static string Keyword_OutlineShell = "OUTLINE_SHELL_ON";
 
         public static string ShaderTag_ZTestMode = "unity_GUIZTestMode";
         public static string ShaderTag_CullMode = "_CullMode";
@@ -304,7 +305,7 @@ namespace TMPro
 
                 float range = (weight + faceDilate) * (scale - m_clamp);
 
-                t = Mathf.Max(1, Mathf.Max(Mathf.Abs(underlayOffsetX), Mathf.Abs(underlayOffsetY)) + underlayDilate + underlaySoftness);
+                t = Mathf.Max(1, underlayDilate + underlaySoftness);
 
                 ratio_C = isRatioEnabled ? Mathf.Max(0, scale - m_clamp - range) / (scale * t) : 1;
                 //float ratio_C_old = mat.GetFloat(ID_ScaleRatio_C);

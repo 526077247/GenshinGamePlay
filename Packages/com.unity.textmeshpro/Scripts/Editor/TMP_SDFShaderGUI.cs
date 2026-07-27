@@ -5,9 +5,9 @@ namespace TMPro.EditorUtilities
 {
     public class TMP_SDFShaderGUI : TMP_BaseShaderGUI
     {
-        static ShaderFeature s_OutlineFeature, s_UnderlayFeature, s_BevelFeature, s_GlowFeature, s_MaskFeature;
+        static ShaderFeature s_OutlineFeature, s_ShellOutlineFeature, s_UnderlayFeature, s_BevelFeature, s_GlowFeature, s_MaskFeature;
 
-        static bool s_Face = true, s_Outline = true, s_Outline2, s_Underlay, s_Lighting, s_Glow, s_Bevel, s_Light, s_Bump, s_Env;
+        static bool s_Face = true, s_Outline = true, s_ShellOutline, s_Outline2, s_Underlay, s_Lighting, s_Glow, s_Bevel, s_Light, s_Bump, s_Env;
 
         static string[]
             s_FaceUVSpeedName = { "_FaceUVSpeed" },
@@ -20,6 +20,12 @@ namespace TMPro.EditorUtilities
             {
                 undoLabel = "Outline",
                 keywords = new[] { "OUTLINE_ON" }
+            };
+
+            s_ShellOutlineFeature = new ShaderFeature()
+            {
+                undoLabel = "Shell Outline",
+                keywords = new[] { "OUTLINE_SHELL_ON" }
             };
 
             s_UnderlayFeature = new ShaderFeature()
@@ -73,6 +79,13 @@ namespace TMPro.EditorUtilities
                 DoOutlinePanel();
             }
 
+            EndPanel();
+
+            s_ShellOutline = BeginPanel("Shell Outline", s_ShellOutlineFeature, s_ShellOutline);
+            if (s_ShellOutline)
+            {
+                DoShellOutlinePanel();
+            }
             EndPanel();
 
             if (m_Material.HasProperty(ShaderUtilities.ID_Outline2Color))
@@ -289,15 +302,20 @@ namespace TMPro.EditorUtilities
             EditorGUILayout.Space();
         }
 
+        void DoShellOutlinePanel()
+        {
+            EditorGUI.indentLevel += 1;
+            EditorGUILayout.HelpBox("Shell Outline: C# vertex expansion + hard edge. Width controlled by TextMeshProOutLine.outlineWidth. Supports thick outlines beyond SDF range.", MessageType.Info);
+            DoSlider("_OutlineSoftness", "Softness");
+            EditorGUI.indentLevel -= 1;
+            EditorGUILayout.Space();
+        }
+
         void DoUnderlayPanel()
         {
             EditorGUI.indentLevel += 1;
             s_UnderlayFeature.DoPopup(m_Editor, m_Material);
             DoColor("_UnderlayColor", "Color");
-            DoSlider("_UnderlayOffsetX", "Offset X");
-            DoSlider("_UnderlayOffsetY", "Offset Y");
-            DoSlider("_UnderlayDilate", "Dilate");
-            DoSlider("_UnderlaySoftness", "Softness");
             EditorGUI.indentLevel -= 1;
             EditorGUILayout.Space();
         }

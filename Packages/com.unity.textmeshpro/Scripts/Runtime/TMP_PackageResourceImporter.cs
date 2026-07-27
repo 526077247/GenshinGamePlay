@@ -24,8 +24,8 @@ namespace TMPro
         public void OnGUI()
         {
             // Check if the resources state has changed.
-            m_EssentialResourcesImported = File.Exists("Assets/TextMesh Pro/Resources/TMP Settings.asset");
-            m_ExamplesAndExtrasResourcesImported = Directory.Exists("Assets/TextMesh Pro/Examples & Extras");
+            m_EssentialResourcesImported = File.Exists(GetPackageFullPath() + "/Resources/TMP Settings.asset");
+            m_ExamplesAndExtrasResourcesImported = Directory.Exists(GetPackageFullPath() + "/Examples & Extras");
 
             GUILayout.BeginVertical();
             {
@@ -168,10 +168,25 @@ namespace TMPro
         {
             string packageFullPath = GetPackageFullPath();
 
+            // Skip import if resources already exist in the package
+            if (importEssentials)
+            {
+                if (File.Exists(packageFullPath + "/Resources/TMP Settings.asset"))
+                {
+                    Debug.Log("[TMP] Essential resources already present in package, skipping import.");
+                    importEssentials = false;
+                }
+                else if (!File.Exists(packageFullPath + "/Package Resources/TMP Essential Resources.unitypackage"))
+                {
+                    Debug.Log("[TMP] Essential resources unitypackage not found, skipping import.");
+                    importEssentials = false;
+                }
+            }
+
             if (importEssentials)
                 AssetDatabase.ImportPackage(packageFullPath + "/Package Resources/TMP Essential Resources.unitypackage", interactive);
 
-            if (importExamples)
+            if (importExamples && File.Exists(packageFullPath + "/Package Resources/TMP Examples & Extras.unitypackage"))
                 AssetDatabase.ImportPackage(packageFullPath + "/Package Resources/TMP Examples & Extras.unitypackage", interactive);
         }
     }

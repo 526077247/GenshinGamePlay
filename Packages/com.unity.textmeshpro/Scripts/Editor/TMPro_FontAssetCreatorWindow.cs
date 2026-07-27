@@ -215,10 +215,11 @@ namespace TMPro.EditorUtilities
             ClearGeneratedData();
 
             // Remove Glyph Report if one was created.
-            if (File.Exists("Assets/TextMesh Pro/Glyph Report.txt"))
+            string packagePath = System.IO.Path.GetFullPath("Packages/com.unity.textmeshpro");
+            if (File.Exists(packagePath + "/Glyph Report.txt"))
             {
-                File.Delete("Assets/TextMesh Pro/Glyph Report.txt");
-                File.Delete("Assets/TextMesh Pro/Glyph Report.txt.meta");
+                File.Delete(packagePath + "/Glyph Report.txt");
+                File.Delete(packagePath + "/Glyph Report.txt.meta");
 
                 AssetDatabase.Refresh();
             }
@@ -1213,10 +1214,11 @@ namespace TMPro.EditorUtilities
                 m_OutputFeedback += "\n\n<color=#ffff00>Report truncated.</color>\n<color=#c0ffff>See</color> \"TextMesh Pro\\Glyph Report.txt\"";
 
             // Save Missing Glyph Report file
-            if (Directory.Exists("Assets/TextMesh Pro"))
+            string pkgPath = System.IO.Path.GetFullPath("Packages/com.unity.textmeshpro");
+            if (Directory.Exists(pkgPath))
             {
                 missingGlyphReport = System.Text.RegularExpressions.Regex.Replace(missingGlyphReport, @"<[^>]*>", string.Empty);
-                File.WriteAllText("Assets/TextMesh Pro/Glyph Report.txt", missingGlyphReport);
+                File.WriteAllText(pkgPath + "/Glyph Report.txt", missingGlyphReport);
                 AssetDatabase.Refresh();
             }
         }

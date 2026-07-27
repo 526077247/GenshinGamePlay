@@ -55,7 +55,11 @@ void PixShader(Input input, inout SurfaceOutput o)
 	outlineColor.a *= input.color.a;
 	faceColor *= tex2D(_FaceTex, float2(input.uv2_FaceTex.x + _FaceUVSpeedX * _Time.y, input.uv2_FaceTex.y + _FaceUVSpeedY * _Time.y));
 	outlineColor *= tex2D(_OutlineTex, float2(input.uv2_OutlineTex.x + _OutlineUVSpeedX * _Time.y, input.uv2_OutlineTex.y + _OutlineUVSpeedY * _Time.y));
+	#if OUTLINE_SHELL_ON
+	faceColor = GetColorShell(sd, c, faceColor, outlineColor, softness);
+	#else
 	faceColor = GetColor(sd, faceColor, outlineColor, outline, softness);
+	#endif
 	faceColor.rgb /= max(faceColor.a, 0.0001);
 
 #if BEVEL_ON

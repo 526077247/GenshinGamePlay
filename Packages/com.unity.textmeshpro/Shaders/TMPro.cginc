@@ -22,6 +22,22 @@ fixed4 GetColor(half d, fixed4 faceColor, fixed4 outlineColor, half outline, hal
 	return faceColor;
 }
 
+// Shell outline: hard edge split between face and outline color.
+// sd: signed distance (includes faceDilate) for face/outline boundary.
+// c: raw SDF value for alpha fade (0 at atlas padding edge = transparent).
+fixed4 GetColorShell(half sd, half c, fixed4 faceColor, fixed4 outlineColor, half softness)
+{
+	// sd < 0 = inside glyph, sd > 0 = outside
+	half faceMask = saturate((-sd + softness * 0.5) / (softness + 0.0001));
+
+	faceColor.rgb *= faceColor.a;
+	outlineColor.rgb *= outlineColor.a;
+
+	fixed4 result = lerp(outlineColor, faceColor, faceMask);
+	result.a = 1.0;
+	return result;
+}
+
 float3 GetSurfaceNormal(float4 h, float bias)
 {
 	bool raisedBevel = step(1, fmod(_ShaderFlags, 2));
@@ -81,4 +97,3 @@ float4 BlendARGB(float4 overlying, float4 underlying)
 	float alpha = underlying.a + (1-underlying.a)*overlying.a;
 	return float4(blended, alpha);
 }
-

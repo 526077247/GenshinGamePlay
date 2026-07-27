@@ -65,7 +65,7 @@ namespace TaoTie
             for (int i = 0; i < sources.Length; i++)
             {
                 string packagePath = sources[i].FullName + "/package.json";
-                if(!File.Exists(packagePath)) return;
+                if(!File.Exists(packagePath)) continue;
                 Package package = Newtonsoft.Json.JsonConvert.DeserializeObject<Package>(File.ReadAllText(packagePath));
                         
                 EditorGUILayout.BeginHorizontal();

@@ -3803,8 +3803,8 @@ namespace TMPro
                             characterInfos[i].vertex_TL.uv2.x = PackUV(x0, y1); characterInfos[i].vertex_TL.uv2.y = xScale;
                             characterInfos[i].vertex_TR.uv2.x = PackUV(x1, y1); characterInfos[i].vertex_TR.uv2.y = xScale;
                             characterInfos[i].vertex_BR.uv2.x = PackUV(x1, y0); characterInfos[i].vertex_BR.uv2.y = xScale;
-                            float uv3_x = PackUV(underlayOffsetX, underlayOffsetY);
-                            float uv3_y = PackUV(underlayDilate, scaleRatioC);
+                            float uv3_x = PackUV(underlayOffsetX * 0.5f + 0.5f, underlayOffsetY * 0.5f + 0.5f);
+                            float uv3_y = PackUV(underlayDilate * 0.5f + 0.5f, scaleRatioC);
                             characterInfos[i].vertex_BL.uv3.x = uv3_x; characterInfos[i].vertex_BL.uv3.y = uv3_y; //characterInfos[i].vertex_BL.tangent = effectColorFloat;
                             characterInfos[i].vertex_TL.uv3.x = uv3_x; characterInfos[i].vertex_TL.uv3.y = uv3_y; //characterInfos[i].vertex_TL.tangent = effectColorFloat;
                             characterInfos[i].vertex_TR.uv3.x = uv3_x; characterInfos[i].vertex_TR.uv3.y = uv3_y; //characterInfos[i].vertex_TR.tangent = effectColorFloat;

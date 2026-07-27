@@ -89,6 +89,7 @@ SubShader {
 		#pragma vertex VertShader
 		#pragma fragment PixShader
 		#pragma shader_feature __ OUTLINE_ON
+		#pragma shader_feature __ OUTLINE_SHELL_ON
 		#pragma shader_feature __ UNDERLAY_ON UNDERLAY_INNER
 
 		#pragma multi_compile __ UNITY_UI_CLIP_RECT
@@ -177,13 +178,19 @@ SubShader {
 			float4 clampedRect = clamp(_ClipRect, -2e10, 2e10);
 			float2 maskUV = (vert.xy - clampedRect.xy) / (clampedRect.zw - clampedRect.xy);
 
+			#if OUTLINE_SHELL_ON
+			half4 outlineParam = half4(scale, bias - outline, bias, bias);
+			#else
+			half4 outlineParam = half4(scale, bias - outline, bias + outline, bias);
+			#endif
+
 			// Structure for pixel shader
 			pixel_t output = {
 				vPosition,
 				faceColor,
 				outlineColor,
 				float4(input.texcoord0.x, input.texcoord0.y, maskUV.x, maskUV.y),
-				half4(scale, bias - outline, bias + outline, bias),
+				outlineParam,
 				half4(vert.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * half2(_MaskSoftnessX, _MaskSoftnessY) + pixelSize.xy)),
 			#if (UNDERLAY_ON | UNDERLAY_INNER)
 				float4(input.texcoord0 + layerOffset, input.color.a, 0),
