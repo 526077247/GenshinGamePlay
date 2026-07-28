@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class GadgetConfigCategory : ProtoObject, IMerge
     {
         public static GadgetConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, GadgetConfig> dict = new Dictionary<int, GadgetConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<GadgetConfig> list = new List<GadgetConfig>();
 		
         public GadgetConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (GadgetConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (GadgetConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,20 +78,20 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class GadgetConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>模型Id</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public int UnitId { get; set; }
 		/// <summary>AI路径</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string AIPath { get; set; }
 		/// <summary>PoseFSM</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public string PoseFSM { get; set; }
 
 	}

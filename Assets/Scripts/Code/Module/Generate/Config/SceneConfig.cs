@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class SceneConfigCategory : ProtoObject, IMerge
     {
         public static SceneConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, SceneConfig> dict = new Dictionary<int, SceneConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<SceneConfig> list = new List<SceneConfig>();
 		
         public SceneConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (SceneConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (SceneConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,29 +78,29 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class SceneConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>名字</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public string Name { get; set; }
 		/// <summary>描述</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string Desc { get; set; }
 		/// <summary>场景路径</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public string Perfab { get; set; }
 		/// <summary>是否日夜循环环境类型</summary>
-		[NinoMember(5)]
+		[ProtoMember(5)]
 		public int DayNight { get; set; }
 		/// <summary>环境配置参数（日夜循环填4个否则填1个）</summary>
-		[NinoMember(6)]
+		[ProtoMember(6)]
 		public int[] EnvIds { get; set; }
 		/// <summary>初始生成SceneGroup</summary>
-		[NinoMember(7)]
+		[ProtoMember(7)]
 		public ulong[] SceneGroupIds { get; set; }
 
 	}

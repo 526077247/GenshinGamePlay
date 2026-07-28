@@ -11,7 +11,7 @@ namespace TaoTie
             try
             {
                 MongoRegister.Init();
-
+                ProtobufHelper.Init();
                 // 命令行参数
                 Options options = null;
                 Parser.Default.ParseArguments<Options>(args)

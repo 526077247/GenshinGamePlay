@@ -1,10 +1,4 @@
 ﻿#define NOT_SERVER //导服务端配置开关
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using MongoDB.Bson.Serialization;
-using Nino.Serialization;
-using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +7,12 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using MongoDB.Bson.Serialization;
+using OfficeOpenXml;
+using ProtoBuf;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace TaoTie
@@ -42,10 +42,10 @@ namespace TaoTie
     }
 
     // 这里加个标签是为了防止编译时裁剪掉protobuf，因为整个tool工程没有用到protobuf，编译会去掉引用，然后动态编译就会出错
-    [NinoSerialize()]
+    [ProtoContract()]
     class Table
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public bool C;
 #if !NOT_SERVER
         public bool S;
@@ -107,6 +107,7 @@ namespace TaoTie
 
         private static Dictionary<string, Table> tables = new Dictionary<string, Table>();
         private static Dictionary<string, ExcelPackage> packages = new Dictionary<string, ExcelPackage>();
+        private static HashSet<string> neededArrayWrappers = new HashSet<string>();
 
         private static Table GetTable(string protoName)
         {
@@ -140,6 +141,7 @@ namespace TaoTie
                 Console.WriteLine("ExcelExporter 开始");
             try
             {
+                neededArrayWrappers.Clear();
                 template = File.ReadAllText("Template.txt");
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -219,6 +221,7 @@ namespace TaoTie
                 }
 
                 // 动态编译生成的配置代码
+                ExportArrayWrappers(ConfigType.c);
                 configAssemblies[(int)ConfigType.c] = DynamicBuild(ConfigType.c);
 #if !NOT_SERVER
                 configAssemblies[(int)ConfigType.s] = DynamicBuild(ConfigType.s);
@@ -270,6 +273,7 @@ namespace TaoTie
             Console.WriteLine($"Exporter{name} 开始");
             try
             {
+                neededArrayWrappers.Clear();
                 template = File.ReadAllText("Template.txt");
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -337,6 +341,7 @@ namespace TaoTie
                 }
 
                 // 动态编译生成的配置代码
+                ExportArrayWrappers(ConfigType.c);
                 configAssemblies[(int)ConfigType.c] = DynamicBuild(ConfigType.c);
 #if !NOT_SERVER
                 configAssemblies[(int)ConfigType.s] = DynamicBuild(ConfigType.s);
@@ -630,13 +635,14 @@ namespace TaoTie
                 {
                     continue;
                 }
-                if (setattr && headInfo.FieldType.IndexOf("float", StringComparison.OrdinalIgnoreCase) >= 0)
+                string fieldType = ConvertType(headInfo.FieldType);
+                if (setattr && fieldType.IndexOf("float", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     sb.Append("\t\t[BsonRepresentation(MongoDB.Bson.BsonType.Double, AllowTruncation = true)]\n");
                 }
                 sb.Append($"\t\t/// <summary>{headInfo.FieldDesc.Replace("\n", "</summary>\n\t\t/// <summary> ")}</summary>\n");
-                sb.Append($"\t\t[NinoMember({headInfo.FieldIndex})]\n");
-                string fieldType = headInfo.FieldType;
+                sb.Append($"\t\t[ProtoMember({headInfo.FieldIndex})]\n");
+                
 
                 sb.Append($"\t\tpublic {fieldType} {headInfo.FieldName} {{ get; set; }}\n");
             }
@@ -647,10 +653,6 @@ namespace TaoTie
                 content = content.Replace("[BsonIgnore]", "");
                 content = content.Replace("[BsonElement]", "");
                 content = content.Replace("using MongoDB.Bson.Serialization.Attributes;", "");
-            }
-            else
-            {
-                content = content.Replace("[Obfuz.ObfuzIgnore]", "");
             }
             sw.Write(content);
         }
@@ -756,6 +758,96 @@ namespace TaoTie
             }
         }
 
+        private static string GetArrayWrapperName(string elementType)
+        {
+            switch (elementType)
+            {
+                case "int":
+                case "int32":
+                    return "IntArray";
+                case "long":
+                case "int64":
+                    return "LongArray";
+                case "uint":
+                    return "UIntArray";
+                case "ulong":
+                    return "ULongArray";
+                case "float":
+                    return "FloatArray";
+                case "double":
+                    return "DoubleArray";
+                case "decimal":
+                    return "DecimalArray";
+                default:
+                    throw new Exception($"不支持此锯齿数组元素类型: {elementType}");
+            }
+        }
+
+        private static string GetArrayWrapperElementType(string wrapperName)
+        {
+            switch (wrapperName)
+            {
+                case "IntArray": return "int";
+                case "LongArray": return "long";
+                case "UIntArray": return "uint";
+                case "ULongArray": return "ulong";
+                case "FloatArray": return "float";
+                case "DoubleArray": return "double";
+                case "DecimalArray": return "decimal";
+                default: throw new Exception($"Unknown array wrapper: {wrapperName}");
+            }
+        }
+
+        private static string ConvertJaggedArray(string type, string value)
+        {
+            string elementType = type.Substring(0, type.Length - 4);
+            string wrapperName = GetArrayWrapperName(elementType);
+
+            value = value.Replace("{", "[").Replace("}", "]");
+            value = value.Trim();
+            if (value.StartsWith("[")) value = value.Substring(1);
+            if (value.EndsWith("]")) value = value.Substring(0, value.Length - 1);
+            value = value.Trim();
+
+            if (string.IsNullOrEmpty(value)) return "[]";
+
+            string[] subArrays = value.Split(new[] { "],[" }, StringSplitOptions.None);
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            for (int i = 0; i < subArrays.Length; i++)
+            {
+                string arr = subArrays[i].Trim().Trim('[', ']');
+                sb.Append($"{{\"_t\":\"{wrapperName}\",\"items\":[{arr}]}}");
+                if (i < subArrays.Length - 1) sb.Append(",");
+            }
+            sb.Append("]");
+            return sb.ToString();
+        }
+
+        private static void ExportArrayWrappers(ConfigType configType)
+        {
+            if (neededArrayWrappers.Count == 0) return;
+            string dir = GetClassDir(configType);
+            string exportPath = Path.Combine(dir, "ArrayWrappers.cs");
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("using ProtoBuf;\n");
+            sb.Append("namespace TaoTie\n{\n");
+            foreach (string wrapperName in neededArrayWrappers)
+            {
+                string elementType = GetArrayWrapperElementType(wrapperName);
+                sb.Append("\t[ProtoContract]\n");
+                sb.Append($"\tpublic partial class {wrapperName} : ProtoObject\n");
+                sb.Append("\t{\n");
+                sb.Append("\t\t[ProtoMember(1)]\n");
+                sb.Append($"\t\tpublic {elementType}[] items {{ get; set; }} = new {elementType}[0];\n");
+                sb.Append("\t}\n");
+            }
+            sb.Append("}\n");
+
+            File.WriteAllText(exportPath, sb.ToString());
+        }
+
         private static string Convert(string type, string value)
         {
             switch (type)
@@ -773,6 +865,7 @@ namespace TaoTie
                         return $"[{value}]";
                     }
                 case "string[]":
+                case "BigInteger[]":
                     if (string.IsNullOrEmpty(value)) return "[]";
                     if (value.StartsWith("\""))
                     {
@@ -792,8 +885,9 @@ namespace TaoTie
                 case "int[][]":
                 case "int32[][]":
                 case "long[][]":
+                case "ulong[][]":
                 case "float[][]":
-                    return $"[{value}]";
+                    return ConvertJaggedArray(type, value);
                 case "int":
                 case "uint":
                 case "int32":
@@ -811,6 +905,13 @@ namespace TaoTie
                     }
                 case "string":
                     return $"\"{value}\"";
+                case "BigInteger":
+                    value = value.Replace("{", "").Replace("}", "");
+                    if (value == "")
+                    {
+                        value = "0";
+                    }
+                    return $"\"{value}\"";
                 case "AttrConfig":
                     string[] ss = value.Split(':');
                     return "{\"_t\":\"AttrConfig\"," + "\"Ks\":" + ss[0] + ",\"Vs\":" + ss[1] + "}";
@@ -818,8 +919,18 @@ namespace TaoTie
                     throw new Exception($"不支持此类型: {type}");
             }
         }
-
-#endregion
+        private static string ConvertType(string type)
+        {
+            if (type.EndsWith("[][]"))
+            {
+                string elementType = type.Substring(0, type.Length - 4);
+                string wrapperName = GetArrayWrapperName(elementType);
+                neededArrayWrappers.Add(wrapperName);
+                return $"{wrapperName}[]";
+            }
+            return type;
+        }
+        #endregion
 
 
         // 根据生成的类，把json转成protobuf
@@ -833,6 +944,11 @@ namespace TaoTie
 
             Assembly ass = GetAssembly(configType);
             Type type = ass.GetType($"TaoTie.{protoName}Category");
+            Type subType = ass.GetType($"TaoTie.{protoName}");
+
+            Serializer.NonGeneric.PrepareSerializer(type);
+            Serializer.NonGeneric.PrepareSerializer(subType);
+
             IMerge final = Activator.CreateInstance(type) as IMerge;
 
             string p = Path.Combine(string.Format(jsonDir, configType, relativeDir));
@@ -849,11 +965,10 @@ namespace TaoTie
                 final.Merge(deserialize);
             }
 
-            object data = final;
             string path = Path.Combine(dir, $"{protoName}Category.bytes");
-            var bytes = Serializer.Serialize(data);
+
             using FileStream file = File.Create(path);
-            file.Write(bytes);
+            Serializer.Serialize(file, final);
         }
     }
 }

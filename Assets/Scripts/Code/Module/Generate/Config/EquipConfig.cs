@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class EquipConfigCategory : ProtoObject, IMerge
     {
         public static EquipConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, EquipConfig> dict = new Dictionary<int, EquipConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<EquipConfig> list = new List<EquipConfig>();
 		
         public EquipConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (EquipConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (EquipConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,17 +78,17 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class EquipConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>模型Id</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public int UnitId { get; set; }
 		/// <summary>挂点</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string EquipType { get; set; }
 
 	}

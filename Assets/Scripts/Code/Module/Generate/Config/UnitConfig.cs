@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class UnitConfigCategory : ProtoObject, IMerge
     {
         public static UnitConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, UnitConfig> dict = new Dictionary<int, UnitConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<UnitConfig> list = new List<UnitConfig>();
 		
         public UnitConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (UnitConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (UnitConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,35 +78,35 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class UnitConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>Type</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public int Type { get; set; }
 		/// <summary>名字</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string Chinese { get; set; }
 		/// <summary>名字</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public string English { get; set; }
 		/// <summary>描述</summary>
-		[NinoMember(5)]
+		[ProtoMember(5)]
 		public string Desc { get; set; }
 		/// <summary>预制体路径</summary>
-		[NinoMember(6)]
+		[ProtoMember(6)]
 		public string Perfab { get; set; }
 		/// <summary>ActorConfig</summary>
-		[NinoMember(7)]
+		[ProtoMember(7)]
 		public string ActorConfig { get; set; }
 		/// <summary>FSM路径</summary>
-		[NinoMember(8)]
+		[ProtoMember(8)]
 		public string FSM { get; set; }
 		/// <summary>Controller路径</summary>
-		[NinoMember(9)]
+		[ProtoMember(9)]
 		public string Controller { get; set; }
 
 	}

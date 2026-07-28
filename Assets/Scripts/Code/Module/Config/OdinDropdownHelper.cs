@@ -41,7 +41,7 @@ namespace TaoTie
                 .Where(x =>
                 {
                     bool has = false;
-                    foreach (var attributeData in x.GetAttributes())
+                    foreach (var attributeData in x.GetCustomAttributes(true))
                     {
                         if (attributeData is TriggerTypeAttribute attr)
                         {
@@ -74,7 +74,7 @@ namespace TaoTie
                 .Where(x =>
                 {
                     bool has = false;
-                    foreach (var attributeData in x.GetAttributes())
+                    foreach (var attributeData in x.GetCustomAttributes(true))
                     {
                         if (attributeData is TriggerTypeAttribute attr)
                         {

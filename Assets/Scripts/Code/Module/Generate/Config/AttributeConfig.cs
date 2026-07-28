@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class AttributeConfigCategory : ProtoObject, IMerge
     {
         public static AttributeConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, AttributeConfig> dict = new Dictionary<int, AttributeConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<AttributeConfig> list = new List<AttributeConfig>();
 		
         public AttributeConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (AttributeConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (AttributeConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,35 +78,35 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class AttributeConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>索引</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public string Key { get; set; }
 		/// <summary>名称</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string Name { get; set; }
 		/// <summary>类型(0:整数,1:小数)</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public int Type { get; set; }
 		/// <summary>显示</summary>
-		[NinoMember(5)]
+		[ProtoMember(5)]
 		public int Show { get; set; }
 		/// <summary>是否被BUFF影响</summary>
-		[NinoMember(6)]
+		[ProtoMember(6)]
 		public int Affected { get; set; }
 		/// <summary>最大值</summary>
-		[NinoMember(7)]
+		[ProtoMember(7)]
 		public string MaxAttr { get; set; }
 		/// <summary>回复值</summary>
-		[NinoMember(8)]
+		[ProtoMember(8)]
 		public string AttrReUp { get; set; }
 		/// <summary>描述</summary>
-		[NinoMember(9)]
+		[ProtoMember(9)]
 		public string Desc { get; set; }
 
 	}

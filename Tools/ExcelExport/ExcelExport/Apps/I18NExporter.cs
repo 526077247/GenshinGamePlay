@@ -1,6 +1,6 @@
-﻿using System.Text;
-using Nino.Serialization;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
+using ProtoBuf;
+using System.Text;
 
 namespace TaoTie
 {
@@ -40,10 +40,9 @@ namespace TaoTie
                 ExportExcelI18N(p, i18nconfig);
                 ExportI18NExcelProtobuf(i18nconfig, relativePath);
                 StringBuilder str = new StringBuilder();
-                str.AppendLine("using Obfuz;");
+                str.AppendLine("using System.Collections.Generic;");
                 str.AppendLine("namespace TaoTie");
                 str.AppendLine("{");
-                str.AppendLine("    [ObfuzIgnore]");
                 str.AppendLine("    public enum I18NKey");
                 str.AppendLine("    {");
                 foreach (var item in i18nconfig)
@@ -117,19 +116,16 @@ namespace TaoTie
                 Directory.CreateDirectory(dir);
             }
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("using Obfuz;");
             sb.AppendLine("namespace TaoTie");
             sb.AppendLine("{");
-            sb.AppendLine("    [ObfuzIgnore]");
             sb.AppendLine("    public enum LangType");
             sb.AppendLine("    {");
             int index = 0;
             foreach (var item in list)
             {
                 string path = Path.Combine(dir, $"{item.Key}.bytes");
-                var bytes = Serializer.Serialize(item.Value);
                 using FileStream file = File.Create(path);
-                file.Write(bytes);
+                Serializer.Serialize(file, item.Value);
                 sb.AppendLine($"        {item.Key} = {index},");
                 index++;
             }

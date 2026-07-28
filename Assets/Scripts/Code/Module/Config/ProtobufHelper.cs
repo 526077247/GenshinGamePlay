@@ -3,69 +3,74 @@ using System.Collections.Generic;
 #if NOT_UNITY
 using System.ComponentModel;
 #endif
+using ProtoBuf.Meta;
 using System.IO;
-using Nino.Serialization;
+using System.Numerics;
+using ProtoBuf;
 
 namespace TaoTie
 {
+    [ProtoContract]
+    public class BigIntegerSurrogate
+    {
+        [ProtoMember(1, OverwriteList = true)]
+        public byte[] Data { get; set; }
+
+        public static implicit operator BigInteger(BigIntegerSurrogate surrogate)
+            => new BigInteger(surrogate.Data);
+
+        public static implicit operator BigIntegerSurrogate(BigInteger value)
+            => new BigIntegerSurrogate { Data = value.ToByteArray() };
+    }
+
+
     public static class ProtobufHelper
     {
+        static ProtobufHelper()
+        {
+            // 注册自定义序列化器
+            RuntimeTypeModel.Default.Add(typeof(BigInteger), false).SetSurrogate(typeof(BigIntegerSurrogate));
+        }
         public static void Init()
         {
         }
         public static T FromBytes<T>(byte[] bytes)
         {
             if (bytes.Length == 0) return default;
-            T o = Deserializer.Deserialize<T>(bytes);
-            if (o is ISupportInitialize supportInitialize)
-            {
-                supportInitialize.EndInit();
-            }
-            return o;
-        }
-        public static object FromBytes(Type type, byte[] bytes)
-        {
-            if (bytes.Length == 0) return null;
-            object o = Deserializer.Deserialize(type, bytes);
-            if (o is ISupportInitialize supportInitialize)
-            {
-                supportInitialize.EndInit();
-            }
+            var o = (T)FromBytes(typeof(T), bytes, 0, bytes.Length);
             return o;
         }
         public static object FromBytes(Type type, byte[] bytes, int index, int count)
         {
-            if (bytes.Length == 0) return null;
-            if (index == 0 && count == bytes.Length) return FromBytes(type, bytes);
-            var temp = new byte[count - index];
-            for (int i = 0; i < temp.Length; i++)
+            using (MemoryStream stream = new MemoryStream(bytes, index, count))
             {
-                temp[i] = bytes[index + i];
+                object o = RuntimeTypeModel.Default.Deserialize(stream, null, type);
+                if (o is ISupportInitialize supportInitialize)
+                {
+                    supportInitialize.EndInit();
+                }
+                return o;
             }
-            object o = Deserializer.Deserialize(type,bytes);
-            if (o is ISupportInitialize supportInitialize)
-            {
-                supportInitialize.EndInit();
-            }
-            return o;
         }
+
 
         public static byte[] ToBytes(object message)
         {
-            return Serializer.Serialize(message);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ProtoBuf.Serializer.Serialize(stream, message);
+                return stream.ToArray();
+            }
         }
 
         public static void ToStream(object message, MemoryStream stream)
         {
-            var bytes = ToBytes(message);
-            stream.Write(bytes,0,bytes.Length);
+            ProtoBuf.Serializer.Serialize(stream, message);
         }
 
         public static object FromStream(Type type, MemoryStream stream)
         {
-            var bytes = new byte[stream.Length - stream.Position];
-            stream.Read(bytes, 0, bytes.Length);
-            object o = Deserializer.Deserialize(type,bytes);
+            object o = RuntimeTypeModel.Default.Deserialize(stream, null, type);
             if (o is ISupportInitialize supportInitialize)
             {
                 supportInitialize.EndInit();

@@ -1,29 +1,29 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     public partial class I18NConfigCategory : ProtoObject
     {
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, I18NConfig> dict = new Dictionary<int, I18NConfig>();
-        
-        [NinoMember(1)]
+
+        [ProtoMember(1)]
         private List<I18NConfig> list = new List<I18NConfig>();
 
         public override void EndInit()
         {
-            for(int i =0 ;i<list.Count;i++)
+            for (int i = 0; i < list.Count; i++)
             {
                 I18NConfig config = list[i];
                 config.EndInit();
                 this.dict.Add(config.Id, config);
-            }            
+            }
             this.AfterEndInit();
         }
-		
+
         public I18NConfig Get(int id)
         {
             this.dict.TryGetValue(id, out I18NConfig item);
@@ -31,7 +31,7 @@ namespace TaoTie
             if (item == null)
             {
 #if NOT_UNITY
-                throw new Exception($"配置找不到，配置表名: {nameof (I18NConfig)}，配置id: {id}");
+                throw new Exception($"配置找不到，配置表名: {nameof(I18NConfig)}，配置id: {id}");
 #else
                 Log.Error($"配置找不到，配置表名: {nameof (I18NConfig)}，配置id: {id}");
 #endif
@@ -39,7 +39,7 @@ namespace TaoTie
 
             return item;
         }
-		
+
         public bool Contain(int id)
         {
             return this.dict.ContainsKey(id);
@@ -63,18 +63,18 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
-	public partial class I18NConfig: ProtoObject
-	{
-		/// <summary>Id</summary>
-		[NinoMember(1)]
-		public int Id { get; set; }
+    [ProtoContract]
+    public partial class I18NConfig : ProtoObject
+    {
+        /// <summary>Id</summary>
+        [ProtoMember(1)]
+        public int Id { get; set; }
 #if NOT_UNITY
         /// <summary>索引标识</summary>
 		public string Key { get; set; }
 #endif
-		/// <summary>内容</summary>
-		[NinoMember(3)]
-		public string Value { get; set; }
+        /// <summary>内容</summary>
+        [ProtoMember(3)]
+        public string Value { get; set; }
     }
 }

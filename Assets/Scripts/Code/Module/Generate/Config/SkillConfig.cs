@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class SkillConfigCategory : ProtoObject, IMerge
     {
         public static SkillConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, SkillConfig> dict = new Dictionary<int, SkillConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<SkillConfig> list = new List<SkillConfig>();
 		
         public SkillConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (SkillConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (SkillConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,29 +78,29 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class SkillConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>技能名</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public string Name { get; set; }
 		/// <summary>简介</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string Desc { get; set; }
 		/// <summary>图标</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public string Icon { get; set; }
 		/// <summary>触发冷却时机</summary>
-		[NinoMember(5)]
+		[ProtoMember(5)]
 		public int TriggerCDType { get; set; }
 		/// <summary>冷却时间公式</summary>
-		[NinoMember(6)]
+		[ProtoMember(6)]
 		public string CD { get; set; }
 		/// <summary>进入cd的ability名</summary>
-		[NinoMember(7)]
+		[ProtoMember(7)]
 		public string AbilityName { get; set; }
 
 	}

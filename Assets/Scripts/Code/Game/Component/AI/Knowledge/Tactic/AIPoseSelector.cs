@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sirenix.Utilities;
 
 namespace TaoTie
 {
@@ -14,7 +13,10 @@ namespace TaoTie
             if (poseList != null)
             {
                 res.poses = HashSetComponent<int>.Create();
-                res.poses.AddRange(poseList);
+                for (int i = 0; i < poseList.Length; i++)
+                {
+                    res.poses.Add(poseList[i]);
+                }
             }
             return res;
         }

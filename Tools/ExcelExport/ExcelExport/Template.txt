@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
-    [Obfuz.ObfuzIgnore]
     public partial class (ConfigName)Category : ProtoObject, IMerge
     {
         public static (ConfigName)Category Instance;
 		
         [BsonIgnore]
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, (ConfigName)> dict = new Dictionary<int, (ConfigName)>();
         [BsonElement]
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<(ConfigName)> list = new List<(ConfigName)>();
 		
         public (ConfigName)Category()
@@ -78,7 +78,7 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class (ConfigName): ProtoObject
 	{
 (Fields)

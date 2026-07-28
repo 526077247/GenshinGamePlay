@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace TaoTie
 {
     public enum I18NKey

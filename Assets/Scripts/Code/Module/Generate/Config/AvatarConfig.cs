@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class AvatarConfigCategory : ProtoObject, IMerge
     {
         public static AvatarConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, AvatarConfig> dict = new Dictionary<int, AvatarConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<AvatarConfig> list = new List<AvatarConfig>();
 		
         public AvatarConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (AvatarConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (AvatarConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,14 +78,14 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class AvatarConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>模型Id</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public int UnitId { get; set; }
 
 	}

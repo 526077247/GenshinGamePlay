@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class ServerConfigCategory : ProtoObject, IMerge
     {
         public static ServerConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, ServerConfig> dict = new Dictionary<int, ServerConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<ServerConfig> list = new List<ServerConfig>();
 		
         public ServerConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (ServerConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (ServerConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,26 +78,26 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class ServerConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>标记</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public string Name { get; set; }
 		/// <summary>realm服地址</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string RealmIp { get; set; }
 		/// <summary>路由cdn地址</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public string RouterListUrl { get; set; }
 		/// <summary>服务器类型</summary>
-		[NinoMember(5)]
+		[ProtoMember(5)]
 		public int EnvId { get; set; }
 		/// <summary>是否默认值</summary>
-		[NinoMember(6)]
+		[ProtoMember(6)]
 		public int IsPriority { get; set; }
 
 	}

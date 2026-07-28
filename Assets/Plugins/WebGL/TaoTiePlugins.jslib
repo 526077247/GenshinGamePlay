@@ -1,231 +1,250 @@
-mergeInto(LibraryManager.library, {
-    IsiOSWebGL: function () {
-        const ios = /iPhone|iPad|iPod|Apple/i
-        if(typeof tt !== 'undefined'){
-            return ios.test(tt.getSystemInfoSync().brand);
-        }
-        if(typeof wx !== 'undefined'){
-            return ios.test(wx.getSystemInfoSync().brand);
-        }
-        if(typeof ks !== 'undefined'){
-            return ios.test(ks.getSystemInfoSync().brand);
-        }
-        return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    },
-    IsAndroidWebGL: function () {
-        const android = /Android/i
-        if(typeof tt !== 'undefined'){
-            return android.test(tt.getSystemInfoSync().system);
-        }
-        if(typeof wx !== 'undefined'){
-            return android.test(wx.getSystemInfoSync().system);
-        }
-        if(typeof ks !== 'undefined'){
-            return android.test(ks.getSystemInfoSync().system);
-        }
-        return android.test(navigator.userAgent);
-    },
-    IsHuaWeiGroupWebGL: function () {
-        const brand = /OpenHarmony|HUAWEI/i
-        if(typeof tt !== 'undefined'){
-            return brand.test(tt.getSystemInfoSync().brand);
-        }
-        if(typeof wx !== 'undefined'){
-            return brand.test(wx.getSystemInfoSync().brand);
-        }
-        if(typeof ks !== 'undefined'){
-            return brand.test(ks.getSystemInfoSync().brand);
-        }
-        return brand.test(navigator.userAgent);
-    },
-    CloseWindow:function() {
-        if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Chrome") != -1) {
-            window.location.href = "about:blank";
-            window.close();
-        } else {
-            window.opener = null;
-            window.open("", "_self");
-            window.close();
-        }
-    },
-    StringReturnValueFunction: function ()
+var TaoTiePluginsLibrary =
     {
-        var returnStr = window.location.href;
-        var title = decodeURI(returnStr);
-        var bufferSize = lengthBytesUTF8(title) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(title, buffer, bufferSize);
-        return buffer;
-    },
-    Vibrate: function (during)
-    {
-        if ("vibrate" in navigator)
+        $TaoTiePlatformInfo: function () {
+            var g = typeof GameGlobal !== 'undefined' ? GameGlobal : window;
+            if (g.__taotiePi) return g.__taotiePi;
+            var info = { brand: '', system: '', model: '', platform: '' };
+            try {
+                var sdk = typeof wx !== 'undefined' ? wx : typeof tt !== 'undefined' ? tt : typeof tap !== 'undefined' ? tap : typeof bl !== 'undefined' ? bl : typeof ks !== 'undefined' ? ks : typeof my !== 'undefined' ? my : null;
+                if (sdk) {
+                    if (sdk.getDeviceInfo) {
+                        var di = sdk.getDeviceInfo();
+                        info.brand = di.brand || ''; info.model = di.model || '';
+                        info.system = di.system || ''; info.platform = di.platform || '';
+                    } else {
+                        var si = sdk.getSystemInfoSync();
+                        info.brand = si.brand || ''; info.model = si.model || '';
+                        info.system = si.system || ''; info.platform = si.platform || '';
+                    }
+                }
+            } catch (e) { console.error('getSystemInfoSync failed:', e); }
+            g.__taotiePi = info;
+            return info;
+        },
+
+        IsiOSWebGL: function () {
+            var p = TaoTiePlatformInfo();
+            if (p.brand) return /iPhone|iPad|iPod|Apple/i.test(p.brand);
+            if (p.platform) return /iOS/i.test(p.platform);
+            return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        },
+        IsAndroidWebGL: function () {
+            var p = TaoTiePlatformInfo();
+            if (p.system) return /Android/i.test(p.system);
+            if (p.platform) return /Android/i.test(p.platform);
+            return /Android/i.test(navigator.userAgent);
+        },
+        IsHuaWeiGroupWebGL: function () {
+            var p = TaoTiePlatformInfo();
+            var brand = /OpenHarmony|HUAWEI/i;
+            if (p.brand) return brand.test(p.brand);
+            if (p.model) return brand.test(p.model);
+            return brand.test(navigator.userAgent);
+        },
+        CloseWindow:function() {
+            if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Chrome") != -1) {
+                window.location.href = "about:blank";
+                window.close();
+            } else {
+                window.opener = null;
+                window.open("", "_self");
+                window.close();
+            }
+        },
+        StringReturnValueFunction: function ()
         {
-            return navigator.vibrate(during)
-        }
-        else if("mozVibrate" in navigator)
+            var returnStr = window.location.href;
+            var title = decodeURI(returnStr);
+            var bufferSize = lengthBytesUTF8(title) + 1;
+            var buffer = _malloc(bufferSize);
+            stringToUTF8(title, buffer, bufferSize);
+            return buffer;
+        },
+        Vibrate: function (during)
         {
-            return navigator.mozVibrate(during)
-        }
-        return false;
-    },
-    NativeDialogPrompt:function (title , defaultValue){
-        defaultValue = UTF8ToString(defaultValue);
-        title = UTF8ToString(title);
-        var result = window.prompt( title , defaultValue );
-        if( !result ){
-            result = defaultValue;
-        }
-        var bufferSize = lengthBytesUTF8(result) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(result, buffer, bufferSize);
-        return buffer;
-    },
-    SetupOverlayDialogHtml:function(title,defaultValue,okBtnText,cancelBtnText){
-        title = UTF8ToString(title);
-        defaultValue = UTF8ToString(defaultValue);
-        okBtnText = UTF8ToString(okBtnText);
-        cancelBtnText = UTF8ToString(cancelBtnText);
-
-        if( !document.getElementById("nativeInputDialogInput" ) ){
-            // setup css
-            var style = document.createElement( 'style' );
-            style.setAttribute('id' , 'inputDialogTextSelect');
-            style.appendChild( document.createTextNode( '#nativeInputDialogInput::-moz-selection { background-color:#00ffff;}' ) );
-            style.appendChild( document.createTextNode( '#nativeInputDialogInput::selection { background-color:#00ffff;}' ) );
-            document.head.appendChild( style );
-        }
-        if( !document.getElementById("nativeInputDialog" ) ){
-            // setup html
-            var html = '<div id="nativeInputDialog" style="background:#000000;opacity:0.9;width:100%;height:100%;position:fixed;top:0%;z-index:2147483647;">' +
-                '  <div style="position:relative;top:30%;" align="center" vertical-align="middle">' +
-                '    <div id="nativeInputDialogTitle" style="color:#ffffff;">Here is title</div>' +
-                '    <div>' +
-                '      <input id="nativeInputDialogInput" type="text" size="40" onsubmit="">' +
-                '    </div>' +
-                '    <div style="margin-top:10px">' +
-                '      <input id="nativeInputDialogOkBtn" type="button" value="OK" onclick="" >' +
-                '      <input id="nativeInputDialogCancelBtn" type="button" value="Cancel" onclick ="">' +
-                '      <input id="nativeInputDialogCheck" type="checkBox" style="display:none;">' +
-                '    </div>' +
-                '  </div>' +
-                '</div>';
-            var element = document.createElement('div');
-            element.innerHTML = html;
-            // write to html
-            document.body.appendChild( element );
-
-            // set Event
-            var okFunction =
-                'document.getElementById("nativeInputDialog" ).style.display = "none";' +
-                'document.getElementById("nativeInputDialogCheck").checked = false;' +
-                'document.getElementById("unity-canvas").style.display="";';
-            var cancelFunction =
-                'document.getElementById("nativeInputDialog" ).style.display = "none";'+
-                'document.getElementById("nativeInputDialogCheck").checked = true;'+
-                'document.getElementById("unity-canvas").style.display="";';
-
-            var inputField = document.getElementById("nativeInputDialogInput");
-            inputField.setAttribute( "onsubmit" , okFunction );
-            var okBtn = document.getElementById("nativeInputDialogOkBtn");
-            okBtn.setAttribute( "onclick" , okFunction );
-            var cancelBtn = document.getElementById("nativeInputDialogCancelBtn");
-            cancelBtn.setAttribute( "onclick" , cancelFunction );
-        }
-        document.getElementById("nativeInputDialogTitle").innerText = title;
-        document.getElementById("nativeInputDialogInput").value= defaultValue;
-
-        document.getElementById("nativeInputDialogOkBtn").value = okBtnText;
-        document.getElementById("nativeInputDialogCancelBtn").value = cancelBtnText;
-        document.getElementById("nativeInputDialog" ).style.display = "";
-    },
-    HideUnityScreenIfHtmlOverlayCant:function(){
-        if( navigator.userAgent.indexOf("Chrome") < 0 && navigator.userAgent.indexOf("Firefox") < 0 ){
-            document.getElementById("unity-canvas").style.display="none";
-        }
-    },
-    IsRunningOnEdgeBrowser:function(){
-        if( navigator.userAgent.indexOf("Edge/") < 0 ){
+            if ("vibrate" in navigator)
+            {
+                return navigator.vibrate(during)
+            }
+            else if("mozVibrate" in navigator)
+            {
+                return navigator.mozVibrate(during)
+            }
             return false;
-        }
-        return true;
-    },
-    IsOverlayDialogHtmlActive:function(){
-        var nativeDialog = document.getElementById("nativeInputDialog" );
-        if( !nativeDialog ){
-            return false;
-        }
-        return ( nativeDialog.style.display != 'none' );
-    },
-    IsOverlayDialogHtmlCanceled:function(){
-        var check = document.getElementById("nativeInputDialogCheck");
-        if( !check ){ return false; }
-        return check.checked;
-    },
-    GetOverlayHtmlInputFieldValue:function(){
-        var inputField = document.getElementById("nativeInputDialogInput");
-        var result = "";
-        if( inputField && inputField.value ){
-            result = inputField.value;
-        }
-        var bufferSize = lengthBytesUTF8(result) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(result, buffer, bufferSize);
-        return buffer;
-    },
-    OpenUploader: function(){
-        var uploader = document.getElementById("unity-uploader");
-        if(!uploader){
-            // setup html
-            var html = '<input type="file" id="unity-uploader" accept="image/*" style="display:none">';
-            var element = document.createElement('div');
-            element.innerHTML = html;
-            // write to html
-            document.body.appendChild( element );
-            // set Event
-            var onchangeFunction =
-                '    const file = this.files[0];' +
-                '    if(file) {' +
-                '       const fileSizeInMB = file.size / (1024 * 1024);' +
-                '       if (fileSizeInMB > 5) {' +
-                '           alert("< 5M");return;' +
-                '       }' +
-                '       var reader = new FileReader();' +
-                '       reader.onload = function(e) {' +
-                '            if (reader.readyState === 2) {' +
-                '                window.imgData = e.target.result;' +
-                '           }' +
-                '       };' +
-                '       reader.readAsDataURL(this.files[0]);' +
-                '    }';
-            uploader = document.getElementById("unity-uploader");
-            uploader.setAttribute("onchange" , onchangeFunction );
-        }
-        window.imgData = null;
-        uploader.click();
-    },
-    GetImgData: function(){
-        var uploader = document.getElementById("unity-uploader");
-        if(uploader && window.imgData){
-            var result = window.imgData;
+        },
+        NativeDialogPrompt:function (title , defaultValue){
+            defaultValue = UTF8ToString(defaultValue);
+            title = UTF8ToString(title);
+            var result = window.prompt( title , defaultValue );
+            if( !result ){
+                result = defaultValue;
+            }
             var bufferSize = lengthBytesUTF8(result) + 1;
             var buffer = _malloc(bufferSize);
             stringToUTF8(result, buffer, bufferSize);
-            window.imgData = null;
             return buffer;
-        }
-        return null;
-    },
-    CopyTextToClipboard: function(ptr){
-        if(!navigator || !navigator.clipboard || !navigator.clipboard.writeText) return;
-        var text = UTF8ToString(ptr);
-        navigator.clipboard.writeText(text).then(function () {
-            console.log('Async: Copying to clipboard was successful!');
-        }, function (err) {
-            console.error('Async: Could not copy text: ', err);
-        });
-    },
-    Reload: function(){
-        location.reload();
-    },
-});
+        },
+        SetupOverlayDialogHtml:function(title,defaultValue,okBtnText,cancelBtnText){
+            title = UTF8ToString(title);
+            defaultValue = UTF8ToString(defaultValue);
+            okBtnText = UTF8ToString(okBtnText);
+            cancelBtnText = UTF8ToString(cancelBtnText);
+
+            if( !document.getElementById("nativeInputDialogInput" ) ){
+                // setup css
+                var style = document.createElement( 'style' );
+                style.setAttribute('id' , 'inputDialogTextSelect');
+                style.appendChild( document.createTextNode( '#nativeInputDialogInput::-moz-selection { background-color:#00ffff;}' ) );
+                style.appendChild( document.createTextNode( '#nativeInputDialogInput::selection { background-color:#00ffff;}' ) );
+                document.head.appendChild( style );
+            }
+            if( !document.getElementById("nativeInputDialog" ) ){
+                // setup html
+                var html = '<div id="nativeInputDialog" style="background:#000000;opacity:0.9;width:100%;height:100%;position:fixed;top:0%;z-index:2147483647;">' +
+                    '  <div style="position:relative;top:30%;" align="center" vertical-align="middle">' +
+                    '    <div id="nativeInputDialogTitle" style="color:#ffffff;">Here is title</div>' +
+                    '    <div>' +
+                    '      <input id="nativeInputDialogInput" type="text" size="40" onsubmit="">' +
+                    '    </div>' +
+                    '    <div style="margin-top:10px">' +
+                    '      <input id="nativeInputDialogOkBtn" type="button" value="OK" onclick="" >' +
+                    '      <input id="nativeInputDialogCancelBtn" type="button" value="Cancel" onclick ="">' +
+                    '      <input id="nativeInputDialogCheck" type="checkBox" style="display:none;">' +
+                    '    </div>' +
+                    '  </div>' +
+                    '</div>';
+                var element = document.createElement('div');
+                element.innerHTML = html;
+                // write to html
+                document.body.appendChild( element );
+
+                // set Event
+                var okFunction =
+                    'document.getElementById("nativeInputDialog" ).style.display = "none";' +
+                    'document.getElementById("nativeInputDialogCheck").checked = false;' +
+                    'document.getElementById("unity-canvas").style.display="";';
+                var cancelFunction =
+                    'document.getElementById("nativeInputDialog" ).style.display = "none";'+
+                    'document.getElementById("nativeInputDialogCheck").checked = true;'+
+                    'document.getElementById("unity-canvas").style.display="";';
+
+                var inputField = document.getElementById("nativeInputDialogInput");
+                inputField.setAttribute( "onsubmit" , okFunction );
+                var okBtn = document.getElementById("nativeInputDialogOkBtn");
+                okBtn.setAttribute( "onclick" , okFunction );
+                var cancelBtn = document.getElementById("nativeInputDialogCancelBtn");
+                cancelBtn.setAttribute( "onclick" , cancelFunction );
+            }
+            document.getElementById("nativeInputDialogTitle").innerText = title;
+            document.getElementById("nativeInputDialogInput").value= defaultValue;
+
+            document.getElementById("nativeInputDialogOkBtn").value = okBtnText;
+            document.getElementById("nativeInputDialogCancelBtn").value = cancelBtnText;
+            document.getElementById("nativeInputDialog" ).style.display = "";
+        },
+        HideUnityScreenIfHtmlOverlayCant:function(){
+            if( navigator.userAgent.indexOf("Chrome") < 0 && navigator.userAgent.indexOf("Firefox") < 0 ){
+                document.getElementById("unity-canvas").style.display="none";
+            }
+        },
+        IsRunningOnEdgeBrowser:function(){
+            if( navigator.userAgent.indexOf("Edge/") < 0 ){
+                return false;
+            }
+            return true;
+        },
+        IsOverlayDialogHtmlActive:function(){
+            var nativeDialog = document.getElementById("nativeInputDialog" );
+            if( !nativeDialog ){
+                return false;
+            }
+            return ( nativeDialog.style.display != 'none' );
+        },
+        IsOverlayDialogHtmlCanceled:function(){
+            var check = document.getElementById("nativeInputDialogCheck");
+            if( !check ){ return false; }
+            return check.checked;
+        },
+        GetOverlayHtmlInputFieldValue:function(){
+            var inputField = document.getElementById("nativeInputDialogInput");
+            var result = "";
+            if( inputField && inputField.value ){
+                result = inputField.value;
+            }
+            var bufferSize = lengthBytesUTF8(result) + 1;
+            var buffer = _malloc(bufferSize);
+            stringToUTF8(result, buffer, bufferSize);
+            return buffer;
+        },
+        OpenUploader: function(){
+            var uploader = document.getElementById("unity-uploader");
+            if(!uploader){
+                // setup html
+                var html = '<input type="file" id="unity-uploader" accept="image/*" style="display:none">';
+                var element = document.createElement('div');
+                element.innerHTML = html;
+                // write to html
+                document.body.appendChild( element );
+                // set Event
+                var onchangeFunction =
+                    '    const file = this.files[0];' +
+                    '    if(file) {' +
+                    '       const fileSizeInMB = file.size / (1024 * 1024);' +
+                    '       if (fileSizeInMB > 5) {' +
+                    '           alert("< 5M");return;' +
+                    '       }' +
+                    '       var reader = new FileReader();' +
+                    '       reader.onload = function(e) {' +
+                    '            if (reader.readyState === 2) {' +
+                    '                window.imgData = e.target.result;' +
+                    '           }' +
+                    '       };' +
+                    '       reader.readAsDataURL(this.files[0]);' +
+                    '    }';
+                uploader = document.getElementById("unity-uploader");
+                uploader.setAttribute("onchange" , onchangeFunction );
+            }
+            window.imgData = null;
+            uploader.click();
+        },
+        GetImgData: function(){
+            var uploader = document.getElementById("unity-uploader");
+            if(uploader && window.imgData){
+                var result = window.imgData;
+                var bufferSize = lengthBytesUTF8(result) + 1;
+                var buffer = _malloc(bufferSize);
+                stringToUTF8(result, buffer, bufferSize);
+                window.imgData = null;
+                return buffer;
+            }
+            return null;
+        },
+        CopyTextToClipboard: function(ptr){
+            if(!navigator || !navigator.clipboard || !navigator.clipboard.writeText) return;
+            var text = UTF8ToString(ptr);
+            navigator.clipboard.writeText(text).then(function () {
+                console.log('Async: Copying to clipboard was successful!');
+            }, function (err) {
+                console.error('Async: Could not copy text: ', err);
+            });
+        },
+        Reload: function(){
+            location.reload();
+        },
+        ReadTextFromClipboard: function(callback){
+            if(!navigator || !navigator.clipboard || !navigator.clipboard.readText) return;
+            if(!callback) return;
+            navigator.clipboard.readText()
+                .then((clipText) => {
+                    var buffer = stringToNewUTF8(clipText);
+                    {{{ makeDynCall('vi', 'callback') }}} (buffer);
+                    _free(buffer);
+                })
+                .catch(err => {
+                    console.error('Failed to read clipboard contents: ', err);
+                });
+        },
+    };
+
+autoAddDeps(TaoTiePluginsLibrary, '$TaoTiePlatformInfo');
+mergeInto(LibraryManager.library, TaoTiePluginsLibrary);

@@ -74,6 +74,12 @@ namespace TaoTie
                     map.Add("DEFFinalPct",DEFFinalPct);
                     map.Add("EN",EN);
                     map.Add("ENBase",ENBase);
+                    map.Add("AttackSpeed",AttackSpeed);
+                    map.Add("AttackSpeedBase",AttackSpeedBase);
+                    map.Add("AttackSpeedAdd",AttackSpeedAdd);
+                    map.Add("AttackSpeedPct",AttackSpeedPct);
+                    map.Add("AttackSpeedFinalAdd",AttackSpeedFinalAdd);
+                    map.Add("AttackSpeedFinalPct",AttackSpeedFinalPct);
                 }
                 return map;
             }
@@ -200,5 +206,18 @@ namespace TaoTie
 		public const int EN = 1012;
 		/// <summary> 霸体值Base </summary>
 		public const int ENBase = 1012 * 10 + 1;
+
+		/// <summary> 攻击速度 </summary>
+		public const int AttackSpeed = 1013;
+		/// <summary> 攻击速度Base </summary>
+		public const int AttackSpeedBase = 1013 * 10 + 1;
+		/// <summary> 攻击速度Add </summary>
+		public const int AttackSpeedAdd = 1013 * 10 + 2;
+		/// <summary> 攻击速度Pct </summary>
+		public const int AttackSpeedPct = 1013 * 10 + 3;
+		/// <summary> 攻击速度FinalAdd </summary>
+		public const int AttackSpeedFinalAdd = 1013 * 10 + 4;
+		/// <summary> 攻击速度FinalPct </summary>
+		public const int AttackSpeedFinalPct = 1013 * 10 + 5;
     }
 }

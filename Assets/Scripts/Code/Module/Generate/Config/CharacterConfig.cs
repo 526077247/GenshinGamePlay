@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Nino.Serialization;
+using ProtoBuf;
 
+using System.Numerics;
 namespace TaoTie
 {
-    [NinoSerialize]
+    [ProtoContract]
     [Config]
     public partial class CharacterConfigCategory : ProtoObject, IMerge
     {
         public static CharacterConfigCategory Instance;
 		
         
-        [NinoIgnore]
+        [ProtoIgnore]
         private Dictionary<int, CharacterConfig> dict = new Dictionary<int, CharacterConfig>();
         
-        [NinoMember(1)]
+        [ProtoMember(1)]
         private List<CharacterConfig> list = new List<CharacterConfig>();
 		
         public CharacterConfigCategory()
@@ -46,7 +47,9 @@ namespace TaoTie
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (CharacterConfig)}，配置id: {id}");
+#if !NOT_UNITY
+                Log.Error($"配置找不到，配置表名: {nameof (CharacterConfig)}，配置id: {id}");
+#endif
             }
 
             return item;
@@ -75,29 +78,29 @@ namespace TaoTie
         }
     }
 
-    [NinoSerialize]
+    [ProtoContract]
 	public partial class CharacterConfig: ProtoObject
 	{
 		/// <summary>Id</summary>
-		[NinoMember(1)]
+		[ProtoMember(1)]
 		public int Id { get; set; }
 		/// <summary>名称</summary>
-		[NinoMember(2)]
+		[ProtoMember(2)]
 		public string Name { get; set; }
 		/// <summary>描述</summary>
-		[NinoMember(3)]
+		[ProtoMember(3)]
 		public string Desc { get; set; }
 		/// <summary>3D模型</summary>
-		[NinoMember(4)]
+		[ProtoMember(4)]
 		public int UnitId { get; set; }
 		/// <summary>全身立绘</summary>
-		[NinoMember(5)]
+		[ProtoMember(5)]
 		public string FullBody { get; set; }
 		/// <summary>半身立绘</summary>
-		[NinoMember(6)]
+		[ProtoMember(6)]
 		public string HalfBody { get; set; }
 		/// <summary>头像</summary>
-		[NinoMember(7)]
+		[ProtoMember(7)]
 		public string HeadIcon { get; set; }
 
 	}
