@@ -1,12 +1,12 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigPlatformReachPointEvtTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     [LabelText("抵达寻路点ActorId")]
     public partial class ConfigPlatformReachPointEvtActorIdCondition : ConfigSceneGroupCondition<PlatformReachPointEvt>
     {
@@ -14,10 +14,10 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("判断类型")]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
         [LabelText("单位Id")]

@@ -1,29 +1,29 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIFacingMoveData
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public MotionFlag SpeedLevel;
-        [NinoMember(2)][MinValue(0.1f)]
+        [ProtoMember(2)][MinValue(0.1f)]
         public float RangeMin;
-        [NinoMember(3)][MinValue(0.1f)]
+        [ProtoMember(3)][MinValue(0.1f)]
         public float RangeMax;
-        [NinoMember(4)][LabelText("随机重置时间min（ms）")]
+        [ProtoMember(4)][LabelText("随机重置时间min（ms）")]
         public int RestTimeMin;
-        [NinoMember(5)][LabelText("随机重置时间max（ms）")]
+        [ProtoMember(5)][LabelText("随机重置时间max（ms）")]
         public int RestTimeMax;
-        [NinoMember(6)]
+        [ProtoMember(6)]
         public int FacingMoveTurnInterval;
-        [NinoMember(7)]
+        [ProtoMember(7)]
         public float FacingMoveMinAvoidanceVelocity;
-        [NinoMember(8)][LabelText("检测靠近障碍的距离")]
+        [ProtoMember(8)][LabelText("检测靠近障碍的距离")]
         public float ObstacleDetectRange;
-        [NinoMember(9)]
+        [ProtoMember(9)]
         public ConfigAIFacingMoveWeight FacingMoveWeight; 
     }
 }

@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class SetGadgetState: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
 #endif

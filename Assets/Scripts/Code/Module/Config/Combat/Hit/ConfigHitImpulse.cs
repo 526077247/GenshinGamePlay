@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigHitImpulse
     {
-        [NinoMember(1)][LabelText("击打力度等级")]
+        [ProtoMember(1)][LabelText("击打力度等级")]
         public HitLevel HitLevel;
-        [NinoMember(2)]
+        [ProtoMember(2, IsRequired = true)]
         public BaseValue HitImpulseX = new SingleValue();
-        [NinoMember(3)]
+        [ProtoMember(3, IsRequired = true)]
         public BaseValue HitImpulseY = new SingleValue();
     }
 }

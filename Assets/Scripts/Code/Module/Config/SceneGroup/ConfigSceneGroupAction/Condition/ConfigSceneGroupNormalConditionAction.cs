@@ -1,6 +1,6 @@
 using System;
 using DaGenGraph;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -8,10 +8,10 @@ using UnityEngine;
 namespace TaoTie
 {
     [LabelText("判断节点")]
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigSceneGroupNormalConditionAction: ConfigSceneGroupConditionAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         [LabelText("条件")][DrawIgnore]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]

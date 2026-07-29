@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAISensing
     {
         [LabelText("启用")]
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public bool Enable = true;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public ConfigAISensingSetting Setting;
-        [NinoMember(3)]
+        [ProtoMember(3, IsRequired = true)]
         public Dictionary<string, ConfigAISensingSetting> Settings = new Dictionary<string, ConfigAISensingSetting>();
 
     }

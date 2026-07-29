@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,18 +8,18 @@ namespace TaoTie
     /// <summary>
     /// 交互面板配置
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigIntee
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float Radius;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public float Height;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public Vector3 Offset;
-        [NinoMember(4)] 
+        [ProtoMember(4)] 
         public ConfigInteeItem[] Params;
-        [NinoMember(5)] [LabelText("默认启用")]
+        [ProtoMember(5)] [LabelText("默认启用")]
         public bool DefaultEnable;
     }
 }

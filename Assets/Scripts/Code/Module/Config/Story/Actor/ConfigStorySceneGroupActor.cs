@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStorySceneGroupActor: ConfigStoryActor
     {
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public int SceneGroupActorId;
 
 

@@ -1,14 +1,14 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 或
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ByOr : ConfigAbilityPredicate
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ConfigAbilityPredicate[] Predicates;
 
         public override bool Evaluate(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)

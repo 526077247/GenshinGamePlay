@@ -1,17 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCombatProperty
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericTypeId)+"()")]
 #endif
         public int NumericType;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public float Value;
     }
 }

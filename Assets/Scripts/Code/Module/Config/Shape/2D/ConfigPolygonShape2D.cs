@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigPolygonShape2D : ConfigShape2D
     {
-        [NinoMember(1)] [NotNull] public Vector2[] Points;
+        [ProtoMember(1)] [NotNull] public Vector2[] Points;
 
         public override bool Contains(Vector2 target)
         {

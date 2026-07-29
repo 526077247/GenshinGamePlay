@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("垂直胶囊体")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCapsuleShape: ConfigShape
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float Height;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public float Radius;
         
         public override bool Contains(Vector3 target)

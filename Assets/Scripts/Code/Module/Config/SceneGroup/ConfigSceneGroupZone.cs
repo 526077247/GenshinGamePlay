@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,22 +9,22 @@ namespace TaoTie
     /// <summary>
     /// 区域
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupZone
     {
 #if UNITY_EDITOR
         [LabelText("策划备注")][PropertyOrder(int.MinValue+1)]
         public string Remarks;
 #endif
-        [NinoMember(1)][PropertyOrder(int.MinValue)]
+        [ProtoMember(1)][PropertyOrder(int.MinValue)]
         public int LocalId;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public Vector3 Position;
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public Vector3 Rotation;
-        [NinoMember(3)][LabelText("是否是相对坐标、方向")]
+        [ProtoMember(3, IsRequired = true)][LabelText("是否是相对坐标、方向")]
         public bool IsLocal = true;
-        [NinoMember(4)][NotNull]
+        [ProtoMember(4)][NotNull]
         public ConfigShape Shape;
 
         public Zone CreateZone(SceneGroup sceneGroup)

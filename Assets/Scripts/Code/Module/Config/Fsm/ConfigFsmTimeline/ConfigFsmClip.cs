@@ -1,16 +1,19 @@
-﻿using System;
+using System;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigAttachAbilityClip))]
+    [ProtoInclude(101, typeof(ConfigExecuteAbilityClip))]
+    [ProtoInclude(102, typeof(ConfigTriggerClip))]
     public abstract partial class ConfigFsmClip
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public float StartTime = 0.0f;
-        [NinoMember(2)]
+        [ProtoMember(2, IsRequired = true)]
         public float Length = 0.0f;
     }
 }

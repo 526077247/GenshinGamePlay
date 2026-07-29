@@ -1,17 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigBillboardNamePlugin: ConfigBillboardPlugin
     {
-        [NinoMember(10)][LabelText("是否展示Unit表对应名称")]
+        [ProtoMember(10)][LabelText("是否展示Unit表对应名称")]
         public bool ShowUnitName;
-        [NinoMember(11)] [ShowIf("@!"+nameof(ShowUnitName))]
+        [ProtoMember(11)] [ShowIf("@!"+nameof(ShowUnitName))]
         public I18NKey NameI18NKey;
-        [NinoMember(12)]
+        [ProtoMember(12, IsRequired = true)]
         public Color BaseColor = Color.white;
     }
 }

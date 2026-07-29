@@ -1,5 +1,5 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace TaoTie
 {
     [LabelText("玩家进入触发区域")]
     [TriggerType(typeof(ConfigExitZoneEventTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigExitZoneEvtGetIsMyCondition : ConfigSceneGroupCondition<ExitZoneEvent>
     {
         public override bool IsMatch(ExitZoneEvent obj, SceneGroup sceneGroup)

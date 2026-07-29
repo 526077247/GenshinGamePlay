@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigBlender
     {
-        [NinoMember(2)]
+        [ProtoMember(2, IsRequired = true)]
         public EasingFunction.Ease Ease = EasingFunction.Ease.Linear;
 
-        [NinoMember(1)][LabelText("过渡时间(ms)")]
+        [ProtoMember(1, IsRequired = true)][LabelText("过渡时间(ms)")]
         public int DeltaTime = 1000;
     }
 }

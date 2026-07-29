@@ -1,4 +1,4 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,17 +7,17 @@ namespace TaoTie
     /// <summary>
     /// 附加特效
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public class AttachEffect: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetEffects)+"()",AppendNextDrawer = true)]
 #endif
         public string EffectName;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public ConfigBornType Born;
-        [NinoMember(12)]
+        [ProtoMember(12)]
         public BaseValue Scale;
 
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)

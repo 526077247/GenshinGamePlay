@@ -1,20 +1,20 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCameraHardLockToTargetPlugin: ConfigCameraBodyPlugin
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float Damping;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public Vector3 Offset;
-        [NinoMember(3)][LabelText("不跟随目标旋转")]
+        [ProtoMember(3, IsRequired = true)][LabelText("不跟随目标旋转")]
         public bool LockRotation = false;
         
-        [NinoMember(4)][ShowIf(nameof(LockRotation))]
+        [ProtoMember(4)][ShowIf(nameof(LockRotation))]
         public Vector3 Rotation;
     }
 }

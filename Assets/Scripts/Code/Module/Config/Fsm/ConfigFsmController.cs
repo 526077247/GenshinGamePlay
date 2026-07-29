@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public sealed partial class ConfigFsmController
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public Dictionary<string, ConfigParam> ParamDict = new Dictionary<string, ConfigParam>();
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public ConfigFsm[] FsmConfigs;
 
         public int FsmCount => this.FsmConfigs.Length;

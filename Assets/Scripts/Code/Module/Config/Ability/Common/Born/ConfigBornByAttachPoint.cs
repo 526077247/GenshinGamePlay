@@ -1,24 +1,24 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigBornByAttachPoint : ConfigBornType
     {
         [LabelText("挂点")]
-        [NinoMember(5)] public string AttachPointName;
+        [ProtoMember(5)] public string AttachPointName;
         [LabelText("挂点所属目标")]
-        [NinoMember(6)] public AttachPointTargetType AttachPointTargetType;
+        [ProtoMember(6)] public AttachPointTargetType AttachPointTargetType;
         [LabelText("是否挂载到挂点")]
-        [NinoMember(7)] public bool AttachToPoint = true;
-        [NinoMember(8)][LabelText("*重写方向")][Tooltip("是否需要重新指定创建时的方向，不勾选表示使用挂点方向")]
+        [ProtoMember(7, IsRequired = true)] public bool AttachToPoint = true;
+        [ProtoMember(8, IsRequired = true)][LabelText("*重写方向")][Tooltip("是否需要重新指定创建时的方向，不勾选表示使用挂点方向")]
         public bool OverrideForward = false;
         [LabelText("*是否指向目标")][ShowIf(nameof(OverrideForward))][Tooltip("勾选表示使用出生点指向目标点的方向，不勾选表示使用目标当前方向作为出生方向(目标不存在时使用挂点方向)")]
-        [NinoMember(9)] public bool LookAtTarget = true;
+        [ProtoMember(9, IsRequired = true)] public bool LookAtTarget = true;
         [LabelText("目标")][ShowIf(nameof(OverrideForward))]
-        [NinoMember(10)] public AbilityTargetting ForwardUseType = AbilityTargetting.Target;
+        [ProtoMember(10, IsRequired = true)] public AbilityTargetting ForwardUseType = AbilityTargetting.Target;
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {
             var entity = TargetHelper.ResolveTarget(actor, ability, modifier, target, AttachPointTargetType);

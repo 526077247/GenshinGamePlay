@@ -1,4 +1,4 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,14 +7,14 @@ namespace TaoTie
     /// <summary>
     /// 操作值
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class OperatorValue: BaseValue
     {
-        [NinoMember(1)][NotNull]
+        [ProtoMember(1)][NotNull]
         public BaseValue Left;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public LogicMode Op;
-        [NinoMember(3)][NotNull][ShowIf("@Op != LogicMode.Default")]
+        [ProtoMember(3)][NotNull][ShowIf("@Op != LogicMode.Default")]
         public BaseValue Right;
 
 

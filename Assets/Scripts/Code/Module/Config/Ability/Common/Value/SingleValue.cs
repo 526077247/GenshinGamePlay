@@ -1,11 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 固定值
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class SingleValue: BaseValue
     {
         public SingleValue()
@@ -16,7 +16,7 @@ namespace TaoTie
         {
             Value = val;
         }
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float Value;
         public override float Resolve(Entity entity,ActorAbility ability)
         {

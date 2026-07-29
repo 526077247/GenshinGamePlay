@@ -1,4 +1,4 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
@@ -6,7 +6,7 @@ namespace TaoTie
     /// <summary>
     /// 已自身为原点
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigBornBySelf: ConfigBornType
     {
         public override Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)

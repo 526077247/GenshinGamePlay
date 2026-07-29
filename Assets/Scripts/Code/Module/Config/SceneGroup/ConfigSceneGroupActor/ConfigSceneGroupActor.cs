@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigSceneGroupActorCharacter))]
+    [ProtoInclude(101, typeof(ConfigSceneGroupActorGadget))]
+    [ProtoInclude(102, typeof(ConfigSceneGroupActorMonster))]
     public abstract class ConfigSceneGroupActor
     {
 #if UNITY_EDITOR
@@ -14,16 +17,16 @@ namespace TaoTie
         [LabelText("策划备注")]
         public string Remarks;
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [PropertyOrder(int.MinValue)]
         public int LocalId;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public Vector3 Position;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public Vector3 Rotation;
-        [NinoMember(4)][LabelText("是否是相对坐标、方向")]
+        [ProtoMember(4, IsRequired = true)][LabelText("是否是相对坐标、方向")]
         public bool IsLocal = true;
-        [NinoMember(5)]
+        [ProtoMember(5)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
 #endif

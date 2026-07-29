@@ -1,21 +1,21 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public sealed partial class ConfigSceneGroupActorMonster : ConfigSceneGroupActor
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetMonsterConfigIds)+"()")]
 #endif
         public int ConfigID;
         
-        [NinoMember(11)][LabelText("防御区域")]
+        [ProtoMember(11)][LabelText("防御区域")]
         public ConfigShape DefendArea;
 
         public override Entity CreateActor(SceneGroup sceneGroup,float range)

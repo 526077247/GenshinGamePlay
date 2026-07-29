@@ -213,9 +213,18 @@ namespace ProtoBuf.Serializers
 #if COREFX || PROFILE259
 								.GetTypeInfo()
 #endif
-                                .IsSubclassOf(value.GetType()))
+                                    .IsSubclassOf(value.GetType()))
                             {
+                                // value is a parent type, upgrade to the more specific type
                                 value = ProtoReader.Merge(source, value, ((IProtoTypeSerializer)ser).CreateInstance(source));
+                            }
+                            else if (serType != forType && ((IProtoTypeSerializer)ser).CanCreateInstance()
+                                && !value.GetType().IsAssignableFrom(serType) && !serType.IsAssignableFrom(value.GetType()))
+                            {
+                                // Sibling subtypes: the wire data has a different subtype than
+                                // the current value (e.g. default ZeroVector3 but wire has DynamicVector3).
+                                // Create a fresh instance of the correct type.
+                                value = ((IProtoTypeSerializer)ser).CreateInstance(source);
                             }
                         }
 

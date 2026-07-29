@@ -1,11 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ByEntityTypes: ConfigAbilityPredicate
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public EntityType[] EntityTypes;
         public override bool Evaluate(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {

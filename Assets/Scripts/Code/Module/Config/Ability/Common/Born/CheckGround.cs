@@ -1,19 +1,19 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class CheckGround
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public bool Enable;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public float RaycastUpHeight;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public float RaycastDownHeight;
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public bool StickToGroundIfValid;
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public bool DontCreateIfInvalid;
     }
 }

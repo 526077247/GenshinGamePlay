@@ -1,12 +1,12 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigAnyMonsterDieEventTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     [LabelText("死亡的单位Id")]
     public partial class ConfigAnyMonsterDieEventActorIdCondition : ConfigSceneGroupCondition<AnyMonsterDieEvent>
     {
@@ -14,10 +14,10 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("判断类型")]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
         [LabelText("单位Id")]

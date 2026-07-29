@@ -1,21 +1,21 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStoryBranchClipItem
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public ConfigStoryText Text;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public ConfigStoryClip Clip;
     }
     
-    [LabelText("选择分支执行")][NinoType(false)]
+    [LabelText("选择分支执行")][ProtoContract]
     public partial class ConfigStoryBranchClip: ConfigStoryClip
     {
-        [NinoMember(10)][NotNull]
+        [ProtoMember(10)][NotNull]
         public ConfigStoryBranchClipItem[] Branchs;
 
         public override async ETTask Process(StorySystem storySystem)

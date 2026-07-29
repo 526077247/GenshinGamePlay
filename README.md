@@ -2,7 +2,7 @@
 
 参考原神的 GamePlay 框架，基于 TaoTie 轻量级 Unity 框架构建，涵盖战斗（AbilitySystem）、解谜（SceneGroup）、怪物 AI、剧情（Story）、相机控制等完整游戏玩法系统。
 
-使用 Json 序列化的 Graph 编辑器进行可视化配置，二进制（Nino）/Json序列化的配置加载，YooAsset 管理资源,架构方便支持热更。
+使用 Json 序列化的 Graph 编辑器进行可视化配置，二进制（protobuf）/Json序列化的配置加载，YooAsset 管理资源,架构方便支持热更。
 
 ## 目录
 
@@ -88,7 +88,7 @@ GenshinGamePlay/
 │   │       ├── DynamicBone/    # 动态骨骼
 │   │       ├── ETTask/         # 单线程异步任务
 │   │       ├── LitJson/        # JSON 序列化
-│   │       ├── Nino/           # 高性能二进制序列化
+│   │       ├── protobuf-net/   # 二进制序列化
 │   │       └── SuperScrollView/# UI 列表扩展
 │   ├── Plugins/
 │   ├── Resources/
@@ -176,7 +176,7 @@ GenshinGamePlay/
 | **TaoTie** | 轻量级 Unity 框架（Entity/Component 生命周期、Manager 系统） |
 | **TaoTie RP** | 轻量级 Render Pipeline，支持 Forward+ / Deferred 渲染路径 |
 | **YooAsset** | 资源管理系统 |
-| **Nino** | 高性能二进制序列化（配置加载） |
+| **protobuf-net** | 二进制序列化（配置加载） |
 | **ETTask** | 单线程异步任务系统 |
 | **DotRecast** | Recast 导航网格寻路 |
 | **ORCA** | 动态避障寻路 |
@@ -189,10 +189,9 @@ GenshinGamePlay/
 2. [TaoTie](https://github.com/526077247/TaoTie) — 轻量级 Unity 框架
 3. [TaoTieRP](https://github.com/526077247/TaoTieRP) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
 4. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
-5. [Nino](https://github.com/JasonXuDeveloper/Nino) — 高性能 C# 序列化模块
-6. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) — 节点编辑器
-7. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
-8. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
+5. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) — 节点编辑器
+6. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
+7. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
 
 ## 付费插件
 

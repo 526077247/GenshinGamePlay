@@ -1,23 +1,23 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("指定目标攻击")]
+    [ProtoContract][LabelText("指定目标攻击")]
     public partial class TargetAttackEvent : ConfigAbilityAction
     {
-        [NinoMember(14)]
+        [ProtoMember(14, IsRequired = true)]
         public TargetType TargetType = TargetType.Enemy;
-        [NinoMember(10)][LabelText("*攻击者")][Tooltip("用于处理最终攻击来源以及伤害计算,仅支持指定一个,若选择结果超过1个默认取第一个")]
+        [ProtoMember(10, IsRequired = true)][LabelText("*攻击者")][Tooltip("用于处理最终攻击来源以及伤害计算,仅支持指定一个,若选择结果超过1个默认取第一个")]
         public AbilityTargetting AttackTargetting = AbilityTargetting.Owner;
-        [NinoMember(11)][LabelText("防御者")]
+        [ProtoMember(11, IsRequired = true)][LabelText("防御者")]
         public AbilityTargetting BeAttackTargetting = AbilityTargetting.Target;
-        [NinoMember(15)][LabelText("*攻击范围检测者")][Tooltip("用于处理碰撞或触发检测,仅支持指定一个,若选择结果超过1个默认取第一个,没找到则使用攻击者进行检测")]
+        [ProtoMember(15, IsRequired = true)][LabelText("*攻击范围检测者")][Tooltip("用于处理碰撞或触发检测,仅支持指定一个,若选择结果超过1个默认取第一个,没找到则使用攻击者进行检测")]
         public AbilityTargetting AttackCheckTargetting = AbilityTargetting.Self;
-        [NinoMember(12)][ShowIf(nameof(BeAttackTargetting), AbilityTargetting.Other)]
+        [ProtoMember(12)][ShowIf(nameof(BeAttackTargetting), AbilityTargetting.Other)]
         public ConfigSelectTargets OtherBeAttackTargets;
-        [NotNull][NinoMember(13)]
+        [NotNull][ProtoMember(13, IsRequired = true)]
         public ConfigAttackInfo AttackInfo = new ConfigAttackInfo();
 
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier,

@@ -1,17 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigExecuteAbilityClip:ConfigFsmClip
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
 #endif
         public string AbilityName;
-        [NinoMember(11)][LabelText("当还未开始时被打断是否执行")]
+        [ProtoMember(11)][LabelText("当还未开始时被打断是否执行")]
         public bool ExecuteOnBreak;
     }
 }

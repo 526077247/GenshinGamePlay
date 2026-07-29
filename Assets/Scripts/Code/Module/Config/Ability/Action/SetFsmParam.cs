@@ -1,13 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(SetFsmInt))]
+    [ProtoInclude(101, typeof(SetFsmFloat))]
+    [ProtoInclude(102, typeof(SetFsmBool))]
+    [ProtoInclude(103, typeof(SetFsmTrigger))]
     public abstract class SetFsmParam<T> : ConfigAbilityAction where T: unmanaged
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public string Key;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public T Value;
 
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)

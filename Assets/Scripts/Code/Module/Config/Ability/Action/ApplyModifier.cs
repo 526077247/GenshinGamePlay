@@ -1,14 +1,14 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 应用Modifier，不会随别人移除
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ApplyModifier: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public string ModifierName;
 
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)

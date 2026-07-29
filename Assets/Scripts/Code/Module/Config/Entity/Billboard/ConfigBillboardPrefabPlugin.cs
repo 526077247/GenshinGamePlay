@@ -1,5 +1,5 @@
-﻿using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using TaoTie.LitJson.Extensions;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public abstract partial class ConfigBillboardPrefabPlugin: ConfigBillboardPlugin
     {
 #if UNITY_EDITOR
@@ -44,7 +44,7 @@ namespace TaoTie
             Prefab = null;
         }
 #endif
-        [ReadOnly][NinoMember(5)][BoxGroup("Prefab")]
+        [ReadOnly][ProtoMember(5)][BoxGroup("Prefab")]
         public string PrefabPath;
     }
 }

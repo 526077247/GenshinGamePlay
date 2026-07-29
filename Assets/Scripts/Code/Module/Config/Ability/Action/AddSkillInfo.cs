@@ -1,11 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class AddSkillInfo: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ConfigSkillInfo Skill;
 
         

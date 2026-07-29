@@ -1,14 +1,14 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 namespace TaoTie
 {
 	/// <summary>
 	/// 筛选子Entity
 	/// </summary>
-	[NinoType(false)]
+	[ProtoContract]
     public class ConfigSelectTargetsByChildren: ConfigSelectTargets
     {
-	    [NinoMember(1)]
+	    [ProtoMember(1)]
 	    public int UnitConfigId;
 
 	    public override ListComponent<Entity> ResolveTargets(Entity actor, ActorAbility ability, ActorModifier modifier,

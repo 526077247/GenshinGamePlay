@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAttackBox: ConfigSimpleAttackPattern
     {
-        [NinoMember(10)][NotNull]
+        [ProtoMember(10, IsRequired = true)][NotNull]
         public DynamicVector3 Size = new DynamicVector3();
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target,

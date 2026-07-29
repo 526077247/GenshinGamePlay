@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using DaGenGraph;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace TaoTie
 {
     [LabelText("与 逻辑节点")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupOrAction : ConfigSceneGroupLogicConditionAction
     {
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)

@@ -1,17 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCombatBeHit
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string HitBloodEffect;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public bool MuteAllHit; 
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public bool MuteAllHitEffect;
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public bool MuteAllHitText;
     }
 }

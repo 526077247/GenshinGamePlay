@@ -1,16 +1,20 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigStoryCameraActor))]
+    [ProtoInclude(101, typeof(ConfigStoryCharacterActor))]
+    [ProtoInclude(102, typeof(ConfigStoryPlayerActor))]
+    [ProtoInclude(103, typeof(ConfigStorySceneGroupActor))]
     public abstract partial class ConfigStoryActor
     {
 #if UNITY_EDITOR
         [Sirenix.OdinInspector.LabelText("策划备注")]
         public string Remarks;
 #endif
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public int Id;
 
         public virtual async ETTask Preload(StorySystem storySystem)

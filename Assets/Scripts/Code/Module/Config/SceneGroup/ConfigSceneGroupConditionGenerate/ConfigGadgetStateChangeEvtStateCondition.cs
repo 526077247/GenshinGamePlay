@@ -1,12 +1,12 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigGadgetStateChangeEvtTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     [LabelText("新状态")]
     public partial class ConfigGadgetStateChangeEvtStateCondition : ConfigSceneGroupCondition<GadgetStateChangeEvt>
     {
@@ -14,10 +14,10 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("判断类型")]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public GadgetState Value;
 
         public override bool IsMatch(GadgetStateChangeEvt obj, SceneGroup sceneGroup)

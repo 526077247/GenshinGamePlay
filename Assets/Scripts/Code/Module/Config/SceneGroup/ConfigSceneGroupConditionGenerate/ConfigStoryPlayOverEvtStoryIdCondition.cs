@@ -1,12 +1,12 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigStoryPlayOverEvtTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     [LabelText("播完的剧情id")]
     public partial class ConfigStoryPlayOverEvtStoryIdCondition : ConfigSceneGroupCondition<StoryPlayOverEvt>
     {
@@ -14,10 +14,10 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("判断类型")]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public UInt64 Value;
 
         public override bool IsMatch(StoryPlayOverEvt obj, SceneGroup sceneGroup)

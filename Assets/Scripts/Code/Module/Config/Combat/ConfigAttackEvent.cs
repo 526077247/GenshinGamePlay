@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAttackEvent
     {
-        [NotNull][NinoMember(1)]
+        [NotNull][ProtoMember(1)]
         public ConfigBaseAttackPattern AttackPattern;
-        [NotNull][NinoMember(2)]
+        [NotNull][ProtoMember(2, IsRequired = true)]
         public ConfigAttackInfo AttackInfo = new ConfigAttackInfo();
     }
 }

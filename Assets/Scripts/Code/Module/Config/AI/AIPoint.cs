@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class AIPoint
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float X;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public float Y;
     }
 }

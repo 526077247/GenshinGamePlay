@@ -1,8 +1,10 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigCameraColliderPlugin))]
+    [ProtoInclude(101, typeof(ConfigCameraShakePlugin))]
     public abstract partial class ConfigCameraOtherPlugin: ConfigCameraPlugin
     {
         

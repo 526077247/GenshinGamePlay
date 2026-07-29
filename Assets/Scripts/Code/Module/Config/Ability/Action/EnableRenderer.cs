@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class EnableRenderer: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public bool SetEnable;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public bool IncludeChild;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

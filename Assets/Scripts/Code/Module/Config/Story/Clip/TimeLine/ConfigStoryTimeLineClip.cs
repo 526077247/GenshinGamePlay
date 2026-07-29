@@ -1,11 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public abstract partial class ConfigStoryTimeLineClip
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public float StartTime = 0;
 
         public abstract void Process(float timeNow, StoryTimeLineRunner runner);

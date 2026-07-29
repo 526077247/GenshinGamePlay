@@ -1,17 +1,20 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigParam<bool>))]
+    [ProtoInclude(101, typeof(ConfigParam<float>))]
+    [ProtoInclude(102, typeof(ConfigParam<int>))]
     public abstract partial class ConfigParam
     {
-        [NinoMember(1)][NotNull]
+        [ProtoMember(1)][NotNull]
         public string Key;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public bool NeedSyncAnimator;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public AnimatorFsmType ParameterType;
 
         public void SetValue(DynDictionary dynDictionary, float val)
@@ -48,10 +51,14 @@ namespace TaoTie
 
         public abstract void SetDefaultValue(DynDictionary dynDictionary);
     }
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigParamInt))]
+    [ProtoInclude(101, typeof(ConfigParamFloat))]
+    [ProtoInclude(102, typeof(ConfigParamBool))]
+    [ProtoInclude(103, typeof(ConfigParamTrigger))]
     public abstract class ConfigParam<T> : ConfigParam
     {
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public T defaultValue;
     }
 }

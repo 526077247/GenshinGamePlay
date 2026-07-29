@@ -1,23 +1,23 @@
-﻿using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using TaoTie.LitJson.Extensions;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigInteeItem
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public int LocalId;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public I18NKey I18NKey;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public string[] I18NParams;
-        [NinoMember(4)] [LabelText("默认启用")]
+        [ProtoMember(4, IsRequired = true)] [LabelText("默认启用")]
         public bool DefaultEnable = true;
 #if UNITY_EDITOR
-        [OnValueChanged(nameof(UpdateIconPath))][BoxGroup("Icon")][NinoIgnore]
+        [OnValueChanged(nameof(UpdateIconPath))][BoxGroup("Icon")][ProtoIgnore]
         public Sprite Icon;
 
         private void UpdateIconPath()
@@ -49,7 +49,7 @@ namespace TaoTie
             Icon = null;
         }
 #endif
-        [ReadOnly][NinoMember(5)][BoxGroup("Icon")]
+        [ReadOnly][ProtoMember(5)][BoxGroup("Icon")]
         public string IconPath;
         
     }

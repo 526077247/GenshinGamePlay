@@ -1,14 +1,14 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 公式运算值
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class FormulaValue: BaseValue
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string Formula;
         public override float Resolve(Entity entity, ActorAbility ability)
         {

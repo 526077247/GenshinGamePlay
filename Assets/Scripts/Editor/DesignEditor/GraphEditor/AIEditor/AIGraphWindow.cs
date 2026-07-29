@@ -1,7 +1,7 @@
-﻿using System.IO;
+using System.IO;
 using DaGenGraph;
 using DaGenGraph.Editor;
-using Nino.Core;
+using ProtoBuf;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -227,7 +227,7 @@ namespace TaoTie
                 var obj = Convert(m_Graph);
                 File.WriteAllText(exportPath,JsonHelper.ToJson(obj));
 
-                File.WriteAllBytes(exportPath.Replace("json","bytes"),NinoSerializer.Serialize(obj));
+                File.WriteAllBytes(exportPath.Replace("json","bytes"),ProtobufHelper.ToBytes(obj));
 
                 AssetDatabase.Refresh();
                 Debug.Log("导出成功");   

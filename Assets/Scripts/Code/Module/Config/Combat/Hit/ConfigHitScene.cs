@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigHitScene
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string DefaultEffect;
-        [NinoMember(2)]
+        [ProtoMember(2, IsRequired = true)]
         public Dictionary<string, string> SurfaceEffect = new Dictionary<string, string>();
     }
 }

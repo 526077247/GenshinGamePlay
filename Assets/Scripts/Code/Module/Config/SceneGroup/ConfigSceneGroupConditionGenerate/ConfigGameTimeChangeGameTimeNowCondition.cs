@@ -1,12 +1,12 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigGameTimeChangeTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     [LabelText("游戏时间(ms)")]
     public partial class ConfigGameTimeChangeGameTimeNowCondition : ConfigSceneGroupCondition<GameTimeChange>
     {
@@ -14,10 +14,10 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("判断类型")]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public Int64 Value;
 
         public override bool IsMatch(GameTimeChange obj, SceneGroup sceneGroup)

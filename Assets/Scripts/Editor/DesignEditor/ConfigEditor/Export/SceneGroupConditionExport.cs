@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -48,14 +48,14 @@ namespace TaoTie
             className = $"Config{type.Name}{ObjectNames.NicifyVariableName(fieldInfo.Name).Replace(" ","")}Condition";
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("using System;");
-            sb.AppendLine("using Nino.Core;");
+            sb.AppendLine("using ProtoBuf;");
             sb.AppendLine("using Sirenix.OdinInspector;");
             sb.AppendLine("using UnityEngine;");
             sb.AppendLine();
             sb.AppendLine("namespace TaoTie");
             sb.AppendLine("{");
             sb.AppendLine($"    [TriggerType(typeof(Config{type.Name}Trigger))]");
-            sb.AppendLine("    [NinoType(false)]");
+            sb.AppendLine("    [ProtoContract]");
             sb.AppendLine($"    [LabelText(\"{showText}\")]");
             sb.AppendLine($"    public partial class {className} : ConfigSceneGroupCondition<{type.Name}>");
             sb.AppendLine("    {");
@@ -63,10 +63,10 @@ namespace TaoTie
             sb.AppendLine("#if UNITY_EDITOR");
             sb.AppendLine("        [OnValueChanged(\"@\"+nameof(CheckModeType)+\"(\"+nameof(Value)+\",\"+nameof(Mode)+\")\")]");
             sb.AppendLine("#endif");
-            sb.AppendLine("        [NinoMember(1)]");
+            sb.AppendLine("        [ProtoMember(1)]");
             sb.AppendLine("        [LabelText(\"判断类型\")]");
             sb.AppendLine("        public CompareMode Mode;");
-            sb.AppendLine("        [NinoMember(2)]");
+            sb.AppendLine("        [ProtoMember(2)]");
             if (fieldInfo.GetCustomAttributes(typeof(SceneGroupZoneIdAttribute), false).Length != 0)
             {
                 sb.AppendLine("#if UNITY_EDITOR");

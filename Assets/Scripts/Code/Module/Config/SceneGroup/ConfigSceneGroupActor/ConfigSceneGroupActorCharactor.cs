@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigSceneGroupActorCharacter : ConfigSceneGroupActor
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@" + nameof(OdinDropdownHelper) + "." + nameof(OdinDropdownHelper.GetCharacterConfigIds) +
                        "()")]

@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("等待时间")]
+    [ProtoContract][LabelText("等待时间")]
     public partial class ConfigStoryWaitTimeClip: ConfigStoryClip
     {
-        [NinoMember(10)][LabelText("时间间隔ms")]
+        [ProtoMember(10)][LabelText("时间间隔ms")]
         public int Interval;
 
-        [NinoMember(11)]
+        [ProtoMember(11, IsRequired = true)]
         public bool IsGameTime = true;
         public override async ETTask Process(StorySystem storySystem)
         {

@@ -1,21 +1,21 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStory
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public ulong Id;
 #if UNITY_EDITOR
         [LabelText("策划备注")]
         public string Remarks;
 #endif
-        [NinoMember(3)] 
+        [ProtoMember(3)] 
         public ConfigStoryActor[] Actors;
             
-        [NinoMember(4)][HideReferenceObjectPicker]
+        [ProtoMember(4, IsRequired = true)][HideReferenceObjectPicker]
         public ConfigStorySerialClip Clips = new ConfigStorySerialClip();
         
     }

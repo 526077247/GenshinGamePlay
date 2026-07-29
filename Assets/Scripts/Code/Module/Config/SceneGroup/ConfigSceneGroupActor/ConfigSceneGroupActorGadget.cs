@@ -1,26 +1,26 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupActorGadget: ConfigSceneGroupActor
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetConfigIds)+"()")]
 #endif
         public int ConfigID;
-        [NinoMember(11)]
+        [ProtoMember(11)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupRouteIds)+"()", AppendNextDrawer = true)]
 #endif
         public int RouteId;
-        [NinoMember(12)][LabelText("*延迟启动(ms)")][Tooltip("<0不启动；0立刻；>0延迟多久")]
+        [ProtoMember(12)][LabelText("*延迟启动(ms)")][Tooltip("<0不启动；0立刻；>0延迟多久")]
         public int Delay;
 
-        [NinoMember(13)] 
+        [ProtoMember(13)] 
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetGadgetState)+"()")]
 #endif

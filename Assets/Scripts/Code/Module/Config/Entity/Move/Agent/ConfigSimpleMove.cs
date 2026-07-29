@@ -1,9 +1,9 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("速度驱动移动")]
+    [ProtoContract][LabelText("速度驱动移动")]
     public partial class ConfigSimpleMove: ConfigMoveAgent
     {
         

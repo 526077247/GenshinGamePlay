@@ -1,22 +1,22 @@
-﻿
+
 using System;
-using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 通过范围筛选
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSelectTargetsByRange: ConfigSelectTargets
     {
-        [NinoMember(1)][NotNull]
+        [ProtoMember(1)][NotNull]
         public ConfigRange Range;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public EntityType[] EntityTypes;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public TargetType CampTargetType;
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public AbilityTargetting CampBasedOn;
         public override ListComponent<Entity> ResolveTargets(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {

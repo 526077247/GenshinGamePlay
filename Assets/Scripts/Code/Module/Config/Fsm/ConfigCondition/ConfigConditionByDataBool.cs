@@ -1,10 +1,10 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigConditionByDataBool : ConfigConditionByData<bool>
     {
         public override bool Equals(ConfigCondition other)

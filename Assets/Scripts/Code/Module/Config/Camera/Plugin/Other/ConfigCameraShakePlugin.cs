@@ -1,8 +1,8 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigCameraShakePlugin: ConfigCameraOtherPlugin
     {
         

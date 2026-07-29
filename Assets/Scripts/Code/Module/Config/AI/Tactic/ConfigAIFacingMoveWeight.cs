@@ -1,19 +1,19 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIFacingMoveWeight
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float Stop;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public float Forward;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public float Back;
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public float Left;
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public float Right;
 
     }

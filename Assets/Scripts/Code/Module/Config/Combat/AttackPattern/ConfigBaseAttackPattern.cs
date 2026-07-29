@@ -1,15 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigAttackColliderBox))]
+    [ProtoInclude(101, typeof(ConfigSimpleAttackPattern))]
     public abstract partial class ConfigBaseAttackPattern
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public CheckHitLayerType CheckHitLayerType;
 
-        [NinoMember(2)]
+        [ProtoMember(2)]
         [ShowIf("@" + nameof(CheckHitLayerType) + "!=TaoTie." + nameof(TaoTie.CheckHitLayerType) + "." +
                 nameof(CheckHitLayerType.OnlyHitBox))]
         public ConfigHitScene HitScene;

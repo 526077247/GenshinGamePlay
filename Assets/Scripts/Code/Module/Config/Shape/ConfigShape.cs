@@ -1,9 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigCapsuleShape))]
+    [ProtoInclude(101, typeof(ConfigObbShape))]
+    [ProtoInclude(102, typeof(ConfigPrismShape))]
+    [ProtoInclude(103, typeof(ConfigSphereShape))]
     public abstract partial class ConfigShape
     {
         /// <summary>

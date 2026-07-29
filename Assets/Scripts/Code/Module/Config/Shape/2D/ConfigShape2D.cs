@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigPolygonShape2D))]
     public abstract partial class ConfigShape2D
     {
         /// <summary>

@@ -1,12 +1,12 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigAvatarNearPlatformEvtTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     [LabelText("靠近单位的当前寻路点或下一个点的序号")]
     public partial class ConfigAvatarNearPlatformEvtPointIndexCondition : ConfigSceneGroupCondition<AvatarNearPlatformEvt>
     {
@@ -14,10 +14,10 @@ namespace TaoTie
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")]
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("判断类型")]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public Int32 Value;
 
         public override bool IsMatch(AvatarNearPlatformEvt obj, SceneGroup sceneGroup)

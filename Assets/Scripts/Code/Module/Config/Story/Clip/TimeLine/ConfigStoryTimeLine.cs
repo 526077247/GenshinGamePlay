@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine.Timeline;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStoryTimeLine: ConfigStoryClip
     {
         
@@ -38,11 +38,11 @@ namespace TaoTie
         }
         [Sirenix.OdinInspector.BoxGroup("TimeLine")]
 #endif
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public string Path;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public ConfigStoryTimeLineClip[] Clips;
-        [NinoMember(12)]
+        [ProtoMember(12, IsRequired = true)]
         public Dictionary<string, int> Binding = new Dictionary<string, int>();
         public override async ETTask Process(StorySystem storySystem)
         {

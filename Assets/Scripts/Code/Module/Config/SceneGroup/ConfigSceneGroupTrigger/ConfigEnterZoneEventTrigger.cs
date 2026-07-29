@@ -1,11 +1,11 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("当有实体进入区域")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigEnterZoneEventTrigger : ConfigSceneGroupTrigger<EnterZoneEvent>
     {
 

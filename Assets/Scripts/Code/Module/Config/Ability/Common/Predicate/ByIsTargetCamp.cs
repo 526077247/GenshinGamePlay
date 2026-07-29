@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ByIsTargetCamp: ConfigAbilityPredicate
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public AbilityTargetting CampBaseOn;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public TargetType CampTargetType;
         public override bool Evaluate(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target)
         {

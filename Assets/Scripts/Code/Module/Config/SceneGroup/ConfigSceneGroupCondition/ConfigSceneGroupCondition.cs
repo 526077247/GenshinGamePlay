@@ -1,6 +1,6 @@
 using System;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -10,7 +10,18 @@ using UnityEditor;
 namespace TaoTie
 {
     // Condition
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigGetSuiteMonsterCountCondition))]
+    [ProtoInclude(101, typeof(ConfigVariableCondition))]
+    [ProtoInclude(102, typeof(ConfigSceneGroupCondition<EnterZoneEvent>))]
+    [ProtoInclude(103, typeof(ConfigSceneGroupCondition<ExitZoneEvent>))]
+    [ProtoInclude(104, typeof(ConfigSceneGroupCondition<AnyMonsterDieEvent>))]
+    [ProtoInclude(105, typeof(ConfigSceneGroupCondition<AvatarNearPlatformEvt>))]
+    [ProtoInclude(106, typeof(ConfigSceneGroupCondition<GadgetStateChangeEvt>))]
+    [ProtoInclude(107, typeof(ConfigSceneGroupCondition<GameTimeChange>))]
+    [ProtoInclude(108, typeof(ConfigSceneGroupCondition<PlatformReachPointEvt>))]
+    [ProtoInclude(109, typeof(ConfigSceneGroupCondition<StoryPlayOverEvt>))]
+    [ProtoInclude(110, typeof(ConfigSceneGroupCondition<SuiteLoadEvent>))]
     public abstract partial class ConfigSceneGroupCondition
     {
         public abstract bool IsMatch(IEventBase obj, SceneGroup sceneGroup);
@@ -185,7 +196,28 @@ namespace TaoTie
 #endif
     }
     
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(102, typeof(ConfigSuiteLoadEventIsAddOnCondition))]
+    [ProtoInclude(103, typeof(ConfigSuiteLoadEventSuiteIdCondition))]
+    [ProtoInclude(104, typeof(ConfigStoryPlayOverEvtStoryIdCondition))]
+    [ProtoInclude(105, typeof(ConfigPlatformReachPointEvtActorIdCondition))]
+    [ProtoInclude(106, typeof(ConfigPlatformReachPointEvtPointIndexCondition))]
+    [ProtoInclude(107, typeof(ConfigPlatformReachPointEvtRouteIdCondition))]
+    [ProtoInclude(108, typeof(ConfigGameTimeChangeGameTimeNowCondition))]
+    [ProtoInclude(109, typeof(ConfigGadgetStateChangeEvtGadgetIdCondition))]
+    [ProtoInclude(110, typeof(ConfigGadgetStateChangeEvtOldStateCondition))]
+    [ProtoInclude(111, typeof(ConfigGadgetStateChangeEvtStateCondition))]
+    [ProtoInclude(112, typeof(ConfigAvatarNearPlatformEvtActorIdCondition))]
+    [ProtoInclude(113, typeof(ConfigAvatarNearPlatformEvtIsMovingCondition))]
+    [ProtoInclude(114, typeof(ConfigAvatarNearPlatformEvtPointIndexCondition))]
+    [ProtoInclude(115, typeof(ConfigAvatarNearPlatformEvtRouteIdCondition))]
+    [ProtoInclude(116, typeof(ConfigAnyMonsterDieEventActorIdCondition))]
+    [ProtoInclude(117, typeof(ConfigExitZoneEvtGetIsMyCondition))]
+    [ProtoInclude(118, typeof(ConfigExitZoneEvtGetRegionEntityCountCondition))]
+    [ProtoInclude(119, typeof(ConfigExitZoneEventZoneLocalIdCondition))]
+    [ProtoInclude(120, typeof(ConfigEnterZoneEvtGetIsMyCondition))]
+    [ProtoInclude(121, typeof(ConfigEnterZoneEvtGetRegionEntityCountCondition))]
+    [ProtoInclude(122, typeof(ConfigEnterZoneEventZoneLocalIdCondition))]
     public abstract class ConfigSceneGroupCondition<T>:ConfigSceneGroupCondition where T:IEventBase
     {
         [JsonIgnore]

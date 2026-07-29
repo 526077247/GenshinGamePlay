@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class SingleSceneGroupValue: BaseSceneGroupValue
     {
-        [NinoMember(1)][LabelText("固定值")]
+        [ProtoMember(1)][LabelText("固定值")]
         public int FixedValue;
 
         public override float Resolve(IEventBase obj, DynDictionary set)

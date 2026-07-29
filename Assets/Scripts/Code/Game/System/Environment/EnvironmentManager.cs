@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
@@ -73,7 +73,7 @@ namespace TaoTie
             else
             {
                 var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
-                return NinoDeserializer.Deserialize<ConfigEnvironments>(bytes);
+                return ProtobufHelper.FromBytes<ConfigEnvironments>(bytes);
             }
         }
         public async ETTask LoadAsync()

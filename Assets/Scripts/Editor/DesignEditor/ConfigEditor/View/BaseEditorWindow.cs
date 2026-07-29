@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
@@ -84,7 +84,7 @@ namespace TaoTie
                 var jStr = JsonHelper.ToJson(data);
                 oldJson = jStr;
                 File.WriteAllText(filePath, jStr);
-                var bytes = NinoSerializer.Serialize(data);
+                var bytes = ProtobufHelper.ToBytes(data);
                 File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
                 AssetDatabase.Refresh();
                 ShowNotification(new GUIContent("保存Json成功"));
@@ -109,7 +109,7 @@ namespace TaoTie
                 var jStr = JsonHelper.ToJson(data);
                 oldJson = jStr;
                 File.WriteAllText(searchPath, jStr);
-                var bytes = NinoSerializer.Serialize(data);
+                var bytes = ProtobufHelper.ToBytes(data);
                 File.WriteAllBytes(filePath.Replace("json","bytes"), bytes);
                 AssetDatabase.Refresh();
                 filePath = searchPath;

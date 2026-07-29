@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigStoryI18NText: ConfigStoryText
     {
-        [NinoMember(1)][LabelText("多语言表Key")]
+        [ProtoMember(1)][LabelText("多语言表Key")]
         public string I18NKey;
 
         public override string GetShowText()

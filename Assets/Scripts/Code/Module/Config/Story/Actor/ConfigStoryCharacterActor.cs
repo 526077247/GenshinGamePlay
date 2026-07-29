@@ -1,17 +1,17 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStoryCharacterActor: ConfigStoryActor
     {
-        [NinoMember(5)]
+        [ProtoMember(5)]
 #if UNITY_EDITOR
         [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCharacterConfigIds)+"()")]
 #endif
         public int ConfigId;
-        [NinoMember(6)]
+        [ProtoMember(6, IsRequired = true)]
         public bool Preload3d = true;
 
         public override async ETTask Preload(StorySystem storySystem)

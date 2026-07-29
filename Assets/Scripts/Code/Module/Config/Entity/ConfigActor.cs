@@ -1,40 +1,40 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigActor
     {
 #if UNITY_EDITOR
         [PropertyOrder(int.MinValue + 1)] [LabelText("策划备注")]
         public string Remarks;
 #endif
-        [PropertyOrder(int.MinValue + 2)][LabelText("Actor模板类型")][NinoMember(10)]
+        [PropertyOrder(int.MinValue + 2)][LabelText("Actor模板类型")][ProtoMember(10)]
         public ActorType Type;
-        [NinoMember(7)]
+        [ProtoMember(7)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAbilities)+"()",AppendNextDrawer = true)]
 #endif
         public string[] Abilities;
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public ConfigActorCommon Common = new ConfigActorCommon();
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public ConfigCombat Combat;
-        [NinoMember(12)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Gadget))]
+        [ProtoMember(12)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Gadget))]
         public ConfigSkill Skill;
-        [NinoMember(4)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Gadget))]
+        [ProtoMember(4)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Gadget))]
         public ConfigEquipController EquipController;
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public ConfigBillboard Billboard;
-        [NinoMember(6)][ShowIf(nameof(Type),ActorType.Gadget)]
+        [ProtoMember(6)][ShowIf(nameof(Type),ActorType.Gadget)]
         public ConfigIntee Intee;
-        [NinoMember(8)][NotNull]
+        [ProtoMember(8, IsRequired = true)][NotNull]
         public ConfigModel Model = new ConfigSingletonModel();
-        [NinoMember(9)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Avatar))]
+        [ProtoMember(9)][ShowIf("@"+nameof(Type)+"!=ActorType."+nameof(ActorType.Avatar))]
         public ConfigTrigger Trigger;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public ConfigMove Move;
     }
 }

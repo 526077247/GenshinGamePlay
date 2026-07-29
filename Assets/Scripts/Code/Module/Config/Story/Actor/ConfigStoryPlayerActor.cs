@@ -1,9 +1,9 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStoryPlayerActor: ConfigStoryActor
     {
         public override async ETTask<GameObject> Get3dObj(StorySystem storySystem)

@@ -1,5 +1,5 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,10 +7,10 @@ namespace TaoTie
 {
     
     [LabelText("附加Suite")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupAddExtraSuiteAction : ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         [LabelText("要附加的阶段id")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]

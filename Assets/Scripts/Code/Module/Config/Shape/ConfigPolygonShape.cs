@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("*柱体")][Tooltip("支持不完善")]
+    [ProtoContract][LabelText("*柱体")][Tooltip("支持不完善")]
     public partial class ConfigPrismShape: ConfigShape
     {
-        [NinoMember(1)] [LabelText("底")][NotNull]
+        [ProtoMember(1)] [LabelText("底")][NotNull]
         public ConfigShape2D ConfigShape2D;
-        [NinoMember(2)][MinValue(0.1f)]
+        [ProtoMember(2, IsRequired = true)][MinValue(0.1f)]
         public float Height = 1;
 
         public override Collider CreateCollider(GameObject obj, bool isTrigger)

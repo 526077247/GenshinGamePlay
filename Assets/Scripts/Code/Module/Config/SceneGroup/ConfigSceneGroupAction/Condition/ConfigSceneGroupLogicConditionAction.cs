@@ -1,15 +1,17 @@
 using System;
 using DaGenGraph;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigSceneGroupAndAction))]
+    [ProtoInclude(101, typeof(ConfigSceneGroupOrAction))]
     public abstract class ConfigSceneGroupLogicConditionAction:ConfigSceneGroupConditionAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         [LabelText("条件")][DrawIgnore]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]

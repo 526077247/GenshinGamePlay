@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [LabelText("串行执行")][NinoType(false)]
+    [LabelText("串行执行")][ProtoContract]
     public partial class ConfigStorySerialClip: ConfigStoryClip
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ConfigStoryClip[] Clips;
         
         public override async ETTask Process(StorySystem storySystem)

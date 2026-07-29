@@ -1,7 +1,7 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-using Nino.Core;
+using ProtoBuf;
 namespace TaoTie
 {
     public class AIEditor: BaseEditorWindow<ConfigAIBeta>

@@ -1,15 +1,17 @@
 using System;
 using DaGenGraph;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigSceneGroupNormalConditionAction))]
+    [ProtoInclude(101, typeof(ConfigSceneGroupLogicConditionAction))]
     public abstract class ConfigSceneGroupConditionAction:ConfigSceneGroupAction
     {
-        [NinoMember(11)]
+        [ProtoMember(11)]
         [LabelText("满足条件后执行")][DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
@@ -17,7 +19,7 @@ namespace TaoTie
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(HandleType)+")")]
 #endif
         public ConfigSceneGroupAction[] Success;
-        [NinoMember(12)]
+        [ProtoMember(12)]
         [LabelText("不满足后执行")][DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]

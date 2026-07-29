@@ -1,5 +1,5 @@
 using System;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,18 +7,18 @@ namespace TaoTie
 {
     [LabelText("触发区域内的指定类型实体的数量")]
     [TriggerType(typeof(ConfigExitZoneEventTrigger))]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigExitZoneEvtGetRegionEntityCountCondition : ConfigSceneGroupCondition<ExitZoneEvent>
     {
         [Tooltip(SceneGroupTooltips.CompareMode)]
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(Value)+","+nameof(Mode)+")")] 
 #endif
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public CompareMode Mode;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public EntityType Type;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public int Value;
         public override bool IsMatch(ExitZoneEvent obj,SceneGroup sceneGroup)
         {

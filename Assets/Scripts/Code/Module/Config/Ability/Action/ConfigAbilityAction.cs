@@ -1,19 +1,47 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(AddAbility))]
+    [ProtoInclude(101, typeof(AddNumericValue))]
+    [ProtoInclude(102, typeof(AddSkillInfo))]
+    [ProtoInclude(103, typeof(ApplyModifier))]
+    [ProtoInclude(104, typeof(AttachEffect))]
+    [ProtoInclude(105, typeof(AttachModifier))]
+    [ProtoInclude(106, typeof(CreateGadget))]
+    [ProtoInclude(107, typeof(DelayDoAction))]
+    [ProtoInclude(108, typeof(EnableHitBoxByName))]
+    [ProtoInclude(109, typeof(EnableRenderer))]
+    [ProtoInclude(110, typeof(ExecuteAbility))]
+    [ProtoInclude(111, typeof(KillGadget))]
+    [ProtoInclude(112, typeof(KillSelf))]
+    [ProtoInclude(113, typeof(ModifyAbility))]
+    [ProtoInclude(114, typeof(OpenView))]
+    [ProtoInclude(115, typeof(Predicated))]
+    [ProtoInclude(116, typeof(PrintTextAction))]
+    [ProtoInclude(117, typeof(RemoveAbility))]
+    [ProtoInclude(118, typeof(RemoveModifier))]
+    [ProtoInclude(119, typeof(SetGadgetState))]
+    [ProtoInclude(120, typeof(ShowIntee))]
+    [ProtoInclude(121, typeof(TargetAttackEvent))]
+    [ProtoInclude(122, typeof(TriggerAttackEvent))]
+    [ProtoInclude(123, typeof(TriggerSkillCD))]
+    [ProtoInclude(124, typeof(TryDoSkill))]
+    [ProtoInclude(125, typeof(SetFsmParam<bool>))]
+    [ProtoInclude(126, typeof(SetFsmParam<float>))]
+    [ProtoInclude(127, typeof(SetFsmParam<int>))]
     public abstract class ConfigAbilityAction
     {
-        [NinoMember(1)][BoxGroup("Common")][LabelText("*重定向前过滤")][Tooltip("Targetting目标重新选定生效前，判断当前Target是否满足条件执行")]
+        [ProtoMember(1)][BoxGroup("Common")][LabelText("*重定向前过滤")][Tooltip("Targetting目标重新选定生效前，判断当前Target是否满足条件执行")]
         public ConfigAbilityPredicate Predicate;
-        [NinoMember(2)][LabelText("Action目标")][BoxGroup("Common")]
+        [ProtoMember(2, IsRequired = true)][LabelText("Action目标")][BoxGroup("Common")]
         public AbilityTargetting Targetting = AbilityTargetting.Target;
-        [NinoMember(3)][ShowIf(nameof(Targetting), AbilityTargetting.Other)][BoxGroup("Common")]
+        [ProtoMember(3)][ShowIf(nameof(Targetting), AbilityTargetting.Other)][BoxGroup("Common")]
         public ConfigSelectTargets OtherTargets;
-        [NinoMember(4)][BoxGroup("Common")][LabelText("*重定向后过滤")][Tooltip("Targetting目标重新选定生效后，对每一个Target进行条件判断过滤")]
+        [ProtoMember(4)][BoxGroup("Common")][LabelText("*重定向后过滤")][Tooltip("Targetting目标重新选定生效后，对每一个Target进行条件判断过滤")]
         public ConfigAbilityPredicate PredicateForeach; 
         protected abstract void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target);
 

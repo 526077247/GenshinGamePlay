@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("动画驱动移动")]
+    [ProtoContract][LabelText("动画驱动移动")]
     public partial class ConfigAnimatorMove: ConfigMoveAgent
     {
-        [NinoMember(10)]
+        [ProtoMember(10, IsRequired = true)]
         public FacingMoveType FacingMove = FacingMoveType.FourDirection;
     }
 }

@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCombat
     {
-        [NinoMember(1)][LabelText("基础属性")] [BoxGroup("属性")][TableList]
+        [ProtoMember(1)][LabelText("基础属性")] [BoxGroup("属性")][TableList]
         public ConfigCombatProperty[] DefaultProperty;
         
         #if UNITY_EDITOR
@@ -38,13 +38,13 @@ namespace TaoTie
         }
         
         #endif
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public ConfigDie Die;
 
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public ConfigCombatLock CombatLock;
 
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public ConfigCombatBeHit BeHit;
     }
 }

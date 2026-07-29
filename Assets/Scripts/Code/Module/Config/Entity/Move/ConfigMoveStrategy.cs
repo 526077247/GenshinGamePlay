@@ -1,8 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigBulletMove))]
+    [ProtoInclude(101, typeof(ConfigFollowMove))]
+    [ProtoInclude(102, typeof(ConfigPlatformMove))]
     public abstract partial class ConfigMoveStrategy
     {
         

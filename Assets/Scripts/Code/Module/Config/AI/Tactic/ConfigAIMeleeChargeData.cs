@@ -1,25 +1,25 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIMeleeChargeData
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public MotionFlag SpeedLevel;
-        [NinoMember(2)]
+        [ProtoMember(2, IsRequired = true)]
         public float TurnSpeedOverride = 20f;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public float StartDistanceMin;
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public float StartDistanceMax;
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public float StopDistance;
-        [NinoMember(6)]
+        [ProtoMember(6)]
         public float InnerDistance;
-        [NinoMember(7)]
+        [ProtoMember(7, IsRequired = true)]
         public MotionFlag SpeedLevelInner = MotionFlag.Run;
-        [NinoMember(8)]
+        [ProtoMember(8)]
         public bool UseMeleeSlot;
     }
 }

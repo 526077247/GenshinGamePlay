@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using DaGenGraph;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -8,18 +8,18 @@ using UnityEngine;
 namespace TaoTie
 {
     [LabelText("延迟调用 节点")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupDelayAction: ConfigSceneGroupAction
     {
-        [NinoMember(10)][MinValue(1)]
+        [ProtoMember(10)][MinValue(1)]
         [LabelText("延迟时间（ms）")]
         public long Delay = 1;
         
-        [NinoMember(11)]
+        [ProtoMember(11)]
         [LabelText("是否现实世界时间")]
         public bool IsRealTime;
         
-        [NinoMember(12)]
+        [ProtoMember(12)]
         [LabelText("到时间后执行")]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]

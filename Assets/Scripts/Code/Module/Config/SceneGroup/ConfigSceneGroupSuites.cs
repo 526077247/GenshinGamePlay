@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace TaoTie
     /// <summary>
     /// 小组配置
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupSuites
     {
 #if UNITY_EDITOR
@@ -20,19 +20,19 @@ namespace TaoTie
         [JsonIgnore]
         public bool RandSuite => OdinDropdownHelper.sceneGroup.RandSuite;
 #endif
-        [NinoMember(1)][PropertyOrder(int.MinValue)]
+        [ProtoMember(1)][PropertyOrder(int.MinValue)]
         public int LocalId;
-        [NinoMember(2)]
+        [ProtoMember(2)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
 #endif
         public int[] Actors;
-        [NinoMember(3)][LabelText("触发区域")]
+        [ProtoMember(3)][LabelText("触发区域")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupZoneIds)+"()",AppendNextDrawer = true)]
 #endif
         public int[] Zones;
-        [NinoMember(4)][LabelText("事件监听器")]
+        [ProtoMember(4)][LabelText("事件监听器")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupTriggerIds)+"()",AppendNextDrawer = true)]
 #endif
@@ -40,7 +40,7 @@ namespace TaoTie
 #if UNITY_EDITOR
         [ShowIf(nameof(RandSuite))][LabelText("随机权值")]
 #endif
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public int RandWeight;
         
         

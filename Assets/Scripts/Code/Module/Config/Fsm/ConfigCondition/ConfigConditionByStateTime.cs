@@ -1,17 +1,17 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigConditionByStateTime : ConfigCondition
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public float Time;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public bool IsNormalized;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public CompareMode Mode;
 
         public override bool Equals(ConfigCondition other)

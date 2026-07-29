@@ -1,22 +1,22 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("输入状态修改")]
+    [ProtoContract][LabelText("输入状态修改")]
     public partial class ConfigStoryChangeInputState: ConfigStoryClip
     {
-        [NinoMember(10)][LabelText("开启输入状态")]
+        [ProtoMember(10)][LabelText("开启输入状态")]
         public bool Active;
         
-        [NinoMember(11)][LabelText("修改光标状态")]
+        [ProtoMember(11)][LabelText("修改光标状态")]
         public bool EffectCursor;
         
-        [NinoMember(12)][LabelText("光标是否不锁定")][ShowIf(nameof(EffectCursor))]
+        [ProtoMember(12, IsRequired = true)][LabelText("光标是否不锁定")][ShowIf(nameof(EffectCursor))]
         public bool UnLockCursor = true;
 
-        [NinoMember(13)][LabelText("显示光标")][ShowIf(nameof(EffectCursor))]
+        [ProtoMember(13, IsRequired = true)][LabelText("显示光标")][ShowIf(nameof(EffectCursor))]
         public bool VisibleCursor = true;
 
         public override async ETTask Process(StorySystem storySystem)

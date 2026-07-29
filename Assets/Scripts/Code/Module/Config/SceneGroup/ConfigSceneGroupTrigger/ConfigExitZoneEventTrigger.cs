@@ -1,11 +1,11 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("当有实体离开区域")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigExitZoneEventTrigger : ConfigSceneGroupTrigger<ExitZoneEvent>
     {
 

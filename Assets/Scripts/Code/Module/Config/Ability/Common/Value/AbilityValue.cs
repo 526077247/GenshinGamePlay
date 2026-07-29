@@ -1,14 +1,14 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 取Ability值
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class AbilityValue: BaseValue
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string Key;
         public override float Resolve(Entity entity,ActorAbility ability)
         {

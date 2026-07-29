@@ -1,9 +1,9 @@
-﻿using System.Reflection;
-using Nino.Core;
+using System.Reflection;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class OpenView: ConfigAbilityAction
     {
 #if UNITY_EDITOR
@@ -41,11 +41,11 @@ namespace TaoTie
         [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAllView)+"()",AppendNextDrawer = true)]
         [Sirenix.OdinInspector.OnValueChanged(nameof(RefreshViewPath))]
 #endif
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public string ViewType;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public string ViewPath;
-        [NinoMember(12)]
+        [ProtoMember(12, IsRequired = true)]
         public UILayerNames Layer = UILayerNames.NormalLayer;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

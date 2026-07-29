@@ -1,23 +1,23 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("通过ActorId创建实体")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupCreateEntityByActorIdAction : ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]
 #endif
         public int ActorId;
-        [NinoMember(11)][MinValue(1)]
+        [ProtoMember(11, IsRequired = true)][MinValue(1)]
         public int Count = 1;
         
-        [NinoMember(12)]
+        [ProtoMember(12)]
 #if UNITY_EDITOR
         [MinValue(0.1f)]
         [LabelText("出生区域随机范围")]

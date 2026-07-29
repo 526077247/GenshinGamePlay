@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)] [LabelText("立方")]
+    [ProtoContract] [LabelText("立方")]
     public partial class ConfigObbShape: ConfigShape
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public Vector3 Size;
 
         public override Collider CreateCollider(GameObject obj, bool isTrigger)

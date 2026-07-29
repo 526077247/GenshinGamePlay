@@ -1,15 +1,15 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("移除附加Suite")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupRemoveExtraSuiteAction : ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         [LabelText("要移除的阶段id")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+ nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]

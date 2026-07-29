@@ -1,11 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAttackSphere: ConfigSimpleAttackPattern
     {
-        [NotNull][NinoMember(10)]
+        [NotNull][ProtoMember(10, IsRequired = true)]
         public BaseValue Radius = new SingleValue(1);
 
         public override int ResolveHit(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target,

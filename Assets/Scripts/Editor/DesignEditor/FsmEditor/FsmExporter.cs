@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-using Nino.Core;
+using ProtoBuf;
 namespace TaoTie
 {
     class Transition
@@ -139,7 +139,7 @@ namespace TaoTie
             {
                 File.WriteAllText(configSavePath+"json", JsonHelper.ToJson(newController));
 
-                File.WriteAllBytes(configSavePath+"bytes", NinoSerializer.Serialize(newController));
+                File.WriteAllBytes(configSavePath+"bytes", ProtobufHelper.ToBytes(newController));
 
                 AssetDatabase.Refresh();
                 Debug.LogFormat("导出成功! {0}", configSavePath);

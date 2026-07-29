@@ -1,39 +1,40 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(CreateBullet))]
     public partial class CreateGadget: ConfigAbilityAction
     {
-        [NinoMember(10)][LabelText("是否存在所有者？")]
+        [ProtoMember(10)][LabelText("是否存在所有者？")]
         public bool OwnerIsTarget;
-        [NinoMember(11)][ShowIf(nameof(OwnerIsTarget))][LabelText("所有者是？")]
+        [ProtoMember(11)][ShowIf(nameof(OwnerIsTarget))][LabelText("所有者是？")]
         public AbilityTargetting OwnerIs;
-        [NinoMember(21)][LabelText("是否存在属性所有者？")]
+        [ProtoMember(21)][LabelText("是否存在属性所有者？")]
         public bool PropOwnerIsTarget;
-        [NinoMember(12)][ShowIf(nameof(PropOwnerIsTarget))][LabelText("属性所有者是？")]
+        [ProtoMember(12)][ShowIf(nameof(PropOwnerIsTarget))][LabelText("属性所有者是？")]
         public AbilityTargetting PropOwnerIs;
-        [NinoMember(13)][ShowIf(nameof(OwnerIsTarget))][LabelText("和所有者相同生命周期")]
+        [ProtoMember(13)][ShowIf(nameof(OwnerIsTarget))][LabelText("和所有者相同生命周期")]
         public bool LifeByOwnerIsAlive;
-        [NinoMember(14)][LabelText("和所有者共享视野")][ShowIf(nameof(OwnerIsTarget))]
+        [ProtoMember(14)][LabelText("和所有者共享视野")][ShowIf(nameof(OwnerIsTarget))]
         public bool SightGroupWithOwner;
-        [NinoMember(15)]
+        [ProtoMember(15)]
         public ConfigBornType Born;
-        [NinoMember(16)]
+        [ProtoMember(16)]
         public CheckGround CheckGround;
-        [NinoMember(17)]
+        [ProtoMember(17)]
         public int GadgetID;
-        [NinoMember(20)]
+        [ProtoMember(20)]
         public bool OverrideCampId;
-        [NinoMember(18)]
+        [ProtoMember(18)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCampTypeId)+"()")]
         [ShowIf(nameof(OverrideCampId))]
 #endif
         public uint CampID;
-        [NinoMember(19)]
+        [ProtoMember(19)]
         public GadgetState DefaultState;
 
         protected Entity CreateGadgetInner(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)

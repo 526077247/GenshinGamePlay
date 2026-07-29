@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 using YooAsset;
 
@@ -57,7 +57,7 @@ namespace TaoTie
                     {
                         try
                         {
-                            ConfigAIDecisionTree item = NinoDeserializer.Deserialize<ConfigAIDecisionTree>(textAsset.bytes);
+                            ConfigAIDecisionTree item = ProtobufHelper.FromBytes<ConfigAIDecisionTree>(textAsset.bytes);
                             if (!dict.ContainsKey(item.Type))
                             {
                                 _list.Add(item);

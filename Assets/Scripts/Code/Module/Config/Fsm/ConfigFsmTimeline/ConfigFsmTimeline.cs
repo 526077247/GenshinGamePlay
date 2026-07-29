@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigFsmTimeline
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public ConfigFsmClip[] Clips;
     }
 }

@@ -1,9 +1,9 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("单实例")]
+    [ProtoContract][LabelText("单实例")]
     public partial class ConfigSingletonModel: ConfigModel
     {
         

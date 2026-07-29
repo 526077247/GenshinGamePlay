@@ -1,21 +1,21 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class OperatorSceneGroupValue : BaseSceneGroupValue
     {
-        [NinoMember(1)][LabelText("左值")]
+        [ProtoMember(1)][LabelText("左值")]
         public BaseSceneGroupValue Value1;
 
-        [NinoMember(2)][LabelText("操作类型")]
+        [ProtoMember(2)][LabelText("操作类型")]
         public LogicMode Op;
         
         [InfoBox("注意：除数不能为0")]
-        [NinoMember(3)][LabelText("右值")]
+        [ProtoMember(3)][LabelText("右值")]
         public BaseSceneGroupValue Value2;
         
 

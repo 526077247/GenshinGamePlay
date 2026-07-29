@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using DaGenGraph;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -9,13 +9,23 @@ using UnityEngine;
 namespace TaoTie
 {
     // Trigger
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigSceneGroupTrigger<AnyMonsterDieEvent>))]
+    [ProtoInclude(101, typeof(ConfigSceneGroupTrigger<AvatarNearPlatformEvt>))]
+    [ProtoInclude(102, typeof(ConfigSceneGroupTrigger<EnterZoneEvent>))]
+    [ProtoInclude(103, typeof(ConfigSceneGroupTrigger<ExitZoneEvent>))]
+    [ProtoInclude(104, typeof(ConfigSceneGroupTrigger<GadgetStateChangeEvt>))]
+    [ProtoInclude(105, typeof(ConfigSceneGroupTrigger<GameTimeChange>))]
+    [ProtoInclude(106, typeof(ConfigSceneGroupTrigger<PlatformReachPointEvt>))]
+    [ProtoInclude(107, typeof(ConfigSceneGroupTrigger<StoryPlayOverEvt>))]
+    [ProtoInclude(108, typeof(ConfigSceneGroupTrigger<SuiteLoadEvent>))]
+    [ProtoInclude(109, typeof(ConfigSceneGroupTrigger<VariableChangeEvent>))]
     public abstract partial class ConfigSceneGroupTrigger
     {
         [PropertyOrder(int.MinValue)] 
-        [NinoMember(1)][DrawIgnore]
+        [ProtoMember(1)][DrawIgnore]
         public int LocalId;
-        [NinoMember(2)]
+        [ProtoMember(2)]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
 #endif
@@ -44,7 +54,17 @@ namespace TaoTie
 
         public abstract void OnTrigger(SceneGroup sceneGroup, IEventBase evt);
     }
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigVariableChangeEventTrigger))]
+    [ProtoInclude(101, typeof(ConfigSuiteLoadEventTrigger))]
+    [ProtoInclude(102, typeof(ConfigStoryPlayOverEvtTrigger))]
+    [ProtoInclude(103, typeof(ConfigPlatformReachPointEvtTrigger))]
+    [ProtoInclude(104, typeof(ConfigGameTimeChangeTrigger))]
+    [ProtoInclude(105, typeof(ConfigGadgetStateChangeEvtTrigger))]
+    [ProtoInclude(106, typeof(ConfigExitZoneEventTrigger))]
+    [ProtoInclude(107, typeof(ConfigEnterZoneEventTrigger))]
+    [ProtoInclude(108, typeof(ConfigAvatarNearPlatformEvtTrigger))]
+    [ProtoInclude(109, typeof(ConfigAnyMonsterDieEventTrigger))]
     public abstract class ConfigSceneGroupTrigger<T> : ConfigSceneGroupTrigger where T : IEventBase
     {
         [JsonIgnore]

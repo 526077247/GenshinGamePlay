@@ -1,13 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)][Tooltip("使技能进入cd")]
+    [ProtoContract][Tooltip("使技能进入cd")]
     public partial class TriggerSkillCD: ConfigAbilityAction
     {
-        [NinoMember(11)][LabelText("技能配置表Id")]
+        [ProtoMember(11)][LabelText("技能配置表Id")]
         public int ConfigId;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

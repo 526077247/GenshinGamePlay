@@ -1,10 +1,10 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("当玩家靠近寻路单位")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAvatarNearPlatformEvtTrigger : ConfigSceneGroupTrigger<AvatarNearPlatformEvt>
     {
         

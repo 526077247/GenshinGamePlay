@@ -1,21 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigFsm
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string Name;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public int LayerIndex;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public string Entry;
-        [NinoMember(4)]
+        [ProtoMember(4, IsRequired = true)]
         public Dictionary<string, ConfigFsmState> StateDict = new Dictionary<string, ConfigFsmState>();
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public ConfigTransition[] AnyStateTransitions;
 
         public ConfigFsmState GetStateConfig(string stateName)

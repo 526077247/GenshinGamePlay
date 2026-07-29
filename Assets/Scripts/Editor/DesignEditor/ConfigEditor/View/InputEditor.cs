@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-using Nino.Core;
+using ProtoBuf;
 namespace TaoTie
 {
     public class InputEditor:BaseEditorWindow<ConfigInput>

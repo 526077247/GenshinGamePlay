@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("逃跑")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIFleeSetting: ConfigAITacticBaseSetting
     {
-        [NinoMember(10)][NotNull]
+        [ProtoMember(10)][NotNull]
         public ConfigAIFleeData DefaultSetting; 
-        [NinoMember(11)]
+        [ProtoMember(11, IsRequired = true)]
         public Dictionary<int, ConfigAIFleeData> Specification = new Dictionary<int, ConfigAIFleeData>();
     }
 }

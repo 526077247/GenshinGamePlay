@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigRangeSphere: ConfigRange
     {
-        [NinoMember(10)][NotNull]
+        [ProtoMember(10)][NotNull]
         public BaseValue Radius;
 
         public override int ResolveEntity(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target, EntityType[] filter,

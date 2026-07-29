@@ -1,30 +1,30 @@
-﻿using System;
+using System;
 using TaoTie.LitJson.Extensions;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("增加变量的值")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupAddVariableAction : ConfigSceneGroupAction
     {
         [JsonIgnore]
         public override bool CanSetOtherSceneGroup => true;
-        [NinoMember(10)]
+        [ProtoMember(10)]
         [LabelText("变量")]
         public string Key;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         [LabelText("是否限制范围")]
         public bool Limit;
-        [NinoMember(12)]
+        [ProtoMember(12)]
         [ShowIf(nameof(Limit))] [LabelText("范围最小值")]
         public float MinValue;
-        [NinoMember(13)]
+        [ProtoMember(13)]
         [ShowIf(nameof(Limit))] [LabelText("范围最大值")]
         public float MaxValue;
-        [NinoMember(14)]
+        [ProtoMember(14)]
         [LabelText("增加的值")]
         public BaseSceneGroupValue Value;
         

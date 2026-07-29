@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor.Callbacks;
 using UnityEditor;
 using UnityEngine;
-using Nino.Core;
+using ProtoBuf;
 namespace TaoTie
 {
     public class AbilityEditor: BaseEditorWindow<List<ConfigAbility>>

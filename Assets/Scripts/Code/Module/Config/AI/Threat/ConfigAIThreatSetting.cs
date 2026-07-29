@@ -1,47 +1,47 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIThreatSetting
     {
         [LabelText("启用")]
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public bool Enable = true;
-        [NinoMember(2)][MinValue(0.1f)][LabelText("超过目标距离范围清除威胁值")]
+        [ProtoMember(2, IsRequired = true)][MinValue(0.1f)][LabelText("超过目标距离范围清除威胁值")]
         public float ClearThreatTargetDistance = 10;
-        [NinoMember(3)][LabelText("超过出生地范围清除威胁值")]
+        [ProtoMember(3, IsRequired = true)][LabelText("超过出生地范围清除威胁值")]
         public float ClearThreatEdgeDistance = 100;
-        [NinoMember(4)][LabelText("超过范围清除威胁值倒计时（ms）")]
+        [ProtoMember(4, IsRequired = true)][LabelText("超过范围清除威胁值倒计时（ms）")]
         public int ClearThreatTimerByDistance = 3000;
         
-        [NinoMember(5)][LabelText("无法寻路清除威胁值")]
+        [ProtoMember(5)][LabelText("无法寻路清除威胁值")]
         public bool ClearThreatByLostPath;
-        [NinoMember(6)][ShowIf(nameof(ClearThreatByLostPath))][LabelText("无法寻路清除威胁值倒计时（ms）")]
+        [ProtoMember(6, IsRequired = true)][ShowIf(nameof(ClearThreatByLostPath))][LabelText("无法寻路清除威胁值倒计时（ms）")]
         public int ClearThreatTimerByLostPath = 3000;
         
-        [NinoMember(7)][LabelText("离开区域清除威胁值")]
+        [ProtoMember(7)][LabelText("离开区域清除威胁值")]
         public bool ClearThreatByTargetOutOfZone;
-        [NinoMember(8)][ShowIf(nameof(ClearThreatByTargetOutOfZone))][LabelText("离开区域清除威胁值倒计时（ms）")]
+        [ProtoMember(8, IsRequired = true)][ShowIf(nameof(ClearThreatByTargetOutOfZone))][LabelText("离开区域清除威胁值倒计时（ms）")]
         public int ClearThreatTimerByTargetOutOfZone = 3000;
         
-        [NinoMember(9)][LabelText("视觉感知附加威胁值")]
+        [ProtoMember(9, IsRequired = true)][LabelText("视觉感知附加威胁值")]
         public float ViewThreatGrow = 100f;
-        [NinoMember(10)][LabelText("听觉感知附加威胁值")]
+        [ProtoMember(10, IsRequired = true)][LabelText("听觉感知附加威胁值")]
         public float HearThreatGrow = 100f;
-        [NinoMember(11)][LabelText("感觉感知附加威胁值")]
+        [ProtoMember(11, IsRequired = true)][LabelText("感觉感知附加威胁值")]
         public float FeelThreatGrow = 500f;
-        [NinoMember(12)][LabelText("威胁值衰减速度（每秒）")]
+        [ProtoMember(12, IsRequired = true)][LabelText("威胁值衰减速度（每秒）")]
         public float ThreatDecreaseSpeed = 30f;
-        [NinoMember(13)][LabelText("附加威胁值广播范围")]
+        [ProtoMember(13)][LabelText("附加威胁值广播范围")]
         public float ThreatBroadcastRange;
 
-        //[NinoMember(14)]//todo:
+        //[ProtoMember(14)]//todo:
         [LabelText("视觉感知距离衰减曲线")][HideReferenceObjectPicker]
         public AnimationCurve ViewAttenuationCurve;
-        //[NinoMember(15)]//todo:
+        //[ProtoMember(15)]//todo:
         [LabelText("听觉感知距离衰减曲线")][HideReferenceObjectPicker]
         public AnimationCurve HearAttenuationCurve;
     }

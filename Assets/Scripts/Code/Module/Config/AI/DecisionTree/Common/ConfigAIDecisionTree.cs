@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIDecisionTree
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public DecisionArchetype Type;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public DecisionNode Node;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public DecisionNode CombatNode;
     }
 }

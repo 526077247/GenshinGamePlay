@@ -1,18 +1,18 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 按条件过滤
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class Predicated: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ConfigAbilityPredicate TargetPredicate;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public ConfigAbilityAction[] SuccessActions;
-        [NinoMember(12)]
+        [ProtoMember(12)]
         public ConfigAbilityAction[] FailActions;
         
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)

@@ -1,19 +1,19 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("*范围检测攻击")][Tooltip("攻击者为Target")]
+    [ProtoContract][LabelText("*范围检测攻击")][Tooltip("攻击者为Target")]
     public partial class TriggerAttackEvent : ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10, IsRequired = true)]
         public TargetType TargetType = TargetType.Enemy;
-        [NotNull] [NinoMember(11)]
+        [NotNull] [ProtoMember(11, IsRequired = true)]
         public ConfigAttackEvent AttackEvent = new ConfigAttackEvent();
-        [NinoMember(12)][Range(0,1)][LabelText("夹角权值（负相关）")][BoxGroup("碰撞盒优先级")]
+        [ProtoMember(12)][Range(0,1)][LabelText("夹角权值（负相关）")][BoxGroup("碰撞盒优先级")]
         public float A;
-        [NinoMember(13)][Range(0,1)][LabelText("高度差权值（正相关）")][BoxGroup("碰撞盒优先级")]
+        [ProtoMember(13)][Range(0,1)][LabelText("高度差权值（正相关）")][BoxGroup("碰撞盒优先级")]
         public float B;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

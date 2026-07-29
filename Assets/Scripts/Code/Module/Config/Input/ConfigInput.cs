@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigInput
     {
-        [NinoMember(1)][LabelText("按键默认绑定")]
+        [ProtoMember(1)][LabelText("按键默认绑定")]
         [TableList]
         public ConfigInputBinding[] Config;
     }

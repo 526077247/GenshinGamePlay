@@ -1,19 +1,19 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class DecisionConditionNode: DecisionNode
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAIDecisionInterface)+"()")]
 #endif
         public string Condition;
-        [NinoMember(11)][NotNull]
+        [ProtoMember(11)][NotNull]
         public DecisionNode True;
-        [NinoMember(12)][NotNull]
+        [ProtoMember(12)][NotNull]
         public DecisionNode False;
     }
 }

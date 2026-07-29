@@ -1,14 +1,14 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class SceneGroupValue : BaseSceneGroupValue
     {
-        [NinoMember(1)][LabelText("变量")]
+        [ProtoMember(1)][LabelText("变量")]
         public string Key;
         
         public override float Resolve(IEventBase obj, DynDictionary set)

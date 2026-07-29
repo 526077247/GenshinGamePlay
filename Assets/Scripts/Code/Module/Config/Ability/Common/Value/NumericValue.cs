@@ -1,14 +1,14 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
     /// <summary>
     /// 属性值
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
     public partial class NumericValue: BaseValue
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
 #if UNITY_EDITOR
         [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericFinalTypeId)+"()")]
 #endif

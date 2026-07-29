@@ -1,5 +1,5 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,14 +9,14 @@ namespace TaoTie
     /// SceneGroup调整suite进度,只对非randSuite有效
     /// </summary>
     [LabelText("跳转到其他Suite")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupGoToSuiteAction:ConfigSceneGroupAction
     {
         [LabelText("要跳转的组Id")]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupSuiteIds)+"()",AppendNextDrawer = true)]
 #endif
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public int SuiteId;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {

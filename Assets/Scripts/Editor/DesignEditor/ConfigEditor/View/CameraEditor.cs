@@ -1,7 +1,7 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
-using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -38,9 +38,9 @@ namespace TaoTie
         [Button("打开1")]
         public void Text()
         {
-            var bytes = NinoSerializer.Serialize(data);
+            var bytes = ProtobufHelper.ToBytes(data);
             Log.Info(JsonHelper.ToJson(data));
-            var camera = NinoDeserializer.Deserialize<ConfigCameras>(bytes);
+            var camera = ProtobufHelper.FromBytes<ConfigCameras>(bytes);
             Log.Info(JsonHelper.ToJson(camera));
         }
     }

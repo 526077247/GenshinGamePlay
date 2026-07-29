@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
@@ -36,7 +36,7 @@ namespace TaoTie
             else
             {
                 var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
-                return NinoDeserializer.Deserialize<ConfigCameras>(bytes);
+                return ProtobufHelper.FromBytes<ConfigCameras>(bytes);
             }
         }
         public async partial ETTask LoadAsync()

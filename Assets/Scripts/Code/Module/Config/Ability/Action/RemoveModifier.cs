@@ -1,11 +1,11 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class RemoveModifier: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public string ModifierName;
 
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)

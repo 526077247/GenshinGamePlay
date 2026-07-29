@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigBillboard
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string AttachPoint;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public Vector3 Offset;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public ConfigBillboardPlugin[] Plugins;
     }
 }

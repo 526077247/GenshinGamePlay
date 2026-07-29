@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 using YooAsset;
 
@@ -57,7 +57,7 @@ namespace TaoTie
                     {
                         try
                         {
-                            var item = NinoDeserializer.Deserialize<ConfigSceneGroup>(textAsset.bytes);
+                            var item = ProtobufHelper.FromBytes<ConfigSceneGroup>(textAsset.bytes);
                             if(item.Disable) continue;
                             if (!dict.ContainsKey(item.Id))
                             {

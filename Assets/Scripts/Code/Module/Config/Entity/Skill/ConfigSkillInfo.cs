@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSkillInfo
     {
-        [NinoMember(3)][LabelText("当前角色唯一Id")]
+        [ProtoMember(3)][LabelText("当前角色唯一Id")]
         public int LocalId;
-        [NinoMember(1)][LabelText("配置表Id")]
+        [ProtoMember(1)][LabelText("配置表Id")]
         public int ConfigId;
-        [NinoMember(2)][LabelText("触发Fsm时的输入Id")]
+        [ProtoMember(2)][LabelText("触发Fsm时的输入Id")]
         public int SkillID;
     }
 }

@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [LabelText("并行执行")][NinoType(false)]
+    [LabelText("并行执行")][ProtoContract]
     public partial class ConfigStoryParallelClip: ConfigStoryClip
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ConfigStoryClip[] Clips;
 
-        [NinoMember(11)][LabelText("等待所有子项执行完成")]
+        [ProtoMember(11, IsRequired = true)][LabelText("等待所有子项执行完成")]
         public bool WaitAll = true;
 
         public override async ETTask Process(StorySystem storySystem)

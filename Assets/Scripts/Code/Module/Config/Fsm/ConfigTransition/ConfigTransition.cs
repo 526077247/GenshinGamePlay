@@ -1,29 +1,29 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigTransition
     {
-        [NinoMember(1)][ReadOnly][ShowIf("@"+nameof(FromState)+"!="+nameof(ToState))]
+        [ProtoMember(1)][ReadOnly][ShowIf("@"+nameof(FromState)+"!="+nameof(ToState))]
         public string FromState;
-        [NinoMember(2)][ReadOnly]
+        [ProtoMember(2)][ReadOnly]
         public string ToState;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public float ToStateTime;
-        [NinoMember(4)]
+        [ProtoMember(4, IsRequired = true)]
         public float FadeDuration = 0.5f;
-        [NinoMember(5)]
+        [ProtoMember(5)]
         public bool CanTransitionToSelf;
-        [NinoMember(6)]
+        [ProtoMember(6)]
         public TransitionInterruptionSource InteractionSource;
-        [NinoMember(7)][ShowIf("@"+nameof(InteractionSource)+"!="+nameof(TransitionInterruptionSource)+"."+nameof(TransitionInterruptionSource.None))]
+        [ProtoMember(7)][ShowIf("@"+nameof(InteractionSource)+"!="+nameof(TransitionInterruptionSource)+"."+nameof(TransitionInterruptionSource.None))]
         public bool OrderedInteraction;
-        [NinoMember(8)]
+        [ProtoMember(8)]
         public ConfigCondition[] Conditions;
 
         public bool IsMatch(Fsm fsm)

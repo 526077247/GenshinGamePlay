@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCameras
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public ConfigCamera DefaultCamera;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public ConfigCamera[] Cameras;
-        [NinoMember(3)] [HideReferenceObjectPicker]
+        [ProtoMember(3, IsRequired = true)] [HideReferenceObjectPicker]
         public ConfigBlender DefaultBlend = new ConfigBlender();
     }
 }

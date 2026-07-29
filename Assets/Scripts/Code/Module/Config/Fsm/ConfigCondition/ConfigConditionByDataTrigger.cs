@@ -1,13 +1,13 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigConditionByDataTrigger : ConfigCondition
     {
-        [NinoMember(1)][NotNull]
+        [ProtoMember(1)][NotNull]
 #if UNITY_EDITOR
         [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFSMConstKey)+"()", AppendNextDrawer = true)]
 #endif

@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
@@ -50,7 +50,7 @@ namespace TaoTie
             else
             {
                 var bytes = await ResourcesManager.Instance.LoadConfigBytesAsync(path);
-                dict[path] = NinoDeserializer.Deserialize<ConfigActor>(bytes);
+                dict[path] = ProtobufHelper.FromBytes<ConfigActor>(bytes);
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 using YooAsset;
 
@@ -67,7 +67,7 @@ namespace TaoTie
                     {
                         try
                         {
-                            var list = NinoDeserializer.Deserialize<ConfigAbility[]>(textAsset.bytes);
+                            var list = ProtobufHelper.FromBytes<ConfigAbility[]>(textAsset.bytes);
                             for (int j = 0; j < list.Length; j++)
                             {
                                 var item = list[j];

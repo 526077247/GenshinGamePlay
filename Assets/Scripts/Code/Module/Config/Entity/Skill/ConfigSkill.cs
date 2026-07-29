@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSkill
     {
-        [NinoMember(1)] [LabelText("默认技能")]
+        [ProtoMember(1)] [LabelText("默认技能")]
         public ConfigSkillInfo[] Skills;
     }
 }

@@ -1,12 +1,12 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigStoryCameraActor: ConfigStoryActor
     {
-        [NinoMember(10)] 
+        [ProtoMember(10, IsRequired = true)] 
         public int CameraConfigId = 2;
 
         private long id;

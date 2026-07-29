@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [TriggerType(typeof(ConfigAnyMonsterDieEventTrigger))]
     [LabelText("当怪物死亡后通过ActorId创建Monster")]
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigSceneGroupCreateMonsterOnMonsterDieAction: ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10, IsRequired = true)]
         public bool CreateDieMonster = true;
-        [NinoMember(11)]
+        [ProtoMember(11)]
 #if UNITY_EDITOR
         [ShowIf("@!"+nameof(CreateDieMonster))]
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()",AppendNextDrawer = true)]

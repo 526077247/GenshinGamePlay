@@ -1,9 +1,12 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigConditionByDataTrigger))]
+    [ProtoInclude(101, typeof(ConfigConditionByStateTime))]
+    [ProtoInclude(102, typeof(ConfigConditionByData))]
     public abstract partial class ConfigCondition
     {
         public abstract ConfigCondition Copy();
@@ -12,21 +15,27 @@ namespace TaoTie
 
         public abstract bool Equals(ConfigCondition other);
     }
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigConditionByData<bool>))]
+    [ProtoInclude(101, typeof(ConfigConditionByData<float>))]
+    [ProtoInclude(102, typeof(ConfigConditionByData<int>))]
     public abstract partial class ConfigConditionByData:ConfigCondition
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
 #if UNITY_EDITOR
         [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFSMConstKey)+"()", AppendNextDrawer = true)]
 #endif
         public string Key;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public CompareMode Mode;
     }
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigConditionByDataBool))]
+    [ProtoInclude(101, typeof(ConfigConditionByDataFloat))]
+    [ProtoInclude(102, typeof(ConfigConditionByDataInt))]
     public abstract partial class ConfigConditionByData<T> :ConfigConditionByData  where T : unmanaged
     {
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public T Value;
     }
 }

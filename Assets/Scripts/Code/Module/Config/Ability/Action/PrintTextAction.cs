@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class PrintTextAction: ConfigAbilityAction
     {
         /// <summary>
         /// 打印的文本
         /// </summary>
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string Text;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

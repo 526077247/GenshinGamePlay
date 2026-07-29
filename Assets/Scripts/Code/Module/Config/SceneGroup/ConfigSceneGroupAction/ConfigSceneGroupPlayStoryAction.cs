@@ -1,4 +1,4 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,16 +8,16 @@ namespace TaoTie
     /// 播放剧情
     /// </summary>
     [LabelText("播放剧情")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupPlayStoryAction : ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ulong Id;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public Vector3 Position;
-        [NinoMember(12)]
+        [ProtoMember(12)]
         public Vector3 Rotation;
-        [NinoMember(13)][LabelText("是否是相对坐标、方向")]
+        [ProtoMember(13)][LabelText("是否是相对坐标、方向")]
         public bool IsLocal;
         protected override void Execute(IEventBase evt, SceneGroup aimSceneGroup, SceneGroup fromSceneGroup)
         {

@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class DynamicVector3: BaseVector3
     {
-        [NinoMember(1)][NotNull]
+        [ProtoMember(1, IsRequired = true)][NotNull]
         public BaseValue X = new SingleValue();
-        [NinoMember(2)][NotNull]
+        [ProtoMember(2, IsRequired = true)][NotNull]
         public BaseValue Y = new SingleValue();
-        [NinoMember(3)][NotNull]
+        [ProtoMember(3, IsRequired = true)][NotNull]
         public BaseValue Z = new SingleValue();
         
         public override Vector3 Resolve(Entity entity, ActorAbility ability)

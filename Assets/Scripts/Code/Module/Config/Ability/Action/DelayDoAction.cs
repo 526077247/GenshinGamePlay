@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class DelayDoAction: ConfigAbilityAction
     {
 
-        [NinoMember(10)][MinValue(1)][LabelText("延时调用(ms)")]
+        [ProtoMember(10, IsRequired = true)][MinValue(1)][LabelText("延时调用(ms)")]
         public int Delay = 1;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public ConfigAbilityAction[] Actions;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

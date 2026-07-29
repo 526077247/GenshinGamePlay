@@ -1,10 +1,10 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public class ConfigAISensingSetting
     {
         [LabelText("*敏感性")][MinValue(0.01f)][Tooltip("作为系数乘以可视范围等各种感知范围")]

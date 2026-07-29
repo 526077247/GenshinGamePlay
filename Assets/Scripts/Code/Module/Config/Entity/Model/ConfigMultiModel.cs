@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)][LabelText("多实例")]
+    [ProtoContract][LabelText("多实例")]
     public partial class ConfigMultiModel: ConfigModel
     {
-        [NinoMember(1)][LabelText("数量")]
+        [ProtoMember(1, IsRequired = true)][LabelText("数量")]
         public BaseValue Count = new NumericValue();
-        [NinoMember(2)][LabelText("中心点偏移")] [NotNull]
+        [ProtoMember(2, IsRequired = true)][LabelText("中心点偏移")] [NotNull]
         public DynamicVector3 Offset = new DynamicVector3();
-        [NinoMember(3)][LabelText("排列方式")]
+        [ProtoMember(3)][LabelText("排列方式")]
         public ConfigArrange Arrange;
     }
 }

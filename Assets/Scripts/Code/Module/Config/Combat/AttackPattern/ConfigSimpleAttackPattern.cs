@@ -1,11 +1,13 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigAttackBox))]
+    [ProtoInclude(101, typeof(ConfigAttackSphere))]
     public abstract class ConfigSimpleAttackPattern: ConfigBaseAttackPattern
     {
-        [NotNull] [NinoMember(3)]
+        [NotNull] [ProtoMember(3, IsRequired = true)]
         public ConfigBornType Born = new ConfigBornByTarget();
     }
 }

@@ -1,10 +1,10 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("环绕对峙")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAISurroundSetting: ConfigAITacticBaseSetting
     {
 

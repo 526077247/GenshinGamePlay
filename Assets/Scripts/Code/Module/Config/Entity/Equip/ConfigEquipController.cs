@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigEquipController
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public Dictionary<EquipType, string> AttachPoints = new Dictionary<EquipType, string>();
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public string SheathPoint;
     }
 }

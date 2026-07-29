@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
@@ -7,16 +7,16 @@ namespace TaoTie
     /// <summary>
     /// 监听状态机状态
     /// </summary>
-    [NinoType(false)][LabelText("监听状态机状态变化时AttachModify")]
+    [ProtoContract][LabelText("监听状态机状态变化时AttachModify")]
     public partial class ConfigAttachToStateIDMixin: ConfigAbilityMixin
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public string ChargeLayer;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public List<string> StateIDs;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         public ConfigAbilityPredicate Predicate;
-        [NinoMember(4)]
+        [ProtoMember(4)]
         public string ModifierName;
     }
 }

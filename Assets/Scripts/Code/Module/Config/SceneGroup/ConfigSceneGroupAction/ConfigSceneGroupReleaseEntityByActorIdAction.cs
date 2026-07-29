@@ -1,15 +1,15 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
     [LabelText("通过ActorId释放实体")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigSceneGroupReleaseEntityByActorIdAction:ConfigSceneGroupAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
 #if UNITY_EDITOR
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetSceneGroupActorIds)+"()", AppendNextDrawer = true)]
 #endif

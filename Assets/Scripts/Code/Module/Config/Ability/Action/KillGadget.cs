@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class KillGadget: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public ConfigSelectTargetsByChildren GadgetInfo;
-        [NinoMember(11)][LabelText("*是否下一帧销毁")][Tooltip("注意时序，先Kill了可能会影响后面执行的Action内部的判断，所以一般开启此项")]
+        [ProtoMember(11, IsRequired = true)][LabelText("*是否下一帧销毁")][Tooltip("注意时序，先Kill了可能会影响后面执行的Action内部的判断，所以一般开启此项")]
         public bool KillNextFrame = true;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

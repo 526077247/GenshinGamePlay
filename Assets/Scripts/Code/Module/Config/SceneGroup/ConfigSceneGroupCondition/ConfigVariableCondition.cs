@@ -1,5 +1,5 @@
-﻿using System;
-using Nino.Core;
+using System;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,19 +7,19 @@ namespace TaoTie
 {
     [TriggerType]
     [LabelText("变量值")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigVariableCondition : ConfigSceneGroupCondition
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         [LabelText("左值")] 
         public BaseSceneGroupValue LeftValue;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         [Tooltip(SceneGroupTooltips.CompareMode)]
 #if UNITY_EDITOR
         [OnValueChanged("@"+nameof(CheckModeType)+"("+nameof(RightValue)+","+nameof(Mode)+")")] 
 #endif
         public CompareMode Mode;
-        [NinoMember(3)]
+        [ProtoMember(3)]
         [LabelText("右值")] 
         public float RightValue;
 

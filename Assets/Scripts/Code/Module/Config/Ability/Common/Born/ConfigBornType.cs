@@ -1,4 +1,4 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,12 +7,16 @@ namespace TaoTie
     /// <summary>
     /// 出生点
     /// </summary>
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(ConfigBornByAttachPoint))]
+    [ProtoInclude(101, typeof(ConfigBornBySelf))]
+    [ProtoInclude(102, typeof(ConfigBornByTarget))]
+    [ProtoInclude(103, typeof(ConfigBornByWorld))]
     public abstract partial class ConfigBornType
     {
-        [NinoMember(1)][NotNull][LabelText("坐标偏移")]
+        [ProtoMember(1, IsRequired = true)][NotNull][LabelText("坐标偏移")]
         public BaseVector3 PositionOffset = new ZeroVector3();
-        [NinoMember(2)][NotNull][LabelText("方向偏移")]
+        [ProtoMember(2, IsRequired = true)][NotNull][LabelText("方向偏移")]
         public BaseVector3 RotationOffset = new ZeroVector3();
 
         public abstract Vector3 ResolvePos(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target);

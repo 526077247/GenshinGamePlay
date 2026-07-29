@@ -1,16 +1,16 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigEnvironments
     {
-        [NinoMember(1)]
+        [ProtoMember(1)]
         public ConfigEnvironment DefaultEnvironment;
-        [NinoMember(2)]
+        [ProtoMember(2)]
         public ConfigEnvironment[] Environments;
-        [NinoMember(3)] [HideReferenceObjectPicker]
+        [ProtoMember(3, IsRequired = true)] [HideReferenceObjectPicker]
         public ConfigBlender DefaultBlend = new ConfigBlender();
     }
 }

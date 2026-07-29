@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigRangeBox: ConfigRange
     {
-        [NinoMember(10)] [NotNull] 
+        [ProtoMember(10, IsRequired = true)] [NotNull] 
         public DynamicVector3 Size = new DynamicVector3();
 
         public override int ResolveEntity(Entity actor, ActorAbility ability, ActorModifier modifier, Entity target,

@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using Nino.Core;
+using System.Collections.Generic;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
     [LabelText("漫游")]
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIWanderSetting: ConfigAITacticBaseSetting
     {
-        [NinoMember(10)] [NotNull]
+        [ProtoMember(10)] [NotNull]
         public ConfigAIWanderData DefaultSetting;
-        [NinoMember(11)] 
+        [ProtoMember(11, IsRequired = true)] 
         public Dictionary<int, ConfigAIWanderData> Specification = new Dictionary<int, ConfigAIWanderData>();
     }
 }

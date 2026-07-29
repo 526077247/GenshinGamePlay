@@ -1,14 +1,14 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigAIDefendArea
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public bool Enable = true;
-        [NinoMember(2)][LabelText("防守距边界范围")]
+        [ProtoMember(2)][LabelText("防守距边界范围")]
         public float DefendRange; 
     }
 }

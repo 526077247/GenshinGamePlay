@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class EnableHitBoxByName: ConfigAbilityAction
     {
-        [NinoMember(10)]
+        [ProtoMember(10)]
         public string[] HitBoxNames;
-        [NinoMember(11)]
+        [ProtoMember(11)]
         public bool SetEnable;
-        [NinoMember(12)]
+        [ProtoMember(12)]
         public bool IncludeChild;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

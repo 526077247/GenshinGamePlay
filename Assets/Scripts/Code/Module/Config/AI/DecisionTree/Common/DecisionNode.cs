@@ -1,13 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
+    [ProtoInclude(100, typeof(DecisionActionNode))]
+    [ProtoInclude(101, typeof(DecisionConditionNode))]
     public abstract partial class DecisionNode
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public bool Enable = true;
 #if UNITY_EDITOR
         [SerializeField] [LabelText("策划备注")]

@@ -1,15 +1,15 @@
-﻿using Nino.Core;
+using ProtoBuf;
 using UnityEngine;
 
 namespace TaoTie
 {
-    [NinoType(false)]
+    [ProtoContract]
     public partial class ConfigCameraColliderPlugin: ConfigCameraOtherPlugin
     {
-        [NinoMember(1)]
+        [ProtoMember(1, IsRequired = true)]
         public float Radius = 0.1f;
 
-        [NinoMember(2)]
+        [ProtoMember(2, IsRequired = true)]
         public LayerMask CastLayer = LayerMask.GetMask("Default");
     }
 }
