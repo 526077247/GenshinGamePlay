@@ -1,6 +1,7 @@
-﻿using System;
+﻿using CommandLine;
+using ProtoBuf;
+using System;
 using System.Threading;
-using CommandLine;
 namespace TaoTie
 {
     internal static class Program
@@ -11,7 +12,7 @@ namespace TaoTie
             try
             {
                 MongoRegister.Init();
-                ProtobufHelper.Init();
+                UnityTypeBindings.Init();
                 // 命令行参数
                 Options options = null;
                 Parser.Default.ParseArguments<Options>(args)

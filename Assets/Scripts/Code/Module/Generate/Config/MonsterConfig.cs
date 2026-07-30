@@ -9,8 +9,8 @@ namespace TaoTie
     [Config]
     public partial class MonsterConfigCategory : ProtoObject, IMerge
     {
-        public static MonsterConfigCategory Instance;
-		
+        public static MonsterConfigCategory Instance => ConfigManager.GetConfig<MonsterConfigCategory>();
+
         
         [ProtoIgnore]
         private Dictionary<int, MonsterConfig> dict = new Dictionary<int, MonsterConfig>();
@@ -20,7 +20,6 @@ namespace TaoTie
 		
         public MonsterConfigCategory()
         {
-            Instance = this;
         }
         
         public void Merge(object o)

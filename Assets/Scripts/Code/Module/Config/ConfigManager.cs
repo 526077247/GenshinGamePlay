@@ -11,6 +11,8 @@ namespace TaoTie
 
         public Dictionary<Type, object> AllConfig = new Dictionary<Type, object>();
 
+        private static Dictionary<string, byte[]> cachedBytes;
+
         #region override
 
         public void Init()
@@ -24,10 +26,28 @@ namespace TaoTie
 	        Instance = null;
 	        ConfigLoader = null;
 	        AllConfig.Clear();
+	        cachedBytes?.Clear();
+	        cachedBytes = null;
         }
 
         #endregion
-        
+
+        public static T GetConfig<T>() where T: ProtoObject
+        {
+	        Type type = TypeInfo<T>.Type;
+	        if (Instance.AllConfig.TryGetValue(type, out var obj))
+		        return obj as T;
+
+	        if (cachedBytes != null && cachedBytes.TryGetValue(type.Name, out var bytes))
+	        {
+		        obj = ProtobufHelper.FromBytes(type, bytes, 0, bytes.Length);
+		        lock (Instance.AllConfig)
+			        Instance.AllConfig[type] = obj;
+		        return obj as T;
+	        }
+	        return null;
+        }
+
         public async ETTask<T> LoadOneConfig<T>(string name = "", bool cache = false) where T: ProtoObject
 		{
 			Type configType = TypeInfo<T>.Type;
@@ -46,42 +66,11 @@ namespace TaoTie
         public async ETTask LoadAsync()
 		{
 			this.AllConfig.Clear();
-			List<Type> types = AttributeManager.Instance.GetTypes(TypeInfo<ConfigAttribute>.Type);
-
-			Dictionary<string, byte[]> configBytes = new Dictionary<string, byte[]>();
-			await this.ConfigLoader.GetAllConfigBytes(configBytes);
-#if UNITY_WEBGL
-			foreach (Type type in types)
-			{
-				this.LoadOneInThread(type, configBytes);
-			}	
-#else
-			using (ListComponent<Task> listTasks = ListComponent<Task>.Create())
-			{
-				foreach (Type type in types)
-				{
-					Task assignment = Task.Run(() => this.LoadOneInThread(type, configBytes));
-					listTasks.Add(assignment);
-				}
-
-				await Task.WhenAll(listTasks.ToArray());
-			}
-#endif
+			cachedBytes = new Dictionary<string, byte[]>();
+			await this.ConfigLoader.GetAllConfigBytes(cachedBytes);
 		}
 
-		private void LoadOneInThread(Type configType, Dictionary<string, byte[]> configBytes)
-		{
-			byte[] oneConfigBytes = configBytes[configType.Name];
-
-			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
-
-			lock (this)
-			{
-				this.AllConfig[configType] = category;
-			}
-		}
-
-		public void ReleaseConfig<T>() where T : ProtoObject, IMerge
+        public void ReleaseConfig<T>() where T : ProtoObject, IMerge
 		{
 			Type configType = TypeInfo<T>.Type;
 			AllConfig.Remove(configType);

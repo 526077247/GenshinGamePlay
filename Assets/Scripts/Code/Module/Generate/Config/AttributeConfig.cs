@@ -9,8 +9,8 @@ namespace TaoTie
     [Config]
     public partial class AttributeConfigCategory : ProtoObject, IMerge
     {
-        public static AttributeConfigCategory Instance;
-		
+        public static AttributeConfigCategory Instance => ConfigManager.GetConfig<AttributeConfigCategory>();
+
         
         [ProtoIgnore]
         private Dictionary<int, AttributeConfig> dict = new Dictionary<int, AttributeConfig>();
@@ -20,7 +20,6 @@ namespace TaoTie
 		
         public AttributeConfigCategory()
         {
-            Instance = this;
         }
         
         public void Merge(object o)
