@@ -17,7 +17,10 @@ var TaoTiePluginsLibrary =
                         info.system = si.system || ''; info.platform = si.platform || '';
                     }
                 }
-            } catch (e) { console.error('getSystemInfoSync failed:', e); }
+            } catch (e) {
+                console.error('getSystemInfoSync failed:', e);
+                return info;
+            }
             g.__taotiePi = info;
             return info;
         },
