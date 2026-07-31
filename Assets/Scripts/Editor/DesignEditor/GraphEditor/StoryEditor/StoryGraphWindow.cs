@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using DaGenGraph;
-using DaGenGraph.Editor;
-using ProtoBuf;
+using TaoTie.Inspector.Editor;
+using TaoTie.Inspector;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -66,7 +65,7 @@ namespace TaoTie
             return m_Graph != null ? JsonHelper.ToJson(m_Graph) : null;
         }
 
-        protected override DaGenGraph.GraphBase DeserializeGraph(string json)
+        protected override TaoTie.Inspector.GraphBase DeserializeGraph(string json)
         {
             if (string.IsNullOrEmpty(json)) return null;
             if (JsonHelper.TryFromJson<StoryGraph>(json, out var graph))
@@ -100,7 +99,7 @@ namespace TaoTie
             }
         }
 
-        private const string k_CachedPathKey = "DaGenGraph_CachedPath_";
+        private const string k_CachedPathKey = "TaoTieInspector_CachedPath_";
 
         protected override void InitGraph()
         {

@@ -1,19 +1,13 @@
 ﻿using System.Reflection;
-using DaGenGraph;
-using DaGenGraph.Editor;
-
+using TaoTie.Inspector.Editor;
+using TaoTie.Inspector;
 namespace TaoTie
 {
     public class SceneGroupNodeView: NodeView
     {
-        protected override void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
+        protected override DrawBase CreateDrawBase()
         {
-            var graph = this.graph as SceneGroupGraph;
-            if (ValueDropDownHelper.RefreshValueDropDown(graph, field, obj, valuesGetter, valueDropdown))
-            {
-                return;
-            }
-            base.RefreshValueDropDown(field, obj, valuesGetter);
+            return new SceneGroupGraphDrawBase(this.graphWindow as SceneGroupGraphWindow);
         }
     }
     

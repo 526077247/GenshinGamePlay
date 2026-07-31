@@ -1,5 +1,4 @@
 using System;
-using DaGenGraph;
 using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -12,7 +11,7 @@ namespace TaoTie
     public abstract class ConfigSceneGroupConditionAction:ConfigSceneGroupAction
     {
         [ProtoMember(11)]
-        [LabelText("满足条件后执行")][DrawIgnore]
+        [LabelText("满足条件后执行")][Inspector.DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
@@ -20,7 +19,7 @@ namespace TaoTie
 #endif
         public ConfigSceneGroupAction[] Success;
         [ProtoMember(12)]
-        [LabelText("不满足后执行")][DrawIgnore]
+        [LabelText("不满足后执行")][Inspector.DrawIgnore]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]

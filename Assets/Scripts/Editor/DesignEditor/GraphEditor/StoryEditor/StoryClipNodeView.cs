@@ -1,50 +1,58 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using DaGenGraph.Editor;
-using Sirenix.OdinInspector;
+using TaoTie.Inspector;
+using TaoTie.Inspector.Editor;
 
 namespace TaoTie
 {
     public class StoryClipNodeView: NodeView<StoryClipNode>
     {
-        private List<Type> subTypes;
-        private string[] subNames;
-        protected override List<Type> GetSubClassList(FieldInfo field,object obj, Type type, out string[] names)
+        public class StoryClipNodeViewDrawBase: DrawBase
         {
-            if (type == TypeInfo<ConfigStoryClip>.Type)
+            private List<Type> subTypes;
+            private string[] subNames;
+            protected override List<Type> GetSubClassList(FieldInfo field,object obj, Type type, out string[] names)
             {
-                if (subTypes == null)
+                if (type == TypeInfo<ConfigStoryClip>.Type)
                 {
-                    subTypes = new List<Type>();
-                    var types = type.Assembly.GetTypes();
-                    foreach (var item in types)
+                    if (subTypes == null)
                     {
-                        if(item == TypeInfo<ConfigStoryBranchClip>.Type||
-                           item == TypeInfo<ConfigStoryParallelClip>.Type||
-                           item == TypeInfo<ConfigStorySerialClip>.Type) continue;
-                        if (item.IsClass && !item.IsAbstract && type.IsAssignableFrom(item))
+                        subTypes = new List<Type>();
+                        var types = type.Assembly.GetTypes();
+                        foreach (var item in types)
                         {
-                            subTypes.Add(item);   
+                            if(item == TypeInfo<ConfigStoryBranchClip>.Type||
+                               item == TypeInfo<ConfigStoryParallelClip>.Type||
+                               item == TypeInfo<ConfigStorySerialClip>.Type) continue;
+                            if (item.IsClass && !item.IsAbstract && type.IsAssignableFrom(item))
+                            {
+                                subTypes.Add(item);   
+                            }
+                        }
+                        subNames = new string[subTypes.Count];
+                        for (int i = 0; i < subNames.Length; i++)
+                        {
+                            if (subTypes[i].GetCustomAttribute(typeof(LabelTextAttribute)) is LabelTextAttribute labelTextAttribute)
+                            {
+                                subNames[i] = labelTextAttribute.Text;
+                            }
+                            else
+                            {
+                                subNames[i] = subTypes[i].FullName;
+                            }
                         }
                     }
-                    subNames = new string[subTypes.Count];
-                    for (int i = 0; i < subNames.Length; i++)
-                    {
-                        if (subTypes[i].GetCustomAttribute(typeof(LabelTextAttribute)) is LabelTextAttribute labelTextAttribute)
-                        {
-                            subNames[i] = labelTextAttribute.Text;
-                        }
-                        else
-                        {
-                            subNames[i] = subTypes[i].FullName;
-                        }
-                    }
+                    names = subNames;
+                    return subTypes;
                 }
-                names = subNames;
-                return subTypes;
+                return base.GetSubClassList(field,obj, type, out names);
             }
-            return base.GetSubClassList(field,obj, type, out names);
+        }
+
+        protected override DrawBase CreateDrawBase()
+        {
+            return new StoryClipNodeViewDrawBase();
         }
     }
 }

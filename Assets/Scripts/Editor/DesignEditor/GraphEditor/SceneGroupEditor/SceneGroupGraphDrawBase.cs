@@ -1,22 +1,36 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using DaGenGraph;
-using Sirenix.OdinInspector;
+using TaoTie.Inspector;
+using TaoTie.Inspector.Editor;
 
 namespace TaoTie
 {
-    public static class ValueDropDownHelper
+    public class SceneGroupGraphDrawBase: DrawBase
     {
-        private static List<IValueDropdownItem> temp = new();
+        private static List<ValueDropdownItem> temp = new();
+        protected SceneGroupGraphWindow graphWindow;
+        public SceneGroupGraphDrawBase(SceneGroupGraphWindow graphWindow)
+        {
+            this.graphWindow = graphWindow;
+        }
+        protected override void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
+        {
+            if (RefreshValueDropDown(graphWindow.m_Graph, field, obj, valuesGetter, valueDropdown))
+            {
+                return;
+            }
+            base.RefreshValueDropDown(field, obj, valuesGetter);
+        }
+
         public static bool RefreshValueDropDown(SceneGroupGraph m_Graph, FieldInfo field, object obj,
-            string valuesGetter,Dictionary<FieldInfo, IValueDropdownItem[]> valueDropdown)
+            string valuesGetter,Dictionary<FieldInfo, ValueDropdownItem[]> valueDropdown)
         {
             if (valuesGetter == "@" + nameof(OdinDropdownHelper) + "." +
                 nameof(OdinDropdownHelper.GetSceneGroupActorIds) + "()")
             {
                 temp.Clear();
                 var graph = m_Graph;
-                for (int i = 0; i < graph.Actors.Length; i++)
+                for (int i = 0; i < graph.Actors?.Length; i++)
                 {
                     temp.Add(new ValueDropdownItem()
                     {
@@ -35,7 +49,7 @@ namespace TaoTie
                 nameof(OdinDropdownHelper.GetSceneGroupRouteIds) + "()")
             {
                 temp.Clear();
-                for (int i = 0; i < m_Graph.values.Count; i++)
+                for (int i = 0; i < m_Graph.values?.Count; i++)
                 {
                     if (m_Graph.values[i] is RouteNode routeNode)
                     {
@@ -59,7 +73,7 @@ namespace TaoTie
             {
                 temp.Clear();
                 var graph = m_Graph;
-                for (int i = 0; i < graph.Zones.Length; i++)
+                for (int i = 0; i < graph.Zones?.Length; i++)
                 {
                     temp.Add(new ValueDropdownItem()
                     {
@@ -77,7 +91,7 @@ namespace TaoTie
                 nameof(OdinDropdownHelper.GetSceneGroupSuiteIds) + "()")
             {
                 temp.Clear();
-                for (int i = 0; i < m_Graph.values.Count; i++)
+                for (int i = 0; i < m_Graph.values?.Count; i++)
                 {
                     if (m_Graph.values[i] is SceneGroupSuitesNode suitesNode)
                     {

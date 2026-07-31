@@ -1,5 +1,5 @@
 using System;
-using DaGenGraph;
+
 using ProtoBuf;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -12,7 +12,7 @@ namespace TaoTie
     public abstract class ConfigSceneGroupLogicConditionAction:ConfigSceneGroupConditionAction
     {
         [ProtoMember(10)]
-        [LabelText("条件")][DrawIgnore]
+        [LabelText("条件")][Inspector.DrawIgnore]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]
 #endif

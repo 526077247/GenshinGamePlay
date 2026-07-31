@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.lifang.dagen": "file:../Modules/com.lifang.dagen",
+    "com.taotie.inspector": "https://github.com/526077247/TaoTieInspector.git",
     "com.taotie.render-pipelines": "https://github.com/526077247/TaoTieRP.git",
     "com.thridparty.odin": "file:../Modules/com.thridparty.odin",
     "com.tuyoogame.yooasset": "file:../Modules/com.tuyoogame.yooasset",

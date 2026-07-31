@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using DaGenGraph;
-using DaGenGraph.Editor;
-using ProtoBuf;
+using TaoTie.Inspector;
+using TaoTie.Inspector.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -73,7 +72,7 @@ namespace TaoTie
             return m_Graph != null ? JsonHelper.ToJson(m_Graph) : null;
         }
 
-        protected override DaGenGraph.GraphBase DeserializeGraph(string json)
+        protected override TaoTie.Inspector.GraphBase DeserializeGraph(string json)
         {
             if (string.IsNullOrEmpty(json)) return null;
             if (JsonHelper.TryFromJson<SceneGroupGraph>(json, out var graph))
@@ -107,7 +106,7 @@ namespace TaoTie
             }
         }
 
-        private const string k_CachedPathKey = "DaGenGraph_CachedPath_";
+        private const string k_CachedPathKey = "TaoTieInspector_CachedPath_";
 
         protected override void InitGraph()
         {
@@ -272,16 +271,10 @@ namespace TaoTie
                 }
             }
         }
-        
 
-        protected override void RefreshValueDropDown(FieldInfo field, object obj, string valuesGetter)
+        protected override DrawBase CreateDrawBase()
         {
-            if (ValueDropDownHelper.RefreshValueDropDown(m_Graph, field, obj, valuesGetter, valueDropdown))
-            {
-                return;
-            }
-
-            base.RefreshValueDropDown(field, obj, valuesGetter);
+            return new SceneGroupGraphDrawBase(this);
         }
 
         #endregion

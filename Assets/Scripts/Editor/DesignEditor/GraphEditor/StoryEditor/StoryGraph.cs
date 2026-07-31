@@ -1,6 +1,5 @@
 using System;
-using DaGenGraph;
-using Sirenix.OdinInspector;
+using TaoTie.Inspector;
 
 namespace TaoTie
 {

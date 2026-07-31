@@ -167,20 +167,18 @@ GenshinGamePlay/
 
 ![怪物AI.gif](ReadMeRes%2FPreview3.gif)
 
-![导表工具](ReadMeRes%2FExcelExport.png)
-
 ## 技术栈
 
 | 技术 | 用途 |
 |------|------|
 | **TaoTie** | 轻量级 Unity 框架（Entity/Component 生命周期、Manager 系统） |
 | **TaoTie RP** | 轻量级 Render Pipeline，支持 Forward+ / Deferred 渲染路径 |
+| **TaoTie Inspector** | 类似Odin的Graph/Inspector编辑器 |
 | **YooAsset** | 资源管理系统 |
 | **protobuf-net** | 二进制序列化（配置加载） |
 | **ETTask** | 单线程异步任务系统 |
 | **DotRecast** | Recast 导航网格寻路 |
 | **ORCA** | 动态避障寻路 |
-| **DaGenGraph** | 节点编辑器框架 |
 | **LitJson** | JSON 序列化 |
 
 ## 引用或参考
@@ -188,8 +186,8 @@ GenshinGamePlay/
 1. [WorldReverse](https://github.com/fengjixuchui/WorldReverse)
 2. [TaoTie](https://github.com/526077247/TaoTie) — 轻量级 Unity 框架
 3. [TaoTieRP](https://github.com/526077247/TaoTieRP) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
-4. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
-5. [DaGenGraph](https://github.com/LiFang7/DaGenGraph) — 节点编辑器
+4. [TaoTieInspector](https://github.com/526077247/TaoTieInspector) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
+5. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
 6. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
 7. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
 

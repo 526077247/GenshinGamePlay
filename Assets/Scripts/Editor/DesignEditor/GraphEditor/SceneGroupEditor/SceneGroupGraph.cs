@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using DaGenGraph;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class SceneGroupGraph: JsonGraphBase
+    public class SceneGroupGraph: Inspector.JsonGraphBase
     {
         public ulong Id;
         [LabelText("策划备注")]
@@ -27,7 +26,7 @@ namespace TaoTie
         
         public Type FindTriggerType(string nodeId)
         {
-            NodeBase node = FindNode(nodeId);
+            Inspector.NodeBase node = FindNode(nodeId);
             while (node != null)
             {
                 if (node is SceneGroupTriggerNode triggerNode)
