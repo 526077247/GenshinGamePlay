@@ -2,7 +2,13 @@ using System.Collections.Generic;
 using TaoTie.LitJson.Extensions;
 using ProtoBuf;
 using UnityEngine.Timeline;
-
+#if UNITY_EDITOR
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
+#endif
 namespace TaoTie
 {
     [ProtoContract]
@@ -11,7 +17,7 @@ namespace TaoTie
         
 #if UNITY_EDITOR
         
-        [Sirenix.OdinInspector.OnValueChanged(nameof(SetPath))][Sirenix.OdinInspector.BoxGroup("TimeLine")]
+        [OnValueChanged(nameof(SetPath))][BoxGroup("TimeLine")]
         public TimelineAsset TimeLine;
         
         public void SetPath()
@@ -27,7 +33,7 @@ namespace TaoTie
                 Path = null;
             }
         }
-        [Sirenix.OdinInspector.BoxGroup("TimeLine")][Sirenix.OdinInspector.Button("预览TimeLine")]
+        [BoxGroup("TimeLine")][Button("预览TimeLine")]
         public void Preview()
         {
             if (string.IsNullOrEmpty(Path)) return;
@@ -36,7 +42,7 @@ namespace TaoTie
             else
                 TimeLine = UnityEditor.AssetDatabase.LoadAssetAtPath<TimelineAsset>(Path);
         }
-        [Sirenix.OdinInspector.BoxGroup("TimeLine")]
+        [BoxGroup("TimeLine")]
 #endif
         [ProtoMember(10)]
         public string Path;

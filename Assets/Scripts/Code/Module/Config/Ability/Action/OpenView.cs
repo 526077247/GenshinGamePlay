@@ -1,6 +1,12 @@
 using System.Reflection;
 using ProtoBuf;
-
+#if UNITY_EDITOR
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
+#endif
 namespace TaoTie
 {
     [ProtoContract]
@@ -38,8 +44,8 @@ namespace TaoTie
                 }
             }
         }
-        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAllView)+"()",AppendNextDrawer = true)]
-        [Sirenix.OdinInspector.OnValueChanged(nameof(RefreshViewPath))]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetAllView)+"()",AppendNextDrawer = true)]
+        [OnValueChanged(nameof(RefreshViewPath))]
 #endif
         [ProtoMember(10)]
         public string ViewType;

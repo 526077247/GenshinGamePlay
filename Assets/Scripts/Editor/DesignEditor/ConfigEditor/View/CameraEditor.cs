@@ -2,7 +2,11 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 using ProtoBuf;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 
 namespace TaoTie
 {

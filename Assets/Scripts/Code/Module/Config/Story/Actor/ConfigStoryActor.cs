@@ -1,6 +1,12 @@
 using ProtoBuf;
 using UnityEngine;
-
+#if UNITY_EDITOR
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
+#endif
 namespace TaoTie
 {
     [ProtoContract]
@@ -11,7 +17,7 @@ namespace TaoTie
     public abstract partial class ConfigStoryActor
     {
 #if UNITY_EDITOR
-        [Sirenix.OdinInspector.LabelText("策划备注")]
+        [LabelText("策划备注")]
         public string Remarks;
 #endif
         [ProtoMember(2)]

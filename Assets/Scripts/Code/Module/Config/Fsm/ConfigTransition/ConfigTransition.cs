@@ -1,6 +1,10 @@
 using System;
 using ProtoBuf;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEditor;
 using UnityEngine;
 

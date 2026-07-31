@@ -1,5 +1,11 @@
 using ProtoBuf;
-
+#if UNITY_EDITOR
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
+#endif
 namespace TaoTie
 {
     /// <summary>
@@ -10,7 +16,7 @@ namespace TaoTie
     {
         [ProtoMember(1)]
 #if UNITY_EDITOR
-        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericFinalTypeId)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericFinalTypeId)+"()")]
 #endif
         public int Key;
         public override float Resolve(Entity entity,ActorAbility ability)

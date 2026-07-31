@@ -109,7 +109,6 @@ GenshinGamePlay/
 ### 环境要求
 
 - Unity 2021.3+
-- Odin Inspector（付费插件）
 
 ### 运行项目
 
@@ -173,7 +172,7 @@ GenshinGamePlay/
 |------|------|
 | **TaoTie** | 轻量级 Unity 框架（Entity/Component 生命周期、Manager 系统） |
 | **TaoTie RP** | 轻量级 Render Pipeline，支持 Forward+ / Deferred 渲染路径 |
-| **TaoTie Inspector** | 类似Odin的Graph/Inspector编辑器 |
+| **TaoTie Inspector** | 类似 Odin 的Graph/Inspector绘制系统（兼容Odin） |
 | **YooAsset** | 资源管理系统 |
 | **protobuf-net** | 二进制序列化（配置加载） |
 | **ETTask** | 单线程异步任务系统 |
@@ -186,16 +185,15 @@ GenshinGamePlay/
 1. [WorldReverse](https://github.com/fengjixuchui/WorldReverse)
 2. [TaoTie](https://github.com/526077247/TaoTie) — 轻量级 Unity 框架
 3. [TaoTieRP](https://github.com/526077247/TaoTieRP) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
-4. [TaoTieInspector](https://github.com/526077247/TaoTieInspector) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
+4. [TaoTieInspector](https://github.com/526077247/TaoTieInspector) — 类似 Odin 的Graph/Inspector绘制系统
 5. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
 6. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
 7. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
 
 ## 付费插件
 
-1. [Odin Inspector](https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041) — 编辑器扩展
-2. [SuperScrollView](https://assetstore.unity.com/packages/tools/gui/ugui-super-scrollview-86572) — UI 滑动列表扩展
-3. [Dynamic Bone](https://assetstore.unity.com/packages/tools/animation/dynamic-bone-16743) — 动态骨骼
+1. [SuperScrollView](https://assetstore.unity.com/packages/tools/gui/ugui-super-scrollview-86572) — UI 滑动列表扩展
+2. [Dynamic Bone](https://assetstore.unity.com/packages/tools/animation/dynamic-bone-16743) — 动态骨骼
 
 ## 使用文档
 

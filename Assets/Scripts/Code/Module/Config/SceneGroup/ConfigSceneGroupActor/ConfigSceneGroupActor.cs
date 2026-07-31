@@ -1,7 +1,11 @@
 using System;
 using TaoTie.LitJson.Extensions;
 using ProtoBuf;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEngine;
 
 namespace TaoTie

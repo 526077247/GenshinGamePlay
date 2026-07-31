@@ -4,7 +4,11 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 
 namespace TaoTie
 {
@@ -49,7 +53,11 @@ namespace TaoTie
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("using System;");
             sb.AppendLine("using ProtoBuf;");
+            sb.AppendLine("#if ODIN_INSPECTOR");
             sb.AppendLine("using Sirenix.OdinInspector;");
+            sb.AppendLine("#else");
+            sb.AppendLine("using TaoTie.Inspector;");
+            sb.AppendLine("#endif");
             sb.AppendLine("using UnityEngine;");
             sb.AppendLine();
             sb.AppendLine("namespace TaoTie");

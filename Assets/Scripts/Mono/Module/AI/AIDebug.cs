@@ -1,6 +1,10 @@
 ﻿#if UNITY_EDITOR
 using System;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEngine;
 
 namespace TaoTie

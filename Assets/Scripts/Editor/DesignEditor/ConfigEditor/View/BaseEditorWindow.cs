@@ -1,8 +1,14 @@
 using System;
 using System.IO;
 using ProtoBuf;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
+#else
+using TaoTie.Inspector;
+using TaoTie.Inspector.Editor;
+using OdinEditorWindow = TaoTie.Inspector.Editor.TaoTieEditorWindow;
+#endif
 using UnityEditor;
 using UnityEngine;
 

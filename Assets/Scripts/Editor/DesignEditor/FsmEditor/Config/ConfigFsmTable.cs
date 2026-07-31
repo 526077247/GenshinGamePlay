@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections;
 using TaoTie.LitJson.Extensions;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEditor;
 using UnityEngine;
 

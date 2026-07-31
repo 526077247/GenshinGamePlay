@@ -1,4 +1,8 @@
-﻿using Sirenix.OdinInspector;
+﻿#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 namespace TaoTie
 {
     public class PlatformReachPointEvt: IEventBase

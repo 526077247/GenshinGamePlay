@@ -1,6 +1,12 @@
 using ProtoBuf;
 using UnityEngine;
-
+#if UNITY_EDITOR
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
+#endif
 namespace TaoTie
 {
     [ProtoContract]
@@ -8,7 +14,7 @@ namespace TaoTie
     {
         [ProtoMember(5)]
 #if UNITY_EDITOR
-        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCharacterConfigIds)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetCharacterConfigIds)+"()")]
 #endif
         public int ConfigId;
         [ProtoMember(6, IsRequired = true)]

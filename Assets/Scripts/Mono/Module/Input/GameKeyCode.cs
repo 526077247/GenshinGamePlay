@@ -1,14 +1,18 @@
 ﻿using System.Collections;
-
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 namespace TaoTie
 {
     public static class GameKeyCode
     {
-#if UNITY_EDITOR && ODIN_INSPECTOR
+#if UNITY_EDITOR
         public static IEnumerable GetGameKeyCodeList()
         {
             var fields = typeof(GameKeyCode).GetFields();
-            Sirenix.OdinInspector.ValueDropdownList<int> list = new Sirenix.OdinInspector.ValueDropdownList<int>();
+            ValueDropdownList<int> list = new ValueDropdownList<int>();
             if (fields.Length > 0)
             {
                 for (int i = 0; i < fields.Length; i++)
@@ -18,8 +22,8 @@ namespace TaoTie
                         continue;
                     }
                     var val = (int) fields[i].GetValue(null);
-                    var attr = fields[i].GetCustomAttributes(typeof(Sirenix.OdinInspector.LabelTextAttribute), true);
-                    if (attr.Length > 0 && attr[0] is Sirenix.OdinInspector.LabelTextAttribute label)
+                    var attr = fields[i].GetCustomAttributes(typeof(LabelTextAttribute), true);
+                    if (attr.Length > 0 && attr[0] is LabelTextAttribute label)
                     {
                         list.Add($"{label.Text}({val})", val);
                     }
@@ -38,17 +42,11 @@ namespace TaoTie
         public const int MoveLeft = 2;
         public const int MoveRight = 3;
         public const int Jump = 4;
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.LabelText("普攻")]
-#endif
+        [LabelText("普攻")]
         public const int NormalAttack = 5;
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.LabelText("1号交互键位")]
-#endif
+        [LabelText("1号交互键位")]
         public const int Opera1 = 6;
-#if ODIN_INSPECTOR
-        [Sirenix.OdinInspector.LabelText("鼠标解锁")]
-#endif
+        [LabelText("鼠标解锁")]
         public const int CursorUnlock = 7;
         public const int Skill1 = 8;
         public const int Skill2 = 9;

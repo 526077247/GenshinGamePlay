@@ -1,8 +1,11 @@
 using System;
-
 using ProtoBuf;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEngine;
 namespace TaoTie
 {

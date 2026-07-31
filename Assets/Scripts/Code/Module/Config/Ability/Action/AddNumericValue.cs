@@ -1,5 +1,11 @@
 using ProtoBuf;
-
+#if UNITY_EDITOR
+#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
+#endif
 namespace TaoTie
 {
     [ProtoContract]
@@ -7,7 +13,7 @@ namespace TaoTie
     {
         [ProtoMember(10)]
 #if UNITY_EDITOR
-        [Sirenix.OdinInspector.ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericTypeId)+"()")]
+        [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericTypeId)+"()")]
 #endif
         public int Key;
         [ProtoMember(11, IsRequired = true)]

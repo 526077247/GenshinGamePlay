@@ -1,5 +1,9 @@
 #if UNITY_EDITOR
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+#else
+using TaoTie.Inspector;
+#endif
 #endif
 using UnityEngine;
 

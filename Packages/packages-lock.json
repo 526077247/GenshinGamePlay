@@ -28,12 +28,6 @@
       },
       "hash": "2dc654a9e8ec27cd6de39f34b83715f106285f5a"
     },
-    "com.thridparty.odin": {
-      "version": "file:com.thridparty.odin",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.tuyoogame.yooasset": {
       "version": "file:../Modules/com.tuyoogame.yooasset",
       "depth": 0,

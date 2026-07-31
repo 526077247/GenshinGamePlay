@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEngine.Animations;
 #if !UNITY_2020_2_OR_NEWER
 using UnityEngine.Experimental.Animations;

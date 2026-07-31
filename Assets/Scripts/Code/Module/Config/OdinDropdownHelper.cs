@@ -4,9 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using Sirenix.Utilities;
+#else
+using TaoTie.Inspector;
+#endif
 using UnityEditor;
 using UnityEngine;
 
