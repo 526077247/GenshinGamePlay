@@ -1,10 +1,4 @@
 ﻿using System;
-#if ODIN_INSPECTOR
-using Sirenix.Serialization;
-#else
-using TaoTie.Inspector;
-#endif
-
 namespace TaoTie
 {
     [Creatable]

@@ -1672,13 +1672,21 @@ namespace ProtoBuf.Meta
         internal static Type ResolveKnownType(string name, TypeModel model, Assembly assembly)
         {
             if (string.IsNullOrEmpty(name)) return null;
-            try
+            // Use Type.GetType to parse the AQN — it handles generic types correctly.
+            Type resolved = null;
+            try { resolved = Type.GetType(name); } catch { }
+            if (resolved != null)
             {
-                Type type = Type.GetType(name);
-
-                if (type != null) return type;
+                if (assembly == null || resolved.Assembly == assembly)
+                    return resolved;
+                // The type is from a different assembly (e.g. editor-compiled
+                // Unity.Code vs byte-loaded obfuscated assembly with the same name).
+                // Find the equivalent type in the context assembly.
+                Type contextType = ResolveTypeInAssembly(resolved, assembly);
+                if (contextType != null) return contextType;
+                return resolved;
             }
-            catch { }
+            // Fallback: extract full name from AQN and look in context assembly
             try
             {
                 int i = name.IndexOf(',');
@@ -1691,6 +1699,28 @@ namespace ProtoBuf.Meta
             }
             catch { }
             return null;
+        }
+
+        private static Type ResolveTypeInAssembly(Type type, Assembly assembly)
+        {
+            if (!type.IsGenericType)
+            {
+                try { return assembly.GetType(type.FullName); } catch { return null; }
+            }
+            // For generic types, resolve definition and each argument separately
+            var genericDef = type.GetGenericTypeDefinition();
+            var contextGenericDef = assembly.GetType(genericDef.FullName);
+            if (contextGenericDef == null) return null;
+            var args = type.GetGenericArguments();
+            var contextArgs = new Type[args.Length];
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Assembly == assembly)
+                    contextArgs[i] = args[i];
+                else
+                    contextArgs[i] = ResolveTypeInAssembly(args[i], assembly) ?? args[i];
+            }
+            try { return contextGenericDef.MakeGenericType(contextArgs); } catch { return null; }
         }
     }
 }
