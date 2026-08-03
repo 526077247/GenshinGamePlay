@@ -38,14 +38,5 @@ namespace TaoTie
             }
             return false;
         }
-
-        [Button("打开1")]
-        public void Text()
-        {
-            var bytes = ProtobufHelper.ToBytes(data);
-            Log.Info(JsonHelper.ToJson(data));
-            var camera = ProtobufHelper.FromBytes<ConfigCameras>(bytes);
-            Log.Info(JsonHelper.ToJson(camera));
-        }
     }
 }
