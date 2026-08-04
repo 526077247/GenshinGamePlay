@@ -89,6 +89,15 @@ namespace TaoTie
                 Data.TargetForward = Vector3.forward;
                 Data.TargetUp = Vector3.up;
             }
+            // If no head plugin, keep Orientation in sync with the camera transform
+            if (head == null)
+            {
+                var cam = CameraManager.Instance.MainCamera();
+                if (cam != null)
+                {
+                    Data.Orientation = cam.transform.rotation;
+                }
+            }
         }
 
         public override void Dispose()
