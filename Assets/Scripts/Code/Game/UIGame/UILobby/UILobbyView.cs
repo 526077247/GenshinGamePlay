@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-	public class UILobbyView : UIBaseView, IOnCreate, IOnEnable
+	public class UILobbyView : UIBaseView, IOnCreate, IOnEnable, IOnDisable
 	{
 		public static string PrefabPath => "UIGame/UILobby/Prefabs/UILobbyView.prefab";
 		public UIButton btn_start;
@@ -19,6 +19,7 @@ namespace TaoTie
 		public void OnEnable()
 		{
 			this.btn_start.SetOnClick(OnClickbtn_start);
+			this.btn_start.DOScale(1.1f, 800).SetLoops(-1, LoopType.Yoyo).SetEase(EasingFunction.Ease.EaseInOutSine);
 		}
 		#endregion
 
@@ -26,6 +27,11 @@ namespace TaoTie
 		public void OnClickbtn_start()
 		{
 			SceneManager.Instance.SwitchMapScene("Sample",Vector3.zero,Vector3.zero).Coroutine();
+		}
+
+		public void OnDisable()
+		{
+			TweenManager.Instance.KillTweens(this.btn_start);
 		}
 		#endregion
 	}
