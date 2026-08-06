@@ -98,9 +98,9 @@ namespace TaoTie
 
         #region UIBaseContainer — GameObject
 
-        public static Tweener<float> DOFade(this UIBaseContainer target, float endValue, int duration)
+        public static Tweener<float> DOFade(this UIMonoBehaviour<CanvasGroup> target, float endValue, int duration)
         {
-            var canvasGroup = target.GetGameObject().GetComponent<CanvasGroup>();
+            var canvasGroup = target.GetComponent();
             return TweenManager.Instance.ToFloat(target,
                 () => canvasGroup.alpha, v => canvasGroup.alpha = v, endValue, duration);
         }
