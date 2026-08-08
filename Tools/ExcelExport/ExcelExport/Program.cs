@@ -1,7 +1,6 @@
 ﻿using CommandLine;
 using ProtoBuf;
-using System;
-using System.Threading;
+
 namespace TaoTie
 {
     internal static class Program
@@ -11,7 +10,6 @@ namespace TaoTie
 
             try
             {
-                MongoRegister.Init();
                 UnityTypeBindings.Init();
                 // 命令行参数
                 Options options = null;

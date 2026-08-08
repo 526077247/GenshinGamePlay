@@ -1527,8 +1527,11 @@ namespace TaoTie.LitJson
     internal class ReferenceEqualityComparer : IEqualityComparer<object>
     {
         public static readonly ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
-
+#if NOT_UNITY
+        public new bool Equals(object x, object y)
+#else
         public bool Equals(object x, object y)
+#endif
         {
             return ReferenceEquals(x, y);
         }

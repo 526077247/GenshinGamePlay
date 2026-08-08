@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NOT_UNITY
+using System;
 using System.Numerics;
 using TaoTie.LitJson.Extensions;
 
@@ -169,3 +170,4 @@ namespace TaoTie.LitJson
 
     }
 }
+#endif

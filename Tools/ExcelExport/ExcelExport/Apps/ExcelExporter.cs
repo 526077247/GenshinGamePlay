@@ -1,18 +1,13 @@
 ﻿#define NOT_SERVER //导服务端配置开关
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using MongoDB.Bson.Serialization;
 using OfficeOpenXml;
 using ProtoBuf;
+using TaoTie.LitJson;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace TaoTie
@@ -210,12 +205,12 @@ namespace TaoTie
                 {
                     if (kv.Value.C)
                     {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c, true);
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
                     }
 #if !NOT_SERVER
                     if (kv.Value.S)
                     {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.s, true);
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.s);
                     }
 #endif
                 }
@@ -226,13 +221,7 @@ namespace TaoTie
 #if !NOT_SERVER
                 configAssemblies[(int)ConfigType.s] = DynamicBuild(ConfigType.s);
 #endif
-                foreach (var kv in tables)
-                {
-                    if (kv.Value.C)
-                    {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
-                    }
-                }
+
                 //foreach (string path in ExportHelper.FindFile(excelDir))
                 //{
                 //    ExportExcel(path);
@@ -330,12 +319,12 @@ namespace TaoTie
                 {
                     if (kv.Value.C)
                     {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c, true);
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
                     }
 #if !NOT_SERVER
                     if (kv.Value.S)
                     {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.s, true);
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.s);
                     }
 #endif
                 }
@@ -346,13 +335,7 @@ namespace TaoTie
 #if !NOT_SERVER
                 configAssemblies[(int)ConfigType.s] = DynamicBuild(ConfigType.s);
 #endif
-                foreach (var kv in tables)
-                {
-                    if (kv.Value.C)
-                    {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
-                    }
-                }
+
                 //foreach (string path in ExportHelper.FindFile(excelDir))
                 //{
                 //    ExportExcel(path);
@@ -442,7 +425,7 @@ namespace TaoTie
         private static string GetProtoDir(ConfigType configType, string relativeDir)
         {
 #if !NOT_SERVER
-            if (configType == ConfigType.c || configType == ConfigType.p)
+            if (configType == ConfigType.c)
             {
                 return string.Format(clientProtoDir, ".");
             }
@@ -605,7 +588,7 @@ namespace TaoTie
             }
         }
 
-        static void ExportClass(string protoName, Dictionary<string, HeadInfo> classField, ConfigType configType, bool setattr = false)
+        static void ExportClass(string protoName, Dictionary<string, HeadInfo> classField, ConfigType configType)
         {
             string dir = GetClassDir(configType);
             if (!Directory.Exists(dir))
@@ -636,10 +619,6 @@ namespace TaoTie
                     continue;
                 }
                 string fieldType = ConvertType(headInfo.FieldType);
-                if (setattr && fieldType.IndexOf("float", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    sb.Append("\t\t[BsonRepresentation(MongoDB.Bson.BsonType.Double, AllowTruncation = true)]\n");
-                }
                 sb.Append($"\t\t/// <summary>{headInfo.FieldDesc.Replace("\n", "</summary>\n\t\t/// <summary> ")}</summary>\n");
                 sb.Append($"\t\t[ProtoMember({headInfo.FieldIndex})]\n");
                 
@@ -648,12 +627,6 @@ namespace TaoTie
             }
 
             string content = template.Replace("(ConfigName)", protoName).Replace(("(Fields)"), sb.ToString());
-            if (!setattr)
-            {
-                content = content.Replace("[BsonIgnore]", "");
-                content = content.Replace("[BsonElement]", "");
-                content = content.Replace("using MongoDB.Bson.Serialization.Attributes;", "");
-            }
             sw.Write(content);
         }
 
@@ -746,10 +719,6 @@ namespace TaoTie
                     }
 
                     string fieldN = headInfo.FieldName;
-                    if (fieldN == "Id")
-                    {
-                        fieldN = "_id";
-                    }
 
                     sb.Append($",\"{fieldN}\":{Convert(headInfo.FieldType, worksheet.Cells[row, col].Text.Trim())}");
                 }
@@ -958,10 +927,17 @@ namespace TaoTie
 
             jsonPaths.Sort();
             jsonPaths.Reverse();
+            FieldInfo listField = type.GetField("list", BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (string jsonPath in jsonPaths)
             {
                 string json = File.ReadAllText(jsonPath);
-                object deserialize = BsonSerializer.Deserialize(json, type);
+                JsonData jsonData = JsonMapper.ToObject(json);
+                object deserialize = Activator.CreateInstance(type);
+                System.Collections.IList list = (System.Collections.IList)listField.GetValue(deserialize);
+                foreach (JsonData item in jsonData["list"])
+                {
+                    list.Add(JsonMapper.ToObject(subType, item.ToJson()));
+                }
                 final.Merge(deserialize);
             }
 

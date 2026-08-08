@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ProtoBuf;
-using MongoDB.Bson.Serialization.Attributes;
+
 using System.Numerics;
 namespace TaoTie
 {
@@ -11,10 +11,10 @@ namespace TaoTie
     {
         public static (ConfigName)Category Instance => ConfigManager.GetConfig<(ConfigName)Category>();
 
-        [BsonIgnore]
+        
         [ProtoIgnore]
         private Dictionary<int, (ConfigName)> dict = new Dictionary<int, (ConfigName)>();
-        [BsonElement]
+        
         [ProtoMember(1)]
         private List<(ConfigName)> list = new List<(ConfigName)>();
 		
