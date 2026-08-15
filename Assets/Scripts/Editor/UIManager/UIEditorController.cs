@@ -33,11 +33,18 @@ namespace TaoTie
             return path.Contains(addressable_path);
         }
 
-        public static void GenerateUICode(GameObject go, string path)
+        /// <summary>
+        /// 根据选中的节点生成UI代码
+        /// </summary>
+        public static void GenerateUICode(GameObject[] gos, string path)
         {
-            UnityEngine.Debug.Log(path);
-            GenerateUIBaseViewCode(go, path);
-            //AssetDatabase.Refresh();
+            if (gos == null || gos.Length == 0)
+            {
+                UnityEngine.Debug.LogError("未选中节点");
+                return;
+            }
+
+            GenerateUIBaseViewCode(gos, path);
         }
 
         static Dictionary<Type, string> WidgetInterfaceList;
@@ -61,10 +68,24 @@ namespace TaoTie
             WidgetInterfaceList.Add(typeof(TMPro.TMP_InputField), "UIInputTextmesh");
         }
 
-        static void GenerateUIBaseViewCode(GameObject go, string path)
+        static void GenerateUIBaseViewCode(GameObject[] gos, string path)
         {
-            string name = go.name;
-            bool isItem = !go.name.EndsWith("View") && !go.name.EndsWith("Win") && !go.name.EndsWith("Panel");
+            if (gos == null || gos.Length == 0) return;
+
+            Transform rootTrans = gos[0].transform;
+            while (rootTrans.parent != null)
+            {
+                rootTrans = rootTrans.parent;
+            }
+
+            // 根节点名可能不是prefab名（如 "Canvas (Environment)"），类名统一取prefab文件名
+            string name = Path.GetFileNameWithoutExtension(path);
+            if (string.IsNullOrEmpty(name))
+            {
+                name = rootTrans.gameObject.name;
+            }
+
+            bool isItem = !name.EndsWith("View") && !name.EndsWith("Win") && !name.EndsWith("Panel");
             var temp = new List<string>(path.Split('/'));
             int index = temp.IndexOf("AssetsPackage");
             if (temp.Count <= index + 3)
@@ -79,13 +100,10 @@ namespace TaoTie
             }
 
             var csPath = $"{dirPath}/{name}.cs";
-            if (!forced_coverage && File.Exists(csPath))
-            {
-                UnityEngine.Debug.LogError("已存在 " + csPath + ",将不会再次生成。");
-                return;
-            }
+            bool exists = File.Exists(csPath);
 
-            StreamWriter sw = new StreamWriter(csPath, false, Encoding.UTF8);
+            var infos = BuildNodeInfos(gos, rootTrans);
+
             StringBuilder strBuilder = new StringBuilder();
             StringBuilder tempBuilder = new StringBuilder();
             StringBuilder addListenerBuilder = new StringBuilder();
@@ -108,13 +126,13 @@ namespace TaoTie
                     .AppendLine();
             }
 
-            GenerateEntityChildCode(go.transform, "", strBuilder);
+            GenerateEntityChildCode(infos, strBuilder);
             strBuilder.AppendLine("\t\t\r\n");
             strBuilder.AppendLine("\t\t#region override");
             
             strBuilder.AppendLine("\t\tpublic void OnCreate()");
             strBuilder.AppendLine("\t\t{");
-            GenerateSystemChildCode(go.transform, "", strBuilder, tempBuilder, name,addListenerBuilder);
+            GenerateSystemChildCode(infos, strBuilder, tempBuilder, addListenerBuilder);
             
             strBuilder.AppendLine("\t\t}");
             
@@ -132,139 +150,182 @@ namespace TaoTie
             
             strBuilder.AppendLine("\t}");
             strBuilder.AppendLine("}");
+
+            if (!forced_coverage && exists)
+            {
+                UnityEngine.Debug.LogWarning("已存在 " + csPath + "，不会覆盖生成，代码已复制到剪贴板。");
+                EditorGUIUtility.systemCopyBuffer = strBuilder.ToString();
+                return;
+            }
+
+            StreamWriter sw = new StreamWriter(csPath, false, Encoding.UTF8);
             sw.Write(strBuilder);
             sw.Flush();
             sw.Close();
+            EditorGUIUtility.systemCopyBuffer = strBuilder.ToString();
         }
 
-        public static void GenerateEntityChildCode(Transform trans, string strPath, StringBuilder strBuilder)
+        private class NodeInfo
         {
-            if (null == trans)
-            {
-                return;
-            }
+            public string ModuleName;
+            public string UpperName;
+            public string Path;
+            public Type ComponentType;
+        }
 
-            for (int nIndex = 0; nIndex < trans.childCount; ++nIndex)
+        /// <summary>
+        /// 遍历选中的节点，计算变量名（重名节点依次加index防重名）与相对路径
+        /// </summary>
+        static List<NodeInfo> BuildNodeInfos(GameObject[] gos, Transform root)
+        {
+            var infos = new List<NodeInfo>();
+            var names = new HashSet<string>();
+            foreach (var go in gos)
             {
-                Transform child = trans.GetChild(nIndex);
-                string strTemp = strPath + "/" + child.name;
-                var uisc = child.GetComponent<UIScriptCreator>();
-                if (uisc != null && uisc.isMarked)
+                if (go == null) continue;
+                string baseName = SanitizeName(go.name);
+                if (string.IsNullOrEmpty(baseName)) continue;
+
+                string moduleName = baseName;
+                int i = 1;
+                while (names.Contains(moduleName))
                 {
-                    bool had = false;
-                    foreach (var uiComponent in WidgetInterfaceList)
-                    {
-                        UnityEngine.Component component = child.GetComponent(uiComponent.Key);
-                        if (null != component)
-                        {
-                            had = true;
-                            strBuilder.AppendFormat("\t\tpublic {0} {1};", uiComponent.Value, uisc.GetModuleName())
-                                .AppendLine();
-                            break;
-                        }
-                    }
+                    moduleName = baseName + i;
+                    i++;
+                }
+                names.Add(moduleName);
 
-                    if (!had)
+                string upperName = char.ToUpper(moduleName[0]) + moduleName.Substring(1);
+                Type compType = null;
+                foreach (var uiComponent in WidgetInterfaceList)
+                {
+                    if (go.GetComponent(uiComponent.Key) != null)
                     {
-                        strBuilder.AppendFormat("\t\tpublic UIEmptyView {0};", uisc.GetModuleName())
-                            .AppendLine();
+                        compType = uiComponent.Key;
+                        break;
                     }
                 }
 
-                GenerateEntityChildCode(child, strTemp, strBuilder);
+                infos.Add(new NodeInfo
+                {
+                    ModuleName = moduleName,
+                    UpperName = upperName,
+                    Path = GetNodePath(go.transform, root),
+                    ComponentType = compType,
+                });
+            }
+            return infos;
+        }
+
+        static string SanitizeName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return "";
+            var sb = new StringBuilder();
+            foreach (var c in name)
+            {
+                if (char.IsLetterOrDigit(c) || c == '_') sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 计算选中节点相对根节点的路径，选中根节点时返回节点名
+        /// </summary>
+        static string GetNodePath(Transform node, Transform root)
+        {
+            var parts = new List<string>();
+            var t = node;
+            while (t != null && t != root)
+            {
+                parts.Add(t.name);
+                t = t.parent;
+            }
+            parts.Reverse();
+            if (parts.Count == 0) return node.name;
+            return string.Join("/", parts);
+        }
+
+        private static void GenerateEntityChildCode(List<NodeInfo> infos, StringBuilder strBuilder)
+        {
+            if (infos == null) return;
+            foreach (var info in infos)
+            {
+                string widgetType = info.ComponentType != null ? WidgetInterfaceList[info.ComponentType] : "UIEmptyView";
+                strBuilder.AppendFormat("\t\tpublic {0} {1};", widgetType, info.ModuleName)
+                    .AppendLine();
             }
         }
 
-        public static void GenerateSystemChildCode(Transform trans, string strPath, StringBuilder strBuilder,
-            StringBuilder tempBuilder, string name, StringBuilder addListenerBuilder)
+        private static void GenerateSystemChildCode(List<NodeInfo> infos, StringBuilder strBuilder,
+            StringBuilder tempBuilder, StringBuilder addListenerBuilder)
         {
-            if (null == trans)
+            if (infos == null) return;
+            foreach (var info in infos)
             {
-                return;
-            }
-
-            for (int nIndex = 0; nIndex < trans.childCount; ++nIndex)
-            {
-                Transform child = trans.GetChild(nIndex);
-                string strTemp = strPath == "" ? child.name : (strPath + "/" + child.name);
-
-                var uisc = child.GetComponent<UIScriptCreator>();
-                if (uisc != null && uisc.isMarked)
+                if (info.ComponentType == null)
                 {
-                    bool had = false;
-                    foreach (var uiComponent in WidgetInterfaceList)
-                    {
-                        UnityEngine.Component component = child.GetComponent(uiComponent.Key);
-                        if (null != component)
-                        {
-                            had = true;
-                            strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<{1}>(\"{2}\");",
-                                    uisc.GetModuleName(), uiComponent.Value, strTemp)
-                                .AppendLine();
-                            if (uiComponent.Key == typeof(Button) || uiComponent.Key == typeof(PointerClick))
-                            {
-                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.SetOnClick(OnClick{1});",
-                                        uisc.GetModuleName(), uisc.GetModuleName())
-                                    .AppendLine();
-                                tempBuilder.AppendFormat("\t\tpublic void OnClick{0}()", uisc.GetModuleName())
-                                    .AppendLine();
-                                tempBuilder.AppendLine("\t\t{").AppendLine();
-                                tempBuilder.AppendLine("\t\t}");
-                            }
-
-                            if (uiComponent.Key == typeof(Toggle) || uiComponent.Key == typeof(Dropdown))
-                            {
-                                addListenerBuilder.AppendFormat("\t\t\tthis.{0}.SetOnValueChanged(SetOn{1}ValueChanged);", uisc.GetModuleName(), uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendFormat("\t\tpublic void SetOn{0}ValueChanged({1} val)", uisc.GetModuleName(), uiComponent.Key == typeof(Toggle)?"bool":"int")
-                                        .AppendLine();
-                                tempBuilder.AppendLine("\t\t{").AppendLine();
-                                tempBuilder.AppendLine("\t\t}");
-                            }
-                            else if (uiComponent.Key == typeof(SuperScrollView.LoopListView2))
-                            {
-                                strBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendFormat("\t\tpublic LoopListViewItem2 Get{0}ItemByIndex(LoopListView2 listView, int index)", uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendLine("\t\t{");
-                                tempBuilder.AppendLine("\t\t\treturn null;");
-                                tempBuilder.AppendLine("\t\t}");
-                            }
-                            else if (uiComponent.Key == typeof(SuperScrollView.LoopGridView))
-                            {
-                                strBuilder.AppendFormat("\t\t\tthis.{0}.InitGridView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendFormat("\t\tpublic LoopGridViewItem Get{0}ItemByIndex(LoopGridView gridview, int index, int row, int column)", uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendLine("\t\t{");
-                                tempBuilder.AppendLine("\t\t\treturn null;");
-                                tempBuilder.AppendLine("\t\t}");
-                            }
-                            else if (uiComponent.Key == typeof(CopyGameObject))
-                            {
-                                strBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendFormat("\t\tpublic void Get{0}ItemByIndex(int index, GameObject obj)", uisc.GetModuleName())
-                                        .AppendLine();
-                                tempBuilder.AppendLine("\t\t{").AppendLine();;
-                                tempBuilder.AppendLine("\t\t}");
-                            }
-                            break;
-                        }
-                    }
-
-                    if (!had)
-                    {
-                        strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyView>(\"{1}\");",
-                                uisc.GetModuleName(), strTemp)
-                            .AppendLine();
-                    }
+                    strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyView>(\"{1}\");",
+                            info.ModuleName, info.Path)
+                        .AppendLine();
+                    continue;
                 }
 
-                GenerateSystemChildCode(child, strTemp, strBuilder, tempBuilder, name, addListenerBuilder);
+                Type key = info.ComponentType;
+                string widgetType = WidgetInterfaceList[key];
+                strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<{1}>(\"{2}\");",
+                        info.ModuleName, widgetType, info.Path)
+                    .AppendLine();
+
+                if (key == typeof(Button) || key == typeof(PointerClick))
+                {
+                    addListenerBuilder.AppendFormat("\t\t\tthis.{0}.SetOnClick(OnClick{1});",
+                            info.ModuleName, info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendFormat("\t\tpublic void OnClick{0}()", info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendLine("\t\t{").AppendLine();
+                    tempBuilder.AppendLine("\t\t}");
+                }
+                else if (key == typeof(Toggle) || key == typeof(Dropdown))
+                {
+                    addListenerBuilder.AppendFormat("\t\t\tthis.{0}.SetOnValueChanged(SetOn{1}ValueChanged);",
+                            info.ModuleName, info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendFormat("\t\tpublic void SetOn{0}ValueChanged({1} val)", info.UpperName, key == typeof(Toggle)?"bool":"int")
+                        .AppendLine();
+                    tempBuilder.AppendLine("\t\t{").AppendLine();
+                    tempBuilder.AppendLine("\t\t}");
+                }
+                else if (key == typeof(SuperScrollView.LoopListView2))
+                {
+                    strBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", info.ModuleName, info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendFormat("\t\tpublic LoopListViewItem2 Get{0}ItemByIndex(LoopListView2 listView, int index)", info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendLine("\t\t{");
+                    tempBuilder.AppendLine("\t\t\treturn null;");
+                    tempBuilder.AppendLine("\t\t}");
+                }
+                else if (key == typeof(SuperScrollView.LoopGridView))
+                {
+                    strBuilder.AppendFormat("\t\t\tthis.{0}.InitGridView(0,Get{1}ItemByIndex);", info.ModuleName, info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendFormat("\t\tpublic LoopGridViewItem Get{0}ItemByIndex(LoopGridView gridview, int index, int row, int column)", info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendLine("\t\t{");
+                    tempBuilder.AppendLine("\t\t\treturn null;");
+                    tempBuilder.AppendLine("\t\t}");
+                }
+                else if (key == typeof(CopyGameObject))
+                {
+                    strBuilder.AppendFormat("\t\t\tthis.{0}.InitListView(0,Get{1}ItemByIndex);", info.ModuleName, info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendFormat("\t\tpublic void Get{0}ItemByIndex(int index, GameObject obj)", info.UpperName)
+                        .AppendLine();
+                    tempBuilder.AppendLine("\t\t{").AppendLine();
+                    tempBuilder.AppendLine("\t\t}");
+                }
             }
         }
     }
 }
-

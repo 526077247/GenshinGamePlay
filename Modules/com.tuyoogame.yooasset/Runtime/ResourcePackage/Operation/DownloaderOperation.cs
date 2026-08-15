@@ -42,6 +42,8 @@ namespace YooAsset
         private readonly int _failedTryAgain;
         private readonly int _timeout;
         private readonly List<BundleInfo> _bundleInfoList;
+        // 注意：下载过程中_bundleInfoList会被消费（RemoveAt），因此构造时快照本次下载的Bundle名称列表
+        private readonly List<string> _bundleNames;
         private readonly List<FSDownloadFileOperation> _downloaders = new List<FSDownloadFileOperation>(MAX_LOADER_COUNT);
         private readonly List<FSDownloadFileOperation> _removeList = new List<FSDownloadFileOperation>(MAX_LOADER_COUNT);
         private readonly List<FSDownloadFileOperation> _failedList = new List<FSDownloadFileOperation>(MAX_LOADER_COUNT);
@@ -82,6 +84,14 @@ namespace YooAsset
         }
 
         /// <summary>
+        /// 获取本次下载任务包含的Bundle名称列表
+        /// </summary>
+        public IReadOnlyList<string> GetDownloadBundleNames()
+        {
+            return _bundleNames;
+        }
+
+        /// <summary>
         /// 当下载器结束（无论成功或失败）
         /// </summary>
         public DownloaderFinish DownloadFinishCallback { set; get; }
@@ -109,6 +119,16 @@ namespace YooAsset
             _downloadingMaxNumber = UnityEngine.Mathf.Clamp(downloadingMaxNumber, 1, MAX_LOADER_COUNT); ;
             _failedTryAgain = failedTryAgain;
             _timeout = timeout;
+
+            // 快照本次下载的Bundle名称列表（下载过程中_bundleInfoList会被消费，导致无法事后遍历）
+            _bundleNames = new List<string>();
+            if (_bundleInfoList != null)
+            {
+                foreach (var bundleInfo in _bundleInfoList)
+                {
+                    _bundleNames.Add(bundleInfo.Bundle.BundleName);
+                }
+            }
 
             // 设置包裹名称 (fix #210)
             SetPackageName(packageName);
@@ -315,6 +335,7 @@ namespace YooAsset
                 if (temper.Contains(combineGUID) == false)
                 {
                     _bundleInfoList.Add(bundleInfo);
+                    _bundleNames.Add(bundleInfo.Bundle.BundleName);
                 }
             }
 

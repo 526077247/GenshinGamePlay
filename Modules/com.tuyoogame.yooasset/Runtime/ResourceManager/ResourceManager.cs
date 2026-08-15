@@ -303,6 +303,14 @@ namespace YooAsset
             return LoaderDic.Count > 0;
         }
 
+        /// <summary>
+        /// 获取已加载的Bundle名称列表
+        /// </summary>
+        public List<string> GetLoadedBundleNames()
+        {
+            return new List<string>(LoaderDic.Keys);
+        }
+
         private LoadBundleFileOperation CreateBundleFileLoaderInternal(BundleInfo bundleInfo)
         {
             // 如果加载器已经存在

@@ -387,5 +387,15 @@ namespace TaoTie
         {
             return UnityEngine.PlayerPrefs.GetInt("PACKAGE_VERSION_" + package, -1);
         }
+
+        /// <summary>
+        /// 获取当前已加载的Bundle名称列表
+        /// </summary>
+        public List<string> GetLoadedBundleNames(string package = Define.DefaultName)
+        {
+            var packageInfo = GetPackageSync(package);
+            if (packageInfo == null) return new List<string>();
+            return packageInfo.GetLoadedBundleNames();
+        }
     }
 }

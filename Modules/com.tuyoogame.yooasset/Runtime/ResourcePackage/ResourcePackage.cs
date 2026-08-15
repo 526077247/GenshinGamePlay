@@ -367,6 +367,16 @@ namespace YooAsset
             DebugCheckInitialize();
             _resourceManager.TryUnloadUnusedAsset(assetInfo);
         }
+
+        /// <summary>
+        /// 获取当前已加载的Bundle名称列表
+        /// 说明：用于判断本次更新下载的Bundle是否与已加载的Bundle存在交集
+        /// </summary>
+        public List<string> GetLoadedBundleNames()
+        {
+            DebugCheckInitialize();
+            return _resourceManager.GetLoadedBundleNames();
+        }
         #endregion
 
         #region 资源信息

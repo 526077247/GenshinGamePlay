@@ -106,7 +106,31 @@ namespace TaoTie
             }
             
             Log.Info("CheckResUpdate DownloadContent Success");
-            return UpdateRes.Restart;
+
+            // 判断本次下载的bundle是否包含当前已加载的bundle。
+            // 若包含，说明已加载的bundle内容已发生变化，必须重启游戏才能加载新内容；
+            // 若未包含，说明本次更新的bundle均尚未被加载，下载完成后可直接进入游戏。
+            var loadedBundles = PackageManager.Instance.GetLoadedBundleNames();
+            var downloadBundles = downloader.GetDownloadBundleNames();
+            bool needRestart = false;
+            foreach (var bundleName in downloadBundles)
+            {
+                if (loadedBundles.Contains(bundleName))
+                {
+                    needRestart = true;
+                    Log.Info("CheckResUpdate loaded bundle updated : " + bundleName);
+                    break;
+                }
+            }
+
+            if (needRestart)
+            {
+                Log.Info("CheckResUpdate Need Restart");
+                return UpdateRes.Restart;
+            }
+
+            Log.Info("CheckResUpdate No loaded bundle updated");
+            return UpdateRes.Over;
         }
         
         /// <summary>
