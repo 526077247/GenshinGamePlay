@@ -1,5 +1,4 @@
 ﻿using CommandLine;
-using ProtoBuf;
 
 namespace TaoTie
 {
@@ -10,7 +9,8 @@ namespace TaoTie
 
             try
             {
-                UnityTypeBindings.Init();
+                ProtoBuf.UnityTypeBindings.Init();
+                LitJson.UnityTypeBindings.Init();
                 // 命令行参数
                 Options options = null;
                 Parser.Default.ParseArguments<Options>(args)

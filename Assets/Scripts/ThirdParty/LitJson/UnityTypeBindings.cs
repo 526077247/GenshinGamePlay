@@ -1,5 +1,4 @@
-﻿#if !NOT_UNITY
-using System;
+﻿using System;
 using System.Numerics;
 using TaoTie.LitJson.Extensions;
 
@@ -29,7 +28,7 @@ namespace TaoTie.LitJson
             {
                 return Type.GetType(s);
             });
-            
+#if !NOT_UNITY
             // 注册Vector2类型的Exporter
             Action<UnityEngine.Vector2, JsonWriter> writeVector2 = (v, w) =>
             {
@@ -138,7 +137,7 @@ namespace TaoTie.LitJson
                 w.WriteProperty("right", v.right);
                 w.WriteObjectEnd();
             });
-            
+#endif
             JsonMapper.RegisterExporter<BigInteger>((v, w) =>
             {
                 w.Write(v.ToString());
@@ -147,6 +146,11 @@ namespace TaoTie.LitJson
             JsonMapper.RegisterImporter<string, BigInteger>((s) =>
             {
                 if (string.IsNullOrEmpty(s)) return BigInteger.Zero;
+                // 支持科学计数法字符串如 "3.6E+34"
+                if (s.Contains('E') || s.Contains('e'))
+                {
+                    return ParseScientificToBigInteger(s);
+                }
                 // 寻找小数点
                 int dotIndex = s.IndexOf('.');
                 if (dotIndex >= 0)
@@ -154,6 +158,13 @@ namespace TaoTie.LitJson
                     s = s.Substring(0, dotIndex);
                 }
                 return BigInteger.Parse(s);
+            });
+
+            // 处理裸数字 3.6E+34：JsonReader 会将其解析为 Double token
+            JsonMapper.RegisterImporter<double, BigInteger>((d) =>
+            {
+                if (d == 0) return BigInteger.Zero;
+                return ParseScientificToBigInteger(d.ToString("R"));
             });
             
             JsonMapper.RegisterImporter<string, long>((string input) =>
@@ -168,6 +179,40 @@ namespace TaoTie.LitJson
             });
         }
 
+        /// <summary>
+        /// 将科学计数法字符串（如 "3.6E+34"）转换为 BigInteger
+        /// </summary>
+        private static BigInteger ParseScientificToBigInteger(string s)
+        {
+            int eIndex = s.IndexOfAny(new[] { 'E', 'e' });
+            if (eIndex < 0)
+            {
+                // 非科学计数法，直接处理小数
+                int dotIndex = s.IndexOf('.');
+                if (dotIndex >= 0)
+                    s = s.Substring(0, dotIndex);
+                return BigInteger.Parse(s);
+            }
+
+            string mantissa = s.Substring(0, eIndex);
+            string exponentStr = s.Substring(eIndex + 1);
+            int exponent = int.Parse(exponentStr);
+
+            int dotIndex2 = mantissa.IndexOf('.');
+            if (dotIndex2 >= 0)
+            {
+                int fracDigits = mantissa.Length - dotIndex2 - 1;
+                mantissa = mantissa.Remove(dotIndex2, 1);
+                exponent -= fracDigits;
+            }
+
+            BigInteger result = BigInteger.Parse(mantissa);
+            if (exponent > 0)
+                result *= BigInteger.Pow(10, exponent);
+            else if (exponent < 0)
+                result /= BigInteger.Pow(10, -exponent);
+            return result;
+        }
+
     }
 }
-#endif
