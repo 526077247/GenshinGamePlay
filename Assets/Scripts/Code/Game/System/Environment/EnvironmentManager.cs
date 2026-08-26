@@ -120,6 +120,7 @@ namespace TaoTie
             envInfoMap = null;
             DefaultBlend = null;
             configs = null;
+            DestroyVolumes();
             Instance = null;
         }
         
@@ -243,10 +244,12 @@ namespace TaoTie
 
             ApplySkybox(curInfo);
             ApplyLight(curInfo);
+            ApplyVolume(curInfo);
         }
 
         private partial void ApplySkybox(EnvironmentInfo info);
         private partial void ApplyLight(EnvironmentInfo info);
+        private partial void ApplyVolume(EnvironmentInfo info);
 
         private NormalEnvironmentRunner CreateRunner(ConfigEnvironment data, EnvironmentPriorityType type)
         {

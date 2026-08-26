@@ -24,6 +24,9 @@ namespace TaoTie
         public bool UseDirLight;
         public LightShadows LightShadows;
 
+        public string VolumeProfilePath;
+        public string VolumeProfilePath2;
+
         public static EnvironmentInfo Create(ConfigEnvironment config)
         {
             EnvironmentInfo res = ObjectPool.Instance.Fetch<EnvironmentInfo>();
@@ -45,6 +48,7 @@ namespace TaoTie
             res.LightIntensity = config.LightIntensity;
             res.LightDir = config.LightDir;
             res.LightShadows = config.LightShadows;
+            res.VolumeProfilePath = config.VolumeProfilePath;
             return res;
         }
 
@@ -91,6 +95,7 @@ namespace TaoTie
             res.LightDir = other.LightDir;
             res.UseDirLight = other.UseDirLight;
             res.LightShadows = other.LightShadows;
+            res.VolumeProfilePath = other.VolumeProfilePath;
             return res;
         }
 
@@ -171,6 +176,13 @@ namespace TaoTie
                 LightDir = to.LightDir;
                 LightShadows = to.LightShadows;
             }
+
+            VolumeProfilePath = from.IsBlender
+                ? (from.Progress > 0.5 ? from.VolumeProfilePath2 : from.VolumeProfilePath)
+                : from.VolumeProfilePath;
+            VolumeProfilePath2 = to.IsBlender
+                ? (to.Progress > 0.5 ? to.VolumeProfilePath2 : to.VolumeProfilePath)
+                : to.VolumeProfilePath;
         }
         public void Lerp(ConfigEnvironment from, ConfigEnvironment to, float val)
         {
@@ -238,6 +250,9 @@ namespace TaoTie
                 LightDir = to.LightDir;
                 LightShadows = to.LightShadows;
             }
+
+            VolumeProfilePath = from.VolumeProfilePath;
+            VolumeProfilePath2 = to.VolumeProfilePath;
         }
         public void Dispose()
         {
@@ -260,6 +275,8 @@ namespace TaoTie
             LightIntensity = default;
             LightDir = default;
             UseDirLight = default;
+            VolumeProfilePath = null;
+            VolumeProfilePath2 = null;
             this.isDispose = true;
             ObjectPool.Instance.Recycle(this);
         }

@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using TaoTie.Inspector;
 #endif
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace TaoTie
 {
@@ -71,5 +72,43 @@ namespace TaoTie
         public Vector3 LightDir = new Vector3(50, -30, 0);
         [ProtoMember(10, IsRequired = true)] [LabelText("阴影类型")] [ShowIf(nameof(UseDirLight))]
         public LightShadows LightShadows = LightShadows.None;
+
+        [ProtoMember(11)]
+        [LabelText("后处理Volume路径")]
+        [Tooltip("留空则不切换后处理")]
+        public string VolumeProfilePath;
+#if UNITY_EDITOR
+        [OnValueChanged(nameof(UpdateVolumeProfilePath))][BoxGroup("PostFX Volume")]
+        public VolumeProfile VolumeProfile;
+
+        private void UpdateVolumeProfilePath()
+        {
+            if (VolumeProfile == null)
+            {
+                VolumeProfilePath = null;
+                return;
+            }
+
+            var path = UnityEditor.AssetDatabase.GetAssetPath(VolumeProfile);
+            if (path.StartsWith("Assets/AssetsPackage/"))
+            {
+                VolumeProfilePath = path.Replace("Assets/AssetsPackage/","");
+            }
+            else
+            {
+                VolumeProfilePath = null;
+            }
+        }
+        [Button("预览VolumeProfile")][BoxGroup("PostFX Volume")]
+        private void PreviewVolumeProfile()
+        {
+            if (!string.IsNullOrEmpty(VolumeProfilePath))
+            {
+                VolumeProfile = UnityEditor.AssetDatabase.LoadAssetAtPath<VolumeProfile>("Assets/AssetsPackage/" + VolumeProfilePath);
+                return;
+            }
+            VolumeProfile = null;
+        }
+#endif
     }
 }

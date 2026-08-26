@@ -15,7 +15,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "0fe91249ffda3197680855443505fa266e4cc516"
+      "hash": "493aeb622024ac08888e3a72587abb5e3952a7b5"
     },
     "com.taotie.render-pipelines": {
       "version": "https://github.com/526077247/TaoTieRP.git",
@@ -26,7 +26,7 @@
         "com.unity.mathematics": "1.2.6",
         "com.unity.burst": "1.8.18"
       },
-      "hash": "2b880700d9445840a40c9d80558b69d3c3a3428b"
+      "hash": "434abe9e783707630ee5ec0b6bc0b64630db6aea"
     },
     "com.tuyoogame.yooasset": {
       "version": "file:../Modules/com.tuyoogame.yooasset",
