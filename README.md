@@ -26,7 +26,7 @@
 | **Story 剧情系统** | Graph 编辑器编排，支持分支节点、并行节点、内嵌 Timeline |
 | **Camera 系统** | 基于状态栈的相机框架，head/body/other 三层插件，支持过渡混合、震动、遮挡前推 |
 | **Numeric 数值系统** | 属性公式计算，支持 FormulaStringFx 表达式替换 |
-| **Move 移动系统** | 策略模式，支持 ORCA 动态避障寻路（DotRecast）、Pathfinding 寻路组件 |
+| **Move 移动系统** | 策略模式，支持 ORCA 动态避障、DotRecast寻路、Pathfinding 路径寻路 |
 | **Environment 环境** | 光照、天空盒管理，优先级调度 |
 | **Billboard 血条** | 头顶信息显示，插件化架构 |
 | **Camp 阵营** | 敌友关系管理 |
@@ -177,18 +177,16 @@ GenshinGamePlay/
 | **protobuf-net** | 二进制序列化（配置加载） |
 | **ETTask** | 单线程异步任务系统 |
 | **DotRecast** | Recast 导航网格寻路 |
-| **ORCA** | 动态避障寻路 |
 | **LitJson** | JSON 序列化 |
 
-## 引用或参考
+## 引用
 
 1. [WorldReverse](https://github.com/fengjixuchui/WorldReverse)
 2. [TaoTie](https://github.com/526077247/TaoTie) — 轻量级 Unity 框架
 3. [TaoTieRP](https://github.com/526077247/TaoTieRP) — 自定义 Scriptable Render Pipeline，支持 Forward / Deferred 渲染路径
 4. [TaoTieInspector](https://github.com/526077247/TaoTieInspector) — 类似 Odin 的Graph/Inspector绘制系统
 5. [YooAsset](https://github.com/tuyoogame/YooAsset) — Unity3D 资源管理系统
-6. [ET](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
-7. [N:ORCA](https://github.com/Nebukam/com.nebukam.orca) — 动态避障寻路
+6. [ETTask](https://github.com/egametang/ET) — 单线程异步、协程锁、计时器、数值组件、导表工具、打包工具
 
 ## 付费插件
 

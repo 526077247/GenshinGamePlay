@@ -1,60 +1,68 @@
-﻿using Nebukam.ORCA;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TaoTie
 {
-    public class ORCAAgentComponent: Component, IComponent
+    public class ORCAAgentComponent : Component, IComponent
     {
         private Actor actor => GetParent<Actor>();
-        private Agent agent;
+        private ORCASystem system;
+        private ORCASystem.Slot slot;
+        private bool rvoEnabled;
         private Vector3 prefVelocity;
+
         public void Init()
         {
+            rvoEnabled = false;
             if (actor?.ConfigActor?.Common != null && SceneManager.Instance.CurrentScene is MapScene scene)
             {
-                var orcaManager = scene.GetManager<ORCAManager>();
-                if(orcaManager==null) return;
-                agent = orcaManager.AddEntity(actor);
-                agent.navigationEnabled = false;
-                agent.height = actor.ConfigActor.Common.ModelHeight;
-                agent.radius = actor.ConfigActor.Common.ModelRadius;
+                system = scene.GetManager<ORCASystem>();
+                if (system == null) return;
+                float radius = actor.ConfigActor.Common.ModelRadius;
+                float height = actor.ConfigActor.Common.ModelHeight;
+                slot = system.AddEntity(actor.Position, radius, height);
+                if (slot != null)
+                    slot.enabled = false;
             }
-            Messager.Instance.AddListener<SceneEntity, Vector3>(Id,MessageId.ChangePositionEvt,OnChangePosition);
+            Messager.Instance.AddListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
         }
 
         public void Destroy()
         {
-            Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id,MessageId.ChangePositionEvt,OnChangePosition);
-            if (agent != null)
-            {
-                agent.Release();
-                agent = null;
-            }
+            Messager.Instance.RemoveListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
+            if (slot != null && system != null)
+                system.RemoveEntity(slot.id);
+            slot = null;
+            system = null;
         }
 
         public void EnableRVO2(bool enable)
         {
-            agent.navigationEnabled = enable;
+            rvoEnabled = enable;
+            if (slot != null)
+                slot.enabled = enable;
         }
 
         public void SetVelocity(Vector3 velocity, float maxSpeed)
         {
             prefVelocity = velocity;
-            if (agent == null) return;
-            agent.prefVelocity = prefVelocity;
-            agent.maxSpeed = maxSpeed;
+            if (slot != null)
+            {
+                slot.prefVelocity = velocity;
+                slot.maxSpeed = maxSpeed;
+            }
         }
-        
+
         public Vector3 GetVelocity()
         {
-            if (agent == null || !agent.navigationEnabled) return prefVelocity;
-            return agent.velocity;
+            if (slot == null || !rvoEnabled)
+                return prefVelocity;
+            return slot.velocity;
         }
 
         private void OnChangePosition(SceneEntity sceneEntity, Vector3 old)
         {
-            if (agent == null) return;
-            agent.pos = sceneEntity.Position;
+            if (slot != null)
+                slot.position = sceneEntity.Position;
         }
     }
 }

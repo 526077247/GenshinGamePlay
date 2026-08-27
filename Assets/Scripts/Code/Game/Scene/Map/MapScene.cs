@@ -64,7 +64,7 @@ namespace TaoTie
             RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
-            RemoveManager<ORCAManager>();
+            RemoveManager<ORCASystem>();
             RemoveManager<EnvironmentManager>();
             RemoveManager<GameTimerManager>();
         }
@@ -99,7 +99,7 @@ namespace TaoTie
                 envm.Create(config.EnvIds[0], EnvironmentPriorityType.Scene);
             }
 
-            RegisterManager<ORCAManager>();
+            RegisterManager<ORCASystem>();
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();
