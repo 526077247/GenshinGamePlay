@@ -34,15 +34,10 @@ namespace TaoTie
             actorCommon = null;
             if (state.follow != null)
             {
-                var ec = state.follow.GetComponent<EntityComponent>();
-                if (ec != null)
+                var actor = state.follow as Actor;
+                if (actor != null)
                 {
-                    var entityId = ec.Id;
-                    if (SceneManager.Instance.CurrentScene is MapScene map)
-                    {
-                        var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
-                        actorCommon = unit.ConfigActor.Common;
-                    }
+                    actorCommon = actor.ConfigActor.Common;
                 }
             }
         }

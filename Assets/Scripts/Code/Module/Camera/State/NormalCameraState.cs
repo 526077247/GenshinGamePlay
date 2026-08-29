@@ -13,8 +13,8 @@ namespace TaoTie
         private CameraPluginRunner head;
         private ListComponent<CameraPluginRunner> others;
 
-        public Transform follow { get; private set; }
-        public Transform target { get; private set; }
+        public ICameraEntity follow { get; private set; }
+        public ICameraEntity target { get; private set; }
 
         public static NormalCameraState Create(ConfigCamera config, int priority)
         {
@@ -80,9 +80,9 @@ namespace TaoTie
         {
             if (target != null)
             {
-                Data.TargetForward = target.forward;
-                Data.LookAt = target.position;
-                Data.TargetUp = target.up;
+                Data.TargetForward = target.Forward;
+                Data.LookAt = target.Position;
+                Data.TargetUp = target.Up;
             }
             else
             {
@@ -124,9 +124,9 @@ namespace TaoTie
             ObjectPool.Instance.Recycle(this);
         }
 
-        public void SetTarget(Transform transform)
+        public void SetTarget(ICameraEntity entity)
         {
-            this.target = transform;
+            this.target = entity;
             this.body?.OnSetTarget();
             this.head?.OnSetTarget();
             if (others != null)
@@ -138,9 +138,9 @@ namespace TaoTie
             }
         }
 
-        public void SetFollow(Transform transform)
+        public void SetFollow(ICameraEntity entity)
         {
-            this.follow = transform;
+            this.follow = entity;
             this.body?.OnSetFollow();
             this.head?.OnSetFollow();
             if (others != null)

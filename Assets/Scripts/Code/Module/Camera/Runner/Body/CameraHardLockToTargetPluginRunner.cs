@@ -29,18 +29,18 @@ namespace TaoTie
         {
             if (state.follow != null)
             {
-                data.Forward = state.follow.forward;
-                data.Up = state.follow.up;
+                data.Forward = state.follow.Forward;
+                data.Up = state.follow.Up;
                 if (!config.LockRotation)
                 {
-                    data.SphereQuaternion = state.follow.rotation;
-                    data.Position = state.follow.position + state.follow.rotation * config.Offset;
+                    data.SphereQuaternion = state.follow.Rotation;
+                    data.Position = state.follow.Position + state.follow.Rotation * config.Offset;
                 }
                 else
                 {
                     var rot = Quaternion.Euler(config.Rotation);
                     data.SphereQuaternion = rot;
-                    data.Position = state.follow.position + config.Offset;
+                    data.Position = state.follow.Position + config.Offset;
                 }
             }
         }

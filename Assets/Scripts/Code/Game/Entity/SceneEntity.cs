@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public abstract class SceneEntity: Entity
+    public abstract class SceneEntity: Entity, ICameraEntity
     {
         private Vector3 position; //坐标
         /// <summary>

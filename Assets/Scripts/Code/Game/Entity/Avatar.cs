@@ -51,11 +51,10 @@ namespace TaoTie
             await TimerManager.Instance.WaitAsync(1);
             if(model.IsDispose) return;
             var camera = CameraManager.Instance.Get<NormalCameraState>(thirdCameraId);
-            var trans = model.EntityView;
-            if (camera != null && trans != null)
+            if (camera != null)
             {
-                camera.SetFollow(trans);
-                camera.SetTarget(trans);
+                camera.SetFollow(this);
+                camera.SetTarget(this);
             }
             if (!PlatformUtil.IsMobile())
             {

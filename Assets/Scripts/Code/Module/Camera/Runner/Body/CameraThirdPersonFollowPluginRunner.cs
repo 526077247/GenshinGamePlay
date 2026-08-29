@@ -49,14 +49,12 @@ namespace TaoTie
             actorCommon = null;
             if (state.follow != null)
             {
-                var ec = state.follow.GetComponent<EntityComponent>();
-                if (ec != null)
+                if (state.follow != null)
                 {
-                    var entityId = ec.Id;
-                    if (SceneManager.Instance.CurrentScene is MapScene map)
+                    var actor = state.follow as Actor;
+                    if (actor != null)
                     {
-                        var unit = map.GetManager<EntityManager>().Get<Actor>(entityId);
-                        actorCommon = unit.ConfigActor.Common;
+                        actorCommon = actor.ConfigActor.Common;
                     }
                 }
             }
@@ -67,10 +65,10 @@ namespace TaoTie
             if (state.follow != null && actorCommon != null)
             { 
                 data.SphereQuaternion = Quaternion.Euler(new Vector3(angleOffsetY, angleOffsetX, 0));
-                data.Forward = state.follow.forward;
-                data.Up = state.follow.up;
+                data.Forward = state.follow.Forward;
+                data.Up = state.follow.Up;
 
-                data.Position = state.follow.position - data.SphereQuaternion * Vector3.forward * distance +
+                data.Position = state.follow.Position - data.SphereQuaternion * Vector3.forward * distance +
                                 data.Up * actorCommon.Height / 2;
             }
         }
