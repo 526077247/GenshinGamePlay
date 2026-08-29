@@ -22,7 +22,10 @@ namespace TaoTie
 
         protected override void UpdateInternal()
         {
-            CalculatingPara();
+            if (state.IsCurrentCamera)
+            {
+                CalculatingPara(CameraManager.Instance.Input.Current);
+            }
             Calculating();
         }
 
@@ -72,11 +75,11 @@ namespace TaoTie
             }
         }
 
-        private void CalculatingPara()
+        private void CalculatingPara(CameraInputIntent input)
         {
             #region 镜头缩放
             
-            var newWheel = -InputManager.Instance.MouseScrollWheel;
+            var newWheel = -input.ScrollDelta;
             wheel = Mathf.Lerp(wheel, newWheel, 0.6f);
             distance += wheel * GameTimerManager.Instance.GetDeltaTime()/10f;
             distance = Mathf.Clamp(distance, config.ZoomMin, config.ZoomMax);
@@ -84,13 +87,13 @@ namespace TaoTie
             #endregion
 
             #region 镜头旋转
-            if(CameraManager.Instance.CursorUnLockState > 0) return;
-            var newx = InputManager.Instance.MouseAxisX;
+            if (input.IsCursorUnLocked) return;
+            var newx = input.LookDelta.x;
             mx = Mathf.Lerp(mx, newx, 0.6f);
             angleOffsetX += mx * GameTimerManager.Instance.GetDeltaTime()/200f * config.SpeedX;
             angleOffsetX %= 360;
 
-            var newy = - InputManager.Instance.MouseAxisY;
+            var newy = - input.LookDelta.y;
             my = Mathf.Lerp(my, newy, 0.6f);
             angleOffsetY += my * GameTimerManager.Instance.GetDeltaTime()/200f * config.SpeedY;
             angleOffsetY = Mathf.Clamp(angleOffsetY, -60, 70);

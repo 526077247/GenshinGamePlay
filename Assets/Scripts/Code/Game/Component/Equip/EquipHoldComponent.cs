@@ -15,7 +15,15 @@ namespace TaoTie
         public void Init()
         {
             euips = new Dictionary<EquipType, Equip>();
-            showWeaponState = parent.GetComponent<FsmComponent>().DefaultFsm.CurrentState.ShowWeapon;
+            FsmComponent fsm = parent.GetComponent<FsmComponent>();
+            if (fsm != null)
+            {
+                showWeaponState = fsm.DefaultFsm?.CurrentState?.ShowWeapon??false;
+            }
+            else
+            {
+                showWeaponState = false;
+            }
             Messager.Instance.AddListener<bool>(Id,MessageId.SetShowWeapon,SetShowWeapon);
         }
 
@@ -55,7 +63,8 @@ namespace TaoTie
             var apt = equip.GetComponent<EquipComponent>().Config.EquipType;
             if (EquipType.TryParse(apt, out EquipType equipType))
             {
-                if((parent as Actor).ConfigActor.EquipController.AttachPoints.TryGetValue(equipType,out var pointName))
+                var points = (parent as Actor)?.ConfigActor?.EquipController?.AttachPoints;
+                if(points != null && points.TryGetValue(equipType,out var pointName))
                 {
                     if (euips.TryGetValue(equipType, out var old))
                     {

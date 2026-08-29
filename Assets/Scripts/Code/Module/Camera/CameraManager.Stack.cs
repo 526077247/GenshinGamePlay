@@ -9,7 +9,8 @@ namespace TaoTie
     {
         
         #region CameraStack
-
+        /// <summary>相机输入提供器：统一创建/刷新/销毁，所有 Runner 共享消费其 Current 快照</summary>
+        public ICameraInputProvider Input { get; private set; }
         private Dictionary<Type, Type> configRunnerType;
 
         private int defaultCameraId;
@@ -41,6 +42,7 @@ namespace TaoTie
         }
         public async partial ETTask LoadAsync()
         {
+            Input = CameraInputProviderFactory.Create();
             #region Config
             var config = await GetConfig("EditConfig/OthersBuildIn/ConfigCameras");
             DefaultBlend = config.DefaultBlend;
@@ -72,6 +74,7 @@ namespace TaoTie
         public void Update()
         {
             if (cameraStack == null) return;
+            Input?.Tick();
             foreach (var item in cameraStack.Data)
             {
                 if(item.Value == null) continue;

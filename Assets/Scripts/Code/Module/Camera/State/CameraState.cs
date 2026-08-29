@@ -5,6 +5,8 @@ namespace TaoTie
     public abstract class CameraState: IPriorityStackItem, IDisposable
     {
         public abstract bool IsBlenderState { get; }
+        /// <summary>是否为当前栈顶相机；仅栈顶相机允许消费输入快照</summary>
+        public bool IsCurrentCamera => CameraManager.Instance != null && CameraManager.Instance.CurrentCameraState == this;
         public bool IsBackground { get; protected set; }
         public bool IsDispose { get; private set; }
         public bool IsOver { get; set; }
