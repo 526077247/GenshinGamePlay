@@ -151,5 +151,18 @@ namespace TaoTie
                 }
             }
         }
+
+        public void Reset()
+        {
+            this.body?.Reset();
+            this.head?.Reset();
+            if (others != null)
+            {
+                for (int i = 0; i < this.others.Count; i++)
+                {
+                    this.others[i]?.Reset();
+                }
+            }
+        }
     }
 }

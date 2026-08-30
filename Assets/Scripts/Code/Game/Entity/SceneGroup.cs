@@ -36,7 +36,7 @@ namespace TaoTie
 
             Messager.Instance.AddListener<IEventBase>(Id, MessageId.SceneGroupEvent, OnEvent);
             this.Manager = manager;
-            configId = p1.Id;
+            Config = p1;
             Variable = DynDictionary.Create();
             actorEntities = new UnOrderMultiMap<int, long>();
             zoneEntities = new Dictionary<int, long>();
@@ -137,7 +137,7 @@ namespace TaoTie
             this.activeHandlers = null;
 
 
-            this.configId = 0;
+            Config = null;
 
             this.Variable.onValueChange -= this.OnVariableChanged;
             this.Variable.Dispose();
@@ -149,7 +149,6 @@ namespace TaoTie
 
         public SceneGroupManager Manager { get; private set; }
         public DynDictionary Variable { get; set; }
-        private ulong configId;
 
         private UnOrderMultiMap<int, long> actorEntities; // [localid: entityid]
 
@@ -166,7 +165,7 @@ namespace TaoTie
 
         private readonly Dictionary<int, int> temp = new Dictionary<int, int>();
 
-        public ConfigSceneGroup Config => ConfigSceneGroupCategory.Instance.Get(configId);
+        public ConfigSceneGroup Config { get; private set; }
 
         private Dictionary<int, ConfigSceneGroupZone> zones;
 

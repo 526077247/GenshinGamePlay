@@ -13,6 +13,8 @@ namespace TaoTie
         public virtual void OnSetTarget() { }
 
         public virtual void OnSetFollow() { }
+        
+        public virtual void Reset() { }
     }
     public abstract class CameraPluginRunner<T>: CameraPluginRunner where T: ConfigCameraPlugin
     {
