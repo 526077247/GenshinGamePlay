@@ -431,7 +431,8 @@ namespace TaoTie
                             var edge = m_Graph.GetEdge(item.edges[i]);
                             var node = m_Graph.FindNode(edge.inputNodeId);
                             var configNode = ConvertAction(node, routes);
-                            temp.Add(configNode);
+                            if (configNode != null)
+                                temp.Add(configNode);
                         }
                     }
                 }
@@ -445,6 +446,11 @@ namespace TaoTie
         {
             if (nodeBase is SceneGroupTriggerActionNode actionNode)
             {
+                if (actionNode.Action == null)
+                {
+                    Debug.LogWarning($"执行项节点 {actionNode.name} 未选择事件Action，导出时将跳过");
+                    return null;
+                }
                 return JsonHelper.FromJson<ConfigSceneGroupAction>(JsonHelper.ToJson(actionNode.Action));
             }
             if (nodeBase is SceneGroupRestartPlatformMoveNode moveNode)
@@ -497,7 +503,8 @@ namespace TaoTie
                                 var edge = m_Graph.GetEdge(item.edges[i]);
                                 var node = m_Graph.FindNode(edge.inputNodeId);
                                 var configNode = ConvertAction(node,routes);
-                                actions.Add(configNode);
+                                if (configNode != null)
+                                    actions.Add(configNode);
                             }
                            
                         }
@@ -550,6 +557,7 @@ namespace TaoTie
                             var edge = m_Graph.GetEdge(item.edges[i]);
                             var node = m_Graph.FindNode(edge.inputNodeId);
                             var configNode = ConvertAction(node,routes);
+                            if (configNode == null) continue;
                             if (item.portName == "不满足则")
                                 fail.Add(configNode);
                             else if (item.portName == "满足条件后")
