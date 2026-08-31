@@ -93,6 +93,29 @@ namespace TaoTie
 
         public void Destroy()
         {
+            //先广播卸载
+            if (this.addOnSuiteConfig != null)
+            {
+                using var list = ListComponent<int>.Create();
+                list.AddRange(this.addOnSuiteConfig);
+                for (int i = 0; i < list.Count; i++)
+                {
+                    Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteUnloadEvent()
+                    {
+                        SuiteId = list[i],
+                        IsAddOn = true,
+                    });
+                }
+            }
+            if (this.curSuiteId != 0)
+            {
+                Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteUnloadEvent()
+                {
+                    SuiteId = this.curSuiteId,
+                    IsAddOn = false,
+                });
+            }
+
             foreach (var item in this.timerTrigger)
             {
                 var timerId = item.Value;
@@ -138,6 +161,7 @@ namespace TaoTie
 
 
             Config = null;
+            curSuiteId = 0;
 
             this.Variable.onValueChange -= this.OnVariableChanged;
             this.Variable.Dispose();
@@ -196,7 +220,7 @@ namespace TaoTie
 
         private void OnEvent(IEventBase evt)
         {
-            if(IsDispose) return;
+            if(IsDispose && !(evt is SuiteUnloadEvent)) return;
             for (var node = this.activeHandlers.First; node != null; node = node.Next)
             {
                 var trigger = this.triggers[node.Value];
@@ -268,6 +292,15 @@ namespace TaoTie
             // 新的
             if (this.suite.TryGetValue(suiteId, out var config))
             {
+                //先广播旧组卸载
+                if (this.curSuiteId != 0)
+                {
+                    Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteUnloadEvent()
+                    {
+                        SuiteId = this.curSuiteId,
+                        IsAddOn = false,
+                    });
+                }
                 this.ChangeTriggers(config);
                 this.ChangeZones(config);
                 this.ChangeActors(config);
@@ -277,6 +310,10 @@ namespace TaoTie
                     SuiteId = curSuiteId,
                     IsAddOn = false,
                 });
+            }
+            else
+            {
+                Log.Error($"Group {Config?.Id}, suite id = {suiteId} not found");
             }
         }
 
@@ -494,6 +531,11 @@ namespace TaoTie
                 this.RemoveAddonZones(config);
                 this.RemoveAddonTriggers(config);
                 this.addOnSuiteConfig.Remove(config.LocalId);
+                Messager.Instance.Broadcast(Id, MessageId.SceneGroupEvent, new SuiteUnloadEvent()
+                {
+                    SuiteId = config.LocalId,
+                    IsAddOn = true,
+                });
             }
         }
 

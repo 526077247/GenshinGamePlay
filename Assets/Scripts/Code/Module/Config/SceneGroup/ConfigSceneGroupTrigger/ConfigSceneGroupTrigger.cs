@@ -23,6 +23,7 @@ namespace TaoTie
     [ProtoInclude(107, typeof(ConfigSceneGroupTrigger<StoryPlayOverEvt>))]
     [ProtoInclude(108, typeof(ConfigSceneGroupTrigger<SuiteLoadEvent>))]
     [ProtoInclude(109, typeof(ConfigSceneGroupTrigger<VariableChangeEvent>))]
+    [ProtoInclude(110, typeof(ConfigSceneGroupTrigger<SuiteUnloadEvent>))]
     public abstract partial class ConfigSceneGroupTrigger
     {
         [PropertyOrder(int.MinValue)] 
@@ -68,6 +69,7 @@ namespace TaoTie
     [ProtoInclude(107, typeof(ConfigEnterZoneEventTrigger))]
     [ProtoInclude(108, typeof(ConfigAvatarNearPlatformEvtTrigger))]
     [ProtoInclude(109, typeof(ConfigAnyMonsterDieEventTrigger))]
+    [ProtoInclude(110, typeof(ConfigSuiteUnloadEventTrigger))]
     public abstract class ConfigSceneGroupTrigger<T> : ConfigSceneGroupTrigger where T : IEventBase
     {
         [JsonIgnore]

@@ -26,6 +26,7 @@ namespace TaoTie
     [ProtoInclude(108, typeof(ConfigSceneGroupCondition<PlatformReachPointEvt>))]
     [ProtoInclude(109, typeof(ConfigSceneGroupCondition<StoryPlayOverEvt>))]
     [ProtoInclude(110, typeof(ConfigSceneGroupCondition<SuiteLoadEvent>))]
+    [ProtoInclude(111, typeof(ConfigSceneGroupCondition<SuiteUnloadEvent>))]
     public abstract partial class ConfigSceneGroupCondition
     {
         public abstract bool IsMatch(IEventBase obj, SceneGroup sceneGroup);
@@ -222,6 +223,8 @@ namespace TaoTie
     [ProtoInclude(120, typeof(ConfigEnterZoneEvtGetIsMyCondition))]
     [ProtoInclude(121, typeof(ConfigEnterZoneEvtGetRegionEntityCountCondition))]
     [ProtoInclude(122, typeof(ConfigEnterZoneEventZoneLocalIdCondition))]
+    [ProtoInclude(123, typeof(ConfigSuiteUnloadEventIsAddOnCondition))]
+    [ProtoInclude(124, typeof(ConfigSuiteUnloadEventSuiteIdCondition))]
     public abstract class ConfigSceneGroupCondition<T>:ConfigSceneGroupCondition where T:IEventBase
     {
         [JsonIgnore]
