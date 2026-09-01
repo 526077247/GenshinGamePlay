@@ -26,7 +26,7 @@ namespace TaoTie
         [LabelText("到时间后执行")]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
-        [OnStateUpdate(nameof(Refresh))][Inspector.DrawIgnore]
+        [OnStateUpdate(nameof(Refresh))][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(HandleType)+")")]
 #endif
         public ConfigSceneGroupAction[] Actions;

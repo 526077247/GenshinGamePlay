@@ -15,7 +15,7 @@ namespace TaoTie
     public abstract class ConfigSceneGroupLogicConditionAction:ConfigSceneGroupConditionAction
     {
         [ProtoMember(10)]
-        [LabelText("条件")][Inspector.DrawIgnore]
+        [LabelText("条件")][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredConditionTypeList)+"("+nameof(HandleType)+")")]
 #endif

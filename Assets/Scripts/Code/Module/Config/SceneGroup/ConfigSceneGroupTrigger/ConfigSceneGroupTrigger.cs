@@ -27,13 +27,13 @@ namespace TaoTie
     public abstract partial class ConfigSceneGroupTrigger
     {
         [PropertyOrder(int.MinValue)] 
-        [ProtoMember(1)][Inspector.DrawIgnore]
+        [ProtoMember(1)][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
         public int LocalId;
         [ProtoMember(2)]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))] [OnStateUpdate(nameof(Refresh))] 
 #endif
-        [SerializeReference] [PropertyOrder(int.MaxValue - 1)][Inspector.DrawIgnore]
+        [SerializeReference] [PropertyOrder(int.MaxValue - 1)][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
 #if UNITY_EDITOR
         [TypeFilter("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetFilteredActionTypeList)+"("+nameof(GetType)+"())")]
 #endif

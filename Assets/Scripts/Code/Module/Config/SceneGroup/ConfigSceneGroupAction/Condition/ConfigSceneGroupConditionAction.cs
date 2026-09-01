@@ -15,7 +15,7 @@ namespace TaoTie
     public abstract class ConfigSceneGroupConditionAction:ConfigSceneGroupAction
     {
         [ProtoMember(11)]
-        [LabelText("满足条件后执行")][Inspector.DrawIgnore]
+        [LabelText("满足条件后执行")][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]
@@ -23,7 +23,7 @@ namespace TaoTie
 #endif
         public ConfigSceneGroupAction[] Success;
         [ProtoMember(12)]
-        [LabelText("不满足后执行")][Inspector.DrawIgnore]
+        [LabelText("不满足后执行")][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
 #if UNITY_EDITOR
         [OnCollectionChanged(nameof(Refresh))]
         [OnStateUpdate(nameof(Refresh))]

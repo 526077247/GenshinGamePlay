@@ -30,7 +30,7 @@ namespace TaoTie
         [LabelText("判定抵达的范围")] [ProtoMember(6)] [MinValue(0.1f)] public float ArriveRange;
         
         [LabelText("判定角色靠近的范围")] [ProtoMember(8)] [MinValue(0.1f)] public float AvatarNearRange;
-        [OnCollectionChanged(nameof(RefreshIndex))][Inspector.DrawIgnore]
+        [OnCollectionChanged(nameof(RefreshIndex))][Inspector.DrawIgnore(Inspector.Ignore.Graph)]
         [ProtoMember(7)] public ConfigWaypoint[] Points;
 
         private void RefreshIndex()

@@ -90,7 +90,7 @@ namespace TaoTie
         private void CheckLeftOrRightFoot()
         {
             if (Animator == null || EntityView == null) return;
-            if (!Animator.avatar.isHuman) return;
+            if (Animator.avatar == null || !Animator.avatar.isHuman) return;
             //判断是左脚还是右脚
             Transform leftFoot = Animator.GetBoneTransform(HumanBodyBones.LeftFoot);
             Transform rightFoot = Animator.GetBoneTransform(HumanBodyBones.RightFoot);
