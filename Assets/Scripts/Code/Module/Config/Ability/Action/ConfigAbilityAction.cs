@@ -37,6 +37,7 @@ namespace TaoTie
     [ProtoInclude(125, typeof(SetFsmParam<bool>))]
     [ProtoInclude(126, typeof(SetFsmParam<float>))]
     [ProtoInclude(127, typeof(SetFsmParam<int>))]
+    [ProtoInclude(128, typeof(FreezeInputAction))]
     public abstract class ConfigAbilityAction
     {
         [ProtoMember(1)][BoxGroup("Common")][LabelText("*重定向前过滤")][Tooltip("Targetting目标重新选定生效前，判断当前Target是否满足条件执行")]

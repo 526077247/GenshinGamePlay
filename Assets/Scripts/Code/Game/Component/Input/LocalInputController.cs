@@ -16,6 +16,8 @@ namespace TaoTie
         private bool canTurn = true;
         private long lastCheckTime;
         private Vector3 lastDirection;
+        private bool isInputFrozen = false;
+        private Vector3 frozenDirection;
         #region IComponent
 
         public void Init()
@@ -75,6 +77,11 @@ namespace TaoTie
             {
                 lastDirection = direction;
                 lastCheckTime = TimerManager.Instance.GetTimeNow();
+            }
+
+            if (isInputFrozen)
+            {
+                direction = frozenDirection;
             }
             
             if (InputManager.Instance.GetKey(GameKeyCode.SprintBS))
@@ -161,6 +168,26 @@ namespace TaoTie
         {
             if(IsDispose) return;
             this.canTurn = canTurn;
+        }
+
+        public void FreezeInput(Vector3 direction = default)
+        {
+            if(IsDispose) return;
+            isInputFrozen = true;
+            if (direction != default)
+            {
+                frozenDirection = lastDirection;
+            }
+            else
+            {
+                frozenDirection = direction;
+            }
+        }
+
+        public void UnfreezeInput()
+        {
+            if(IsDispose) return;
+            isInputFrozen = false;
         }
 
         public void TryJump()
