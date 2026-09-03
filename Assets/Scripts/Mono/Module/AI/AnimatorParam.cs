@@ -1,15 +1,13 @@
-#if UNITY_EDITOR
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 #else
 using TaoTie.Inspector;
 #endif
-#endif
 using UnityEngine;
 
 namespace TaoTie
 {
-    public class AnimatorParam : StateMachineBehaviour
+    public class AnimatorParam : SerializedStateMachineBehaviour
     {
         [SerializeReference]
 #if UNITY_EDITOR

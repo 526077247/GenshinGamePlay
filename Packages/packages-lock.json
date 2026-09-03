@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "0121f3738af8ad66839229fa9ca4755a32e06840"
+      "hash": "08d28f3ac3b5b2ed1c5a0f8e299faca1b0cce561"
     },
     "com.taotie.render-pipelines": {
       "version": "https://github.com/526077247/TaoTieRP.git",
