@@ -174,7 +174,7 @@ namespace TaoTie
         {
             if(IsDispose) return;
             isInputFrozen = true;
-            if (direction != default)
+            if (direction == default)
             {
                 frozenDirection = lastDirection;
             }
