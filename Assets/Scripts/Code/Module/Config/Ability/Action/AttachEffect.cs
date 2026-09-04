@@ -23,6 +23,9 @@ namespace TaoTie
         public ConfigBornType Born;
         [ProtoMember(12)]
         public BaseValue Scale;
+        [ProtoMember(13, IsRequired = true)]
+        [LabelText("延时销毁(ms)")][Tooltip("-1表示不销毁")]
+        public int DelayDestroy = -1;
 
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
@@ -31,9 +34,9 @@ namespace TaoTie
 
         protected async ETTask ExecuteAsync(Entity applier, ActorAbility ability, ActorModifier modifier, Entity target)
         {
-            var pos = Born.ResolvePos(applier, ability, modifier, target);
-            var rot = Born.ResolveRot(applier, ability, modifier, target);
-            var scale = Scale.Resolve(target, ability);
+            var pos = Born?.ResolvePos(applier, ability, modifier, target)??Vector3.zero;
+            var rot = Born?.ResolveRot(applier, ability, modifier, target)??Quaternion.identity;
+            var scale = Scale?.Resolve(target, ability)??1;
             var res = target.Parent.CreateEntity<Effect, string>(EffectName);
            
             res.Position = pos;
@@ -48,7 +51,13 @@ namespace TaoTie
                     owner.GetOrAddComponent<AttachComponent>().AddChild(res);
                 }
             }
-            await Born.AfterBorn(applier, ability, modifier, target,res);
+
+            if (DelayDestroy >= 0)
+            {
+                res.DelayDispose(DelayDestroy);
+            }
+
+            if (Born != null) await Born.AfterBorn(applier, ability, modifier, target, res);
         }
     }
 }
