@@ -37,7 +37,7 @@ namespace TaoTie
     [ProtoInclude(125, typeof(SetFsmParam<bool>))]
     [ProtoInclude(126, typeof(SetFsmParam<float>))]
     [ProtoInclude(127, typeof(SetFsmParam<int>))]
-    [ProtoInclude(128, typeof(FreezeInputAction))]
+    [ProtoInclude(128, typeof(SampleHoldInputAction))]
     [ProtoInclude(129, typeof(RemoveEffect))]
     public abstract class ConfigAbilityAction
     {

@@ -17,6 +17,7 @@ namespace TaoTie
             if (ac != null)
             {
                 var newModifier = ac.ApplyModifier(actionExecuter.Id, ability, ModifierName);
+                if (newModifier == null) return;
                 if (modifier != null)
                 {
                     modifier.AddAttachedModifer(newModifier);
