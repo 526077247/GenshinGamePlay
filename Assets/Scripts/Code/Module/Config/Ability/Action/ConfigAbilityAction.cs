@@ -39,6 +39,7 @@ namespace TaoTie
     [ProtoInclude(127, typeof(SetFsmParam<int>))]
     [ProtoInclude(128, typeof(SampleHoldInputAction))]
     [ProtoInclude(129, typeof(RemoveEffect))]
+    [ProtoInclude(130, typeof(ShowRangeAction))]
     public abstract class ConfigAbilityAction
     {
         [ProtoMember(1)][BoxGroup("Common")][LabelText("*重定向前过滤")][Tooltip("Targetting目标重新选定生效前，判断当前Target是否满足条件执行")]

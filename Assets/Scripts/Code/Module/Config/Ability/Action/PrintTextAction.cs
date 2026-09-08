@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    [ProtoContract]
+    [ProtoContract][LabelText("Debug/打印文本")]
     public partial class PrintTextAction: ConfigAbilityAction
     {
         /// <summary>
