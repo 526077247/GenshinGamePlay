@@ -53,6 +53,7 @@ namespace TaoTie
         {
             enemySensiblesPreparation.Clear();
             var entityList = aiManager.GetEnemies(knowledge.CampID);
+            if (entityList == null) return;
             foreach (var item in entityList)
             {
                 for (int i = 0; i < item.Value.Count; i++)

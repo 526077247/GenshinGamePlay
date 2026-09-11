@@ -32,7 +32,7 @@ namespace TaoTie
         public float HitHaltTimeScale;
         [ProtoMember(10)][ShowIf("@"+nameof(HitHaltTime)+">0")][LabelText("*被格挡时是否时停")][BoxGroup("击中时停")][Tooltip("暂用最终伤害等于0判定为格挡")]
         public bool CanBeDefenceHalt;
-        [ProtoMember(11)][LabelText("击中飘字")]
+        [ProtoMember(11)][LabelText("禁用击中飘字")]
         public bool MuteHitText;
         [ProtoMember(12)][LabelText("支持同目标重复命中")]
         public bool Recurring;
