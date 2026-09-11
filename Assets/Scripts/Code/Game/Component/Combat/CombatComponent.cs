@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TaoTie
@@ -10,6 +11,26 @@ namespace TaoTie
         public DieStateFlag DieStateFlag;
         private ConfigCombat config;
 
+        private HashSet<long> hitAttackRecords = new HashSet<long>();
+
+        /// <summary>
+        /// 非循环命中(Recurring=false)模式下,判断该攻击实例是否已经命中过当前实体
+        /// </summary>
+        public bool HasAlreadyHit(long attackInstanceId)
+        {
+            return hitAttackRecords.Contains(attackInstanceId);
+        }
+
+        public void RecordHit(long attackInstanceId)
+        {
+            hitAttackRecords.Add(attackInstanceId);
+        }
+
+        public void RemoveHitRecord(long attackInstanceId)
+        {
+            hitAttackRecords.Remove(attackInstanceId);
+        }
+
         public bool IsInCombat { get; private set; }
         public bool CanBeHit;
 
@@ -20,10 +41,12 @@ namespace TaoTie
             if(config!=null && config.BeHit!=null)
                 CanBeHit = !config.BeHit.MuteAllHit;
             attackTarget.Reset();
+            Messager.Instance.AddListener<long>(0, MessageId.ClearHitRecord, RemoveHitRecord);
         }
 
         public void Destroy()
         {
+            Messager.Instance.RemoveListener<long>(0, MessageId.ClearHitRecord, RemoveHitRecord);
             beforeAttack = null;
             beforeBeAttack = null;
             afterAttack = null;
@@ -31,6 +54,7 @@ namespace TaoTie
             IsInCombat = false;
             config = null;
             CanBeHit = false;
+            hitAttackRecords.Clear();
         }
 
         /// <summary>

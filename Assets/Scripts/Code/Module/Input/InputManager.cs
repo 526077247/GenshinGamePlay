@@ -47,8 +47,8 @@ namespace TaoTie
         private readonly int[] keyStatus = new int[GameKeyCode.Max];
         
         private Vector2 mousePosition;
-        private TouchInfo oldTouch1;
-        private TouchInfo oldTouch2;
+        private Vector2 oldPinchPos1;
+        private Vector2 oldPinchPos2;
 
         private readonly List<TouchInfo> touchInfos = new List<TouchInfo>();
         private readonly Dictionary<int, TouchInfo> touchMap = new Dictionary<int, TouchInfo>();
@@ -283,20 +283,20 @@ namespace TaoTie
                     var newTouch2 = touchInfos[1];
                     if (newTouch2.Phase == TouchPhase.Began)
                     {
-                        oldTouch2 = newTouch2;
-                        oldTouch1 = newTouch1;
+                        oldPinchPos1 = newTouch1.Position;
+                        oldPinchPos2 = newTouch2.Position;
                         return;
                     }
 
-                    float oldDistance = Vector2.Distance(oldTouch1.Position, oldTouch2.Position);
+                    float oldDistance = Vector2.Distance(oldPinchPos1, oldPinchPos2);
                     float newDistance = Vector2.Distance(newTouch1.Position, newTouch2.Position);
                     float offset = newDistance - oldDistance;
 
                     if (Mathf.Abs(offset) >= 3)
                     {
-                        MouseScrollWheel = offset / 100;
-                        oldTouch1 = newTouch1;
-                        oldTouch2 = newTouch2;
+                        MouseScrollWheel = offset / 1000;
+                        oldPinchPos1 = newTouch1.Position;
+                        oldPinchPos2 = newTouch2.Position;
                     }
                 }
             }

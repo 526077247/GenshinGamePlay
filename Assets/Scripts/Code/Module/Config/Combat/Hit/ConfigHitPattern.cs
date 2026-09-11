@@ -19,9 +19,10 @@ namespace TaoTie
         public BaseValue HitImpulseX = new SingleValue();
         [ProtoMember(4, IsRequired = true)][NotNull][BoxGroup("击退信息")]
         public BaseValue HitImpulseY = new SingleValue();
-        [ProtoMember(5)][BoxGroup("击退信息")]
+        [ProtoMember(5)][BoxGroup("击退信息")][LabelText("*击退类型")][Tooltip("击退分类标签,作为预留字段供击退抗性系统过滤。配置后配合OverrideHitImpulse使用:非空且填写OverrideHitImpulse时使用其击退数据,空则用默认HitLevel/HitImpulseX/Y")]
         public string HitImpulseType;
-        [ProtoMember(6)][LabelText("冲刺中的击退数据")][BoxGroup("击退信息")]
+        [ProtoMember(6)][LabelText("没满足条件时的击退数据")][BoxGroup("击退信息")]
+        [ShowIf("@"+nameof(HitImpulseType)+"!=null")]
         public ConfigHitImpulse OverrideHitImpulse;
         [ProtoMember(7)][LabelText("击退来源方向")][BoxGroup("击退信息")]
         public RetreatType RetreatType;
@@ -33,7 +34,7 @@ namespace TaoTie
         public bool CanBeDefenceHalt;
         [ProtoMember(11)][LabelText("击中飘字")]
         public bool MuteHitText;
-        [ProtoMember(12)]
+        [ProtoMember(12)][LabelText("支持同目标重复命中")]
         public bool Recurring;
     }
 }

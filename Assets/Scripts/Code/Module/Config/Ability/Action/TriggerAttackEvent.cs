@@ -45,7 +45,7 @@ namespace TaoTie
                 temp.Add(info.EntityId, info);
             }
 
-            long attackInfoId = IdGenerater.Instance.GenerateId();
+            long attackInfoId = modifier != null ? modifier.Id : IdGenerater.Instance.GenerateId();
             bool isTimeScale = false;
             foreach (var item in temp)
             {
@@ -70,7 +70,7 @@ namespace TaoTie
                     executerIsBullet, startTime,attackInfoId);
                 AttackHelper.DamageClose(ability, modifier, result);
                 //时停
-                if (!isTimeScale && result.HitPattern != null)
+                if (result.IsEffective && !isTimeScale && result.HitPattern != null)
                 {
                     if (result.HitPattern.HitHaltTime > 0)
                     {

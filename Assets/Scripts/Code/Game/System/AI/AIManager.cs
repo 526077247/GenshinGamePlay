@@ -2,10 +2,9 @@
 
 namespace TaoTie
 {
-    public class AIManager:IManager<MapScene>,IUpdate
+    public class AIManager:IManager,IUpdate
     {
         private const int CONST_VALUE_SKILL_CD_MIN_PRESERVE_TIME = 10;
-        private MapScene scene;
         private Dictionary<long, AIComponent> unitIdUnits;
         private LinkedList<AIComponent> allAIUnit;
         private List<AIComponent> localAvatarAlertEnemies;
@@ -24,11 +23,8 @@ namespace TaoTie
         private Dictionary<string, long> publicCDs;
         #region IManager
 
-        public void Init(MapScene mapScene)
+        public void Init()
         {
-            scene = mapScene;
-            localAvatar = scene.Self;
-            avatarInputController = localAvatar.GetComponent<LocalInputController>();
             campIdEntityTable = new UnOrderMultiMap<uint, Actor>();
             campIdCampIdEntityTable = new UnOrderDoubleKeyDictionary<uint, uint, List<Actor>>();
             unitIdUnits = new Dictionary<long, AIComponent>();
@@ -37,7 +33,6 @@ namespace TaoTie
             localAvatarAwareEnemies = new List<AIComponent>();
             publicCDs = new Dictionary<string, long>();
             
-            campIdEntityTable.Add(localAvatar.CampId,localAvatar);
             Messager.Instance.AddListener<Actor>(0,MessageId.OnBeKill,Remove);
         }
 
@@ -53,7 +48,6 @@ namespace TaoTie
             publicCDs = null;
             avatarInputController = null;
             localAvatar = null;
-            scene = null;
         }
 
         public void Update()
@@ -130,12 +124,33 @@ namespace TaoTie
             return null;
         }
 
+        /// <summary>
+        /// 设置主控
+        /// </summary>
+        /// <param name="avatar"></param>
+        public void SetLocalAvatar(Actor avatar)
+        {
+            if (localAvatar != null)
+            {
+                campIdEntityTable.Remove(localAvatar.CampId,localAvatar);
+            }
+            this.localAvatar = avatar;
+            if (avatar != null)
+            {
+                avatarInputController = avatar.GetComponent<LocalInputController>();
+                campIdEntityTable.Add(localAvatar.CampId,localAvatar);
+            }
+            else
+            {
+                avatarInputController = null;
+            }
+        }
+
         public Unit GetUnit(long id)
         {
-            if (scene == null) return null;
-            if (id == scene.MyId)
+            if (id == localAvatar.Id)
             {
-                return scene.Self;
+                return localAvatar;
             }
             if (unitIdUnits.TryGetValue(id, out var res))
             {

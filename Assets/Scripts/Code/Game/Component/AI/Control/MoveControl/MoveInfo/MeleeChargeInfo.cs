@@ -22,6 +22,11 @@ namespace TaoTie
         {
             if (Status == ChargeStatus.Inactive)
             {
+                if (aiKnowledge.MeleeChargeTactic?.Data == null)
+                {
+                    taskHandler.UpdateMotionFlag(MotionFlag.Idle);
+                    return;
+                }
                 ConfigAIMeleeChargeData data = aiKnowledge.MeleeChargeTactic.Data;
 
                 float stopDistance = data.StopDistance;
@@ -49,6 +54,7 @@ namespace TaoTie
         {
             if (Status == ChargeStatus.Charging)
             {
+                if (aiKnowledge.MeleeChargeTactic?.Data == null) return;
                 if (aiKnowledge.TargetKnowledge.TargetEntity == null) return;
                 ConfigAIMeleeChargeData data = aiKnowledge.MeleeChargeTactic.Data;
                 float stopDistance = data.StopDistance;

@@ -54,7 +54,7 @@ namespace TaoTie
         public virtual void Init(ConfigAIBeta config, ConfigShape defendArea)
         {
             parent.AddComponent<AIInputController>();
-            if (SceneManager.Instance.CurrentScene is MapScene scene)
+            if (SceneManager.Instance.CurrentScene is SceneManagerProvider scene)
             {
                 aiManager = scene.GetManager<AIManager>();
             }

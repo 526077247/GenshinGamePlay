@@ -52,6 +52,11 @@ namespace TaoTie
 
         private void CreateNewTask(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge)
         {
+            if (aiKnowledge.FacingMoveTactic?.Data == null)
+            {
+                taskHandler.UpdateMotionFlag(MotionFlag.Idle);
+                return;
+            }
             FacingMoveType moveType = (aiKnowledge.Mover?.Config as ConfigAnimatorMove)?.FacingMove ?? FacingMoveType.FourDirection;
             MotionDirection dir = MotionDirection.Idle;
             bool needUpdate = false;

@@ -655,7 +655,7 @@ namespace TaoTie
                     txt = txt.Replace("fontSize: 13,", "fontSize: 16,");
                     txt = txt.Replace("backgroundColor: '#ffffff',", "backgroundColor: '#3c3c3c',");
                     txt = txt.Replace("iconImage: 'images/unity_logo.png',", "iconImage: '',");
-                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform, useCdn);
+                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform, isBuildAll, useCdn);
                     if (!string.IsNullOrEmpty(preload))
                     {
                         txt = txt.Replace(
@@ -710,7 +710,7 @@ namespace TaoTie
                     txt = txt.Replace(
                         $"{YooAssetSettingsData.Setting.DefaultYooFolderName}/{Define.DefaultName}/",
                         WeChatWASM.WXConvertCore.config.ProjectConf.CDN);
-                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform, true);
+                    var preload = GetPreloadFileUrls(null, buildTarget, config, rename, platform, isBuildAll, true);
                     if (!string.IsNullOrEmpty(preload))
                     {
                         txt = txt.Replace(
@@ -798,9 +798,9 @@ namespace TaoTie
         }
 
         public static string GetPreloadFileUrls(List<string> address, BuildTarget buildTarget, CDNConfig config, 
-            string rename, string platform, bool includeBuildins = false)
+            string rename, string platform, bool isBuildAll, bool includeBuildins = false)
         {
-            if (address == null) return null;
+            if (address == null || isBuildAll) return null;
             HashSet<string> hashSet = new HashSet<string>();
             for (int i = 0; i < address.Count; i++)
             {

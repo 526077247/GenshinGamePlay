@@ -87,6 +87,10 @@ namespace TaoTie
 
         public float HitImpulseY; 
         /// <summary>
+        /// 击退类型(作为分类标签,后续用于目标击退抗性过滤)
+        /// </summary>
+        public string HitImpulseType;
+        /// <summary>
         /// 击退方向
         /// </summary>
         public Vector3 RetreatDir;
@@ -136,6 +140,7 @@ namespace TaoTie
             HitLevel = default;
             HitImpulseX = default;
             HitImpulseY = default;
+            HitImpulseType = default;
             RetreatDir = default;
             HitPattern = default;
             IsBullet = default;

@@ -32,6 +32,7 @@ namespace TaoTie
                 var graph = m_Graph;
                 for (int i = 0; i < graph.Actors?.Length; i++)
                 {
+                    if (graph.Actors[i] == null) continue;
                     temp.Add(new ValueDropdownItem()
                     {
                         Value = graph.Actors[i].LocalId,
@@ -75,6 +76,7 @@ namespace TaoTie
                 var graph = m_Graph;
                 for (int i = 0; i < graph.Zones?.Length; i++)
                 {
+                    if (graph.Zones[i] == null) continue;
                     temp.Add(new ValueDropdownItem()
                     {
                         Value = graph.Zones[i].LocalId,

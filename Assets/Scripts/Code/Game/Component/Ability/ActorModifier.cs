@@ -26,6 +26,10 @@ namespace TaoTie
 
         public ConfigAbilityModifier Config{ get; private set; }
         public ActorAbility Ability { get; private set; }
+        /// <summary>
+        /// 一次攻击/效果实例的唯一标识,复用对象池每次创建重新生成
+        /// </summary>
+        public long Id { get; private set; }
         private long timerId;
         private long tillTime;
 
@@ -42,6 +46,7 @@ namespace TaoTie
         {
             var res = ObjectPool.Instance.Fetch<ActorModifier>();
             res.Init(applierID,component);
+            res.Id = IdGenerater.Instance.GenerateId();
             res.Ability = ability;
             res.isDispose = false;
             res.Config = config;
@@ -87,6 +92,8 @@ namespace TaoTie
         public override void BeforeRemove()
         {
             GameTimerManager.Instance.Remove(ref timerId);
+            //广播清理受击方记录的该攻击实例的命中记录,复用对象池时可避免旧记录误命中
+            Messager.Instance?.Broadcast<long>(0, MessageId.ClearHitRecord, Id);
             if (Config.Properties != null)
             {
                 var entity = Parent.GetParent<Entity>();

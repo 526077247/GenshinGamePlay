@@ -20,6 +20,7 @@ namespace TaoTie
         
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent ai, AIManager aiManager)
         {
+            if (aiKnowledge.WanderTactic?.Data == null) return;
             if (Status == WanderStatus.Wandering && taskHandler.CurrentState != LocoTaskState.Running)
             {
                 if (!InWanderArea(aiKnowledge.CurrentPos, aiKnowledge.BornPos, aiKnowledge.WanderTactic.Data))
@@ -80,6 +81,11 @@ namespace TaoTie
 
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
+            if (aiKnowledge.WanderTactic?.Data == null)
+            {
+                taskHandler.UpdateMotionFlag(MotionFlag.Idle);
+                return;
+            }
             StartNewTask(taskHandler, aiKnowledge);
         }
 
@@ -101,6 +107,7 @@ namespace TaoTie
 
         public void TriggerCD(AIKnowledge knowledge, bool byFail = false)
         {
+            if (knowledge.WanderTactic?.Data == null) return;
             int cdMin = knowledge.WanderTactic.Data.CdMin;
             int cdMax = knowledge.WanderTactic.Data.CdMax;
             NextAvailableTick = GameTimerManager.Instance.GetTimeNow() + Random.Range(cdMin, cdMax);

@@ -34,6 +34,7 @@ namespace TaoTie
 
         public override void UpdateInternal(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIComponent lcai, AIManager aiManager)
         {
+            if (aiKnowledge.FleeTactic?.Data == null) return;
             if (Status == FleeStatus.Inactive)
             {
                 ConfigAIFleeData data = aiKnowledge.FleeTactic.Data;
@@ -103,6 +104,11 @@ namespace TaoTie
 
         public override void Enter(AILocomotionHandler taskHandler, AIKnowledge aiKnowledge, AIManager aiManager)
         {
+            if (aiKnowledge.FleeTactic?.Data == null)
+            {
+                taskHandler.UpdateMotionFlag(MotionFlag.Idle);
+                return;
+            }
             ConfigAIFleeData data = aiKnowledge.FleeTactic.Data;
 
             FindFleePosition(aiKnowledge);
@@ -129,6 +135,7 @@ namespace TaoTie
 
         public void TriggerCD(AIKnowledge knowledge, bool byFail = false)
         {
+            if (knowledge.FleeTactic?.Data == null) return;
             NextAvailableTick = knowledge.FleeTactic.Data.CD + GameTimerManager.Instance.GetTimeNow();
         }
 

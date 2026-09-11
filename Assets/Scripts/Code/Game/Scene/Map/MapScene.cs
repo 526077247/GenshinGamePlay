@@ -103,7 +103,7 @@ namespace TaoTie
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();
-            RegisterManager<AIManager, MapScene>(this);
+            RegisterManager<AIManager>().SetLocalAvatar(Self);
 
             RegisterManager<SceneGroupManager, ulong[], SceneManagerProvider>(config.SceneGroupIds, this);
             RegisterManager<StorySystem, SceneManagerProvider>(this);

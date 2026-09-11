@@ -169,6 +169,8 @@ namespace TaoTie
 			if (!knowledge.MoveKnowledge.CanMove) return false;
 			if (knowledge.MeleeChargeTactic.Config==null||!knowledge.MeleeChargeTactic.Config.Enable)
 				return false;
+			if (knowledge.MeleeChargeTactic.Data==null)
+				return false;
 			
 			if (knowledge.MoveControlState.MeleeCharge.Status == MeleeChargeInfo.ChargeStatus.Charging) return true;
 			float meleeChargeStartDistanceMin = knowledge.MeleeChargeTactic.Data.StartDistanceMin;
@@ -279,14 +281,16 @@ namespace TaoTie
 			public static bool IsFleeValid(AIKnowledge knowledge)
 		{
 			if (!knowledge.MoveKnowledge.CanMove) return false;
-			knowledge.FleeTactic.SwitchSetting(knowledge.PoseID);
-			float triggerDistance = knowledge.FleeTactic.Data.TriggerDistance;
 			if (knowledge.FleeTactic.Config==null||!knowledge.FleeTactic.Config.Enable)
+				return false;
+			knowledge.FleeTactic.SwitchSetting(knowledge.PoseID);
+			if (knowledge.FleeTactic.Data==null)
 				return false;
 			if (!knowledge.FleeTactic.NerveCheck(knowledge))
 				return false;
 			if (knowledge.MoveControlState.FleeInfo.NextAvailableTick > GameTimerManager.Instance.GetTimeNow())
 				return false;
+			float triggerDistance = knowledge.FleeTactic.Data.TriggerDistance;
 			if (knowledge.TargetKnowledge.TargetDistance > triggerDistance)
 				return false;
 			return true;

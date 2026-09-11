@@ -20,6 +20,11 @@ namespace TaoTie
         {
             if (Status == CombatFollowMoveStatus.Inactive)
             {
+                if (aiKnowledge.MeleeChargeTactic?.Data == null)
+                {
+                    taskHandler.UpdateMotionFlag(MotionFlag.Idle);
+                    return;
+                }
                 ConfigAIMeleeChargeData data = aiKnowledge.MeleeChargeTactic.Data;
 
                 float stopDistance = data.StopDistance;

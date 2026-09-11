@@ -133,6 +133,16 @@ namespace TaoTie
             var combatD = defence.GetComponent<CombatComponent>();
             if (combatA == null || combatD == null) return;
             if (!combatD.CanBeHit) return;
+            //非循环命中模式,同一攻击实例对同一目标只结算一次(攻击实例=每次施加的Modifier)
+            if (result.HitPattern != null && !result.HitPattern.Recurring && result.Id != 0)
+            {
+                if (combatD.HasAlreadyHit(result.Id))
+                {
+                    result.IsEffective = false;
+                    return;
+                }
+                combatD.RecordHit(result.Id);
+            }
             var numA = attacker.GetComponent<NumericComponent>();
             var numD = defence.GetComponent<NumericComponent>();
             if (numA == null || numD == null) return;
@@ -156,13 +166,26 @@ namespace TaoTie
             result.StrikeType = result.ConfigAttackInfo.AttackProperty.StrikeType;
             result.AttackType = result.ConfigAttackInfo.AttackProperty.AttackType;
 
-            result.HitLevel = result.HitPattern.HitLevel;
-            result.HitImpulseX = result.HitPattern.HitImpulseX.Resolve(attacker, ability);
-            result.HitImpulseY = result.HitPattern.HitImpulseY.Resolve(attacker, ability);
-            
-            //todo: 冲刺状态击退方向计算
-            result.RetreatDir = TargetHelper.ResolveTarget(attacker, result, defence, result.HitPattern.RetreatType);
-            
+            result.HitImpulseType = result.HitPattern?.HitImpulseType;
+            var impulse = result.HitPattern;
+            if (impulse != null)
+            {
+                if (impulse.OverrideHitImpulse != null
+                    && !string.IsNullOrEmpty(impulse.HitImpulseType)) //todo:判断HitImpulseType
+                {
+                    result.HitLevel = impulse.OverrideHitImpulse.HitLevel;
+                    result.HitImpulseX = impulse.OverrideHitImpulse.HitImpulseX.Resolve(attacker, ability);
+                    result.HitImpulseY = impulse.OverrideHitImpulse.HitImpulseY.Resolve(attacker, ability);
+                }
+                else
+                {
+                    result.HitLevel = impulse.HitLevel;
+                    result.HitImpulseX = impulse.HitImpulseX.Resolve(attacker, ability);
+                    result.HitImpulseY = impulse.HitImpulseY.Resolve(attacker, ability);
+                }
+                result.RetreatDir = TargetHelper.ResolveTarget(attacker, result, defence, impulse.RetreatType);
+            }
+
             combatA.BeforeAttack(result, combatD);
             if (!result.IsEffective) return; //被取消
             combatD.BeforeBeAttack(result, combatA);
