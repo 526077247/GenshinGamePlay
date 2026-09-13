@@ -13,7 +13,7 @@ namespace TaoTie
     {
         private const int CAPACITY = 512;
 
-        private AxisPair plane = AxisPair.XY; // 本项目使用 XY 平面
+        private AxisPair plane = AxisPair.XZ; // 本项目使用 XZ 平面（y 为竖直轴）
 
         public class Slot
         {
@@ -53,10 +53,12 @@ namespace TaoTie
         private NativeArray<byte> nActive;
         private NativeParallelMultiHashMap<int, int> nHashMap;
         private JobHandle handle;
+        private bool disposed;
 
         public void Init()
         {
-            plane = AxisPair.XY;
+            disposed = false;
+            plane = AxisPair.XZ;
             for (int i = 0; i < CAPACITY; i++)
             {
                 slots[i] = new Slot();
@@ -78,12 +80,28 @@ namespace TaoTie
             nHeight = new NativeArray<float>(CAPACITY, Allocator.Persistent);
             nActive = new NativeArray<byte>(CAPACITY, Allocator.Persistent);
             nHashMap = new NativeParallelMultiHashMap<int, int>(CAPACITY * 8, Allocator.Persistent);
+            CodeLoader.Instance.OnApplicationQuit += DisposeAll;
         }
 
         public void Destroy()
         {
-            if (!handle.IsCompleted)
-                handle.Complete();
+            DisposeAll();
+            CodeLoader.Instance.OnApplicationQuit -= DisposeAll;
+        }
+
+        private void DisposeAll()
+        {
+            if (disposed) return;
+            disposed = true;
+            try
+            {
+                if (!handle.IsCompleted)
+                    handle.Complete();
+            }
+            catch (System.Exception e)
+            {
+                Log.Error(e);
+            }
 
             if (nPositions.IsCreated) nPositions.Dispose();
             if (nPrefVels.IsCreated) nPrefVels.Dispose();
@@ -99,6 +117,7 @@ namespace TaoTie
             if (nHeight.IsCreated) nHeight.Dispose();
             if (nActive.IsCreated) nActive.Dispose();
             if (nHashMap.IsCreated) nHashMap.Dispose();
+            handle = default;
         }
 
         #region 公共 API（供 ORCAAgentComponent 调用）
@@ -190,90 +209,98 @@ namespace TaoTie
 
         public void Update()
         {
-            int n = activeList.Count;
-            if (n == 0)
+            try
             {
+                int n = activeList.Count;
+                if (n == 0)
+                {
+                    if (!handle.IsCompleted) handle.Complete();
+                    return;
+                }
                 if (!handle.IsCompleted) handle.Complete();
-                return;
+
+                float dt = GameTimerManager.Instance.GetDeltaTime() / 1000f;
+                if (dt <= 0f) dt = 0.016f;
+
+                float cellSize = 1f;
+                for (int k = 0; k < n; k++)
+                {
+                    int slot = activeList[k];
+                    Slot s = slots[slot];
+                    nPositions[slot] = ToPlane(s.position);
+                    nPrefVels[slot] = ToPlane(s.prefVelocity);
+                    nVelocities[slot] = ToPlane(s.velocity);
+                    nRadii[slot] = s.radius;
+                    nMaxSpeeds[slot] = s.maxSpeed;
+                    nMaxNeighbors[slot] = s.maxNeighbors;
+                    nNeighborDist[slot] = s.neighborDist;
+                    nTimeHorizon[slot] = s.timeHorizon;
+                    nEnabled[slot] = (byte)(s.enabled ? 1 : 0);
+                    nBaseline[slot] = s.baseline;
+                    nHeight[slot] = s.height;
+
+                    float range = s.radius + s.neighborDist;
+                    if (range > cellSize) cellSize = range;
+                }
+
+                nHashMap.Clear();
+
+                var buildJob = new BuildHashJob
+                {
+                    nActive = nActive,
+                    positions = nPositions,
+                    cellSize = cellSize,
+                    hashMap = nHashMap.AsParallelWriter()
+                };
+                JobHandle h = buildJob.Schedule(CAPACITY, 64);
+
+                var orcaJob = new ORCALinesJob
+                {
+                    nActive = nActive,
+                    positions = nPositions,
+                    prefVels = nPrefVels,
+                    velocities = nVelocities,
+                    radii = nRadii,
+                    maxSpeeds = nMaxSpeeds,
+                    maxNeighborsArr = nMaxNeighbors,
+                    neighborDistArr = nNeighborDist,
+                    timeHorizonArr = nTimeHorizon,
+                    enableds = nEnabled,
+                    baselines = nBaseline,
+                    heights = nHeight,
+                    hashMap = nHashMap,
+                    cellSize = cellSize,
+                    timestep = dt,
+                    newVelocities = nNewVelocities
+                };
+                h = orcaJob.Schedule(CAPACITY, 64, h);
+
+                var applyJob = new ApplyJob
+                {
+                    nActive = nActive,
+                    newVelocities = nNewVelocities,
+                    velocities = nVelocities
+                };
+                h = applyJob.Schedule(CAPACITY, 64, h);
+
+                handle = h;
+                handle.Complete();
+
+                for (int k = 0; k < n; k++)
+                {
+                    int slot = activeList[k];
+                    float2 rv = nVelocities[slot];
+                    Vector3 pref = slots[slot].prefVelocity;
+                    // Nebukam 保留平面外轴分量：XY 保留 z，XZ 保留 y
+                    slots[slot].velocity = plane == AxisPair.XZ
+                        ? new Vector3(rv.x, pref.y, rv.y)
+                        : new Vector3(rv.x, rv.y, pref.z);
+                }
             }
-            if (!handle.IsCompleted) handle.Complete();
-
-            float dt = GameTimerManager.Instance.GetDeltaTime() / 1000f;
-            if (dt <= 0f) dt = 0.016f;
-
-            float cellSize = 1f;
-            for (int k = 0; k < n; k++)
+            catch (System.Exception e)
             {
-                int slot = activeList[k];
-                Slot s = slots[slot];
-                nPositions[slot] = ToPlane(s.position);
-                nPrefVels[slot] = ToPlane(s.prefVelocity);
-                nVelocities[slot] = ToPlane(s.velocity);
-                nRadii[slot] = s.radius;
-                nMaxSpeeds[slot] = s.maxSpeed;
-                nMaxNeighbors[slot] = s.maxNeighbors;
-                nNeighborDist[slot] = s.neighborDist;
-                nTimeHorizon[slot] = s.timeHorizon;
-                nEnabled[slot] = (byte)(s.enabled ? 1 : 0);
-                nBaseline[slot] = s.baseline;
-                nHeight[slot] = s.height;
-
-                float range = s.radius + s.neighborDist;
-                if (range > cellSize) cellSize = range;
-            }
-
-            nHashMap.Clear();
-
-            var buildJob = new BuildHashJob
-            {
-                nActive = nActive,
-                positions = nPositions,
-                cellSize = cellSize,
-                hashMap = nHashMap.AsParallelWriter()
-            };
-            JobHandle h = buildJob.Schedule(CAPACITY, 64);
-
-            var orcaJob = new ORCALinesJob
-            {
-                nActive = nActive,
-                positions = nPositions,
-                prefVels = nPrefVels,
-                velocities = nVelocities,
-                radii = nRadii,
-                maxSpeeds = nMaxSpeeds,
-                maxNeighborsArr = nMaxNeighbors,
-                neighborDistArr = nNeighborDist,
-                timeHorizonArr = nTimeHorizon,
-                enableds = nEnabled,
-                baselines = nBaseline,
-                heights = nHeight,
-                hashMap = nHashMap,
-                cellSize = cellSize,
-                timestep = dt,
-                newVelocities = nNewVelocities
-            };
-            h = orcaJob.Schedule(CAPACITY, 64, h);
-
-            var applyJob = new ApplyJob
-            {
-                nActive = nActive,
-                newVelocities = nNewVelocities,
-                velocities = nVelocities
-            };
-            h = applyJob.Schedule(CAPACITY, 64, h);
-
-            handle = h;
-            handle.Complete();
-
-            for (int k = 0; k < n; k++)
-            {
-                int slot = activeList[k];
-                float2 rv = nVelocities[slot];
-                Vector3 pref = slots[slot].prefVelocity;
-                // Nebukam 保留平面外轴分量：XY 保留 z，XZ 保留 y
-                slots[slot].velocity = plane == AxisPair.XZ
-                    ? new Vector3(rv.x, pref.y, rv.y)
-                    : new Vector3(rv.x, rv.y, pref.z);
+                handle = default;
+                Log.Error(e);
             }
         }
 

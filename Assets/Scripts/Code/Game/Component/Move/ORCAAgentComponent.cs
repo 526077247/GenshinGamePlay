@@ -13,7 +13,7 @@ namespace TaoTie
         public void Init()
         {
             rvoEnabled = false;
-            if (actor?.ConfigActor?.Common != null && SceneManager.Instance.CurrentScene is MapScene scene)
+            if (actor?.ConfigActor?.Common != null && SceneManager.Instance.CurrentScene is SceneManagerProvider scene)
             {
                 system = scene.GetManager<ORCASystem>();
                 if (system == null) return;

@@ -36,6 +36,9 @@ namespace TaoTie
         {
             Vector3 dir = target - SceneEntity.Position;
             dir.y = 0;
+            // dir 为零向量时直接返回，保持原朝向
+            if (dir.sqrMagnitude < 0.0001f)
+                return;
             SceneEntity.Rotation = Quaternion.LookRotation(dir, Vector3.up);
         }
         /// <summary>

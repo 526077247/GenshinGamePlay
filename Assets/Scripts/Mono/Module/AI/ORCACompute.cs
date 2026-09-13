@@ -392,9 +392,10 @@ namespace TaoTie
                         projLines.Add(line);
                     }
 
-                    float2 tempResult = result;
+float2 tempResult = result;
                     if (LP2(projLines, radius, float2(-dirA.y, dirA.x), true, ref result) < projLines.Length)
                         result = tempResult;
+                    projLines.Dispose();
 
                     distance = Det(dirA, ptA - result);
                 }
