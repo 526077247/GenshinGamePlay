@@ -34,8 +34,6 @@ namespace TaoTie
         [ProtoMember(7)] [Tooltip("相机出栈过渡混合动画")] [BoxGroup("Blender")]
         public ConfigBlender Leave;
 
-        [ProtoMember(8, IsRequired = true)] [Range(1, 179)] public float Fov = 90;
-
         [ProtoMember(9, IsRequired = true)] [MinValue(0.01)] public float NearClipPlane = 0.3f;
         
         [ProtoMember(10, IsRequired = true)] [MinValue(0.01)] public float FarClipPlane = 5000f;
@@ -48,5 +46,15 @@ namespace TaoTie
 
         [ProtoMember(13)] [LabelText("用于角色面向")]
         public bool AvatarFaceDirection;
+        
+        [ProtoMember(14)] public bool Orthographicn;
+            
+        [ProtoMember(8, IsRequired = true)] 
+        [ShowIf(nameof(Orthographicn))] [Range(1, 179)] 
+        public float Fov = 90;
+        
+        [ProtoMember(15, IsRequired = true)] 
+        [ShowIf("@!"+nameof(Orthographicn))] [Min(0.01f)] 
+        public float OrthographicnSize = 5;
     }
 }

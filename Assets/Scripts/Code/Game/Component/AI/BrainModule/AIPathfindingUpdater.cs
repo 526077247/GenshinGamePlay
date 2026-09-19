@@ -61,8 +61,14 @@ namespace TaoTie
         }
         private async ETTask FindNavmeshTask(PathfindingComponent pc, PathQueryTask task)
         {
+            var pathKnowledge = knowledge.PathFindingKnowledge;
             task.Status = QueryStatus.Querying;
-            task.Status = await pc.Find(task.Start, task.Destination, task.Corners)?QueryStatus.Success:QueryStatus.Fail;
+            var ok = await pc.Find(task.Start, task.Destination, task.Corners, task.Token);
+            if (pathKnowledge.QueryTasks != null &&
+                pathKnowledge.QueryTasks.TryGetValue(task.Id, out var current) && current == task)
+            {
+                task.Status = ok ? QueryStatus.Success : QueryStatus.Fail;
+            }
         }
     }
 }

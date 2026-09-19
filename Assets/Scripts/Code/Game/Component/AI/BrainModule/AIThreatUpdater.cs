@@ -42,6 +42,9 @@ namespace TaoTie
             candidateList.Clear();
             threatList.Clear();
             aiComponent = null;
+            forceLeaveCombat = false;
+            topThreat = null;
+            mainTarget = null;
         }
 
         private void AfterBeAttack(AttackResult result, CombatComponent other)

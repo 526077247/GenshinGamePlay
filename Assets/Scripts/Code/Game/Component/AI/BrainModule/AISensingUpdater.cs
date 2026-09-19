@@ -45,6 +45,18 @@ namespace TaoTie
             base.UpdateMainThreadInternal();
             knowledge.DefendAreaKnowledge.IsInDefendRange =
                 knowledge.DefendAreaKnowledge.CheckInDefendArea(knowledge.Entity.Position);
+            if (knowledge.EyeTransform != null)
+            {
+                knowledge.EyePos = knowledge.EyeTransform.position;
+            }
+            else if (knowledge.Entity?.ConfigActor?.Common != null)
+            {
+                knowledge.EyePos = knowledge.CurrentPos + Vector3.up * knowledge.Entity.ConfigActor.Common.ModelHeight;
+            }
+            else
+            {
+                knowledge.EyePos = knowledge.CurrentPos;
+            }
             CollectEnemies();
             ProcessEnemies();
         }
@@ -61,15 +73,19 @@ namespace TaoTie
                     var entity = item.Value[i];
                     var entityID = entity.Id;
                     var entityPos = entity.Position;
-                    var selfPos = knowledge.Entity.Position + knowledge.Entity.Rotation * knowledge.EyePos;
+                    var selfPos = knowledge.Entity.Position;
                     var direction = (entityPos - selfPos).normalized;
+                    var isActor = true;//这里必定为Actor
+                    var height = entity.ConfigActor?.Common?.ModelHeight ?? 0f;
                     
                     enemySensiblesPreparation[entityID] = new SensibleInfo()
                     {
                         SensibleID = entityID,
                         Distance = Vector3.Distance(entityPos, selfPos),
                         Position = entityPos,
+                        TargetablePosition = entityPos + Vector3.up * height,
                         Direction = direction,
+                        IsActorEntity = isActor,
                     };
 
                 }
@@ -89,42 +105,59 @@ namespace TaoTie
                 
                 if (sensible.Value.Distance < sensingKnowledge.FeelRange)
                 {
-                    enemySensibles.TryAdd(sensible.Key, sensible.Value);
-                    if (sensingKnowledge.NearestEnemyDistance<0 || sensible.Value.Distance < sensingKnowledge.NearestEnemyDistance)
+                    var info = sensible.Value;
+                    info.HasLineOfSight = CheckLineOfSight(info);
+                    enemySensibles.TryAdd(sensible.Key, info);
+                    if (sensingKnowledge.NearestEnemyDistance<0 || info.Distance < sensingKnowledge.NearestEnemyDistance)
                     {
-                        sensingKnowledge.NearestEnemyDistance = sensible.Value.Distance;
-                        sensingKnowledge.NearestEnemy = sensible.Value.SensibleID;
+                        sensingKnowledge.NearestEnemyDistance = info.Distance;
+                        sensingKnowledge.NearestEnemy = info.SensibleID;
                     }
                 }
                 else if (sensible.Value.Distance < viewRange)
                 {
-                    var forward = knowledge.Entity.Forward;
+                    var forward = knowledge.CurrentForward;
                     if (knowledge.EyeTransform != null)
                     {
                         forward = knowledge.EyeTransform.forward;
-                           
                     }
                     var horizontalDirection = sensible.Value.Direction;
                     horizontalDirection.y = forward.y;
-                    var horizontalAngle = Vector3.Angle(knowledge.Entity.Forward, horizontalDirection);
+                    var horizontalAngle = Vector3.Angle(forward, horizontalDirection);
 
                     if (horizontalAngle < halfHorizontalFov)
                     {
                         var verticalDirection = sensible.Value.Direction;
                         verticalDirection.x = forward.x;
-                        var verticalAngle = Vector3.Angle(knowledge.Entity.Forward, verticalDirection);
+                        var verticalAngle = Vector3.Angle(forward, verticalDirection);
                         if (verticalAngle < halfVerticalFov)
                         {
-                            enemySensibles.TryAdd(sensible.Key, sensible.Value);
-                            if (sensingKnowledge.NearestEnemyDistance<0 || sensible.Value.Distance < sensingKnowledge.NearestEnemyDistance)
+                            var info = sensible.Value;
+                            info.HasLineOfSight = CheckLineOfSight(info);
+                            enemySensibles.TryAdd(sensible.Key, info);
+                            if (sensingKnowledge.NearestEnemyDistance<0 || info.Distance < sensingKnowledge.NearestEnemyDistance)
                             {
-                                sensingKnowledge.NearestEnemyDistance = sensible.Value.Distance;
-                                sensingKnowledge.NearestEnemy = sensible.Value.SensibleID;
+                                sensingKnowledge.NearestEnemyDistance = info.Distance;
+                                sensingKnowledge.NearestEnemy = info.SensibleID;
                             }
                         }
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 检测脚/头顶位置对眼部位置是否有视线遮挡
+        /// </summary>
+        private bool CheckLineOfSight(SensibleInfo info)
+        {
+            if (info.IsActorEntity)
+            {
+                var hitFeet = PhysicsHelper.LinecastScene(info.Position, knowledge.EyePos, out _);
+                var hitTop = PhysicsHelper.LinecastScene(info.TargetablePosition, knowledge.EyePos, out _);
+                return !hitFeet || !hitTop;
+            }
+            return PhysicsHelper.LinecastScene(info.TargetablePosition, knowledge.EyePos, out _);
         }
 
         /// <summary>

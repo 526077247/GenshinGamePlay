@@ -20,7 +20,7 @@ namespace TaoTie
         public bool CreateIfExists;
         [ProtoMember(12)][Tooltip("与SceneGroup脱钩，之后SceneGroup切换suite，也不会销毁该actor")]
         public bool RemoveFromSceneGroup;
-        public override Entity CreateActor(SceneGroup sceneGroup,float range)
+        protected override Actor InnerCreateActor(SceneGroup sceneGroup,float range)
         {
             if (!CreateIfExists)
             {

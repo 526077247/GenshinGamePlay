@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -152,10 +153,23 @@ namespace TaoTie
                     if (knowledge.TargetKnowledge?.TargetEntity != null)
                     {
                         aiDebug.TargetPos = knowledge.TargetKnowledge.TargetEntity.Position;
+                        aiDebug.EyePos = knowledge.EyePos;
+                        var actor = knowledge.TargetKnowledge.TargetEntity as Actor;
+                        var height = actor?.ConfigActor?.Common?.ModelHeight ?? 0f;
+                        aiDebug.TargetTopPos = height > 0f
+                            ? aiDebug.TargetPos.Value + Vector3.up * height
+                            : null;
+                        aiDebug.HasLineOfSight = knowledge.TargetKnowledge.HasLineOfSight;
+                        var pathQuery = TargetUpdater.TargetPathQuery;
+                        aiDebug.PathPoints = pathQuery != null && pathQuery.Status == QueryStatus.Success ? pathQuery.Corners : null;
                     }
                     else
                     {
                         aiDebug.TargetPos = null;
+                        aiDebug.EyePos = null;
+                        aiDebug.TargetTopPos = null;
+                        aiDebug.HasLineOfSight = false;
+                        aiDebug.PathPoints = null;
                     }
 
                     aiDebug.ViewRange = knowledge.SensingKnowledge.ViewRange;

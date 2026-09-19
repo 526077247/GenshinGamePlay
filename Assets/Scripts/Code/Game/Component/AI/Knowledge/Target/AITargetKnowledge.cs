@@ -102,6 +102,9 @@ namespace TaoTie
         /// </summary>
         public float SkillAnchorDistance;
         
+        /// <summary>
+        /// 最后感知/看到的目标位置
+        /// </summary>
         public Vector3? TargetLKP;
         
         /// <summary>
@@ -130,16 +133,18 @@ namespace TaoTie
         /// <param name="clearType">目标类型</param>
         public void ClearTarget(AITargetType clearType)
         {
+            if (TargetType == clearType)
+            {
+                TargetType = AITargetType.InvalidTarget;
+                HasPath = AITargetHasPathType.Invalid;
+                TargetLKP = null;
+            }
             switch (clearType)
             {
                 case AITargetType.PointTarget:
-                    TargetType = AITargetType.InvalidTarget;
                     TargetPosition = Vector3.zero;
-                    HasPath = AITargetHasPathType.Invalid;
                     break;
                 case AITargetType.EntityTarget:
-                    TargetType = AITargetType.InvalidTarget;
-                    HasPath = AITargetHasPathType.Invalid;
                     TargetID = 0;
                     TargetEntity = null;
                     break;
@@ -153,6 +158,7 @@ namespace TaoTie
                 this.TargetID = newTargetID;
                 this.TargetEntity = ai.GetParent<Unit>().Parent.Get<Unit>(newTargetID);
                 HasPath = AITargetHasPathType.Invalid;
+                TargetLKP = null;
             }
         }
 
@@ -180,6 +186,7 @@ namespace TaoTie
             TargetType = AITargetType.PointTarget;
             TargetPosition = pos;
             HasPath = AITargetHasPathType.Invalid;
+            TargetLKP = pos;
         }
 
         public void Dispose()

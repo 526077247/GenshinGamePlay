@@ -32,19 +32,25 @@ namespace TaoTie
 
         public void Destroy()
         {
+            if (isDestroy) return;
             isDestroy = true;
-            foreach (var item in abilities)
+            
+            for (var node = abilities.Last; node != null;)
             {
-                item.BeforeRemove();
-                item.Dispose();
+                var prev = node.Previous;
+                node.Value.BeforeRemove();
+                node.Value.Dispose();
+                node = prev;
             }
 
             abilities.Dispose();
 
-            foreach (var item in modifiers)
+            for (var node = modifiers.Last; node != null;)
             {
-                item.BeforeRemove();
-                item.Dispose();
+                var prev = node.Previous;
+                node.Value.BeforeRemove();
+                node.Value.Dispose();
+                node = prev;
             }
 
             modifiers.Dispose();

@@ -21,7 +21,10 @@ namespace TaoTie
                 float height = actor.ConfigActor.Common.ModelHeight;
                 slot = system.AddEntity(actor.Position, radius, height);
                 if (slot != null)
+                {
                     slot.enabled = false;
+                    slot.baseline = actor.Position.y;
+                }
             }
             Messager.Instance.AddListener<SceneEntity, Vector3>(Id, MessageId.ChangePositionEvt, OnChangePosition);
         }
@@ -62,7 +65,10 @@ namespace TaoTie
         private void OnChangePosition(SceneEntity sceneEntity, Vector3 old)
         {
             if (slot != null)
+            {
                 slot.position = sceneEntity.Position;
+                slot.baseline = sceneEntity.Position.y;
+            }
         }
     }
 }

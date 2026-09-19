@@ -25,11 +25,14 @@ namespace TaoTie
             UseRVO2 = default;
             Type = default;
             NavMeshAgentName = null;
-            foreach (var item in QueryTasks)
+            if (QueryTasks != null && QueryTasks.Count > 0)
             {
-                item.Value.Dispose();
+                var tasks = new PathQueryTask[QueryTasks.Count];
+                QueryTasks.Values.CopyTo(tasks, 0);
+                foreach (var task in tasks)
+                    task?.Dispose();
             }
-            QueryTasks.Dispose();
+            QueryTasks?.Dispose();
             QueryTasks = null;
         }
 

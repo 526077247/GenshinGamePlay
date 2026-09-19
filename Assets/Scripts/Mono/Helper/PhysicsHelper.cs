@@ -60,7 +60,19 @@ namespace TaoTie
             }
             return len > 0;
         }
+
+        public static int OverlapSphereNonAlloc(Vector3 center, float radius, 
+            QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore)
+        {
+            return Physics.OverlapSphereNonAlloc(center, radius, Colliders, defaultL, queryTriggerInteraction);
+        }
+        public static int OverlapSphereNonAlloc(Vector3 center, float radius, int layerMask,
+            QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore)
+        {
+            return Physics.OverlapSphereNonAlloc(center, radius, Colliders, layerMask, queryTriggerInteraction);
+        }
         #endregion
+        
         #region Entity
         public static int OverlapCapsuleNonAlloc(Vector3 p1, Vector3 p2, float radius, 
             EntityType[] filter, out long[] res)
@@ -280,7 +292,7 @@ namespace TaoTie
 
         public static bool LinecastScene(Vector3 start, Vector3 end, out Vector3 pos)
         {
-            var res = Physics.Linecast(start, end, out var hit, defaultL + hitscene, QueryTriggerInteraction.Ignore);
+            var res = Physics.Linecast(start, end, out var hit, defaultL | hitscene, QueryTriggerInteraction.Ignore);
             if (res)
             {
                 pos = hit.point;
@@ -294,7 +306,6 @@ namespace TaoTie
         }
 
         #endregion
-
 
         #region Camera
 

@@ -173,11 +173,13 @@ namespace TaoTie
         private void ApplyData(CameraStateData data)
         {
             if (sceneMainCamera == null || data == null) return;
-            sceneMainCamera.fieldOfView = data.Fov;
+            sceneMainCamera.orthographic = data.Orthographicn;
+            if(data.Orthographicn) sceneMainCamera.orthographicSize = data.OrthographicnSize;
+            else sceneMainCamera.fieldOfView = data.Fov;
             sceneMainCamera.nearClipPlane = data.NearClipPlane;
+            sceneMainCamera.farClipPlane = data.FarClipPlane;
             sceneMainCamera.gameObject.transform.rotation = data.Orientation;
             sceneMainCamera.gameObject.transform.position = data.Position;
-            //todo: 
         }
 
         private void SetCurCameraState(CameraState state)

@@ -94,7 +94,7 @@ namespace TaoTie
             GameTimerManager.Instance.Remove(ref timerId);
             //广播清理受击方记录的该攻击实例的命中记录,复用对象池时可避免旧记录误命中
             Messager.Instance?.Broadcast<long>(0, MessageId.ClearHitRecord, Id);
-            if (Config.Properties != null)
+            if (Config?.Properties != null)
             {
                 var entity = Parent.GetParent<Entity>();
                 if (entity != null)

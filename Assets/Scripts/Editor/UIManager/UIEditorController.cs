@@ -72,10 +72,19 @@ namespace TaoTie
         {
             if (gos == null || gos.Length == 0) return;
 
-            Transform rootTrans = gos[0].transform;
-            while (rootTrans.parent != null)
+            Transform rootTrans;
+            var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+            if (prefabStage != null)
             {
-                rootTrans = rootTrans.parent;
+                rootTrans = prefabStage.prefabContentsRoot.transform;
+            }
+            else
+            {
+                rootTrans = gos[0].transform;
+                while (rootTrans.parent != null)
+                {
+                    rootTrans = rootTrans.parent;
+                }
             }
 
             // 根节点名可能不是prefab名（如 "Canvas (Environment)"），类名统一取prefab文件名

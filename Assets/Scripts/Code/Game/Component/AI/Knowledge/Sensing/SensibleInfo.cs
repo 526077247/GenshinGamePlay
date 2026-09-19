@@ -10,6 +10,6 @@ namespace TaoTie
         public Vector3 Direction;
         public float Distance;
         public bool HasLineOfSight;
-        public bool IsCharacterEntity;
+        public bool IsActorEntity;
     }
 }

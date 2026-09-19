@@ -22,7 +22,7 @@ namespace TaoTie
         [ProtoMember(11)][LabelText("防御区域")]
         public ConfigShape DefendArea;
 
-        public override Entity CreateActor(SceneGroup sceneGroup,float range)
+        protected override Actor InnerCreateActor(SceneGroup sceneGroup,float range)
         {
             Vector3 position;
             Quaternion rotation;

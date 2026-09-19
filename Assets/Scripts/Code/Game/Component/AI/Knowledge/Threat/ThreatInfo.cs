@@ -90,6 +90,12 @@ namespace TaoTie
             LctByFarDistance = null;
             LctByEntityDisappear = null;
             LctByOutOfZone = null;
+            Temperature = 0f;
+            ThreatValue = 0f;
+            LastSeenTime = 0f;
+            LastFeelTime = 0f;
+            LastFootstepTime = 0f;
+            CaredGlobalValue = 0f;
             ObjectPool.Instance.Recycle(this);
         }
     }

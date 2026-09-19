@@ -30,7 +30,7 @@ namespace TaoTie
 #endif
         public GadgetState DefaultState;
 
-        public override Entity CreateActor(SceneGroup sceneGroup, float range)
+        protected override Actor InnerCreateActor(SceneGroup sceneGroup, float range)
         {
             Vector3 position;
             Quaternion rotation;

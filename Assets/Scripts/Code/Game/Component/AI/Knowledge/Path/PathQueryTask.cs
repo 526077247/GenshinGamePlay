@@ -13,6 +13,7 @@ namespace TaoTie
         public Vector3 Destination;
         public QueryStatus Status;
         public NavMeshUseType Type;
+        public ETCancellationToken Token;
         private AIPathFindingKnowledge pathFindingKnowledge;
 
         public static PathQueryTask Create(Vector3 start,Vector3 destination,AIPathFindingKnowledge knowledge,NavMeshUseType type=NavMeshUseType.Auto)
@@ -25,6 +26,7 @@ namespace TaoTie
             res.Corners = ListComponent<Vector3>.Create();
             res.Status = QueryStatus.Pending;
             res.Type = type;
+            res.Token = new ETCancellationToken();
             return res;
         }
 
@@ -34,6 +36,8 @@ namespace TaoTie
             {
                 var know = pathFindingKnowledge;
                 pathFindingKnowledge = null;
+                Token?.Cancel();
+                Token = null;
                 know.ReleasePathQueryTask(Id);
                 Id = 0;
                 Corners?.Dispose();

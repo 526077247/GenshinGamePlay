@@ -24,9 +24,9 @@ namespace TaoTie
 
         #endregion
         
-        public async ETTask<bool> Find(Vector3 start, Vector3 target, List<Vector3> result)
+        public async ETTask<bool> Find(Vector3 start, Vector3 target, List<Vector3> result, ETCancellationToken token = null)
         {
-            return await NavmeshSystem.Instance.Find(Name, start, target, result);
+            return await NavmeshSystem.Instance.Find(Name, start, target, result, token);
         }
     }
 }
