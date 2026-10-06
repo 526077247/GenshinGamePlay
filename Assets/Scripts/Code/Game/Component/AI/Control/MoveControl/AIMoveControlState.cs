@@ -64,6 +64,7 @@ namespace TaoTie
 
             moveInfoGroup = null;
             curMoveInfo = null;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public void Goto(MoveDecision newDecision, AILocomotionHandler taskHandler, AIKnowledge aiKnowledge,

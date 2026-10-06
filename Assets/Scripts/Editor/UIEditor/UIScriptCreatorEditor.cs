@@ -37,7 +37,7 @@ namespace TaoTie
             }
 
             string prefabPath = GetPrefabPath();
-            UIScriptController.GenerateUICode(selected, prefabPath);
+            UICodeGenerate.GenerateUICode(selected, prefabPath);
 
             Debug.Log("生成完成");
         }

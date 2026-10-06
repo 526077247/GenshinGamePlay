@@ -90,6 +90,13 @@ namespace TaoTie
             knowledge.Dispose();
             knowledge = null;
             aiManager = null;
+
+            decision.Act = default;
+            decision.Move = default;
+            decision.Tactic = default;
+            decisionOld.Act = default;
+            decisionOld.Move = default;
+            decisionOld.Tactic = default;
         }
 
         public virtual void Update()

@@ -30,6 +30,7 @@ namespace TaoTie
             defendCenter = Vector3.zero;
             IsInDefendRange = false;
             defendArea = null;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public bool CheckInDefendArea(Vector3 point)

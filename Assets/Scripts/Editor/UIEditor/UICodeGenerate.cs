@@ -9,13 +9,13 @@ using UnityEngine.UI;
 
 namespace TaoTie
 {
-    public class UIScriptController
+    public class UICodeGenerate
     {
         static string addressable_path = "Assets/AssetsPackage/";
         static string generate_path = "Game";
         static bool forced_coverage = false; //是否强制覆盖
 
-        public static bool AllowGenerate(GameObject go, string path)
+        private static bool AllowGenerate(GameObject go, string path)
         {
             if (!go.name.StartsWith("UI"))
             {
@@ -30,7 +30,7 @@ namespace TaoTie
                 return false;
             }
 
-            return path.Contains(addressable_path);
+            return true;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace TaoTie
 
         static Dictionary<Type, string> WidgetInterfaceList;
 
-        static UIScriptController() //优先生成的排前面
+        static UICodeGenerate() //优先生成的排前面
         {
             WidgetInterfaceList = new Dictionary<Type, string>();
             WidgetInterfaceList.Add(typeof(SuperScrollView.LoopListView2), "UILoopListView2");
@@ -66,6 +66,7 @@ namespace TaoTie
             WidgetInterfaceList.Add(typeof(Text), "UIText");
             WidgetInterfaceList.Add(typeof(TMPro.TMP_Text), "UITextmesh");
             WidgetInterfaceList.Add(typeof(TMPro.TMP_InputField), "UIInputTextmesh");
+            WidgetInterfaceList.Add(typeof(Animator), "UIAnimator");
         }
 
         static void GenerateUIBaseViewCode(GameObject[] gos, string path)
@@ -87,13 +88,15 @@ namespace TaoTie
                 }
             }
 
+            if (!AllowGenerate(rootTrans.gameObject, path)) return;
+
             // 根节点名可能不是prefab名（如 "Canvas (Environment)"），类名统一取prefab文件名
             string name = Path.GetFileNameWithoutExtension(path);
             if (string.IsNullOrEmpty(name))
             {
                 name = rootTrans.gameObject.name;
             }
-
+            
             bool isItem = !name.EndsWith("View") && !name.EndsWith("Win") && !name.EndsWith("Panel");
             var temp = new List<string>(path.Split('/'));
             int index = temp.IndexOf("AssetsPackage");
@@ -160,10 +163,12 @@ namespace TaoTie
             strBuilder.AppendLine("\t}");
             strBuilder.AppendLine("}");
 
+            //不管原文件是否存在，都复制到剪贴板
+            EditorGUIUtility.systemCopyBuffer = strBuilder.ToString();
+
             if (!forced_coverage && exists)
             {
                 UnityEngine.Debug.LogWarning("已存在 " + csPath + "，不会覆盖生成，代码已复制到剪贴板。");
-                EditorGUIUtility.systemCopyBuffer = strBuilder.ToString();
                 return;
             }
 
@@ -171,7 +176,6 @@ namespace TaoTie
             sw.Write(strBuilder);
             sw.Flush();
             sw.Close();
-            EditorGUIUtility.systemCopyBuffer = strBuilder.ToString();
         }
 
         private class NodeInfo
@@ -192,7 +196,8 @@ namespace TaoTie
             foreach (var go in gos)
             {
                 if (go == null) continue;
-                string baseName = SanitizeName(go.name);
+                //根节点的名称不能直接用className会报错，统一命名为Root
+                string baseName = go.transform == root ? "Root" : SanitizeName(go.name);
                 if (string.IsNullOrEmpty(baseName)) continue;
 
                 string moduleName = baseName;
@@ -238,7 +243,7 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 计算选中节点相对根节点的路径，选中根节点时返回节点名
+        /// 计算选中节点相对根节点的路径，选中根节点时返回空路径，生成时不需要传路径
         /// </summary>
         static string GetNodePath(Transform node, Transform root)
         {
@@ -250,7 +255,6 @@ namespace TaoTie
                 t = t.parent;
             }
             parts.Reverse();
-            if (parts.Count == 0) return node.name;
             return string.Join("/", parts);
         }
 
@@ -273,17 +277,35 @@ namespace TaoTie
             {
                 if (info.ComponentType == null)
                 {
-                    strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyView>(\"{1}\");",
-                            info.ModuleName, info.Path)
-                        .AppendLine();
+                    if (string.IsNullOrEmpty(info.Path))
+                    {
+                        strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyView>();",
+                                info.ModuleName)
+                            .AppendLine();
+                    }
+                    else
+                    {
+                        strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<UIEmptyView>(\"{1}\");",
+                                info.ModuleName, info.Path)
+                            .AppendLine();
+                    }
                     continue;
                 }
 
                 Type key = info.ComponentType;
                 string widgetType = WidgetInterfaceList[key];
-                strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<{1}>(\"{2}\");",
-                        info.ModuleName, widgetType, info.Path)
-                    .AppendLine();
+                if (string.IsNullOrEmpty(info.Path))
+                {
+                    strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<{1}>();",
+                            info.ModuleName, widgetType)
+                        .AppendLine();
+                }
+                else
+                {
+                    strBuilder.AppendFormat("\t\t\tthis.{0} = this.AddComponent<{1}>(\"{2}\");",
+                            info.ModuleName, widgetType, info.Path)
+                        .AppendLine();
+                }
 
                 if (key == typeof(Button) || key == typeof(PointerClick))
                 {

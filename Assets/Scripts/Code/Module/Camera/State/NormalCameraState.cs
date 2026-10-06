@@ -16,6 +16,8 @@ namespace TaoTie
         public ICameraEntity follow { get; private set; }
         public ICameraEntity target { get; private set; }
 
+        public CameraPluginRunner Body => body;
+
         public static NormalCameraState Create(ConfigCamera config, int priority)
         {
             NormalCameraState res = ObjectPool.Instance.Fetch<NormalCameraState>();
@@ -29,6 +31,8 @@ namespace TaoTie
             res.Data.NearClipPlane = res.Config.NearClipPlane;
             res.Data.FarClipPlane = res.Config.FarClipPlane;
             res.Data.AvatarFaceDirection = config.AvatarFaceDirection;
+            res.Data.Position = Vector3.zero;
+            res.Data.LookAt = Vector3.zero;
             res.IsOver = false;
             res.CreateRunner();
             return res;
@@ -87,10 +91,24 @@ namespace TaoTie
                 Data.LookAt = target.Position;
                 Data.TargetUp = target.Up;
             }
+            else if (follow != null)
+            {
+                // 没有 target 时用 follow 兜底：Body 插件的机位本来就是围绕 follow 算出来的，
+                // LookAt 必须跟着它走。这里曾经是空缺，于是过渡期的焦点距离会落到 follow 身上，
+                Data.TargetForward = follow.Forward;
+                Data.LookAt = follow.Position;
+                Data.TargetUp = follow.Up;
+            }
             else
             {
-                Data.TargetForward = Vector3.forward;
-                Data.TargetUp = Vector3.up;
+                // 既无 target 也无 follow：用当前相机自身前方一点，保证 LookAt 始终有效，
+                // 不让过渡期的焦点距离退化成 0。
+                var cam = CameraManager.Instance.MainCamera();
+                var pos = cam != null ? cam.transform.position : Vector3.zero;
+                var rot = cam != null ? cam.transform.rotation : Quaternion.identity;
+                Data.TargetForward = rot * Vector3.forward;
+                Data.LookAt = pos + Data.TargetForward;
+                Data.TargetUp = rot * Vector3.up;
             }
             // If no head plugin, keep Orientation in sync with the camera transform
             if (head == null)

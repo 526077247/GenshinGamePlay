@@ -114,6 +114,8 @@ namespace TaoTie
             SensingKnowledge = null;
             TargetKnowledge.Dispose();
             TargetKnowledge = null;
+            DefendAreaKnowledge.Dispose();
+            DefendAreaKnowledge = null;
 
             ActionControlState.Dispose();
             ActionControlState = null;
@@ -125,6 +127,11 @@ namespace TaoTie
             DecisionArchetype = default;
             CurrentTactic = default;
             TacticChanged = false;
+            MoveDecisionChanged = false;
+            Temperature = 0f;
+            EyePos = default;
+            EyeTransform = null;
+            PoseID = 0;
             AIManager = null;
             Entity = null;
             BornPos = default;

@@ -18,6 +18,10 @@ namespace TaoTie
         public void Dispose()
         {
             Config = null;
+            DisableMoveTactic = false;
+            CanMove = true;
+            CanTurn = true;
+            ObjectPool.Instance.Recycle(this);
         }
         
         public float GetAlmostReachDistance(MotionFlag speed)

@@ -37,6 +37,7 @@ namespace TaoTie
             condition = null;
             Config = null;
             Data = default;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public bool NerveCheck(AIKnowledge knowledge)

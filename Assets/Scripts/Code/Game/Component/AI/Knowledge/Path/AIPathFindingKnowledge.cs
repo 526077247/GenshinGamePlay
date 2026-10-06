@@ -34,6 +34,7 @@ namespace TaoTie
             }
             QueryTasks?.Dispose();
             QueryTasks = null;
+            ObjectPool.Instance.Recycle(this);
         }
 
         public PathQueryTask CreatePathQueryTask(Vector3 start, Vector3 destination, NavMeshUseType type = NavMeshUseType.Auto)

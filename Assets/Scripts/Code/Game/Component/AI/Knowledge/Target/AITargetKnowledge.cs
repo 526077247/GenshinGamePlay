@@ -191,10 +191,11 @@ namespace TaoTie
 
         public void Dispose()
         {
+            TargetType = AITargetType.InvalidTarget;
             TargetID = 0;
-            TargetPosition =Vector3.zero;
-            TargetForward =Vector3.zero;
-            TargetDirection=Vector3.zero;
+            TargetPosition = Vector3.zero;
+            TargetForward = Vector3.zero;
+            TargetDirection = Vector3.zero;
             TargetDistance = 0;
             TargetDistanceXZ = 0;
             TargetDistanceY = 0;
