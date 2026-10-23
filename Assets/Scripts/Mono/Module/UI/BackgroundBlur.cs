@@ -27,28 +27,21 @@ namespace TaoTie
         
         private void OnEnable()
         {
-            StartCoroutine(Snapshoot());
-        }
-
-        private IEnumerator Snapshoot()
-        {
             if (rImage == null)
             {
-                Log.Warning("Background Blur is warring !!!");
-                yield break;
+                return;
             }
-            yield return ReadPixels();
-            
+            ReadPixels().Coroutine();
         }
 
-        private IEnumerator ReadPixels()
+        private async ETTask ReadPixels()
         {
             var mainCamera = Camera.main;
-            if (mainCamera == null) yield break;
+            if (mainCamera == null) return;
             rImage.enabled = false;
             while (RefCount>0 && screenShotTemp == null)
             {
-                yield return new WaitForEndOfFrame();
+                await UnityLifeTimeHelper.WaitFrameFinish();
             }
             RefCount++;
             if (screenShotTemp == null)
@@ -65,7 +58,7 @@ namespace TaoTie
                     }
                 }
                 if(uiCamera!=null) uiCamera.enabled = false;
-                yield return new WaitForEndOfFrame();
+                await UnityLifeTimeHelper.WaitFrameFinish();
                 if (RefCount > 0)//防止等一帧回来已经被关了
                 {
                     // 先创建一个的空纹理，大小可根据实现需要来设置  

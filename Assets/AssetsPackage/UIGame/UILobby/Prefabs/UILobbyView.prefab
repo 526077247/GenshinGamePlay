@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224438795553994780}
   - component: {fileID: 7887646650339310160}
-  - component: {fileID: 166101657567911910}
   - component: {fileID: -1953605526500354536}
   m_Layer: 5
   m_Name: UILobbyView
@@ -48,21 +47,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1386170326414932}
   m_CullTransparentMesh: 1
---- !u!114 &166101657567911910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1386170326414932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 120d88d4e150f8846a9270d2996478de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moduleName: UILobbyView
-  isListItem: 0
-  isMarked: 1
 --- !u!114 &-1953605526500354536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,7 +74,6 @@ GameObject:
   - component: {fileID: 3551763173420594385}
   - component: {fileID: 8890989337163527610}
   - component: {fileID: 8461347479426950707}
-  - component: {fileID: 3446405867443709563}
   m_Layer: 5
   m_Name: btn_start
   m_TagString: Untagged
@@ -200,21 +183,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &3446405867443709563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3290284465351630487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 120d88d4e150f8846a9270d2996478de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moduleName: btn_start
-  isListItem: 0
-  isMarked: 1
 --- !u!1 &3674709965235869182
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,12 +316,12 @@ MonoBehaviour:
     textComponent: {fileID: 7823744164242686026}
     characterCount: 2
     spriteCount: 0
-    spaceCount: 2
+    spaceCount: 0
     wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 1
+    materialCount: 2
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -405,7 +373,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5499546447373738199}
   - component: {fileID: 7265193717659024069}
-  - component: {fileID: 2210593100359711519}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -441,21 +408,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3958348107001678898}
   m_CullTransparentMesh: 1
---- !u!114 &2210593100359711519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3958348107001678898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 120d88d4e150f8846a9270d2996478de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moduleName: Image
-  isListItem: 0
-  isMarked: 0
 --- !u!1 &5476543361298959846
 GameObject:
   m_ObjectHideFlags: 0

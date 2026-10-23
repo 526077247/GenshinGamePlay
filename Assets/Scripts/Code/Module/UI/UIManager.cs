@@ -79,12 +79,7 @@ namespace TaoTie
         }
 
         #endregion
-                
-        public Camera GetUICamera()
-        {
-            return UICamera;
-        }
-        
+
         public void ResetSafeArea()
         {
             var safeArea = SystemInfoHelper.safeArea;

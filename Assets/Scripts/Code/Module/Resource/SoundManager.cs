@@ -289,7 +289,7 @@ namespace TaoTie
         public async ETTask InitAsync()
         {
             soundsRoot = new GameObject("SoundsRoot").transform;
-            var al = UIManager.Instance.GetUICamera().GetComponent<AudioListener>();
+            var al = UIManager.Instance.UICamera.GetComponent<AudioListener>();
             if (al != null)
             {
                 //UI相机上不挂载AudioListener
