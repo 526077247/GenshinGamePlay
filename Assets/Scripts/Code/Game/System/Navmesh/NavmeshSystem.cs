@@ -259,11 +259,6 @@ namespace TaoTie
             
                 query.FindNearestPoly(startPos, extents, filter, out startRef, out startPt, out _);
                 query.FindNearestPoly(endPos, extents, filter, out endRef, out endPt, out _);
-<<<<<<< HEAD
-            
-=======
-
->>>>>>> 5184d65d (新增地形求解器)
                 polys.Clear();
                 query.FindPath(startRef, endRef, startPt, endPt, filter, ref polys, new DtFindPathOption(0, float.MaxValue));
 
