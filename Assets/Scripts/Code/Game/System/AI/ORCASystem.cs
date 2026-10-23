@@ -43,6 +43,8 @@ namespace TaoTie
             public float baseline; // 实体底部高度（y 轴坐标，与 height 构成纵向范围）
             public float thickness;
             public bool collisionEnabled;
+            /// <summary>是否水面障碍（河流水面足印），供玩家移动约束单独查询。</summary>
+            public bool water;
         }
 
         private Slot[] slots = new Slot[CAPACITY];
@@ -58,6 +60,22 @@ namespace TaoTie
         private Dictionary<int, int> obstacleIdToSlot = new Dictionary<int, int>();
         private List<int> obstacleActiveList = new List<int>();
         private int nextObstacleId = 1;
+
+        /// <summary>当前是否注册了可碰撞的静态障碍（河流/陡坡/feature 等）。</summary>
+        public bool HasObstacles => obstacleActiveList.Count > 0;
+
+        /// <summary>当前是否注册了水面障碍（河流水面足印）。</summary>
+        public bool HasWaterObstacles
+        {
+            get
+            {
+                for (int i = 0; i < obstacleActiveList.Count; i++)
+                {
+                    if (obstacleSlots[obstacleActiveList[i]].water) return true;
+                }
+                return false;
+            }
+        }
 
         private NativeArray<float2> nPositions;
         private NativeArray<float2> nPrefVels;
@@ -273,8 +291,10 @@ namespace TaoTie
         /// <param name="thickness">障碍厚度，并入智能体避障半径。</param>
         /// <param name="inverseOrder">true 时不自动规整绕序，保持入参方向（可控制“可通行侧”），默认自动规整为内部在左。</param>
         /// <param name="maxSegmentLength">边长超过该值时自动细分，0 表示不细分。</param>
+        /// <param name="water">true 表示水面障碍（河流水面足印），可被单独查询。</param>
         public int AddObstacle(IList<Vector3> vertices, float height = 1f, float baseline = 0f,
-            float thickness = 0f, bool inverseOrder = false, float maxSegmentLength = 10f)
+            float thickness = 0f, bool inverseOrder = false, float maxSegmentLength = 10f,
+            bool water = false)
         {
             if (vertices == null || vertices.Count < 2)
             {
@@ -327,6 +347,7 @@ namespace TaoTie
             o.baseline = baseline;
             o.thickness = thickness;
             o.collisionEnabled = true;
+            o.water = water;
             o.vertices.Clear();
             o.vertices.AddRange(pts);
             obstacleIdToSlot[o.id] = slot;
@@ -416,6 +437,80 @@ namespace TaoTie
         public int GetObstacleCount()
         {
             return obstacleActiveList.Count;
+        }
+
+        /// <summary>
+        /// 检测世界坐标位置（含半径与纵向范围）是否与任一启用的静态障碍相交。
+        /// </summary>
+        /// <param name="position">待检测位置（世界坐标，纵向范围底点）。</param>
+        /// <param name="radius">检测半径。</param>
+        /// <param name="baseline">纵向范围底（y）。</param>
+        /// <param name="height">纵向范围高。</param>
+        public bool OverlapsObstacle(Vector3 position, float radius, float baseline, float height)
+        {
+            return OverlapsObstacle(position, radius, baseline, height, false);
+        }
+
+        /// <summary>
+        /// 仅检测水面障碍（河流水面足印）是否与给定圆重叠。
+        /// 玩家移动约束用精确水面足印，避免近似河宽在离河较远时就挡住角色。
+        /// </summary>
+        public bool OverlapsWaterObstacle(Vector3 position, float radius, float baseline, float height)
+        {
+            return OverlapsObstacle(position, radius, baseline, height, true);
+        }
+
+        private bool OverlapsObstacle(Vector3 position, float radius, float baseline, float height,
+            bool waterOnly)
+        {
+            if (obstacleActiveList.Count == 0) return false;
+            float2 p = ToPlane(position);
+            float top = baseline + height;
+            for (int k = 0; k < obstacleActiveList.Count; k++)
+            {
+                ObstacleSlot o = obstacleSlots[obstacleActiveList[k]];
+                if (!o.collisionEnabled) continue;
+                if (waterOnly && !o.water) continue;
+                if (o.baseline > top || o.baseline + o.height < baseline) continue;
+                if (PointNearPolygon(p, o.vertices, radius + o.thickness)) return true;
+            }
+            return false;
+        }
+
+        private static bool PointNearPolygon(float2 p, List<float2> poly, float radius)
+        {
+            if (poly.Count < 3) return false;
+            if (PointInPolygon(p, poly)) return true;
+            float r2 = radius * radius;
+            for (int i = 0; i + 1 < poly.Count; i++)
+            {
+                if (DistanceSqrPointToSegment(p, poly[i], poly[i + 1]) <= r2) return true;
+            }
+            return false;
+        }
+
+        private static bool PointInPolygon(float2 p, List<float2> poly)
+        {
+            bool inside = false;
+            for (int i = 0, j = poly.Count - 1; i < poly.Count; j = i++)
+            {
+                float2 a = poly[i];
+                float2 b = poly[j];
+                if (((a.y > p.y) != (b.y > p.y)) &&
+                    (p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x))
+                {
+                    inside = !inside;
+                }
+            }
+            return inside;
+        }
+
+        private static float DistanceSqrPointToSegment(float2 p, float2 a, float2 b)
+        {
+            float2 ab = b - a;
+            float lenSq = dot(ab, ab);
+            float t = lenSq > 1e-6f ? saturate(dot(p - a, ab) / lenSq) : 0f;
+            return lengthsq(p - (a + ab * t));
         }
 
         #endregion

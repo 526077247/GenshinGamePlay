@@ -71,6 +71,7 @@ namespace TaoTie
             ManagerProvider.RegisterManager<CameraManager>();
             ManagerProvider.RegisterManager<InputManager>();
             ManagerProvider.RegisterManager<NavmeshSystem>();
+            ManagerProvider.RegisterManager<TerrainQueryManager>();
             ManagerProvider.RegisterManager<SoundManager>();
             ManagerProvider.RegisterManager<AbilitySystem>();
             ManagerProvider.RegisterManager<ModelSystem>();

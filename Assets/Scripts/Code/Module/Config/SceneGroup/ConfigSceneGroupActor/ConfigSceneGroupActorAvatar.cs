@@ -51,10 +51,6 @@ namespace TaoTie
                 position = Position;
                 rotation = Quaternion.Euler(Rotation);
             }
-            if (range > 0)
-            {
-                position += Quaternion.Euler(0, Random.Range(0, 360), 0) * Vector3.forward * Random.Range(0, range);
-            }
             var entity = sceneGroup.Parent.CreateEntity<Avatar, int>(ConfigID);
             var sgac = entity.AddComponent<SceneGroupActorComponent, int, long>(LocalId, sceneGroup.Id);
             entity.Position = position;

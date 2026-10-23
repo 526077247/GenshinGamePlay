@@ -2,7 +2,7 @@
 
 namespace TaoTie
 {
-    public class RigidbodyMoveComponent : MoveComponent<ConfigRigidbodyMove>
+    public class RigidbodyMoveComponent : MoveComponent<ConfigRigidbodyMove>, IFixedUpdate
     {
         private Rigidbody rigidbody;
         public override bool useAnimMove => false;
@@ -10,6 +10,7 @@ namespace TaoTie
 
         protected override void InitInternal()
         {
+            InitMoveConstraint(ActorMoveProfile.Create(parent as Actor), 0);
             InitInternalAsync().Coroutine();
         }
 
@@ -27,19 +28,37 @@ namespace TaoTie
 
         protected override void UpdateInternal()
         {
+        }
+
+        public void FixedUpdate()
+        {
             if (CharacterInput == null || rigidbody == null) return;
-            float deltaTime = GameTimerManager.Instance.GetDeltaTime() / 1000f;
+            float deltaTime = Time.fixedDeltaTime;
+            if (deltaTime <= 0f) return;
+
+            SceneEntity.SyncViewPosition(rigidbody.position);
             HandleRotation(deltaTime);
 
-            //doMove
             var speed = numericComponent.GetAsFloat(NumericType.Speed);
             var velocity = CharacterInput.Direction.normalized * speed * CharacterInput.SpeedScale;
             velocity = ApplyORCA(velocity, speed);
+            velocity = ConstrainVelocity(velocity);
 
             CharacterInput.Velocity = velocity;
             rigidbody.velocity = velocity;
             rigidbody.isKinematic = velocity == Vector3.zero;
             SceneEntity.SyncViewPosition(rigidbody.position);
+        }
+
+        private Vector3 ConstrainVelocity(Vector3 velocity)
+        {
+            if (!HasMoveConstraint || velocity == Vector3.zero) return velocity;
+            float deltaTime = Time.fixedDeltaTime;
+            if (deltaTime <= 0f) return velocity;
+
+            var area = GetComponent<MoveAreaComponent>()?.Area;
+            Vector3 displacement = ConstrainTerrain(velocity * deltaTime, area);
+            return displacement / deltaTime;
         }
     }
 }

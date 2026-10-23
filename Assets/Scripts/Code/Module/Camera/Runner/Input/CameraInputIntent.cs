@@ -11,9 +11,9 @@ namespace TaoTie
         public float ScrollDelta;
         /// <summary>视角旋转增量：(x=水平, y=垂直)，第三人称/看向用</summary>
         public Vector2 LookDelta;
-        /// <summary>平移输入轴：(x=左右, y=前后)，HexMap 键盘移动用</summary>
+        /// <summary>平移输入轴：(x=左右, y=前后)</summary>
         public Vector2 MoveAxis;
-        /// <summary>相机水平旋转轴：-1 / 0 / 1（HexMap Q/E 用）</summary>
+        /// <summary>相机水平旋转轴：-1 / 0 / 1</summary>
         public float RotationAxis;
         /// <summary>本帧指针按下</summary>
         public bool IsPointerDown;

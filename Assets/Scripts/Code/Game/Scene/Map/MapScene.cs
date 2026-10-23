@@ -34,6 +34,7 @@ namespace TaoTie
         #endregion
         private UILoadingView win;
         private string[] dontDestroyWindow = {TypeInfo<UILoadingView>.TypeName};
+        private NavmeshTerrainQuery navmeshTerrainQuery;
 
         public string[] GetDontDestroyWindow()
         {
@@ -60,6 +61,8 @@ namespace TaoTie
         public async ETTask OnLeave()
         {
             await ETTask.CompletedTask;
+            TerrainQueryManager.Instance?.Unregister(navmeshTerrainQuery);
+            navmeshTerrainQuery = null;
             RemoveManager<StorySystem>();
             RemoveManager<SceneGroupManager>();
             RemoveManager<AIManager>();
@@ -72,6 +75,44 @@ namespace TaoTie
         public async ETTask OnPrepare(float progressStart,float progressEnd)
         {
             await BillboardSystem.Instance.PreloadLoadAsset();
+            await SetupTerrainQuery();
+        }
+
+        /// <summary>
+        /// 预加载本场景 NavMesh 数据并注册地形/水面查询。
+        /// NavMesh 数据是同步查询的前提（<see cref="NavmeshSystem.TryGetNearestPoly"/> 只读已加载的查询对象），
+        /// 因此必须在创建 Actor（出生点求解）之前完成。
+        /// </summary>
+        private async ETTask SetupTerrainQuery()
+        {
+            TerrainQueryManager terrain = TerrainQueryManager.Instance;
+            if (terrain == null)
+            {
+                Log.Error("地形查询管理器未注册，无法初始化场景地形数据");
+                return;
+            }
+
+            string navMeshName = config.NavMesh;
+            if (string.IsNullOrEmpty(navMeshName))
+            {
+                // 该场景无 NavMesh 数据，出生点退化为纯物理搜索。
+                return;
+            }
+
+            if (NavmeshSystem.Instance == null)
+            {
+                Log.Error("寻路系统未注册，无法加载场景 NavMesh 数据");
+                return;
+            }
+
+            if (!await NavmeshSystem.Instance.Preload(navMeshName))
+            {
+                Log.Error($"场景 NavMesh 数据加载失败: {navMeshName}");
+                return;
+            }
+
+            navmeshTerrainQuery = new NavmeshTerrainQuery(navMeshName);
+            terrain.Register(navmeshTerrainQuery);
         }
 
         public async ETTask OnComplete()

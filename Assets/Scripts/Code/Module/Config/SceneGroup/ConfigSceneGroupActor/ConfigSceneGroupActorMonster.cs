@@ -37,11 +37,6 @@ namespace TaoTie
                 rotation = Quaternion.Euler(Rotation);
             }
 
-            if (range > 0)
-            {
-                position += Quaternion.Euler(0, Random.Range(0, 360), 0) * Vector3.forward * Random.Range(0, range);
-            }
-
             Monster entity = null;
             if (DefendArea != null)
             {

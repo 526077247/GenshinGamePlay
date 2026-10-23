@@ -45,6 +45,31 @@ namespace TaoTie
                 slot.enabled = enable;
         }
 
+        /// <summary>
+        /// RVO2 避障是否已开启。
+        /// </summary>
+        public bool IsRVOEnabled => rvoEnabled;
+
+        /// <summary>当前场景是否注册了可碰撞的静态障碍（河流/陡坡/feature 等）。</summary>
+        public bool HasObstacles => system != null && system.HasObstacles;
+
+        /// <summary>当前场景是否注册了水面障碍（河流水面足印）。</summary>
+        public bool HasWaterObstacles => system != null && system.HasWaterObstacles;
+
+        /// <summary>检测给定圆是否与水面障碍（河流水面足印）重叠。</summary>
+        public bool OverlapsWaterObstacle(Vector3 position, float radius, float baseline, float height)
+        {
+            return system != null && system.OverlapsWaterObstacle(position, radius, baseline, height);
+        }
+
+        /// <summary>
+        /// 检测位置是否与 ORCA 静态障碍相交（出生点避障用）。
+        /// </summary>
+        public bool OverlapsObstacle(Vector3 position, float radius, float baseline, float height)
+        {
+            return system != null && system.OverlapsObstacle(position, radius, baseline, height);
+        }
+
         public void SetVelocity(Vector3 velocity, float maxSpeed)
         {
             prefVelocity = velocity;

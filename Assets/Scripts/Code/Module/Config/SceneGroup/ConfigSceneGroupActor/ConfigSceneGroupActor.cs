@@ -39,11 +39,14 @@ namespace TaoTie
         [ProtoMember(6)]
         [LabelText("出生是否避障")]
         public bool IsSpawnAvoid;
+        [ProtoMember(7)]
+        [LabelText("出生是否允许在水里")]
+        public bool AllowWaterSpawn;
 
         public Entity CreateActor(SceneGroup sceneGroup, float range)
         {
             var res = InnerCreateActor(sceneGroup, range);
-            res.Position = AdjustSpawnPosition(res.Position, res.ConfigActor?.Common);
+            res.Position = AdjustSpawnPosition(res, res.ConfigActor?.Common, range);
             return res;
         }
         protected abstract Actor InnerCreateActor(SceneGroup sceneGroup, float range);
@@ -51,51 +54,29 @@ namespace TaoTie
         #region 出生点避障
 
         /// <summary>
-        /// 调整出生点以避开碰撞体障碍：目标位置空闲则直接使用，
-        /// 否则在周围圆周采样一个空闲位置。position 为世界坐标。
+        /// 求解出生点：地形、水域由 <see cref="TerrainQueryManager"/> 判定，
+        /// 物理碰撞、ORCA 等额外限制由注册到该管理器的 <see cref="ISpawnFilter"/> 处理。
         /// </summary>
-        private Vector3 AdjustSpawnPosition(Vector3 position, ConfigActorCommon common)
+        private Vector3 AdjustSpawnPosition(Actor actor, ConfigActorCommon common, float range)
         {
-            if (!IsSpawnAvoid || common == null) return position;
-            // 目标点没有碰撞体阻挡，直接使用
-            if (IsPositionFree(position, common)) return position;
+            if (common == null) return actor.Position;
 
-            // 在目标点周围圆周采样一个空闲位置
-            return SearchFreePositionAround(position, common);
-        }
+            TerrainQueryManager terrain = TerrainQueryManager.Instance;
+            if (terrain == null) return actor.Position;
 
-        /// <summary>
-        /// 检测世界坐标位置是否空闲（不被带碰撞体的障碍物占用）。
-        /// </summary>
-        private bool IsPositionFree(Vector3 worldPosition, ConfigActorCommon common)
-        {
-            return PhysicsHelper.OverlapSphereNonAlloc(worldPosition + Vector3.up * common.ModelHeight / 2,
-                common.ModelRadius) == 0;
-        }
-
-        /// <summary>
-        /// 在目标点周围按圆环比逐层采样，返回第一个无碰撞体的位置，找不到返回原位置。
-        /// </summary>
-        private Vector3 SearchFreePositionAround(Vector3 position, ConfigActorCommon common)
-        {
-            const float step = 1f;
-            const int rings = 5;
-            const int count = 12;
-            for (int r = 1; r <= rings; r++)
+            var options = new SpawnPointOptions
             {
-                float sampleRadius = r * step;
-                for (int i = 0; i < count; i++)
-                {
-                    float angle = (360f / count) * i * Mathf.Deg2Rad;
-                    var candidate = position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * sampleRadius;
-                    if (IsPositionFree(candidate, common))
-                    {
-                        return candidate;
-                    }
-                }
-            }
+                Range = range,
+                //随机散开时与地形边界保留的最小距离，避免落在边缘。
+                BoundaryMargin = 1,
+                AllowWater = AllowWaterSpawn,
+                RequireWalkable = IsSpawnAvoid,
+                FootprintRadius = common.ModelRadius,
+                //出生高度高于地表该值时视为站在桥/平台等承托物上，不再按脚下地形判定。
+                HeightTolerance = 1,
+            };
 
-            return position;
+            return terrain.GetSpawnPosition(actor.Position, options, actor);
         }
 
         #endregion

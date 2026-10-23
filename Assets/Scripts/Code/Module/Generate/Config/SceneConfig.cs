@@ -92,14 +92,17 @@ namespace TaoTie
 		/// <summary>场景路径</summary>
 		[ProtoMember(4)]
 		public string Perfab { get; set; }
-		/// <summary>是否日夜循环环境类型</summary>
+		/// <summary>寻路数据</summary>
 		[ProtoMember(5)]
+		public string NavMesh { get; set; }
+		/// <summary>是否日夜循环环境类型</summary>
+		[ProtoMember(6)]
 		public int DayNight { get; set; }
 		/// <summary>环境配置参数（日夜循环填4个否则填1个）</summary>
-		[ProtoMember(6)]
+		[ProtoMember(7)]
 		public int[] EnvIds { get; set; }
 		/// <summary>初始生成SceneGroup</summary>
-		[ProtoMember(7)]
+		[ProtoMember(8)]
 		public ulong[] SceneGroupIds { get; set; }
 
 	}

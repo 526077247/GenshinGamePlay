@@ -82,7 +82,86 @@ namespace TaoTie
         {
             Instance = null;
         }
-        
+
+        /// <summary>
+        /// 预加载并缓存指定名称的 NavMesh 查询对象（离线表或临时表），
+        /// 供地形/水面查询 Provider 在同步路径上安全使用。已加载则直接返回 true。
+        /// </summary>
+        public async ETTask<bool> Preload(string name, ETCancellationToken token = null)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            if (TryGetLoadedQuery(name, out _)) return true;
+            // 与 Find 使用同一把按名字的锁，避免与寻路查询并发重复加载同一份数据。
+            using (await CoroutineLockManager.Instance.Wait(CoroutineLockType.PathQuery, name.GetHashCode()))
+            {
+                if (token.IsCancel()) return false;
+                if (TryGetLoadedQuery(name, out _)) return true;
+                return await AcquireQuery(name, token) != null;
+            }
+        }
+
+        /// <summary>
+        /// 获取已加载的查询对象（优先临时表，其次离线表），不触发任何异步/磁盘加载。
+        /// </summary>
+        public bool TryGetLoadedQuery(string name, out DtNavMeshQuery query)
+        {
+            query = null;
+            if (string.IsNullOrEmpty(name)) return false;
+            if (temporaryNavmeshs.TryGetValue(name, out TemporaryNavMesh tmp))
+            {
+                query = tmp.Query;
+                return true;
+            }
+            return navmeshs.TryGetValue(name, out query);
+        }
+
+        /// <summary>
+        /// 同步查询最近多边形。坐标按 Find 的 (-x, y, z) 规则转换。
+        /// 返回 false 表示未加载或查询失败，调用方应视为“无地形数据”。
+        /// </summary>
+        public bool TryGetNearestPoly(string name, Vector3 position, out long polyRef,
+            out Vector3 nearest, out bool overPoly)
+        {
+            polyRef = 0;
+            nearest = position;
+            overPoly = false;
+            if (!TryGetLoadedQuery(name, out DtNavMeshQuery query)) return false;
+
+            RcVec3f center = new(-position.x, position.y, position.z);
+            DtStatus status = query.FindNearestPoly(center, extents, filter, out polyRef,
+                out RcVec3f nearestPt, out overPoly);
+            if (status.Failed() || polyRef == 0) return false;
+
+            nearest = new Vector3(-nearestPt.x, nearestPt.y, nearestPt.z);
+            return true;
+        }
+
+        /// <summary>
+        /// 同步获取多边形表面高度（沿多边形垂直投影）。
+        /// </summary>
+        public bool TryGetPolyHeight(string name, long polyRef, Vector3 position, out float height)
+        {
+            height = 0f;
+            if (polyRef == 0 || !TryGetLoadedQuery(name, out DtNavMeshQuery query)) return false;
+            RcVec3f pos = new(-position.x, position.y, position.z);
+            return !query.GetPolyHeight(polyRef, pos, out height).Failed();
+        }
+
+        /// <summary>
+        /// 同步获取多边形边界上离指定点最近的点（用于 BoundaryDistance 估算）。
+        /// </summary>
+        public bool TryGetPolyBoundary(string name, long polyRef, Vector3 position,
+            out Vector3 boundary)
+        {
+            boundary = position;
+            if (polyRef == 0 || !TryGetLoadedQuery(name, out DtNavMeshQuery query)) return false;
+            RcVec3f pos = new(-position.x, position.y, position.z);
+            if (query.ClosestPointOnPolyBoundary(polyRef, pos, out RcVec3f boundaryPt).Failed())
+                return false;
+            boundary = new Vector3(-boundaryPt.x, boundaryPt.y, boundaryPt.z);
+            return true;
+        }
+
         private async ETTask<DtNavMeshQuery> Load(string name)
         {
             byte[] buffer = (await ResourcesManager.Instance.LoadAsync<TextAsset>(name))?.bytes;
@@ -180,7 +259,11 @@ namespace TaoTie
             
                 query.FindNearestPoly(startPos, extents, filter, out startRef, out startPt, out _);
                 query.FindNearestPoly(endPos, extents, filter, out endRef, out endPt, out _);
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 5184d65d (新增地形求解器)
                 polys.Clear();
                 query.FindPath(startRef, endRef, startPt, endPt, filter, ref polys, new DtFindPathOption(0, float.MaxValue));
 

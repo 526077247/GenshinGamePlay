@@ -74,6 +74,7 @@ namespace TaoTie
 		
 		protected override void InitInternal()
 		{
+			InitMoveConstraint(ActorMoveProfile.Create(parent as Actor), 0);
 			lastAnimatorMoveTime = GameTimerManager.Instance.GetTimeNow();
 			InitAsync().Coroutine();
 		}
@@ -110,6 +111,7 @@ namespace TaoTie
 		public void FixedUpdate()
 		{
 			if (transform == null || mover == null) return;
+			SceneEntity.SyncViewPosition(transform.position);
 			ControllerUpdate();
 			HandlerForward();
 			HandleJumpKeyInput();
@@ -188,6 +190,7 @@ namespace TaoTie
 
 			//Add current momentum to velocity;
 			velocity += worldMomentum;
+			velocity = ConstrainVelocity(velocity);
 
 			//If player is grounded or sliding on a slope, extend mover's sensor range;
 			//This enables the player to walk up/down stairs and slopes without losing ground contact;
@@ -209,6 +212,17 @@ namespace TaoTie
 			//Reset ceiling detector, if one is attached to this gameobject;
 			if (ceilingDetector != null)
 				ceilingDetector.ResetFlags();
+		}
+
+		private Vector3 ConstrainVelocity(Vector3 velocity)
+		{
+			if (!HasMoveConstraint || velocity == Vector3.zero) return velocity;
+			float deltaTime = Time.fixedDeltaTime;
+			if (deltaTime <= 0f) return velocity;
+
+			var area = GetComponent<MoveAreaComponent>()?.Area;
+			Vector3 displacement = ConstrainTerrain(velocity * deltaTime, area);
+			return displacement / deltaTime;
 		}
 
 		//Calculate and return movement direction based on player input;
