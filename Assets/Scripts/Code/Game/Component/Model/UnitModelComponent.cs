@@ -10,6 +10,12 @@ namespace TaoTie
         /// </summary>
         public Transform EntityView { get; private set; }
 
+        /// <summary>
+        /// View 与实体位置是否存在固定偏移（多模型围拢）。
+        /// 为 true 时不可用 View 位置直接反推实体位置。
+        /// </summary>
+        public bool IsViewOffset => configModel is ConfigMultiModel;
+
         private ConfigModel configModel;
         public LinkedListComponent<GameObjectHolder> Holders { get; private set; }
         private bool needDestroy;

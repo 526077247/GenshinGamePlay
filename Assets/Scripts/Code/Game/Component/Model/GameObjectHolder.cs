@@ -44,6 +44,9 @@ namespace TaoTie
 
         private Queue<ETTask> waitFinishTask;
 
+        // AnimatorMoveComponent 的 Mono 桥，挂在 Animator 同节点（Unity 只在 Animator 所在 GameObject 上回调 OnAnimatorMove）
+        private AnimatorMoveBridge animatorMoveBridge;
+
         #region override
 
         private async ETTask LoadGameObjectAsync(Transform tranParent)
@@ -60,6 +63,12 @@ namespace TaoTie
             if (Animator == null)
             {
                 Animator = obj.GetComponentInChildren<Animator>();
+            }
+            if (Animator != null)
+            {
+                var bridge = Animator.gameObject.GetComponent<AnimatorMoveBridge>();
+                if (bridge == null) bridge = Animator.gameObject.AddComponent<AnimatorMoveBridge>();
+                animatorMoveBridge = bridge;
             }
 
             EntityView = obj.transform;
@@ -139,6 +148,11 @@ namespace TaoTie
 
         private void Destroy()
         {
+            if (animatorMoveBridge != null)
+            {
+                animatorMoveBridge.OnAnimatorMoveEvt = null;
+                animatorMoveBridge = null;
+            }
             Messager.Instance.RemoveListener(Id, MessageId.CheckLeftOrRight, CheckLeftOrRightFoot);
             Messager.Instance.RemoveListener<Vector3>(Id, MessageId.CheckAngleVF, CheckAngleVF);
             Messager.Instance.RemoveListener<float>(0,MessageId.TimeScaleChange,ChangeTimeScale);

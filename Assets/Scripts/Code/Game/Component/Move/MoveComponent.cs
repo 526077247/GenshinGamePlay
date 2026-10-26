@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace TaoTie
 {
@@ -16,8 +17,29 @@ namespace TaoTie
         private const float WallSkin = 0.05f;
         private const float MaxDepenetrate = 2f;
 
+        /// <summary>
+        /// 墙扫掠起步重叠判定阈值：hit.distance 小于此值视为「起步时扫掠球已嵌在碰撞体内」，直接忽略。
+        /// 为什么必须按 distance 过滤：扫掠球半径取 ModelRadius、球心在脚底+ModelHeight/2，
+        /// 对矮胖体型（如 Fox：R=0.7/H=0.5）球底会永久嵌入地面碰撞体。Unity 对起步重叠的扫掠
+        /// 一律返回 distance=0 + normal=−扫掠方向——假法线是水平的且与运动方向相反：
+        /// 滑动循环先把期望位移沿该假法线整体投影掉（角色停止前进），再把 WallSkin 防粘连间隙
+        /// （0.05m/帧 @50Hz = 2.5m/s）当作每帧位移沿假法线方向持续推出——正好是运动的反方向，
+        /// 表现为播放前进动画却匀速后退（Fox 实测 out=(−0.2,+2.5)、posD=+0.05/帧，与本模型逐位吻合）。
+        /// 起步重叠本由 ConstrainVelocity 前段的 ResolveEmbedding/GetEscapeDirection 负责
+        /// （基于 ClosestPoint 的真实脱困方向，竖直重叠自动退化忽略），墙扫掠只该阻挡 distance>0 的面；
+        /// 取最近的非重叠命中，墙在地面重叠命中之后也能正确检出。
+        /// </summary>
+        private const float WallHitMinDist = 1e-4f;
+
+        /// <summary>
+        /// 墙扫掠命中过滤器：排除起步重叠命中（distance≈0 的假法线命中），只保留 distance>0 的真实命中
+        /// （静态委托，避免每帧分配）。
+        /// </summary>
+        private static readonly Func<RaycastHit, bool> WallHitFilter =
+            h => h.distance > WallHitMinDist;
+
         private MoveStrategy strategy;
-        private ActorMoveProfile moveProfile;
+        protected ActorMoveProfile moveProfile;
         private int constraintWallLayer;
         protected bool HasMoveConstraint => moveProfile != null;
 
@@ -116,7 +138,9 @@ namespace TaoTie
                 return Vector3.zero;
 
             Vector3 v = Vector3.zero;
-            var up = SceneEntity.Up;
+            // 统一用世界竖直轴作投影/构造基准：SceneEntity.Rotation 契约恒为水平 yaw
+            // （四足贴坡倾斜只落在 View 上），这里显式取世界轴避免任何倾斜污染。
+            var up = Vector3.up;
             var faceRight = Quaternion.Euler(0, 90, 0) * CharacterInput.FaceDirection;
             v += Vector3.ProjectOnPlane(faceRight, up).normalized * CharacterInput.Direction.x;
             v += Vector3.ProjectOnPlane(CharacterInput.FaceDirection, up).normalized * CharacterInput.Direction.z;
@@ -135,7 +159,9 @@ namespace TaoTie
             if (lookDir == Vector3.zero) return;
 
             var euler = SceneEntity.Rotation.eulerAngles;
-            var dir = Quaternion.LookRotation(lookDir, SceneEntity.Up);
+            // 同 CalculateLookDirection：目标朝向基于世界竖直轴构造，只比较/写入 yaw 分量，
+            // 不引入任何竖直系假设（实体朝向恒为水平，与 View 的贴坡倾斜解耦）。
+            var dir = Quaternion.LookRotation(lookDir, Vector3.up);
             var euler2 = dir.eulerAngles;
             var angle = euler2.y - euler.y;
             while (angle < -180) angle += 360;
@@ -216,6 +242,18 @@ namespace TaoTie
             return ClampTerrainBlock(displacement, area);
         }
 
+        /// <summary>
+        /// 只约束墙体，不做地形/水面足印约束。
+        /// 用于竖直运动期间（跳跃/下落/击退）：足印可走性判定基于站立位置，
+        /// 起点位于地形上方时 IsBlockedAt 会误判为不可走，且脱困探测只覆盖水平方向，
+        /// 会把含竖直分量的位移整体清零，导致角色悬停在空中。
+        /// </summary>
+        protected Vector3 ConstrainWallOnly(Vector3 displacement)
+        {
+            if (!HasMoveConstraint || displacement == Vector3.zero) return displacement;
+            return ClampWallBlock(displacement);
+        }
+
         private Vector3 ClampWallBlock(Vector3 displacement)
         {
             if (displacement == Vector3.zero) return displacement;
@@ -248,7 +286,7 @@ namespace TaoTie
                 Vector3 flatDir = rem.normalized;
                 float segLen = Mathf.Min(rem.magnitude, maxSegment);
                 if (PhysicsHelper.SphereCastNonAlloc(origin, radius, flatDir, out RaycastHit hit, segLen,
-                        constraintWallLayer, QueryTriggerInteraction.Ignore))
+                        constraintWallLayer, QueryTriggerInteraction.Ignore, null, WallHitFilter))
                 {
                     float step = Mathf.Max(hit.distance - WallSkin, 0f);
                     moved += flatDir * step;

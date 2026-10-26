@@ -9,9 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 825769113795510220}
-  - component: {fileID: 2381862194090851813}
   - component: {fileID: 765581295828156040}
-  - component: {fileID: 3585709557367256208}
   - component: {fileID: 7779619946453701086}
   - component: {fileID: 5001083197151544805}
   - component: {fileID: 6685136000211786254}
@@ -52,28 +50,6 @@ Transform:
   - {fileID: 252028682120890626}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2381862194090851813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17565861601961334}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63f5026f802e4f379bc487e3b8cdb5f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stepHeightRatio: 0.1
-  colliderHeight: 1.5
-  colliderThickness: 0.5
-  colliderOffset: {x: 0, y: 0.465, z: 0}
-  sensorType: 0
-  isInDebugMode: 0
-  sensorArrayRows: 1
-  sensorArrayRayCount: 6
-  sensorArrayRowsAreOffset: 0
-  raycastArrayPreviewPositions: []
 --- !u!136 &765581295828156040
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -96,34 +72,7 @@ CapsuleCollider:
   m_Radius: 0.25
   m_Height: 1.35
   m_Direction: 1
-  m_Center: {x: 0, y: 0.7725, z: 0}
---- !u!54 &3585709557367256208
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17565861601961334}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
+  m_Center: {x: 0, y: 0.6205, z: 0}
 --- !u!114 &7779619946453701086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +131,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mFootID: 0
   mForwardVector: {x: 0, y: 0, z: 1}
-  mIKHintOffset: {x: -0.1, y: 0, z: 0}
   mUpVector: {x: 0, y: 1, z: 0}
   mFootOffsetDist: 0.5
   mFootLength: 0.22
@@ -190,14 +138,11 @@ MonoBehaviour:
   mFootHeight: 0.1
   mTransitionTime: 0.15
   mExtraRayDistanceCheck: 0
+  mFootRayDownhillSlack: 0.08
   mFootRotationLimit: 60
   mPlantFoot: 0
   mDisablePlantFromDistance: 0.3
   mDisablePlantFromAngle: 60
-  mSetExtraRayDistanceCheckAutomatically: 0
-  mFootDistanceFromGroundThreshold: 0.1
-  mExtraRayDistanceCheckMin: 0
-  mExtraRayDistanceCheckMax: 2
   mDrawDebugRay: 0
 --- !u!114 &3759918019329461393
 MonoBehaviour:
@@ -213,7 +158,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mFootID: 1
   mForwardVector: {x: 0, y: 0, z: 1}
-  mIKHintOffset: {x: 0.1, y: 0, z: 0}
   mUpVector: {x: 0, y: 1, z: 0}
   mFootOffsetDist: 0.5
   mFootLength: 0.22
@@ -221,14 +165,11 @@ MonoBehaviour:
   mFootHeight: 0.1
   mTransitionTime: 0.15
   mExtraRayDistanceCheck: 0
+  mFootRayDownhillSlack: 0.08
   mFootRotationLimit: 60
   mPlantFoot: 0
   mDisablePlantFromDistance: 0.3
   mDisablePlantFromAngle: 60
-  mSetExtraRayDistanceCheckAutomatically: 0
-  mFootDistanceFromGroundThreshold: 0.1
-  mExtraRayDistanceCheckMin: 0
-  mExtraRayDistanceCheckMax: 2
   mDrawDebugRay: 0
 --- !u!114 &4246832413715209846
 MonoBehaviour:
@@ -244,9 +185,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mAdjustPelvisVertically: 1
   mDampPelvis: 1
-  mMaxLegLength: 0.9
+  mMaxLegLength: 0.95
   mMinLegLength: 0.2
   mPelvisAdjustmentSpeed: 0.4
+  mPelvisErrorDeadZone: 0.02
+  mPelvisTargetSmoothRate: 20
+  mPelvisLift: 0.054
   mLayersToIgnore:
   - Entity
   - HitBox

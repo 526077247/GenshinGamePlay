@@ -46,19 +46,26 @@ namespace TaoTie
             out RaycastHit result,
             float maxDistance,
             int layerMask,
-            QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal)
+            QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+            Transform ignoreRoot = null,
+            Func<RaycastHit, bool> filter = null)
         {
             var len = Physics.SphereCastNonAlloc(origin, radius, direction, raycastHits, maxDistance, layerMask,
                 queryTriggerInteraction);
-            result = raycastHits[0];
-            for (int i = 1; i < len; i++)
+            result = default;
+            var found = false;
+            for (int i = 0; i < len; i++)
             {
-                if (raycastHits[i].distance < result.distance)
+                var hit = raycastHits[i];
+                if (ignoreRoot != null && hit.transform.IsChildOf(ignoreRoot)) continue;
+                if (filter != null && !filter(hit)) continue;
+                if (!found || hit.distance < result.distance)
                 {
-                    result = raycastHits[i];
+                    result = hit;
+                    found = true;
                 }
             }
-            return len > 0;
+            return found;
         }
 
         public static int OverlapSphereNonAlloc(Vector3 center, float radius, 
