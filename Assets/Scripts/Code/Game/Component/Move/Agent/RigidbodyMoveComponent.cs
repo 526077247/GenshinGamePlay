@@ -8,6 +8,14 @@ namespace TaoTie
         public override bool useAnimMove => false;
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
 
+        /// <summary>
+        /// 刚体移动<b>暂不消费击退</b>：速度由 Rigidbody 直接接管，而且 isKinematic 会随速度归零来回切，
+        /// 再叠一份 hitVelocity 进去会与该切换互相打架（表现为被击退后僵在半空或原地抽搐）。
+        /// 这里显式写 0，让「配了击退没反应」落到 <see cref="MoveComponent.ApplyHitImpulse"/> 的告警里，
+        /// 而不是让基类默认值悄悄吞掉。
+        /// </summary>
+        protected override float HitImpulseToSpeed => 0f;
+
         protected override void InitInternal()
         {
             InitMoveConstraint(ActorMoveProfile.Create(parent as Actor), 0);

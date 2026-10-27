@@ -141,9 +141,14 @@ namespace TaoTie
 
         #region Data
 
+        /// <summary>
+        /// 该 FSM 是否声明了此参数。<b>写入可选参数前必须先问一句</b>：
+        /// <see cref="SetData(string,bool)"/> 找不到参数时会打 Warning，
+        /// 而「某个单位没配 Shake」属于正常配置，不该被当成错误刷屏。
+        /// </summary>
         public bool KeyExist(string key)
         {
-            return config.TryGetParam(key, out _);
+            return config != null && config.TryGetParam(key, out _);
         }
 
         public void SetData(string key, float val)
@@ -242,11 +247,6 @@ namespace TaoTie
                 Log.Error($"FsmController GetBool Can Not Find bool Param: {key}");
                 return default (bool);
             }
-        }
-
-        public bool IsExist(string key)
-        {
-            return config.TryGetParam(key, out var param);
         }
 
         [Conditional("ENABLE_FSM_WARNING")]

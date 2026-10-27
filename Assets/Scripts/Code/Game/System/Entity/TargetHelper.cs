@@ -162,6 +162,26 @@ namespace TaoTie
 
 
         /// <summary>
+        /// 解析「攻击起点」实体。
+        ///
+        /// 子弹命中时攻击者可能被解析成子弹自己（TriggerAttackEvent 直接拿 actionExecuter 当攻击者），
+        /// 而子弹此刻就贴在受击者身上，拿它算方向必然退化成零向量。所以起点优先取射手
+        /// （<see cref="AttackResult.OriginOwnerId"/>，由 CreateBullet 记录）。
+        /// 取不到（OriginOwnerId=0 / 射手已销毁）时退回攻击者本人，等价于旧行为 ——
+        /// 配错类型的攻击不会变成「打不退」。
+        /// </summary>
+        public static Entity ResolveAttackOrigin(Entity attacker, Entity defence, AttackResult attackResult)
+        {
+            if (attackResult != null && attackResult.OriginOwnerId != 0)
+            {
+                var em = attacker != null ? attacker.Parent : defence?.Parent;
+                var owner = em != null ? em.Get<Entity>(attackResult.OriginOwnerId) : null;
+                if (owner != null) return owner;
+            }
+            return attacker;
+        }
+
+        /// <summary>
         /// 获取目标
         /// </summary>
         /// <param name="attacker"></param>
@@ -173,17 +193,36 @@ namespace TaoTie
             switch (retreatType)
             {
                 case RetreatType.ByAttacker:
-                    if (attacker is SceneEntity sceneEntity1 && defence is SceneEntity sceneEntity2)
+                case RetreatType.ByOriginOwner:
+                {
+                    var origin = retreatType == RetreatType.ByOriginOwner
+                        ? ResolveAttackOrigin(attacker, defence, attackResult)
+                        : attacker;
+                    if (origin is SceneEntity from && defence is SceneEntity to)
                     {
-                        return (sceneEntity2.Position - sceneEntity1.Position).normalized;
+                        var dir = to.Position - from.Position;
+                        dir.y = 0f; // 水平推：竖直分量由 HitImpulseY 单独控制
+                        if (dir.sqrMagnitude > 1e-6f) return dir.normalized;
                     }
                     break;
+                }
                 case RetreatType.ByTangent:
-                    break;
+                {
+                    // 切向 = 绕 Y 轴把「攻击者 → 受击者」连线转 +90°（左手侧）。方向必须是确定的：
+                    // 若按命中点做叉乘，同一招打同一位置会因为命中点微差左右乱跳。
+                    Vector3 baseDir = default;
+                    if (attacker is SceneEntity a && defence is SceneEntity d)
+                        baseDir = d.Position - a.Position;
+                    if (baseDir.sqrMagnitude < 1e-6f)
+                        baseDir = attackResult.HitInfo.HitDir; // 双方重合（叠在同一个点上）时退回命中方向
+                    baseDir.y = 0f;
+                    if (baseDir.sqrMagnitude < 1e-6f) break;
+
+                    // Cross(dir, up) 得到水平左手侧；叉积顺序不能换，换了就是另一侧
+                    return Vector3.Cross(baseDir.normalized, Vector3.up);
+                }
                 case RetreatType.ByHitDirection:
                     return attackResult.HitInfo.HitDir;
-                case RetreatType.ByOriginOwner:
-                    break;
                 case RetreatType.ByHitDirectionInverse:
                     return -attackResult.HitInfo.HitDir;
             }

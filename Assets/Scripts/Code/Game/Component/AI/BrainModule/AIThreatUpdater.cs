@@ -23,6 +23,18 @@ namespace TaoTie
         //强制离开战斗
         private bool forceLeaveCombat = false;
 
+        /// <summary>
+        /// 无源受击的警戒值（不知道谁打的，只知道「被打了」）。
+        ///
+        /// 为什么不塞进 candidateList/threatList：那两个列表都以实体 Id 为键，
+        /// 塞一个假 Id 会让 <see cref="SelectTarget"/> 把不存在的实体选成 mainTarget
+        /// （AI 转头去追空气），而且 <see cref="ValidateThreat"/> 要求 Id 出现在
+        /// EnemySensibles 里，假 Id 每帧都被判失效。所以这里单独累计一个会自然衰减的
+        /// 警戒值：AI 会进 Aware/Alert、切警戒姿态，但不锁定任何目标 ——
+        /// 这正是「被黑枪打了却没看见人」该有的表现。
+        /// </summary>
+        private float sourcelessHitTemper;
+
         protected override void InitInternal()
         {
             base.InitInternal();
@@ -43,28 +55,86 @@ namespace TaoTie
             threatList.Clear();
             aiComponent = null;
             forceLeaveCombat = false;
+            sourcelessHitTemper = 0f;
             topThreat = null;
             mainTarget = null;
         }
 
+        /// <summary>
+        /// 受击后的仇恨归因。
+        ///
+        /// 近战：攻击者就是攻击者，直接记仇恨。
+        ///
+        /// 子弹：攻击者取决于配置（AttackTargetting=Owner 解析到射手，配 Self 就是子弹本体），
+        /// 统一用 <see cref="AttackResult.OriginOwnerId"/> 求真实来源，再看<b>此刻看不看得见射手</b>：
+        /// - 看得见 → 归因到射手，走正常仇恨；
+        /// - 看不见（隔墙、背后、超出视野，或者来源压根解析不出来）→ 记为无源伤害：
+        ///   只抬警戒、不产生仇恨目标。否则 AI 会凭空锁定一个它根本不知道在哪的敌人，
+        ///   表现为「隔墙锁人」「背后被打了立刻转身反打」这种全知全能。
+        /// </summary>
         private void AfterBeAttack(AttackResult result, CombatComponent other)
         {
-            var sourcelessHitAttractionRange = knowledge.SensingKnowledge.SourcelessHitAttractionRange;
-            if (other.GetParent<Entity>() is Unit unit)
-            {
-                if (result.IsBullet)
-                {
-                    var currentPos = knowledge.CurrentPos;
-                    float distanceToTarget = Vector3.Distance(currentPos, unit.Position);
-                    //无源受击感知范围判断
-                    if (distanceToTarget > sourcelessHitAttractionRange) return;
-                }
+            var attackerEntity = other != null ? other.GetParent<Entity>() : null;
 
-                ExternalAddCandidate(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
-                ExternalAddThreat(other.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
-                ForceEnterCombat();
+            if (!result.IsBullet)
+            {
+                if (attackerEntity is Unit meleeUnit)
+                    AddHitThreat(meleeUnit, result);
+                return;
             }
+
+            var origin = TargetHelper.ResolveAttackOrigin(attackerEntity, knowledge.Entity, result);
+            if (origin is Unit shooter && KnowHitSource(shooter))
+            {
+                AddHitThreat(shooter, result);
+                return;
+            }
+
+            RecordSourcelessHit(origin, result);
         }
+
+        private void AddHitThreat(Unit unit, AttackResult result)
+        {
+            ExternalAddCandidate(unit.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
+            ExternalAddThreat(unit.Id, unit.Position, ThreatAddReason.Hit, result.FinalRealDamage);
+            ForceEnterCombat();
+        }
+
+        /// <summary>
+        /// 「这一下是谁打的」对 AI 是不是已知的。
+        ///
+        /// 看得见一定算知道；此外 FeelRange（全方位近身感知）以内也算 —— 被人贴脸打了一枪
+        /// 还坚称「不知道谁打的」不符合直觉。两者都没有就认作无源。
+        /// </summary>
+        private bool KnowHitSource(Unit shooter)
+        {
+            var distance = Vector3.Distance(knowledge.CurrentPos, shooter.Position);
+            if (distance <= knowledge.SensingKnowledge.FeelRange) return true;
+            // 视觉判定只对 Actor 成立（需要有模型高度、可被瞄准）；纯逻辑单位（如子弹本体
+            // 被当成来源的情况）谈不上「看见」，直接按无源处理
+            return shooter is Actor shooterActor && knowledge.CanSee(shooterActor);
+        }
+
+        /// <summary>
+        /// 无源受击：知道「被打中了」，但不知道是谁（或者太远懒得理会）。
+        ///
+        /// <see cref="AISensingKnowledge.SourcelessHitAttractionRange"/> 在这里量的是
+        /// 「来源离自己多远」：来源未知时用命中点（就打在自己身上，等于必然触发），
+        /// 来源已知但看不见时用射手位置，和这条配置原本的口径一致。
+        /// </summary>
+        private void RecordSourcelessHit(Entity origin, AttackResult result)
+        {
+            // 起点解析不出来（OriginOwnerId=0 且攻击者是子弹本体）时，退化用命中点：
+            // 那一点就在自己身上，距离恒为 0，等于「必然注意到」。
+            var originPos = origin is SceneEntity originEntity ? originEntity.Position : result.HitInfo.HitPos;
+            if (Vector3.Distance(knowledge.CurrentPos, originPos) > knowledge.SensingKnowledge.SourcelessHitAttractionRange)
+                return;
+
+            // 和无源受击的警戒值同口径累加伤害：打得越疼越警觉，衰减后自然平静
+            sourcelessHitTemper = Mathf.Min(sourcelessHitTemper + result.FinalRealDamage,
+                ThreatInfo.TEMPERVAL_MAX);
+        }
+
         protected override void UpdateMainThreadInternal()
         {
             if (!knowledge.ThreatKnowledge.Config.Enable)
@@ -131,6 +201,7 @@ namespace TaoTie
                 }
                 candidateList.Clear();
                 threatList.Clear();
+                sourcelessHitTemper = 0f;
                 return;
             }
             UpdateCandidateFromSensibles();
@@ -178,6 +249,17 @@ namespace TaoTie
 
                 knowledge.Temperature = knowledge.Temperature > candidate.Temperature
                     ? knowledge.Temperature : candidate.Temperature;
+            }
+
+            // 无源受击的警戒值也参与总警戒：否则「被打了一枪但没看见人」的这一下，
+            // 会在本帧重算 Temperature 时被抹掉（它不在 candidateList 里）。
+            // 衰减用同一个 ThreatDecreaseSpeed，但不受下面「仅 Alert 以下才衰减」的约束 ——
+            // 它没有目标可追，一直挂在 Alert 没有意义。
+            if (sourcelessHitTemper > 0f)
+            {
+                if (sourcelessHitTemper > knowledge.Temperature) knowledge.Temperature = sourcelessHitTemper;
+                sourcelessHitTemper -= knowledge.ThreatKnowledge.Config.ThreatDecreaseSpeed * deltaTime / 1000;
+                if (sourcelessHitTemper < 0f) sourcelessHitTemper = 0f;
             }
 
             if (knowledge.Temperature < ThreatInfo.TEMPERVAL_ALERT)

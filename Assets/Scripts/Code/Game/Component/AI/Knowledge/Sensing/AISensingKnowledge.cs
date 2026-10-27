@@ -41,6 +41,10 @@ namespace TaoTie
         public bool ViewPanoramic => Setting.ViewPanoramic;
         public float HorizontalFov => Setting.HorizontalFov;
         public float VerticalFov => Setting.VerticalFov;
+        /// <summary>水平半角。全景视觉等于没有水平限制（180°）</summary>
+        public float HalfHorizontalFov => ViewPanoramic ? 180f : 0.5f * HorizontalFov;
+        /// <summary>竖直半角。全景视觉等于没有竖直限制（180°）</summary>
+        public float HalfVerticalFov => ViewPanoramic ? 180f : 0.5f * VerticalFov;
         public float FeelRange  => Setting.FeelRange * Setting.Sensitivity;
         public float HearAttractionRange  => Setting.HearAttractionRange * Setting.Sensitivity;
         public float HearFootstepRange => Setting.HearFootstepRange * Setting.Sensitivity;

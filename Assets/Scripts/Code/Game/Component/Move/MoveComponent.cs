@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TaoTie
@@ -66,6 +67,9 @@ namespace TaoTie
             Config = null;
             moveProfile = null;
             constraintWallLayer = 0;
+            hitVelocity = Vector3.zero;
+            HitLaunched = false;
+            hitImpulseUnsupportedLogged = false;
         }
 
         /// <summary>
@@ -517,6 +521,368 @@ namespace TaoTie
 
             return best;
         }
+
+        #region 击退冲量（外部输入 → 速度）
+
+        /// <summary>
+        /// 击退速度（世界系）。AnimatorMove 含竖直分量，SimpleMove 只吃水平分量。
+        /// 由 <see cref="ConsumeHitImpulse"/> 从 <see cref="MoveInput.HitImpulse"/> 汇入，逐物理步线性衰减。
+        /// </summary>
+        protected Vector3 hitVelocity;
+
+        /// <summary>
+        /// 本次击退是否把自身打离地面（击飞）。空中期间豁免角色互斥：
+        /// <see cref="ActorBodyComponent.GetProxyWorld"/> 的竖直区间跟着 Position 上移，
+        /// 被击飞的身体仍会与地面单位交叠 —— 不解耦就会「停在别人头顶上空被顶住」。
+        /// 只由 <see cref="ConsumeHitImpulse"/> 在击退带向上分量时置位（普通跳跃不受影响），
+        /// 着地后由移动组件清除。
+        /// </summary>
+        protected bool HitLaunched;
+
+        /// <summary>
+        /// 判定「被击飞」的竖直速度阈值(u/s)。低于此值视为抬升已结束。
+        /// 取 0.01 而不是 0：线性衰减到零前的最后几帧速度极小，没必要为它继续判空中。
+        /// </summary>
+        protected const float HitImpulseAirborneEps = 0.01f;
+
+        /// <summary>冲量 → 速度的倍率。0 表示该移动方式不消费击退（由子类按各自配置覆盖）。</summary>
+        protected virtual float HitImpulseToSpeed => 0f;
+
+        /// <summary>击退速度的线性衰减速率(u/s)。位移距离 ≈ v²/(2*衰减)。</summary>
+        protected virtual float HitImpulseDecayRate => 50f;
+
+        private Actor HitActor => GetParent<Actor>();
+
+        /// <summary>「本移动方式不支持击退」的告警只喊一次，否则每次挨打都刷。</summary>
+        private bool hitImpulseUnsupportedLogged;
+
+        /// <summary>
+        /// 外部击退冲量的<b>唯一入口</b>。攻击侧只负责算「期望冲量」，
+        /// 抗性缩放、是否抬离地面、由哪种移动方式消费，都在受击方这里决定。
+        ///
+        /// 为什么必须统一入口，而不是各处直写 <see cref="MoveInput.HitImpulse"/>：
+        /// 1. 抗性表按 <see cref="ConfigHitPattern.HitImpulseType"/> 查的是<b>受击方</b>配置（同一招打史莱姆和打石像该有不同反应），
+        ///    只有受击方自己拿得到；
+        /// 2. <see cref="SimpleMoveComponent"/> 原先根本没有击退通道，直写字段会被静默丢弃；
+        /// 3. 后续的角色互斥冲量传递（撞人时把速度投递给对方）要复用同一条路径，
+        ///    保证「被技能打」和「被身体撞」的落地口径一致。
+        /// </summary>
+        /// <param name="impulse">世界系冲量：XZ 水平方向，y 为抬升量（语义见 ConfigHitPattern）</param>
+        /// <param name="type">击退分类标签，用于查抗性表，可为空</param>
+        public void ApplyHitImpulse(Vector3 impulse, string type)
+        {
+            if (CharacterInput == null || impulse == Vector3.zero) return;
+
+            // 先查抗性：免疫（Scale=0）是策划的明确意图，不该再报「没有击退通道」的警。
+            float scale = ResolveHitImpulseResist(type);
+            if (scale <= 0f) return;
+
+            if (HitImpulseToSpeed <= 0f)
+            {
+                // 没有击退通道时静默吞掉，是「配了击退却没反应」最典型的误判来源，
+                // 所以这里明确告警一次并指出是哪种移动方式（目前只有刚体移动没接）。
+                if (!hitImpulseUnsupportedLogged)
+                {
+                    hitImpulseUnsupportedLogged = true;
+                    Log.Warning($"实体 {HitActor?.Id} 的移动方式 {GetType().Name} 未实现击退通道(HitImpulseToSpeed=0)，冲量被丢弃");
+                }
+                return;
+            }
+
+            CharacterInput.HitImpulse += impulse * scale;
+        }
+
+        /// <summary>
+        /// 查受击方抗性表：先精确匹配类型标签，未命中取 Type 为空的兜底项，都没有则为 1（不缩放）。
+        /// </summary>
+        private float ResolveHitImpulseResist(string type)
+        {
+            ConfigHitImpulseResist[] table = HitActor?.ConfigActor?.Common?.HitImpulseResists;
+            if (table == null || table.Length == 0) return 1f;
+
+            float fallback = -1f;
+            for (int i = 0; i < table.Length; i++)
+            {
+                ConfigHitImpulseResist entry = table[i];
+                if (entry == null) continue;
+                if (string.IsNullOrEmpty(entry.Type))
+                {
+                    if (fallback < 0f) fallback = entry.Scale;
+                    continue;
+                }
+                if (entry.Type == type) return Mathf.Clamp(entry.Scale, 0f, 3f);
+            }
+
+            return fallback >= 0f ? Mathf.Clamp(fallback, 0f, 3f) : 1f;
+        }
+
+        /// <summary>
+        /// 把本帧累积的 <see cref="MoveInput.HitImpulse"/> 收进 hitVelocity 并清空输入。
+        /// 子类必须在各自物理步的<b>最前面</b>调用（尤其是 AnimatorMove：CheckGround 要靠它判断是否被击飞）。
+        ///
+        /// 「是否击飞」在这里判定而不是在 <see cref="ApplyHitImpulse"/>：
+        /// 冲量可能在物理步之外投递，若那时就置位，紧接着的 SyncBodyAirborne（那时还没消费冲量、
+        /// isGrounded 仍为 true）会把标记当场清掉，整次击飞都拿不到互斥豁免。
+        /// </summary>
+        protected void ConsumeHitImpulse()
+        {
+            if (CharacterInput == null) return;
+            if (CharacterInput.HitImpulse.sqrMagnitude <= 1e-6f) return;
+
+            hitVelocity += CharacterInput.HitImpulse * HitImpulseToSpeed;
+            CharacterInput.HitImpulse = Vector3.zero;
+
+            if (hitVelocity.y > HitImpulseAirborneEps) HitLaunched = true;
+        }
+
+        protected void DecayHitVelocity(float dt)
+        {
+            DecayVector(ref hitVelocity, HitImpulseDecayRate, dt);
+        }
+
+        /// <summary>线性衰减（不是指数）：|v| -= decay*dt，到零截断。</summary>
+        protected static void DecayVector(ref Vector3 v, float decay, float dt)
+        {
+            if (v == Vector3.zero || decay <= 0f) return;
+            float mag = v.magnitude;
+            float step = decay * dt;
+            if (step >= mag)
+            {
+                v = Vector3.zero;
+                return;
+            }
+            v -= v.normalized * step;
+        }
+
+        #endregion
+
+        #region 角色间互斥（体积代理，纯几何）
+
+        /// <summary>
+        /// 接触判定余量。<b>行进投影与重叠消解必须共用这一个边界</b>（r1+r2+ActorSkin）：
+        /// 若一边停在 skin、另一边推到 slop，位置就会在两个目标之间逐帧来回，肉眼即为碰撞时闪烁。
+        /// </summary>
+        private const float ActorSkin = 0.02f;
+        /// <summary>单个物理步内所有接触合计的最大修正量（米），防止出生重叠时被弹飞。</summary>
+        private const float ActorMaxCorrection = 0.12f;
+        /// <summary>滑移分段的单步长度，避免高速位移从细小代理之间穿过。</summary>
+        private const float ActorMaxStep = 0.2f;
+
+        // 求解器缓冲（主线程顺序执行，复用避免每帧分配）
+        private static readonly List<ActorBodyComponent> s_actorNeighbors = new List<ActorBodyComponent>(16);
+        private static readonly List<Vector3> s_actorContactNormals = new List<Vector3>(8);
+        private static readonly List<float> s_actorContactDepths = new List<float>(8);
+
+        protected ActorBodyComponent Body => parent.GetComponent<ActorBodyComponent>();
+
+        /// <summary>
+        /// 本物理步角色互斥是否改动了水平位置（投影收窄位移 或 重叠消解写回位置）。
+        /// 供移动组件决定「是否需要在末尾重新采样地面高度」：互斥只改 XZ，
+        /// 斜坡上新的 XZ 对应不同的地面高度，不重采样就会脚底低于坡面
+        /// （脚 IK 被迫压短腿 → 肉体表现为半蹲 + 脚陷入地下）。
+        /// </summary>
+        protected bool ActorContactMoved;
+
+        private static bool VerticalOverlap(float aMin, float aMax, float bMin, float bMax)
+        {
+            return aMin < bMax && bMin < aMax;
+        }
+
+        /// <summary>
+        /// 行进前的角色阻挡：沿期望位移推进，遇到对方代理就把"朝对方"的分量投影掉（保留切向 → 贴人滑走）。
+        /// 与墙扫掠同一套思路，但不改竖直分量。
+        /// </summary>
+        protected Vector3 ConstrainActor(Vector3 displacement)
+        {
+            ActorBodyComponent self = Body;
+            if (self == null || !self.CanBlock || self.ProxyCount == 0) return displacement;
+
+            // 被击飞期间完全豁免角色互斥（详见 HitLaunched）：
+            // 身体已离地，竖直区间随 Position 上移后仍与地面单位交叠，继续求解会把角色顶在半空。
+            if (self.Airborne) return displacement;
+
+            Vector3 flat = new Vector3(displacement.x, 0f, displacement.z);
+            float len = flat.magnitude;
+            if (len <= 1e-4f) return displacement;
+
+            ActorBodySystem system = self.System;
+            if (system == null || !system.Enabled) return displacement;
+
+            int steps = Mathf.Clamp(Mathf.CeilToInt(len / ActorMaxStep), 1, 4);
+            Vector3 step = flat / steps;
+            Vector3 start = SceneEntity.Position;
+            Vector3 cursor = start;
+            float queryRadius = self.MaxProxyOffset + self.MaxProxyRadius + system.MaxBodyRadius + system.MaxBodyOffset + ActorSkin;
+
+            for (int s = 0; s < steps; s++)
+            {
+                // 两次投影迭代：夹在两腿之间时两条法线互相修正才能收敛
+                for (int pass = 0; pass < 2; pass++)
+                {
+                    bool hit = false;
+                    int n = system.QueryNeighbors(cursor + step, queryRadius, s_actorNeighbors);
+                    for (int i = 0; i < n; i++)
+                    {
+                        ActorBodyComponent other = s_actorNeighbors[i];
+                        if (other == null || other == self || other.IsDispose) continue;
+                        if (!other.CanBlock || other.ProxyCount == 0) continue;
+                        // 对方在空中（被击飞）：不挡人，也不接受推送
+                        if (other.Airborne) continue;
+
+                        for (int sp = 0; sp < self.ProxyCount; sp++)
+                        {
+                            if (!self.GetProxyWorld(sp, out Vector3 cSelf, out float rSelf, out float sMin, out float sMax))
+                                continue;
+                            // 子步推进后代理中心也要跟着前移（cursor 已含前面子步的实际位移）
+                            cSelf += step + (cursor - start);
+
+                            for (int op = 0; op < other.ProxyCount; op++)
+                            {
+                                if (!other.GetProxyWorld(op, out Vector3 cOther, out float rOther, out float oMin, out float oMax))
+                                    continue;
+                                if (!VerticalOverlap(sMin, sMax, oMin, oMax)) continue;
+
+                                Vector3 d = cSelf - cOther;
+                                d.y = 0f;
+                                float dist = d.magnitude;
+                                float rSum = rSelf + rOther + ActorSkin;
+                                if (dist >= rSum) continue;
+
+                                Vector3 normal = dist > 1e-4f ? d / dist : -flat.normalized;
+                                float into = Vector3.Dot(step, normal);
+                                if (into < 0f)
+                                {
+                                    step -= normal * into;
+                                    hit = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!hit) break;
+                }
+                cursor += step;
+            }
+
+            Vector3 result = new Vector3(cursor.x - start.x, displacement.y, cursor.z - start.z);
+            // 位移被收窄 = 本步发生过角色阻挡（供调用方判断是否需要重采样地面高度）
+            float dx = result.x - flat.x;
+            float dz = result.z - flat.z;
+            if (dx * dx + dz * dz > 1e-8f) ActorContactMoved = true;
+            return result;
+        }
+
+        /// <summary>
+        /// 应用位移后的重叠消解（纯几何，无动量）。
+        ///
+        /// 三条约束都是从「碰撞时闪烁」换来的，改动前请先读：
+        /// 1. 边界与 <see cref="ConstrainActor"/> 完全一致（r1+r2+ActorSkin）。
+        ///    两者若用不同阈值，贴住时一个想把脚停在 skin、另一个想推到更外侧，
+        ///    位置就会在两个目标之间逐帧来回，肉眼就是闪烁。
+        /// 2. 只修正自己，绝不写 other.Actor.Position。
+        ///    双方各自在自己的物理步里修正自己；若同一物理步里互相推，会被推两次而超调，
+        ///    表现为「弹开 → 下一帧又被 root motion 拉近」的高频振荡。
+        ///    承担比例：对方可移动则各担一半；对方不可移动（木桩）则自己全担。
+        /// 3. 修正后若落进不可走区域（水面/坡度），撤销本次修正。
+        ///    否则表现为「被推进墙里 → 下一帧脱困弹出」的循环。
+        /// </summary>
+        protected void ResolveActorContacts()
+        {
+            ActorBodyComponent self = Body;
+            if (self == null || !self.CanBlock || self.ProxyCount == 0) return;
+
+            // 与 ConstrainActor 同一口径：击飞期间不参与互斥
+            if (self.Airborne) return;
+
+            ActorBodySystem system = self.System;
+            if (system == null || !system.Enabled) return;
+
+            s_actorContactNormals.Clear();
+            s_actorContactDepths.Clear();
+
+            float queryRadius = self.MaxProxyOffset + self.MaxProxyRadius + system.MaxBodyRadius + system.MaxBodyOffset;
+            int n = system.QueryNeighbors(SceneEntity.Position, queryRadius, s_actorNeighbors);
+
+            // 每个对方只取「最深的一对代理」，避免 4 腿等多代理重复施加修正
+            for (int i = 0; i < n; i++)
+            {
+                ActorBodyComponent other = s_actorNeighbors[i];
+                if (other == null || other == self || other.IsDispose) continue;
+                if (!other.CanBlock || other.ProxyCount == 0) continue;
+                // 对方在空中（被击飞）：不参与位置消解
+                if (other.Airborne) continue;
+
+                float bestDepth = 0f;
+                Vector3 bestNormal = Vector3.zero;
+
+                for (int sp = 0; sp < self.ProxyCount; sp++)
+                {
+                    if (!self.GetProxyWorld(sp, out Vector3 cSelf, out float rSelf, out float sMin, out float sMax))
+                        continue;
+
+                    for (int op = 0; op < other.ProxyCount; op++)
+                    {
+                        if (!other.GetProxyWorld(op, out Vector3 cOther, out float rOther, out float oMin, out float oMax))
+                            continue;
+                        if (!VerticalOverlap(sMin, sMax, oMin, oMax)) continue;
+
+                        Vector3 d = cSelf - cOther;
+                        d.y = 0f;
+                        float dist = d.magnitude;
+                        // 与 ConstrainActor 同一边界：贴住时 depth <= 0，不产生任何修正
+                        float depth = rSelf + rOther + ActorSkin - dist;
+                        if (depth <= bestDepth) continue;
+
+                        bestDepth = depth;
+                        bestNormal = dist > 1e-4f ? d / dist : Vector3.zero;
+                    }
+                }
+
+                if (bestDepth <= 0f) continue;
+
+                if (bestNormal == Vector3.zero)
+                {
+                    Vector3 fallback = SceneEntity.Position - other.WorldCenter;
+                    fallback.y = 0f;
+                    bestNormal = fallback.sqrMagnitude > 1e-6f ? fallback.normalized : Vector3.forward;
+                }
+
+                // 不可移动的一方（木桩）不会自己修正，由可移动方全额承担
+                float share = other.CanMove ? 0.5f : 1f;
+
+                s_actorContactNormals.Add(bestNormal);
+                s_actorContactDepths.Add(bestDepth * share);
+            }
+
+            int count = s_actorContactNormals.Count;
+            if (count == 0) return;
+
+            Vector3 correction = Vector3.zero;
+            for (int i = 0; i < count; i++)
+            {
+                correction += s_actorContactNormals[i] * s_actorContactDepths[i];
+            }
+            correction.y = 0f;
+
+            float mag = correction.magnitude;
+            if (mag <= 1e-5f) return;
+            if (mag > ActorMaxCorrection) correction *= ActorMaxCorrection / mag;
+
+            Vector3 from = SceneEntity.Position;
+            Vector3 to = from + correction;
+
+            // 不允许把自己推进不可走区域（水面/陡坡）。原本就在里面时不拦，避免卡死。
+            // 穿墙单位（CanPassWall）在 ActorBodyComponent 里已令 CanBlock=false，不会走到这里。
+            if (HasMoveConstraint &&
+                IsBlockedAt(to, 0f) && !IsBlockedAt(from, 0f))
+            {
+                return;
+            }
+
+            ActorContactMoved = true;
+            SceneEntity.Position = to;
+        }
+
+        #endregion
     }
 
     public abstract class MoveComponent<T> : MoveComponent, IComponent<T> where T: ConfigMoveAgent

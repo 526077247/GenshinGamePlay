@@ -11,6 +11,13 @@ namespace TaoTie
         public long Id;
         public bool IsBullet;
         public long AttackerId;
+        /// <summary>
+        /// 攻击的<b>起点</b>实体 Id。非子弹链路与 AttackerId 相同语义；
+        /// 子弹链路下是射手（<see cref="BulletComponent.OwnerId"/>），
+        /// 因为此时 AttackerId 可能被解析成子弹自己。
+        /// 0 表示未知，<see cref="RetreatType.ByOriginOwner"/> 会退化成 ByAttacker。
+        /// </summary>
+        public long OriginOwnerId;
         public long DefenseId;
         public HitInfo HitInfo;
         public ConfigAttackInfo ConfigAttackInfo;
@@ -100,6 +107,8 @@ namespace TaoTie
             AttackResult res = new AttackResult();
             res.Id = attackInfoId;//攻击Id
             res.AttackerId = attackerId;
+            // 默认「起点 == 攻击者」，子弹链路再按 BulletComponent.OwnerId 覆写成射手
+            res.OriginOwnerId = attackerId;
             res.DefenseId = defenseId;
             res.HitInfo = info;
             res.ConfigAttackInfo = config;
@@ -121,6 +130,7 @@ namespace TaoTie
         {
             Id = default;
             AttackerId = default;
+            OriginOwnerId = default;
             DefenseId = default;
             HitInfo = default;
             ConfigAttackInfo = null;

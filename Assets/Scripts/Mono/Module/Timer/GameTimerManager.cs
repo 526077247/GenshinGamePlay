@@ -37,6 +37,13 @@ namespace TaoTie
         private long timeNow;
 
         private long resetTimeScaleId;
+
+        /// <summary>
+        /// 时停到期的<b>真实时间</b>戳(ms)，0 表示当前没有时停排期。
+        /// 不能像其他定时器那样把到期点挂在 <see cref="timeNow"/> 上：那是被 timeScale 缩放后的
+        /// 游戏时间，时停期间几乎不推进（见 Update 里 deltaTime 的取整），会让「时停 75ms」变成一两秒。
+        /// </summary>
+        private long resetRealTime;
         #region override
         
         public override void Init()
@@ -61,6 +68,16 @@ namespace TaoTie
         public override void Update()
         {
             var clientNow = TimeInfo.Instance.ClientNow();
+
+            // 时停恢复必须按真实时间判断，且必须在下面 timeScale<=0 的提前返回之前：
+            // 低 timeScale 下 timeNow 几乎不推进（deltaTime=(int)(changeTime*scale)，
+            // 16ms×0.05=0.8 截断成 0），恢复定时器会被拉长到一两秒；
+            // 若 HitHaltTimeScale 配成 0，timeNow 永不推进 → 恢复定时器永不触发 → 全局永久卡死。
+            if (resetRealTime > 0 && clientNow >= resetRealTime)
+            {
+                SetTimeScale(1);
+            }
+
             long changeTime = clientNow - lastUpdateTime;
             deltaTime = (int) (changeTime * timeScale);
             if (timeScale <= 0)
@@ -148,10 +165,11 @@ namespace TaoTie
             if(scale<0) return;
             timeScale = scale;
             TimerManager.Instance.Remove(ref resetTimeScaleId);
+            resetRealTime = 0;
             if (during >= 0)
             {
-                resetTimeScaleId = TimerManager.Instance.NewOnceTimer(TimerManager.Instance.GetTimeNow() + during,
-                    TimerType.ResetTimeScale, this);
+                // 时停时长按真实时间计（游戏时间在时停期间几乎不推进，见 Update 注释）。
+                resetRealTime = TimeInfo.Instance.ClientNow() + during;
             }
             Messager.Instance.Broadcast(0, MessageId.TimeScaleChange, timeScale);
         }

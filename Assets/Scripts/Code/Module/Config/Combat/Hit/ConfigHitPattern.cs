@@ -19,11 +19,14 @@ namespace TaoTie
         public BaseValue HitImpulseX = new SingleValue();
         [ProtoMember(4, IsRequired = true)][NotNull][BoxGroup("击退信息")]
         public BaseValue HitImpulseY = new SingleValue();
-        [ProtoMember(5)][BoxGroup("击退信息")][LabelText("*击退类型")][Tooltip("击退分类标签,作为预留字段供击退抗性系统过滤。配置后配合OverrideHitImpulse使用:非空且填写OverrideHitImpulse时使用其击退数据,空则用默认HitLevel/HitImpulseX/Y")]
+        [ProtoMember(5)][BoxGroup("击退信息")][LabelText("*击退类型")][Tooltip("击退分类标签。受击方按它查 ConfigActorCommon.HitImpulseResists 决定吃下多少冲量；留空则只命中受击方的兜底项")]
         public string HitImpulseType;
-        [ProtoMember(6)][LabelText("没满足条件时的击退数据")][BoxGroup("击退信息")]
-        [ShowIf("@"+nameof(HitImpulseType)+"!=null")]
-        public ConfigHitImpulse OverrideHitImpulse;
+        // 6：原 OverrideHitImpulse（按 HitImpulseType 决定用哪套击退数据）已删除。
+        //    那份差异本质是「谁在挨打」，放在攻击配置上永远做不对：同一招打史莱姆和打石像，
+        //    该由受击方的 HitImpulseResists 决定，而不是攻击方再维护一份覆盖面。
+        //    原实现的触发条件（HitImpulseType 非空 + 填了 OverrideHitImpulse）本身就是个 todo，
+        //    全工程配置里 HitImpulseType 恒为空，等于永远走不到。
+        //    编号 6 保留不复用。
         [ProtoMember(7)][LabelText("击退来源方向")][BoxGroup("击退信息")]
         public RetreatType RetreatType;
         [ProtoMember(8)][LabelText("击中时停(ms)")][MinValue(0)][BoxGroup("击中时停")]

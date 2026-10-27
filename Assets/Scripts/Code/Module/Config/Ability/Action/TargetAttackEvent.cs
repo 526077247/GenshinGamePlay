@@ -77,6 +77,11 @@ namespace TaoTie
                     var hitEntity = entityManager.Get<Entity>(info.EntityId);
                     AttackResult result = AttackResult.Create(attacker.Id, hitEntity.Id, info, AttackInfo,
                         executerIsBullet, startTime,attackInfoId);
+                    if (executerIsBullet && bullet.OwnerId != 0)
+                    {
+                        // 同上：ByOriginOwner 要的是射手位置，不是子弹位置
+                        result.OriginOwnerId = bullet.OwnerId;
+                    }
                     AttackHelper.DamageClose(ability, modifier, result);
 
                     //时停

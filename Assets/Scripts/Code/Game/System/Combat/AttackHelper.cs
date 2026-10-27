@@ -166,23 +166,15 @@ namespace TaoTie
             result.StrikeType = result.ConfigAttackInfo.AttackProperty.StrikeType;
             result.AttackType = result.ConfigAttackInfo.AttackProperty.AttackType;
 
-            result.HitImpulseType = result.HitPattern?.HitImpulseType;
+            // 击退数据一律取自 HitPattern：抗性缩放在受击方的 MoveComponent.ApplyHitImpulse 里按
+            // HitImpulseType 查受击方配置，攻击侧不再维护第二套「覆盖值」。
             var impulse = result.HitPattern;
+            result.HitImpulseType = impulse?.HitImpulseType;
             if (impulse != null)
             {
-                if (impulse.OverrideHitImpulse != null
-                    && !string.IsNullOrEmpty(impulse.HitImpulseType)) //todo:判断HitImpulseType
-                {
-                    result.HitLevel = impulse.OverrideHitImpulse.HitLevel;
-                    result.HitImpulseX = impulse.OverrideHitImpulse.HitImpulseX.Resolve(attacker, ability);
-                    result.HitImpulseY = impulse.OverrideHitImpulse.HitImpulseY.Resolve(attacker, ability);
-                }
-                else
-                {
-                    result.HitLevel = impulse.HitLevel;
-                    result.HitImpulseX = impulse.HitImpulseX.Resolve(attacker, ability);
-                    result.HitImpulseY = impulse.HitImpulseY.Resolve(attacker, ability);
-                }
+                result.HitLevel = impulse.HitLevel;
+                result.HitImpulseX = impulse.HitImpulseX.Resolve(attacker, ability);
+                result.HitImpulseY = impulse.HitImpulseY.Resolve(attacker, ability);
                 result.RetreatDir = TargetHelper.ResolveTarget(attacker, result, defence, impulse.RetreatType);
             }
 
@@ -193,11 +185,8 @@ namespace TaoTie
 
             result.FinalRealDamage = 0;
 
-            //子弹，根据距离衰减伤害
-            if (result.IsBullet && result.ConfigAttackInfo.BulletWane != null)
-            {
-                //todo
-            }
+            //子弹，按飞行时间衰减伤害与受击等级
+            if (result.IsBullet) ApplyBulletWane(result);
 
             //等级差异加伤减伤
             if (!result.IgnoreLevelDiff)
@@ -254,6 +243,61 @@ namespace TaoTie
                 var effect = em.CreateEntity<Effect, string>(result.HitPattern.OnHitEffectName);
                 effect.Position = result.HitInfo.HitPos;
                 effect.DelayDispose(2000);
+            }
+        }
+
+        /// <summary>
+        /// 子弹衰减：按「创生至今」的飞行时间等比扣减伤害、逐级下调受击等级。
+        ///
+        /// 调用位置很关键 —— 必须在 <see cref="CombatComponent.AfterBeAttack"/> 之前，
+        /// 因为受击等级决定「>= Shake 才击退/抖动」的门禁，改晚了这一发就还是按原等级打。
+        /// 时停用的是 HitPattern.HitHaltTime，与等级无关，不受影响。
+        ///
+        /// 时间基准是 <see cref="BulletComponent.CreateTime"/> / <see cref="AttackResult.StartTime"/> 的
+        /// 缩放时间：时停期间子弹本身也不动，所以「不衰减」正是预期行为。
+        /// </summary>
+        private static void ApplyBulletWane(AttackResult result)
+        {
+            var wane = result.ConfigAttackInfo?.BulletWane;
+            if (wane == null) return;
+
+            // 全 0 配置（现存 Test_Bullet 就是这样）必须零副作用，也不能走进除零/除负分支
+            if (wane.DamageWaneInterval <= 0f && wane.HitLevelWaneInterval <= 0f) return;
+            if (result.StartTime <= 0) return; // 拿不到创生时间（不是真子弹）就不衰减
+
+            long elapsed = GameTimerManager.Instance.GetTimeNow() - result.StartTime;
+            if (elapsed <= 0) return;
+
+            float elapsedSec = elapsed * 0.001f;
+            if (elapsedSec <= wane.WaneDelay) return; // 还在保护期内，满额结算
+
+            float stepped = elapsedSec - wane.WaneDelay;
+
+            // 伤害：每过一个周期扣一次，复利式 (1-Ratio)^n（字段语义就是「按比例扣除」）
+            if (wane.DamageWaneInterval > 0f)
+            {
+                int steps = (int)(stepped / wane.DamageWaneInterval);
+                float ratioEach = Mathf.Clamp01(wane.DamageWaneRatio);
+                if (steps > 0 && ratioEach > 0f)
+                {
+                    float ratio = Mathf.Pow(1f - ratioEach, steps);
+                    ratio = Mathf.Max(ratio, Mathf.Clamp01(wane.DamageWaneMinRatio)); // MinRatio 缺省 0 → 允许衰减到 0
+                    result.DamagePercentage *= ratio;
+                }
+            }
+
+            // 受击等级：每过一个周期降一级，不低于 HitLevelWaneMin（原本就不高于它则不衰减）
+            if (wane.HitLevelWaneInterval > 0f)
+            {
+                int steps = (int)(stepped / wane.HitLevelWaneInterval);
+                int min = (int)wane.HitLevelWaneMin;
+                int lv = (int)result.HitLevel;
+                if (steps > 0 && lv > min)
+                {
+                    lv -= steps;
+                    if (lv < min) lv = min;
+                    result.HitLevel = (HitLevel)lv;
+                }
             }
         }
     }

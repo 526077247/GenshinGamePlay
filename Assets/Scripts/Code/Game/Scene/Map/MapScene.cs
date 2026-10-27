@@ -68,6 +68,7 @@ namespace TaoTie
             RemoveManager<AIManager>();
             RemoveManager<EntityManager>();
             RemoveManager<ORCASystem>();
+            RemoveManager<ActorBodySystem>();
             RemoveManager<EnvironmentManager>();
             RemoveManager<GameTimerManager>();
         }
@@ -141,6 +142,7 @@ namespace TaoTie
             }
 
             RegisterManager<ORCASystem>();
+            RegisterManager<ActorBodySystem>();
             var em = RegisterManager<EntityManager>();
             MyId = em.CreateEntity<Avatar, int>(1).Id;
             Self.GetComponent<EquipHoldComponent>().AddEquip(1).Coroutine();

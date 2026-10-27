@@ -100,50 +100,49 @@ namespace TaoTie
             foreach (var sensible in enemySensiblesPreparation)
             {
                 var viewRange = sensingKnowledge.ViewRange;
-                var halfHorizontalFov = sensingKnowledge.ViewPanoramic ? 180f : 0.5 * sensingKnowledge.HorizontalFov;
-                var halfVerticalFov = sensingKnowledge.ViewPanoramic ? 180f : 0.5 * sensingKnowledge.VerticalFov;
-                
-                if (sensible.Value.Distance < sensingKnowledge.FeelRange)
+                // FeelRange 是全方位近身感知，不看朝向也不需要视线
+                if (sensible.Value.Distance < sensingKnowledge.FeelRange
+                    || (sensible.Value.Distance < viewRange
+                        && IsInViewCone(GetEyeForward(), sensible.Value.Direction,
+                            sensingKnowledge.HalfHorizontalFov, sensingKnowledge.HalfVerticalFov)))
                 {
                     var info = sensible.Value;
                     info.HasLineOfSight = CheckLineOfSight(info);
                     enemySensibles.TryAdd(sensible.Key, info);
-                    if (sensingKnowledge.NearestEnemyDistance<0 || info.Distance < sensingKnowledge.NearestEnemyDistance)
+                    if (sensingKnowledge.NearestEnemyDistance < 0 || info.Distance < sensingKnowledge.NearestEnemyDistance)
                     {
                         sensingKnowledge.NearestEnemyDistance = info.Distance;
                         sensingKnowledge.NearestEnemy = info.SensibleID;
                     }
                 }
-                else if (sensible.Value.Distance < viewRange)
-                {
-                    var forward = knowledge.CurrentForward;
-                    if (knowledge.EyeTransform != null)
-                    {
-                        forward = knowledge.EyeTransform.forward;
-                    }
-                    var horizontalDirection = sensible.Value.Direction;
-                    horizontalDirection.y = forward.y;
-                    var horizontalAngle = Vector3.Angle(forward, horizontalDirection);
-
-                    if (horizontalAngle < halfHorizontalFov)
-                    {
-                        var verticalDirection = sensible.Value.Direction;
-                        verticalDirection.x = forward.x;
-                        var verticalAngle = Vector3.Angle(forward, verticalDirection);
-                        if (verticalAngle < halfVerticalFov)
-                        {
-                            var info = sensible.Value;
-                            info.HasLineOfSight = CheckLineOfSight(info);
-                            enemySensibles.TryAdd(sensible.Key, info);
-                            if (sensingKnowledge.NearestEnemyDistance<0 || info.Distance < sensingKnowledge.NearestEnemyDistance)
-                            {
-                                sensingKnowledge.NearestEnemyDistance = info.Distance;
-                                sensingKnowledge.NearestEnemy = info.SensibleID;
-                            }
-                        }
-                    }
-                }
             }
+        }
+
+        private Vector3 GetEyeForward()
+        {
+            return knowledge.EyeTransform != null ? knowledge.EyeTransform.forward : knowledge.CurrentForward;
+        }
+
+        /// <summary>
+        /// 目标方向是否落在视锥内。
+        ///
+        /// 注意这两个轴向处理是「把另一个轴对齐到 forward 后再比夹角」而不是真正的投影：
+        /// 水平比较时把方向的 y 换成 forward.y，竖直比较时把 x 换成 forward.x。
+        /// 这是既有感知一直在用的口径，抽成静态方法只是为了让
+        /// <see cref="AIKnowledge.CanSee"/>（受击归因用）和感知筛选走同一份实现，
+        /// 不要再各自复制一套（复制必然漂移：改了一边忘了另一边，AI 就会出现
+        /// 「感知得到但看不见」「看得见却感知不到」这种自相矛盾）。
+        /// </summary>
+        public static bool IsInViewCone(Vector3 forward, Vector3 direction, float halfHorizontalFov, float halfVerticalFov)
+        {
+            var horizontalDirection = direction;
+            horizontalDirection.y = forward.y;
+            if (Vector3.Angle(forward, horizontalDirection) >= halfHorizontalFov)
+                return false;
+
+            var verticalDirection = direction;
+            verticalDirection.x = forward.x;
+            return Vector3.Angle(forward, verticalDirection) < halfVerticalFov;
         }
 
         /// <summary>
@@ -151,13 +150,24 @@ namespace TaoTie
         /// </summary>
         private bool CheckLineOfSight(SensibleInfo info)
         {
-            if (info.IsActorEntity)
+            return CheckLineOfSight(knowledge.EyePos, info.Position, info.TargetablePosition, info.IsActorEntity);
+        }
+
+        /// <summary>
+        /// 视线判定：脚和头顶各打一条线，<b>任意一条通畅就算看得见</b>。
+        ///
+        /// 为什么不用单点：脚部射线经常被半人高的掩体挡住，而露出的上半身明明可见；
+        /// 反过来蹲在矮墙后只露头时，脚部反而更通。两点取「或」比任何单点都稳。
+        /// </summary>
+        public static bool CheckLineOfSight(Vector3 eyePos, Vector3 pos, Vector3 targetablePos, bool isActorEntity)
+        {
+            if (isActorEntity)
             {
-                var hitFeet = PhysicsHelper.LinecastScene(info.Position, knowledge.EyePos, out _);
-                var hitTop = PhysicsHelper.LinecastScene(info.TargetablePosition, knowledge.EyePos, out _);
+                var hitFeet = PhysicsHelper.LinecastScene(pos, eyePos, out _);
+                var hitTop = PhysicsHelper.LinecastScene(targetablePos, eyePos, out _);
                 return !hitFeet || !hitTop;
             }
-            return PhysicsHelper.LinecastScene(info.TargetablePosition, knowledge.EyePos, out _);
+            return PhysicsHelper.LinecastScene(targetablePos, eyePos, out _);
         }
 
         /// <summary>

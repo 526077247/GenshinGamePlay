@@ -846,6 +846,15 @@ namespace TaoTie
                             else if (old is ConfigConditionByDataInt dataInta &&
                                      cond is ConfigConditionByDataInt dataIntb)
                             {
+                                // 同一个 int 参数不可能同时等于两个不同的值：
+                                // 子状态机扇出时（父线的 MotionFlag==0 + 入口线的 MotionFlag==1）
+                                // 会拼出这种永不成立的组合，必须在这里滤掉，否则会导出成死迁移。
+                                if (dataInta.Mode == CompareMode.Equal && dataIntb.Mode == CompareMode.Equal &&
+                                    dataInta.Value != dataIntb.Value)
+                                {
+                                    return true;
+                                }
+
                                 if (dataInta.Value == dataIntb.Value)
                                 {
                                     if (dataInta.Mode == CompareMode.Equal && (dataIntb.Mode == CompareMode.NotEqual ||

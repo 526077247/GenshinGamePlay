@@ -22,10 +22,6 @@ namespace TaoTie
         public float Gravity = 30f;
         [ProtoMember(14)][LabelText("空气摩擦(u/s)")][Tooltip("离地后水平速度的线性衰减速率")]
         public float AirFriction = 0.5f;
-        [ProtoMember(15)][LabelText("击退速度倍率")][Tooltip("击退冲量转换为速度时的倍率")]
-        public float HitImpulseScale = 5f;
-        [ProtoMember(16)][LabelText("击退衰减(u/s)")][Tooltip("击退速度的线性衰减速率，竖直分量同样生效")]
-        public float HitImpulseDecay = 50f;
         [ProtoMember(17)][LabelText("台阶高度")][Tooltip("着地检测向脚下延伸的高度，用于台阶/斜坡")]
         public float StepHeight = 0.15f;
         [ProtoMember(18)][LabelText("可站立最大坡度(°)")]

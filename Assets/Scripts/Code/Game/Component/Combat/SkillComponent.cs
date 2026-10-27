@@ -73,7 +73,7 @@ namespace TaoTie
                 var target = combatComponent.GetAttackTarget();
                 if (target is SceneEntity se && moveComponent != null)
                 {
-                    moveComponent.CharacterInput.FaceDirection = se.Position - GetParent<SceneEntity>().Position;
+                    moveComponent.ForceLookAt(se.Position);
                 }
                 OnDoSkillEvt?.Invoke(configId);
                 combatComponent.UseSkillImmediately(info.SkillId);
@@ -93,7 +93,7 @@ namespace TaoTie
                     var target = combatComponent.GetAttackTarget();
                     if (target is SceneEntity se && moveComponent != null)
                     {
-                        moveComponent.CharacterInput.FaceDirection = se.Position - GetParent<SceneEntity>().Position;
+                        moveComponent.ForceLookAt(se.Position);
                     }
                     OnDoSkillEvt?.Invoke(configId);
                     combatComponent.UseSkillImmediately(info.SkillId);

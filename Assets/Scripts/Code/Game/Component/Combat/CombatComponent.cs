@@ -13,6 +13,9 @@ namespace TaoTie
 
         private HashSet<long> hitAttackRecords = new HashSet<long>();
 
+        /// <summary>「受击方没有移动组件」的告警每个实体只喊一次，否则每次挨打都刷。</summary>
+        private bool hitImpulseNoMoveLogged;
+
         /// <summary>
         /// 非循环命中(Recurring=false)模式下,判断该攻击实例是否已经命中过当前实体
         /// </summary>
@@ -107,23 +110,17 @@ namespace TaoTie
         public void AfterBeAttack(AttackResult result, CombatComponent other)
         {
             afterBeAttack?.Invoke(result, other);
-            if (result.HitLevel >= HitLevel.Shake)//todo: 击退击飞
+            if (result.HitLevel >= HitLevel.Shake)
             {
-                if (fsm != null)
-                    fsm.SetData(FSMConst.Shake, true);
+                var fsmComponent = fsm;
+                // Shake 属于「可选表现参数」：多数单位的 FsmController 根本没声明它，
+                // 直接 SetData 会让 FsmComponent 每次命中刷一条 "SetData Can Not Find bool Param: Shake"
+                // （表现为「打得越多日志越脏」，且没人能从中看出是哪份配置缺了参数）。
+                // 没声明就只是不做受击抖动，不算配置错误。
+                if (fsmComponent != null && fsmComponent.KeyExist(FSMConst.Shake))
+                    fsmComponent.SetData(FSMConst.Shake, true);
 
-                if (result.RetreatDir.sqrMagnitude > 0)
-                {
-                    var p = GetParent<SceneEntity>();
-                    var mc = p.GetComponent<MoveComponent>();
-                    if (mc != null)
-                    {
-                        mc.CharacterInput.HitImpulse += Vector3.up * result.HitImpulseY +
-                                                        new Vector3(result.RetreatDir.x, 0, result.RetreatDir.z)
-                                                            .normalized *
-                                                        result.HitImpulseX;
-                    }
-                }
+                DispatchHitImpulse(result, other);
             }
             if (config != null && config.BeHit != null && !config.BeHit.MuteAllHitText 
                 && (result.HitPattern == null || !result.HitPattern.MuteHitText))
@@ -160,6 +157,54 @@ namespace TaoTie
                 }
                 Messager.Instance.Broadcast(0, MessageId.ShakeCamera, para);
             }
+        }
+
+        /// <summary>
+        /// 把 <see cref="AttackResult"/> 的击退数据交给移动组件的统一入口。
+        /// 抗性缩放与「是否算击飞」由 <see cref="MoveComponent.ApplyHitImpulse"/> 判定（受击方口径），
+        /// 这里只负责把「方向 × 力度 + 抬升」拼成世界系冲量。
+        ///
+        /// 为什么不再直写 <see cref="MoveInput.HitImpulse"/>：
+        /// 那样 SimpleMove 单位（没有击退通道）会被静默丢弃，抗性表也永远查不到受击方配置。
+        /// </summary>
+        private void DispatchHitImpulse(AttackResult result, CombatComponent attacker)
+        {
+            if (result.HitImpulseX == 0f && result.HitImpulseY == 0f) return;
+
+            var self = GetParent<SceneEntity>();
+            var mc = self != null ? self.GetComponent<MoveComponent>() : null;
+            if (mc == null)
+            {
+                // 固定靶（MuZhuang 等没有 Move 配置段的单位）根本没有 MoveComponent，
+                // 冲量无处落地。这条以前完全静默，是「配了击退却没反应」最容易误判的一种，
+                // 所以按实体喊一次，并直接点名是「目标没配 Move」而不是「击退坏了」。
+                if (!hitImpulseNoMoveLogged)
+                {
+                    hitImpulseNoMoveLogged = true;
+                    Log.Info($"实体 {self?.Id} 没有 MoveComponent（ConfigActor 未配置 Move 段），无处承受击退，冲量被丢弃");
+                }
+                return;
+            }
+
+            Vector3 dir = result.RetreatDir;
+            dir.y = 0f;
+            if (dir.sqrMagnitude < 1e-6f)
+            {
+                // TargetHelper.ResolveTarget 拿不到双方位置时会返回零向量。这种时候如果照直把冲量丢掉，
+                // 配了击退的攻击就成了「打不退人」，且没有任何报错线索。
+                // 退化方向取「攻击起点 → 受击者」：起点走 ResolveAttackOrigin，
+                // 所以子弹（attacker 解析成子弹自己）也能拿到射手而不是贴在脸上的子弹。
+                var attackerEntity = attacker != null ? attacker.GetParent<SceneEntity>() : null;
+                attackerEntity = TargetHelper.ResolveAttackOrigin(attackerEntity, self, result) as SceneEntity;
+                if (attackerEntity != null)
+                {
+                    dir = self.Position - attackerEntity.Position;
+                    dir.y = 0f;
+                }
+            }
+
+            Vector3 horizontal = dir.sqrMagnitude > 1e-6f ? dir.normalized * result.HitImpulseX : Vector3.zero;
+            mc.ApplyHitImpulse(new Vector3(horizontal.x, result.HitImpulseY, horizontal.z), result.HitImpulseType);
         }
 
         /// <summary>

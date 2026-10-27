@@ -12,6 +12,10 @@ namespace TaoTie
     {
         public override bool useAnimMove => true;
 
+        // 击退：冲量→速度倍率与线性衰减速率取本移动方式的配置（见 MoveComponent「击退冲量」region）
+        protected override float HitImpulseToSpeed => ConfigMove.HitImpulseScale;
+        protected override float HitImpulseDecayRate => ConfigMove.HitImpulseDecay;
+
         private UnitModelComponent model => parent.GetComponent<UnitModelComponent>();
         private FsmComponent fsm => GetComponent<FsmComponent>();
         private ORCAAgentComponent orcaAgent => GetComponent<ORCAAgentComponent>();
@@ -33,11 +37,10 @@ namespace TaoTie
         /// </summary>
         private float pivotLift;
 
-        // 击退速度（世界系，含竖直分量，线性衰减）
-        private Vector3 hitVelocity;
+        // 击退速度 hitVelocity 已上提到 MoveComponent（SimpleMove 也要用），见那里的「击退冲量」region
         // 离地时继承的水平速度（世界系，空中线性衰减）
         private Vector3 airVelocity;
-        // 上一帧的水平总速度，用于离地瞬间继承
+        // 上一帧的常规水平速度（不含击退），用于离地瞬间继承
         private Vector3 lastTotalHorizontal;
         // 竖直速度（重力/起跳锁定）
         private float verticalVelocity;
@@ -55,6 +58,33 @@ namespace TaoTie
         private float airborneTime;
         private bool jumpTriggered;
         private float jumpPinTime;
+
+        /// <summary>
+        /// Entity 层的位掩码。用于把角色自身的层从「地面检测」里剔出去。
+        /// </summary>
+        private static readonly int EntityLayerBit = LayerMask.GetMask("Entity");
+
+        /// <summary>
+        /// 地面检测实际使用的掩码 = 配置掩码 剔除 <b>Entity</b> 层。
+        ///
+        /// 为什么必须剔除：<see cref="ConfigAnimatorMove.GroundMask"/> 的默认值含 Entity，
+        /// 而着地检测是一个半径 <c>ModelRadius*0.8 ≈ 0.56</c> 的球从脚底上方往下扫。
+        /// 角色互斥上线前两个单位可以互相穿过，这颗球永远不会持续与对方相交；
+        /// 现在会真的贴在一起，于是：
+        ///  • 击中对方胶囊侧面 → 法线接近水平 → 角度超 SlopeLimit → 判为「未着地」，
+        ///    着地吸附随之失效、重力把角色一直往下压 —— 表现为「撞在一起后半蹲并陷入地下」；
+        ///  • 击中对方胶囊顶部 → groundY 取到对方头顶高度 → 角色被抬到对方身上。
+        /// 地面只能由地形/水面提供，因此这里统一裁剪，不改配置数据（配置仍保留 Entity 以兼容旧行为开关）。
+        /// </summary>
+        private int GroundMaskWithoutEntity
+        {
+            get
+            {
+                int mask = ConfigMove.GroundMask & ~EntityLayerBit;
+                // 兜底：若配置只配了 Entity，退回原值，避免完全丧失着地检测
+                return mask != 0 ? mask : ConfigMove.GroundMask;
+            }
+        }
 
         protected override void InitInternal()
         {
@@ -132,10 +162,21 @@ namespace TaoTie
             float dt = Time.fixedDeltaTime;
             if (dt <= 0f) return;
 
+            ActorContactMoved = false;
+
+            // 击退冲量必须先入账再判着地：CheckGround 用 hitVelocity.y 识别「被击飞」，
+            // 若放在它之后就消费，击飞的第一帧会先被判为着地，着地吸附当帧就把角色按回地面。
+            ConsumeHitImpulse();
+            DecayHitVelocity(dt);
+
             // 兼容外部直接写 View 的情况（多模型 View 带偏移，不能反推实体位置）
             if (!viewHasOffset) SceneEntity.SyncViewPosition(view.position);
 
             CheckGround(dt);
+
+            // 必须紧跟 CheckGround：后面 ConstrainVelocity → ConstrainActor 要读本帧最新的
+            // Airborne（击飞第一帧就得豁免，否则冲量会被对方体积当场投影掉，表现为「打不动」）。
+            SyncBodyAirborne();
 
             // 朝向：与 RigidbodyMove/SimpleMove 一致走基类 HandleRotation（RotateSpeed 步进 + 死区吸附）。
             // 必须在速度合成之前调用：GetAnimatorHorizontalVelocity 依赖 SceneEntity.Rotation
@@ -149,14 +190,7 @@ namespace TaoTie
             // 立即把贴坡姿态落到 View，不能等到动画回调再写（见 SyncViewTilt 注释）
             SyncViewTilt();
 
-            // 击退冲量并入击退速度（世界系，含竖直分量）
-            if (CharacterInput.HitImpulse.sqrMagnitude > 1e-6f)
-            {
-                hitVelocity += CharacterInput.HitImpulse * ConfigMove.HitImpulseScale;
-                CharacterInput.HitImpulse = Vector3.zero;
-            }
-            DecayVector(ref hitVelocity, ConfigMove.HitImpulseDecay, dt);
-
+            // 击退冲量已在物理步最前面入账（ConsumeHitImpulse），此处不再重复消费
             UpdateJump(dt);
 
             // 起跳锁定期间豁免重力：复刻旧版 Jumping 状态每帧覆盖垂直速度为 JumpSpeed 的语义，
@@ -185,7 +219,10 @@ namespace TaoTie
                     horizontal = animHorizontal + airVelocity;
                 }
             }
-            lastTotalHorizontal = horizontal + Vector3.ProjectOnPlane(hitVelocity, Vector3.up);
+            // 只记「常规水平速度」，不含击退：击退有独立通道，若一并记进来，
+            // 被击飞当帧会走「离地继承 airVelocity = lastTotalHorizontal」再叠加一次 hitVelocity，
+            // 水平击退翻倍（表现为被击飞瞬间突然横向窜出去）。
+            lastTotalHorizontal = horizontal;
 
             Vector3 velocity = horizontal + hitVelocity + Vector3.up * verticalVelocity;
             velocity = ConstrainVelocity(velocity);
@@ -215,6 +252,35 @@ namespace TaoTie
                 verticalVelocity = 0f;
             }
 
+            // 角色间重叠消解（纯几何，只动 XZ，不影响着地检测与脚部 IK）。
+            // 必须放在着地吸附之后：吸附会重写 y，这里只累加水平分量。
+            ResolveActorContacts();
+
+            // 互斥改过水平位置：斜坡上新 XZ 对应的地面高度与当前 y 已不对应，必须就地重采样。
+            // 不重采样的后果：脚底低于坡面 → 脚部 IK 为够到「地面 + mFootHeight」只能压短腿
+            // （视觉半蹲 + 脚陷入地下）；坡陡时射线还会从坡体内部起算而丢失着地信号。
+            // 平地不受影响：XZ 变化不改变地面高度。
+            if (ActorContactMoved)
+            {
+                CheckGround(dt);
+                if (isGrounded && verticalVelocity <= 0f && hitVelocity.y <= 0f)
+                {
+                    var snapped = SceneEntity.Position;
+                    float actorStandY = groundY + pivotLift;
+                    if (Mathf.Abs(snapped.y - actorStandY) > 1e-4f)
+                    {
+                        snapped.y = actorStandY;
+                        SceneEntity.Position = snapped;
+                    }
+                    verticalVelocity = 0f;
+                }
+            }
+
+            // 击飞状态落地即解除，并同步给体积代理（互斥在 Airborne 期间整体豁免）。
+            // 末尾再同步一次：互斥重采样可能改了 isGrounded。
+            SyncBodyAirborne();
+
+            // 着地状态提交：放在互斥/重采样之后，保证 FSM 收到的是本物理步的最终结果
             if (isGrounded != lastIsGrounded)
             {
                 lastIsGrounded = isGrounded;
@@ -238,7 +304,11 @@ namespace TaoTie
             // pos.y 是「实体高度」= 脚底地面 + pivotLift；groundY 始终记真实地面高度。
             // 下面所有「掉到哪了」的判断都换回脚底空间，否则 pivotLift 会让着地提前/滞后。
             float footY = pos.y - pivotLift;
-            if (verticalVelocity > 0f)
+            // 上升期（跳跃锁定/重力反弹）与「击退抬升期」都不采信地面。
+            // 击退的竖直分量走的是 hitVelocity 而不是 verticalVelocity：若这里只判后者，
+            // 击飞全程 isGrounded 仍为 true，等 hitVelocity.y 衰减到 0 的那一帧会被着地吸附
+            // 瞬间拉回地面 —— 表现为「弹一下又贴回去」，既没有抛物线也没有滞空。
+            if (verticalVelocity > 0f || hitVelocity.y > HitImpulseAirborneEps)
             {
                 isGrounded = false;
                 groundY = footY;
@@ -263,7 +333,7 @@ namespace TaoTie
                            + fallDist;
             Vector3 origin = pos + Vector3.up * originLift;
             bool hit = PhysicsHelper.SphereCastNonAlloc(origin, radius, Vector3.down, out var rh,
-                length, ConfigMove.GroundMask, QueryTriggerInteraction.Ignore, view);
+                length, GroundMaskWithoutEntity, QueryTriggerInteraction.Ignore, view);
             bool landed = hit && Vector3.Angle(rh.normal, Vector3.up) <= ConfigMove.SlopeLimit;
             if (landed && !lastIsGrounded)
             {
@@ -293,6 +363,19 @@ namespace TaoTie
                 groundY = footY;
                 groundNormal = Vector3.up;
             }
+        }
+
+        /// <summary>
+        /// 把「被击飞」状态同步给体积代理：空中期间角色互斥整体豁免（见 <see cref="ActorBodyComponent.Airborne"/>）。
+        /// 两处调用：① CheckGround 之后（ConstrainVelocity/ConstrainActor 需要本帧最新状态）；
+        /// ② 物理步末尾（互斥改过 XZ 会重采样地面，isGrounded 可能变化）。
+        /// 着地即清 HitLaunched，落地当帧就恢复互斥，重叠交给常规消解处理。
+        /// </summary>
+        private void SyncBodyAirborne()
+        {
+            if (isGrounded) HitLaunched = false;
+            var body = Body;
+            if (body != null) body.Airborne = HitLaunched;
         }
 
         /// <summary>
@@ -458,22 +541,13 @@ namespace TaoTie
                     : ConstrainWallOnly(displacement);
             }
 
+            // 角色互斥（行进滑移）：放在墙/地形之后，保证先被墙挡住再考虑推挤。
+            // 只处理水平面；竖直分量原样带出（重力/跳跃/击退）。
+            displacement = ConstrainActor(displacement);
+
             var result = displacement / dt;
             result.y = vertical;
             return result;
-        }
-
-        private static void DecayVector(ref Vector3 v, float decay, float dt)
-        {
-            if (v == Vector3.zero || decay <= 0f) return;
-            float mag = v.magnitude;
-            float step = decay * dt;
-            if (step >= mag)
-            {
-                v = Vector3.zero;
-                return;
-            }
-            v -= v.normalized * step;
         }
     }
 }
