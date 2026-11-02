@@ -13,13 +13,31 @@ namespace TaoTie
             List<Entity> results)
         {
             var pos = bornType.ResolvePos(actor, ability, modifier, target);
-            int count = PhysicsHelper.OverlapSphereNonAllocEntity(pos, Radius.Resolve(actor,ability), filter, out var res);
-            for (int i = 0; i < count; i++)
+            var radiusSqr = Radius.Resolve(actor, ability);
+            radiusSqr *= radiusSqr;
+            if (filter == null) return results.Count;
+            var em = actor?.Parent;
+            if (em == null) return results.Count;
+            var dict = em.GetAllDict();
+            foreach (var item in dict.Values)
             {
-                var e = actor.Parent.Get<Entity>(res[i]);
-                if (e != null)
+                if (item == null || item.IsDispose) continue;
+                if (!(item is SceneEntity se)) continue; // 必须有坐标才能做距离判定
+                var type = item.Type;
+                bool match = false;
+                for (int j = 0; j < filter.Length; j++)
                 {
-                    results.Add(e);
+                    if (type == filter[j])
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+                if (!match) continue;
+                var offset = se.Position - pos;
+                if (offset.sqrMagnitude <= radiusSqr)
+                {
+                    results.Add(item);
                 }
             }
             return results.Count;

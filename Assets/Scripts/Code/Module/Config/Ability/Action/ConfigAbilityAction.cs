@@ -61,7 +61,10 @@ namespace TaoTie
                 {
                     if (entities.Count == 0)
                     {
-                        Log.Error("没有找到重定向Target，请检查逻辑");
+                        if(Targetting == AbilityTargetting.Other)
+                            Log.Info("没有找到Other范围内的Target");
+                        else
+                            Log.Error("没有找到重定向Target，请检查逻辑");
                         return;
                     }
 

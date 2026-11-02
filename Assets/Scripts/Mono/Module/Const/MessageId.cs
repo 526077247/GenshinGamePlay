@@ -63,6 +63,10 @@
         public const int CheckLeftOrRight = 27;
         /// <summary> 检查镜头与面向夹角 </summary>
         public const int CheckAngleVF = 28;
-
+        /// <summary>
+        /// 控制状态变化（载荷 ControlStateEvent）。只在被剥夺的能力位掩码真的变化时广播一次，
+        /// 订阅方（UI 头顶图标 / 模型层特效 / AI 决策）据此响应，不要轮询 ControlComponent。
+        /// </summary>
+        public const int ControlStateChanged = 29;
     }
 }

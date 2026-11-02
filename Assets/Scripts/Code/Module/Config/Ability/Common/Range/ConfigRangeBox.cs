@@ -15,13 +15,31 @@ namespace TaoTie
         {
             var pos = bornType.ResolvePos(actor, ability, modifier, target);
             var rot = bornType.ResolveRot(actor, ability, modifier, target);
-            int count = PhysicsHelper.OverlapBoxNonAllocEntity(pos, Size.Resolve(actor,ability) * 0.5f, rot, filter, out var res);
-            for (int i = 0; i < count; i++)
+            var half = Size.Resolve(actor, ability) * 0.5f;
+            if (filter == null) return results.Count;
+            var em = actor?.Parent;
+            if (em == null) return results.Count;
+            var dict = em.GetAllDict();
+            var inv = Quaternion.Inverse(rot); // 世界坐标 -> 盒子局部坐标
+            foreach (var item in dict.Values)
             {
-                var e = actor.Parent.Get<Entity>(res[i]);
-                if (e != null)
+                if (item == null || item.IsDispose) continue;
+                if (!(item is SceneEntity se)) continue; // 必须有坐标才能做判定
+                var type = item.Type;
+                bool match = false;
+                for (int j = 0; j < filter.Length; j++)
                 {
-                    results.Add(e);
+                    if (type == filter[j])
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+                if (!match) continue;
+                var local = inv * (se.Position - pos);
+                if (Mathf.Abs(local.x) <= half.x && Mathf.Abs(local.y) <= half.y && Mathf.Abs(local.z) <= half.z)
+                {
+                    results.Add(item);
                 }
             }
             return results.Count;

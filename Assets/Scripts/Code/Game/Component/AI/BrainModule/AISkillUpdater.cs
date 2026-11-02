@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TaoTie
 {
@@ -7,6 +8,32 @@ namespace TaoTie
     /// </summary>
     public class AISkillUpdater: BrainModuleBase
     {
+#if UNITY_EDITOR
+        /// <summary>
+        /// 已经报过「AI 配了技能、但这个实体身上没有」的 ConfigId。
+        ///
+        /// 这条缺失以前是完全静默的：<see cref="SkillComponent.IsSkillInCD"/> 对未知技能返回 true，
+        /// 技能被当成「永远在 CD」直接过滤掉，表现只是「怪物贴身站着不打人」，日志里什么都没有。
+        /// 按技能去重，一个实体最多每个技能喊一次；修好配置后重进场景重新计数。
+        /// </summary>
+        private HashSet<int> missingSkillReported;
+#endif
+        protected override void InitInternal()
+        {
+            base.InitInternal();
+#if UNITY_EDITOR
+            missingSkillReported = new HashSet<int>();
+#endif
+        }
+
+        protected override void ClearInternal()
+        {
+#if UNITY_EDITOR
+            missingSkillReported = null;
+#endif
+            base.ClearInternal();
+        }
+
         protected override void UpdateMainThreadInternal()
         {
             base.UpdateMainThreadInternal();
@@ -24,6 +51,18 @@ namespace TaoTie
                         knowledge.TargetKnowledge.TargetType == AITargetType.InvalidTarget) continue;
                     //视线被遮挡
                     if(skill.Config.NeedLineOfSight && !knowledge.TargetKnowledge.HasLineOfSight) continue;
+#if UNITY_EDITOR
+                    //技能本体不存在：配置对不上（典型是 ConfigActor.Skill.Skills 少了这一条）
+                    if (!knowledge.SkillComponent.HasSkill(skill.ConfigId))
+                    {
+                        if (missingSkillReported != null && missingSkillReported.Add(skill.ConfigId))
+                        {
+                            Log.Error($"AI 技能 ConfigId={skill.ConfigId} 在实体 {knowledge.Entity?.Id} 的 SkillComponent 里不存在，" +
+                                      "该技能永远不会释放。检查 ConfigActor.Skill.Skills 是否少了这一项（怪物与玩家共用 ConfigActor 时尤其容易漏）");
+                        }
+                        continue;
+                    }
+#endif
                     //自己cd
                     if(knowledge.SkillComponent.IsSkillInCD(skill.ConfigId)) continue;
                     //自己ai技能cd

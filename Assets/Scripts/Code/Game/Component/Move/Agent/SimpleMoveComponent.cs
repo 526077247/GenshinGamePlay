@@ -35,7 +35,10 @@ namespace TaoTie
             HandleRotation(deltaTime);
 
             var speed = numericComponent.GetAsFloat(NumericType.Speed);
-            var velocity = CharacterInput.Direction.normalized * speed * CharacterInput.SpeedScale;
+            // 被控制时只清"主动位移"这一项：ORCA 与击退通道保持工作，被眩晕打断时照样能被打飞
+            var velocity = IsMoveDenied
+                ? Vector3.zero
+                : CharacterInput.Direction.normalized * speed * CharacterInput.SpeedScale;
             velocity = ApplyORCA(velocity, speed);
 
             // 击退通道：本类没有重力与着地概念，竖直分量会让单位永久漂浮（上去不下来），

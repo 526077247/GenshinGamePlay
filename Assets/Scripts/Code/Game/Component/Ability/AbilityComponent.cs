@@ -11,6 +11,13 @@ namespace TaoTie
         private LinkedListComponent<ActorModifier> modifiers;
         private UnOrderMultiMap<string, ActorModifier> modifierDictionary; //[Ability_Modifier:ActorModifier]
 
+        /// <summary>
+        /// 活跃 modifier 链表（只读遍历）。供 <see cref="ControlComponent"/> 全量聚合控制位，
+        /// 用链表直读而不是回调委托，避免每次重算都分配闭包。
+        /// 不要在外部增删，统一走 ApplyModifier / RemoveModifier。
+        /// </summary>
+        public LinkedListComponent<ActorModifier> Modifiers => modifiers;
+        
         #region override
 
         public void Init(List<ConfigAbility> data)
@@ -61,6 +68,8 @@ namespace TaoTie
         #endregion
         public ActorAbility AddAbility(ConfigAbility config)
         {
+            //组件销毁中禁止再添加
+            if (isDestroy) return null;
             var ability = ActorAbility.Create(Id, config, this);
             abilities.AddLast(ability);
             ability.AfterAdd();
@@ -76,6 +85,8 @@ namespace TaoTie
 
         public ActorModifier ApplyModifier(long applierID, ActorAbility ability, string modifierName)
         {
+            //组件销毁中禁止再添加
+            if (isDestroy) return null;
             if (!ability.TryGetConfigAbilityModifier(modifierName, out var config))
             {
                 Log.Error(
@@ -110,6 +121,7 @@ namespace TaoTie
                             modifiers.AddLast(modifier);
                             modifierDictionary.Add(key, modifier);
                             modifier.AfterAdd();
+                            NotifyControlChanged();
                             return modifier;
                         }
 
@@ -143,6 +155,7 @@ namespace TaoTie
                 modifiers.AddLast(modifier);
                 modifierDictionary.Add(key, modifier);
                 modifier.AfterAdd();
+                NotifyControlChanged();
                 return modifier;
             }
 
@@ -151,19 +164,21 @@ namespace TaoTie
 
         public void RemoveModifier(ActorModifier modifier)
         {
-            if (isDestroy) return;
-            string key = modifier.Ability.Config.AbilityName + "_" + modifier.Config.ModifierName;
+            if (isDestroy || modifier == null) return;
+            string key = modifier.Ability?.Config?.AbilityName + "_" + modifier.Config?.ModifierName;
             if (modifierDictionary.Contains(key, modifier))
             {
                 modifier.BeforeRemove();
                 modifiers.Remove(modifier);
                 modifierDictionary.Remove(key, modifier);
                 modifier.Dispose();
+                NotifyControlChanged();
             }
         }
 
         public void RemoveModifier(string ability, string modifier)
         {
+            if (isDestroy) return;
             string key = ability + "_" + modifier;
             var list = modifierDictionary[key];
             if (list == null || list.Count == 0) return;
@@ -210,6 +225,32 @@ namespace TaoTie
                 ability.Dispose();
             }
         }
+        /// <summary>
+        /// 按名字查已有实例（只读）。心法注入前必须先查：
+        /// <see cref="AddAbility"/> 不去重，同名 Add 两次会得到两个 ActorAbility，效果翻倍。
+        /// </summary>
+        public ActorAbility GetAbility(string abilityName)
+        {
+            if (abilities == null) return null;
+            for (var node = abilities.First; node != null; node = node.Next)
+            {
+                var a = node.Value;
+                if (a?.Config != null && a.Config.AbilityName == abilityName) return a;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// modifier 增删后通知控制仲裁者重算能力位掩码。
+        /// 组件销毁过程中不通知：此时 isDestroy 已置位，销毁链路里的 RemoveModifier 也会提前返回，
+        /// 没必要再去碰一个可能已经 Dispose 的 ControlComponent。
+        /// </summary>
+        private void NotifyControlChanged()
+        {
+            if (isDestroy) return;
+            GetComponent<ControlComponent>()?.NotifyModifiersChanged();
+        }
+
         public void ExecuteAbility(string ability)
         {
             foreach (var item in abilities)

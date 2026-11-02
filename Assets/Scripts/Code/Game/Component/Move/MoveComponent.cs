@@ -44,6 +44,29 @@ namespace TaoTie
         private int constraintWallLayer;
         protected bool HasMoveConstraint => moveProfile != null;
 
+        private ControlComponent controlComponent;
+
+        /// <summary>
+        /// 控制仲裁者，懒查找。
+        /// 不能在 Init 里缓存：实体创建顺序是「移动组件 → AbilityComponent → ControlComponent」，
+        /// 移动组件 Init 时后者还不存在，所以查找失败要留到下次再找。
+        /// </summary>
+        protected ControlComponent Control
+        {
+            get
+            {
+                if (controlComponent == null || controlComponent.IsDispose)
+                    controlComponent = GetComponent<ControlComponent>();
+                return controlComponent;
+            }
+        }
+
+        /// <summary>主动位移是否被剥夺（不含击退这类外部强制位移）。</summary>
+        protected bool IsMoveDenied => Control is { } c && !c.CanDo(ControlFlag.Move);
+
+        /// <summary>主动转向是否被剥夺。</summary>
+        protected bool IsTurnDenied => Control is { } c && !c.CanDo(ControlFlag.Turn);
+
         protected void Init(ConfigMoveAgent configMove)
         {
             Config = configMove;
@@ -70,6 +93,8 @@ namespace TaoTie
             hitVelocity = Vector3.zero;
             HitLaunched = false;
             hitImpulseUnsupportedLogged = false;
+            // 组件是池化复用的：不清会把上一个实体的 ControlComponent 带到下一个实体上
+            controlComponent = null;
         }
 
         /// <summary>
@@ -100,6 +125,8 @@ namespace TaoTie
 
         public void Update()
         {
+            if (IsMoveDenied) ClearMoveIntent();
+
             if (strategy != null)
             {
                 strategy?.Update();
@@ -109,6 +136,33 @@ namespace TaoTie
             {
                 UpdateInternal();
             }
+        }
+
+        /// <summary>
+        /// 被控制时清掉一切"主动位移意图"。
+        ///
+        /// 放在所有通道的上游（Update 开头）而不是各个输入组件里，是为了让所有驱动源
+        /// —— 输入 / AI / 移动策略 / 直接写 CharacterInput 的旧代码 —— 在同一处被拦下。
+        /// 另外三个位移通道（Simple / Rigidbody / Animator）在各自的消费点还会再判一次，
+        /// 堵住"输入组件在本帧更晚写入 Direction"的时序漏洞。
+        ///
+        /// 击退（HitImpulse / hitVelocity）是外部强制位移，不在这里清除：
+        /// 被眩晕时照样应该被打飞。
+        /// </summary>
+        private void ClearMoveIntent()
+        {
+            if (CharacterInput == null) return;
+
+            CharacterInput.Direction = Vector3.zero;
+            CharacterInput.FaceDirection = Vector3.zero;
+            CharacterInput.SpeedScale = 0f;
+            CharacterInput.Velocity = Vector3.zero;
+            CharacterInput.Jump = false;
+
+            // 动画驱动的单位靠 MotionFlag 切回待机，光清 Direction 停不下来
+            var fsmComponent = GetComponent<FsmComponent>();
+            if (fsmComponent != null && fsmComponent.KeyExist(FSMConst.MotionFlag))
+                fsmComponent.SetData(FSMConst.MotionFlag, 0);
         }
         
         protected abstract void UpdateInternal();
@@ -159,6 +213,8 @@ namespace TaoTie
         protected void HandleRotation(float deltaTime)
         {
             if (CharacterInput == null || CharacterInput.RotateSpeed <= 0) return;
+            // 转向被剥夺：三个移动通道都走这里，所以只在这一处拦就够
+            if (IsTurnDenied) return;
             var lookDir = CalculateLookDirection();
             if (lookDir == Vector3.zero) return;
 

@@ -23,5 +23,15 @@ namespace TaoTie
         public ConfigAbilityMixin[] Mixins;
         [ProtoMember(6)][LabelText("修改玩家数值")]
         public ConfigCombatProperty[] Properties;
+        [ProtoMember(8)][LabelText("剥夺能力位")]
+        [Tooltip("眩晕=CrowdControl(Move|Turn|CastSkill|Attack)、定身=Move、沉默=CastSkill。" +
+                 "多个控制同时生效时取并集，不需要配互斥规则；留空(None)表示这不是控制类 buff")]
+        public ControlFlag Deny;
+        [ProtoMember(9)][LabelText("控制等级")]
+        [Tooltip("仅用于表现层取强者（同时被眩晕和减速时播眩晕的动画/图标），不参与行为判定")]
+        public int ControlLevel;
+        [ProtoMember(10)][LabelText("生效时打断")]
+        [Tooltip("从'未被控制'进入'被控制'那一刻执行一次；已处于控制中再叠加不会重复打断")]
+        public ControlInterrupt Interrupt;
     }
 }

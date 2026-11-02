@@ -198,7 +198,8 @@ namespace TaoTie
             // 松手截断时 jumpTriggered 已置 false，重力当帧立即生效（旧版松手转 Rising 同语义）。
             if (!isGrounded && !jumpTriggered) verticalVelocity -= ConfigMove.Gravity * dt;
 
-            var animHorizontal = GetAnimatorHorizontalVelocity();
+            // 被控制时不采样动画根运动：否则"被眩晕但动画还在跑"会让角色继续滑行
+            var animHorizontal = IsMoveDenied ? Vector3.zero : GetAnimatorHorizontalVelocity();
             Vector3 horizontal;
             if (isGrounded)
             {

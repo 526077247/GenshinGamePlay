@@ -18,6 +18,9 @@ namespace TaoTie
         private Vector3 lastDirection;
         private bool isInputFrozen = false;
         private Vector3 frozenDirection;
+        
+        private ControlComponent controlComponent;
+        
         #region IComponent
 
         public void Init()
@@ -32,10 +35,21 @@ namespace TaoTie
         {
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanMove, SetCanMove);
             Messager.Instance.RemoveListener<bool>(Id, MessageId.SetCanTurn, SetCanTurn);
+            // 组件池化复用：不清会把上一个实体的 ControlComponent 带到下一个实体上
+            controlComponent = null;
         }
 
         public void Update()
         {
+            // 被控制时连"意图"都不产生：不仅停移动，也一并阻断冲刺/跳跃/转向。
+            // 此前只有 TryMove 里有检查，管不到前面那几个分支，眩晕期间按空格仍能起跳。
+            if (!CanMoveNow())
+            {
+                fsm.SetData(FSMConst.MotionFlag, 0);
+                fsm.SetData(FSMConst.MotionDirection, 0);
+                return;
+            }
+
             //移动
             Vector3 direction = Vector3.zero;
             if (InputManager.Instance.GetKey(GameKeyCode.MoveForward))
@@ -105,10 +119,25 @@ namespace TaoTie
         }
 
         #endregion
-
+        /// <summary>
+        /// 现在是否允许主动位移。判定统一走 <see cref="ControlComponent"/> 的能力位掩码，
+        /// 不再按"被哪种控制命中"来判断 —— 定身/击飞/恐惧等新控制接进来时这里不用改。
+        /// </summary>
+        private bool CanMoveNow()
+        {
+            if (controlComponent == null || controlComponent.IsDispose)
+                controlComponent = parent.GetComponent<ControlComponent>();
+            return controlComponent == null || controlComponent.CanDo(ControlFlag.Move);
+        }
         public void TryMove(Vector3 direction, MotionFlag mFlag = MotionFlag.Run, MotionDirection mDirection = MotionDirection.Forward)
         {
             if (moveComponent == null) return;
+            if (!CanMoveNow())
+            {
+                fsm.SetData(FSMConst.MotionFlag, 0);
+                fsm.SetData(FSMConst.MotionDirection, 0);
+                return;
+            }
             if (!canTurn)
             {
                 if (mDirection == MotionDirection.Left || mDirection == MotionDirection.Right)
