@@ -9,6 +9,7 @@ namespace TaoTie
     [ProtoInclude(103, typeof(ByNot))]
     [ProtoInclude(104, typeof(ByOr))]
     [ProtoInclude(105, typeof(BySkillReady))]
+    [ProtoInclude(106, typeof(ByNumericCompare))]
     public abstract partial class ConfigAbilityPredicate
     {
         [ProtoMember(1)]

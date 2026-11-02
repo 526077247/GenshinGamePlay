@@ -22,6 +22,7 @@ namespace TaoTie
     [ProtoInclude(116, typeof(ConfigDoActionOnInteeTouchMixin))]
     [ProtoInclude(117, typeof(ConfigDoActionOnTriggerMixin))]
     [ProtoInclude(118, typeof(ConfigDoActionOnUseSkillMixin))]
+    [ProtoInclude(119, typeof(ConfigDoActionOnNumericChangeMixin))]
     public abstract partial class ConfigAbilityMixin
     {
     }

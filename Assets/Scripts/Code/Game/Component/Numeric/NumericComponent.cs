@@ -50,12 +50,15 @@ namespace TaoTie
 			}
 		}
 		
+		/// <summary>
+		/// 读真实值。小数属性存的是 值*10000，这里还原；整数属性原样返回。
+		/// </summary>
 		public float GetAsFloat(int numericType)
 		{
-			if(this.IsFloat(numericType))
-				return this.GetByKey(numericType)/10000f;
-			else
-				return this.GetByKey(numericType);
+			long raw = this.GetByKey(numericType);
+			if (this.IsFloat(numericType))
+				return raw / 10000f;
+			return raw;
 		}
 
 		public int GetAsInt(int numericType)
@@ -120,6 +123,50 @@ namespace TaoTie
 		{
 			this.Insert(numericType,value,false);
 		}
+
+		#region 原始值读写（给"成对加减"用）
+
+		/// <summary>
+		/// 读原始存储值，不做 float 还原。整数属性就是值本身，小数属性是 值*10000。
+		/// 装备加成这类"记下我加了多少、下次先减再加"的场景必须用它，
+		/// 否则 GetAsFloat → Set 的往返会在小数段产生 ±1/10000 漂移，反复刷新后越差越多。
+		/// </summary>
+		public long GetRaw(int numericType)
+		{
+			return this.GetByKey(numericType);
+		}
+
+		/// <summary>
+		/// 写原始存储值。会正常触发五段式重算与 NumericChangeEvt。
+		/// <paramref name="numericType"/> 必须是派生段（&gt;= <see cref="NumericType.Max"/>），
+		/// 填基础段会被索引器改成 Base 段并报错。
+		/// </summary>
+		public void SetRaw(int numericType, long value)
+		{
+			if (numericType < NumericType.Max)
+			{
+				Log.Error($"SetRaw 不允许设置基础段 id={numericType}，请用派生段（>= {NumericType.Max}）");
+				return;
+			}
+			this[numericType] = value;
+		}
+
+		/// <summary>
+		/// float 配置值 → 原始存储值。小数段乘 10000 后**四舍五入**（不用截断：
+		/// 20f * 1.0000001f * 10000 = 200000.02，截断是安全的，但 19.999999 * 10000 = 199999.99 截断会掉 1）。
+		/// </summary>
+		public long ToRaw(int numericType, float value)
+		{
+			if (numericType < NumericType.Max)
+			{
+				Log.Error($"ToRaw 不允许使用基础段 id={numericType}，请用派生段（>= {NumericType.Max}）");
+				return 0;
+			}
+			if (this.IsFloat(numericType)) return (long) System.Math.Round(value * 10000f);
+			return (long) System.Math.Round(value);
+		}
+
+		#endregion
 		
 		private void Insert(int numericType, long value,bool isPublicEvent = true)
 		{
@@ -142,8 +189,19 @@ namespace TaoTie
 				NumericChange args = new NumericChange();
 				args.Parent = this.parent;
 				args.NumericType = numericType;
-				args.Old = oldValue;
-				args.New = value;
+				args.OldRaw = oldValue;
+				args.NewRaw = value;
+				// Raw 与 Real 一次性算好，避免每个订阅者各自查表换算
+				if (this.IsFloat(numericType))
+				{
+					args.OldReal = oldValue / 10000f;
+					args.NewReal = value / 10000f;
+				}
+				else
+				{
+					args.OldReal = oldValue;
+					args.NewReal = value;
+				}
 				Messager.Instance.Broadcast(Id,MessageId.NumericChangeEvt,args);
 			}
 		}
@@ -171,11 +229,11 @@ namespace TaoTie
 		}
 		
 		/// <summary>
-		/// 读表判断是取整还是保留小数
+		/// 读表判断是取整还是保留小数。
+		/// 外部写入前需要据此决定取整策略：<see cref="Set(int,float,bool)"/> 对整数属性是
+		/// <c>(int)value</c> 向零截断，24.5 会变成 24，和"四舍五入"的直觉不符。
 		/// </summary>
-		/// <param name="numericType"></param>
-		/// <returns></returns>
-		private bool IsFloat(int numericType)
+		internal bool IsFloat(int numericType)
 		{
 			if (numericType > NumericType.Max)
 			{

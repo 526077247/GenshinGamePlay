@@ -153,14 +153,14 @@ namespace TaoTie
         {
             if (evt.NumericType == countKey)
             {
-                while (Holders.Count > evt.New)
+                while (Holders.Count > evt.NewRaw)
                 {
                     var first = Holders.First;
                     Messager.Instance.Broadcast(Id, MessageId.OnHolderCountChange, first.Value, false);
                     Holders.RemoveFirst();
                     first.Value.Dispose();
                 }
-                while (Holders.Count < evt.New)
+                while (Holders.Count < evt.NewRaw)
                 {
                     var plugin = GameObjectHolder.Create(this,EntityView);
                     Holders.AddLast(plugin);

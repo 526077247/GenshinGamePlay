@@ -19,8 +19,9 @@ namespace TaoTie
         public BaseValue DamagePercentageRatio = new SingleValue(1);
         [ProtoMember(3)][LabelText("击打类型")]
         public StrikeType StrikeType;
-        [ProtoMember(4, IsRequired = true)][LabelText("破霸体值")] 
-        public Dictionary<HitBoxType, BaseValue> EnBreak = new Dictionary<HitBoxType, BaseValue>();
+        [ProtoMember(4)][LabelText("破霸体")]
+        [Tooltip("逐条配置：某部位对某属性削多少。留空则该攻击不削韧")]
+        public List<ConfigNumericBreak> NumericBreak = new List<ConfigNumericBreak>();
         [ProtoMember(5)][LabelText("攻击类型")]
         public AttackType AttackType;
         [ProtoMember(6, IsRequired = true)][LabelText("*额外伤害值")][NotNull][Tooltip("暂定为不受任何因素影响的固定伤害,如默认可以给1,防止伤害最终结算为0")]

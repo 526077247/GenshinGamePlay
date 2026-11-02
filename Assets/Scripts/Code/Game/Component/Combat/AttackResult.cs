@@ -39,10 +39,6 @@ namespace TaoTie
         /// </summary>
         public StrikeType StrikeType;
         /// <summary>
-        /// 破霸体值
-        /// </summary>
-        public int EnBreak;
-        /// <summary>
         /// 攻击类型
         /// </summary>
         public AttackType AttackType;
@@ -137,7 +133,6 @@ namespace TaoTie
             DamagePercentage = default;
             DamagePercentageRatio = default;
             StrikeType = default;
-            EnBreak = default;
             AttackType = default;
             DamageExtra = default;
             BonusCritical = default;
