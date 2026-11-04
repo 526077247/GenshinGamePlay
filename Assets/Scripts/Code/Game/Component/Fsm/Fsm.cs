@@ -205,6 +205,7 @@ namespace TaoTie
             toState.StateTime = transitionInfo.TargetTime;
             toState.StateNormalizedTime = transitionInfo.TargetTime / toCfg.StateDuration;
 
+            FsmState disposeFrom = null;
             if (transitionInfo.FadeDuration > 0)
             {
                 preState = fromState;
@@ -216,14 +217,15 @@ namespace TaoTie
             else
             {
                 currentState.OnExit();
-                currentState.Dispose();
-                currentState = null;
+                disposeFrom = currentState;
             }
             currentState = toState;
             currentState.OnEnter();
             transition?.OnPostApply(this);
 
             InvokeOnStateChanged(fromState, toState);
+            
+            disposeFrom?.Dispose();
         }
 
         protected virtual void InvokeOnStateChanged(FsmState fromState, FsmState toState)

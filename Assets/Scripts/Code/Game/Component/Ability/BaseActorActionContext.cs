@@ -45,6 +45,14 @@ namespace TaoTie
         /// <param name="childModifier"></param>
         public void AddAttachedModifer(BaseActorActionContext childModifier)
         {
+            if (childModifier == null) return;
+            
+            if (attachedModifierList == null)
+            {
+                childModifier.parentContext = null;
+                return;
+            }
+
             childModifier.parentContext = this;
             attachedModifierList.Add(childModifier);
         }
@@ -54,7 +62,7 @@ namespace TaoTie
         /// <param name="childModifier"></param>
         private void RemoveAttachedModifer(BaseActorActionContext childModifier)
         {
-            attachedModifierList.Remove(childModifier);
+            attachedModifierList?.Remove(childModifier);
         }
 
 
@@ -64,25 +72,37 @@ namespace TaoTie
             Parent = component;
             mixins = ListComponent<AbilityMixin>.Create();
             attachedModifierList = ListComponent<BaseActorActionContext>.Create();
+            parentContext = null;
         }
         
         public virtual void Dispose()
         {
-            for (int i = mixins.Count-1; i >= 0; i--)
-            {
-                mixins[i].Dispose();
-            }
-            mixins.Dispose();
-            mixins = null;
-            
-            for (int i = attachedModifierList.Count-1; i >= 0; i--)
-            {
-                attachedModifierList[i].Dispose();
-            }
-            attachedModifierList.Dispose();
+            var children = attachedModifierList;
             attachedModifierList = null;
             
-            if (parentContext != null) parentContext.RemoveAttachedModifer(this);
+            var localMixins = mixins;
+            mixins = null;
+            if (localMixins != null)
+            {
+                for (int i = localMixins.Count-1; i >= 0; i--)
+                {
+                    localMixins[i].Dispose();
+                }
+                localMixins.Dispose();
+            }
+
+            if (children != null)
+            {
+                for (int i = children.Count-1; i >= 0; i--)
+                {
+                    children[i].Dispose();
+                }
+                children.Dispose();
+            }
+
+            var parent = parentContext;
+            parentContext = null;
+            if (parent != null) parent.RemoveAttachedModifer(this);
             
             Parent = null;
             ApplierID = 0;

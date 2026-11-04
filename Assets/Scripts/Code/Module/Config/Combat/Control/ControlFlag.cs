@@ -28,13 +28,24 @@ namespace TaoTie
         /// <summary>使用道具</summary>
         UseItem = 1 << 4,
 
-        /// <summary>被选为攻击目标（潜行/虚体用；刻意不并入 <see cref="CrowdControl"/></summary>
+        /// <summary>
+        /// 被选为攻击目标（潜行/虚体用；刻意不并入 <see cref="CrowdControl"/></summary>
         BeSelected = 1 << 5,
+
+        /// <summary>
+        /// 冲刺/突进。
+        ///
+        /// 与 <see cref="Move"/> 分开，是为了让"自身施法"和"被硬控"能区别对待：
+        /// 吟唱（<c>Casting</c>）只 Deny Move|CastSkill，冲刺仍然可用 —— 它正是打断吟唱的手段；
+        /// 眩晕/击飞才 Deny 到 Sprint，把人钉死。
+        /// 注意 <see cref="CrowdControl"/> 已包含这一位，硬控配 <c>CrowdControl</c> 就够。
+        /// </summary>
+        Sprint = 1 << 6,
 
         /// <summary>
         /// 常规硬控集合：眩晕/击飞这一档剥夺的全部能力。
         /// 不含 <see cref="BeSelected"/> —— "不可被选中"是隐身语义，不该被眩晕顺带赋予。
         /// </summary>
-        CrowdControl = Move | Turn | CastSkill | Attack,
+        CrowdControl = Move | Turn | CastSkill | Attack | Sprint,
     }
 }

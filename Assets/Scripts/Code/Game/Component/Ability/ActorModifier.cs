@@ -50,6 +50,8 @@ namespace TaoTie
             res.Ability = ability;
             res.isDispose = false;
             res.Config = config;
+            res.timerId = 0;
+            res.tillTime = 0;
             if (config.Mixins != null)
             {
                 for (int i = 0; i < config.Mixins.Length; i++)

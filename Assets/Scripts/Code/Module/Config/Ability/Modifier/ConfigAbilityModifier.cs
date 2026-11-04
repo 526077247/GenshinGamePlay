@@ -24,7 +24,8 @@ namespace TaoTie
         [ProtoMember(6)][LabelText("修改玩家数值")]
         public ConfigCombatProperty[] Properties;
         [ProtoMember(8)][LabelText("剥夺能力位")]
-        [Tooltip("眩晕=CrowdControl(Move|Turn|CastSkill|Attack)、定身=Move、沉默=CastSkill。" +
+        [Tooltip("眩晕=CrowdControl(Move|Turn|CastSkill|Attack|Sprint)、定身=Move、沉默=CastSkill。" +
+                 "自身施法（吟唱）只填 Move|CastSkill，不要碰 Sprint —— 冲刺是打断吟唱的手段。" +
                  "多个控制同时生效时取并集，不需要配互斥规则；留空(None)表示这不是控制类 buff")]
         public ControlFlag Deny;
         [ProtoMember(9)][LabelText("控制等级")]

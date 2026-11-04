@@ -173,9 +173,36 @@ namespace TaoTie
                 modifierDictionary.Remove(key, modifier);
                 modifier.Dispose();
                 NotifyControlChanged();
+                return;
+            }
+            
+            // key 拼不出来（所依附的 ability 先被移除，Config 已置 null）或已被摘过：
+            // 兜底按实例找一次。否则这个 modifier 会一直留在 modifiers 里，
+            // Deny/Interrupt 这些控制位再也摘不掉，角色会永久被禁控
+            if (TryRemoveByIdentity(modifier))
+            {
+                modifier.BeforeRemove();
+                modifiers.Remove(modifier);
+                modifier.Dispose();
+                NotifyControlChanged();
             }
         }
-
+        
+        /// <summary>
+        /// 按实例从 <see cref="modifierDictionary"/> 里摘除（key 不可用时的兜底）。
+        /// </summary>
+        private bool TryRemoveByIdentity(ActorModifier modifier)
+        {
+            foreach (var pair in modifierDictionary)
+            {
+                var list = pair.Value;
+                if (list == null || !list.Remove(modifier)) continue;
+                if (list.Count == 0) modifierDictionary.Remove(pair.Key);
+                return true;
+            }
+            return false;
+        }
+        
         public void RemoveModifier(string ability, string modifier)
         {
             if (isDestroy) return;

@@ -101,6 +101,12 @@ namespace TaoTie
 		/// <summary>进入cd的ability名</summary>
 		[ProtoMember(7)]
 		public string AbilityName { get; set; }
+		/// <summary>吟唱时长(毫秒)，进入起手到出伤害；0=瞬发</summary>
+		[ProtoMember(8)]
+		public int CastTime { get; set; }
+		/// <summary>FSM 动作 id（写 FSM 的 SkillId 参数）；0=不进 FSM 直接结算</summary>
+		[ProtoMember(9)]
+		public int FsmSkillId { get; set; }
 
 	}
 }

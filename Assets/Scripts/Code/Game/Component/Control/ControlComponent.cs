@@ -35,6 +35,11 @@ namespace TaoTie
         private ControlFlag deniedMask;
         /// <summary>当前最高控制等级，只给表现层用（决定"新来的控制值不值得换表现"），不参与判定。</summary>
         private int topLevel;
+        /// <summary>
+        /// 当前是否存在"会打断"的控制源（<see cref="ControlInterrupt.None"/> 之外）。
+        /// 打断判定看的是这个值从"无"到"有"，而不是掩码从 0 到非 0 —— 原因见 <see cref="Rebuild"/>。
+        /// </summary>
+        private bool hasInterruptSource;
 
         /// <summary>当前被剥夺的能力位并集，O(1) 读取。</summary>
         public ControlFlag DeniedMask => deniedMask;
@@ -69,6 +74,7 @@ namespace TaoTie
             abilityComponent = null;
             deniedMask = ControlFlag.None;
             topLevel = 0;
+            hasInterruptSource = false;
         }
 
         #endregion
@@ -127,19 +133,23 @@ namespace TaoTie
             }
 
             ControlFlag old = deniedMask;
-            // 只比掩码：掩码没变就什么都不做（等级变化不单独触发广播，
-            // 避免"同一种控制换了个来源"也惊动 UI）。
+
+            // 打断判定独立于掩码：吟唱这类"自身就剥夺 CastSkill"的状态下，掩码早就是非 0 了，
+            // 若仍按"掩码 0→非 0"判断，眩晕永远打不断吟唱。
+            // 改成看"打断源从无到有"：吟唱自己的 modifier 配 Interrupt=None 不算打断源，
+            // 眩晕/击飞配 Interrupt=CurrentSkill 算，因此只在真正来控的那一次打断。
+            bool hadInterruptSource = hasInterruptSource;
+            hasInterruptSource = interrupt != ControlInterrupt.None;
+            if (!silent && !hadInterruptSource && hasInterruptSource)
+            {
+                ApplyInterrupt(interrupt);
+            }
+
+            // 掩码没变就到此为止（等级/打断源变化不单独广播，避免"同一种控制换了个来源"也惊动 UI）。
             if (old == mask) return;
 
             deniedMask = mask;
             topLevel = bestLevel;
-
-            // 只有"从无控制到被控制"这一次才打断。已处于控制中再叠一层控制不重复打断，
-            // 否则连控时会反复把目标的动作重置回起点。
-            if (!silent && old == ControlFlag.None && mask != ControlFlag.None)
-            {
-                ApplyInterrupt(interrupt);
-            }
 
             OnMaskChanged?.Invoke(old, mask);
 
@@ -156,9 +166,13 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 控制生效瞬间的处置：打断技能、按策略处理寻路。
+        /// 控制生效瞬间的处置：打断当前动作。
         /// 这里是"打断"的唯一落点 —— 以前 <see cref="CombatComponent.ReleaseSkillImmediately"/>
         /// 只有 AI 的失败分支会调，控制链路从来不调，导致眩晕打不断正在施放的技能。
+        ///
+        /// 只处理技能/动作，不碰寻路：大世界的六边形寻路由输入层自己管，
+        /// 被控时"能不能发起新寻路"由 <see cref="ControlFlag.Move"/> 在入口拦住，
+        /// 已经在走的路径不需要控制层介入。
         /// </summary>
         private void ApplyInterrupt(ControlInterrupt interrupt)
         {
