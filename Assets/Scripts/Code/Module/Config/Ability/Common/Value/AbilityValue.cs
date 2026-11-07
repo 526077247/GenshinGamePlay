@@ -10,7 +10,7 @@ namespace TaoTie
     {
         [ProtoMember(1)]
         public string Key;
-        public override float Resolve(Entity entity,ActorAbility ability)
+        public override float Resolve(Entity entity,ActorAbility ability,ActorModifier modifier = null)
         {
             if(ability != null)
                 return ability.GetReplaceValue(Key);

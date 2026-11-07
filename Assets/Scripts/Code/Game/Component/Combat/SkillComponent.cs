@@ -12,12 +12,6 @@ namespace TaoTie
         private AbilityComponent abilityComponent => parent.GetComponent<AbilityComponent>();
 
         /// <summary>
-        /// 吟唱时长在 ability 里的变量名。施法时用 SetSpecials 写进去，
-        /// 由该 ability 的 DelayDoAction.Delay（AbilityValue）读走当倒计时。
-        /// </summary>
-        private const string CastTimeSpecial = "CastTime";
-
-        /// <summary>
         /// 施法序号。每次施法自增并写进技能 ability 的 special，
         /// DelayDoAction 到期时比对，不一致说明这笔延迟属于上一次施法，丢弃。
         /// 常驻 ability 不能靠"移除实例"来终止上一轮协程，只能靠这个。
@@ -165,11 +159,15 @@ namespace TaoTie
         /// 打断不结算靠 ability 里的 RequireModifier（Casting）：状态一跳走 modifier 就被摘，
         /// Delay 到期发现它不在了就放弃 —— 常驻 ability 的 IsDispose 永远是 false，指望不上。
         ///
-        /// 都先消音按住的方向键，否则边跑边放会被自己的移动意图顶掉。
+        /// 进吟唱前先消音按住的方向键，否则边跑边放会被自己的移动意图顶掉；
+        /// 瞬发不消音 —— 它没有吟唱态需要保护，消了只会把方向输入一起冻住。
         /// </summary>
         private void TryEnterFsm(SkillInfo info)
         {
-            GetComponent<LocalInputController>()?.SuppressMoveUntilRelease();
+            // 只有真的进吟唱才消音按住的方向键。
+            // 瞬发技能没有吟唱状态需要保护；若也消音，这个 flag 会一直留到玩家松开全部方向键为止，
+            // 表现就是「跑动中放完瞬发技能，方向键完全没反应，必须先松手才能重新转向」。
+            bool chanting = false;
 
             if (info.CastTime > 0)
             {
@@ -184,13 +182,16 @@ namespace TaoTie
                 }
                 else
                 {
-                    BeginCast(info);
+                    chanting = BeginCast(info);
                 }
             }
 
             // 有 FSM 动作 id 就交给状态机（吟唱/瞬发都走这条）
             if (info.SkillId > 0)
             {
+                // 必须在切状态之前消音：吟唱态是用 MotionFlag != 0 判「主动移动打断」的，
+                // 玩家边跑边放时，同一帧写下去的移动意图会把刚进的吟唱状态顶掉。
+                if (chanting) GetComponent<LocalInputController>()?.SuppressMoveUntilRelease();
                 combatComponent.UseSkillImmediately(info.SkillId);
                 return;
             }
@@ -206,13 +207,17 @@ namespace TaoTie
         /// <summary>
         /// 给技能 ability 注入本次施法的参数。
         ///
-        /// ability 是常驻的（<see cref="SkillLoadoutComponent"/> 装配时挂上），所以这里
+        /// ability 是常驻的，所以这里
         /// <b>不能</b> AddAbility 第二份 —— 那会让伤害 mixin 叠成两份。
         /// 取不到实例才补挂（怪物 AI / 临时注入没走装配套路的情况）。
         /// </summary>
-        private void BeginCast(SkillInfo info)
+        /// <returns>
+        /// 是否真的进入了吟唱流程。调用方据此决定要不要消音按住的方向键 ——
+        /// 失败（ability 配置缺失）时不能消音，否则玩家会平白丢一次转向。
+        /// </returns>
+        private bool BeginCast(SkillInfo info)
         {
-            if (abilityComponent == null) return;
+            if (abilityComponent == null) return false;
 
             var ability = abilityComponent.GetAbility(info.AbilityName);
             if (ability == null)
@@ -221,16 +226,17 @@ namespace TaoTie
                 if (!ConfigAbilityCategory.Instance.GetAll().TryGetValue(info.AbilityName, out var conf) || conf == null)
                 {
                     Log.Error($"[Skill] {info.ConfigId} 的 ability 不存在：{info.AbilityName}");
-                    return;
+                    return false;
                 }
                 ability = abilityComponent.AddAbility(conf);
             }
-            if (ability == null) return;
+            if (ability == null) return false;
 
-            ability.SetSpecials(CastTimeSpecial, info.CastTime);
+            ability.SetSpecials(GameConst.CastTimeSpecial, info.CastTime);
             // 序号必须最后写：DelayDoAction 在 EnterActions 里读到的是本次序号，
             // 上一轮还没到期的协程醒来发现序号变了就会自己退出
             ability.SetSpecials(CastSeqSpecial, ++castSeq);
+            return true;
         }
         /// <summary>
         /// 批量注入技能（场景模板 / 外部系统用）。参数是 <see cref="SkillConfig.Id"/> 数组。

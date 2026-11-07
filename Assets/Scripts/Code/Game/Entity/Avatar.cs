@@ -29,10 +29,10 @@ namespace TaoTie
             AddComponent<LocalInputController>();
             CreateMoveComponent();
             AddComponent<ORCAAgentComponent>();
+            AddComponent<ControlComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             var ac = AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             ac.AddAbilities(ConfigAbilityCategory.Instance.GetDefaultAvatarAbilities());
-            AddComponent<ControlComponent>();
             AddComponent<EquipHoldComponent>();
             if (ConfigActor.Billboard != null)
                 AddComponent<BillboardComponent, ConfigBillboard>(ConfigActor.Billboard);

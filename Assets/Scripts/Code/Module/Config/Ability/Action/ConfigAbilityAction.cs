@@ -41,6 +41,8 @@ namespace TaoTie
     [ProtoInclude(129, typeof(RemoveEffect))]
     [ProtoInclude(130, typeof(ShowRangeAction))]
     [ProtoInclude(131, typeof(SetNumericValue))]
+    [ProtoInclude(132, typeof(ModifyAttackResult))]
+    [ProtoInclude(133, typeof(RemoveModifierByTag))]
     public abstract class ConfigAbilityAction
     {
         [ProtoMember(1)][BoxGroup("Common")][LabelText("*重定向前过滤")][Tooltip("Targetting目标重新选定生效前，判断当前Target是否满足条件执行")]
@@ -53,7 +55,22 @@ namespace TaoTie
         public ConfigAbilityPredicate PredicateForeach; 
         protected abstract void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target);
 
-        public void DoExecute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
+        /// <summary>
+        /// 需要"本次结算"信息的 Action 覆写这个重载（比如 <see cref="ModifyAttackResult"/>）。
+        ///
+        /// 默认直接转发到 4 参版本，所以其余 30 多个 Action 一行都不用改。
+        /// 只有攻击类钩子（BeforeAttack / BeforeBeAttack / AfterAttack / AfterBeAttack）会传非 null 的
+        /// <paramref name="result"/>；其余链路（Tick、AfterAdd、OnUseSkill…）没有"本次这一击"，
+        /// 传进来的是 null —— 覆写方要自己判空并报错，别静默吞掉。
+        /// </summary>
+        protected virtual void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier,
+            Entity target, AttackResult result)
+        {
+            Execute(actionExecuter, ability, modifier, target);
+        }
+
+        /// <param name="result">本次结算的伤害句柄；非攻击钩子为 null</param>
+        public void DoExecute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target, AttackResult result = null)
         {
             if (Predicate == null || Predicate.Evaluate(actionExecuter, ability, modifier, target))
             {
@@ -76,7 +93,7 @@ namespace TaoTie
                             if (PredicateForeach == null ||
                                 PredicateForeach.Evaluate(actionExecuter, ability, modifier, item))
                             {
-                                Execute(actionExecuter, ability, modifier, item);
+                                Execute(actionExecuter, ability, modifier, item, result);
                             }
                         }
                     }

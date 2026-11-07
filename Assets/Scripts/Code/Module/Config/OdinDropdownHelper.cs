@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -388,6 +389,78 @@ namespace TaoTie
             }
             list.Sort(DefaultStringComparer);
             return list;
+        }
+        
+        /// <summary>
+        /// 攻击标识下拉：扫全部 Ability 配置，把每个 AttackInfo 上写过的 AttackTag 列出来。
+        /// 注意这里读的是 json 源文件而不是运行时加载的配置 —— 编辑器里改完还没重新出 bytes 也能选到。
+        /// </summary>
+        public static IEnumerable GetAttackTags()
+        {
+            ValueDropdownList<string> list = new ValueDropdownList<string>();
+            HashSet<string> temp = new HashSet<string>();
+            var files = Directory.GetFiles("Assets/AssetsPackage/EditConfig/Abilities");
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (!files[i].EndsWith(".json")) continue;
+                var jStr = File.ReadAllText(files[i]);
+                if (JsonHelper.TryFromJson(jStr, out List<ConfigAbility> abilities))
+                {
+                    for (int j = 0; j < abilities.Count; j++)
+                    {
+                        CollectAttackTags(abilities[j], temp, new HashSet<object>(), 0);
+                    }
+                }
+            }
+
+            foreach (var tag in temp) list.Add(tag);
+            list.Sort(DefaultStringComparer);
+            return list;
+        }
+
+        private const int MaxAttackTagDepth = 16;
+
+        /// <summary>
+        /// 反射遍历整棵配置树（Ability → Mixins → Actions → 嵌套 Actions、Modifiers → Mixins），
+        /// 把 <see cref="ConfigAttackInfo.AttackTag"/> 上出现过的标识收集起来。
+        /// </summary>
+        private static void CollectAttackTags(object node, HashSet<string> output, HashSet<object> visited, int depth)
+        {
+            if (node == null || depth > MaxAttackTagDepth) return;
+
+            var type = node.GetType();
+            // 值类型（float/int/枚举/Vector3…）里不可能藏着 AttackInfo，直接剪掉，
+            // 免得给每个字段都塞一个装箱对象进 visited。
+            if (type.IsValueType || node is string) return;
+
+            if (node is ConfigAttackInfo attackInfo)
+            {
+                if (!string.IsNullOrEmpty(attackInfo.AttackTag)) output.Add(attackInfo.AttackTag);
+                return; // AttackInfo 内部不会有嵌套的 AttackInfo
+            }
+
+            // 环形引用（理论上配置是树，但编辑器里拖引用仍然可能成环）走一次就够
+            if (!visited.Add(node)) return;
+
+            if (node is IDictionary dictionary)
+            {
+                foreach (var value in dictionary.Values)
+                    CollectAttackTags(value, output, visited, depth + 1);
+                return;
+            }
+
+            if (node is IEnumerable enumerable)
+            {
+                foreach (var item in enumerable)
+                    CollectAttackTags(item, output, visited, depth + 1);
+                return;
+            }
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            for (int i = 0; i < fields.Length; i++)
+            {
+                CollectAttackTags(fields[i].GetValue(node), output, visited, depth + 1);
+            }
         }
 
         /// <summary>

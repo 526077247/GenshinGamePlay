@@ -17,6 +17,7 @@
 
         private void Execute(AttackResult result, CombatComponent other)
         {
+            if (!AttackHelper.MatchAttackTag(Config.AttackTag, result)) return;
             var actions = Config.Actions;
             if (actions != null)
             {
@@ -24,7 +25,7 @@
                 var target = other.GetParent<Entity>();
                 for (int i = 0; i < actions.Length; i++)
                 {
-                    actions[i].DoExecute(executer, actorAbility, actorModifier, target);
+                    actions[i].DoExecute(executer, actorAbility, actorModifier, target, result);
                 }
             }
         }

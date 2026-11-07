@@ -14,7 +14,7 @@ namespace TaoTie
         /// <summary>
         /// 打印的文本
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(10)]
         public string Text;
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {

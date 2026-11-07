@@ -19,7 +19,7 @@ namespace TaoTie
         [ValueDropdown("@"+nameof(OdinDropdownHelper)+"."+nameof(OdinDropdownHelper.GetNumericFinalTypeId)+"()")]
 #endif
         public int Key;
-        public override float Resolve(Entity entity,ActorAbility ability)
+        public override float Resolve(Entity entity,ActorAbility ability,ActorModifier modifier = null)
         {
             var numc = entity.GetComponent<NumericComponent>();
             if (numc != null)

@@ -128,11 +128,37 @@ namespace TaoTie
             var em = ability.Parent.GetParent<Entity>().Parent;
             var attacker = em.Get<Entity>(result.AttackerId);
             var defence = em.Get<Entity>(result.DefenseId);
-            if (attacker == null || defence == null) return;
-            var combatA = attacker.GetComponent<CombatComponent>();
+            // 统一约定：IsEffective 表示"这一击真的落地了"。
+            // 所有早退路径都必须显式置 false —— 否则调用方（时停判定、ConfigAttackEvent.OnHitActions）
+            // 会把"没打中"当成命中，凭空挂上灼烧之类的东西。
+            if (attacker == null || defence == null)
+            {
+                result.IsEffective = false;
+                return;
+            }
+            // 事件归属实体：子弹链路下 AttackerId 可能被解析成子弹自己（见 BulletComponent.OwnerId），
+            // 而攻击标识的消费方（心法/受击方挂的 Mixin）在射手身上 —— 在子弹身上广播，
+            // 射手永远收不到，表现就是「子弹类技能静默不附加任何东西，且没有任何报错」。
+            // 所以事件统一归到起点所有者，拿不到再退回攻击者。
+            // 伤害数值仍然按 attacker 结算（子弹若带自己的数值，本就该用它），只有事件归属改变。
+            var eventOwner = attacker;
+            if (result.OriginOwnerId != 0 && result.OriginOwnerId != result.AttackerId)
+            {
+                var origin = em.Get<Entity>(result.OriginOwnerId);
+                if (origin != null) eventOwner = origin;
+            }
+            var combatA = eventOwner.GetComponent<CombatComponent>() ?? attacker.GetComponent<CombatComponent>();
             var combatD = defence.GetComponent<CombatComponent>();
-            if (combatA == null || combatD == null) return;
-            if (!combatD.CanBeHit) return;
+            if (combatA == null || combatD == null)
+            {
+                result.IsEffective = false;
+                return;
+            }
+            if (!combatD.CanBeHit)
+            {
+                result.IsEffective = false;
+                return;
+            }
             //非循环命中模式,同一攻击实例对同一目标只结算一次(攻击实例=每次施加的Modifier)
             if (result.HitPattern != null && !result.HitPattern.Recurring && result.Id != 0)
             {
@@ -145,15 +171,19 @@ namespace TaoTie
             }
             var numA = attacker.GetComponent<NumericComponent>();
             var numD = defence.GetComponent<NumericComponent>();
-            if (numA == null || numD == null) return;
+            if (numA == null || numD == null)
+            {
+                result.IsEffective = false;
+                return;
+            }
             result.DamagePercentage =
-                result.ConfigAttackInfo.AttackProperty.DamagePercentage.Resolve(attacker, ability);
+                result.ConfigAttackInfo.AttackProperty.DamagePercentage.Resolve(attacker, ability, modifier);
             result.DamagePercentageRatio =
-                result.ConfigAttackInfo.AttackProperty.DamagePercentageRatio.Resolve(attacker, ability);
-            result.DamageExtra = result.ConfigAttackInfo.AttackProperty.DamageExtra.Resolve(attacker, ability);
-            result.BonusCritical = result.ConfigAttackInfo.AttackProperty.BonusCritical.Resolve(attacker, ability);
+                result.ConfigAttackInfo.AttackProperty.DamagePercentageRatio.Resolve(attacker, ability, modifier);
+            result.DamageExtra = result.ConfigAttackInfo.AttackProperty.DamageExtra.Resolve(attacker, ability, modifier);
+            result.BonusCritical = result.ConfigAttackInfo.AttackProperty.BonusCritical.Resolve(attacker, ability, modifier);
             result.BonusCriticalHurt =
-                result.ConfigAttackInfo.AttackProperty.BonusCriticalHurt.Resolve(attacker, ability);
+                result.ConfigAttackInfo.AttackProperty.BonusCriticalHurt.Resolve(attacker, ability, modifier);
             result.TrueDamage = result.ConfigAttackInfo.AttackProperty.TrueDamage;
             result.IgnoreLevelDiff = result.ConfigAttackInfo.AttackProperty.IgnoreLevelDiff;
             result.StrikeType = result.ConfigAttackInfo.AttackProperty.StrikeType;
@@ -166,8 +196,8 @@ namespace TaoTie
             if (impulse != null)
             {
                 result.HitLevel = impulse.HitLevel;
-                result.HitImpulseX = impulse.HitImpulseX.Resolve(attacker, ability);
-                result.HitImpulseY = impulse.HitImpulseY.Resolve(attacker, ability);
+                result.HitImpulseX = impulse.HitImpulseX.Resolve(attacker, ability, modifier);
+                result.HitImpulseY = impulse.HitImpulseY.Resolve(attacker, ability, modifier);
                 result.RetreatDir = TargetHelper.ResolveTarget(attacker, result, defence, impulse.RetreatType);
             }
 
@@ -226,7 +256,7 @@ namespace TaoTie
             numD.Set(NumericType.HpBase, finalHp);
             //破霸体（已打死就不再削韧，避免给正在销毁的尸体广播数值变化）
             if (finalHp > 0)
-                ApplyNumericBreak(numD, attacker, ability,
+                ApplyNumericBreak(numD, attacker, ability, modifier,
                     result.ConfigAttackInfo.AttackProperty, result.HitInfo.HitBoxType);
 
             combatD.AfterBeAttack(result, combatA);
@@ -262,7 +292,7 @@ namespace TaoTie
         /// 所以 25 → 0 会触发一次、0 → 0 不广播、恢复期间 0 → 20 又不会命中"跨入 0"，不会重复破。
         /// </summary>
         private static void ApplyNumericBreak(NumericComponent numD, Entity attacker,
-                                              ActorAbility ability,
+                                              ActorAbility ability, ActorModifier modifier,
                                               ConfigAttackProperty prop, HitBoxType hitBox)
         {
             var list = prop?.NumericBreak;
@@ -290,7 +320,7 @@ namespace TaoTie
                 var cur = numD.GetAsFloat(baseId);
                 if (cur <= 0f) continue; // 已在破韧免疫窗口内，不再重复扣
 
-                var value = entry.Value.Resolve(attacker, ability);
+                var value = entry.Value.Resolve(attacker, ability, modifier);
                 if (value <= 0f) continue; // 负值等于回韧，会让目标永远破不了
 
                 var next = cur - value;
@@ -411,5 +441,23 @@ namespace TaoTie
                 }
             }
         }
+        
+        /// <summary>
+        /// 攻击标识匹配：判断「本次这一击」是否属于 <paramref name="expected"/> 这一类。
+        ///
+        /// 标识是一根字符串绳子 —— 攻击侧在 <see cref="ConfigAttackInfo.AttackTag"/> 上写一个名字，
+        /// 订阅侧在四个攻击钩子（攻击前 / 攻击后 / 受击前 / 受击后）的 AttackTag 上写同一个名字，
+        /// 两边一致才执行整组 Actions。拼错一个字符既不报错也不触发，所以改标识时两边必须一起改。
+        ///
+        /// 判断放在 Mixin 层而不是 Action 层：Actions 是一组，天然共享「这次攻击属不属于我」这个前提；
+        /// 摊到每个 Action 上就要求处处配齐，漏一个它就会在错误的攻击里执行且毫无报错。
+        /// </summary>
+        public static bool MatchAttackTag(string expected, AttackResult result)
+        {
+            if (string.IsNullOrEmpty(expected)) return true; // 未配 = 不过滤，绝大多数 Mixin 走这条
+            var tag = result?.ConfigAttackInfo?.AttackTag;
+            return !string.IsNullOrEmpty(tag) && string.Equals(tag, expected, StringComparison.Ordinal);
+        }
+
     }
 }

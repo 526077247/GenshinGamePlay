@@ -68,5 +68,10 @@
         /// 订阅方（UI 头顶图标 / 模型层特效 / AI 决策）据此响应，不要轮询 ControlComponent。
         /// </summary>
         public const int ControlStateChanged = 29;
+        /// <summary>
+        /// 状态标记变化（载荷 EntityTagsEvent）。标记集合或层数变化时广播，
+        /// 订阅方拿到变化后自己拉层数，不要轮询 ControlComponent。
+        /// </summary>
+        public const int EntityTagsChanged = 30;
     }
 }

@@ -18,7 +18,7 @@ namespace TaoTie
         }
         [ProtoMember(1)]
         public float Value;
-        public override float Resolve(Entity entity,ActorAbility ability)
+        public override float Resolve(Entity entity,ActorAbility ability,ActorModifier modifier = null)
         {
             return Value;
         }

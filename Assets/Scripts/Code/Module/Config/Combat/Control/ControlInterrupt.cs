@@ -6,9 +6,14 @@ namespace TaoTie
     /// 这条链路以前是缺的：<c>SkillComponent</c> 只在"发起技能"时拦一道，
     /// 已经在 FSM 技能状态里的那段会继续播完、时间轴上的攻击事件照常结算伤害，
     /// 所以眩晕对"正在出招"的目标完全无效。现在由 <see cref="ControlComponent"/>
-    /// 在"从无控制变为被控制"那一刻统一执行一次。
+    /// 在"打断源从无到有"那一刻统一执行一次。
     ///
-    /// 只在该控制的 <c>Deny</c> 真正让掩码从 None 变为非 None 时触发，
+    /// <b>这个值不在配置上</b>：它由标记派生（<see cref="GameplayTagMeta.InterruptOf"/>），
+    /// 和"剥夺哪些能力"（<see cref="GameplayTagMeta.TierOf"/>）、"表现等级"（<see cref="GameplayTagMeta.LevelOf"/>）
+    /// 是同一条原则 —— 同一个状态换了来源，行为必须一样。
+    /// 想在某个技能上"额外打断但不留状态"，那是 Action 的事，不是 Modifier 的字段。
+    ///
+    /// 只在打断源（<see cref="GameplayTagMeta.InterruptMask"/>）从"无"到"有"时触发，
     /// 已经处于控制中再叠一层不会再打断（避免"被连控时反复重置动作"）。
     /// </summary>
     public enum ControlInterrupt

@@ -34,6 +34,20 @@ namespace TaoTie
         private long tillTime;
 
         /// <summary>
+        /// 当前层数，1 起步。
+        ///
+        /// Multiple 的每个实例恒为 1（层数由实例个数体现）；
+        /// Stack 类型共用一个实例，靠 <see cref="TryAddStack"/> 自增。
+        /// 上限不在这里，而在 GameplayTagMeta（上限属于标记，不属于 modifier）。
+        /// </summary>
+        public int StackCount { get; private set; }
+
+        /// <summary>
+        /// Properties 已经按几层应用过，用于摘除时一次扣干净。
+        /// </summary>
+        private int appliedStack;
+
+        /// <summary>
         /// 创建
         /// </summary>
         /// <param name="applierID">施加者id</param>
@@ -52,6 +66,8 @@ namespace TaoTie
             res.Config = config;
             res.timerId = 0;
             res.tillTime = 0;
+            res.StackCount = 1;
+            res.appliedStack = 0;
             if (config.Mixins != null)
             {
                 for (int i = 0; i < config.Mixins.Length; i++)
@@ -73,22 +89,7 @@ namespace TaoTie
                 timerId = GameTimerManager.Instance.NewOnceTimer(tillTime, TimerType.ModifierExpired, this);
             }
 
-            if (Config.Properties != null)
-            {
-                var entity = Parent.GetParent<Entity>();
-                if (entity != null)
-                {
-                    var numC = entity.GetComponent<NumericComponent>();
-                    if (numC != null)
-                    {
-                        for (int i = 0; i < Config.Properties.Length; i++)
-                        {
-                            var old = numC.GetAsFloat(Config.Properties[i].NumericType);
-                            numC.Set(Config.Properties[i].NumericType,old + Config.Properties[i].Value);
-                        }
-                    }
-                }
-            }
+            ApplyProperties(StackCount);
         }
 
         public override void BeforeRemove()
@@ -96,25 +97,45 @@ namespace TaoTie
             GameTimerManager.Instance.Remove(ref timerId);
             //广播清理受击方记录的该攻击实例的命中记录,复用对象池时可避免旧记录误命中
             Messager.Instance?.Broadcast<long>(0, MessageId.ClearHitRecord, Id);
-            if (Config?.Properties != null)
-            {
-                var entity = Parent.GetParent<Entity>();
-                if (entity != null)
-                {
-                    var numC = entity.GetComponent<NumericComponent>();
-                    if (numC != null)
-                    {
-                        for (int i = 0; i < Config.Properties.Length; i++)
-                        {
-                            var old = numC.GetAsFloat(Config.Properties[i].NumericType);
-                            numC.Set(Config.Properties[i].NumericType,old - Config.Properties[i].Value);
-                        }
-                    }
-                }
-            }
+            ApplyProperties(-appliedStack);
             base.BeforeRemove();
         }
 
+
+        /// <summary>
+        /// 按层数增量应用 / 回退 Properties。
+        ///
+        /// delta &gt; 0 加层，delta &lt; 0 回退（摘除时传 -appliedStack，一次扣干净）。
+        /// 不做全量重算：GetAsFloat→Set 往返会带来精度漂移，
+        /// 而增量只加差值。
+        /// </summary>
+        private void ApplyProperties(int delta)
+        {
+            if (delta == 0 || appliedStack + delta < 0 || Config?.Properties == null) return;
+
+            var entity = Parent.GetParent<Entity>();
+            var numC = entity?.GetComponent<NumericComponent>();
+            if (numC == null) return;
+
+            for (int i = 0; i < Config.Properties.Length; i++)
+            {
+                var prop = Config.Properties[i];
+                var old = numC.GetAsFloat(prop.NumericType);
+                numC.Set(prop.NumericType, old + prop.Value * delta);
+            }
+            appliedStack += delta;
+        }
+
+        /// <summary>
+        /// 叠一层。
+        /// 上限校验在 <see cref="AbilityComponent"/>（它按标记池的余量判），
+        /// 这里只负责上层已经同意的那一次自增。
+        /// </summary>
+        public void TryAddStack()
+        {
+            StackCount++;
+            ApplyProperties(1);
+        }
 
         public void SetDuration(long duration)
         {

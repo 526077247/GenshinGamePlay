@@ -28,6 +28,10 @@ namespace TaoTie
             
             if (config.AbilityMixins != null)
             {
+                // ability 级 Mixin 以前没有校验入口；监听类的漏填（WatchTags=None）只在运行时静默失效，
+                // 必须在装载期就吵出来。modifier 级由 ValidateModifier 内部统一处理。
+                GameplayTagMeta.ValidateMixins(config.AbilityMixins, config.AbilityName, GameplayTags.None);
+
                 for (int i = 0; i < config.AbilityMixins.Length; i++)
                 {
                     var mixin = AbilitySystem.Instance.CreateAbilityMixin(res, null, config.AbilityMixins[i]);
@@ -40,6 +44,9 @@ namespace TaoTie
                 for (int i = 0; i < config.Modifiers.Length; i++)
                 {
                     var modifier = config.Modifiers[i];
+                    // 装载期校验标记配置：写错就在加载时报错，别等行为诡异。
+                    // 每次装载都查（每条 modifier 两次位运算），只在配置有误时打日志
+                    GameplayTagMeta.ValidateModifier(modifier, config.AbilityName);
                     res.modifierConfigs.Add(modifier.ModifierName, modifier);
                 }
             }

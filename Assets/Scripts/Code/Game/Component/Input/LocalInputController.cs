@@ -193,8 +193,8 @@ namespace TaoTie
 
         /// <summary>
         /// 现在是否允许冲刺。与 <see cref="CanMoveNow"/> 分开判定：
-        /// 硬控按 <see cref="ControlFlag.CrowdControl"/> 连 Sprint 位一起剥夺（人钉死不能冲），
-        /// 而吟唱这类自身施法只剥夺 Move|CastSkill —— 冲刺仍然可用，它就是打断吟唱的手段。
+        /// 硬控（<see cref="GameplayTagMeta.HardStop"/> 档）连 Sprint 位一起剥夺（人钉死不能冲），
+        /// 而吟唱这类自身施法只锁 Move|CastSkill —— 冲刺仍然可用，它就是打断吟唱的手段。
         /// </summary>
         private bool CanSprintNow()
         {
@@ -296,11 +296,14 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 进入施法：把此刻还按住的方向键忽略掉，直到玩家松手。
+        /// 进入<b>吟唱</b>：把此刻还按住的方向键忽略掉，直到玩家松手。
         ///
         /// 为什么需要：FSM 里的吟唱状态是用 <c>MotionFlag != 0</c> 判"主动移动打断"的，
         /// 而移动意图来自输入。若玩家边跑边放技能，吟唱会在第 0 帧就被自己按着的方向键打断。
         /// 这里只吞"施法瞬间已按住"的键：松手后再按是明确的移动意图，照旧打断吟唱。
+        ///
+        /// <b>瞬发技能不要调它</b>：没有吟唱态需要保护，而这个标记只有在"方向归零"时才清，
+        /// 玩家一直按着方向键就永远清不掉，表现是放完技能后方向键完全没反应。
         /// </summary>
         public void SuppressMoveUntilRelease()
         {

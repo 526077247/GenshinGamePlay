@@ -17,13 +17,23 @@ namespace TaoTie
         
         protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier, Entity target)
         {
+            Execute(actionExecuter, ability, modifier, target, null);
+        }
+
+        /// <summary>
+        /// 转发 result：包在 Predicated 里的 <see cref="ModifyAttackResult"/> 也要能拿到本次结算，
+        /// 否则"条件成立才增伤"这种写法会静默失效。
+        /// </summary>
+        protected override void Execute(Entity actionExecuter, ActorAbility ability, ActorModifier modifier,
+            Entity target, AttackResult result)
+        {
             if (TargetPredicate.Evaluate(actionExecuter, ability, modifier, target))
             {
                 if (SuccessActions != null)
                 {
                     for (int i = 0; i < SuccessActions.Length; i++)
                     {
-                        SuccessActions[i].DoExecute(actionExecuter, ability, modifier, target);
+                        SuccessActions[i].DoExecute(actionExecuter, ability, modifier, target, result);
                     }
                 }
             }
@@ -33,7 +43,7 @@ namespace TaoTie
                 {
                     for (int i = 0; i < FailActions.Length; i++)
                     {
-                        FailActions[i].DoExecute(actionExecuter, ability, modifier, target);
+                        FailActions[i].DoExecute(actionExecuter, ability, modifier, target, result);
                     }
                 }
             }
