@@ -13,34 +13,32 @@ namespace TaoTie
     /// 全部 modifier 再逐条翻它的 Mixins 快，也不依赖 Mixin 的存储结构。
     /// 注册/注销挂在宿主的 afterAdd / beforeRemove 上，跟着生命周期走，不会漏。
     ///
-    /// <b>次数为什么存在实例上</b>：<see cref="ConfigImmuneMixin"/> 是全局共享的配置模板，
-    /// 扣它等于扣所有实体的免疫。剩余次数属于这一个实例，与 <see cref="ActorModifier.StackCount"/> 同构。
+    /// <b>本类不认识「次数」这个概念</b>：
+    /// 它只回答两件事 —— 「这组标记我免不免」和「免了之后跑哪些 Actions」。
+    /// 有限次数、扣减、耗尽移除，全部是配置层用通用件拼出来的：
+    /// <code>
+    /// ModifierSpecials: { "ImmuneCount": 3 }
+    /// Mixins: [
+    ///   ConfigImmuneMixin{ ImmuneTags = Stun, Actions = [ AddSpecial(ImmuneCount, -1) ] },
+    ///   ConfigDoActionOnSpecialsChangeMixin{ Key = ImmuneCount, Compare = LEqual, Value = 0,
+    ///                                        Mode = FallingEdge, Actions = [ RemoveModifier ] }
+    /// ]
+    /// </code>
+    /// 这样 Mixin 不需要知道状态名，也就不存在「key 拼错 → 静默变成永久免疫」这类错；
+    /// 而「扣几次」「扣到多少算耗尽」「耗尽后是移除还是只播特效」全在配置里，改行为不用改代码。
+    /// 不配 <c>AddSpecial</c> 就是永久免疫，与以前「不配次数」的默认行为一致。
     /// </summary>
     public class ImmuneMixin : AbilityMixin<ConfigImmuneMixin>
     {
-        /// <summary>剩余可抵挡次数。不限次时恒为初始值，不参与递减。</summary>
-        private int remaining;
-
         /// <summary>宿主实体的控制仲裁者（免疫注册表所在处）。</summary>
         private ControlComponent host;
-
-        /// <summary>是否不限次（<see cref="ConfigImmuneMixin.ImmuneCount"/> 为 0）。</summary>
-        public bool Unlimited => Config != null && Config.ImmuneCount <= 0;
-
-        /// <summary>剩余次数；不限次返回 -1（给 UI 区分"∞"和"还剩 0 次"）。</summary>
-        public int Remaining => Unlimited ? -1 : remaining;
 
         protected override void InitInternal(ActorAbility actorAbility, ActorModifier actorModifier,
             ConfigImmuneMixin config)
         {
-            // 次数必须在 Init 里赋值，不能挪到 Register（afterAdd）——
-            // afterAdd 是事件，将来任何"重新触发一次 afterAdd"的改动都会把次数刷满，
-            // 而那种改动看起来完全无害，且不会立刻暴露。
-            remaining = config.ImmuneCount;
-
-            var context = actorModifier != null ? (BaseActorActionContext)actorModifier : actorAbility;
             // 无 ControlComponent 的实体（Gadget / Character）拿不到 host，注册静默失败：
             // 这类实体按 ApplyModifier 的语义本来就"全免"，免疫配置是冗余的，不是 bug。
+            var context = actorModifier != null ? (BaseActorActionContext)actorModifier : actorAbility;
             host = context?.Parent?.GetComponent<ControlComponent>();
 
             if (actorModifier != null)
@@ -84,7 +82,13 @@ namespace TaoTie
             host?.UnregisterImmune(this);
         }
 
-        /// <summary>本条是否免疫这组标记（只要命中任一位即算）。</summary>
+        /// <summary>
+        /// 本条是否免疫这组标记（只要命中任一位即算）。
+        ///
+        /// 不看次数 —— 剩余次数是配置层的事。想让某些条件失效，
+        /// 在 Actions 里把状态扣到 0 并用 <c>ConfigDoActionOnSpecialsChangeMixin</c> 移除宿主即可；
+        /// 或者给这条 modifier 配 Duration，到期自然注销。
+        /// </summary>
         public bool CanImmune(GameplayTags tags)
         {
             return tags != GameplayTags.None
@@ -93,16 +97,11 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 消耗一次免疫。返回 true 表示还能继续挡，false 表示这是最后一次、宿主该移除了。
-        /// 不限次永远返回 true 且不递减。
+        /// 执行「免疫成功」的 Actions。初始目标是宿主自己，需要指向攻击者请在本条里配 Targetting。
+        ///
+        /// Actions 里可能移除宿主（扣到 0 → RemoveModifier），
+        /// 那条路径走帧末延迟，所以本栈里继续执行剩余的 Actions 是安全的。
         /// </summary>
-        public bool Consume()
-        {
-            if (Config == null || Config.ImmuneCount <= 0) return true;
-            return --remaining > 0;
-        }
-
-        /// <summary>执行「免疫成功」的 Actions。必须在宿主被移除 <b>之前</b>调用。</summary>
         public void ExecuteOnImmune()
         {
             var actions = Config?.Actions;
@@ -115,21 +114,6 @@ namespace TaoTie
             {
                 actions[i].DoExecute(executer, actorAbility, actorModifier, executer);
             }
-        }
-
-        /// <summary>
-        /// 次数耗尽后移除宿主（modifier 或 ability）。
-        /// <b>调用后本实例已被回收进对象池，不得再访问任何成员</b>。
-        /// </summary>
-        public void RemoveHost()
-        {
-            if (actorModifier != null)
-            {
-                actorModifier.Dispose();
-                return;
-            }
-
-            actorAbility?.Dispose();
         }
     }
 }

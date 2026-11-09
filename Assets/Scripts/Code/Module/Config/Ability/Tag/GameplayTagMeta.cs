@@ -477,11 +477,14 @@ namespace TaoTie
         /// 校验修饰器上挂的 <see cref="ConfigImmuneMixin"/>。由 <see cref="ValidateModifier"/> 调用，
         /// <b>与 Tags 是否为空无关</b> —— 纯免疫 modifier 的 Tags 恰恰就是 None。
         ///
-        /// 四类典型写错：
+        /// 三类典型写错：
         /// 1. <c>ImmuneTags</c> 填了枚举里不存在的位（组掩码除外）；
         /// 2. 同一条 modifier 一边挂标记、一边免疫同一个标记（自己免疫自己后续的施加，几乎必是配错）；
-        /// 3. 免疫了段 2 的动作锁 —— 吟唱 / 蓄力是自身施加的，免疫后自己永远进不去；
-        /// 4. 配了次数却没填免疫标记，这条什么也不做。
+        /// 3. 免疫了段 2 的动作锁 —— 吟唱 / 蓄力是自身施加的，免疫后自己永远进不去。
+        ///
+        /// 次数不在这里校验：<see cref="ImmuneMixin"/> 不认识次数，扣减与耗尽全在
+        /// <c>Actions</c> 里用通用件配（<c>AddSpecial</c> + <c>ConfigDoActionOnSpecialsChangeMixin</c>），
+        /// 代码没有「次数 key」这个入口可校验，配错表现为扣不动或移不掉，属于配置层调试。
         /// </summary>
         private static void ValidateImmune(ConfigAbilityModifier config, string abilityName)
         {
@@ -495,20 +498,9 @@ namespace TaoTie
                 var immune = mixins[i] as ConfigImmuneMixin;
                 if (immune == null) continue;
 
-                if (immune.ImmuneCount < 0)
-                {
-                    Log.Error($"[GameplayTag] {who} 的免疫次数 {immune.ImmuneCount} 非法：" +
-                              "0 表示不限次，不需要填负数");
-                }
-
                 GameplayTags immuneTags = immune.ImmuneTags;
                 if (immuneTags == GameplayTags.None)
                 {
-                    if (immune.ImmuneCount > 0)
-                    {
-                        Log.Warning($"[GameplayTag] {who} 配了免疫次数 {immune.ImmuneCount} 却没填免疫标记，" +
-                                    "这条不产生任何效果");
-                    }
                     continue;
                 }
 

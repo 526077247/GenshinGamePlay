@@ -5,8 +5,6 @@ namespace TaoTie
 {
     public sealed class ActorModifier : BaseActorActionContext
     {
-        
-
         [Timer(TimerType.ModifierExpired)]
         public class ModifierExpiredTimer : ATimer<ActorModifier>
         {
@@ -22,8 +20,7 @@ namespace TaoTie
                 }
             }
         }
-
-
+        
         public ConfigAbilityModifier Config{ get; private set; }
         public ActorAbility Ability { get; private set; }
         /// <summary>
@@ -59,7 +56,7 @@ namespace TaoTie
             AbilityComponent component)
         {
             var res = ObjectPool.Instance.Fetch<ActorModifier>();
-            res.Init(applierID,component);
+            res.Init(applierID, component);
             res.Id = IdGenerater.Instance.GenerateId();
             res.Ability = ability;
             res.isDispose = false;
@@ -68,6 +65,18 @@ namespace TaoTie
             res.tillTime = 0;
             res.StackCount = 1;
             res.appliedStack = 0;
+
+            // 状态初值必须在创建 Mixin 之前落库：Mixin 的 InitInternal 会读它做校验
+            // （比如吸收类 Mixin 检查 key 是否配了），读到 0 会误判成「没配盾」。
+            if (config.ModifierSpecials != null && config.ModifierSpecials.Count > 0)
+            {
+                foreach (var item in config.ModifierSpecials)
+                {
+                    if (string.IsNullOrEmpty(item.Key)) continue;
+                    res.SetSpecial(item.Key, item.Value);
+                }
+            }
+
             if (config.Mixins != null)
             {
                 for (int i = 0; i < config.Mixins.Length; i++)

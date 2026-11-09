@@ -280,9 +280,6 @@ namespace TaoTie
         /// 免疫是「拒绝」语义，只要有一条免疫覆盖了其中一个标记，整条施加就不该发生。
         /// 调用点只有 <see cref="AbilityComponent.ApplyModifier"/>，且必须在堆叠分支之前。
         ///
-        /// <b>优先返回不限次的源</b>：次数是资源，不该被冗余的永久免疫白白吃掉。
-        /// 身上同时有「常驻免控」和「免疫 3 次」时，前者能挡就不消耗后者。
-        /// 没有不限次源时返回第一个有限次源（注册顺序 = 挂载顺序，可预测）。
         /// <see cref="ImmuneMixin.CanImmune"/> 自带 Config 非空保护，
         /// 已 Dispose 回池的实例不会误命中。
         /// </summary>
@@ -297,16 +294,11 @@ namespace TaoTie
                 var immune = immuneSources[i];
                 if (immune == null || !immune.CanImmune(tags)) continue;
 
-                if (immune.Unlimited)
-                {
-                    source = immune;
-                    return true;
-                }
-
-                source ??= immune;
+                source = immune;
+                return true;
             }
 
-            return source != null;
+            return false;
         }
 
         #endregion

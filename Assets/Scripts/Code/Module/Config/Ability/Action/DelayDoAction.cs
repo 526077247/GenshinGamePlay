@@ -1,4 +1,4 @@
-using ProtoBuf;
+﻿using ProtoBuf;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 #else
@@ -45,7 +45,7 @@ namespace TaoTie
 
         /// <summary>
         /// BaseValue.Resolve 需要施法者来算属性/公式，所以传 actionExecuter；
-        /// AbilityValue 会忽略这个参数，只读 ability 的 special
+        /// SpecialValue 用不上这个参数（Auto 下没有修饰器，落在 ability 的 special）
         /// </summary>
         private int ResolveDelay(Entity actionExecuter, ActorAbility ability)
         {

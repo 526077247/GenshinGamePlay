@@ -250,5 +250,48 @@ namespace TaoTie
                     return false;
             }
         }
+
+        /// <summary>
+        /// 按 <see cref="SpecialTarget"/> 选出要读写的状态上下文（dynDictionary 所在的实例）。
+        ///
+        /// 读（<see cref="SpecialValue"/>）与写（<see cref="SetSpecial"/> / <see cref="AddSpecial"/>）
+        /// 共用这一处解析 —— 两边各写一份判断，早晚会演变成「写进修饰器、却从 Ability 读」，
+        /// 而那种错配不会报错，只会读到一个安静的 0。
+        ///
+        /// <b>Auto 不做「读不到就换层」</b>：只在修饰器整体不存在时才退到 Ability。
+        /// 修饰器在、但 key 没配（ModifierSpecials 漏写或拼错）属于配置错误，
+        /// 静默改读施法者共享值会张冠李戴，由调用方报错更有价值。
+        /// </summary>
+        /// <returns>失败返回 null，原因写入 <paramref name="error"/>（由调用方按自己的名字打日志，便于定位是哪条 Action）</returns>
+        public static BaseActorActionContext ResolveSpecialTarget(SpecialTarget target, ActorAbility ability,
+            ActorModifier modifier, out string error)
+        {
+            error = null;
+
+            switch (target)
+            {
+                case SpecialTarget.Modifier:
+                    if (modifier == null || modifier.IsDispose)
+                    {
+                        error = "Target=Modifier，但当前执行上下文没有可用修饰器（ability 级 Mixin / Action 链）";
+                        return null;
+                    }
+                    return modifier;
+
+                case SpecialTarget.Ability:
+                    if (ability == null || ability.IsDispose)
+                    {
+                        error = "Target=Ability，但当前执行上下文没有可用的 Ability 实例";
+                        return null;
+                    }
+                    return ability;
+
+                default:
+                    if (modifier != null && !modifier.IsDispose) return modifier;
+                    if (ability != null && !ability.IsDispose) return ability;
+                    error = "Target=Auto，但修饰器与 Ability 都不可用";
+                    return null;
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace TaoTie
@@ -8,21 +8,21 @@ namespace TaoTie
         public ConfigAbility Config { get; private set; }
         
         private DictionaryComponent<string, ConfigAbilityModifier> modifierConfigs;
-        private DynDictionary dynDictionary;
         public static ActorAbility Create(long applierID,ConfigAbility config, AbilityComponent component)
         {
             var res = ObjectPool.Instance.Fetch<ActorAbility>();
             res.Init(applierID,component);
-            res.dynDictionary = DynDictionary.Create();
             res.Config = config;
             res.modifierConfigs = DictionaryComponent<string, ConfigAbilityModifier>.Create();
             res.isDispose = false;
 
             if (config.AbilitySpecials != null)             
             {
+                // 初值表与 modifier 的 ModifierSpecials 共用基类那份 states ——
+                // 差别只在作用域：这里是「一个施法者一份」，modifier 是「一个目标每次施加一份」。
                 foreach (var item in config.AbilitySpecials)
                 {
-                    res.dynDictionary.Set(item.Key,item.Value);
+                    res.SetSpecial(item.Key, item.Value);
                 }
             }
             
@@ -64,8 +64,6 @@ namespace TaoTie
             
             modifierConfigs.Dispose();
             modifierConfigs = null;
-            dynDictionary.Dispose();
-            dynDictionary = null;
             Config = null;
             ObjectPool.Instance.Recycle(this);
         }
@@ -90,7 +88,7 @@ namespace TaoTie
         /// <returns></returns>
         public float GetReplaceValue(string key)
         {
-            return dynDictionary.Get(key);
+            return GetSpecial(key);
         }
         
         
@@ -101,7 +99,7 @@ namespace TaoTie
         /// <returns></returns>
         public void SetSpecials(string key,float value)
         {
-            dynDictionary.Set(key,value);
+            SetSpecial(key, value);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace TaoTie
     /// 值
     /// </summary>
     [ProtoContract]
-    [ProtoInclude(100, typeof(AbilityValue))]
+    [ProtoInclude(100, typeof(SpecialValue))]
     [ProtoInclude(101, typeof(FormulaValue))]
     [ProtoInclude(102, typeof(NumericValue))]
     [ProtoInclude(103, typeof(OperatorValue))]

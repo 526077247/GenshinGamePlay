@@ -250,11 +250,30 @@ namespace TaoTie
                 SpawnHitEffect(em, defence, result);
             }
 
+            //护盾吸收：位置在最终伤害算出之后、扣血之前，两个边界都不能挪。
+            //
+            //为什么不能在 BeforeBeAttack（206 行）：那里只有未经等级差 / 防御 / 暴击 /
+            //  子弹衰减的原料（DamagePercentage / DamagePercentageRatio / DamageExtra），
+            //  最终伤害要到 243 行才知道。提前扣盾只能靠"预演一遍公式"，而预演暴击会消耗
+            //  Random，把真实的暴击序列一起改掉；同时 212 行的子弹衰减还没执行，预演值也是错的。
+            //为什么在 243 行之后：护盾是"拿盾去换伤害"，必须先知道这一击多少伤害才能换。
+            //
+            //为什么 FinalRealDamage 不改小：飘字 / 时停 / 仇恨 / AfterBeAttack / OnHitActions
+            //  读的都是它，改小会让"被盾挡住的一击"在系统里变成"没打中" ——
+            //  表现为不掉血也不出伤害字、不触发受击特效、不进入战斗状态。
+            //  所以这里只算出"真正落到 HP 上的伤害"，FinalRealDamage 保持全额。
+            var hpDamage = result.ResolveAbsorb(result.FinalRealDamage);
+            if (result.AbsorbedDamage > 0)
+            {
+                Log.Info($"护盾吸收： {result.AbsorbedDamage} 点，实际掉血 {hpDamage} To:{defence.Id}");
+            }
+
             //修改血量
-            var finalHp = numD.GetAsInt(NumericType.HpBase) - result.FinalRealDamage;
+            var finalHp = numD.GetAsInt(NumericType.HpBase) - hpDamage;
             if (finalHp < 0) finalHp = 0;
             numD.Set(NumericType.HpBase, finalHp);
             //破霸体（已打死就不再削韧，避免给正在销毁的尸体广播数值变化）
+            //护盾不免疫削韧：韧性是独立的一条池子，盾挡住的是 HP 伤害，不是"这一击没打中"
             if (finalHp > 0)
                 ApplyNumericBreak(numD, attacker, ability, modifier,
                     result.ConfigAttackInfo.AttackProperty, result.HitInfo.HitBoxType);

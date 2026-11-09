@@ -23,6 +23,12 @@ namespace TaoTie
     ///
     /// 挂到 <see cref="ConfigAbility.AbilityMixins"/> 上也生效 —— 心法因此可以配常驻免疫，
     /// 不必非得做成一条 Duration=-1 的常驻 modifier。
+    ///
+    /// <b>本 Mixin 不管理次数</b>：它只判断「免不免」和「免了跑什么」。
+    /// 有限次数、扣减、耗尽移除都是配置层用通用件拼的 ——
+    /// <c>Actions</c> 里配 <c>AddSpecial</c> 扣，另挂
+    /// <c>ConfigDoActionOnSpecialsChangeMixin</c> 监听同一个状态归零后移除宿主。
+    /// 不配扣减就是永久免疫。
     /// </summary>
     [ProtoContract]
     [LabelText("免疫标记")]
@@ -37,16 +43,14 @@ namespace TaoTie
                  "注意免疫只挡「新的」，不会清掉已经挂在身上的状态；要清请配 RemoveTagsAction。")]
         public GameplayTags ImmuneTags;
 
-        [ProtoMember(2)][LabelText("免疫次数")]
-        [Tooltip("0 = 不限次（默认）：本条存在期间始终生效。\n" +
-                 "N > 0 = 可抵挡 N 次，挡完最后一次后连同宿主 modifier 一起移除 —— " +
-                 "它带的 Properties / Mixins 也会一并失效，想保留效果请拆成两条 modifier。\n" +
-                 "适合同低频控制（眩晕 / 冰冻 / 定身）；给灼烧这类高频 DoT 配次数会几秒内耗尽。")]
-        public int ImmuneCount;
-
-        [ProtoMember(3)][LabelText("免疫成功时Actions:初始目标为Applier")]
-        [Tooltip("成功挡下一次施加时执行（抵抗反击 / 回血 / 叠层）。只在真的挡住时触发，" +
-                 "免疫标记不匹配的空过不会触发。")]
+        [ProtoMember(3)][LabelText("免疫成功时Actions:初始目标为宿主")]
+        [Tooltip("成功挡下一次施加时执行，初始目标是宿主自己。这里配什么就做什么 ——\n" +
+                 "• 抵抗表现：AttachEffect / PlaySound\n" +
+                 "• 扣次数：AddSpecial{ Key = 任意状态名, Value = -1 }\n" +
+                 "• 反击：Damage / 施加 modifier（Targetting 指向攻击者）\n" +
+                 "只在本条真的挡住时触发；免疫标记不匹配的空过不会触发。\n" +
+                 "想「扣到 0 次就消失」，另挂 ConfigDoActionOnSpecialsChangeMixin 监听同一个 key 归零，\n" +
+                 "在它的 Actions 里配 RemoveModifier 即可 —— 本 Mixin 不参与次数判断。")]
         public ConfigAbilityAction[] Actions;
     }
 }

@@ -111,18 +111,15 @@ namespace TaoTie
                 // 按"免控"处理，等价于拒绝全部带标记的施加。
                 //
                 // 这条必须与下面的免疫命中分开：无受体时根本没有免疫源，
-                // 不能消耗 ImmuneCount、播抵抗表现、执行 OnImmuneActions。
+                // 不能播抵抗表现、也不能执行 OnImmuneActions。
                 if (control == null) return null;
 
                 if (control.TryGetImmune(config.Tags, out var immune))
                 {
-                    bool alive = immune.Consume();
-
-                    // Actions 必须在移除宿主之前跑：RemoveHost 会把本实例回收进对象池，
-                    // 之后再访问它就是读一个已清空的壳。
+                    // 次数扣减不在这里做 —— Mixin 不认识状态名，
+                    // 「扣几次、扣哪个 key、扣到多少移除」全在 ConfigImmuneMixin.Actions 里配。
+                    // 本行只负责：这一击被挡下了，跑它的 Actions（抵抗表现 / 扣次数 / 反击）。
                     immune.ExecuteOnImmune();
-
-                    if (!alive) immune.RemoveHost();
                     return null;
                 }
             }

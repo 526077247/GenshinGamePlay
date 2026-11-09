@@ -13,7 +13,7 @@
         
         /// <summary>
         /// 吟唱时长在 ability 里的变量名。施法时用 <c>SetSpecials</c> 写进去，
-        /// 由该 ability 的 <c>DelayDoAction.Delay</c>（AbilityValue）读走当倒计时。
+        /// 由该 ability 的 <c>DelayDoAction.Delay</c>（SpecialValue）读走当倒计时。
         /// </summary>
         public const string CastTimeSpecial = "CastTime";
     }

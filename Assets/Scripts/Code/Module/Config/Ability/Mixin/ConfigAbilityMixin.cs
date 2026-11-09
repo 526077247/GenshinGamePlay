@@ -26,6 +26,8 @@ namespace TaoTie
     [ProtoInclude(120, typeof(ConfigImmuneMixin))]
     [ProtoInclude(121, typeof(ConfigDoActionOnEntityTagsChangeMixin))]
     [ProtoInclude(122, typeof(ConfigDoActionOnControlStateChangeMixin))]
+    [ProtoInclude(123, typeof(ConfigAbsorbByStateMixin))]
+    [ProtoInclude(124, typeof(ConfigDoActionOnSpecialsChangeMixin))]
     public abstract partial class ConfigAbilityMixin
     {
     }

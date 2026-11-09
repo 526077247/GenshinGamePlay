@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ProtoBuf;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
@@ -34,5 +35,8 @@ namespace TaoTie
                  "• 段3 状态标记（Burn/Poison/Bleed/Vulnerable/Shield/Rush）：可多选，不剥夺能力，" +
                  "层数上限挂在标记上（GameplayTagMeta.maxStackOf），同一标记的所有来源共享一个池。")]
         public GameplayTags Tags;
+        
+        [ProtoMember(8, IsRequired = true)][LabelText("Modifier参数")]
+        public Dictionary<string, float> ModifierSpecials;
     }
 }
