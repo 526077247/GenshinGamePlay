@@ -98,6 +98,15 @@ namespace ProtoBuf.Serializers
         public object Read(object value, ProtoReader source)
         {
             Helpers.DebugAssert(value == null); // since replaces
+            if (map == null)
+            {
+                // 64 位枚举必须按 64 位读：wire type 同为 varint，只是宽度不同，旧数据照样能读。
+                switch (GetTypeCode())
+                {
+                    case ProtoTypeCode.Int64: return Enum.ToObject(enumType, source.ReadInt64());
+                    case ProtoTypeCode.UInt64: return Enum.ToObject(enumType, source.ReadUInt64());
+                }
+            }
             int wireValue = source.ReadInt32();
             if (map == null)
             {
@@ -118,6 +127,13 @@ namespace ProtoBuf.Serializers
         {
             if (map == null)
             {
+                // EnumToWire 会把 64 位截成 32 位；底层是 long / ulong 的枚举必须走 64 位写，
+                // 否则 bit32 以上静默丢失（GameplayTags 段 3 的 bit32..63 就是这么丢的）。
+                switch (GetTypeCode())
+                {
+                    case ProtoTypeCode.Int64: ProtoWriter.WriteInt64((long)value, dest); return;
+                    case ProtoTypeCode.UInt64: ProtoWriter.WriteUInt64((ulong)value, dest); return;
+                }
                 ProtoWriter.WriteInt32(EnumToWire(value), dest);
             }
             else
@@ -140,9 +156,21 @@ namespace ProtoBuf.Serializers
             ProtoTypeCode typeCode = GetTypeCode();
             if (map == null)
             {
-                ctx.LoadValue(valueFrom);
-                ctx.ConvertToInt32(typeCode, false);
-                ctx.EmitBasicWrite("WriteInt32", null);
+                // 局部变量的 IL 类型就是底层类型：64 位枚举直接交给 WriteInt64 / WriteUInt64，不做 32 位收窄。
+                if (typeCode == ProtoTypeCode.Int64)
+                {
+                    ctx.EmitBasicWrite("WriteInt64", valueFrom);
+                }
+                else if (typeCode == ProtoTypeCode.UInt64)
+                {
+                    ctx.EmitBasicWrite("WriteUInt64", valueFrom);
+                }
+                else
+                {
+                    ctx.LoadValue(valueFrom);
+                    ctx.ConvertToInt32(typeCode, false);
+                    ctx.EmitBasicWrite("WriteInt32", null);
+                }
             }
             else
             {
@@ -176,8 +204,19 @@ namespace ProtoBuf.Serializers
             ProtoTypeCode typeCode = GetTypeCode();
             if (map == null)
             {
-                ctx.EmitBasicRead("ReadInt32", ctx.MapType(typeof(int)));
-                ctx.ConvertFromInt32(typeCode, false);
+                if (typeCode == ProtoTypeCode.Int64)
+                {
+                    ctx.EmitBasicRead("ReadInt64", ctx.MapType(typeof(long)));
+                }
+                else if (typeCode == ProtoTypeCode.UInt64)
+                {
+                    ctx.EmitBasicRead("ReadUInt64", ctx.MapType(typeof(ulong)));
+                }
+                else
+                {
+                    ctx.EmitBasicRead("ReadInt32", ctx.MapType(typeof(int)));
+                    ctx.ConvertFromInt32(typeCode, false);
+                }
             }
             else
             {

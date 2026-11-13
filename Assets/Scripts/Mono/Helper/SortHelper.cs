@@ -4,6 +4,10 @@ namespace TaoTie
 {
     public static class SortHelper
     {
+        /// <summary>
+        /// 对数组做<b>升序</b>排序，比较器语义与 <see cref="Comparison{T}"/> 一致：
+        /// 返回负数表示 a 排在 b 前，返回正数表示 a 排在 b 后。
+        /// </summary>
         public static void Sort<T>(this T[] array, Func<T,T,int> compare) 
         {
 	        try
@@ -41,16 +45,16 @@ namespace TaoTie
             Sort(array, partitionIndex + 1, right, compare);
         }
 
-        // 三数取中：选择left, mid, right的中位数
+        // 三数取中：让 array[left] <= array[mid] <= array[right]，返回中位下标
         private static int MedianOfThree<T>(T[] array, int left, int right, Func<T, T, int> compare)
         {
             int mid = left + (right - left) / 2;
 
-            if (compare(array[left], array[mid]) < 0)
+            if (compare(array[left], array[mid]) > 0)
                 Swap(array, left, mid);
-            if (compare(array[left], array[right]) < 0)
+            if (compare(array[left], array[right]) > 0)
                 Swap(array, left, right);
-            if (compare(array[mid], array[right]) < 0)
+            if (compare(array[mid], array[right]) > 0)
                 Swap(array, mid, right);
 
             return mid; // 现在mid是中位数
@@ -63,7 +67,7 @@ namespace TaoTie
 
             for (int j = left; j < right; j++)
             {
-                if (compare(array[j], pivot) > 0)
+                if (compare(array[j], pivot) < 0)
                 {
                     i++;
                     Swap(array, i, j);
@@ -82,7 +86,7 @@ namespace TaoTie
                 var key = array[i];
                 int j = i - 1;
 
-                while (j >= left && compare(array[j], key) < 0)
+                while (j >= left && compare(array[j], key) > 0)
                 {
                     array[j + 1] = array[j];
                     j--;
