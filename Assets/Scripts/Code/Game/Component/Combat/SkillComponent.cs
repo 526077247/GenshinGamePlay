@@ -4,12 +4,55 @@ using UnityEngine;
 
 namespace TaoTie
 {
-    public class SkillComponent:Component,IComponent,IComponent<ConfigSkill>
+    /// <summary>请求施法被拒绝的原因。None 表示成功。</summary>
+    public enum SkillRejectReason
+    {
+        None = 0,
+        NoSkill,
+        NoCombat,
+        Controlled,
+        ActionLocked,
+        InCD,
+        FsmRejected,
+    }
+
+    /// <summary>施法请求的三态结果。Rejected=0 作默认值，池化复用时天然安全。</summary>
+    public enum SkillRequestResult
+    {
+        Rejected = 0,
+        Executed,
+        Queued,
+    }
+
+    /// <summary>一次"被拒后等待补发"的施法意图。缓冲开关开启后才会被填写。</summary>
+    public struct PendingSkill
+    {
+        public int ConfigId;
+        public int Slot;
+        public long ExpireAt;
+        public bool IsValid => ConfigId != 0 || Slot != 0;
+        public void Clear()
+        {
+            ConfigId = 0;
+            Slot = 0;
+            ExpireAt = 0;
+        }
+    }
+
+    public class SkillComponent:Component,IComponent,IComponent<ConfigSkill>,IUpdate
     {
         private NumericComponent numericComponent => parent.GetComponent<NumericComponent>();
         private CombatComponent combatComponent => parent.GetComponent<CombatComponent>();
         private MoveComponent moveComponent => parent.GetComponent<MoveComponent>();
         private AbilityComponent abilityComponent => parent.GetComponent<AbilityComponent>();
+
+        private const bool EnableBuffer = true;
+        public const bool EnableCancelOnRelease = true;
+        private PendingSkill pending;
+        public int ExecutedSeq;
+        public int LastExecutedConfigId;
+        public bool WasExecutedSince(int configId, int seq)
+            => ExecutedSeq > seq && LastExecutedConfigId == configId;
 
         /// <summary>
         /// 施法序号。每次施法自增并写进技能 ability 的 special，
@@ -73,6 +116,8 @@ namespace TaoTie
             SkillInfoMap = null;
             slots = null;
             sprintBSId = 0;
+            // 组件池化复用：不清会把上一条实体的待放技能带过来
+            pending.Clear();
         }
         
 
@@ -90,21 +135,126 @@ namespace TaoTie
 
         #endregion
         
-        public void TryDoSkill(int configId)
-        {
-            if (SkillInfoMap == null || !SkillInfoMap.TryGetValue(configId, out var info)) return;
-            DoSkill(info);
-        }
+        public bool TryDoSkill(int configId) => RequestSkill(configId, 0, 0, out _) == SkillRequestResult.Executed;
 
         /// <summary>
         /// 按槽位号放技能 —— 按键入口（1..4 = 左键/Q/E/R）。
         ///
         /// 槽位号直接来自 <c>TryDoSkill.Slot</c> 配置，不再有任何"角色内唯一 id"的中间编号：
-        /// 心法装配会改写 <see cref="slots"/>，按键读的是"这一格现在装的是什么"。
+        /// 外部装配会改写 <see cref="slots"/>，按键读的是"这一格现在装的是什么"。
         /// </summary>
-        public void TryDoSkillBySlot(int slot)
+        public bool TryDoSkillBySlot(int slot) => RequestSkill(0, slot, 0, out _) == SkillRequestResult.Executed;
+
+        public SkillRequestResult RequestSkill(int configId, int ttlMs = 0) => RequestSkill(configId, 0, ttlMs, out _);
+        public SkillRequestResult RequestSkillBySlot(int slot, int ttlMs = 0) => RequestSkill(0, slot, ttlMs, out _);
+        public SkillRequestResult RequestSkill(int configId, out SkillRejectReason reason, int ttlMs = 0)
+            => RequestSkill(configId, 0, ttlMs, out reason);
+        public SkillRequestResult RequestSkillBySlot(int slot, out SkillRejectReason reason, int ttlMs = 0)
+            => RequestSkill(0, slot, ttlMs, out reason);
+        public SkillRequestResult RequestSkillSilent(int configId) => RequestSkill(configId, 0, 0, out _);
+        public SkillRequestResult RequestSkillSilent(int configId, out SkillRejectReason reason) =>
+            RequestSkill(configId, 0, 0, out reason);
+        public SkillRequestResult RequestSkillSilent(int configId, out SkillRejectReason reason, int ttlMs)
+            => RequestSkill(configId, 0, ttlMs, out reason);
+
+        public void CancelPending() => pending.Clear();
+
+        public void CancelPendingBySlot(int slot)
         {
-            DoSkill(GetSlot(slot));
+            if (EnableCancelOnRelease && slot > 0 && PendingMatchesKey(slot, 0))
+                pending.Clear();
+        }
+
+        public void CancelPendingByConfigId(int configId)
+        {
+            if (EnableCancelOnRelease && configId != 0 && PendingMatchesKey(0, configId))
+                pending.Clear();
+        }
+
+        private bool PendingMatchesKey(int slot, int configId)
+        {
+            return slot > 0
+                ? (pending.Slot == slot && pending.ConfigId == 0)
+                : (pending.ConfigId == configId && pending.Slot == 0);
+        }
+
+        private SkillRequestResult RequestSkill(int configId, int slot, int ttlMs, out SkillRejectReason reason)
+        {
+            reason = SkillRejectReason.None;
+
+            var info = slot > 0 ? GetSlot(slot) : GetInfo(configId);
+            if (info == null)
+            {
+                reason = SkillRejectReason.NoSkill;
+                return SkillRequestResult.Rejected;
+            }
+
+            bool sameKey = PendingMatchesKey(slot, info.ConfigId);
+
+            if (DoSkill(info, out reason))
+            {
+                pending.Clear();
+                return SkillRequestResult.Executed;
+            }
+
+            if (ttlMs <= 0 || !EnableBuffer)
+            {
+                return SkillRequestResult.Rejected;
+            }
+
+            long expireAt = GameTimerManager.Instance.GetTimeNow() + ttlMs;
+            if (!sameKey)
+            {
+                if (pending.IsValid)
+                {
+                    Log.Debug($"[Skill] 缓冲覆盖 entity={Id} old=({pending.Slot},{pending.ConfigId}) " +
+                              $"new=({(slot > 0 ? slot : 0)},{(slot > 0 ? 0 : info.ConfigId)})");
+                }
+                pending.Clear();
+            }
+
+            pending.ConfigId = slot > 0 ? 0 : info.ConfigId;
+            pending.Slot = slot > 0 ? slot : 0;
+            pending.ExpireAt = sameKey ? System.Math.Max(pending.ExpireAt, expireAt) : expireAt;
+            return SkillRequestResult.Queued;
+        }
+
+        public void Update()
+        {
+            if (!pending.IsValid) return;
+
+            if (GameTimerManager.Instance.GetTimeNow() > pending.ExpireAt)
+            {
+                ReportDrop();
+                return;
+            }
+
+            var info = pending.Slot > 0 ? GetSlot(pending.Slot) : GetInfo(pending.ConfigId);
+            if (info == null)
+            {
+                ReportDrop();
+                return;
+            }
+
+            if (DoSkill(info, out var reason))
+            {
+                pending.Clear();
+                return;
+            }
+
+            if (reason == SkillRejectReason.NoSkill || reason == SkillRejectReason.NoCombat)
+                ReportDrop();
+        }
+
+        private void ReportDrop()
+        {
+            pending.Clear();
+        }
+
+        private SkillInfo GetInfo(int configId)
+        {
+            if (SkillInfoMap == null) return null;
+            return SkillInfoMap.TryGetValue(configId, out var info) ? info : null;
         }
 
         /// <summary>
@@ -118,17 +268,55 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 施法的公共前半段。两个入口只差"怎么查到 SkillInfo"，其余（CD 判定、选敌转向、
-        /// 广播、写 FSM）完全相同，合并成一处避免两条路径慢慢跑偏。
+        /// 施法的公共前半段。所有入口只差"怎么查到 SkillInfo"，其余（控制门、CD 判定、FSM 干跑、
+        /// 选敌转向、广播、写 FSM）完全相同，合并成一处避免多条路径慢慢跑偏。
+        ///
+        /// 顺序不可调换：①②③ 三道门全部是纯判定、无副作用，④ 之后才允许产生副作用。
         /// </summary>
-        private void DoSkill(SkillInfo info)
+        private bool DoSkill(SkillInfo info, out SkillRejectReason reason)
         {
-            if (info == null) return;
-            if (combatComponent == null) return;
-            if (GetComponent<ControlComponent>() is { } ctl && !ctl.CanDo(ControlFlag.CastSkill)) return;
+            reason = SkillRejectReason.None;
+            if (info == null)
+            {
+                reason = SkillRejectReason.NoSkill;
+                return false;
+            }
+
+            if (combatComponent == null)
+            {
+                reason = SkillRejectReason.NoCombat;
+                return false;
+            }
+
+            var ctl = GetComponent<ControlComponent>();
+            if (ctl != null && !ctl.CanDo(ControlFlag.CastSkill))
+            {
+                reason = ctl.IsControlled ? SkillRejectReason.Controlled : SkillRejectReason.ActionLocked;
+                return false;
+            }
 
             var configId = info.ConfigId;
-            if (IsSkillInCD(configId)) return;
+
+            if (IsSkillInCD(configId))
+            {
+                reason = SkillRejectReason.InCD;
+                return false;
+            }
+
+            var skillId = info.SkillId;
+            if (skillId > 0)
+            {
+                var fsmComp = GetComponent<FsmComponent>();
+                var fsm = fsmComp?.DefaultFsm;
+                var pA = new FsmProbe(FSMConst.UseSkill, 1);
+                var pB = new FsmProbe(FSMConst.SkillId, skillId);
+                bool accept = fsm != null && fsm.WouldAccept(pA, pB);
+                if (!accept)
+                {
+                    reason = SkillRejectReason.FsmRejected;
+                    return false;
+                }
+            }
 
             if (info.TriggerCDType == (int) TriggerCDType.OnSpell)
                 TriggerSkillCD(configId);
@@ -138,8 +326,12 @@ namespace TaoTie
             {
                 moveComponent.ForceLookAt(se.Position);
             }
+
+            LastExecutedConfigId = configId;
+            ++ExecutedSeq;
             OnDoSkillEvt?.Invoke(configId);
             TryEnterFsm(info);
+            return true;
         }
 
         /// <summary>
@@ -242,7 +434,7 @@ namespace TaoTie
         /// 批量注入技能（场景模板 / 外部系统用）。参数是 <see cref="SkillConfig.Id"/> 数组。
         ///
         /// 注入的技能<b>不占槽位</b>（<see cref="SkillInfo.Slot"/> = 0）：它们没有按键入口，
-        /// 只按 ConfigId 查（怪物 AI 走 <see cref="TryDoSkill"/>）。按键槽位只有心法装配会写。
+        /// 只按 ConfigId 查（怪物 AI 走 <see cref="TryDoSkill"/>）。按键槽位只有外部装配会写。
         ///
         /// 走 <see cref="SetSkillInfo"/> 而不是 <see cref="AddSkillInfo"/>：后者遇到同 ConfigId 会
         /// 直接复用旧实例，重复注入同一份配置等于什么都没发生；SetSkillInfo 先清同槽位 / 同 ConfigId
@@ -291,7 +483,7 @@ namespace TaoTie
 
         /// <summary>
         /// 注册一条技能（不带槽位）。用于角色自带技能与场景模板注入 —— 它们没有按键入口，
-        /// 只按 ConfigId 查；按键槽位由心法装配走 <see cref="SetSkillInfo"/> 写入。
+        /// 只按 ConfigId 查；按键槽位由外部装配走 <see cref="SetSkillInfo"/> 写入。
         ///
         /// 注意同 <paramref name="configId"/> 已存在时直接复用旧实例、不新建 ——
         /// 这是"重复注入同一个技能不翻倍"的保证，也是它<b>不能</b>用来装配槽位的原因。
@@ -308,7 +500,7 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 按槽位卸下（心法重新装配时用）。槽位上的技能必然在 <see cref="SkillInfoMap"/> 里，
+        /// 按槽位卸下（重新装配时用）。槽位上的技能必然在 <see cref="SkillInfoMap"/> 里，
         /// 统一走 <see cref="RemoveSkillInfo"/> 清两处，避免只清数组、留下悬空的 ConfigId 映射。
         /// </summary>
         public void RemoveSkillBySlot(int slot)
@@ -335,12 +527,12 @@ namespace TaoTie
         }
 
         /// <summary>
-        /// 原子装配：先清同槽位、再清同 ConfigId，最后注册。心法装配与模板注入共用这一个入口。
+        /// 原子装配：先清同槽位、再清同 ConfigId，最后注册。外部装配与模板注入共用这一个入口。
         ///
         /// <paramref name="slot"/> 传 0 表示不占槽位（模板注入）；&gt;0 时必须是 1..<see cref="GameConst.SkillSlotConst"/>，
         /// 越界会报错并降级成"不占槽位"，不抛异常 —— 配置写错不该让整场战斗崩掉。
         /// <paramref name="skillIdOverride"/> 传 -1 表示用 <see cref="SkillConfig.FsmSkillId"/>；
-        /// 传 0 表示显式不进 FSM；&gt;0 是心法等级表指定的动作 id。
+        /// 传 0 表示显式不进 FSM；&gt;0 是技能等级表指定的动作 id。
         /// </summary>
         public SkillInfo SetSkillInfo(int configId, int slot, string cdOverride = null,
             int triggerOverride = -1, string abilityName = null, int castTimeOverride = -1,

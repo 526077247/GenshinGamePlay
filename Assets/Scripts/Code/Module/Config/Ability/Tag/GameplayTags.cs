@@ -3,38 +3,13 @@ using System;
 namespace TaoTie
 {
     /// <summary>
-    /// 实体状态标记位。<b>这是唯一暴露给配置的标记枚举。</b>
+    /// 实体状态标记位。<b>唯一暴露给配置的标记枚举</b>，只回答「处于什么状态 / 因为什么受限」，
+    /// 不回答「能做什么」—— 后者是 <see cref="ControlFlag"/>，由本枚举经 <see cref="GameplayTagMeta.TierOf"/> 派生。
     ///
-    /// 它只回答「处于什么状态 / 因为什么受限」，<b>不回答「能做什么」</b> ——
-    /// 后者是 <see cref="ControlFlag"/>，由本枚举经 <see cref="GameplayTagMeta.TierOf"/> 派生。
+    /// 底层 <see cref="long"/>，划三段：段 1（0..15）控制身份 / 段 2（16..23）自身动作锁 / 段 3（24..63）状态标记。
+    /// 分段的理由与各段聚合规则见 <c>Book/1.AbilitySystem的战斗框架.md</c> §三。
     ///
-    /// 底层 <see cref="long"/>，64 位划三段，语义互不重叠：
-    ///
-    /// <b>段 1 · ControlKind（bit 0..15，16 位）控制身份位</b>：因为什么被控。
-    /// 眩晕不是"另一个状态"，它就是「Move|Turn|CastSkill|Attack|Sprint 被剥夺」这件事的名字。
-    /// 所以这里只登记身份（用来说表现、判免疫、做驱散），不登记剥夺 ——
-    /// 剥夺由 <see cref="GameplayTagMeta.tierOf"/> 反查。一条修饰器只允许一个控制身份。
-    /// 已用 8 位，余 8 位给击飞/嘲讽/束缚/睡眠/麻痹这一档。
-    ///
-    /// <b>段 2 · ActionLock（bit 16..23，8 位）自身动作锁</b>：吟唱 / 蓄力 / 僵直 / 后摇。
-    /// 机制上与段 1 同构（同样派生剥夺），但**不算被控** ——
-    /// 吟唱是自己在施法，不是被敌人控住，<c>IsControlled</c> 必须能区分这两者。
-    ///
-    /// <b>段 3 · StateFlag（bit 24..63，40 位）状态标记位</b>：灼烧 / 中毒 / 流血 / 易伤 / 护盾 / 冲刺。
-    /// 不派生任何剥夺，只回答「是什么、几层」。层数由 <see cref="GameplayTagMeta.maxStackOf"/> 封顶。
-    /// 这一段是元素 / 异常 / 增益的长期增长区，给足 40 位。
-    ///
-    /// <b>为什么分三段而不是平铺</b>：
-    /// 1. 三段的聚合规则不同 —— 控制位取"有/无"回答"是不是"，动作锁回答"在忙什么"，
-    ///    状态位取层数回答"几层"。混在一段里，同一个掩码要背三种含义，传错位不报错只会静默失效；
-    /// 2. 段就是分类层级。要问"有没有被控制"不必维护一张
-    ///    <c>AnyControl = Stun|Root|Silence|…</c> 的手写清单（漏加一个新控制就永久漏判），
-    ///    直接用段掩码 <see cref="GameplayTagMeta.ControlKindMask"/> 一次命中，加新控制零维护；
-    /// 3. 有了段就能在加载期报错（<see cref="GameplayTagMeta.ValidateModifier"/>），
-    ///    把"配错"从运行时行为异常提前成一条 Error 日志。
-    ///
-    /// <b>位值一旦发布就不能再改</b>：它已经写进 json / bytes，改了就相当于把旧配置静默改义。
-    /// 新标记一律在所属段的尾部追加；某段用尽时新开一段，不要挤进别的段。
+    /// <b>位值一旦发布就不能再改</b>：已写进 json / bytes，改了等于让旧配置静默改义。新标记只在所属段尾部追加。
     /// </summary>
     [Flags]
     public enum GameplayTags : long
@@ -89,7 +64,10 @@ namespace TaoTie
         /// <summary>后摇 / 收招：锁 Move|CastSkill，保留 Sprint</summary>
         Recover = 1 << 19,
 
-        // bit 20..23 预留
+        /// <summary>禁冲刺：只锁 Sprint，用于自身动作期间的区间封锁（如普攻虚化窗口）</summary>
+        NoSprint = 1 << 20,
+
+        // bit 21..23 预留
 
         #endregion
 
@@ -113,25 +91,28 @@ namespace TaoTie
         /// <summary>正在冲刺 / 突进</summary>
         Rush = 1L << 29,
 
-        // bit 30..63 预留：元素异常 / 增益 / 减益的长期增长区
+        /// <summary>不可选中：选敌时被剔除（虚化 / 潜行）。选择权见 <see cref="GameplayTagMeta.SelectOf"/></summary>
+        Untargetable = 1L << 30,
+
+        /// <summary>被嘲讽：软强制攻击施加者，目标不可用才回落常规选敌</summary>
+        Taunted = 1L << 31,
+
+        /// <summary>被强嘲讽：优先级更高的软强制，压过普通嘲讽</summary>
+        TauntedHard = 1L << 32,
+
+        /// <summary>无敌：纯身份标记。伤害拦截由修饰器上的受击前钩子完成，本标记不派生任何剥夺</summary>
+        Invincible = 1L << 33,
+
+        // bit 34..63 预留：元素异常 / 增益 / 减益的长期增长区
 
         #endregion
 
         #region 组选择器（只用于「免疫哪些标记」这类按整段批量表达的地方）
 
         /// <summary>
-        /// 段 1 全部，<b>含 bit 8..15 的预留位</b>。
-        ///
-        /// 这三位不是"状态"，是给 <see cref="ConfigImmuneMixin.ImmuneTags"/> 这类字段用的
-        /// 「整段选择器」：配一次就免疫全部控制身份，以后段 1 新增 Sleep / Taunt 落在预留位上时
-        /// 自动被覆盖，不用回来改配置 —— 这正是手写 <c>Stun|Freeze|Root|…</c> 清单做不到的。
-        ///
-        /// <b>禁止用在 <see cref="ConfigAbilityModifier.Tags"/> 上</b>：那里每一位都要参与
-        /// 层数聚合与「一条修饰器一个控制身份」的校验，组值没有身份，语义不成立
-        /// （<see cref="GameplayTagMeta.ValidateModifier"/> 会把它们当未命名位报错）。
-        ///
-        /// 底层都是复合位，<see cref="GameplayTagMeta.KnownMask"/> 的静态构造只收原子位，
-        /// 所以它们不会污染"已知位"集合。
+        /// 段 1 全部，<b>含 bit 8..15 的预留位</b>。整段选择器，只给 <see cref="ConfigImmuneMixin.ImmuneTags"/>
+        /// 这类"按整段免疫"的字段用；<b>禁止用在 <see cref="ConfigAbilityModifier.Tags"/></b> 上
+        /// （组值没有身份，<see cref="GameplayTagMeta.ValidateModifier"/> 会报未命名位）。
         /// </summary>
         AllControlKind = 0x0000FFFF,
 

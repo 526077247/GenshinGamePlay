@@ -275,7 +275,10 @@ namespace TaoTie
                 coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
                 await this.WaitLoadGameObjectOver();
                 if(parent.IsDispose) return;
-                var renders = this.EntityView.GetComponentsInChildren<Renderer>();
+                // 必须带 includeInactive=true：蒙皮/武器常被「通道①」用 GameObject.active 关掉，
+                // 默认重载会跳过 inactive 子物体。曾因此导致 Hide 关了 7 个、Show 只开回 5 个，
+                // 武器那两个 Renderer 永久停在 enabled=false（冲刺打断虚化后再也不显示）。
+                var renders = this.EntityView.GetComponentsInChildren<Renderer>(true);
                 for (int i = 0; i < renders.Length; i++)
                 {
                     renders[i].enabled = enable;

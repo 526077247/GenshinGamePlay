@@ -25,6 +25,7 @@ namespace TaoTie
             AddComponent<NumericComponent,ConfigCombatProperty[]>(ConfigActor.Combat?.DefaultProperty);
             AddComponent<FsmComponent,ConfigFsmController>(GetFsmConfig(Config.FSM));
             AddComponent<CombatComponent,ConfigCombat>(ConfigActor.Combat);
+            AddComponent<ElementComponent>();
             AddComponent<SkillComponent, ConfigSkill>(ConfigActor.Skill);
             AddComponent<LocalInputController>();
             CreateMoveComponent();

@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 namespace TaoTie
 {
-    public class UIDamageView : UIBaseView, IOnCreate, IOnEnable, IOnDisable, IOnDestroy
+    public class UIDamageView : UIBaseView, IOnCreate, IOnEnable, IOnDisable, IOnDestroy, IUpdate
     {
         public static string PrefabPath => "UIGame/UIMain/Prefabs/UIDamageView.prefab";
         private List<DamageText> showFightTexts = new List<DamageText>();

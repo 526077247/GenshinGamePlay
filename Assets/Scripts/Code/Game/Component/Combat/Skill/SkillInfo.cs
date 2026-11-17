@@ -60,7 +60,7 @@ namespace TaoTie
             var res = ObjectPool.Instance.Fetch<SkillInfo>();
             res.ConfigId = configId;
             res.Slot = slot;
-            // 对象池复用：覆盖字段必须在这里重置，否则上一份心法的等级会泄漏到自带技能上
+            // 对象池复用：覆盖字段必须在这里重置，否则上一份技能的参数会泄漏到下一份技能上
             res.cdOverride = null;
             res.triggerOverride = -1;
             res.abilityNameOverride = null;

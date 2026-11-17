@@ -137,7 +137,7 @@ namespace TaoTie
                 return;
             }
             // 事件归属实体：子弹链路下 AttackerId 可能被解析成子弹自己（见 BulletComponent.OwnerId），
-            // 而攻击标识的消费方（心法/受击方挂的 Mixin）在射手身上 —— 在子弹身上广播，
+            // 而攻击标识的消费方（攻击方挂的 Mixin）在射手身上 —— 在子弹身上广播，
             // 射手永远收不到，表现就是「子弹类技能静默不附加任何东西，且没有任何报错」。
             // 所以事件统一归到起点所有者，拿不到再退回攻击者。
             // 伤害数值仍然按 attacker 结算（子弹若带自己的数值，本就该用它），只有事件归属改变。
@@ -188,6 +188,20 @@ namespace TaoTie
             result.IgnoreLevelDiff = result.ConfigAttackInfo.AttackProperty.IgnoreLevelDiff;
             result.StrikeType = result.ConfigAttackInfo.AttackProperty.StrikeType;
             result.AttackType = result.ConfigAttackInfo.AttackProperty.AttackType;
+
+            // 元素分两条线，别混：
+            // • 伤害型的元素附着看 ConfigAttackProperty：Element 决定「是什么元素」，ElementDurability 决定「挂多少」，
+            //   由本方法末尾（整击结算完之后）附着。元素只用于附着与触发反应，<b>不影响伤害</b>。
+            // • 非伤害型的元素附着看 ConfigAbilityModifier（Modifier 挂到实体上时由 ActorModifier 自己处理），
+            //   不经过 AttackResult —— 所以给队友挂 buff、给自己上状态这类效果也能附着元素。
+            // 两条都配会让同一个元素挂两次，配置时二选一。
+            var attackProperty = result.ConfigAttackInfo.AttackProperty;
+            result.Element = attackProperty.Element;
+            result.ElementDurability = attackProperty.ElementDurability;
+
+            // 元素组件只在这里取一次：末尾附着要用同一个引用（受击方在钩子里可能被销毁，
+            // 那时再 GetComponent 会拿不到，而这里拿到的是"结算开始时"的实例）。
+            var elementD = defence.GetComponent<ElementComponent>();
 
             // 击退数据一律取自 HitPattern：抗性缩放在受击方的 MoveComponent.ApplyHitImpulse 里按
             // HitImpulseType 查受击方配置，攻击侧不再维护第二套「覆盖值」。
@@ -280,6 +294,20 @@ namespace TaoTie
 
             combatD.AfterBeAttack(result, combatA);
             combatA.AfterAttack(result, combatD);
+
+            // 元素附着放在整击结算之后，位置不能提前：
+            // 1. 配置层的受击钩子（BeforeBeAttack / AfterBeAttack / OnBeingHit）要读到"被打之前"的元素，
+            //    提前注入会让同一次攻击挂上的元素立刻被自己触发的反应吃掉，表现为"一次攻击自我消费"。
+            // 2. 被护盾全额吸收时仍然应该挂元素 —— 所以放在吸收、扣血之后，而不是跟着伤害走。
+            // 3. 打死目标就不必再挂（ElementComponent 会随实体一起销毁），放在 DoKill 之前即可。
+            //
+            // 挂什么、挂多少只看 ConfigAttackProperty.Element / ElementDurability（伤害型）；
+            // 非伤害型的效果走 ConfigAbilityModifier，在 Modifier 挂上时就已经附着过了，不经过这里。
+            // Attach 内部挂完立刻结算自动反应，所以这一行结束时身上已经没有"能反应却共存"的元素对了。
+            if (elementD != null && !elementD.IsDispose && result.ElementDurability > 0)
+            {
+                elementD.Attach(result.Element, result.ElementDurability, eventOwner.Id);
+            }
 
             if (finalHp == 0)
             {

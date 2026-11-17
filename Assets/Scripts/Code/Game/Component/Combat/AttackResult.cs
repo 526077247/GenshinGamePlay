@@ -63,6 +63,22 @@ namespace TaoTie
         /// </summary>
         public bool TrueDamage;
 
+        #region 元素
+
+        /// <summary>
+        /// 这一击「是什么元素」，来自 <see cref="ConfigAttackProperty.Element"/>。0 = 不带元素。
+        /// 只决定「是什么元素」：命中后附着什么、能触发哪些反应；不影响伤害。
+        /// </summary>
+        public int Element;
+
+        /// <summary>
+        /// 命中后附着多少元素量，来自 <see cref="ConfigAttackProperty.ElementDurability"/>。
+        /// 只决定「挂多少」；附着后由 <see cref="ElementComponent"/> 自动结算反应。
+        /// </summary>
+        public int ElementDurability;
+
+        #endregion
+
         /// <summary>
         /// 是否有效
         /// </summary>
@@ -101,7 +117,7 @@ namespace TaoTie
         /// <summary>
         /// 登记的吸收者。懒创建 —— 没有吸收机制的单位（绝大多数怪物）永远不分配这块内存。
         ///
-        /// 容量给到 8：多盾（火 / 冰 / 雷 / 通用 / 心法）同时挂在一个单位上不再是理论情况。
+        /// 容量给到 8：多面盾（不同来源 / 不同优先级）同时挂在一个单位上不再是理论情况。
         /// 超出的会被丢弃并告警 —— 静默丢一面盾的表现是「某类伤害突然开始掉血」，极难定位。
         /// </summary>
         private AbsorbEntry[] absorbEntries;
@@ -232,6 +248,8 @@ namespace TaoTie
             BonusCriticalHurt = default;
             IgnoreLevelDiff = default;
             TrueDamage = default;
+            Element = default;
+            ElementDurability = default;
             IsEffective = default;
             IsCritical = default;
             FinalRealDamage = default;

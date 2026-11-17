@@ -12,7 +12,7 @@ namespace TaoTie
     /// 本组件目前只提供几何（代理圆 + 竖直区间），**不含速度/动量状态**：
     /// 角色互斥走「行进投影 + 重叠消解」两段纯位置方案，双方各自修正自己，
     /// 不写对方位置、不传递速度。<b>质量口径已废弃</b>：原先的 BodyMass 只被当成
-    /// 「是否参与互斥」的布尔用，现已换成显式的 <see cref="CanBlock"/>；将来若做 P2
+    /// 「是否参与互斥」的布尔用，现已换成显式的 <see cref="CanBlock"/>；将来若做冲量传递
     /// 冲量传递，按 <see cref="ConfigHitImpulseResist"/> 的受力度分配，不再引入质量比。
     /// </summary>
     public class ActorBodyComponent : Component, IComponent

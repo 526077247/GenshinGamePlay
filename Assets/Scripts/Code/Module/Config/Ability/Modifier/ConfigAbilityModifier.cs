@@ -38,5 +38,18 @@ namespace TaoTie
         
         [ProtoMember(8, IsRequired = true)][LabelText("Modifier参数")]
         public Dictionary<string, float> ModifierSpecials;
+
+        [ProtoMember(9)][LabelText("附着元素")]
+        [Tooltip("这个 Modifier <b>挂到实体上时</b>给宿主挂什么元素，填元素表的 Id（ElementConfig）。0 = 不附着（默认）。\n" +
+                 "这是<b>非伤害效果</b>的附着通道：给队友挂 buff、给自己上状态、场地效果 —— 它们没有伤害结算，\n" +
+                 "但都有「一个 Modifier 挂到目标身上」这个共同点，所以在这里附着。\n" +
+                 "<b>伤害型攻击不要用这个字段</b>，用 ConfigAttackProperty.Element / ElementDurability ——\n" +
+                 "否则同一个元素会在 Modifier 挂上和命中结算时各挂一次。")]
+        public int Element;
+
+        [ProtoMember(10)][LabelText("附着元素量")][MinValue(0)]
+        [Tooltip("挂上时入账多少元素量，整数（元素量不记小数），受该元素自身的耐久上限封顶。\n" +
+                 "填 0 = 不挂（即使元素填了）。只在 Modifier 挂上那一刻生效一次，叠层不重复挂。")]
+        public int ElementDurability;
     }
 }

@@ -1,4 +1,4 @@
-using ProtoBuf;
+﻿using ProtoBuf;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 #else

@@ -11,6 +11,22 @@ namespace TaoTie
         private LinkedListComponent<ActorModifier> modifiers;
         private UnOrderMultiMap<string, ActorModifier> modifierDictionary; //[Ability_Modifier:ActorModifier]
 
+        /// <summary>批量摘除期间挂起通知：一次减 N 层只做一次全量 Rebuild。</summary>
+        private bool suppressNotify;
+
+        /// <summary>本帧是否已登记待摘除 Flush（同帧多次减层只调度一次）。</summary>
+        private bool flushScheduled;
+
+        /// <summary>
+        /// 挂起的「恢复型」补执行（当前全库只有 <c>KeQing_NormalAttack4_Show</c> 这一类的 Show 端）。
+        /// key = 能力名，value = 该次挂起的取消令牌。
+        ///
+        /// 连段内过渡要按美术节奏等到原 StartTime 才回显，所以必须延迟；但一旦进入收剑态
+        /// （冲刺 / 受击 / 死亡 / 收剑），这层延迟就变成「角色或武器一直不可见」的尾巴，
+        /// 必须由 <see cref="FlushPendingRestores"/> 立刻兑现。详见 <c>ExecuteAbilityClip.OnBreak</c>。
+        /// </summary>
+        private Dictionary<string, ETCancellationToken> pendingRestores;
+
         /// <summary>
         /// 活跃 modifier 链表（只读遍历）。供 <see cref="ControlComponent"/> 全量聚合控制位，
         /// 用链表直读而不是回调委托，避免每次重算都分配闭包。
@@ -23,6 +39,7 @@ namespace TaoTie
         public void Init(List<ConfigAbility> data)
         {
             isDestroy = false;
+            pendingRestores = null;
             abilities = LinkedListComponent<ActorAbility>.Create();
             modifiers = LinkedListComponent<ActorModifier>.Create();
             modifierDictionary = new UnOrderMultiMap<string, ActorModifier>();
@@ -41,6 +58,8 @@ namespace TaoTie
         {
             if (isDestroy) return;
             isDestroy = true;
+
+            DropPendingRestores();
             
             for (var node = abilities.Last; node != null;)
             {
@@ -63,6 +82,8 @@ namespace TaoTie
             modifiers.Dispose();
 
             modifierDictionary = null;
+            suppressNotify = false;
+            flushScheduled = false;
         }
 
         #endregion
@@ -272,6 +293,141 @@ namespace TaoTie
             }
         }
 
+        /// <summary>
+        /// 削减层数（<see cref="RemoveModifierByTag"/> 的运行时入口）。
+        ///
+        /// <b>只按标记定位</b>：遍历 <see cref="modifiers"/> 命中所有带该标记的实例 ——
+        /// 与读侧 <c>TagStackValue</c> 走 <c>ControlComponent.GetTagStack</c> 的聚合口径
+        /// 完全一致，跨来源、跨 ability 叠的层都能被消耗。
+        ///
+        /// <b>数字同步、结构延后</b>：调用 <see cref="ActorModifier.ReduceStack"/> 立即改
+        /// StackCount / Properties，归零只登记 <c>IsPendingRemove</c>；帧末由
+        /// <see cref="FlushPendingRemoves"/> 统一摘除。这样同帧后续 Action 读得到减后层数，
+        /// 又不会在别人遍历 modifiers 链表时改集合。
+        ///
+        /// <b>一次通知</b>：循环里不逐实例 Rebuild，结束统一 <see cref="NotifyControlChanged"/>；
+        /// 帧末批量摘除期间用 <c>suppressNotify</c> 把 N 次 RemoveModifier 的通知也合并成一次。
+        ///
+        /// count：Consume 时是要消耗的层数，Keep 时是要保留的层数，Clear 时被忽略。
+        /// 返回实际减掉的层数，供调用方按消耗量结算（<c>ResultKey</c>）。
+        /// </summary>
+        public int ConsumeStacks(GameplayTags tags, int count, StackRemoveMode mode)
+        {
+            if (isDestroy || modifiers == null || tags == GameplayTags.None) return 0;
+
+            var targets = CollectStackTargets(tags);
+            if (targets.Count == 0) return 0;
+
+            // 最早到期的层先掉：Multiple 每层各自倒计时，优先消耗快到期的才符合
+            // 「自然衰减」的直觉；无限时长（TillTime<=0）排最后，永不被优先削掉。
+            targets.Sort((a, b) => SortKey(a).CompareTo(SortKey(b)));
+
+            int total = 0;
+            for (int i = 0; i < targets.Count; i++) total += targets[i].StackCount;
+
+            int left;
+            switch (mode)
+            {
+                case StackRemoveMode.Clear:
+                    left = int.MaxValue;
+                    break;
+                case StackRemoveMode.Keep:
+                    left = Math.Max(0, total - Math.Max(0, count));
+                    break;
+                default:
+                    left = Math.Max(0, count);
+                    break;
+            }
+            if (left == 0) return 0;
+
+            int removed = 0;
+            for (int i = 0; i < targets.Count && left > 0; i++)
+            {
+                int used = targets[i].ReduceStack(left);
+                if (used <= 0) continue; // 防御：不让 left 原地不动把循环拖死
+                removed += used;
+                left -= used;
+            }
+
+            if (removed > 0) NotifyControlChanged();
+            return removed;
+        }
+
+        private static long SortKey(ActorModifier m)
+        {
+            return m.TillTime > 0 ? m.TillTime : long.MaxValue;
+        }
+
+        /// <summary>
+        /// 收集减层目标：按标记遍历活跃链表（跨来源、跨 ability）。
+        /// 0 层 / 已回收的实例一律排除，避免把待摘除对象再算一遍。
+        /// </summary>
+        private List<ActorModifier> CollectStackTargets(GameplayTags tags)
+        {
+            var result = new List<ActorModifier>();
+            for (var node = modifiers.First; node != null; node = node.Next)
+            {
+                var m = node.Value;
+                if (m == null || m.IsDispose || m.Config == null || m.StackCount <= 0) continue;
+                if ((m.Config.Tags & tags) == GameplayTags.None) continue;
+                result.Add(m);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 登记一次帧末摘除。同一帧里多个来源同时减层只调度一次，
+        /// 且登记不持有任何 modifier 引用 —— 宿主回池也不会被协程解引用。
+        /// </summary>
+        public void ScheduleFlushPendingRemoves()
+        {
+            if (isDestroy || flushScheduled) return;
+            flushScheduled = true;
+            FlushPendingRemovesAsync(this).Coroutine();
+        }
+
+        private static async ETTask FlushPendingRemovesAsync(AbilityComponent ac)
+        {
+            await UnityLifeTimeHelper.WaitUpdateFinish();
+            ac.flushScheduled = false;
+            if (!ac.isDestroy) ac.FlushPendingRemoves();
+        }
+
+        /// <summary>
+        /// 帧末统一摘除本帧被减到 0 层的实例。
+        /// 摘除期间挂起通知，结束后只重算一次标记聚合 —— 否则 Multiple 清 5 层
+        /// 会触发 5 次全量 Rebuild、5 次 EntityTagsChanged 广播与 5 个中间态。
+        /// </summary>
+        private void FlushPendingRemoves()
+        {
+            if (modifiers == null) return;
+
+            List<ActorModifier> pending = null;
+            for (var node = modifiers.First; node != null; node = node.Next)
+            {
+                var m = node.Value;
+                if (m != null && !m.IsDispose && m.IsPendingRemove)
+                {
+                    (pending ??= new List<ActorModifier>()).Add(m);
+                }
+            }
+            if (pending == null) return;
+
+            suppressNotify = true;
+            try
+            {
+                for (int i = 0; i < pending.Count; i++)
+                {
+                    pending[i].FlushPendingRemove();
+                }
+            }
+            finally
+            {
+                suppressNotify = false;
+            }
+            NotifyControlChanged();
+        }
+
         public void RemoveAbility(ActorAbility ability)
         {
             if (isDestroy) return;
@@ -303,7 +459,7 @@ namespace TaoTie
             }
         }
         /// <summary>
-        /// 按名字查已有实例（只读）。心法注入前必须先查：
+        /// 按名字查已有实例（只读）。外部注入前必须先查：
         /// <see cref="AddAbility"/> 不去重，同名 Add 两次会得到两个 ActorAbility，效果翻倍。
         /// </summary>
         public ActorAbility GetAbility(string abilityName)
@@ -344,30 +500,22 @@ namespace TaoTie
             return control == null || control.GetTagRoom(config.Tags) > 0;
         }
 
+        // 按标记清状态统一走 ConsumeStacks(tags, 0, Clear) + ScheduleFlushPendingRemoves()：
+        // 数字同步生效、帧末批量摘除，不再另开一条 RemoveModifiersByTag 链路。
+
         /// <summary>
-        /// 清掉所有挂着指定标记的 modifier（净化 / 驱散 / 免疫触发后的清理）。
-        /// 传组合值表示"命中任一标记就清"，返回清掉的条数。
+        /// modifier 增删 / 层数变化后重算标记聚合与控制掩码。
+        ///
+        /// 加层走 <c>ApplyModifier</c> 的 Stack 分支，减层走 <c>ConsumeStacks</c>，
+        /// 两条链各自在结尾通知一次；否则 <c>tagStacks</c> 还记着旧层数，
+        /// 「灼烧 5 层上限」在引爆消耗层数后会表现为"层减了但池子没释放"。
+        ///
+        /// 帧末批量摘除期间 <c>suppressNotify</c> 为真，N 次 RemoveModifier 的通知
+        /// 被合并成 Flush 结束后的一次。
         /// </summary>
-        public int RemoveModifiersByTag(GameplayTags tags)
-        {
-            if (isDestroy || tags == GameplayTags.None || modifiers == null) return 0;
-
-            List<ActorModifier> snapshot = null;
-            for (var node = modifiers.First; node != null; node = node.Next)
-            {
-                var m = node.Value;
-                if (m?.Config == null || (m.Config.Tags & tags) == GameplayTags.None) continue;
-                (snapshot ??= new List<ActorModifier>()).Add(m);
-            }
-            if (snapshot == null) return 0;
-
-            for (int i = 0; i < snapshot.Count; i++) RemoveModifier(snapshot[i]);
-            return snapshot.Count;
-        }
-
         private void NotifyControlChanged()
         {
-            if (isDestroy) return;
+            if (isDestroy || suppressNotify) return;
             GetComponent<ControlComponent>()?.NotifyModifiersChanged();
         }
 
@@ -382,5 +530,83 @@ namespace TaoTie
                 }
             }
         }
+
+        #region 挂起的恢复型补执行
+
+        /// <summary>
+        /// 登记一次延迟补执行，返回用于取消的令牌（会被 <see cref="FlushPendingRestores"/> 提前兑现）。
+        /// 同名重复登记时先撤掉旧的，保证同一能力最多只有一份延迟任务。
+        /// </summary>
+        public ETCancellationToken RegisterPendingRestore(string ability)
+        {
+            if (isDestroy || string.IsNullOrEmpty(ability)) return null;
+
+            if (pendingRestores == null)
+            {
+                pendingRestores = new Dictionary<string, ETCancellationToken>();
+            }
+            else if (pendingRestores.TryGetValue(ability, out var old))
+            {
+                pendingRestores.Remove(ability);
+                old.Cancel();
+            }
+
+            var token = new ETCancellationToken();
+            pendingRestores[ability] = token;
+            return token;
+        }
+
+        /// <summary>延迟到点后正常结算，把登记项摘掉（避免下次误兑现）。</summary>
+        public void CompletePendingRestore(string ability, ETCancellationToken token)
+        {
+            if (pendingRestores == null || token == null) return;
+            if (pendingRestores.TryGetValue(ability, out var cur) && ReferenceEquals(cur, token))
+            {
+                pendingRestores.Remove(ability);
+            }
+        }
+
+        /// <summary>
+        /// 立刻兑现所有挂起的恢复型补执行，并让原来的延迟协程自行退出。
+        /// 由 <c>EquipHoldComponent</c> 在聚合显隐落到「收剑态」时调用 —— 那里是唯一
+        /// 知道多 FSM 聚合结果的地方，比在各个打断来源上逐处打点更可靠。
+        /// </summary>
+        public void FlushPendingRestores()
+        {
+            if (pendingRestores == null || pendingRestores.Count == 0) return;
+
+            // 先摘表再 Cancel：Cancel 会同步唤醒等待中的协程，协程回来时会调
+            // CompletePendingRestore，若此时还在遍历原字典就会抛「集合被修改」。
+            var names = new List<string>(pendingRestores.Count);
+            var tokens = new List<ETCancellationToken>(pendingRestores.Count);
+            foreach (var kv in pendingRestores)
+            {
+                names.Add(kv.Key);
+                tokens.Add(kv.Value);
+            }
+            pendingRestores.Clear();
+
+            for (int i = 0; i < names.Count; i++)
+            {
+                tokens[i]?.Cancel();
+                ExecuteAbility(names[i]);
+            }
+        }
+
+        /// <summary>析构前丢弃所有挂起项：只取消，不再补执行。</summary>
+        private void DropPendingRestores()
+        {
+            if (pendingRestores == null) return;
+
+            var tokens = new List<ETCancellationToken>(pendingRestores.Values);
+            pendingRestores.Clear();
+            pendingRestores = null;
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                tokens[i]?.Cancel();
+            }
+        }
+
+        #endregion
     }
 }

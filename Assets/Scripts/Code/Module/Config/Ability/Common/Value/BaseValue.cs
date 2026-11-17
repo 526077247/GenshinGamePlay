@@ -13,6 +13,9 @@ namespace TaoTie
     [ProtoInclude(104, typeof(SingleValue))]
     [ProtoInclude(105, typeof(ZeroValue))]
     [ProtoInclude(106, typeof(TagStackValue))]
+    [ProtoInclude(107, typeof(ElementValue))]
+    [ProtoInclude(108, typeof(ElementMaxValue))]
+    [ProtoInclude(109, typeof(ElementReactionValue))]
     public abstract class BaseValue
     {
         /// <summary>

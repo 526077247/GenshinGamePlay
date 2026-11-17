@@ -60,7 +60,7 @@ namespace TaoTie
             {
                 if (InputManager.Instance.GetKey(GameKeyCode.SprintBS) && CanSprintNow())
                 {
-                    TrySprint(direction);
+                    TrySprint(direction, true);
                 }
                 ClearMoveIntent();
                 return;
@@ -91,6 +91,15 @@ namespace TaoTie
             }
             else
             {
+                // 缓冲窗口内表达明确新意图（由静止起步 / 反向）视为放弃未施放的技能；
+                // 斜向微调不撤销，也不碰上面两个提前返回的分支（那里的方向不算新意图）。
+                if (SkillComponent.EnableCancelOnRelease &&
+                    (lastDirection == Vector3.zero ||
+                     Vector3.Dot(lastDirection.normalized, direction.normalized) < 0f))
+                {
+                    GetComponent<SkillComponent>()?.CancelPending();
+                }
+
                 lastDirection = direction;
                 lastCheckTime = TimerManager.Instance.GetTimeNow();
             }
@@ -102,7 +111,7 @@ namespace TaoTie
             
             if (InputManager.Instance.GetKey(GameKeyCode.SprintBS))
             {
-                TrySprint(direction);
+                TrySprint(direction, false);
             }
             else
             {
@@ -147,17 +156,20 @@ namespace TaoTie
             return direction;
         }
 
-        /// <summary>
-        /// 冲刺。只置 FSM trigger，位移由状态的动画驱动。
-        ///
-        /// 两个入口共用一份实现：正常移动（<see cref="Update"/> 尾部）与吟唱期间被打断时
-        /// （被 Deny Move 挡住、但 Sprint 位没被剥夺）。CD、朝向、冷却触发都只在这里，
-        /// 不要在别处再拼一套 —— 否则手感参数会分叉。
-        /// </summary>
-        private void TrySprint(Vector3 direction)
+        /// <summary>冲刺：只置 FSM trigger，位移由状态动画驱动；CD、朝向、冷却只在这里算。</summary>
+        /// <param name="interrupted">是否同时是打断动作（吟唱 / 蓄力 / 后摇期间冲刺）：走统一打断收尾</param>
+        private void TrySprint(Vector3 direction, bool interrupted)
         {
+            // 冲刺是否可用只由控制位决定，区间封锁（虚化窗口）由 NoSprint 派生 Sprint 位。
+            // 放在最前面：Update 尾部那条正常移动入口也走同一门禁，且被拦时不转向、不吃 CD。
+            if (!CanSprintNow()) return;
+
             var skillC = GetComponent<SkillComponent>();
             if (skillC?.IsSprintBSInCD() == true) return;
+
+            // 放在 CD 判定之后：被 CD 挡下的按键不算冲刺，不该吞掉玩家的施法意图。
+            if (interrupted)
+                GetComponent<CombatComponent>()?.InterruptCurrentSkill();
 
             if (direction != Vector3.zero && moveComponent != null)
             {
@@ -166,8 +178,7 @@ namespace TaoTie
             fsm.SetData(FSMConst.SprintBS, true);
             skillC?.TriggerSprintBSCD();
 
-            // 冲刺是明确的"新意图"，把施法瞬间的输入抑制清掉：
-            // 否则冲完回到 idle，玩家还按着的方向键仍被当作没按，得先松手才能接着跑。
+            // 冲刺是新意图：清掉施法瞬间的输入抑制，否则冲完还得先松手才能跑。
             suppressMoveUntilRelease = false;
             lastDirection = direction;
             lastCheckTime = direction == Vector3.zero ? 0 : TimerManager.Instance.GetTimeNow();
@@ -180,10 +191,7 @@ namespace TaoTie
         }
 
         #endregion
-        /// <summary>
-        /// 现在是否允许主动位移。判定统一走 <see cref="ControlComponent"/> 的能力位掩码，
-        /// 不再按"被哪种控制命中"来判断 —— 定身/击飞/恐惧等新控制接进来时这里不用改。
-        /// </summary>
+        /// <summary>是否允许主动位移：统一读 <see cref="ControlComponent"/> 的能力位。</summary>
         private bool CanMoveNow()
         {
             if (controlComponent == null || controlComponent.IsDispose)
@@ -191,11 +199,7 @@ namespace TaoTie
             return controlComponent == null || controlComponent.CanDo(ControlFlag.Move);
         }
 
-        /// <summary>
-        /// 现在是否允许冲刺。与 <see cref="CanMoveNow"/> 分开判定：
-        /// 硬控（<see cref="GameplayTagMeta.HardStop"/> 档）连 Sprint 位一起剥夺（人钉死不能冲），
-        /// 而吟唱这类自身施法只锁 Move|CastSkill —— 冲刺仍然可用，它就是打断吟唱的手段。
-        /// </summary>
+        /// <summary>是否允许冲刺。与 <see cref="CanMoveNow"/> 分开：吟唱 / 后摇只锁 Move|CastSkill，冲刺正是打断手段。</summary>
         private bool CanSprintNow()
         {
             if (controlComponent == null || controlComponent.IsDispose)

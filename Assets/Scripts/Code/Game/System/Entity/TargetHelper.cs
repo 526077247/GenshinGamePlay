@@ -229,6 +229,13 @@ namespace TaoTie
             return Vector3.zero;
         }
                 
+        /// <summary>能否被选为目标：读候选侧选择权（虚化 / 潜行 = 负数），不要直接翻标记位。</summary>
+        public static bool CanBeSelected(Entity entity)
+        {
+            var control = entity?.GetComponent<ControlComponent>();
+            return control == null || control.SelectionPriority >= 0;
+        }
+
         public static bool IsTarget(Actor self, Actor other, TargetType type)
         {
             if (self == null || other == null) return false;

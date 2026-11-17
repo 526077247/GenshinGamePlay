@@ -28,6 +28,7 @@ namespace TaoTie
     [ProtoInclude(122, typeof(ConfigDoActionOnControlStateChangeMixin))]
     [ProtoInclude(123, typeof(ConfigAbsorbByStateMixin))]
     [ProtoInclude(124, typeof(ConfigDoActionOnSpecialsChangeMixin))]
+    [ProtoInclude(125, typeof(ConfigElementReactionMixin))]
     public abstract partial class ConfigAbilityMixin
     {
     }

@@ -21,7 +21,7 @@ namespace TaoTie
     ///    ControlComponent 只持一张 0~2 项的小表，不必跟着 modifier 增删做全量重算；
     /// 3. 顺带就能在免疫成功时执行 <see cref="Actions"/>，不必为此另开一条消息通道。
     ///
-    /// 挂到 <see cref="ConfigAbility.AbilityMixins"/> 上也生效 —— 心法因此可以配常驻免疫，
+    /// 挂到 <see cref="ConfigAbility.AbilityMixins"/> 上也生效 —— 因此可以配常驻免疫，
     /// 不必非得做成一条 Duration=-1 的常驻 modifier。
     ///
     /// <b>本 Mixin 不管理次数</b>：它只判断「免不免」和「免了跑什么」。

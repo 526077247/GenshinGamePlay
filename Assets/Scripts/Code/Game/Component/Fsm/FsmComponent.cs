@@ -139,6 +139,37 @@ namespace TaoTie
 
         #endregion
 
+        #region Probe
+
+        private int probeDepth;
+        private FsmProbe probe0;
+        private FsmProbe probe1;
+
+        internal void BeginProbe(FsmProbe a, FsmProbe b)
+        {
+            if (probeDepth == 0) { probe0 = a; probe1 = b; }
+            probeDepth++;
+        }
+
+        internal void EndProbe()
+        {
+            if (probeDepth == 0) return;
+            if (--probeDepth == 0) { probe0 = default; probe1 = default; }
+        }
+
+        private bool TryProbe(string key, out int value)
+        {
+            if (probeDepth > 0 && !string.IsNullOrEmpty(key))
+            {
+                if (key == probe0.Key) { value = probe0.Value; return true; }
+                if (key == probe1.Key) { value = probe1.Value; return true; }
+            }
+            value = 0;
+            return false;
+        }
+
+        #endregion
+
         #region Data
 
         /// <summary>
@@ -212,6 +243,7 @@ namespace TaoTie
 
         public float GetFloat(string key)
         {
+            if (TryProbe(key, out var p)) return p;
             if (config.TryGetParam(key, out var param))
             {
                 return param.GetFloat(DynDictionary);
@@ -225,6 +257,7 @@ namespace TaoTie
 
         public int GetInt(string key)
         {
+            if (TryProbe(key, out var p)) return p;
             if (config.TryGetParam(key, out var param))
             {
                 return param.GetInt(DynDictionary);
@@ -238,6 +271,7 @@ namespace TaoTie
 
         public bool GetBool(string key)
         {
+            if (TryProbe(key, out var p)) return p != 0;
             if (config.TryGetParam(key, out var param))
             {
                 return param.GetBool(DynDictionary);

@@ -3,36 +3,14 @@ using System;
 namespace TaoTie
 {
     /// <summary>
-    /// 标记 → 行为的映射表。<b>加一种新状态，只改这里（和枚举），判定代码零改动。</b>
+    /// 标记 → 行为的映射表。<b>加一种新状态只改这里（和枚举），判定代码零改动。</b>
     ///
-    /// 五张表回答五个问题（都在这一处，因为它们全是"状态固有属性"，
-    /// 一旦允许每条修饰器各配一份，同一个眩晕换了来源就会出现两种行为）：
-    /// 1. <see cref="tierOf"/>：这个标记剥夺哪些能力？
-    ///    —— 眩晕天然等于"Move|Turn|CastSkill|Attack|Sprint 全禁"，
-    ///    让配置只写 <c>Tags=Stun</c> 就够了，不用记 79 这个数，也不会漏配某个位。
-    ///    用**按位下标的数组**而不是字典：位值本身就是索引，O(1) 无哈希无装箱。
-    ///    表的值是 <see cref="ControlFlag"/>，与 <see cref="GameplayTags"/> 是两个独立枚举 ——
-    ///    「原因 → 结论」的转换只在这一处发生，转换完的结论不再回到配置面。
-    /// 2. <see cref="maxStackOf"/>：这个标记最多几层？
-    ///    —— <b>上限属于标记，不属于修饰器</b>。如果每个修饰器各配一个上限，
-    ///    两个不同来源挂同一个标记时会各按各的封顶（5 和 3），聚合上限变成 8，
-    ///    "灼烧最多 5 层"这个规则就表达不出来。
-    /// 3. <see cref="levelOf"/>：这个标记的表现等级是几？
-    ///    —— <b>等级属于标记，不属于修饰器</b>。同一个眩晕从破韧来、从雷法来、从陷阱来，
-    ///    表现必须一样；让每条修饰器各配一个的话，"同一个状态两种动画"是迟早的事。
-    ///    和 <see cref="maxStackOf"/> 是同一条原则：状态固有的属性，写进状态本身。
-    /// 4. <see cref="interruptOf"/>：这个标记生效时要不要打断目标正在做的动作？
-    ///    —— 同样属于标记：同一个眩晕从破韧来、从雷法来，都必须打断正在放的技能。
-    ///    留在配置面的话，"漏填 = 不打断"是最危险的默认值，
-    ///    而且会得到"眩晕了但技能照常放完、伤害照常结算"这种只在配置事故里出现的 bug。
-    ///    注意它**不能从 <see cref="tierOf"/> 推导**：吟唱自己就剥夺 CastSkill（推导会打断自己），
-    ///    魅惑不剥夺任何能力却要打断 —— 所以是一条独立的列，不是一条自动的规则。
-    /// 5. 段校验：一条修饰器挂两个控制身份、或 Tags 里出现枚举中不存在的位、
-    ///    或段 3 的状态标记登记了剥夺 / 打断，加载期直接报错（见 <see cref="ValidateModifier"/>），
-    ///    而不是等到行为诡异才发现。
+    /// 六张表全部是"状态固有属性"，不接受逐修饰器配置 —— 否则同一个眩晕换个来源就会出现两种行为。
+    /// 各表语义与「为什么必须收敛在这一处」见 <c>Book/1.AbilitySystem的战斗框架.md</c> §三：
+    /// <see cref="tierOf"/> 剥夺 / <see cref="maxStackOf"/> 层数上限 / <see cref="levelOf"/> 表现等级 /
+    /// <see cref="interruptOf"/> 打断 / <see cref="selectOf"/> 候选选择权 / <see cref="forcedOf"/> 强制目标。
     ///
-    /// 未登记的标记按"不剥夺、不可叠"处理，所以加标记时不必同步改表 ——
-    /// 只有需要特殊语义才登记。
+    /// 未登记的标记按"不剥夺、不可叠、可选、无强制"处理，加标记不必同步改表。
     /// </summary>
     public static class GameplayTagMeta
     {
@@ -55,12 +33,8 @@ namespace TaoTie
         public const GameplayTags StateFlagMask = (GameplayTags)(~0xFFFFFFL);
 
         /// <summary>
-        /// 组选择器并集（<see cref="GameplayTags.AllControlKind"/> 等三个整段值）。
-        ///
-        /// 只给「按整段批量表达」的字段用（目前只有 <see cref="ConfigImmuneMixin.ImmuneTags"/>），
-        /// 校验时与 <see cref="KnownMask"/> 一起放行。它<b>不能</b>出现在
-        /// <see cref="ConfigAbilityModifier.Tags"/> 上 —— 那里每一位都要有身份、要参与层数聚合，
-        /// 组值没有身份，配上去会被 <see cref="ValidateModifier"/> 当未命名位报出来。
+        /// 三个整段值的并集，只给「按整段批量表达」的字段用（目前只有 <see cref="ConfigImmuneMixin.ImmuneTags"/>），
+        /// 校验时与 <see cref="KnownMask"/> 一起放行；不能出现在 <see cref="ConfigAbilityModifier.Tags"/> 上。
         /// </summary>
         public const GameplayTags GroupMask =
             GameplayTags.AllControlKind | GameplayTags.AllActionLock | GameplayTags.AllStateFlag;
@@ -148,6 +122,12 @@ namespace TaoTie
         /// </summary>
         private static readonly ControlInterrupt[] interruptOf = new ControlInterrupt[BitCount];
 
+        /// <summary>标记 → 候选侧选择权。<b>只登记段 3</b>：&lt;0 不可被选中（越负越硬）、0 中性、&gt;0 吸引。</summary>
+        private static readonly sbyte[] selectOf = new sbyte[BitCount];
+
+        /// <summary>标记 → 施加侧强制等级。<b>只登记段 3</b>：&gt;0 = 被迫以施加者为目标，数值即优先级。</summary>
+        private static readonly byte[] forcedOf = new byte[BitCount];
+
         private static bool validated;
 
         static GameplayTagMeta()
@@ -184,9 +164,15 @@ namespace TaoTie
             tierOf[Index(GameplayTags.Charge)] = MoveStop;
             tierOf[Index(GameplayTags.Stagger)] = HardStop;
             tierOf[Index(GameplayTags.Recover)] = MoveCastStop;
+            tierOf[Index(GameplayTags.NoSprint)] = ControlFlag.Sprint;
 
             // ── 段 3：状态标记（不剥夺，只登记层数上限）──
             maxStackOf[Index(GameplayTags.Burn)] = 5;
+
+            // ── 段 3：被选中性 / 强制目标（走各自的轴，不碰 tierOf）──
+            selectOf[Index(GameplayTags.Untargetable)] = -1;
+            forcedOf[Index(GameplayTags.Taunted)] = 1;
+            forcedOf[Index(GameplayTags.TauntedHard)] = 2;
 
             // ── 表现等级（数值只是"谁盖过谁"的序，本身没有含义）──
             // 4：硬控 —— 五项能力全禁，角色彻底钉死，任何别的表现都该让位
@@ -316,6 +302,43 @@ namespace TaoTie
             return result;
         }
 
+        /// <summary>标记派生的候选选择权：任一排斥即排斥（取最负，安全优先），全为吸引时取最大。0 = 可选。</summary>
+        public static sbyte SelectOf(GameplayTags tags)
+        {
+            if (tags == GameplayTags.None) return 0;
+
+            sbyte minNeg = 0, maxPos = 0;
+            long bits = (long)tags;
+            while (bits != 0)
+            {
+                long bit = bits & -bits;
+                bits ^= bit;
+
+                sbyte v = selectOf[Index(bit)];
+                if (v < minNeg) minNeg = v;
+                else if (v > maxPos) maxPos = v;
+            }
+            return minNeg < 0 ? minNeg : maxPos;
+        }
+
+        /// <summary>标记派生的强制等级：取最大（强嘲讽压过普通嘲讽）。0 = 无强制。</summary>
+        public static byte ForcedOf(GameplayTags tags)
+        {
+            if (tags == GameplayTags.None) return 0;
+
+            byte result = 0;
+            long bits = (long)tags;
+            while (bits != 0)
+            {
+                long bit = bits & -bits;
+                bits ^= bit;
+
+                byte cur = forcedOf[Index(bit)];
+                if (cur > result) result = cur;
+            }
+            return result;
+        }
+
         /// <summary>是否是单个原子标记（只有一个位）。</summary>
         public static bool IsSingleTag(GameplayTags tag)
         {
@@ -400,6 +423,17 @@ namespace TaoTie
                 {
                     Log.Error($"[GameplayTag] {tag}(bit {i}) 剥夺了 CastSkill 却没有登记打断 " +
                               "（interruptOf），正在释放的技能将无法被它打断");
+                }
+
+                // 选择轴只允许段 3，且与剥夺 / 打断互斥：同一标记不能既表示"我动不了"又表示"别人选不中我"。
+                sbyte sel = selectOf[i];
+                byte frc = forcedOf[i];
+                if (sel != 0 || frc != 0)
+                {
+                    if ((tag & StateFlagMask) == GameplayTags.None)
+                        Log.Error($"[GameplayTag] {tag}(bit {i}) 登记了选择轴，但不在段 3：只有状态标记能表达被选中性与强制目标");
+                    if (tier != ControlFlag.None || irq != ControlInterrupt.None)
+                        Log.Error($"[GameplayTag] {tag}(bit {i}) 同时登记了剥夺 / 打断与选择轴：两条轴互斥，请单独用一个段 3 标记");
                 }
 
                 if (tier == ControlFlag.None) continue;

@@ -27,9 +27,9 @@ namespace TaoTie
     ///    而 <see cref="FormulaValue"/> 里的 ability specials 取自**挂载这条 mixin 的 ability**，
     ///    不是攻击方的 —— 想做"按攻方技能等级增伤"要显式读属性，不要指望 specials。
     ///
-    /// 加法顺序无所谓：<c>DamagePercentageRatio</c> 加在防御减免前还是后，
-    /// 相对增幅都是同一个比例（乘法交换律）。只有加在 <see cref="DamageExtraAdd"/> 上
-    /// 才是"不被防御和倍率影响的固定伤害"。
+    /// <c>DamagePercentageRatio</c> 上的增减一律是<b>乘法</b>（本类的 DamageRatioMultiplier），
+    /// 乘法可交换，所以乘在防御减免之前还是之后、同一条 Actions 里谁先谁后，结果都一样。
+    /// 只有 <see cref="DamageExtraAdd"/> 是加法，那才是"不被防御和倍率影响的固定伤害"。
     /// </summary>
     [ProtoContract]
     public partial class ModifyAttackResult : ConfigAbilityAction
@@ -46,12 +46,12 @@ namespace TaoTie
         public AttackType AttackType;
         [ProtoMember(11)]
 #if UNITY_EDITOR
-        [LabelText("受伤倍率加成")]
-        [Tooltip("加到 DamagePercentageRatio 上：0.3 = 这一击 +30%。\n" +
-                 "同一次结算里多个来源**相加**（0.3 + 0.2 = +50%），想做叠乘就自己算好填。\n" +
+        [LabelText("受伤倍率(乘)")]
+        [Tooltip("以<b>倍率</b>形式乘到 DamagePercentageRatio 上：0.3 = 这一击 ×1.3。\n" +
+                 "同一次结算里多个来源**相乘**（1.3 × 1.2 = 1.56），乘法可交换，所以和别的增减、和 Actions 顺序都无关。\n" +
                  "破韧期增伤就填这个：挂在破韧时加到目标身上的 modifier 里，窗口 == 眩晕窗口")]
 #endif
-        public BaseValue DamageRatioAdd;
+        public BaseValue DamageRatioMultiplier;
 
         [ProtoMember(12)]
 #if UNITY_EDITOR
@@ -115,8 +115,8 @@ namespace TaoTie
             // 受击前钩子里 target 就是攻击者，这正是"按攻方属性缩放增伤"想要的上下文。
             var ctx = target ?? actionExecuter;
 
-            if (DamageRatioAdd != null)
-                result.DamagePercentageRatio += DamageRatioAdd.Resolve(ctx, ability, modifier);
+            if (DamageRatioMultiplier != null)
+                result.DamagePercentageRatio *= 1f + DamageRatioMultiplier.Resolve(ctx, ability, modifier);
             if (DamageAdd != null)
                 result.DamagePercentage += DamageAdd.Resolve(ctx, ability, modifier);
             if (DamageExtraAdd != null)

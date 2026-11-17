@@ -49,6 +49,21 @@ namespace TaoTie
             return true;
         }
 
+        /// <summary>
+        /// 这条转移的条件里是否用到了 k0 / k1 中的任一键。
+        /// 只读判定、无副作用，供 Fsm.WouldAccept 判断"命中的转移是否真的依赖被探针覆盖的参数"。
+        /// </summary>
+        public bool UsesKey(string k0, string k1)
+        {
+            if (Conditions == null) return false;
+            for (int i = 0; i < Conditions.Length; i++)
+            {
+                if (Conditions[i] is ConfigConditionByData d && (d.Key == k0 || (k1 != null && d.Key == k1))) return true;
+                if (Conditions[i] is ConfigConditionByDataTrigger t && (t.Key == k0 || (k1 != null && t.Key == k1))) return true;
+            }
+            return false;
+        }
+
         public void OnApply(Fsm fsm, ConfigFsmState fromStateCfg, ConfigFsmState toStateCfg, ref FsmTransitionInfo info)
         {
             if (fromStateCfg == null || toStateCfg == null)

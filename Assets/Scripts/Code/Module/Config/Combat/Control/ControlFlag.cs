@@ -50,12 +50,6 @@ namespace TaoTie
         UseItem = 1 << 4,
 
         /// <summary>
-        /// 被选为攻击目标（潜行 / 虚体用）。
-        /// 刻意不并入任何控制档 —— "不可被选中"是隐身语义，不该被眩晕顺带赋予。
-        /// </summary>
-        BeSelected = 1 << 5,
-
-        /// <summary>
         /// 冲刺 / 突进。
         ///
         /// 与 <see cref="Move"/> 分开，是为了让"自身施法"和"被硬控"能区别对待：
@@ -65,6 +59,6 @@ namespace TaoTie
         Sprint = 1 << 6,
 
         /// <summary>全部能力位（校验 / 遍历用）。</summary>
-        All = Move | Turn | CastSkill | Attack | UseItem | BeSelected | Sprint,
+        All = Move | Turn | CastSkill | Attack | UseItem | Sprint,
     }
 }

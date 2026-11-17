@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ProtoBuf;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
@@ -36,5 +36,21 @@ namespace TaoTie
         public bool IgnoreLevelDiff;
         [ProtoMember(10)][LabelText("*是否真伤")] [Tooltip("真伤可以忽视对方防御影响,默认防御减伤比例系数范围(0,1)公式为：(攻击方等级*100)/(防守方防御值+攻击方等级*100)")]
         public bool TrueDamage;
+
+        [ProtoMember(11)][LabelText("元素")]
+        [Tooltip("这一击「是什么元素」，填元素表的 Id（ElementConfig）。0 = 不带元素。\n" +
+                 "决定命中后附着什么元素、能触发哪些反应；<b>不影响伤害</b> —— 元素增伤请在配置层用 Action 自己表达。")]
+        public int Element;
+
+        [ProtoMember(12)][LabelText("元素量")]
+        [Tooltip("命中后附着多少元素量（整数，向下取整）。0 = 有元素类型但不附着。\n" +
+                 "只决定「挂多少」，不影响伤害。\n" +
+                 "<b>非伤害效果</b>（给自己或队友挂 buff 之类）不走这里，用 ConfigAbilityModifier 的「附着元素」——\n" +
+                 "那条在 Modifier 挂到实体上时生效，不需要有伤害结算。两条都配会让同一个元素挂两次。")]
+        public int ElementDurability;
+
+        // 原 ProtoMember(13)「消耗已附着元素」、14「消耗量」已删除：
+        // 命中时抽走对方元素改由配置层的 ConsumeElement Action 负责，攻击属性不再自带消耗字段。
+        // 号段空出不复用，避免已有配置资产里的旧值被新字段误读。
     }
 }

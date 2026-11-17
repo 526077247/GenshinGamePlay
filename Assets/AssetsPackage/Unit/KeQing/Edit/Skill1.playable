@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Time: 0.05
   AbilityName: KeQing_Skill1
-  ExecuteOnBreak: 1
+  ExecuteOnBreak: 0
 --- !u!114 &6692269853049155522
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -12,6 +12,8 @@ namespace TaoTie
         public bool IsPlaying = false;
         private float length => this.cfg.Length;
         protected Entity actor => this.state.Fsm.Component.GetParent<Entity>();
+        /// <summary>本 clip 所属状态（Break 期间仍有效，Dispose 之后为 null）。</summary>
+        protected FsmState State => state;
 
         #region IDisposable
         public virtual void OnInit(FsmState state, ConfigFsmClip cfg)

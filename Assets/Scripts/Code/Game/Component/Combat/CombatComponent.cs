@@ -8,6 +8,9 @@ namespace TaoTie
     {
         private FsmComponent fsm => parent.GetComponent<FsmComponent>();
         protected AttackTarget attackTarget = new AttackTarget();
+
+        /// <summary>当前锁定目标是否来自嘲讽（强制解除时要清缓存，避免继续打旧目标）。</summary>
+        private bool forcedTargetApplied;
         public DieStateFlag DieStateFlag;
         private ConfigCombat config;
 
@@ -45,11 +48,14 @@ namespace TaoTie
                 CanBeHit = !config.BeHit.MuteAllHit;
             attackTarget.Reset();
             Messager.Instance.AddListener<long>(0, MessageId.ClearHitRecord, RemoveHitRecord);
+            Messager.Instance.AddListener(Id, MessageId.SelectionChanged, OnSelectionChanged);
         }
 
         public void Destroy()
         {
             Messager.Instance.RemoveListener<long>(0, MessageId.ClearHitRecord, RemoveHitRecord);
+            Messager.Instance.RemoveListener(Id, MessageId.SelectionChanged, OnSelectionChanged);
+            forcedTargetApplied = false;
             beforeAttack = null;
             beforeBeAttack = null;
             afterAttack = null;
@@ -228,6 +234,22 @@ namespace TaoTie
         }
 
         /// <summary>
+        /// 打断当前技能的统一收尾：清 FSM 施法参数 + 丢弃待放意图 + 请求一次显隐重算。
+        /// 三条打断来源共用：硬控、玩家冲刺打断、AI 放弃行动。不要只调它来做"打断"，
+        /// 那会漏掉清 pending 的那一半（打断后 220ms 内不会自动补放已放弃的技能）。
+        ///
+        /// 显隐这里只发「重算」请求，不直接写 ShowWeapon=true：调用点（TrySprint）
+        /// 发生在本帧切到 SprintBS 之前，此时读不到目标状态；直接写死 true 还会绕过
+        /// OR 聚合，在死亡 / 收剑态把武器错误亮出。真正的恢复由随后的 ChangeState
+        /// 无条件广播 FsmStateChanged 完成，这里只是补一个不依赖状态切换的重算点。
+        /// </summary>
+        public void InterruptCurrentSkill()
+        {
+            ReleaseSkillImmediately();
+            GetComponent<SkillComponent>()?.CancelPending();
+        }
+
+        /// <summary>
         /// 被击杀
         /// </summary>
         /// <param name="killerID"></param>
@@ -279,7 +301,11 @@ namespace TaoTie
         {
             if (attackTarget.RuntimeID != 0)
             {
-                return parent.Parent.Get(attackTarget.RuntimeID);
+                var target = parent.Parent.Get(attackTarget.RuntimeID);
+                if (target != null && !target.IsDispose) return target;
+
+                // 目标已被销毁：顺手清掉缓存，否则后续 SelectAttackTarget 会以为"还有锁定"而不重选
+                attackTarget.Reset();
             }
 
             return null;
@@ -291,9 +317,26 @@ namespace TaoTie
         }
         public void SelectAttackTarget(bool force)
         {
+            // 软强制优先：嘲讽目标有效就用它，选不到（死亡 / 不可选中 / 非敌对）回落常规选敌。
+            // 放在 early-return 之前 —— 嘲讽要能顶掉已有锁定。
+            var control = GetComponent<ControlComponent>();
+            if (control != null && control.TryGetForcedTarget(out var forcedId))
+            {
+                var self = GetParent<Unit>();
+                if (self != null && self.Parent.Get(forcedId) is Unit taunter && !taunter.IsDispose
+                    && AttackHelper.CheckIsEnemy(self, taunter) && TargetHelper.CanBeSelected(taunter))
+                {
+                    attackTarget.LockedPoint = null;
+                    attackTarget.RuntimeID = forcedId;
+                    forcedTargetApplied = true;
+                    return;
+                }
+            }
+
             if(config == null || config.CombatLock == null) return;
             if (attackTarget.RuntimeID == 0 || force)
             {
+                forcedTargetApplied = false;
                 var unit = GetParent<Unit>();
                 var count = PhysicsHelper.OverlapSphereNonAllocHitInfo(unit.Position, config.CombatLock.OverrideRange,
                     new[] {EntityType.Monster, EntityType.Avatar}, CheckHitLayerType.OnlyHitBox,
@@ -303,7 +346,8 @@ namespace TaoTie
                 for (int i = 0; i < count; i++)
                 {
                     var hitEntity = unit.Parent.Get(hitInfos[i].EntityId);
-                    if (hitEntity is Unit other && AttackHelper.CheckIsEnemy(unit, hitEntity))
+                    if (hitEntity is Unit other && AttackHelper.CheckIsEnemy(unit, hitEntity)
+                        && TargetHelper.CanBeSelected(hitEntity))
                     {
                         var dir = other.Position - unit.Position;
                         var a = Mathf.Abs(Vector3.Angle(dir, unit.Forward));
@@ -315,6 +359,26 @@ namespace TaoTie
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>选择轴变化（嘲讽生效 / 解除、自己被挂上不可选中）：缓存目标必须立刻跟着变。</summary>
+        private void OnSelectionChanged()
+        {
+            var control = GetComponent<ControlComponent>();
+            if (control != null && control.TryGetForcedTarget(out var forcedId))
+            {
+                attackTarget.LockedPoint = null;
+                attackTarget.RuntimeID = forcedId;
+                forcedTargetApplied = true;
+                return;
+            }
+
+            // 强制解除，或锁定的目标变成不可选中：清缓存，下次选敌按常规规则重挑
+            if (forcedTargetApplied || !TargetHelper.CanBeSelected(GetAttackTarget()))
+            {
+                forcedTargetApplied = false;
+                attackTarget.Reset();
             }
         }
 

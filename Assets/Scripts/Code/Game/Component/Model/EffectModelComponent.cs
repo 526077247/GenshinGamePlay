@@ -163,7 +163,9 @@ namespace TaoTie
                 coroutineLock = await CoroutineLockManager.Instance.Wait(CoroutineLockType.EnableObjView, parent.Id);
                 await this.WaitLoadGameObjectOver();
                 if(this.IsDispose) return;
-                var renders = this.EntityView.GetComponentsInChildren<Renderer>();
+                // includeInactive=true：特效常靠 GameObject.active 关闭，默认重载会漏掉它们，
+                // 导致关掉 N 个、开回少于 N 个，残留的 Renderer 永久 enabled=false。
+                var renders = this.EntityView.GetComponentsInChildren<Renderer>(true);
                 for (int i = 0; i < renders.Length; i++)
                 {
                     renders[i].enabled = enable;

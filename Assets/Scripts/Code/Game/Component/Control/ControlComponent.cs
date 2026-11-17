@@ -64,6 +64,13 @@ namespace TaoTie
         /// </summary>
         private int topLevel;
 
+        /// <summary>候选侧选择权聚合（&lt;0 不可被选中 / 0 中性 / &gt;0 吸引），见 <see cref="GameplayTagMeta.SelectOf"/></summary>
+        private sbyte selectionPriority;
+        /// <summary>强制目标：聚合出的施加者 id，0 = 无强制。</summary>
+        private long forcedTargetId;
+        /// <summary>强制等级（1 普通 / 2 强），只供调试与表现。</summary>
+        private byte forcedPriority;
+
         /// <summary>当前挂着的状态标记并集（域 B）。</summary>
         private GameplayTags tagMask;
         /// <summary>每个标记的层数总和，下标 = 位下标（0..63）。</summary>
@@ -73,6 +80,16 @@ namespace TaoTie
 
         /// <summary>当前被剥夺的能力位并集，O(1) 读取。</summary>
         public ControlFlag DeniedMask => deniedMask;
+
+        /// <summary>候选侧选择权：&lt;0 不可被选中。选敌过滤读它，不要直接翻标记位。</summary>
+        public sbyte SelectionPriority => selectionPriority;
+
+        /// <summary>强制目标 id。只给 id 不给实体：实体随时会销毁，由调用方 <c>Get</c> 后校验存活。</summary>
+        public bool TryGetForcedTarget(out long id)
+        {
+            id = forcedTargetId;
+            return forcedTargetId != 0;
+        }
 
         /// <summary>当前挂着的状态标记并集，O(1) 读取。</summary>
         public GameplayTags Tags => tagMask;
@@ -106,6 +123,9 @@ namespace TaoTie
 
             deniedMask = ControlFlag.None;
             topLevel = 0;
+            selectionPriority = 0;
+            forcedTargetId = 0;
+            forcedPriority = 0;
             tagMask = GameplayTags.None;
             tagStacks = null;
             tagStacksNext = null;
@@ -128,6 +148,9 @@ namespace TaoTie
             OnTagsChanged = null;
             abilityComponent = null;
             deniedMask = ControlFlag.None;
+            selectionPriority = 0;
+            forcedTargetId = 0;
+            forcedPriority = 0;
             tagMask = GameplayTags.None;
             tagStacks = null;
             tagStacksNext = null;
@@ -243,18 +266,6 @@ namespace TaoTie
             return room > 0 ? room : 0;
         }
 
-        /// <summary>
-        /// 清掉挂着指定标记的所有 modifier（净化 / 驱散）。返回清掉的条数。
-        /// </summary>
-        public int ClearTags(GameplayTags tags)
-        {
-            if (IsDispose || tags == GameplayTags.None) return 0;
-            if (abilityComponent == null || abilityComponent.IsDispose)
-                abilityComponent = GetComponent<AbilityComponent>();
-
-            return abilityComponent?.RemoveModifiersByTag(tags) ?? 0;
-        }
-
         #endregion
 
         #region 免疫
@@ -324,6 +335,9 @@ namespace TaoTie
             ControlFlag deny = ControlFlag.None;
             GameplayTags tags = GameplayTags.None;
             int bestLevel = 0;
+            sbyte minSel = 0, maxSel = 0;
+            long forcedId = 0, forcedSeq = 0;
+            byte forcedLvl = 0;
 
             var mods = abilityComponent?.Modifiers;
             if (mods != null)
@@ -332,6 +346,12 @@ namespace TaoTie
                 {
                     var modifier = node.Value;
                     if (modifier == null || modifier.IsDispose || modifier.Config == null) continue;
+
+                    // 层数已减到 0、等待帧末摘除的实例不算活跃：
+                    // 减层是同步生效的，摘除要避开正在遍历本链表的栈，中间会有一个
+                    // "对象还在但层数已是 0"的窗口。这里放行会留下 tagMask 有标记、
+                    // tagStacks 却是 0 的半生效状态（IsControlled 与层数对不上）。
+                    if (modifier.StackCount <= 0) continue;
 
                     var config = modifier.Config;
 
@@ -353,6 +373,20 @@ namespace TaoTie
                     // 段 3 的标记一样会走到这里（等级默认 0），以后给灼烧登记等级就直接生效。
                     int level = GameplayTagMeta.LevelOf(modTags);
                     if (level > bestLevel) bestLevel = level;
+
+                    // 选择轴：候选侧取最负（任一排斥即排斥），施加侧取最强；与剥夺无关，不走 TierOf。
+                    sbyte sel = GameplayTagMeta.SelectOf(modTags);
+                    if (sel < minSel) minSel = sel;
+                    else if (sel > maxSel) maxSel = sel;
+
+                    byte frc = GameplayTagMeta.ForcedOf(modTags);
+                    // 同级取后施加（Id 递增）：连续两次嘲讽时最后一次说了算
+                    if (frc > 0 && (frc > forcedLvl || (frc == forcedLvl && modifier.Id > forcedSeq)))
+                    {
+                        forcedLvl = frc;
+                        forcedId = modifier.ApplierID;
+                        forcedSeq = modifier.Id;
+                    }
                 }
             }
 
@@ -378,6 +412,19 @@ namespace TaoTie
             deniedMask = deny;
             topLevel = bestLevel;
             bool maskChanged = old != deny;
+
+            // 选择轴同步落盘：回调里读到的新值必须一致，重新选目标时不能还在用旧目标。
+            sbyte selResult = minSel < 0 ? minSel : maxSel;
+            bool selectionChanged = selectionPriority != selResult || forcedTargetId != forcedId;
+            selectionPriority = selResult;
+            forcedTargetId = forcedId;
+            forcedPriority = forcedLvl;
+
+            // 不复用 ControlStateChanged：那是"能力被剥夺"，UI 会当成被控图标。
+            if (!silent && selectionChanged && Messager.Instance != null)
+            {
+                Messager.Instance.Broadcast(Id, MessageId.SelectionChanged);
+            }
 
             // 打断判定独立于掩码：吟唱这类"自身就剥夺 CastSkill"的状态下，掩码早就是非 0 了，
             // 若仍按"掩码 0→非 0"判断，眩晕永远打不断吟唱。

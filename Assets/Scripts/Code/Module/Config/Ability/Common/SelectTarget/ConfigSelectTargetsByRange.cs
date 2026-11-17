@@ -29,7 +29,8 @@ namespace TaoTie
                 {
                     for (int i = list.Count-1; i >= 0 ; i--)
                     {
-                        if (!(list[i] is Actor item) || !TargetHelper.IsTarget(unit, item, CampTargetType))
+                        if (!(list[i] is Actor item) || !TargetHelper.IsTarget(unit, item, CampTargetType)
+                            || !TargetHelper.CanBeSelected(list[i]))
                         {
                             list.RemoveAt(i);
                         }

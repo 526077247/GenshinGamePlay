@@ -6,6 +6,7 @@ namespace TaoTie
     {
         private Fsm fsm;
         private ConfigFsmState config;
+        private bool isDisposed;
 
         public Fsm Fsm => fsm;
         public string Name => config.Name;
@@ -88,6 +89,15 @@ namespace TaoTie
         {
             this.fsm = fsm;
             config = cfg;
+            isDisposed = false;
+            StateTime = 0f;
+            StateNormalizedTime = 0f;
+            StateElapseTime = 0f;
+            StatePassTime = 0f;
+            StateExitTime = 0f;
+            // 池化兜底：清掉上一轮残留的 timeline / clipList / clipIndex / nextClipTime。
+            // 正常路径 Dispose()->ClearTimeline() 已清过，这里是不依赖调用顺序的结构性保证。
+            ClearTimeline();
         }
 
         public void OnEnter()
@@ -108,6 +118,8 @@ namespace TaoTie
         #region IDisposable
         public void Dispose()
         {
+            if (isDisposed) return;
+            isDisposed = true;
             ClearTimeline();
             fsm = null;
             config = null;

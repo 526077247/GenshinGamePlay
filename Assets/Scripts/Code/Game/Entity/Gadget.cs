@@ -42,6 +42,7 @@ namespace TaoTie
             {
                 AddComponent<CombatComponent, ConfigCombat>(ConfigActor.Combat);
             }
+            AddComponent<ElementComponent>();
             using ListComponent<ConfigAbility> list = ConfigAbilityCategory.Instance.GetList(ConfigActor.Abilities);
             AddComponent<AbilityComponent,List<ConfigAbility>>(list);
             if (!string.IsNullOrEmpty(gadget.Config.AIPath))
