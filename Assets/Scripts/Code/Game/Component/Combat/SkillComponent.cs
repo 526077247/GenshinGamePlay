@@ -564,6 +564,52 @@ namespace TaoTie
             }
         }
         
+        /// <summary>
+        /// 减少一个技能的剩余 CD（毫秒）。CD 的真相源只有 <see cref="SkillInfo.LastSpellTime"/> 一个，
+        /// 所以这里不做"额外记一个 CD 修正值"，而是把时间锚点往回拨 —— <see cref="IsSkillInCD"/> 与
+        /// <see cref="TriggerSkillCD"/> 读的是同一个字段，不会出现两套账。
+        /// 边界：已就绪的技能不处理；减量上限 = 当前剩余 CD，不会把 CD 减成负数。
+        /// </summary>
+        public void ReduceSkillCD(int configId, long reduceMs)
+        {
+            if (reduceMs <= 0 || SkillInfoMap == null) return;
+            if (!SkillInfoMap.TryGetValue(configId, out var info)) return;
+            var remain = GetRemainCD(info);
+            if (remain <= 0) return;
+            info.LastSpellTime -= (long)System.Math.Min((double)reduceMs, remain);
+        }
+
+        /// <summary>按比例减剩余 CD，ratio 语义 0~1（越界会 clamp）。0.3 = 减掉当前剩余的 30%。</summary>
+        public void ReduceSkillCDByRatio(int configId, float ratio)
+        {
+            if (ratio <= 0f || SkillInfoMap == null) return;
+            if (!SkillInfoMap.TryGetValue(configId, out var info)) return;
+            var remain = GetRemainCD(info);
+            if (remain <= 0) return;
+            info.LastSpellTime -= (long)(remain * UnityEngine.Mathf.Clamp01(ratio));
+        }
+
+        /// <summary>对全部已装配技能减固定 CD。用于"全技能刷新"类效果；未装配的技能不在字典里，不会被波及。</summary>
+        public void ReduceAllSkillCD(long reduceMs)
+        {
+            if (reduceMs <= 0 || SkillInfoMap == null) return;
+            foreach (var info in SkillInfoMap.Values)
+            {
+                var remain = GetRemainCD(info);
+                if (remain > 0) info.LastSpellTime -= (long)System.Math.Min((double)reduceMs, remain);
+            }
+        }
+
+        /// <summary>
+        /// 当前剩余 CD（毫秒），&lt;=0 表示已就绪。CD 是 FormulaStringFx（float），LastSpellTime 是 long，
+        /// 统一升到 double 再算，避免 long + float 的隐式转换在减法上丢精度 / 混类型。
+        /// </summary>
+        private double GetRemainCD(SkillInfo info)
+        {
+            var timeNow = GameTimerManager.Instance.GetTimeNow();
+            return (double)info.LastSpellTime + info.CD.GetData(numericComponent) - timeNow;
+        }
+
         public void TriggerSprintBSCD()
         {
             if (sprintBSId == 0) return;

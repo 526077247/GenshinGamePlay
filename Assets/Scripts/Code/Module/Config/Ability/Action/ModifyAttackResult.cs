@@ -44,6 +44,21 @@ namespace TaoTie
 #endif
         [ProtoMember(17)]
         public AttackType AttackType;
+#if UNITY_EDITOR
+        [LabelText("元素过滤 0表示任意")]
+        [Tooltip("只响应「本次这一击」Element 与之一致的攻击。填元素 Id（如金=1/雷=102）；0=不过滤。\n" +
+                 "用于跨元素定向借用：配 ByEntityTags 检测宿主反应标记 + 本字段限定攻击元素，两者串联才算严格定向。\n" +
+                 "组合元素按 AttackResult.Element 原值匹配，不拆来源")]
+#endif
+        [ProtoMember(18)]
+        public int Element;
+#if UNITY_EDITOR
+        [LabelText("攻击标识过滤 空表示任意")]
+        [Tooltip("复用 AttackHelper.MatchAttackTag：取这一击 ConfigAttackInfo.AttackTag 精确匹配，留空=不过滤。\n" +
+                 "钩子 Mixin 层已有同名过滤（整组 Actions 共享）；这里再配可实现同一钩子内不同 Action 按 AttackTag 分流，两者 AND")]
+#endif
+        [ProtoMember(19)]
+        public string AttackTag;
         [ProtoMember(11)]
 #if UNITY_EDITOR
         [LabelText("受伤倍率(乘)")]
@@ -111,6 +126,8 @@ namespace TaoTie
 
             if (StrikeType != StrikeType.None && StrikeType != result.StrikeType) return;
             if (AttackType != AttackType.None && AttackType != result.AttackType) return;
+            if (Element != 0 && Element != result.Element) return;
+            if (!AttackHelper.MatchAttackTag(AttackTag, result)) return;
             // 解析上下文用 target（钩子传入的对手），拿不到才退回 executer。
             // 受击前钩子里 target 就是攻击者，这正是"按攻方属性缩放增伤"想要的上下文。
             var ctx = target ?? actionExecuter;

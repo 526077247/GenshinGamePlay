@@ -17,7 +17,7 @@ namespace TaoTie
                     var sc = entities[0].GetComponent<SkillComponent>();
                     if (sc != null)
                     {
-                        return sc.IsSkillInCD(SkillId);
+                        return !sc.IsSkillInCD(SkillId);
                     }
                     var ai = target.GetComponent<AIComponent>();
                     if (ai != null)

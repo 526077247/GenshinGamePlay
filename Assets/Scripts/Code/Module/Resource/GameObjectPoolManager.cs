@@ -24,7 +24,7 @@ namespace TaoTie
     public class GameObjectPoolManager:IManager,IManager<string>
     {
 	    public string PackageName { get; private set; } = Define.DefaultName;
-	    private static Dictionary<string, GameObjectPoolManager> instances = new Dictionary<string, GameObjectPoolManager>();
+	    private static Dictionary<string, GameObjectPoolManager> instances = new();
 
         private Transform cacheTransRoot;
 
@@ -184,19 +184,20 @@ namespace TaoTie
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="callback"></param>
+		/// <param name="active">初始激活</param>
 		/// <returns></returns>
-		public async ETTask<GameObject> GetGameObjectAsync(string path,Action<GameObject> callback = null)
+		public async ETTask<GameObject> GetGameObjectAsync(string path,Action<GameObject> callback = null, bool active = true)
 		{
 			if (TryGetFromCache(path, out var inst))
 			{
-				InitInst(inst);
+				if(active) InitInst(inst);
 				callback?.Invoke(inst);
 				return inst;
 			}
 			await PreLoadGameObjectAsync(path, 1);
 			if (TryGetFromCache(path, out inst))
 			{
-				InitInst(inst);
+				if(active) InitInst(inst);
 				callback?.Invoke(inst);
 				return inst;
 			}
@@ -208,12 +209,13 @@ namespace TaoTie
 		/// 同步取已加载的，没加载过则返回null
 		/// </summary>
 		/// <param name="path"></param>
+		/// <param name="active">初始激活</param>
 		/// <returns></returns>
-		public GameObject GetGameObjectFromPool(string path)
+		public GameObject GetGameObjectFromPool(string path, bool active = true)
 		{
 			if (TryGetFromCache(path, out var inst))
 			{
-				InitInst(inst);
+				if(active) InitInst(inst);
 				return inst;
 			}
 			return null;
@@ -298,6 +300,7 @@ namespace TaoTie
 			foreach (var item in instCache)
 			{
 				if (ignorePath != null && ignorePath.Contains(item.Key)) continue;
+				if (persistentPathCache.Contains(item.Key)) continue;
 				for (int i = 0; i < item.Value.Count; i++)
 				{
 					var inst = item.Value[i];
