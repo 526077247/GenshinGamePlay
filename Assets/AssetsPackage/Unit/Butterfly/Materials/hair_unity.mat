@@ -45,10 +45,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 79b5dbad87945734d83a9aaae091aa6b, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -221,7 +217,6 @@ Material:
     - _AngleRingShadowColor: {r: 1, g: 1, b: 1, a: 1}
     - _AnisoSecondarySpecularColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _AnisoSpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     - _Color: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}

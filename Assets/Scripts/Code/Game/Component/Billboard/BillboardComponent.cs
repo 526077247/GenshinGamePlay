@@ -36,7 +36,7 @@ namespace TaoTie
             await model.WaitLoadGameObjectOver();
             if(model.IsDispose || IsDispose) return;
             Target = model.GetCollectorObj<Transform>(Config.AttachPoint);
-            for (int i = 0; i < Config.Plugins.Length; i++)
+            for (int i = 0; i < Config.Plugins?.Length; i++)
             {
                 var plugin = BillboardSystem.Instance.CreateBillboardPlugin(Config.Plugins[i], this);
                 plugins.Add(plugin);

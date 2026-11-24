@@ -11,6 +11,8 @@ namespace TaoTie
     {
 
         protected AIManager aiManager;
+        
+        public bool Enabled = true;
         /// <summary> 收集的信息 </summary>
         protected AIKnowledge knowledge;
 
@@ -54,6 +56,7 @@ namespace TaoTie
 
         public virtual void Init(ConfigAIBeta config, ConfigShape defendArea)
         {
+            Enabled = true;
             parent.AddComponent<AIInputController>();
             if (SceneManager.Instance.CurrentScene is SceneManagerProvider scene)
             {
@@ -101,6 +104,7 @@ namespace TaoTie
 
         public virtual void Update()
         {
+            if (!Enabled) return;
             //更新知识
             UpdateKnowledge();
             

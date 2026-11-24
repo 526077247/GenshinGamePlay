@@ -249,7 +249,7 @@ namespace TaoTie
 
         public T GetCurrentScene<T>() where T : IScene
         {
-            return (T) CurrentScene;
+            return CurrentScene is T scene ? scene : default;
         }
 
         public bool IsInTargetScene<T>() where T : IScene

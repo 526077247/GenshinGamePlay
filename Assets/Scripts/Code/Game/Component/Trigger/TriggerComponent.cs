@@ -39,7 +39,6 @@ namespace TaoTie
         private CheckRangeType checkRangeType;
         private SceneEntity pSceneEntity => GetParent<SceneEntity>();
         private EntityManager em => parent.Parent;
-        private MapScene map;
         private ListComponent<long> entities;
         private ListComponent<long> lastEntities;
 
@@ -68,7 +67,6 @@ namespace TaoTie
             configTriggerCount = configTrigger.TriggerCount;
             configTotalTriggerCount = configTrigger.TotalTriggerCount;
             checkRangeType = configTrigger.CheckRangeType;
-            map = SceneManager.Instance.GetCurrentScene<MapScene>();
             entities = ListComponent<long>.Create();
             lastTriggerTime = DictionaryComponent<long, long>.Create();
             triggerCount = DictionaryComponent<long, uint>.Create();
@@ -98,7 +96,6 @@ namespace TaoTie
             configTotalTriggerCount = uint.MaxValue;
             totalTriggerCount = 0;
             
-            map = SceneManager.Instance.GetCurrentScene<MapScene>();
             entities = ListComponent<long>.Create();
             lastTriggerTime = DictionaryComponent<long, long>.Create();
             triggerCount = DictionaryComponent<long, uint>.Create();
@@ -196,26 +193,39 @@ namespace TaoTie
                 switch (concernType)
                 {
                     case ConcernType.LocalAvatar:
-                        CheckItem(map.Self);
+                    {
+                        var self = SceneManager.Instance.GetCurrentScene<MapScene>()?.Self;
+                        if (self == null)
+                        {
+                            var avatars = em.GetAll<Avatar>();
+                            if (avatars?.Count > 0)
+                                self = em.GetAll<Avatar>()[0];//约定第一个是LocalAvatar
+                        }
+                        CheckItem(self);
                         break;
+                    }
                     case ConcernType.AllAvatars:
+                    {
                         var avatars = em.GetAll<Avatar>();
                         for (int i = 0; i < avatars.Count; i++)
                         {
                             CheckItem(avatars[i]);
                         }
+
                         break;
+                    }
                     default:
+                    {
                         //加到列表里遍历，防止遍历中Dict变化报错
                         using (ListComponent<SceneEntity> targets = ListComponent<SceneEntity>.Create())
                         {
                             var all = em.GetAllDict();
                             foreach (var item in all)
                             {
-                                if(!(item.Value is SceneEntity sceneEntity)) continue;
+                                if (!(item.Value is SceneEntity sceneEntity)) continue;
                                 if (concernType == ConcernType.CombatExcludeGWGO)
                                 {
-                                    if(sceneEntity.GetComponent<CombatComponent>() == null) 
+                                    if (sceneEntity.GetComponent<CombatComponent>() == null)
                                         continue;
                                     targets.Add(sceneEntity);
                                 }
@@ -224,6 +234,7 @@ namespace TaoTie
                                     targets.Add(sceneEntity);
                                 }
                             }
+
                             for (int i = 0; i < targets.Count; i++)
                             {
                                 CheckItem(targets[i]);
@@ -231,7 +242,7 @@ namespace TaoTie
                         }
 
                         break;
-                    
+                    }
                 }
 
             }

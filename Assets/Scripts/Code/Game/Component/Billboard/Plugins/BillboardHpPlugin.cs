@@ -13,12 +13,14 @@ namespace TaoTie
         float x = 0.5f, y = 0.02f, z = 0f;
         
         private NumericComponent numericComponent;
+        private long listenId;
         #region BillboardPlugin
 
         protected override void InitInternal()
         {
             numericComponent = billboardComponent.GetParent<Entity>().GetComponent<NumericComponent>();
-            Messager.Instance.AddListener<NumericChange>(billboardComponent.Id,MessageId.NumericChangeEvt, OnNumericChange);
+            listenId = numericComponent.Id;
+            Messager.Instance.AddListener<NumericChange>(listenId,MessageId.NumericChangeEvt, OnNumericChange);
             x = 0.01f * config.Size.x;
             y = 0.01f * config.Size.y;
             obj = new GameObject("Hp");
@@ -89,7 +91,7 @@ namespace TaoTie
 
         protected override void DisposeInternal()
         {
-            Messager.Instance.RemoveListener<NumericChange>(billboardComponent.Id,MessageId.NumericChangeEvt, OnNumericChange);
+            Messager.Instance.RemoveListener<NumericChange>(listenId,MessageId.NumericChangeEvt, OnNumericChange);
             if (obj != null)
             {
                 Object.Destroy(obj);
